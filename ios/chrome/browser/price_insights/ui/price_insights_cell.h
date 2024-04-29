@@ -12,6 +12,9 @@
 // UICollectionViewCell that contains data for Price Insights.
 @interface PriceInsightsCell : UICollectionViewCell
 
+// Contextual panel view controller.
+@property(nonatomic, weak) UIViewController* viewController;
+
 // Configures the UICollectionViewCell with `PriceInsightsitem`.
 - (void)configureWithItem:(PriceInsightsItem*)item;
 

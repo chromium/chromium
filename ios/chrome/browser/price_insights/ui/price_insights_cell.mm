@@ -34,11 +34,14 @@ const CGFloat kPriceTrackingVerticalStackViewSpacing = 2.0f;
 // The spacing between price tracking stack views.
 const CGFloat kHorizontalStackViewSpacing = 20.0f;
 
-// The corner radius of this container.
-const float kCornerRadius = 24;
-
 // Size of the icon.
 const CGFloat kIconSize = 20.0f;
+
+// Size of the space between the graph and the text in Price History.
+const CGFloat kPriceHistoryContentSpacing = 12.0f;
+
+// The corner radius of this container.
+const float kCornerRadius = 24;
 
 }  // namespace
 
@@ -54,6 +57,7 @@ const CGFloat kIconSize = 20.0f;
   UIStackView* _priceTrackingStackView;
   UIStackView* _buyingOptionsStackView;
   UIStackView* _contentStackView;
+  UIStackView* _priceHistoryStackView;
 }
 
 #pragma mark - Public
@@ -73,19 +77,53 @@ const CGFloat kIconSize = 20.0f;
     [self.contentView addSubview:_contentStackView];
     AddSameConstraintsWithInsets(
         _contentStackView, self.contentView,
-        NSDirectionalEdgeInsetsMake(0, kHorizontalInset, 0, -kHorizontalInset));
+        NSDirectionalEdgeInsetsMake(0, kHorizontalInset, 0, kHorizontalInset));
   }
   return self;
 }
 
 - (void)configureWithItem:(PriceInsightsItem*)item {
   self.item = item;
+
+  // Configure Price Trancking and Price Range.
   if (self.item.canPriceTrack ||
       ([self hasPriceRange] && [self hasPriceHistory])) {
     [self configurePriceTrackingAndRange];
     [_contentStackView addArrangedSubview:_priceTrackingStackView];
   }
 
+  // Configure Price History.
+  if ([self hasPriceHistory]) {
+    NSString* title;
+    NSString* primarySubtitle;
+    NSString* secondarySubtitle;
+
+    bool hasPriceTrackOrPriceRange =
+        self.item.canPriceTrack || [self hasPriceRange];
+    title = hasPriceTrackOrPriceRange
+                ? l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION)
+                : self.item.title;
+    NSString* priceHistoryDescription =
+        hasPriceTrackOrPriceRange
+            ? nil
+            : l10n_util::GetNSString(IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION);
+
+    if ([self hasVariants]) {
+      primarySubtitle = self.item.variants;
+      secondarySubtitle = priceHistoryDescription;
+    } else {
+      primarySubtitle = priceHistoryDescription;
+      secondarySubtitle = nil;
+    }
+
+    [self configurePriceHistoryWithTitle:title
+                         primarySubtitle:primarySubtitle
+                       secondarySubtitle:secondarySubtitle];
+
+    [_contentStackView addArrangedSubview:_priceHistoryStackView];
+  }
+
+  // Configure Buying options.
   if (self.item.buyingOptionsURL.is_valid()) {
     [self configureBuyingOptions];
     [_contentStackView addArrangedSubview:_buyingOptionsStackView];
@@ -114,35 +152,23 @@ const CGFloat kIconSize = 20.0f;
 
 // Returns whether or not price history is available.
 - (BOOL)hasPriceHistory {
-  return NO;
+  return self.item.priceHistory && [self.item.priceHistory count] > 0;
 }
 
 // Method that creates a view for both price tracking and price range, or solely
 // for price tracking or price range when price history is also available.
 - (void)configurePriceTrackingAndRange {
-  UILabel* priceTrackingTitle = [[UILabel alloc] init];
-  priceTrackingTitle.numberOfLines = 1;
-  priceTrackingTitle.textAlignment = NSTextAlignmentLeft;
+  UILabel* priceTrackingTitle = [self createLabel];
   priceTrackingTitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
-  priceTrackingTitle.adjustsFontForContentSizeCategory = YES;
-  priceTrackingTitle.adjustsFontSizeToFitWidth = NO;
-  priceTrackingTitle.translatesAutoresizingMaskIntoConstraints = NO;
-  priceTrackingTitle.lineBreakMode = NSLineBreakByTruncatingTail;
   priceTrackingTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
   priceTrackingTitle.text = self.item.title;
 
-  UILabel* priceTrackingSubtitle = [[UILabel alloc] init];
-  priceTrackingSubtitle.textAlignment = NSTextAlignmentLeft;
+  UILabel* priceTrackingSubtitle = [self createLabel];
   priceTrackingSubtitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
-  priceTrackingSubtitle.adjustsFontForContentSizeCategory = YES;
-  priceTrackingSubtitle.adjustsFontSizeToFitWidth = NO;
-  priceTrackingSubtitle.lineBreakMode = NSLineBreakByTruncatingTail;
-  priceTrackingSubtitle.translatesAutoresizingMaskIntoConstraints = NO;
   priceTrackingSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   if ([self hasPriceRange] && [self hasPriceHistory]) {
-    priceTrackingSubtitle.numberOfLines = 1;
     priceTrackingSubtitle.text =
         [self hasVariants]
             ? ([self hasPriceOneTypicalPrice]
@@ -200,29 +226,17 @@ const CGFloat kIconSize = 20.0f;
 
 // Method that creates a view for the buying options module.
 - (void)configureBuyingOptions {
-  UILabel* title = [[UILabel alloc] init];
-  title.numberOfLines = 1;
-  title.textAlignment = NSTextAlignmentLeft;
+  UILabel* title = [self createLabel];
   title.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
-  title.adjustsFontForContentSizeCategory = YES;
-  title.adjustsFontSizeToFitWidth = NO;
   title.text = l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE);
-  title.translatesAutoresizingMaskIntoConstraints = NO;
-  title.lineBreakMode = NSLineBreakByTruncatingTail;
   title.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  UILabel* subtitle = [[UILabel alloc] init];
-  subtitle.numberOfLines = 1;
-  subtitle.textAlignment = NSTextAlignmentLeft;
+  UILabel* subtitle = [self createLabel];
   subtitle.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
-  subtitle.adjustsFontForContentSizeCategory = YES;
-  subtitle.adjustsFontSizeToFitWidth = NO;
-  subtitle.lineBreakMode = NSLineBreakByTruncatingTail;
   subtitle.text =
       l10n_util::GetNSString(IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE);
-  subtitle.translatesAutoresizingMaskIntoConstraints = NO;
   subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
   UIStackView* verticalStack =
@@ -254,6 +268,69 @@ const CGFloat kIconSize = 20.0f;
       initWithTarget:self
               action:@selector(handleBuyingOptionsTap:)];
   [_buyingOptionsStackView addGestureRecognizer:tapRecognizer];
+}
+
+// Method that creates a swiftUI graph for price history.
+- (void)configurePriceHistoryWithTitle:(NSString*)titleText
+                       primarySubtitle:(NSString*)primarySubtitleText
+                     secondarySubtitle:(NSString*)secondarySubtitleText {
+  UIStackView* verticalStack = [[UIStackView alloc] init];
+  verticalStack.axis = UILayoutConstraintAxisVertical;
+  verticalStack.distribution = UIStackViewDistributionFill;
+  verticalStack.alignment = UIStackViewAlignmentLeading;
+
+  UILabel* title = [self createLabel];
+  title.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  title.text = titleText;
+  title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  [verticalStack addArrangedSubview:title];
+
+  if (primarySubtitleText.length) {
+    UILabel* primarySubtitle = [self createLabel];
+    primarySubtitle.font =
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+    primarySubtitle.text = primarySubtitleText;
+    primarySubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    [verticalStack addArrangedSubview:primarySubtitle];
+
+    // Set secondarySubtitle only if both primarySubtitle and
+    // secondarySubtitle are present.
+    if (secondarySubtitleText.length) {
+      UILabel* secondarySubtitle = [self createLabel];
+      secondarySubtitle.font =
+          CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+      secondarySubtitle.text = secondarySubtitleText;
+      secondarySubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      [verticalStack addArrangedSubview:secondarySubtitle];
+    }
+  }
+
+  _priceHistoryStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    verticalStack
+  ]];
+  _priceHistoryStackView.axis = UILayoutConstraintAxisVertical;
+  _priceHistoryStackView.spacing = kPriceHistoryContentSpacing;
+  _priceHistoryStackView.distribution = UIStackViewDistributionFill;
+  _priceHistoryStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _priceHistoryStackView.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
+  _priceHistoryStackView.layoutMarginsRelativeArrangement = YES;
+  _priceHistoryStackView.layoutMargins =
+      UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
+                    kContentVerticalInset, kContentHorizontalInset);
+}
+
+// Creates and configures a UILabel with default settings.
+- (UILabel*)createLabel {
+  UILabel* label = [[UILabel alloc] init];
+  label.textAlignment = NSTextAlignmentLeft;
+  label.adjustsFontForContentSizeCategory = YES;
+  label.adjustsFontSizeToFitWidth = NO;
+  label.lineBreakMode = NSLineBreakByTruncatingTail;
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.numberOfLines = 1;
+  return label;
 }
 
 #pragma mark - Actions
