@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_INPUT_H_
-#define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_INPUT_H_
+#ifndef CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_
+#define CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_
 
 #include <memory>
 #include <optional>
@@ -35,7 +35,7 @@ namespace content {
 class CursorManager;
 class RenderInputRouter;
 class SyntheticGestureTarget;
-class RenderWidgetHostViewBase;
+class RenderWidgetHostViewInputObserver;
 
 // RenderWidgetHostViewInput is an interface implemented by an object that acts
 // as the "View" portion of a RenderWidgetHost. This interface acts as a helper
@@ -45,8 +45,14 @@ class RenderWidgetHostViewBase;
 // assist VizCompositor Thread to implement input handling in the future with
 // InputVizard.
 // (https://docs.google.com/document/d/1mcydbkgFCO_TT9NuFE962L8PLJWT2XOfXUAPO88VuKE)
+//
+// The lifetime of RenderWidgetHostViewInput is tied to the lifetime of the
+// renderer process. If the render process dies, the RenderWidgetHostViewInput
+// goes away and all references to it must become nullptr.
 class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
  public:
+  virtual base::WeakPtr<RenderWidgetHostViewInput> GetInputWeakPtr() = 0;
+
   virtual float GetDeviceScaleFactor() const = 0;
   // Returns true if the mouse pointer is currently locked.
   virtual bool IsPointerLocked() = 0;
@@ -128,7 +134,7 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
       const gfx::PointF& point) = 0;
 
   // Transform a point that is in the coordinate space of a Surface that is
-  // embedded within the RenderWidgetHostViewBase's Surface to the
+  // embedded within the RenderWidgetHostViewInput's Surface to the
   // coordinate space of an embedding, or embedded, Surface. Typically this
   // means that a point was received from an out-of-process iframe's
   // RenderWidget and needs to be translated to viewport coordinates for the
@@ -143,14 +149,14 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
       const viz::SurfaceId& original_surface,
       gfx::PointF* transformed_point) = 0;
 
-  // Given a RenderWidgetHostViewBase that renders to a Surface that is
+  // Given a RenderWidgetHostViewInput that renders to a Surface that is
   // contained within this class' Surface, find the relative transform between
   // the Surfaces and apply it to a point. Returns false if a Surface has not
   // yet been created or if |target_view| is not a descendant RWHV from our
   // client.
   virtual bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) = 0;
 
   // On success, returns true and modifies |*transform| to represent the
@@ -163,7 +169,7 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
   // This function is useful if there are multiple points to transform between
   // the same two views. |target_view| must be non-null.
   virtual bool GetTransformToViewCoordSpace(
-      RenderWidgetHostViewBase* target_view,
+      RenderWidgetHostViewInput* target_view,
       gfx::Transform* transform) = 0;
 
   // Transforms |point| to be in the coordinate space of browser compositor's
@@ -173,7 +179,7 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
   // Returns the view into which this view is directly embedded. This can
   // return nullptr when this view's associated child frame is not connected
   // to the frame tree or when view is the root view.
-  virtual RenderWidgetHostViewBase* GetParentView() = 0;
+  virtual RenderWidgetHostViewInput* GetParentViewInput() = 0;
 
   // Called prior to forwarding input event messages to the renderer, giving
   // the view a chance to perform in-process event filtering or processing.
@@ -243,6 +249,12 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
 
   virtual void OnAutoscrollStart() = 0;
 
+  // Add and remove observers for lifetime event notifications. The order in
+  // which notifications are sent to observers is undefined. Clients must be
+  // sure to remove the observer before they go away.
+  virtual void AddObserver(RenderWidgetHostViewInputObserver* observer) = 0;
+  virtual void RemoveObserver(RenderWidgetHostViewInputObserver* observer) = 0;
+
  protected:
   virtual void UpdateFrameSinkIdRegistration() = 0;
 
@@ -261,4 +273,4 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
 };
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_INPUT_H_
+#endif  // CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_

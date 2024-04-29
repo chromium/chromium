@@ -29,13 +29,13 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
-#include "content/browser/renderer_host/render_widget_host_view_base_observer.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/input/event_with_latency_info.h"
+#include "content/common/input/render_widget_host_view_input_observer.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -96,7 +96,7 @@ void RenderWidgetHostViewBase::NotifyObserversAboutShutdown() {
   // Note: RenderWidgetHostInputEventRouter is an observer, and uses the
   // following notification to remove this view from its surface owners map.
   for (auto& observer : observers_)
-    observer.OnRenderWidgetHostViewBaseDestroyed(this);
+    observer.OnRenderWidgetHostViewInputDestroyed(this);
   // All observers are required to disconnect after they are notified.
   CHECK(observers_.empty());
 }
@@ -651,11 +651,16 @@ float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
   return screen_infos_.current().device_scale_factor;
 }
 
+base::WeakPtr<RenderWidgetHostViewInput>
+RenderWidgetHostViewBase::GetInputWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 RenderInputRouter* RenderWidgetHostViewBase::GetViewRenderInputRouter() {
   return host()->GetRenderInputRouter();
 }
 
-RenderWidgetHostViewBase* RenderWidgetHostViewBase::GetParentView() {
+RenderWidgetHostViewInput* RenderWidgetHostViewBase::GetParentViewInput() {
   return nullptr;
 }
 
@@ -805,7 +810,7 @@ gfx::PointF RenderWidgetHostViewBase::TransformRootPointToViewCoordSpace(
 
 bool RenderWidgetHostViewBase::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
-    RenderWidgetHostViewBase* target_view,
+    RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
   NOTREACHED();
   return true;
@@ -894,12 +899,12 @@ void RenderWidgetHostViewBase::StopFling() {
 }
 
 void RenderWidgetHostViewBase::AddObserver(
-    RenderWidgetHostViewBaseObserver* observer) {
+    RenderWidgetHostViewInputObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void RenderWidgetHostViewBase::RemoveObserver(
-    RenderWidgetHostViewBaseObserver* observer) {
+    RenderWidgetHostViewInputObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -955,8 +960,8 @@ void RenderWidgetHostViewBase::SetTooltipObserverForTesting(
 // TODO(wjmaclean): Would it simplify this function if we re-implemented it
 // using GetTransformToViewCoordSpace()?
 bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
-    RenderWidgetHostViewBase* original_view,
-    RenderWidgetHostViewBase* target_view,
+    RenderWidgetHostViewInput* original_view,
+    RenderWidgetHostViewInput* target_view,
     const gfx::PointF& point,
     gfx::PointF* transformed_point) const {
   CHECK(original_view);
@@ -974,10 +979,9 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
   std::vector<viz::FrameSinkId> target_ancestors;
   target_ancestors.push_back(target_view->GetFrameSinkId());
 
-  RenderWidgetHostViewBase* cur_view = target_view;
+  RenderWidgetHostViewInput* cur_view = target_view;
   while (cur_view->IsRenderWidgetHostViewChildFrame()) {
-    cur_view =
-        static_cast<RenderWidgetHostViewChildFrame*>(cur_view)->GetParentView();
+    cur_view = cur_view->GetParentViewInput();
     if (!cur_view)
       return false;
     target_ancestors.push_back(cur_view->GetFrameSinkId());
@@ -1009,7 +1013,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
 }
 
 bool RenderWidgetHostViewBase::GetTransformToViewCoordSpace(
-    RenderWidgetHostViewBase* target_view,
+    RenderWidgetHostViewInput* target_view,
     gfx::Transform* transform) {
   CHECK(transform);
   if (target_view == this) {

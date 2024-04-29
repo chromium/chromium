@@ -613,6 +613,19 @@ size_t GetFrameTreeSize(FrameTree* frame_tree) {
   return tree_size;
 }
 
+using RenderWidgetHostAtPointCallback =
+    base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
+                            std::optional<gfx::PointF>)>;
+
+void RunCallback(RenderWidgetHostAtPointCallback callback,
+                 base::WeakPtr<RenderWidgetHostViewInput> view,
+                 std::optional<gfx::PointF> point) {
+  auto* target = static_cast<RenderWidgetHostViewBase*>(view.get());
+  if (!callback.is_null()) {
+    std::move(callback).Run(target ? target->GetWeakPtr() : nullptr, point);
+  }
+}
+
 }  // namespace
 
 // This is a small helper class created while a JavaScript dialog is showing
@@ -3885,6 +3898,26 @@ RenderWidgetHostInputEventRouter* WebContentsImpl::GetInputEventRouter() {
     }
   }
   return rwh_input_event_router_.get();
+}
+
+void WebContentsImpl::GetRenderWidgetHostAtPointAsynchronously(
+    RenderWidgetHostViewBase* root_view,
+    const gfx::PointF& point,
+    base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
+                            std::optional<gfx::PointF>)> callback) {
+  GetInputEventRouter()->GetRenderWidgetHostAtPointAsynchronously(
+      root_view, point, base::BindOnce(&RunCallback, std::move(callback)));
+}
+
+std::vector<RenderWidgetHostView*>
+WebContentsImpl::GetRenderWidgetHostViewsForTests() {
+  auto input_hosts =
+      GetInputEventRouter()->GetRenderWidgetHostViewInputsForTests();
+  std::vector<RenderWidgetHostView*> hosts;
+  for (auto host : input_hosts) {
+    hosts.push_back(static_cast<RenderWidgetHostViewBase*>(host));
+  }
+  return hosts;
 }
 
 RenderWidgetHostImpl* WebContentsImpl::GetFocusedRenderWidgetHost(

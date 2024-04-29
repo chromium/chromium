@@ -28,7 +28,7 @@ class PointF;
 
 namespace content {
 
-class RenderWidgetHostViewBase;
+class RenderWidgetHostViewInput;
 
 // TODO(sunxd): Make |RenderWidgetTargetResult| a class. Merge the booleans into
 // a mask to reduce the size. Make the constructor take in enums for better
@@ -36,13 +36,13 @@ class RenderWidgetHostViewBase;
 struct CONTENT_EXPORT RenderWidgetTargetResult {
   RenderWidgetTargetResult();
   RenderWidgetTargetResult(const RenderWidgetTargetResult&);
-  RenderWidgetTargetResult(RenderWidgetHostViewBase* view,
+  RenderWidgetTargetResult(RenderWidgetHostViewInput* view,
                            bool should_query_view,
                            std::optional<gfx::PointF> location,
                            bool latched_target);
   ~RenderWidgetTargetResult();
 
-  raw_ptr<RenderWidgetHostViewBase, DanglingUntriaged> view = nullptr;
+  raw_ptr<RenderWidgetHostViewInput, DanglingUntriaged> view = nullptr;
   bool should_query_view = false;
   std::optional<gfx::PointF> target_location = std::nullopt;
   // When |latched_target| is false, we explicitly hit-tested events instead of
@@ -53,7 +53,7 @@ struct CONTENT_EXPORT RenderWidgetTargetResult {
 class RenderWidgetTargeter {
  public:
   using RenderWidgetHostAtPointCallback =
-      base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
+      base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewInput>,
                               std::optional<gfx::PointF>)>;
 
   class Delegate {
@@ -61,30 +61,30 @@ class RenderWidgetTargeter {
     virtual ~Delegate() {}
 
     virtual RenderWidgetTargetResult FindTargetSynchronouslyAtPoint(
-        RenderWidgetHostViewBase* root_view,
+        RenderWidgetHostViewInput* root_view,
         const gfx::PointF& location) = 0;
 
     virtual RenderWidgetTargetResult FindTargetSynchronously(
-        RenderWidgetHostViewBase* root_view,
+        RenderWidgetHostViewInput* root_view,
         const blink::WebInputEvent& event) = 0;
 
     // |event| must be non-null, and is in |root_view|'s coordinate space.
     virtual void DispatchEventToTarget(
-        RenderWidgetHostViewBase* root_view,
-        RenderWidgetHostViewBase* target,
+        RenderWidgetHostViewInput* root_view,
+        RenderWidgetHostViewInput* target,
         blink::WebInputEvent* event,
         const ui::LatencyInfo& latency,
         const std::optional<gfx::PointF>& target_location) = 0;
 
     virtual void SetEventsBeingFlushed(bool events_being_flushed) = 0;
 
-    virtual RenderWidgetHostViewBase* FindViewFromFrameSinkId(
+    virtual RenderWidgetHostViewInput* FindViewFromFrameSinkId(
         const viz::FrameSinkId& frame_sink_id) const = 0;
 
     // Returns true if a further asynchronous query should be sent to the
     // candidate RenderWidgetHostView.
     virtual bool ShouldContinueHitTesting(
-        RenderWidgetHostViewBase* target_view) const = 0;
+        RenderWidgetHostViewInput* target_view) const = 0;
   };
 
   enum class HitTestResultsMatch {
@@ -105,18 +105,18 @@ class RenderWidgetTargeter {
 
   // Finds the appropriate target inside |root_view| for |event|, and dispatches
   // it through the delegate. |event| is in the coord-space of |root_view|.
-  void FindTargetAndDispatch(RenderWidgetHostViewBase* root_view,
+  void FindTargetAndDispatch(RenderWidgetHostViewInput* root_view,
                              const blink::WebInputEvent& event,
                              const ui::LatencyInfo& latency);
 
   // Finds the appropriate target inside |root_view| for |point|, and passes the
   // target along with the transformed coordinates of the point with respect to
   // the target's coordinates.
-  void FindTargetAndCallback(RenderWidgetHostViewBase* root_view,
+  void FindTargetAndCallback(RenderWidgetHostViewInput* root_view,
                              const gfx::PointF& point,
                              RenderWidgetHostAtPointCallback callback);
 
-  void ViewWillBeDestroyed(RenderWidgetHostViewBase* view);
+  void ViewWillBeDestroyed(RenderWidgetHostViewInput* view);
 
   bool HasEventsPendingDispatch() const;
 
@@ -137,10 +137,10 @@ class RenderWidgetTargeter {
  private:
   class TargetingRequest {
    public:
-    TargetingRequest(base::WeakPtr<RenderWidgetHostViewBase>,
+    TargetingRequest(base::WeakPtr<RenderWidgetHostViewInput>,
                      const blink::WebInputEvent&,
                      const ui::LatencyInfo&);
-    TargetingRequest(base::WeakPtr<RenderWidgetHostViewBase>,
+    TargetingRequest(base::WeakPtr<RenderWidgetHostViewInput>,
                      const gfx::PointF&,
                      RenderWidgetHostAtPointCallback);
     TargetingRequest(TargetingRequest&& request);
@@ -151,18 +151,18 @@ class RenderWidgetTargeter {
 
     ~TargetingRequest();
 
-    void RunCallback(RenderWidgetHostViewBase* target,
+    void RunCallback(RenderWidgetHostViewInput* target,
                      std::optional<gfx::PointF> point);
 
     bool MergeEventIfPossible(const blink::WebInputEvent& event);
     bool IsWebInputEventRequest() const;
     blink::WebInputEvent* GetEvent();
-    RenderWidgetHostViewBase* GetRootView() const;
+    RenderWidgetHostViewInput* GetRootView() const;
     gfx::PointF GetLocation() const;
     const ui::LatencyInfo& GetLatency() const;
 
    private:
-    base::WeakPtr<RenderWidgetHostViewBase> root_view;
+    base::WeakPtr<RenderWidgetHostViewInput> root_view;
 
     RenderWidgetHostAtPointCallback callback;
 
@@ -185,9 +185,9 @@ class RenderWidgetTargeter {
   // |last_request_target| and |last_target_location| provide a fallback target
   // in the case that the query times out. These should be null values when
   // querying the root view, and the target's immediate parent view otherwise.
-  void QueryClient(RenderWidgetHostViewBase* target,
+  void QueryClient(RenderWidgetHostViewInput* target,
                    const gfx::PointF& target_location,
-                   RenderWidgetHostViewBase* last_request_target,
+                   RenderWidgetHostViewInput* last_request_target,
                    const gfx::PointF& last_target_location,
                    TargetingRequest request);
 
@@ -198,7 +198,7 @@ class RenderWidgetTargeter {
   // |frame_sink_id| is returned from the InputTargetClient to indicate where
   // the event should be routed, and |transformed_location| is the point in
   // that new target's coordinate space.
-  void FoundFrameSinkId(base::WeakPtr<RenderWidgetHostViewBase> target,
+  void FoundFrameSinkId(base::WeakPtr<RenderWidgetHostViewInput> target,
                         uint32_t request_id,
                         const gfx::PointF& target_location,
                         const viz::FrameSinkId& frame_sink_id,
@@ -206,23 +206,23 @@ class RenderWidgetTargeter {
 
   // |target_location|, if
   // set, is the location in |target|'s coordinate space.
-  void FoundTarget(RenderWidgetHostViewBase* target,
+  void FoundTarget(RenderWidgetHostViewInput* target,
                    const std::optional<gfx::PointF>& target_location,
                    TargetingRequest* request);
 
   // Callback when the hit testing timer fires, to resume event processing
   // without further waiting for a response to the last targeting request.
   void AsyncHitTestTimedOut(
-      base::WeakPtr<RenderWidgetHostViewBase> current_request_target,
+      base::WeakPtr<RenderWidgetHostViewInput> current_request_target,
       const gfx::PointF& current_target_location,
-      base::WeakPtr<RenderWidgetHostViewBase> last_request_target,
+      base::WeakPtr<RenderWidgetHostViewInput> last_request_target,
       const gfx::PointF& last_target_location);
 
-  void OnInputTargetDisconnect(base::WeakPtr<RenderWidgetHostViewBase> target,
+  void OnInputTargetDisconnect(base::WeakPtr<RenderWidgetHostViewInput> target,
                                const gfx::PointF& location);
 
   HitTestResultsMatch GetHitTestResultsMatchBucket(
-      RenderWidgetHostViewBase* target,
+      RenderWidgetHostViewInput* target,
       TargetingRequest* request) const;
 
   base::TimeDelta async_hit_test_timeout_delay() {
@@ -233,7 +233,7 @@ class RenderWidgetTargeter {
   uint32_t last_request_id_ = 0;
   std::queue<TargetingRequest> requests_;
 
-  std::unordered_set<raw_ptr<RenderWidgetHostViewBase, CtnExperimental>>
+  std::unordered_set<raw_ptr<RenderWidgetHostViewInput, CtnExperimental>>
       unresponsive_views_;
 
   // Target to send events to if autoscroll is in progress

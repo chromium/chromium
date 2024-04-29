@@ -119,7 +119,7 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
 
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override {
     return true;
   }
@@ -312,14 +312,14 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 #endif
   }
 
-  RenderWidgetHostViewBase* touch_target() { return rwhier()->touch_target_; }
-  RenderWidgetHostViewBase* touchscreen_gesture_target() {
+  RenderWidgetHostViewInput* touch_target() { return rwhier()->touch_target_; }
+  RenderWidgetHostViewInput* touchscreen_gesture_target() {
     return rwhier()->touchscreen_gesture_target_.get();
   }
-  RenderWidgetHostViewChildFrame* bubbling_gesture_scroll_origin() {
+  RenderWidgetHostViewInput* bubbling_gesture_scroll_origin() {
     return rwhier()->bubbling_gesture_scroll_origin_;
   }
-  RenderWidgetHostViewBase* bubbling_gesture_scroll_target() {
+  RenderWidgetHostViewInput* bubbling_gesture_scroll_target() {
     return rwhier()->bubbling_gesture_scroll_target_;
   }
 
@@ -493,7 +493,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
 
   // Now, tell the router that the child view was destroyed, and verify the
   // acks.
-  rwhier()->OnRenderWidgetHostViewBaseDestroyed(child.view.get());
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
   EXPECT_EQ(view_root_->last_id_for_touch_ack(), 2lu);
   EXPECT_EQ(0u, rwhier()->TouchEventAckQueueLengthForTesting());
 }
@@ -739,7 +739,7 @@ void RenderWidgetHostInputEventRouterTest::TestSendNewGestureWhileBubbling(
           delta.x(), delta.y(), blink::WebGestureDevice::kTouchscreen);
 
   TestRenderWidgetHostViewChildFrame* cur_target = bubbling_origin;
-  RenderWidgetHostViewBase* parent = bubbling_origin->GetParentView();
+  RenderWidgetHostViewInput* parent = bubbling_origin->GetParentViewInput();
   while (parent) {
     ASSERT_TRUE(rwhier()->BubbleScrollEvent(parent, cur_target, scroll_begin));
     EXPECT_EQ(bubbling_origin, bubbling_gesture_scroll_origin());
@@ -755,7 +755,7 @@ void RenderWidgetHostInputEventRouterTest::TestSendNewGestureWhileBubbling(
       EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
                 next_child->last_gesture_seen());
       cur_target = next_child;
-      parent = next_child->GetParentView();
+      parent = next_child->GetParentViewInput();
     } else {
       MockRootRenderWidgetHostView* root =
           static_cast<MockRootRenderWidgetHostView*>(parent);
@@ -1000,7 +1000,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   // Set middle click autoscroll in progress to true.
   rwhier()->SetAutoScrollInProgress(true);
   // Destroy the view/target, middle click autoscroll is latched to.
-  rwhier()->OnRenderWidgetHostViewBaseDestroyed(child.view.get());
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
 
   EXPECT_FALSE(targeter->is_auto_scroll_in_progress());
 }
@@ -1551,7 +1551,7 @@ TEST_P(DelegatedInkPointTest, MAYBE_ForwardPointsToChildFrame) {
 
   // Reset's the hit test result on the root so that we don't crash on
   // destruction.
-  rwhier()->OnRenderWidgetHostViewBaseDestroyed(child.view.get());
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
   view_root_->GetCursorManager()->ViewBeingDestroyed(child.view.get());
 }
 

@@ -5099,7 +5099,7 @@ namespace {
 uint32_t SendTouchTapWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& touch_point,
-    RenderWidgetHostViewBase*& router_touch_target,
+    RenderWidgetHostViewInput*& router_touch_target,
     RenderWidgetHostViewBase* expected_target,
     RenderWidgetHostImpl* child_render_widget_host) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
@@ -5144,7 +5144,7 @@ uint32_t SendTouchTapWithExpectedTarget(
 void SendGestureTapSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& gesture_point,
-    base::WeakPtr<RenderWidgetHostViewBase>& router_gesture_target,
+    base::WeakPtr<RenderWidgetHostViewInput>& router_gesture_target,
     const RenderWidgetHostViewBase* expected_target,
     const uint32_t unique_touch_event_id) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
@@ -5203,7 +5203,7 @@ void SendGestureTapSequenceWithExpectedTarget(
 void SendTouchpadPinchSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& gesture_point,
-    RenderWidgetHostViewBase*& router_touchpad_gesture_target,
+    RenderWidgetHostViewInput*& router_touchpad_gesture_target,
     RenderWidgetHostViewBase* expected_target) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
 
@@ -5255,7 +5255,7 @@ void SendTouchpadPinchSequenceWithExpectedTarget(
 void SendTouchpadFlingSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& gesture_point,
-    RenderWidgetHostViewBase*& router_wheel_target,
+    RenderWidgetHostViewInput*& router_wheel_target,
     RenderWidgetHostViewBase* expected_target) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
 

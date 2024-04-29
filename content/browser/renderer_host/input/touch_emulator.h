@@ -28,7 +28,7 @@ class WebMouseWheelEvent;
 
 namespace content {
 
-class RenderWidgetHostViewBase;
+class RenderWidgetHostViewInput;
 
 // Emulates touch input. See TouchEmulator::Mode for more details.
 class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
@@ -66,16 +66,16 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   // propagate any further.
   // TODO(dgozman): maybe pass latency info together with events.
   bool HandleMouseEvent(const blink::WebMouseEvent& event,
-                        RenderWidgetHostViewBase* target_view);
+                        RenderWidgetHostViewInput* target_view);
   bool HandleMouseWheelEvent(const blink::WebMouseWheelEvent& event);
   bool HandleKeyboardEvent(const blink::WebKeyboardEvent& event);
   bool HandleTouchEvent(const blink::WebTouchEvent& event);
 
   void OnGestureEventAck(const blink::WebGestureEvent& event,
-                         RenderWidgetHostViewBase* target_view);
+                         RenderWidgetHostViewInput* target_view);
 
   // Called to notify the TouchEmulator when a view is destroyed.
-  void OnViewDestroyed(RenderWidgetHostViewBase* destroyed_view);
+  void OnViewDestroyed(RenderWidgetHostViewInput* destroyed_view);
 
   // Returns |true| if the event ack was consumed. Consumed ack should not
   // propagate any further.
@@ -85,7 +85,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   // Injects a touch event to be processed for gestures and optionally
   // forwarded to the client. Only works in kInjectingTouchEvents mode.
   void InjectTouchEvent(const blink::WebTouchEvent& event,
-                        RenderWidgetHostViewBase* target_view,
+                        RenderWidgetHostViewInput* target_view,
                         base::OnceClosure completion_callback);
 
   // Cancel any touches, for example, when focus is lost.
@@ -129,7 +129,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   // it to the client if appropriate. Returns whether event was handled
   // synchronously, and there will be no ack.
   bool HandleEmulatedTouchEvent(blink::WebTouchEvent event,
-                                RenderWidgetHostViewBase* target_view);
+                                RenderWidgetHostViewInput* target_view);
 
   // Called when ack for injected touch has been received.
   void OnInjectedTouchCompleted();
@@ -164,7 +164,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   blink::WebTouchEvent touch_event_;
   int emulated_stream_active_sequence_count_;
   int native_stream_active_sequence_count_;
-  raw_ptr<RenderWidgetHostViewBase> last_emulated_start_target_;
+  raw_ptr<RenderWidgetHostViewInput> last_emulated_start_target_;
   // TODO(einbinder): this relies on synchronous tap gesture generation and does
   // not work for any other gestures. We should switch to callbacks which go
   // through touches and gestures once that's available.

@@ -3824,8 +3824,8 @@ RenderWidgetHostImpl::GetEmbeddedRenderWidgetHosts() {
 
     auto* view = static_cast<RenderWidgetHostViewBase*>(widget->GetView());
     if (view && view->IsRenderWidgetHostViewChildFrame() &&
-        static_cast<RenderWidgetHostViewChildFrame*>(view)->GetParentView() ==
-            parent_view) {
+        static_cast<RenderWidgetHostViewChildFrame*>(view)
+                ->GetParentViewInput() == parent_view) {
       hosts->Add(widget);
     }
   }

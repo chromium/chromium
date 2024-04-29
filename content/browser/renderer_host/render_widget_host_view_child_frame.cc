@@ -473,7 +473,8 @@ void RenderWidgetHostViewChildFrame::ClearKeyboardTriggeredTooltip() {
   root_view->ClearKeyboardTriggeredTooltip();
 }
 
-RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetParentView() {
+RenderWidgetHostViewInput*
+RenderWidgetHostViewChildFrame::GetParentViewInput() {
   if (!frame_connector_)
     return nullptr;
   return frame_connector_->GetParentRenderWidgetHostView();
@@ -758,8 +759,9 @@ bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableFor(
       screen_rect_stable_since_) {
     return true;
   }
-  if (RenderWidgetHostViewBase* parent = GetParentView())
+  if (RenderWidgetHostViewInput* parent = GetParentViewInput()) {
     return parent->ScreenRectIsUnstableFor(event);
+  }
   return false;
 }
 
@@ -775,7 +777,7 @@ bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableForIOv2For(
       screen_rect_stable_since_for_iov2_) {
     return true;
   }
-  if (RenderWidgetHostViewBase* parent = GetParentView()) {
+  if (RenderWidgetHostViewInput* parent = GetParentViewInput()) {
     return parent->ScreenRectIsUnstableForIOv2For(event);
   }
   return false;
@@ -827,7 +829,7 @@ gfx::PointF RenderWidgetHostViewChildFrame::TransformPointToRootCoordSpaceF(
 
 bool RenderWidgetHostViewChildFrame::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
-    RenderWidgetHostViewBase* target_view,
+    RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
   viz::SurfaceId surface_id = GetCurrentSurfaceId();
   if (!frame_connector_)
@@ -1106,7 +1108,7 @@ bool RenderWidgetHostViewChildFrame::CanBecomeVisible() {
   if (frame_connector_->IsHidden())
     return false;
 
-  RenderWidgetHostViewBase* parent_view = GetParentView();
+  RenderWidgetHostViewInput* parent_view = GetParentViewInput();
   if (!parent_view || !parent_view->IsRenderWidgetHostViewChildFrame()) {
     // Root frame does not have a CSS visibility property.
     return true;

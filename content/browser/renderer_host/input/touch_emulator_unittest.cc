@@ -65,7 +65,7 @@ class TouchEmulatorTest : public testing::Test,
   }
 
   void ForwardEmulatedTouchEvent(const blink::WebTouchEvent& event,
-                                 RenderWidgetHostViewBase* target) override {
+                                 RenderWidgetHostViewInput* target) override {
     forwarded_events_.push_back(event.GetType());
     EXPECT_EQ(1U, event.touches_length);
     EXPECT_EQ(last_mouse_x_, event.touches[0].PositionInWidget().x());
@@ -90,7 +90,7 @@ class TouchEmulatorTest : public testing::Test,
 
   void ShowContextMenuAtPoint(const gfx::Point& point,
                               const ui::MenuSourceType source_type,
-                              RenderWidgetHostViewBase* target) override {}
+                              RenderWidgetHostViewInput* target) override {}
 
  protected:
   TouchEmulator* emulator() const {

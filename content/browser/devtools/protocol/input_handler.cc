@@ -1015,13 +1015,11 @@ void InputHandler::DragController::EndDragging(
         drag_state_->pos);
     return;
   }
-  handler_->web_contents_->GetInputEventRouter()
-      ->GetRenderWidgetHostAtPointAsynchronously(
-          handler_->GetRootView(), drag_state_->pos,
-          base::BindOnce(&InputHandler::DragController::
-                             EndDraggingWithRenderWidgetHostAtPoint,
-                         weak_factory_.GetWeakPtr(), std::move(event),
-                         std::move(callback)));
+  handler_->web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+      handler_->GetRootView(), drag_state_->pos,
+      base::BindOnce(
+          &InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint,
+          weak_factory_.GetWeakPtr(), std::move(event), std::move(callback)));
 }
 
 void InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint(
@@ -1340,7 +1338,6 @@ void InputHandler::HandleMouseEvent(
           return;
         gfx::PointF position = event->PositionInWidget();
         widget_host->delegate()
-            ->GetInputEventRouter()
             ->GetRenderWidgetHostAtPointAsynchronously(
                 widget_host->GetView(), position,
                 base::BindOnce(&InputHandler::OnWidgetForDispatchMouseEvent,
@@ -1381,7 +1378,6 @@ void InputHandler::DispatchDragEvent(
   }
 
   widget_host->delegate()
-      ->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
           widget_host->GetView(), CssPixelsToPointF(x, y, ScaleFactor()),
           base::BindOnce(&InputHandler::OnWidgetForDispatchDragEvent,
@@ -1631,7 +1627,6 @@ void InputHandler::DispatchWebTouchEvent(
         }
         gfx::PointF point(events[0].touches[0].PositionInWidget());
         widget_host->delegate()
-            ->GetInputEventRouter()
             ->GetRenderWidgetHostAtPointAsynchronously(
                 widget_host->GetView(), point,
                 base::BindOnce(&InputHandler::OnWidgetForDispatchWebTouchEvent,

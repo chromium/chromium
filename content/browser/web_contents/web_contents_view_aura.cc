@@ -1356,8 +1356,9 @@ void WebContentsViewAura::DragEnteredCallback(
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
   drag_in_progress_ = true;
-  if (!target)
+  if (!target) {
     return;
+  }
   RenderWidgetHostImpl* target_rwh =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
   if (!drag_security_info_.IsValidDragTarget(target_rwh)) {
@@ -1429,13 +1430,12 @@ void WebContentsViewAura::OnDragEntered(const ui::DropTargetEvent& event) {
   }
 
   DropMetadata drop_metadata(event);
-  web_contents_->GetInputEventRouter()
-      ->GetRenderWidgetHostAtPointAsynchronously(
-          web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
-          event.location_f(),
-          base::BindOnce(&WebContentsViewAura::DragEnteredCallback,
-                         weak_ptr_factory_.GetWeakPtr(), drop_metadata,
-                         std::move(drop_data)));
+  web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+      web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
+      event.location_f(),
+      base::BindOnce(&WebContentsViewAura::DragEnteredCallback,
+                     weak_ptr_factory_.GetWeakPtr(), drop_metadata,
+                     std::move(drop_data)));
 }
 
 void WebContentsViewAura::DragUpdatedCallback(
@@ -1450,8 +1450,9 @@ void WebContentsViewAura::DragUpdatedCallback(
   // this case we just ignore this operation.
   if (!drag_in_progress_)
     return;
-  if (!target)
+  if (!target) {
     return;
+  }
   RenderWidgetHostImpl* target_rwh =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
   if (!drag_security_info_.IsValidDragTarget(target_rwh)) {
@@ -1515,13 +1516,12 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
   // Calling this here as event.data might become invalid inside the callback.
   PrepareDropData(drop_data.get(), event.data());
   DropMetadata drop_metadata(event);
-  web_contents_->GetInputEventRouter()
-      ->GetRenderWidgetHostAtPointAsynchronously(
-          web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
-          event.location_f(),
-          base::BindOnce(&WebContentsViewAura::DragUpdatedCallback,
-                         weak_ptr_factory_.GetWeakPtr(), drop_metadata,
-                         std::move(drop_data)));
+  web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+      web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
+      event.location_f(),
+      base::BindOnce(&WebContentsViewAura::DragUpdatedCallback,
+                     weak_ptr_factory_.GetWeakPtr(), drop_metadata,
+                     std::move(drop_data)));
 
   drag_info.drag_operation =
       static_cast<int>(current_drag_data_ ? current_drag_data_->operation
@@ -1610,8 +1610,9 @@ void WebContentsViewAura::PerformDropCallback(
   drag_in_progress_ = false;
   base::ScopedClosureRunner end_drag_runner(std::move(end_drag_runner_));
 
-  if (!target)
+  if (!target) {
     return;
+  }
   RenderWidgetHostImpl* target_rwh =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
   if (!drag_security_info_.IsValidDragTarget(target_rwh)) {
@@ -1757,13 +1758,12 @@ void WebContentsViewAura::PerformDropOrExitDrag(
   output_drag_op = current_drag_data_ ? current_drag_data_->operation
                                       : ui::mojom::DragOperation::kNone;
 
-  web_contents_->GetInputEventRouter()
-      ->GetRenderWidgetHostAtPointAsynchronously(
-          web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
-          drop_metadata.localized_location,
-          base::BindOnce(&WebContentsViewAura::PerformDropCallback,
-                         weak_ptr_factory_.GetWeakPtr(), drop_metadata,
-                         std::move(data)));
+  web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+      web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
+      drop_metadata.localized_location,
+      base::BindOnce(&WebContentsViewAura::PerformDropCallback,
+                     weak_ptr_factory_.GetWeakPtr(), drop_metadata,
+                     std::move(data)));
   exit_drag.ReplaceClosure(base::DoNothing());
 }
 

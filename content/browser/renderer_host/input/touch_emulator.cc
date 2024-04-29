@@ -11,8 +11,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
+#include "content/common/input/render_widget_host_view_input.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "content/grit/content_resources.h"
 #include "content/public/common/content_client.h"
@@ -178,7 +178,7 @@ ui::Cursor TouchEmulator::InitCursorFromResource(int resource_id) {
 }
 
 bool TouchEmulator::HandleMouseEvent(const WebMouseEvent& mouse_event,
-                                     RenderWidgetHostViewBase* target_view) {
+                                     RenderWidgetHostViewInput* target_view) {
   if (!enabled() || mode_ != Mode::kEmulatingTouchFromMouse)
     return false;
 
@@ -280,7 +280,7 @@ bool TouchEmulator::HandleTouchEvent(const blink::WebTouchEvent& event) {
 
 bool TouchEmulator::HandleEmulatedTouchEvent(
     blink::WebTouchEvent event,
-    RenderWidgetHostViewBase* target_view) {
+    RenderWidgetHostViewInput* target_view) {
   DCHECK(gesture_provider_);
   event.unique_touch_event_id = ui::GetNextTouchEventId();
   auto result = gesture_provider_->OnTouchEvent(MotionEventWeb(event));
@@ -345,7 +345,7 @@ bool TouchEmulator::HandleTouchEventAck(
 }
 
 void TouchEmulator::OnGestureEventAck(const WebGestureEvent& event,
-                                      RenderWidgetHostViewBase*) {
+                                      RenderWidgetHostViewInput*) {
   if (event.GetType() != WebInputEvent::Type::kGestureTap)
     return;
   if (pending_taps_count_) {
@@ -354,7 +354,7 @@ void TouchEmulator::OnGestureEventAck(const WebGestureEvent& event,
   }
 }
 
-void TouchEmulator::OnViewDestroyed(RenderWidgetHostViewBase* destroyed_view) {
+void TouchEmulator::OnViewDestroyed(RenderWidgetHostViewInput* destroyed_view) {
   if (destroyed_view != last_emulated_start_target_)
     return;
 
@@ -453,7 +453,7 @@ bool TouchEmulator::RequiresDoubleTapGestureEvents() const {
 }
 
 void TouchEmulator::InjectTouchEvent(const blink::WebTouchEvent& event,
-                                     RenderWidgetHostViewBase* target_view,
+                                     RenderWidgetHostViewInput* target_view,
                                      base::OnceClosure callback) {
   DCHECK(enabled() && mode_ == Mode::kInjectingTouchEvents);
   touch_event_ = event;

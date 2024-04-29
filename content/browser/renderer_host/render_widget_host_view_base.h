@@ -25,10 +25,10 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "content/browser/renderer_host/display_feature.h"
-#include "content/browser/renderer_host/render_widget_host_view_input.h"
 #include "content/common/content_export.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "content/common/input/input_router_impl.h"
+#include "content/common/input/render_widget_host_view_input.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/page_visibility_state.h"
@@ -72,7 +72,7 @@ class CursorManager;
 class DevicePosturePlatformProvider;
 class MouseWheelPhaseHandler;
 class RenderWidgetHostImpl;
-class RenderWidgetHostViewBaseObserver;
+class RenderWidgetHostViewInputObserver;
 class ScopedViewTransitionResources;
 class TextInputManager;
 class TouchSelectionControllerClientManager;
@@ -129,6 +129,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   display::ScreenInfos GetScreenInfos() const override;
 
   // RenderWidgetHostViewInput implementation
+  base::WeakPtr<RenderWidgetHostViewInput> GetInputWeakPtr() override;
   RenderInputRouter* GetViewRenderInputRouter() override;
   void ProcessMouseEvent(const blink::WebMouseEvent& event,
                          const ui::LatencyInfo& latency) override;
@@ -159,12 +160,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
                                        gfx::PointF* transformed_point) override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override;
-  bool GetTransformToViewCoordSpace(RenderWidgetHostViewBase* target_view,
+  bool GetTransformToViewCoordSpace(RenderWidgetHostViewInput* target_view,
                                     gfx::Transform* transform) override;
   void TransformPointToRootSurface(gfx::PointF* point) override;
-  RenderWidgetHostViewBase* GetParentView() override;
+  RenderWidgetHostViewInput* GetParentViewInput() override;
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& input_event) override;
   void GestureEventAck(const blink::WebGestureEvent& event,
@@ -188,6 +189,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Rect& focused_edit_bounds,
       const gfx::Rect& caret_bounds) override {}
   void OnAutoscrollStart() override;
+  void AddObserver(RenderWidgetHostViewInputObserver* observer) override;
+  void RemoveObserver(RenderWidgetHostViewInputObserver* observer) override;
 
   float GetDeviceScaleFactor() const final;
   bool IsPointerLocked() override;
@@ -457,12 +460,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void OnFrameTokenChangedForView(uint32_t frame_token,
                                   base::TimeTicks activation_time);
 
-  // Add and remove observers for lifetime event notifications. The order in
-  // which notifications are sent to observers is undefined. Clients must be
-  // sure to remove the observer before they go away.
-  void AddObserver(RenderWidgetHostViewBaseObserver* observer);
-  void RemoveObserver(RenderWidgetHostViewBaseObserver* observer);
-
   // Returns a reference to the current instance of TextInputManager. The
   // reference is obtained from RenderWidgetHostDelegate. The first time a non-
   // null reference is obtained, its value is cached in |text_input_manager_|
@@ -676,10 +673,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // Transforms |point| from |original_view| coord space to |target_view| coord
   // space. Result is stored in |transformed_point|. Returns true if the
   // transform is successful, false otherwise.
-  bool TransformPointToTargetCoordSpace(RenderWidgetHostViewBase* original_view,
-                                        RenderWidgetHostViewBase* target_view,
-                                        const gfx::PointF& point,
-                                        gfx::PointF* transformed_point) const;
+  bool TransformPointToTargetCoordSpace(
+      RenderWidgetHostViewInput* original_view,
+      RenderWidgetHostViewInput* target_view,
+      const gfx::PointF& point,
+      gfx::PointF* transformed_point) const;
 
   // Helper function to return whether the current background color is fully
   // opaque.
@@ -689,7 +687,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
     return view_stopped_flinging_for_test_;
   }
 
-  base::ObserverList<RenderWidgetHostViewBaseObserver>::Unchecked observers_;
+  base::ObserverList<RenderWidgetHostViewInputObserver>::Unchecked observers_;
 
   std::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
 

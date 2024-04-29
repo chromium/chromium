@@ -15,7 +15,7 @@ class Cursor;
 
 namespace content {
 
-class RenderWidgetHostViewBase;
+class RenderWidgetHostViewInput;
 
 // Emulates touch input with mouse and keyboard.
 class TouchEmulatorClient {
@@ -25,12 +25,12 @@ class TouchEmulatorClient {
   virtual void ForwardEmulatedGestureEvent(
       const blink::WebGestureEvent& event) = 0;
   virtual void ForwardEmulatedTouchEvent(const blink::WebTouchEvent& event,
-                                         RenderWidgetHostViewBase* target) = 0;
+                                         RenderWidgetHostViewInput* target) = 0;
   virtual void SetCursor(const ui::Cursor& cursor) = 0;
   // |target| is the view associated with the corresponding input event.
   virtual void ShowContextMenuAtPoint(const gfx::Point& point,
                                       const ui::MenuSourceType source_type,
-                                      RenderWidgetHostViewBase* target) = 0;
+                                      RenderWidgetHostViewInput* target) = 0;
 };
 
 }  // namespace content

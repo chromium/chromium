@@ -2116,7 +2116,7 @@ bool RenderWidgetHostViewAura::HasFallbackSurface() const {
 
 bool RenderWidgetHostViewAura::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
-    RenderWidgetHostViewBase* target_view,
+    RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 

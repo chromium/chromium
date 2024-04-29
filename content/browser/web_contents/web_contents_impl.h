@@ -288,6 +288,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     return screen_orientation_provider_.get();
   }
 
+  // Return RenderWidgetHostView from RWHIER.
+  std::vector<RenderWidgetHostView*> GetRenderWidgetHostViewsForTests();
+
   // Adds the given accessibility mode to the current accessibility mode
   // bitmap.
   void AddAccessibilityModeForTesting(ui::AXMode mode);
@@ -1024,6 +1027,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                         int end_adjust,
                                         bool show_selection_menu) override;
   RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
+  void GetRenderWidgetHostAtPointAsynchronously(
+      RenderWidgetHostViewBase* root_view,
+      const gfx::PointF& point,
+      base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
+                              std::optional<gfx::PointF>)> callback) override;
   RenderWidgetHostImpl* GetFocusedRenderWidgetHost(
       RenderWidgetHostImpl* receiving_widget) override;
   RenderWidgetHostImpl* GetRenderWidgetHostWithPageFocus() override;
@@ -1731,6 +1739,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Determines if content is allowed to overscroll. This value comes from the
   // WebContentsDelegate, but can also be overridden by the WebContents.
   bool CanOverscrollContent() const;
+
+  // void CastToViewBaseSafely(
+  //     RenderWidgetTargeter::RenderWidgetHostAtPointCallback callback,
+  //     base::WeakPtr<RenderWidgetHostViewInput> view,
+  //     std::optional<gfx::PointF> point) ;
 
   // Inner WebContents Helpers -------------------------------------------------
   //

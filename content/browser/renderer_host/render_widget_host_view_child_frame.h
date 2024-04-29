@@ -147,7 +147,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       const gfx::PointF& point) override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override;
   void DidNavigate() override;
   gfx::PointF TransformRootPointToViewCoordSpace(
@@ -202,7 +202,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
     return frame_connector_;
   }
 
-  RenderWidgetHostViewBase* GetParentView() override;
+  RenderWidgetHostViewInput* GetParentViewInput() override;
 
   void RegisterFrameSinkId();
   void UnregisterFrameSinkId();

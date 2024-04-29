@@ -45,6 +45,7 @@ namespace content {
 class RenderFrameHostImpl;
 class RenderFrameProxyHost;
 class RenderWidgetHostViewBase;
+class RenderWidgetHostViewInput;
 class RenderWidgetHostViewChildFrame;
 
 // CrossProcessFrameConnector provides the platform view abstraction for
@@ -160,9 +161,11 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Transform a point into the coordinate space of the root
   // RenderWidgetHostView, for the current view's coordinate space.
   // Returns false if |target_view| and |view_| do not have the same root
-  // RenderWidgetHostView.
+  // RenderWidgetHostView. RenderWidgetHostViewInput is the abstract class that
+  // defines the interface for handling user input and is one to one with
+  // RenderWidgetHostViewBase in the browser.
   bool TransformPointToCoordSpaceForView(const gfx::PointF& point,
-                                         RenderWidgetHostViewBase* target_view,
+                                         RenderWidgetHostViewInput* target_view,
                                          const viz::SurfaceId& local_surface_id,
                                          gfx::PointF* transformed_point);
 

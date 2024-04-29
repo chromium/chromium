@@ -239,7 +239,7 @@ gfx::PointF CrossProcessFrameConnector::TransformPointToRootCoordSpace(
 
 bool CrossProcessFrameConnector::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
-    RenderWidgetHostViewBase* target_view,
+    RenderWidgetHostViewInput* target_view,
     const viz::SurfaceId& local_surface_id,
     gfx::PointF* transformed_point) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();

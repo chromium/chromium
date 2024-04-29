@@ -164,6 +164,12 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   virtual RenderWidgetHostInputEventRouter* GetInputEventRouter();
 
+  virtual void GetRenderWidgetHostAtPointAsynchronously(
+      RenderWidgetHostViewBase* root_view,
+      const gfx::PointF& point,
+      base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
+                              std::optional<gfx::PointF>)> callback) {}
+
   // Get the focused RenderWidgetHost associated with |receiving_widget|. A
   // RenderWidgetHostView, upon receiving a keyboard event, will pass its
   // RenderWidgetHost to this function to determine who should ultimately

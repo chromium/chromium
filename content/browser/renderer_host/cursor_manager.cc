@@ -10,19 +10,19 @@
 
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/common/input/render_widget_host_view_input.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace content {
 
-CursorManager::CursorManager(RenderWidgetHostViewBase* root)
+CursorManager::CursorManager(RenderWidgetHostViewInput* root)
     : view_under_cursor_(root), root_view_(root) {}
 
 CursorManager::~CursorManager() = default;
 
-void CursorManager::UpdateCursor(RenderWidgetHostViewBase* view,
+void CursorManager::UpdateCursor(RenderWidgetHostViewInput* view,
                                  const ui::Cursor& cursor) {
   cursor_map_[view] = cursor;
   if (view == view_under_cursor_) {
@@ -30,7 +30,7 @@ void CursorManager::UpdateCursor(RenderWidgetHostViewBase* view,
   }
 }
 
-void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewBase* view) {
+void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewInput* view) {
   if (view == view_under_cursor_)
     return;
 
@@ -44,7 +44,7 @@ void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewBase* view) {
   UpdateCursor();
 }
 
-void CursorManager::ViewBeingDestroyed(RenderWidgetHostViewBase* view) {
+void CursorManager::ViewBeingDestroyed(RenderWidgetHostViewInput* view) {
   cursor_map_.erase(view);
 
   // If the view right under the mouse is going away, use the root's cursor
@@ -53,7 +53,7 @@ void CursorManager::ViewBeingDestroyed(RenderWidgetHostViewBase* view) {
     UpdateViewUnderCursor(root_view_);
 }
 
-bool CursorManager::IsViewUnderCursor(RenderWidgetHostViewBase* view) const {
+bool CursorManager::IsViewUnderCursor(RenderWidgetHostViewInput* view) const {
   return view == view_under_cursor_;
 }
 
@@ -74,7 +74,7 @@ base::ScopedClosureRunner CursorManager::CreateDisallowCustomCursorScope(
                      weak_factory_.GetWeakPtr(), max_dimension_dips));
 }
 
-bool CursorManager::GetCursorForTesting(RenderWidgetHostViewBase* view,
+bool CursorManager::GetCursorForTesting(RenderWidgetHostViewInput* view,
                                         ui::Cursor& cursor) {
   if (cursor_map_.find(view) == cursor_map_.end()) {
     return false;
