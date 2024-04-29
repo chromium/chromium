@@ -82,6 +82,12 @@ public class AccountTrackerService implements AccountsChangeObserver {
         }
     }
 
+    @CalledByNative
+    private long getNativePointer() {
+        assert mNativeAccountTrackerService != 0;
+        return mNativeAccountTrackerService;
+    }
+
     @VisibleForTesting
     @CalledByNative
     void destroy() {
