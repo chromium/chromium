@@ -177,24 +177,11 @@ void RegisterImage(const std::string& version,
                             base::BindOnce(&OnImageRegistered));
 }
 
-// This is called when an image has been loaded, and |image_dir| is the
-// directory where it has been mounted. This directory should contain the
-// directory structure expected for Widevine (in particular "manifest.json"
-// at the top level, binary in "_platform_specific/<platform>"). If the image
-// was successfully loaded, register it with Chrome via the hint file so that
-// it can be loaded next time ChromeOS restarts.
-void OnImageLoaded(std::optional<std::string> image_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Mounting should not fail, but if it does simply log a message. This will
-  // be tried again next time the device reboots.
-  if (!image_dir.has_value()) {
-    VLOG(1) << "Failed to load image for Widevine.";
-    return;
-  }
-
+// Called to verify the manifest and update the hint file if everything looks
+// valid. The directory `image_dir` should be a valid directory.
+void VerifyManifestAndUpdateHintFile(const std::string& image_dir) {
   // Image loaded, so check that the manifest is valid.
-  base::FilePath mount_point(image_dir.value());
+  base::FilePath mount_point(image_dir);
   auto manifest_path = mount_point.Append(FILE_PATH_LITERAL("manifest.json"));
   base::Version version;
   media::CdmCapability capability;
@@ -215,6 +202,29 @@ void OnImageLoaded(std::optional<std::string> image_dir) {
   if (!UpdateHintFile(mount_point)) {
     VLOG(1) << "Failed to update Widevine CDM hint path.";
   }
+}
+
+// This is called when an image has been loaded, and `image_dir` is the
+// directory where it has been mounted. This directory should contain the
+// directory structure expected for Widevine (in particular "manifest.json"
+// at the top level, binary in "_platform_specific/<platform>"). If the image
+// was successfully loaded, register it with Chrome via the hint file so that
+// it can be loaded next time ChromeOS restarts.
+void OnImageLoaded(std::optional<std::string> image_dir) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Mounting should not fail, but if it does simply log a message. This will
+  // be tried again next time the device reboots.
+  if (!image_dir.has_value()) {
+    VLOG(1) << "Failed to load image for Widevine.";
+    return;
+  }
+
+  // As reading the manifest and writing the hint file cause I/O, run on a
+  // thread that allows blocking.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&VerifyManifestAndUpdateHintFile, image_dir.value()));
 }
 
 // This is called on the UI thread to load the latest registered image for
