@@ -66,4 +66,8 @@ found in the LICENSE file.
         android:title="@string/signin_review_data_title"
         android:summary="@string/signin_review_data_summary"/>
 
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="manage_your_google_account"
+        android:title="@string/manage_your_google_account"/>
+
 </PreferenceScreen>

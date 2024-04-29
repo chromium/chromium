@@ -123,6 +123,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String PREF_SYNC_REVIEW_DATA = "sync_review_data";
 
     @VisibleForTesting
+    public static final String PREF_MANAGE_YOUR_GOOGLE_ACCOUNT = "manage_your_google_account";
+
+    @VisibleForTesting
     public static final String PREF_SEARCH_AND_BROWSE_CATEGORY = "search_and_browse_category";
 
     @VisibleForTesting
@@ -206,6 +209,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             mSyncTypeSwitchPreferencesMap
                     .values()
                     .forEach(pref -> pref.setOnPreferenceChangeListener(this));
+
+            Preference manageYourGoogleAccount = findPreference(PREF_MANAGE_YOUR_GOOGLE_ACCOUNT);
+            manageYourGoogleAccount.setOnPreferenceClickListener(
+                    SyncSettingsUtils.toOnClickListener(
+                            this,
+                            () -> {
+                                SyncSettingsUtils.openGoogleMyAccount(getActivity());
+                            }));
         } else {
             getActivity().setTitle(R.string.sync_category_title);
 
