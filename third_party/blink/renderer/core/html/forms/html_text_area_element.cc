@@ -775,4 +775,13 @@ String HTMLTextAreaElement::DefaultToolTip() const {
   return validationMessage();
 }
 
+void HTMLTextAreaElement::SetFocused(bool is_focused,
+                                     mojom::blink::FocusType focus_type) {
+  // See comment in HTMLInputElement::SetFocused.
+  if (UserHasEditedTheField()) {
+    SetUserHasEditedTheFieldAndBlurred();
+  }
+  TextControlElement::SetFocused(is_focused, focus_type);
+}
+
 }  // namespace blink

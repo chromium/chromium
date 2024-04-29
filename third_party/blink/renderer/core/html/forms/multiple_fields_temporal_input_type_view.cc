@@ -292,6 +292,11 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
     const String& value) {
   if (will_be_destroyed_)
     return;
+
+  // SetUserHasEditedTheFieldAndBlurred is required in order to match
+  // :user-valid/:user-invalid
+  GetElement().SetUserHasEditedTheFieldAndBlurred();
+
   if (value.empty() || GetElement().IsValidValue(value)) {
     GetElement().SetValue(value, TextFieldEventBehavior::kDispatchInputEvent);
     return;
@@ -320,6 +325,11 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
     double value) {
   if (will_be_destroyed_)
     return;
+
+  // SetUserHasEditedTheFieldAndBlurred is required in order to match
+  // :user-valid/:user-invalid
+  GetElement().SetUserHasEditedTheFieldAndBlurred();
+
   DCHECK(std::isfinite(value) || std::isnan(value));
   if (std::isnan(value)) {
     GetElement().SetValue(g_empty_string,
@@ -527,6 +537,7 @@ AtomicString MultipleFieldsTemporalInputTypeView::LocaleIdentifier() const {
 
 void MultipleFieldsTemporalInputTypeView::
     EditControlDidChangeValueByKeyboard() {
+  GetElement().SetUserHasEditedTheField();
   GetElement().DispatchFormControlChangeEvent();
 }
 

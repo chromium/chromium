@@ -169,6 +169,8 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   virtual wtf_size_t FocusedFieldIndex() const { return 0; }
 
+  virtual bool IsMultipleFieldsTemporal() const { return false; }
+
  protected:
   InputTypeView(HTMLInputElement& element) : element_(&element) {}
   HTMLInputElement& GetElement() const { return *element_; }

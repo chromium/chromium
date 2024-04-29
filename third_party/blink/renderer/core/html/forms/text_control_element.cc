@@ -310,11 +310,6 @@ void TextControlElement::SetFocused(bool flag,
 }
 
 void TextControlElement::DispatchFormControlChangeEvent() {
-  if (UserHasEditedTheField()) {
-    // If the user has edited the field, then at this point we should also start
-    // matching :user-valid/:user-invalid.
-    SetUserHasEditedTheFieldAndBlurred();
-  }
   if (!value_before_first_user_edit_.IsNull() &&
       !EqualIgnoringNullity(value_before_first_user_edit_, Value())) {
     ClearValueBeforeFirstUserEdit();

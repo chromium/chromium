@@ -390,6 +390,8 @@ class CORE_EXPORT HTMLInputElement
   bool IsValidInvokeAction(HTMLElement& invoker, InvokeAction action) override;
   bool HandleInvokeInternal(HTMLElement& invoker, InvokeAction action) override;
 
+  void SetFocused(bool is_focused, mojom::blink::FocusType) override;
+
  protected:
   void DefaultEventHandler(Event&) override;
   bool IsInnerEditorValueEmpty() const final;
