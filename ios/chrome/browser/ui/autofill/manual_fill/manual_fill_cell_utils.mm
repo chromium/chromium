@@ -126,13 +126,12 @@ ExtendedTouchTargetButton* CreateThreeDotMenuButton() {
   menu_button.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
-  UIImage* menu_image =
-      SymbolWithPalette(DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
-                                                   kThreeDotMenuButtonSize),
-                        @[
-                          [UIColor colorNamed:kBlue600Color],
-                          [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
-                        ]);
+  UIImage* menu_image = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
+                                 kThreeDotMenuButtonSize),
+      @[
+        [UIColor colorNamed:kBlue600Color], [UIColor tertiarySystemFillColor]
+      ]);
   [menu_button setImage:menu_image forState:UIControlStateNormal];
 
   [menu_button setContentHuggingPriority:UILayoutPriorityDefaultHigh
