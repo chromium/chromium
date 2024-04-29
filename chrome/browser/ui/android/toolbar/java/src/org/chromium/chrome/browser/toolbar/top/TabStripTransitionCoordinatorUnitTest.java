@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -446,6 +447,22 @@ public class TabStripTransitionCoordinatorUnitTest {
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
 
         // Destroy the coordinator so the transition task is canceled.
+        mCoordinator.destroy();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
+    }
+
+    @Test
+    public void destroyBeforeCapture() {
+        setConfigurationWithNewWidth(NARROW_WINDOW_WIDTH);
+        simulateLayoutChange(NARROW_WINDOW_WIDTH);
+        ShadowLooper.idleMainLooper(300, TimeUnit.MILLISECONDS);
+        // Tab strip still visible.
+        assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
+        // The capture task is scheduled.
+        verify(mViewResourceAdapter).addOnResourceReadyCallback(any());
+
+        // Destroy the coordinator so the capture task won't go through.
         mCoordinator.destroy();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);

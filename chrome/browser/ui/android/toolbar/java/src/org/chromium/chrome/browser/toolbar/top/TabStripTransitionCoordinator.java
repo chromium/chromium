@@ -109,6 +109,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     /** Tracks the additional top padding added to the tab strip. */
     private int mTopPadding;
 
+    private boolean mIsDestroyed;
+
     private OnLayoutChangeListener mOnLayoutChangedListener;
     private TabObscuringHandler.Observer mTabObscuringHandlerObserver;
     private @Nullable Runnable mLayoutTransitionTask;
@@ -152,7 +154,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
                     onLayoutWidthChanged(windowWidth);
                 };
         controlContainerView().addOnLayoutChangeListener(mOnLayoutChangedListener);
-        mDeferTransitionTokenHolder = new TokenHolder(this::onTokenUpdate);
+        mDeferTransitionTokenHolder =
+                new TokenHolder(mCallbackController.makeCancelable(this::onTokenUpdate));
 
         mTabObscuringHandler = tabObscuringHandler;
         mTabObscuringHandlerObserver =
@@ -209,6 +212,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
 
     /** Remove observers and release reference to dependencies. */
     public void destroy() {
+        mIsDestroyed = true;
+
         if (mTransitionKickoffObserver != null) {
             mBrowserControlsVisibilityManager.removeObserver(mTransitionKickoffObserver);
             mTransitionKickoffObserver = null;
@@ -357,6 +362,9 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     }
 
     private void maybeUpdateTabStripVisibility(int tabStripWidth) {
+        // Do not allow callback to pass through when object is destroyed.
+        if (mIsDestroyed) return;
+
         // Block new request for transitions as long as there's any token left. Once the token
         // clears out, #onTokenUpdated will route into this method again.
         if (mDeferTransitionTokenHolder.hasTokens()) return;
@@ -421,6 +429,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
      * @param show Whether the tab strip should be shown.
      */
     private void setTabStripVisibility(boolean show) {
+        if (mIsDestroyed) return;
+
         mTabStripVisible = show;
         int newHeight = show ? calculateTabStripHeight() : 0;
 
