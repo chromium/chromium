@@ -2,14 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/logging.gni")
+
 import("../../partition_alloc.gni")
+import("buildflag_header.gni")
 
 # Add partition_alloc.gni and import it for partition_alloc configs.
 
@@ -91,7 +92,10 @@ if (!is_debug || partition_alloc_optimized_debug) {
 }
 
 source_set("build_config") {
-  sources = [ "build_config.h" ]
+  sources = [
+    "build_config.h",
+    "buildflag.h",
+  ]
 }
 
 component("raw_ptr") {
@@ -149,7 +153,7 @@ component("raw_ptr") {
 # pool offset freelist. When false, the latter is not built.
 use_freelist_dispatcher = has_64_bit_pointers && false
 
-buildflag_header("partition_alloc_buildflags") {
+pa_buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
 
   _record_alloc_info = false
@@ -218,7 +222,7 @@ buildflag_header("partition_alloc_buildflags") {
   ]
 }
 
-buildflag_header("raw_ptr_buildflags") {
+pa_buildflag_header("raw_ptr_buildflags") {
   header = "raw_ptr_buildflags.h"
 
   flags = [
@@ -228,22 +232,26 @@ buildflag_header("raw_ptr_buildflags") {
   ]
 }
 
-buildflag_header("chromecast_buildflags") {
+pa_buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
 
+  # TODO(https://crbug.com/41481467): Remove the "PA_" prefix, because it
+  # will already be part of the define and the `PA_BUILDFLAG` macro.
   flags = [
     "PA_IS_CAST_ANDROID=$is_cast_android",
     "PA_IS_CASTOS=$is_castos",
   ]
 }
 
-buildflag_header("chromeos_buildflags") {
+pa_buildflag_header("chromeos_buildflags") {
   header = "chromeos_buildflags.h"
 
+  # TODO(https://crbug.com/41481467): Remove the "PA_" prefix, because it
+  # will already be part of the define and the `PA_BUILDFLAG` macro.
   flags = [ "PA_IS_CHROMEOS_ASH=$is_chromeos_ash" ]
 }
 
-buildflag_header("debugging_buildflags") {
+pa_buildflag_header("debugging_buildflags") {
   header = "debugging_buildflags.h"
   header_dir = rebase_path(".", "//") + "/partition_alloc_base/debug"
 
@@ -251,6 +259,8 @@ buildflag_header("debugging_buildflags") {
   # but avails it as a buildflag.
   _dcheck_is_on = is_debug || dcheck_always_on
 
+  # TODO(https://crbug.com/41481467): Remove the "PA_" prefix, because it
+  # will already be part of the define and the `PA_BUILDFLAG` macro.
   flags = [
     "PA_DCHECK_IS_ON=$_dcheck_is_on",
     "PA_EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
