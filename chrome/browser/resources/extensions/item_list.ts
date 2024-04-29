@@ -7,9 +7,9 @@ import './item.js';
 import './shared_style.css.js';
 import './review_panel.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {ExtensionsItemElement, ItemDelegate} from './item.js';
@@ -186,21 +186,14 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
 
   private announceSearchResults_() {
     if (this.computedFilter_) {
-      IronA11yAnnouncer.requestAvailability();
       setTimeout(() => {  // Async to allow list to update.
         const total = this.shownAppsCount_ + this.shownExtensionsCount_;
-        this.dispatchEvent(new CustomEvent('iron-announce', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            text: this.shouldShowEmptySearchMessage_() ?
-                this.i18n('noSearchResults') :
-                (total === 1 ?
-                     this.i18n('searchResultsSingular', this.filter) :
-                     this.i18n(
-                         'searchResultsPlural', total.toString(), this.filter)),
-          },
-        }));
+        getAnnouncerInstance().announce(this.shouldShowEmptySearchMessage_() ?
+            this.i18n('noSearchResults') :
+            (total === 1 ?
+                 this.i18n('searchResultsSingular', this.filter) :
+                 this.i18n(
+                     'searchResultsPlural', total.toString(), this.filter)));
       }, 0);
     }
   }

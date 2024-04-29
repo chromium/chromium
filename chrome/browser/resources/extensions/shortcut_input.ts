@@ -7,10 +7,10 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
@@ -223,14 +223,8 @@ export class ExtensionsShortcutInputElement extends
 
     this.error_ = ShortcutError.NO_ERROR;
 
-    IronA11yAnnouncer.requestAvailability();
-    this.dispatchEvent(new CustomEvent('iron-announce', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        text: this.i18n('shortcutSet', this.computeText_()),
-      },
-    }));
+    getAnnouncerInstance().announce(
+        this.i18n('shortcutSet', this.computeText_()));
 
     this.commitPending_();
     this.endCapture_();
