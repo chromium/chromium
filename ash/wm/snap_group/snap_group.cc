@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "ash/screen_util.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
@@ -76,6 +77,11 @@ void SnapGroup::Shutdown() {
   // Restore the snapped window bounds that were adjusted to make room for
   // divider when snap group was created.
   UpdateGroupWindowsBounds(/*account_for_divider_width=*/false);
+
+  // Shelf defaults to rounded corners. We square them when a Snap Group is
+  // created and fully visible. Maybe restore rounded corners on Snap Group
+  // removal if no visible snap groups remain.
+  Shelf::ForWindow(GetRootWindow())->MaybeUpdateShelfBackground();
 
   StopObservingWindows();
 }

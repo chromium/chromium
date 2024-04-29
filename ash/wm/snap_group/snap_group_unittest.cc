@@ -22,6 +22,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/style/close_button.h"
@@ -2233,6 +2234,40 @@ TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInPortrait) {
 
   EXPECT_TRUE(snap_group_divider());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
+// Tests that the shelf's corners are rounded by default. Upon Snap Group
+// creation,  the shelf's corners become sharp. When the Snap Group breaks, the
+// shelf returns to its default state with rounded corners.
+TEST_F(SnapGroupTest, ShelfBehavior) {
+  ShelfLayoutManager* shelf_layout_manager =
+      AshTestBase::GetPrimaryShelf()->shelf_layout_manager();
+  ASSERT_EQ(ShelfBackgroundType::kDefaultBg,
+            shelf_layout_manager->shelf_background_type());
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Test that Shelf will be updated to have sharp rounded corners.
+  EXPECT_EQ(ShelfBackgroundType::kMaximized,
+            shelf_layout_manager->shelf_background_type());
+
+  // Drag `w1` out to break the group.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().top_center());
+  aura::test::TestWindowDelegate().set_window_component(HTCAPTION);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(50, 200);
+  EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
+  event_generator->ReleaseLeftButton();
+
+  // Verify that Shelf restores its default background type with rounded
+  // corners.
+  EXPECT_EQ(ShelfBackgroundType::kDefaultBg,
+            shelf_layout_manager->shelf_background_type());
 }
 
 // Test that dragging a snapped window's caption hides the divider and that the
