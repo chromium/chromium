@@ -252,7 +252,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     if (previewPlaying) {
       return loadTimeData.getString('stopLabel');
     } else {
-      return loadTimeData.getString('playLabel');
+      return loadTimeData.getString('previewTooltip');
     }
   }
 

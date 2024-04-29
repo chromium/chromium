@@ -84,6 +84,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"pauseLabel", IDS_READING_MODE_PAUSE_SPEECH},
       {"stopLabel", IDS_READING_MODE_STOP_SPEECH},
       {"playTooltip", IDS_READING_MODE_PLAY_TOOLTIP},
+      {"previewTooltip", IDS_READING_MODE_PREVIEW_TOOLTIP},
       {"pauseTooltip", IDS_READING_MODE_PAUSE_TOOLTIP},
       {"previousSentenceLabel", IDS_READING_MODE_NAVIGATE_PREVIOUS_SENTENCE},
       {"nextSentenceLabel", IDS_READING_MODE_NAVIGATE_NEXT_SENTENCE},

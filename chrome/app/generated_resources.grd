@@ -9145,6 +9145,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_PLAY_TOOLTIP" desc="Tooltip label for button that plays speech in Read Aloud.">
         Play (k)
       </message>
+      <message name="IDS_READING_MODE_PREVIEW_TOOLTIP" desc="Tooltip label for button that previews speech in Read Aloud.">
+        Play
+      </message>
       <message name="IDS_READING_MODE_PAUSE_TOOLTIP" desc="Tooltip label for button that pauses speech in Read Aloud.">
         Pause (k)
       </message>
