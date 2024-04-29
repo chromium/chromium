@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -38,6 +39,7 @@ class CpuHealthTracker
       base::RepeatingCallback<void(ResourceType, HealthLevel, bool)>;
   using ActionableTabResultCallback =
       base::RepeatingCallback<void(ResourceType, ActionableTabsResult)>;
+  using CpuPercent = base::StrongAlias<class CpuPercentTag, int>;
 
   CpuHealthTracker(StatusChangeCallback on_status_change_cb,
                    ActionableTabResultCallback on_actionability_change_cb);
@@ -60,31 +62,31 @@ class CpuHealthTracker
                            PagesMeetMinimumCpuUsage);
 
   using PageResourceMeasurements =
-      base::flat_map<resource_attribution::PageContext, int>;
+      base::flat_map<resource_attribution::PageContext, CpuPercent>;
 
   base::OnceCallback<void(ActionableTabsResult)>
   GetStatusAndActionabilityCallback(bool did_status_change,
                                     HealthLevel health_level);
 
   // Returns the health level associated with the measurement
-  HealthLevel GetHealthLevelForMeasurement(int measurement);
+  HealthLevel GetHealthLevelForMeasurement(CpuPercent measurement);
 
   // Calls `callback` with a vector of actionable tabs that is determined from
   // 'unfiltered_measurements'.
   void GetFilteredActionableTabs(
       PageResourceMeasurements unfiltered_measurements,
-      int recent_measurement,
+      CpuPercent recent_measurement,
       base::OnceCallback<void(ActionableTabsResult)> callback);
 
   // Keeps track of the given measurement and potentially update the health
   // level if the tracker consistently records that level
-  bool RecordAndUpdateHealthStatus(int measurement);
+  bool RecordAndUpdateHealthStatus(CpuPercent measurement);
 
   void ProcessCpuProbeResult(std::optional<system_cpu::CpuSample> cpu_sample);
 
   // Processes 'results' and notifies observers if the health status changes
   void ProcessQueryResultMap(
-      int system_cpu_usage_percentage,
+      CpuPercent system_cpu_usage_percentage,
       const resource_attribution::QueryResultMap& results);
 
   // Filter 'page_cpu' for pages that meet the minimum CPU usage to be
@@ -113,7 +115,8 @@ class CpuHealthTracker
   const size_t cpu_health_sample_window_size_;
 
   // Recent resource measurements used to determine overall resource health.
-  base::circular_deque<int> recent_resource_measurements_;
+  base::circular_deque<CpuPercent> recent_resource_measurements_;
+  CpuPercent min_resource_measurement_ = CpuPercent(0);
 
   resource_attribution::ScopedResourceUsageQuery scoped_cpu_query_;
   HealthLevel current_health_status_ = HealthLevel::kHealthy;

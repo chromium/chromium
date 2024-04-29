@@ -69,7 +69,7 @@ class PerformanceDetectionManager {
   // Discards all eligible pages in `tabs` and runs `post_discard_cb`
   // after the discard finishes. `post_discard_cb` must be valid to
   // run on the UI sequence.
-  void DiscardTabs(std::vector<resource_attribution::PageContext> tabs,
+  void DiscardTabs(ActionableTabsResult tabs,
                    base::OnceCallback<void(bool)> post_discard_cb =
                        base::OnceCallback<void(bool)>());
 

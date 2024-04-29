@@ -124,13 +124,17 @@ PerformanceDetectionManager::PerformanceDetectionManager() {
         return std::make_pair(type, ActionableTabsResult());
       });
 
-  CpuHealthTracker::StatusChangeCallback on_status_change =
+  CpuHealthTracker::StatusChangeCallback on_status_change = base::BindPostTask(
+      content::GetUIThreadTaskRunner({}),
       base::BindRepeating(&PerformanceDetectionManager::NotifyStatusObservers,
-                          weak_ptr_factory_.GetWeakPtr());
+                          weak_ptr_factory_.GetWeakPtr()));
+
   CpuHealthTracker::ActionableTabResultCallback on_actionable_list_change =
-      base::BindRepeating(
-          &PerformanceDetectionManager::NotifyActionableTabObservers,
-          weak_ptr_factory_.GetWeakPtr());
+      base::BindPostTask(
+          content::GetUIThreadTaskRunner({}),
+          base::BindRepeating(
+              &PerformanceDetectionManager::NotifyActionableTabObservers,
+              weak_ptr_factory_.GetWeakPtr()));
 
   performance_manager::PerformanceManager::CallOnGraph(
       FROM_HERE,

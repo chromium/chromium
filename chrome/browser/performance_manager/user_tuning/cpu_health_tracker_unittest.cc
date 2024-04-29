@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -54,11 +55,11 @@ const int kNumHealthStatusForChange =
     performance_manager::features::kCPUTimeOverThreshold.Get() /
     performance_manager::features::kCPUSampleFrequency.Get();
 
-const int kUnhealthySystemCpuUsagePercentage =
-    performance_manager::features::kCPUUnhealthyPercentageThreshold.Get() + 1;
-const int kDegradedSystemCpuUsagePercentage =
+const CpuHealthTracker::CpuPercent kUnhealthySystemCpuUsagePercentage{
+    performance_manager::features::kCPUUnhealthyPercentageThreshold.Get() + 1};
+const CpuHealthTracker::CpuPercent kDegradedSystemCpuUsagePercentage{
     performance_manager::features::kCPUDegradedHealthPercentageThreshold.Get() +
-    1;
+    1};
 
 class StatusWaiter : public PerformanceDetectionManager::StatusObserver {
  public:
@@ -147,12 +148,13 @@ class CpuHealthTrackerTestHelper {
             .cumulative_cpu = cumulative_cpu};
   }
 
-  void ProcessQueryResultMap(int system_cpu_usage_percentage,
-                             resource_attribution::QueryResultMap results) {
+  void ProcessQueryResultMap(
+      CpuHealthTracker::CpuPercent system_cpu_usage_percentage,
+      resource_attribution::QueryResultMap results) {
     performance_manager::PerformanceManager::CallOnGraph(
         FROM_HERE,
         base::BindOnce(
-            [](int system_cpu_usage_percentage,
+            [](CpuHealthTracker::CpuPercent system_cpu_usage_percentage,
                resource_attribution::QueryResultMap results, Graph* graph) {
               CpuHealthTracker* const health_tracker =
                   CpuHealthTracker::GetFromGraph(graph);
@@ -177,8 +179,9 @@ class CpuHealthTrackerTest : public ChromeRenderViewHostTestHarness,
     SetContents(CreateTestWebContents());
 
     performance_manager::RunInGraph(
-        [status_change_cb =
-             status_change_future_.GetRepeatingCallback()](Graph* graph) {
+        [status_change_cb = base::BindPostTask(
+             content::GetUIThreadTaskRunner({}),
+             status_change_future_.GetRepeatingCallback())](Graph* graph) {
           std::unique_ptr<CpuHealthTracker> cpu_health_tracker =
               std::make_unique<CpuHealthTracker>(std::move(status_change_cb),
                                                  base::DoNothing());
@@ -405,22 +408,22 @@ class CpuHealthTrackerBrowserTest : public BrowserWithTestWindowTest,
                                  CreateFakeCpuResult(base::Seconds(0))};
     }
 
-    ProcessQueryResultMap(0, result_map);
+    ProcessQueryResultMap(CpuHealthTracker::CpuPercent(0), result_map);
   }
 
   // Simulate that the CpuHealthTracker has consistently receive CPU
   // measurements so that it is in the `health_level` state.
   void SetHealthLevel(PerformanceDetectionManager::HealthLevel health_level) {
-    int cpu_usage = 0;
+    CpuHealthTracker::CpuPercent cpu_usage{0};
     switch (health_level) {
       case PerformanceDetectionManager::HealthLevel::kUnhealthy:
-        cpu_usage = features::kCPUUnhealthyPercentageThreshold.Get() + 1;
+        cpu_usage = kUnhealthySystemCpuUsagePercentage;
         break;
       case PerformanceDetectionManager::HealthLevel::kDegraded:
-        cpu_usage = features::kCPUDegradedHealthPercentageThreshold.Get() + 1;
+        cpu_usage = kDegradedSystemCpuUsagePercentage;
         break;
       case PerformanceDetectionManager::HealthLevel::kHealthy:
-        cpu_usage = 0;
+        cpu_usage = CpuHealthTracker::CpuPercent(0);
         break;
     }
 
@@ -454,7 +457,7 @@ TEST_F(CpuHealthTrackerBrowserTest, HealthStatusUpdates) {
     resource_attribution::QueryResultMap result_map;
     result_map[first_page_context] = {
         .cpu_time_result = CreateFakeCpuResult(
-            base::Seconds(kUnhealthySystemCpuUsagePercentage *
+            base::Seconds(kUnhealthySystemCpuUsagePercentage.value() *
                           base::SysInfo::NumberOfProcessors()))};
     ProcessQueryResultMap(kUnhealthySystemCpuUsagePercentage, result_map);
   }
@@ -469,9 +472,10 @@ TEST_F(CpuHealthTrackerBrowserTest, HealthStatusUpdates) {
 TEST_F(CpuHealthTrackerBrowserTest, PagesMeetMinimumCpuUsage) {
   std::map<resource_attribution::ResourceContext, double> page_contexts_cpu;
 
-  const int minimum_percent_cpu_usage =
-      performance_manager::features::kMinimumActionableTabCPUPercentage.Get();
-  const double minimum_decimal_cpu_usage = minimum_percent_cpu_usage / 100.0;
+  const CpuHealthTracker::CpuPercent minimum_percent_cpu_usage{
+      performance_manager::features::kMinimumActionableTabCPUPercentage.Get()};
+  const double minimum_decimal_cpu_usage =
+      minimum_percent_cpu_usage.value() / 100.0;
 
   // Generate a map of page contexts and decimal CPU usage where half the page
   // contexts are below the minimum cpu usage for a tab to be actionable, and
@@ -490,7 +494,8 @@ TEST_F(CpuHealthTrackerBrowserTest, PagesMeetMinimumCpuUsage) {
       base::BindOnce(
           [](std::map<resource_attribution::ResourceContext, double>
                  page_contexts_cpu,
-             int minimum_percent_cpu_usage, Graph* graph) {
+             CpuHealthTracker::CpuPercent minimum_percent_cpu_usage,
+             Graph* graph) {
             const CpuHealthTracker::PageResourceMeasurements
                 filtered_measurements =
                     CpuHealthTracker::GetFromGraph(graph)
@@ -587,7 +592,7 @@ TEST_F(CpuHealthTrackerBrowserTest, NotifyWhenNoTabsAreActionable) {
   resource_attribution::QueryResultMap result_map;
   result_map[first_page_context] = {
       .cpu_time_result = CreateFakeCpuResult(
-          base::Seconds(kUnhealthySystemCpuUsagePercentage *
+          base::Seconds(kUnhealthySystemCpuUsagePercentage.value() *
                         base::SysInfo::NumberOfProcessors()))};
 
   // Verify that the observer receive previously recorded actionable tab data
@@ -635,8 +640,9 @@ TEST_F(CpuHealthTrackerBrowserTest, NeedMultipleTabsToBeActionable) {
   manager()->AddActionableTabsObserver(
       {PerformanceDetectionManager::ResourceType::kCpu}, &observer);
   ProcessQueryResultMap(
-      features::kCPUUnhealthyPercentageThreshold.Get() +
-          (2 * features::kMinimumActionableTabCPUPercentage.Get()),
+      CpuHealthTracker::CpuPercent(
+          features::kCPUUnhealthyPercentageThreshold.Get() +
+          (2 * features::kMinimumActionableTabCPUPercentage.Get())),
       result_map);
   observer.Wait();
 
