@@ -26,7 +26,6 @@ constexpr uint32_t kWebGPUUsages =
 
 constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
@@ -176,8 +175,7 @@ bool GLTextureImageBackingFactory::IsSupported(
     if ((gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
          gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) ||
         emulate_using_angle_metal_for_testing_) {
-      uint32_t metal_invalid_usages = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                      SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+      uint32_t metal_invalid_usages = SHARED_IMAGE_USAGE_DISPLAY_READ;
 
       // GLES2 usage is in general not allowed, as WebGL might be on a different
       // GPU than raster/composite. However, if the GLES2 usage is for

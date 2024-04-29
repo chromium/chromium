@@ -197,8 +197,7 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
                                   size_t num_images) {
   const uint32_t usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                         gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
   std::vector<std::unique_ptr<Image>> images;
   for (size_t i = 0; i < num_images; ++i) {

@@ -826,7 +826,6 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   // of clients' eventual allowed usages. Note that CopyOutputRequests are not
   // writable via raster or GLES2 (by contract).
   constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                              gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                               gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;

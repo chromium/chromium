@@ -496,8 +496,7 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   // back buffer.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   auto client_shared_image = sii->CreateSharedImage(
       {alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
               : viz::SinglePlaneFormat::kRGBX_8888,

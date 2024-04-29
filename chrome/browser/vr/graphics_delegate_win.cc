@@ -146,9 +146,7 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
   // an overlay.
   client_shared_image_ = sii_->CreateSharedImage(
       {format, buffer_size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-           gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-       "VRGraphicsDelegate"},
+       gpu::SHARED_IMAGE_USAGE_GLES2_WRITE, "VRGraphicsDelegate"},
       gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
   if (!client_shared_image_) {
     return false;

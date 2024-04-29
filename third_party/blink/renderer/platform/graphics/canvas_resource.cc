@@ -433,13 +433,9 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
   // Hence, GLES2_READ usage is necessary regardless of whether raster is over
   // GLES.
-  // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
-  // eliminated.
-  shared_image_usage_flags = shared_image_usage_flags |
-                             gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                             gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                             gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+  shared_image_usage_flags =
+      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
   if (use_oop_rasterization_) {
     shared_image_usage_flags =
         shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
@@ -1159,11 +1155,8 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
   // Hence, GLES2_READ usage is necessary regardless of whether raster is over
   // GLES.
-  // TODO(crbug.com/1518735): Determine whether FRAMEBUFFER_HINT can be
-  // eliminated.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_SCANOUT |
                    gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;

@@ -232,7 +232,6 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
       // This test both reads from and writes to the created SharedImages via
       // GL.
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto backings = shared_image_factory_->CreateSwapChain(

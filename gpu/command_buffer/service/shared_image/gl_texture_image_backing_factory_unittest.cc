@@ -185,8 +185,7 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidUsageWithANGLEMetal) {
 
   for (uint32_t metal_invalid_usage :
        {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_GLES2_READ,
-        SHARED_IMAGE_USAGE_GLES2_WRITE,
-        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT}) {
+        SHARED_IMAGE_USAGE_GLES2_WRITE}) {
     bool supported = backing_factory_->CanCreateSharedImage(
         metal_invalid_usage, format, size, /*thread_safe=*/false,
         gfx::EMPTY_BUFFER, GrContextType::kGL, {});
