@@ -25,7 +25,7 @@ const CSS_FILE_HEADER = `/* Copyright 2024 The Chromium Authors
 `;
 
 const LISTENER_BINDING_REGEX =
-    /on-(?<eventName>[a-zA-Z]+)="(?<listenerName>[a-zA-Z_]+)"/g;
+    /on-(?<eventName>[a-zA-Z-]+)="(?<listenerName>[a-zA-Z_]+)"/g;
 
 function processFile(file) {
   const basename = path.basename(file, '.ts');
@@ -51,7 +51,11 @@ function processFile(file) {
       });
 
   // Step 4: Update property access syntax in HTML template
-  // TODO(crbug.com/40943652): Implement this.
+  htmlContent = htmlContent.replaceAll(/\[\[!item/g, () => '${!item');
+  htmlContent = htmlContent.replaceAll(/\[\[item/g, () => '${item');
+  htmlContent = htmlContent.replaceAll(/\[\[!/g, () => '${!this.');
+  htmlContent = htmlContent.replaceAll(/\[\[/g, () => '${this.');
+  htmlContent = htmlContent.replaceAll(/\]\]/g, () => '}');
 
   // Step 5: Write updated HTML content to disk
   fs.writeFileSync(htmlFile, htmlContent, 'utf8');
