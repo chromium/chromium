@@ -187,14 +187,25 @@ int AudioDestination::Render(base::TimeDelta delay,
     // Fill the FIFO.
     if (worklet_task_runner_) {
       // Use the dual-thread rendering if the AudioWorklet is activated.
-      const size_t frames_to_render =
+      auto result =
           fifo_->PullAndUpdateEarmark(output_bus_.get(), number_of_frames);
+
+      media::AudioGlitchInfo combined_glitch_info = glitch_info;
+      if (result.frames_provided < number_of_frames) {
+        combined_glitch_info += media::AudioGlitchInfo{
+            // FIFO contains audio at the output device sample rate.
+            .duration = audio_utilities::FramesToTime(
+                number_of_frames - result.frames_provided,
+                web_audio_device_->SampleRate()),
+            .count = 1};
+      }
+
       PostCrossThreadTask(
           *worklet_task_runner_, FROM_HERE,
           CrossThreadBindOnce(&AudioDestination::RequestRender,
                               WrapRefCounted(this), number_of_frames,
-                              frames_to_render, delay, delay_timestamp,
-                              glitch_info));
+                              result.frames_to_render, delay, delay_timestamp,
+                              combined_glitch_info));
     } else {
       // Otherwise use the single-thread rendering.
       const size_t frames_to_render =

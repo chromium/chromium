@@ -219,8 +219,9 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
       : 0;
 }
 
-size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
-                                          uint32_t frames_requested) {
+PushPullFIFO::PullResult PushPullFIFO::PullAndUpdateEarmark(
+    AudioBus* output_bus,
+    uint32_t frames_requested) {
   TRACE_EVENT2("webaudio", "PushPullFIFO::PullAndUpdateEarmark", "this",
                static_cast<void*>(this), "frames_requested", frames_requested);
 
@@ -237,7 +238,7 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
   // The frames available was not enough to fulfill |frames_requested|. Fill
   // the output buffer with silence and update |earmark_frames_|.
   if (frames_requested > frames_available_) {
-    const size_t missing_frames = frames_requested - frames_available_;
+    const uint32_t missing_frames = frames_requested - frames_available_;
 
     if (underflow_count_++ < kMaxMessagesToLog) {
       LOG(WARNING) << "PushPullFIFO::PullAndUpdateEarmark"
@@ -270,13 +271,14 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
              frames_requested * sizeof(*output_bus_channel));
     }
 
-    // The producer (WebAudio) needs to prepare the next pull plus what's
-    // missing.
-    return frames_requested + missing_frames;
+    // No frames were pulled; the producer (WebAudio) needs to prepare the next
+    // pull plus what's missing.
+    return PullResult{.frames_provided = 0,
+                      .frames_to_render = frames_requested + missing_frames};
   }
 
   const size_t remainder = fifo_length_ - index_read_;
-  const size_t frames_to_fill = std::min(frames_available_, frames_requested);
+  const uint32_t frames_to_fill = std::min(frames_available_, frames_requested);
 
   for (unsigned i = 0; i < fifo_bus_->NumberOfChannels(); ++i) {
     const float* fifo_bus_channel = fifo_bus_->Channel(i)->Data();
@@ -308,8 +310,11 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
   pull_count_++;
 
   // Ask the producer to fill the FIFO up to |earmark_frames_|.
-  return earmark_frames_ > frames_available_
-      ? earmark_frames_ - frames_available_ : 0;
+  return PullResult{
+      .frames_provided = frames_to_fill,
+      .frames_to_render = earmark_frames_ > frames_available_
+                              ? earmark_frames_ - frames_available_
+                              : 0};
 }
 
 const PushPullFIFOStateForTest PushPullFIFO::GetStateForTest() {
