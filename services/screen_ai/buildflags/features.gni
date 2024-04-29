@@ -9,8 +9,8 @@ declare_args() {
   # Screen AI service is only supported on desktop platforms.
   enable_screen_ai_service = is_linux || is_mac || is_chromeos || is_win
 
-  # Screen AI library is not yet available for browser tests on ChromeOS.
-  # TODO(b/40267312): Expand this browser test for all supported targets.
+  # Screen AI library is not available for browser tests on ChromeOS. Tast tests
+  # cover library's OCR functionality on ChromeOS.
   enable_screen_ai_browsertests =
       is_linux || (is_mac && (target_cpu == "arm64" || target_cpu == "x64")) ||
       (is_win && (target_cpu == "x64" || target_cpu == "x86"))
