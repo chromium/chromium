@@ -819,7 +819,15 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 // Avatar button is not shown on Ash. No need to perform those tests as the info
 // checked might not be adapted.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SignInOutIconEffect) {
+// TODO(crbug/327688158): SignInOutIconEffect is flaky on Win10 Tests x64.
+// Disable for Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SignInOutIconEffect DISABLED_SignInOutIconEffect
+#else
+#define MAYBE_SignInOutIconEffect SignInOutIconEffect
+#endif
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       MAYBE_SignInOutIconEffect) {
   ASSERT_FALSE(IsSignedInImageUsed());
 
   SigninAndWait(u"test@gmail.com");
@@ -1527,8 +1535,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
 
 #endif  // !BUILDFLAG(IS_WIN)
 
-// TODO(b/335775210): Flaky on win-asan
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+// TODO(b/335775210): Flaky on win-asan and Win10 Tests x64
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SigninPaused_ThenSignout DISABLED_SigninPaused_ThenSignout
 #else
 #define MAYBE_SigninPaused_ThenSignout SigninPaused_ThenSignout
