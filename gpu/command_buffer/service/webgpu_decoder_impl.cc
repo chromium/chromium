@@ -1363,17 +1363,6 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     required_features.push_back(wgpu::FeatureName::SharedFenceMTLSharedEvent);
   }
 
-#if BUILDFLAG(IS_OZONE)
-  if (adapter_obj.HasFeature(wgpu::FeatureName::SharedTextureMemoryDmaBuf)) {
-    required_features.push_back(wgpu::FeatureName::SharedTextureMemoryDmaBuf);
-  }
-  if (adapter_obj.HasFeature(
-          wgpu::FeatureName::SharedFenceVkSemaphoreOpaqueFD)) {
-    required_features.push_back(
-        wgpu::FeatureName::SharedFenceVkSemaphoreOpaqueFD);
-  }
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   if (adapter_obj.HasFeature(
           wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer)) {
