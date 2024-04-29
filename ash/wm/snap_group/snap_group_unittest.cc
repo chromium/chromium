@@ -64,6 +64,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/test/test_non_client_frame_view_ash.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
@@ -103,6 +104,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/test/test_widget_observer.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_modality_controller.h"
@@ -289,12 +291,11 @@ void DragGroupItemToPoint(OverviewItemBase* item,
   }
 }
 
-// Gets a point to drag `window` by the header. Note this only works for app
-// windows.
+// Gets a point to drag `window` by the header.
 gfx::Point GetDragPoint(aura::Window* window) {
-  gfx::Point drag_point = window->GetBoundsInScreen().top_center();
-  drag_point.Offset(0, 10);
-  return drag_point;
+  auto* frame = NonClientFrameViewAsh::Get(window);
+  views::test::RunScheduledLayout(frame);
+  return frame->GetHeaderView()->GetBoundsInScreen().CenterPoint();
 }
 
 // Verifies that the union bounds of `w1`, `w2` and the divider are equal to
@@ -336,46 +337,10 @@ void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
 void VerifySnapGroupOnDisplay(SnapGroup* snap_group, const int64_t display_id) {
   aura::Window* root = snap_group->window1()->GetRootWindow();
   EXPECT_EQ(root, snap_group->window2()->GetRootWindow());
-  EXPECT_EQ(root, snap_group->snap_group_divider()
-                      ->divider_widget()
-                      ->GetNativeWindow()
-                      ->GetRootWindow());
+  EXPECT_EQ(root, snap_group->snap_group_divider()->GetRootWindow());
   EXPECT_EQ(display_id,
             display::Screen::GetScreen()->GetDisplayNearestWindow(root).id());
 }
-
-// TestWidgetDelegate that can set app window minimum sizes. Needed since only
-// app windows can be dragged by the header view and process certain
-// accelerators, e.g. `ZoomDisplay()`.
-class TestWidgetDelegate : public views::WidgetDelegateView {
- public:
-  explicit TestWidgetDelegate(const gfx::Size& minimum_size)
-      : minimum_size_(minimum_size) {
-    SetCanFullscreen(true);
-    SetCanMaximize(true);
-    SetCanMinimize(true);
-    SetCanResize(true);
-  }
-
-  // views::View:
-  // Returns the minimum size the client view requests. This represents the
-  // minimum content area needed to display its elements correctly.
-  gfx::Size GetMinimumSize() const override { return minimum_size_; }
-
-  // Returns the actual minimum size of the window, which includes the client
-  // view and any additional non-client view elements elements (title bar,
-  // borders, etc.). This is equivalent to calling
-  // `GetWidget()->GetContentsView()->GetMinimumSize()`.
-  gfx::Size GetWindowMinimumSize() const {
-    return GetWidget()
-        ->non_client_view()
-        ->GetWindowBoundsForClientBounds(gfx::Rect(minimum_size_))
-        .size();
-  }
-
- private:
-  const gfx::Size minimum_size_;
-};
 
 }  // namespace
 
@@ -2154,10 +2119,14 @@ class SnapGroupTest : public FasterSplitScreenTest {
     return child;
   }
 
-  std::unique_ptr<aura::Window> CreateAppWindowWithDelegate(
-      views::WidgetDelegate* delegate) {
-    return CreateAppWindow(gfx::Rect(800, 600), AppType::SYSTEM_APP,
-                           kShellWindowId_Invalid, delegate);
+  std::unique_ptr<aura::Window> CreateAppWindowWithMinSize(gfx::Size min_size) {
+    std::unique_ptr<aura::Window> window =
+        CreateAppWindow(gfx::Rect(800, 600), AppType::SYSTEM_APP,
+                        kShellWindowId_Invalid, new TestWidgetDelegateAsh);
+    auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+        NonClientFrameViewAsh::Get(window.get()));
+    custom_frame->SetMinimumSize(min_size);
+    return window;
   }
 
  private:
@@ -5268,8 +5237,7 @@ TEST_F(SnapGroupSnapToReplaceTest, WindowWithMinimumSize) {
 
   // Create a new `w3` with min size > 0.5f.
   const gfx::Size min_size(work_area_bounds().width() * 0.6f, 0);
-  TestWidgetDelegate* delegate = new TestWidgetDelegate(min_size);
-  std::unique_ptr<aura::Window> w3(CreateAppWindowWithDelegate(delegate));
+  std::unique_ptr<aura::Window> w3 = CreateAppWindowWithMinSize(min_size);
 
   // Snap to replace `w3` on top of the group.
   auto* event_generator = GetEventGenerator();
@@ -5282,8 +5250,7 @@ TEST_F(SnapGroupSnapToReplaceTest, WindowWithMinimumSize) {
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  EXPECT_EQ(delegate->GetWindowMinimumSize().width(),
-            w3->GetBoundsInScreen().width());
+  EXPECT_EQ(min_size.width(), w3->GetBoundsInScreen().width());
   UnionBoundsEqualToWorkAreaBounds(w3.get(), w2.get(), snap_group_divider());
 }
 
@@ -5294,15 +5261,15 @@ TEST_F(SnapGroupSnapToReplaceTest, BothWindowsMinimumSizes) {
   // Create a snap group where `w2` has min size 0.45f.
   const int work_area_length = work_area_bounds().width();
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindowWithDelegate(
-      new TestWidgetDelegate(gfx::Size(work_area_length * 0.45f, 0))));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindowWithMinSize(gfx::Size(work_area_length * 0.45f, 0)));
   SnapTwoTestWindows(w1.get(), w2.get());
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
   // Create `w3` with min size 0.6f.
-  std::unique_ptr<aura::Window> w3(CreateAppWindowWithDelegate(
-      new TestWidgetDelegate(gfx::Size(work_area_length * 0.6f, 0))));
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindowWithMinSize(gfx::Size(work_area_length * 0.6f, 0)));
 
   // Snap to replace `w3` over `w1`. Since `w3` and `w2` would not fit, test we
   // don't replace `w1` in the group.
@@ -5486,11 +5453,9 @@ TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkArea) {
 
   // Set the min width so that the windows fit in `zoom_factor_1` but not
   // `zoom_factor_2`.
-  const gfx::Size min_size(360, 0);
-  std::unique_ptr<aura::Window> w1(
-      CreateAppWindowWithDelegate(new TestWidgetDelegate(min_size)));
-  std::unique_ptr<aura::Window> w2(
-      CreateAppWindowWithDelegate(new TestWidgetDelegate(min_size)));
+  const gfx::Size min_size(370, 0);
+  std::unique_ptr<aura::Window> w1(CreateAppWindowWithMinSize(min_size));
+  std::unique_ptr<aura::Window> w2(CreateAppWindowWithMinSize(min_size));
 
   SnapTwoTestWindows(w1.get(), w2.get());
   auto* snap_group_controller = SnapGroupController::Get();
