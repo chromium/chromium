@@ -150,8 +150,6 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   // base delay.
   bool CheckPolicyRefreshed(base::TimeDelta delay = base::TimeDelta());
 
-  bool IsUnsent(const invalidation::Invalidation& invalidation);
-
   // Returns the invalidations enabled state set by the invalidator on the
   // refresh scheduler.
   bool InvalidationsEnabled();
@@ -350,11 +348,6 @@ bool CloudPolicyInvalidatorTestBase::CheckPolicyNotRefreshed() {
   return CheckPolicyRefreshCount(0);
 }
 
-bool CloudPolicyInvalidatorTestBase::IsUnsent(
-    const invalidation::Invalidation& invalidation) {
-  return invalidation_service_.GetFakeAckHandler()->IsUnsent(invalidation);
-}
-
 bool CloudPolicyInvalidatorTestBase::InvalidationsEnabled() {
   return core_.refresh_scheduler()->invalidations_available();
 }
@@ -366,7 +359,6 @@ bool CloudPolicyInvalidatorTestBase::IsInvalidationAcknowledged(
   // acknowledgement status.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(IsUnsent(invalidation));
   return !invalidation_service_.GetFakeAckHandler()->IsUnacked(invalidation);
 }
 
@@ -450,7 +442,6 @@ TEST_F(CloudPolicyInvalidatorTest, Uninitialized) {
                    0      /* highest_handled_invalidation_version*/);
   StorePolicy(kTopicA);
   EXPECT_FALSE(IsInvalidatorRegistered());
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(1), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
@@ -463,7 +454,6 @@ TEST_F(CloudPolicyInvalidatorTest, RefreshSchedulerNotStarted) {
                    0      /* highest_handled_invalidation_version*/);
   StorePolicy(kTopicA);
   EXPECT_FALSE(IsInvalidatorRegistered());
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(1), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
@@ -478,7 +468,6 @@ TEST_F(CloudPolicyInvalidatorTest, DisconnectCoreThenInitialize) {
   InitializeInvalidator();
   StorePolicy(kTopicA);
   EXPECT_FALSE(IsInvalidatorRegistered());
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(1), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
@@ -506,16 +495,12 @@ TEST_F(CloudPolicyInvalidatorTest, RegisterOnStoreLoaded) {
   StartInvalidator();
   EXPECT_FALSE(IsInvalidatorRegistered());
   EXPECT_FALSE(InvalidationsEnabled());
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(1), "test")));
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicB, V(2), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
 
   // No registration when store is loaded with no invalidation topic id.
   StorePolicy(kNoTopic);
   EXPECT_FALSE(IsInvalidatorRegistered());
   EXPECT_FALSE(InvalidationsEnabled());
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(3), "test")));
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicB, V(4), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
 
   // Check registration when store is loaded for topic A.
@@ -524,7 +509,6 @@ TEST_F(CloudPolicyInvalidatorTest, RegisterOnStoreLoaded) {
   EXPECT_TRUE(InvalidationsEnabled());
   FireInvalidation(kTopicA, V(5), "test");
   EXPECT_TRUE(CheckPolicyRefreshed());
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicB, V(6), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
 }
@@ -537,7 +521,6 @@ TEST_F(CloudPolicyInvalidatorTest, ChangeRegistration) {
   EXPECT_TRUE(InvalidationsEnabled());
   FireInvalidation(kTopicA, V(1), "test");
   EXPECT_TRUE(CheckPolicyRefreshed());
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicB, V(2), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   invalidation::Invalidation inv = FireInvalidation(kTopicA, V(3), "test");
 
@@ -551,7 +534,6 @@ TEST_F(CloudPolicyInvalidatorTest, ChangeRegistration) {
 
   // Make sure future invalidations for topic A are ignored and for topic B
   // are processed.
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(4), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   FireInvalidation(kTopicB, V(5), "test");
   EXPECT_TRUE(CheckPolicyRefreshed());
@@ -574,8 +556,6 @@ TEST_F(CloudPolicyInvalidatorTest, UnregisterOnStoreLoaded) {
   EXPECT_FALSE(IsInvalidatorRegistered());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv));
   EXPECT_FALSE(InvalidationsEnabled());
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(3), "test")));
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicB, V(4), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
 
   // Check re-registration for topic B.
@@ -764,17 +744,14 @@ TEST_F(CloudPolicyInvalidatorTest, Disconnect) {
 
   // Ensure that invalidation service events do not cause refreshes while the
   // invalidator is stopped.
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(2), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   DisableInvalidationService();
   EnableInvalidationService();
 
   // Connect and disconnect without starting the refresh scheduler.
   ConnectCore();
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(3), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   DisconnectCore();
-  EXPECT_TRUE(IsUnsent(FireInvalidation(kTopicA, V(4), "test")));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
 
   // Ensure that the invalidator returns to normal after reconnecting.
