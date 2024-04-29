@@ -376,6 +376,15 @@ TEST(FloatRoundedRectTest, IntersectsQuadEnclosing) {
   EXPECT_TRUE(r.IntersectsQuad(crossing_corners));
 }
 
+TEST(FloatRoundedRectTest, Conversion) {
+  FloatRoundedRect r(gfx::RectF(100, 200, 300, 400), gfx::SizeF(5, 6),
+                     gfx::SizeF(7, 8), gfx::SizeF(9, 10), gfx::SizeF(11, 12));
+  gfx::RRectF gfx_r(r);
+  SkRRect sk_r(r);
+  EXPECT_EQ(r, FloatRoundedRect(gfx_r));
+  EXPECT_EQ(r, FloatRoundedRect(sk_r));
+}
+
 TEST(FloatRoundedRectTest, ToString) {
   gfx::SizeF corner_rect(1, 2);
   FloatRoundedRect rounded_rect(

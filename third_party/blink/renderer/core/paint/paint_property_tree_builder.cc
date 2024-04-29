@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -2006,6 +2007,25 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
     context_.current.clip = properties_->CssClip();
 }
 
+static std::optional<FloatRoundedRect> PathToRRect(const Path& path) {
+  const SkPath sk_path = path.GetSkPath();
+  if (sk_path.isInverseFillType()) {
+    return std::nullopt;
+  }
+  SkRect rect;
+  if (sk_path.isRect(&rect)) {
+    return FloatRoundedRect(gfx::SkRectToRectF(rect));
+  }
+  SkRRect rrect;
+  if (sk_path.isRRect(&rrect)) {
+    return FloatRoundedRect(rrect);
+  }
+  if (sk_path.isOval(&rect)) {
+    return FloatRoundedRect(SkRRect::MakeOval(rect));
+  }
+  return std::nullopt;
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
     DCHECK(!clip_path_bounding_box_.has_value());
@@ -2025,10 +2045,22 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
         if (std::optional<Path> path = ClipPathClipper::PathBasedClip(
                 object_, context_.current.is_in_block_fragmentation)) {
           path->Translate(paint_offset);
+          std::optional<FloatRoundedRect> rrect;
+          // TODO(crbug.com/337191311): The optimization breaks view-transition
+          // if the bounding box of clip-path is larger than the contents.
+          if (!(full_context_.direct_compositing_reasons &
+                (CompositingReason::kViewTransitionElement |
+                 CompositingReason::
+                     kViewTransitionElementDescendantWithClipPath))) {
+            rrect = PathToRRect(*path);
+          }
           ClipPaintPropertyNode::State state(
               context_.current.transform, *clip_path_bounding_box_,
-              FloatRoundedRect(gfx::ToEnclosingRect(*clip_path_bounding_box_)));
-          state.clip_path = path;
+              rrect.value_or(FloatRoundedRect(
+                  gfx::ToEnclosingRect(*clip_path_bounding_box_))));
+          if (!rrect) {
+            state.clip_path = path;
+          }
           OnUpdateClip(properties_->UpdateClipPathClip(*context_.current.clip,
                                                        std::move(state)));
         } else {

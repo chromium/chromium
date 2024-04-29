@@ -55,6 +55,20 @@ FloatRoundedRect::FloatRoundedRect(const gfx::RectF& rect,
                                    const gfx::SizeF& bottom_right)
     : rect_(rect), radii_(top_left, top_right, bottom_left, bottom_right) {}
 
+FloatRoundedRect::FloatRoundedRect(const gfx::RRectF& r)
+    : FloatRoundedRect(r.rect()) {
+  gfx::Vector2dF top_left = r.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft);
+  gfx::Vector2dF top_right = r.GetCornerRadii(gfx::RRectF::Corner::kUpperRight);
+  gfx::Vector2dF bottom_left =
+      r.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft);
+  gfx::Vector2dF bottom_right =
+      r.GetCornerRadii(gfx::RRectF::Corner::kLowerRight);
+  SetRadii(Radii(gfx::SizeF(top_left.x(), top_left.y()),
+                 gfx::SizeF(top_right.x(), top_right.y()),
+                 gfx::SizeF(bottom_left.x(), bottom_left.y()),
+                 gfx::SizeF(bottom_right.x(), bottom_right.y())));
+}
+
 void FloatRoundedRect::Radii::SetMinimumRadius(float minimum_radius) {
   top_left_.set_width(std::max(minimum_radius, top_left_.width()));
   top_left_.set_height(std::max(minimum_radius, top_left_.height()));

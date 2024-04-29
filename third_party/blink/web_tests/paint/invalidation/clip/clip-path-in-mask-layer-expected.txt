@@ -12,12 +12,6 @@
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
-    },
-    {
-      "name": "Synthesized Clip",
-      "position": [-2, -2],
-      "bounds": [204, 204],
-      "transform": 1
     }
   ],
   "transforms": [
