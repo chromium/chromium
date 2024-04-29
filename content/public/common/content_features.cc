@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "content/common/buildflags.h"
 #include "content/public/common/dips_utils.h"
 
@@ -307,8 +308,13 @@ BASE_FEATURE(kDIPSPreservePSData,
 // Enables HW decode acceleration for WebRTC.
 BASE_FEATURE(kWebRtcHWDecoding,
              "webrtc-hw-decoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
+// TODO: b/336314537 Re enable HW Decoding once the GPU Hang is resolved
+#if BUILDFLAG(PLATFORM_CFM)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 // Enables HW encode acceleration for WebRTC.
 BASE_FEATURE(kWebRtcHWEncoding,
              "webrtc-hw-encoding",

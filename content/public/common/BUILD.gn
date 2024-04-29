@@ -265,6 +265,7 @@ source_set("common_sources") {
     ":content_descriptor_keys",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//build/config/chromebox_for_meetings:buildflags",
 
     # This looks needless as we have //content/common in public_deps, but it's
     # needed because of allow_circular_includes_from.
