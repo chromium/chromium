@@ -171,12 +171,17 @@ void HeaderModificationDelegateImpl::ProcessResponse(
       // Terminate the session if session termination header is set.
       bound_session_cookie_refresh_service->MaybeTerminateSession(
           response_adapter->GetHeaders());
-
-      auto params = BoundSessionRegistrationFetcherParam::MaybeCreateInstance(
+      auto params = BoundSessionRegistrationFetcherParam::CreateFromHeaders(
           response_adapter->GetUrl(), response_adapter->GetHeaders());
-      if (params.has_value()) {
+      for (auto&& param : std::move(params)) {
+        // `bound_session_cookie_refresh_service` currently can handle only one
+        // registration request. The service has logic to choose which request
+        // it should prioritize, so we're sending it multiple params to choose
+        // from.
+        // TODO(b/274774185): modify `CreateRegistrationRequest()` to accept a
+        // vector of params.
         bound_session_cookie_refresh_service->CreateRegistrationRequest(
-            std::move(params).value());
+            std::move(param));
       }
     }
   }
