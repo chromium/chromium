@@ -1096,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
     expires_after="2024-09-22">
-  <owner>nharper@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
   <summary>
     The amount of time (ms) between the cookie store load starting and
     completing.
