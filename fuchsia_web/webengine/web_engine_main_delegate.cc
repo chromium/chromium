@@ -80,15 +80,6 @@ std::optional<int> WebEngineMainDelegate::BasicStartupComplete() {
     return 1;
   }
 
-  if (command_line->HasSwitch(switches::kGoogleApiKey)) {
-#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
-    google_apis::SetAPIKey(
-        command_line->GetSwitchValueASCII(switches::kGoogleApiKey));
-#else
-    LOG(WARNING) << "Ignored " << switches::kGoogleApiKey;
-#endif
-  }
-
   SetCorsExemptHeaders(base::SplitString(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
           switches::kCorsExemptHeaders),
@@ -108,6 +99,20 @@ void WebEngineMainDelegate::PreSandboxStartup() {
   base::i18n::SetICUDefaultLocale(initial_locale);
 
   InitializeResources();
+}
+
+std::optional<int> WebEngineMainDelegate::PreBrowserMain() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kGoogleApiKey)) {
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
+    google_apis::SetAPIKey(
+        command_line->GetSwitchValueASCII(switches::kGoogleApiKey));
+#else
+    LOG(WARNING) << "Ignored " << switches::kGoogleApiKey;
+#endif
+  }
+
+  return std::nullopt;
 }
 
 absl::variant<int, content::MainFunctionParams>
