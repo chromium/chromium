@@ -1421,9 +1421,12 @@ void ChromeClientImpl::DocumentDetached(Document& document) {
   }
 }
 
-double ChromeClientImpl::UserZoomFactor() const {
+double ChromeClientImpl::UserZoomFactor(LocalFrame* frame) const {
   DCHECK(web_view_);
-  return PageZoomLevelToZoomFactor(web_view_->ZoomLevel());
+  return PageZoomLevelToZoomFactor(
+      WebLocalFrameImpl::FromFrame(frame->LocalFrameRoot())
+          ->FrameWidgetImpl()
+          ->GetZoomLevel());
 }
 
 void ChromeClientImpl::SetDelegatedInkMetadata(
