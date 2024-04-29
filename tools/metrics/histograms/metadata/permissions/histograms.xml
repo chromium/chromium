@@ -63,6 +63,17 @@ chromium-metrics-reviews@google.com.
   <variant name="FromUser"/>
 </variants>
 
+<variants name="OsScreen">
+  <variant name="OS_PROMPT"/>
+  <variant name="OS_SYSTEM_SETTINGS"/>
+</variants>
+
+<variants name="OsScreenAction">
+  <variant name="DISMISSED_SCRIM"/>
+  <variant name="DISMISSED_X_BUTTON"/>
+  <variant name="SYSTEM_SETTINGS"/>
+</variants>
+
 <variants name="PermissionTypeForElementAnchoredBubble">
   <variant name="AR"/>
   <variant name="AudioAndVideoCapture"/>
@@ -912,13 +923,8 @@ chromium-metrics-reviews@google.com.
     sequentially as part of the same prompt. Is recorded when the screen is
     shown.
   </summary>
-  <token key="PermissionType">
-    <variant name="AR"/>
-    <variant name="AudioAndVideoCapture"/>
-    <variant name="AudioCapture"/>
-    <variant name="Geolocation"/>
-    <variant name="VideoCapture"/>
-  </token>
+  <token key="PermissionType"
+      variants="PermissionTypeForElementAnchoredBubble"/>
 </histogram>
 
 <histogram
@@ -933,10 +939,23 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="PermissionType"
       variants="PermissionTypeForElementAnchoredBubble"/>
-  <token key="OsScreen">
-    <variant name="OS_PROMPT"/>
-    <variant name="OS_SYSTEM_SETTINGS"/>
-  </token>
+  <token key="OsScreen" variants="OsScreen"/>
+</histogram>
+
+<histogram
+    name="Permissions.Prompt.{PermissionType}.ElementAnchoredBubble.{OsScreen}.{OsScreenAction}.TimeToAction"
+    units="ms" expires_after="2025-02-16">
+  <owner>hkamila@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Tracks the time until an action is taken on a {PermissionType} screen that
+    informs the user about state of the OS settings. Recorded whenever the user
+    takes an action that results in closing the screen.
+  </summary>
+  <token key="PermissionType"
+      variants="PermissionTypeForElementAnchoredBubble"/>
+  <token key="OsScreen" variants="OsScreen"/>
+  <token key="OsScreenAction" variants="OsScreenAction"/>
 </histogram>
 
 <histogram name="Permissions.Prompt.{PermissionType}.{Disposition}.Action"

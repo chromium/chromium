@@ -222,6 +222,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
           delegate()->Requests(),
           permissions::ElementAnchoredBubbleVariant::OS_PROMPT);
+      current_variant_first_display_time_ = base::Time::Now();
 // This view has no buttons, so the OS level prompt should be triggered at the
 // same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
 #if BUILDFLAG(IS_MAC)
@@ -234,6 +235,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
       permissions::PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(
           delegate()->Requests(),
           permissions::ElementAnchoredBubbleVariant::OS_SYSTEM_SETTINGS);
+      current_variant_first_display_time_ = base::Time::Now();
       break;
     case Variant::kAdministratorGranted:
       prompt_view = new EmbeddedPermissionPromptPolicyView(
@@ -269,6 +271,27 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
 EmbeddedPermissionPrompt::TabSwitchingBehavior
 EmbeddedPermissionPrompt::GetTabSwitchingBehavior() {
   return TabSwitchingBehavior::kDestroyPromptButKeepRequestPending;
+}
+
+void EmbeddedPermissionPrompt::RecordOsMetrics(
+    permissions::OsScreenAction action) {
+  permissions::OsScreen screen;
+
+  switch (embedded_prompt_variant_) {
+    case Variant::kOsPrompt:
+      screen = permissions::OsScreen::OS_PROMPT;
+      break;
+    case Variant::kOsSystemSettings:
+      screen = permissions::OsScreen::OS_SYSTEM_SETTINGS;
+      break;
+    default:
+      return;
+  }
+
+  base::TimeDelta time_to_decision =
+      base::Time::Now() - current_variant_first_display_time_;
+  permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
+      delegate()->Requests(), screen, action, time_to_decision);
 }
 
 permissions::PermissionPromptDisposition
@@ -345,20 +368,12 @@ void EmbeddedPermissionPrompt::AllowThisTime() {
 
 void EmbeddedPermissionPrompt::Dismiss() {
   PrecalculateVariantsForMetrics();
-  if (embedded_prompt_variant_ == Variant::kOsPrompt) {
-    permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
-        delegate()->Requests(), permissions::OsScreen::OS_PROMPT,
-        permissions::OsScreenAction::DISMISSED_X_BUTTON);
-  }
-  if (embedded_prompt_variant_ == Variant::kOsSystemSettings) {
-    permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
-        delegate()->Requests(), permissions::OsScreen::OS_SYSTEM_SETTINGS,
-        permissions::OsScreenAction::DISMISSED_X_BUTTON);
-  }
-
-  delegate_->Dismiss();
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_X_BUTTON);
+
+  RecordOsMetrics(permissions::OsScreenAction::DISMISSED_X_BUTTON);
+
+  delegate_->Dismiss();
   delegate_->FinalizeCurrentRequests();
 }
 
@@ -382,15 +397,15 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
 // as it is not possible to open multiple System Setting pages. Figure out a
 // better way to handle this scenario.
 #if BUILDFLAG(IS_MAC)
+  RecordOsMetrics(permissions::OsScreenAction::SYSTEM_SETTINGS);
+
   if (requests_[0]->request_type() == permissions::RequestType::kCameraStream) {
     OpenCameraSystemSettingsOnMacOS();
   } else if (requests_[0]->request_type() ==
              permissions::RequestType::kMicStream) {
     OpenMicSystemSettingsOnMacOS();
   }
-  permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
-      delegate()->Requests(), permissions::OsScreen::OS_SYSTEM_SETTINGS,
-      permissions::OsScreenAction::SYSTEM_SETTINGS);
+
 #endif
 }
 
@@ -407,16 +422,15 @@ EmbeddedPermissionPrompt::Requests() const {
 void EmbeddedPermissionPrompt::DismissScrim() {
   permissions::PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
       delegate()->Requests(), permissions::DismissedReason::DISMISSED_SCRIM);
+
   if (embedded_prompt_variant_ == Variant::kOsPrompt) {
-    permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
-        delegate()->Requests(), permissions::OsScreen::OS_PROMPT,
-        permissions::OsScreenAction::DISMISSED_SCRIM);
+    RecordOsMetrics(permissions::OsScreenAction::DISMISSED_SCRIM);
   }
+
   if (embedded_prompt_variant_ == Variant::kOsSystemSettings) {
-    permissions::PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
-        delegate()->Requests(), permissions::OsScreen::OS_SYSTEM_SETTINGS,
-        permissions::OsScreenAction::DISMISSED_SCRIM);
+    RecordOsMetrics(permissions::OsScreenAction::DISMISSED_SCRIM);
   }
+
   CloseView();
   PrecalculateVariantsForMetrics();
   delegate_->Dismiss();

@@ -384,7 +384,7 @@ void RecordPermissionActionUkm(
     int dismiss_count,
     int ignore_count,
     PermissionSourceUI source_ui,
-    base::TimeDelta time_to_decision,
+    base::TimeDelta time_to_action,
     PermissionPromptDisposition ui_disposition,
     std::optional<PermissionPromptDispositionReason> ui_reason,
     std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
@@ -539,9 +539,9 @@ void RecordPermissionActionUkm(
       }
     }
   }
-  if (!time_to_decision.is_zero()) {
+  if (!time_to_action.is_zero()) {
     builder.SetTimeToDecision(ukm::GetExponentialBucketMinForUserTiming(
-        time_to_decision.InMilliseconds()));
+        time_to_action.InMilliseconds()));
   }
 
   builder.Record(ukm::UkmRecorder::Get());
@@ -815,7 +815,7 @@ void PermissionUmaUtil::PermissionRevoked(
   // applicable in prompt UIs where revocations are not possible.
   RecordPermissionAction(permission, PermissionAction::REVOKED, source_ui,
                          PermissionRequestGestureType::UNKNOWN,
-                         /*time_to_decision=*/base::TimeDelta(),
+                         /*time_to_action=*/base::TimeDelta(),
                          PermissionPromptDisposition::NOT_APPLICABLE,
                          /*ui_reason=*/std::nullopt, /*variants=*/std::nullopt,
                          revoked_origin,
@@ -940,7 +940,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
     content::WebContents* web_contents,
     PermissionAction permission_action,
-    base::TimeDelta time_to_decision,
+    base::TimeDelta time_to_action,
     PermissionPromptDisposition ui_disposition,
     std::optional<PermissionPromptDispositionReason> ui_reason,
     std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
@@ -989,8 +989,8 @@ void PermissionUmaUtil::PermissionPromptResolved(
 
     RecordPermissionAction(
         permission, permission_action, PermissionSourceUI::PROMPT, gesture_type,
-        time_to_decision, ui_disposition, ui_reason, variants,
-        requesting_origin, web_contents, web_contents->GetBrowserContext(),
+        time_to_action, ui_disposition, ui_reason, variants, requesting_origin,
+        web_contents, web_contents->GetBrowserContext(),
         content::RenderFrameHost::FromID(request->get_requesting_frame_id()),
         predicted_grant_likelihood, prediction_decision_held_back);
 
@@ -1020,11 +1020,11 @@ void PermissionUmaUtil::PermissionPromptResolved(
                                     permission_disposition + ".Action",
                                 permission_action, PermissionAction::NUM);
 
-  if (!time_to_decision.is_zero()) {
+  if (!time_to_action.is_zero()) {
     base::UmaHistogramLongTimes("Permissions.Prompt." + permission_type + "." +
                                     permission_disposition + "." +
                                     action_string + ".TimeToAction",
-                                time_to_decision);
+                                time_to_action);
   }
 
   if (permission_action == PermissionAction::IGNORED &&
@@ -1206,7 +1206,7 @@ void PermissionUmaUtil::RecordPermissionAction(
     PermissionAction action,
     PermissionSourceUI source_ui,
     PermissionRequestGestureType gesture_type,
-    base::TimeDelta time_to_decision,
+    base::TimeDelta time_to_action,
     PermissionPromptDisposition ui_disposition,
     std::optional<PermissionPromptDispositionReason> ui_reason,
     std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
@@ -1268,7 +1268,7 @@ void PermissionUmaUtil::RecordPermissionAction(
       permission, browser_context, web_contents, requesting_origin,
       base::BindOnce(
           &RecordPermissionActionUkm, action, gesture_type, permission,
-          dismiss_count, ignore_count, source_ui, time_to_decision,
+          dismiss_count, ignore_count, source_ui, time_to_action,
           ui_disposition, ui_reason, variants,
           permission == ContentSettingsType::NOTIFICATIONS
               ? PermissionsClient::Get()
@@ -1827,10 +1827,11 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleDismiss(
 }
 
 // static
-void PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
+void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
     const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>& requests,
     OsScreen screen,
-    OsScreenAction action) {
+    OsScreenAction action,
+    base::TimeDelta time_to_action) {
   CHECK(!requests.empty());
 
   RequestTypeForUma type = GetUmaValueForRequests(requests);
@@ -1849,8 +1850,31 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsScreenAction(
 
   base::UmaHistogramEnumeration(
       "Permissions.Prompt." + GetPermissionRequestString(type) +
-          ".ElementAnchoredBubble" + screen_type + ".OsScreenAction",
+          ".ElementAnchoredBubble." + screen_type + ".OsScreenAction",
       action);
+
+  std::string screen_action;
+  if (!time_to_action.is_zero()) {
+    switch (action) {
+      case OsScreenAction::SYSTEM_SETTINGS:
+        screen_action = "SystemSettings";
+        break;
+      case OsScreenAction::DISMISSED_X_BUTTON:
+        screen_action = "DismissXButton";
+        break;
+      case OsScreenAction::DISMISSED_SCRIM:
+        screen_action = "DismissScrim";
+        break;
+      default:
+        NOTREACHED();
+    }
+
+    base::UmaHistogramLongTimes("Permissions.Prompt." +
+                                    GetPermissionRequestString(type) +
+                                    ".ElementAnchoredBubble." + screen_type +
+                                    "." + screen_action + ".TimeToAction",
+                                time_to_action);
+  }
 }
 
 void PermissionUmaUtil::RecordElementAnchoredBubbleVariantUMA(

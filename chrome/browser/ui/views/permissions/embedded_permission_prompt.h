@@ -99,6 +99,8 @@ class EmbeddedPermissionPrompt
 
   void RebuildRequests();
 
+  void RecordOsMetrics(permissions::OsScreenAction action);
+
   void PromptForOsPermission();
 
 #if BUILDFLAG(IS_MAC)
@@ -119,6 +121,8 @@ class EmbeddedPermissionPrompt
   Variant embedded_prompt_variant_ = Variant::kUninitialized;
   views::UniqueWidgetPtr content_scrim_widget_;
   views::ViewTracker prompt_view_tracker_;
+
+  base::Time current_variant_first_display_time_;
 
   raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 

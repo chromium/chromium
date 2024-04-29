@@ -653,7 +653,7 @@ class PermissionUmaUtil {
           requests,
       content::WebContents* web_contents,
       PermissionAction permission_action,
-      base::TimeDelta time_to_decision,
+      base::TimeDelta time_to_action,
       PermissionPromptDisposition ui_disposition,
       std::optional<PermissionPromptDispositionReason> ui_reason,
       std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,
@@ -676,11 +676,12 @@ class PermissionUmaUtil {
           requests,
       DismissedReason reason);
 
-  static void RecordElementAnchoredBubbleOsScreenAction(
+  static void RecordElementAnchoredBubbleOsMetrics(
       const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
           requests,
       OsScreen screen,
-      OsScreenAction action);
+      OsScreenAction action,
+      base::TimeDelta time_to_action);
 
   static void RecordElementAnchoredBubbleVariantUMA(
       const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
@@ -839,7 +840,7 @@ class PermissionUmaUtil {
       PermissionAction action,
       PermissionSourceUI source_ui,
       PermissionRequestGestureType gesture_type,
-      base::TimeDelta time_to_decision,
+      base::TimeDelta time_to_action,
       PermissionPromptDisposition ui_disposition,
       std::optional<PermissionPromptDispositionReason> ui_reason,
       std::optional<std::vector<ElementAnchoredBubbleVariant>> variants,

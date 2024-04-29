@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OsScreenAction">
   <int value="0" label="SystemSettings"/>
-  <int value="1" label="Dismiss"/>
+  <int value="1" label="DismissXButton"/>
   <int value="2" label="DismissScrim"/>
 </enum>
 
