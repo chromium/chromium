@@ -360,7 +360,8 @@ suite('VoiceSelectionMenuElement', () => {
         assertTrue(isPositionedOnPage(playIconVoice0));
         assertEquals(playIconVoice0.ironIcon, 'read-anything-20:play-circle');
         assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
-        assertStringContains(playIconVoice0.ariaLabel!.toLowerCase(), 'play');
+        assertStringContains(
+            playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
       });
 
       suite('when preview finishes playing', () => {
@@ -391,8 +392,10 @@ suite('VoiceSelectionMenuElement', () => {
               playIconOfPreviewVoice.title.toLowerCase(), 'play');
           assertStringContains(playIconVoice0.title.toLowerCase(), 'play');
           assertStringContains(
-              playIconOfPreviewVoice.ariaLabel!.toLowerCase(), 'play');
-          assertStringContains(playIconVoice0.ariaLabel!.toLowerCase(), 'play');
+              playIconOfPreviewVoice.ariaLabel!.toLowerCase(),
+              'preview voice for');
+          assertStringContains(
+              playIconVoice0.ariaLabel!.toLowerCase(), 'preview voice for');
         });
       });
     });

@@ -118,6 +118,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"readingModeLanguageMenuNoSpaceButVoicesExist",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST},
+      {"previewVoiceAccessibilityLabel",
+       IDS_READING_MODE_VOICE_MENU_PREVIEW_LANGUAGE},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);

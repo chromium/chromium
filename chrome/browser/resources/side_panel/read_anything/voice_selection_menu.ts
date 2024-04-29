@@ -248,7 +248,16 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     currentElement.parentElement!.focus();
   }
 
-  private previewLabel_(previewPlaying: boolean, voiceName: string): string {
+  private previewLabel_(previewPlaying: boolean): string {
+    if (previewPlaying) {
+      return loadTimeData.getString('stopLabel');
+    } else {
+      return loadTimeData.getString('playLabel');
+    }
+  }
+
+  private previewAriaLabel_(previewPlaying: boolean, voiceName: string):
+      string {
     let nameSuffix = '';
     if (voiceName.length > 0) {
       nameSuffix = ' ' + voiceName;
@@ -256,7 +265,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     if (previewPlaying) {
       return loadTimeData.getString('stopLabel') + nameSuffix;
     } else {
-      return loadTimeData.getString('playLabel') + nameSuffix;
+      return loadTimeData.getStringF(
+          'previewVoiceAccessibilityLabel', nameSuffix);
     }
   }
 

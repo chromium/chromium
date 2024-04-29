@@ -9193,6 +9193,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE" desc="Label for status text when no space on disk prevents a voice from downloading from the Read Aloud language menu.">
         To install this language, clear space on your device
       </message>
+      <message name="IDS_READING_MODE_VOICE_MENU_PREVIEW_LANGUAGE" desc="Accessibility label for a button to preview a voice in a specfic language.">
+        preview voice for <ph name="LANGUAGE">$1<ex>English</ex></ph>
+      </message>
       <message name="IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST" desc="Label for status text when no space on disk prevents a voice from downloading from the Read Aloud language menu but there are already installed voices for the language.">
         For higher quality voices, clear space on your device
       </message>
