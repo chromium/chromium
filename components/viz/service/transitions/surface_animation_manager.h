@@ -52,6 +52,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       Surface* surface,
       SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
+      ReservedResourceIdTracker* id_tracker,
       TransitionDirectiveCompleteCallback sequence_id_finished_callback);
 
   ~SurfaceAnimationManager() override;
@@ -77,6 +78,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       Surface* surface,
       SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
+      ReservedResourceIdTracker* id_tracker,
       TransitionDirectiveCompleteCallback sequence_id_finished_callback);
 
   bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,

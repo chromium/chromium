@@ -25,7 +25,9 @@ class Display;
 // graphics pipeline to deref all surfaces.
 class EvictionHandler : public ReservedResourceDelegate {
  public:
-  EvictionHandler(Display* display, CompositorFrameSinkSupport* support);
+  EvictionHandler(Display* display,
+                  CompositorFrameSinkSupport* support,
+                  ReservedResourceIdTracker* id_tracker);
 
   EvictionHandler(const EvictionHandler&) = delete;
   EvictionHandler& operator=(const EvictionHandler&) = delete;
@@ -63,7 +65,7 @@ class EvictionHandler : public ReservedResourceDelegate {
   // and swap to complete to actually unref.
   LocalSurfaceId to_evict_on_next_draw_and_swap_;
 
-  ReservedResourceIdTracker id_tracker_;
+  raw_ptr<ReservedResourceIdTracker> id_tracker_;
 
   base::flat_map<ResourceId, std::unique_ptr<CopyOutputResult>>
       copy_output_results_;

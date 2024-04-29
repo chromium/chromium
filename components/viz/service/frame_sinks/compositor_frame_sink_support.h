@@ -274,7 +274,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     return frame_sink_type_;
   }
 
-  void SetReservedResourceDelegate(ReservedResourceDelegate* delegate);
+  void SetExternalReservedResourceDelegate(ReservedResourceDelegate* delegate);
 
  private:
   friend class CompositorFrameSinkSupportTest;
@@ -355,9 +355,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
       base::flat_set<base::PlatformThreadId> thread_ids,
       bool passed_verification);
 
-  void SetSurfaceAnimationManager(
-      std::unique_ptr<SurfaceAnimationManager> surface_animation_manager);
-  std::unique_ptr<SurfaceAnimationManager> TakeSurfaceAnimationManager();
+  void ForAllReservedResourceDelegates(
+      base::FunctionRef<void(ReservedResourceDelegate&)> func);
 
   const raw_ptr<mojom::CompositorFrameSinkClient> client_;
 
@@ -552,7 +551,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // This is used for any viz side resources that are managed by viz. These
   // resources must use the reserved resource range defined by
   // `kVizReservedRangeStartId`.
-  raw_ptr<ReservedResourceDelegate> reserved_resource_delegate_ = nullptr;
+  raw_ptr<ReservedResourceDelegate> external_reserved_resource_delegate_ =
+      nullptr;
 
   // The sequence ID for the save directive pending copy.
   uint32_t in_flight_save_sequence_id_ = 0;

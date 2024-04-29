@@ -309,6 +309,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void SetSharedImageInterface(
       gpu::SharedImageInterface* shared_image_interface);
 
+  ReservedResourceIdTracker* reserved_resource_id_tracker() {
+    return &reserved_resource_id_tracker_;
+  }
+
  private:
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTest;
@@ -496,6 +500,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   std::optional<FrameCounter> frame_counter_;
 
   raw_ptr<gpu::SharedImageInterface> shared_image_interface_ = nullptr;
+
+  ReservedResourceIdTracker reserved_resource_id_tracker_;
 
   base::WeakPtrFactory<FrameSinkManagerImpl> weak_factory_{this};
 };

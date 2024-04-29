@@ -22,8 +22,11 @@
 namespace viz {
 
 TransferableResourceTracker::TransferableResourceTracker(
-    SharedBitmapManager* shared_bitmap_manager)
-    : shared_bitmap_manager_(shared_bitmap_manager) {}
+    SharedBitmapManager* shared_bitmap_manager,
+    ReservedResourceIdTracker* id_tracker)
+    : shared_bitmap_manager_(shared_bitmap_manager), id_tracker_(id_tracker) {
+  CHECK(id_tracker_);
+}
 
 TransferableResourceTracker::~TransferableResourceTracker() = default;
 
@@ -111,7 +114,7 @@ TransferableResourceTracker::ImportResource(
     }
   }
 
-  resource.id = id_tracker_.AllocId(/*initial_ref_count=*/1);
+  resource.id = id_tracker_->AllocId(/*initial_ref_count=*/1);
   DCHECK(!base::Contains(managed_resources_, resource.id));
   managed_resources_.emplace(
       resource.id,
@@ -132,15 +135,20 @@ void TransferableResourceTracker::ReturnFrame(const ResourceFrame& frame) {
 }
 
 void TransferableResourceTracker::RefResource(ResourceId id) {
-  DCHECK(base::Contains(managed_resources_, id));
-  id_tracker_.RefId(id, /*count=*/1);
+  if (!base::Contains(managed_resources_, id)) {
+    return;
+  }
+
+  id_tracker_->RefId(id, /*count=*/1);
 }
 
 void TransferableResourceTracker::UnrefResource(
     ResourceId id,
     int count,
     const gpu::SyncToken& sync_token) {
-  DCHECK(base::Contains(managed_resources_, id));
+  if (!base::Contains(managed_resources_, id)) {
+    return;
+  }
 
   // Always update the release sync token, even if we're still keeping the
   // resource. This way, if we first return it from the display compositor and
@@ -152,7 +160,7 @@ void TransferableResourceTracker::UnrefResource(
     it->second.release_sync_token = sync_token;
   }
 
-  if (id_tracker_.UnrefId(id, count)) {
+  if (id_tracker_->UnrefId(id, count)) {
     managed_resources_.erase(id);
   }
 }

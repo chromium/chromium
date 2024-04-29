@@ -21,13 +21,14 @@
 namespace viz {
 
 EvictionHandler::EvictionHandler(Display* display,
-                                 CompositorFrameSinkSupport* support)
-    : display_(display), support_(support) {
-  support_->SetReservedResourceDelegate(this);
+                                 CompositorFrameSinkSupport* support,
+                                 ReservedResourceIdTracker* id_tracker)
+    : display_(display), support_(support), id_tracker_(id_tracker) {
+  support_->SetExternalReservedResourceDelegate(this);
 }
 
 EvictionHandler::~EvictionHandler() {
-  support_->SetReservedResourceDelegate(nullptr);
+  support_->SetExternalReservedResourceDelegate(nullptr);
 }
 
 bool EvictionHandler::WillEvictSurface(const SurfaceId& surface_id) {
@@ -187,7 +188,7 @@ void EvictionHandler::SubmitPlaceholderContentForEviction(
         TransferableResource::ResourceSource::kStaleContent);
 
     // The first ref will come from `ReceiveFromChild`.
-    resource.id = id_tracker_.AllocId(
+    resource.id = id_tracker_->AllocId(
         /*initial_ref_count=*/0);
 
     // When we submit the compositor frame containing this, the resource will
@@ -229,8 +230,8 @@ void EvictionHandler::SubmitPlaceholderContentForEviction(
 void EvictionHandler::ReceiveFromChild(
     const std::vector<TransferableResource>& resources) {
   for (const auto& resource : resources) {
-    if (resource.id >= kVizReservedRangeStartId) {
-      id_tracker_.RefId(resource.id, /*count=*/1);
+    if (copy_output_results_.contains(resource.id)) {
+      id_tracker_->RefId(resource.id, /*count=*/1);
     }
   }
 }
@@ -238,8 +239,8 @@ void EvictionHandler::ReceiveFromChild(
 void EvictionHandler::RefResources(
     const std::vector<TransferableResource>& resources) {
   for (const auto& resource : resources) {
-    if (resource.id >= kVizReservedRangeStartId) {
-      id_tracker_.RefId(resource.id, /*count=*/1);
+    if (copy_output_results_.contains(resource.id)) {
+      id_tracker_->RefId(resource.id, /*count=*/1);
     }
   }
 }
@@ -247,10 +248,10 @@ void EvictionHandler::RefResources(
 void EvictionHandler::UnrefResources(
     const std::vector<ReturnedResource>& resources) {
   for (const auto& resource : resources) {
-    if (resource.id >= kVizReservedRangeStartId) {
+    if (copy_output_results_.contains(resource.id)) {
       // There are no further references, destroy the `CopyOutputRequest`s which
       // will call their release callbacks.
-      if (id_tracker_.UnrefId(resource.id, /*count=*/1)) {
+      if (id_tracker_->UnrefId(resource.id, /*count=*/1)) {
         copy_output_results_.erase(resource.id);
       }
     }

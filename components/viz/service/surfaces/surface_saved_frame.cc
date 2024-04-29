@@ -119,7 +119,12 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
 
   if (copy_request_count_ == 0) {
     InitFrameResult();
-    std::move(directive_finished_callback_).Run(directive_);
+
+    // Dispatch the callback asynchronously from the ctor; otherwise CompositorFrameSinkSupport
+    // tries to access the SurfaceAnimationManager before it's initialized.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(directive_finished_callback_), directive_));
   }
 }
 

@@ -574,7 +574,9 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
       synthetic_begin_frame_source_(std::move(synthetic_begin_frame_source)),
       external_begin_frame_source_(std::move(external_begin_frame_source)),
       display_(std::move(display)),
-      eviction_handler_(display_.get(), support_.get()) {
+      eviction_handler_(display_.get(),
+                        support_.get(),
+                        frame_sink_manager->reserved_resource_id_tracker()) {
   DCHECK(display_);
   DCHECK(begin_frame_source());
   frame_sink_manager->RegisterBeginFrameSource(begin_frame_source(),

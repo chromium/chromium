@@ -2055,13 +2055,15 @@ TEST_F(CompositorFrameSinkSupportTest,
 
   auto test_context_provider = TestContextProvider::CreateRaster();
   TestSharedImageInterface* sii = test_context_provider->SharedImageInterface();
+  ReservedResourceIdTracker id_tracker;
 
   std::unique_ptr<SurfaceAnimationManager> animation_manager =
       SurfaceAnimationManager::CreateWithSave(
           CompositorFrameTransitionDirective::CreateSave(transition_token,
                                                          maybe_cross_frame_sink,
                                                          /*sequence_id=*/1, {}),
-          surface, &shared_bitmap_manager_, sii, base::DoNothing());
+          surface, &shared_bitmap_manager_, sii, &id_tracker,
+          base::DoNothing());
   ASSERT_TRUE(animation_manager);
 
   EXPECT_FALSE(HasAnimationManagerForToken(transition_token));
