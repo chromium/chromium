@@ -2,7 +2,7 @@ instance=$rbe_instance
 service=remotebuildexecution.googleapis.com:443
 log_format=reducedtext
 $auth_flags
-fail_early_min_action_count=4000
+fail_early_min_action_count=400
 fail_early_min_fallback_ratio=0.5
 deps_cache_max_mb=256
 # TODO(b/276727504) Re-enable once noop build shutdown time bug is fixed
