@@ -114,7 +114,12 @@ enum class ReadAnythingSpeechError {
   kLanguageUnavailable = 1,
   kVoiceUnavailabe = 2,
   kInvalidArgument = 3,
-  kMaxValue = kInvalidArgument,
+  kSynthesisFailed = 4,
+  kSynthesisUnvailable = 5,
+  kAudioBusy = 6,
+  kAudioHardware = 7,
+  kNetwork = 8,
+  kMaxValue = kNetwork,
 };
 
 // Enum for logging the user-chosen font.

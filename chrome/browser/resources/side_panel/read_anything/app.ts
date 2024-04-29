@@ -1246,6 +1246,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         return;
       }
 
+      // Log a speech error. We aren't concerned with logging an interrupted
+      // error, since that can be triggered from play / pause.
+      chrome.readingMode.logSpeechError(error.error);
+
       if (error.error === 'text-too-long') {
         // This is unlikely to happen, as the length limit on most voices
         // is quite long. However, if we do hit a limit, we should just use
@@ -1255,7 +1259,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.synth.cancel();
         this.playTextWithBoundaries(
             utteranceText, true, this.getAccessibleTextLength(utteranceText));
-        chrome.readingMode.logSpeechError(error.error);
         return;
       }
       if (error.error === 'invalid-argument') {
@@ -1263,16 +1266,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // is not supported by the synthesizer. Since we're only setting the
         // speech rate, update the speech rate to the WebSpeech default of 1.
         this.updateSpeechRate_(1);
-        chrome.readingMode.logSpeechError(error.error);
       }
 
-      // TODO(b/322542144): Fallback to other languages / locales if the
-      // language or voice is unavailable.
+      // No appropriate voice is available for the language designated in
+      // SpeechSynthesisUtterance lang.
       if (error.error === 'language-unavailable') {
-        // No appropriate voice is available for the language designated in
-        // SpeechSynthesisUtterance lang.
-        chrome.readingMode.logSpeechError(error.error);
-
         const possibleNewLanguage = convertLangToAnAvailableLangIfPresent(
             this.speechSynthesisLanguage, this.availableLangs,
             /* allowCurrentLanguageIfExists */ false);
@@ -1281,11 +1279,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         }
       }
 
+      // The voice designated in SpeechSynthesisUtterance voice attribute
+      // is not available.
       if (error.error === 'voice-unavailable') {
-        // The voice designated in SpeechSynthesisUtterance voice attribute
-        // is not available.
-        chrome.readingMode.logSpeechError(error.error);
-
         let newVoice = this.selectedVoice ? this.selectedVoice : null;
         this.selectedVoice = undefined;
         newVoice = this.getAlternativeVoice(newVoice);

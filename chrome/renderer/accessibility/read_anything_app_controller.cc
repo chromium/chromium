@@ -1618,6 +1618,16 @@ void ReadAnythingAppController::LogSpeechErrorEvent(std::string error_code) {
     error = ReadAnythingSpeechError::kLanguageUnavailable;
   } else if (error_code == "invalid-argument") {
     error = ReadAnythingSpeechError::kInvalidArgument;
+  } else if (error_code == "synthesis-failed") {
+    error = ReadAnythingSpeechError::kSynthesisFailed;
+  } else if (error_code == "synthesis-unavailable") {
+    error = ReadAnythingSpeechError::kSynthesisUnvailable;
+  } else if (error_code == "audio-busy") {
+    error = ReadAnythingSpeechError::kAudioBusy;
+  } else if (error_code == "audio-hardware") {
+    error = ReadAnythingSpeechError::kAudioHardware;
+  } else if (error_code == "network") {
+    error = ReadAnythingSpeechError::kNetwork;
   }
 
   // There are more error code possibilities, but right now, we only care
