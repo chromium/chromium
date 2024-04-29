@@ -89,6 +89,11 @@ void PrintLayerHierarchyImp(const Layer* layer,
     }
   }
 
+  const auto clip_rect = layer->clip_rect();
+  if (!clip_rect.IsEmpty()) {
+    *out << " clip_rect:" << clip_rect.ToString();
+  }
+
   if (!layer->rounded_corner_radii().IsEmpty()) {
     *out << "\n" << property_indent_str;
     *out << "rounded-corners-radii: "
