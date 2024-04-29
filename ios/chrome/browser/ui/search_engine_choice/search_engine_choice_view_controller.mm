@@ -626,11 +626,11 @@ UIButton* CreateMorePillButton() {
   //    is the bottom of the view.
   // Rect of the floating container at the end of the animation.
   CGRect animationEndFrame = _floatingSetAsDefaultButtonContainer.frame;
+  // Computes and sets the origin of the animation based on the inline
+  // container.
+  // Rect of the floating container at the beginning of the animation.
+  CGRect animationStartFrame = animationEndFrame;
   if (_floatingSetAsDefaultButtonContainer.hidden) {
-    // Computes and sets the origin of the animation based on the inline
-    // container.
-    // Rect of the floating container at the beginning of the animation.
-    CGRect animationStartFrame = animationEndFrame;
     // The origin point for the animation should be the origin of the inline
     // container.
     CGPoint animationStartOriginPoint =
@@ -642,7 +642,16 @@ UIButton* CreateMorePillButton() {
       animationStartOriginPoint.y = self.view.frame.size.height;
     }
     animationStartFrame.origin.y = animationStartOriginPoint.y;
-    _floatingSetAsDefaultButtonContainer.frame = animationStartFrame;
+    if (UIAccessibilityPrefersCrossFadeTransitions()) {
+      // `_floatingSetAsDefaultButtonContainer` should not appear with a
+      // transition, but with a fade in.
+      // `animationStartFrame` is unchanged to be able to compute
+      // `heightToScrollUp` value.
+      _floatingSetAsDefaultButtonContainer.hidden = NO;
+      _floatingSetAsDefaultButtonContainer.alpha = 0.;
+    } else {
+      _floatingSetAsDefaultButtonContainer.frame = animationStartFrame;
+    }
     [self makeFloatingSetAsDefaultButtonContainerVisible];
   }
 
@@ -661,8 +670,8 @@ UIButton* CreateMorePillButton() {
   // So the scrollview will move exactly at the same time than the button.
   if (selectedButtonRect.origin.y + selectedButtonRect.size.height >
       animationEndFrame.origin.y) {
-    heightToScrollUp = animationEndFrame.origin.y -
-                       _floatingSetAsDefaultButtonContainer.frame.origin.y;
+    heightToScrollUp =
+        animationEndFrame.origin.y - animationStartFrame.origin.y;
   }
 
   // Animates everything.
@@ -673,8 +682,9 @@ UIButton* CreateMorePillButton() {
       animations:^{
         // 1- Fades in.
         fakeButtonForGreyToBlueFading.alpha = 0;
-        // 2- Moves from the bottom.
+        // 2- Moves from the bottom or fade in.
         floatingSetAsDefaultButtonContainer.frame = animationEndFrame;
+        floatingSetAsDefaultButtonContainer.alpha = 1.;
         // 3- Scrolls up, if needed.
         if (heightToScrollUp) {
           CGPoint contentOffset = scrollView.contentOffset;
