@@ -2388,8 +2388,9 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
 #if BUILDFLAG(ENABLE_PDF)
 // Tests that a main frame hosting pdf does not get skipped because of history
 // manipulation intervention if there was a user gesture.
+// TODO(crbug.com/333829580): Flaky.
 IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
-                       PDFDoNotSkipOnBackForwardDueToUserGesture) {
+                       DISABLED_PDFDoNotSkipOnBackForwardDueToUserGesture) {
   GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
 
@@ -2418,8 +2419,9 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
 
 // Tests that a main frame hosting pdf gets skipped because of history
 // manipulation intervention if there was no user gesture.
+// TODO(crbug.com/333829580): Flaky.
 IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
-                       PDFSkipOnBackForwardNoUserGesture) {
+                       DISABLED_PDFSkipOnBackForwardNoUserGesture) {
   GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
 
