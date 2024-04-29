@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -207,7 +208,13 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
                    ->knowledge_factor_setup.local_password_forced);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, Managed) {
+// crbug.com/337379954: Managed is excessively flaky on linux-chromeos-chrome.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_Managed DISABLED_Managed
+#else
+#define MAYBE_Managed Managed
+#endif
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, MAYBE_Managed) {
   StartLogin();
   ProfileManager::GetPrimaryUserProfile()
       ->GetProfilePolicyConnector()
