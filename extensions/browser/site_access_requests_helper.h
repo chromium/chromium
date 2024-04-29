@@ -42,12 +42,13 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
   void AddRequest(const Extension& extension);
 
   // Removes `extension_id` from the set of extensions with site access
-  // requests.
-  void RemoveRequest(const ExtensionId& extension_id);
+  // requests. Returns whether request was removed.
+  bool RemoveRequest(const ExtensionId& extension_id);
 
   // Removes `extension` from the set of extensions with site access requests
-  // iff extension has granted access to the current site.
-  void RemoveRequestIfGrantedAccess(const Extension& extension);
+  // iff extension has granted access to the current site. Returns whether
+  // request was removed.
+  bool RemoveRequestIfGrantedAccess(const Extension& extension);
 
   // Returns whether `extension_id` has a site access request.
   bool HasRequest(const ExtensionId& extension_id);

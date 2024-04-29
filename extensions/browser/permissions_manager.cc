@@ -804,7 +804,10 @@ void PermissionsManager::RemoveSiteAccessRequest(
     return;
   }
 
-  helper->RemoveRequest(extension_id);
+  bool request_removed = helper->RemoveRequest(extension_id);
+  if (!request_removed) {
+    return;
+  }
 
   if (!helper->HasRequests()) {
     DeleteSiteAccessRequestHelperFor(tab_id);
@@ -842,7 +845,15 @@ void PermissionsManager::NotifyExtensionPermissionsUpdated(
     UpdateReason reason) {
   std::vector<int> tabs_to_remove;
   for (auto& [tab_id, helper] : requests_helpers_) {
-    helper->RemoveRequestIfGrantedAccess(extension);
+    bool request_removed = helper->RemoveRequestIfGrantedAccess(extension);
+    if (!request_removed) {
+      continue;
+    }
+
+    for (auto& observer : observers_) {
+      observer.OnSiteAccessRequestRemoved(extension.id(), tab_id);
+    }
+
     if (!helper->HasRequests()) {
       tabs_to_remove.push_back(tab_id);
     }

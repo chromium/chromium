@@ -38,13 +38,18 @@ void SiteAccessRequestsHelper::AddRequest(const Extension& extension) {
   requesting_extensions_.insert(extension.id());
 }
 
-void SiteAccessRequestsHelper::RemoveRequest(const ExtensionId& extension_id) {
+bool SiteAccessRequestsHelper::RemoveRequest(const ExtensionId& extension_id) {
+  if (!requesting_extensions_.contains(extension_id)) {
+    return false;
+  }
+
   requesting_extensions_.erase(extension_id);
   // TODO(crbug.com/330588494): Remove request from dismissed set, if existent,
   // once dismissed requests are moved to SiteAccessRequestsHelper.
+  return true;
 }
 
-void SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
+bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
     const Extension& extension) {
   // Request is removed iff extension has access to the current site.
   const GURL& url = web_contents_->GetLastCommittedURL();
@@ -52,10 +57,10 @@ void SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
       permissions_manager_->GetSiteAccess(extension, url);
   if (!site_access.has_site_access && !site_access.has_all_sites_access &&
       !permissions_manager_->HasActiveTabAndCanAccess(extension, url)) {
-    return;
+    return false;
   }
 
-  RemoveRequest(extension.id());
+  return RemoveRequest(extension.id());
 }
 
 bool SiteAccessRequestsHelper::HasRequest(const ExtensionId& extension_id) {

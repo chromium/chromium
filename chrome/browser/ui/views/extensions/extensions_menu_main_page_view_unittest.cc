@@ -1468,6 +1468,45 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_FALSE(requests_access_container->GetVisible());
 }
 
+// Tests that an extension's requests access container removes an extension's
+// request when the extension is granted site access.
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       MessageSection_UserCustomizedAccess_ExtensionGrantedSiteAccess) {
+  // Install two extension that requests host permissions.
+  auto extension_A = InstallExtensionWithHostPermissions(
+      "Extension A", {"*://www.example.com/*"});
+  auto extension_B =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  WithholdHostPermissions(extension_A.get());
+  WithholdHostPermissions(extension_B.get());
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ShowMenu();
+  views::View* requests_access_container =
+      main_page()->GetRequestsAccessContainerForTesting();
+
+  // Add site access requests for both extensions and verify they are both
+  // visible on the request access container.
+  AddSiteAccessRequest(*extension_A, web_contents);
+  AddSiteAccessRequest(*extension_B, web_contents);
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_A->id(), extension_B->id()));
+
+  // Grant site access to extension B and verify request access container only
+  // has extension A, since extension's B request was removed once the extension
+  // gained access to the site.
+  UpdateUserSiteAccess(*extension_B, web_contents,
+                       PermissionsManager::UserSiteAccess::kOnSite);
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_A->id()));
+}
+
 TEST_F(ExtensionsMenuMainPageViewUnitTest,
        MessageSection_UserCustomizedAccess_AllowExtension) {
   auto extension =

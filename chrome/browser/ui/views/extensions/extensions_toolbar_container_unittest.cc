@@ -651,9 +651,40 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
-// TODO(crbug.com/330588494): Add a test that verifies requests are removed when
-// site access is granted once we update request access button after an action
-// update.
+// Tests that an extension's site access request is removed when the extension
+// is granted site access.
+TEST_F(ExtensionsToolbarContainerUnitTest,
+       RequestAccessButton_ExtensionGrantedSiteAccess) {
+  auto extension_A = InstallExtensionWithHostPermissions(
+      "Extension A", {"*://www.example.com/*"});
+  auto extension_B =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  WithholdHostPermissions(extension_A.get());
+  WithholdHostPermissions(extension_B.get());
+
+  // Navigate to a site and verify request access button is not visible, since
+  // no extension has added a request.
+  NavigateAndCommit(GURL("http://www.example.com"));
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add site access requests for both extensions and verify they are visible
+  // on the request access button.
+  AddSiteAccessRequest(*extension_A, web_contents);
+  AddSiteAccessRequest(*extension_B, web_contents);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_A->id(), extension_B->id()));
+
+  // Grant site access to extension B and verify request access button only has
+  // extension A, since extension B's request was removed once the extension
+  // gained access to the site.
+  UpdateUserSiteAccess(*extension_B, web_contents,
+                       PermissionsManager::UserSiteAccess::kOnSite);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_A->id()));
+}
 
 // Tests that requests are reset on cross-origin navigations.
 TEST_F(ExtensionsToolbarContainerUnitTest,
