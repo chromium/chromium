@@ -178,6 +178,8 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldMergeFullSyncData) {
   EXPECT_THAT(
       GetBridgeSpecifics(),
       UnorderedElementsAre(EqualsProto(specifics1), EqualsProto(specifics2)));
+  EXPECT_THAT(bridge().GetCollaborationGroupIds(),
+              UnorderedElementsAre("id1", "id2"));
 }
 
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyIncrementalSyncChanges) {
@@ -219,6 +221,8 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyIncrementalSyncChanges) {
   EXPECT_THAT(
       GetBridgeSpecifics(),
       UnorderedElementsAre(EqualsProto(specifics2), EqualsProto(specifics3)));
+  EXPECT_THAT(bridge().GetCollaborationGroupIds(),
+              UnorderedElementsAre("id2", "id3"));
 }
 
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadMetadata) {
@@ -271,6 +275,8 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadData) {
   EXPECT_THAT(
       GetBridgeSpecifics(),
       UnorderedElementsAre(EqualsProto(specifics1), EqualsProto(specifics2)));
+  EXPECT_THAT(bridge().GetCollaborationGroupIds(),
+              UnorderedElementsAre("id1", "id2"));
 }
 
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {

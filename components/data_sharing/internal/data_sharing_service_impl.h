@@ -77,9 +77,15 @@ class DataSharingServiceImpl : public DataSharingService {
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
 
+  CollaborationGroupSyncBridge* GetCollaborationGroupSyncBridgeForTesting();
+
  private:
   void OnReadSingleGroupCompleted(
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
+      const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
+          result);
+  void OnReadAllGroupsCompleted(
+      base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback,
       const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
           result);
   void OnCreateGroupCompleted(

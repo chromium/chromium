@@ -17,6 +17,10 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/model/entity_change.h"
+#include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/collaboration_group_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -31,6 +35,29 @@ namespace {
 
 using base::test::RunClosure;
 using testing::Eq;
+
+sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
+    const std::string& id) {
+  sync_pb::CollaborationGroupSpecifics result;
+  result.set_collaboration_id(id);
+  result.set_last_updated_timestamp_millis_since_unix_epoch(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+  return result;
+}
+
+syncer::EntityData EntityDataFromSpecifics(
+    const sync_pb::CollaborationGroupSpecifics& specifics) {
+  syncer::EntityData entity_data;
+  *entity_data.specifics.mutable_collaboration_group() = specifics;
+  entity_data.name = specifics.collaboration_id();
+  return entity_data;
+}
+
+std::unique_ptr<syncer::EntityChange> EntityChangeAddFromSpecifics(
+    const sync_pb::CollaborationGroupSpecifics& specifics) {
+  return syncer::EntityChange::CreateAdd(specifics.collaboration_id(),
+                                         EntityDataFromSpecifics(specifics));
+}
 
 class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
  public:
@@ -301,6 +328,59 @@ TEST_F(DataSharingServiceImplTest, ShouldReadGroup) {
   ASSERT_TRUE(outcome.has_value());
   EXPECT_THAT(outcome->display_name, Eq(display_name));
   EXPECT_THAT(outcome->group_id, Eq(group_id));
+}
+
+TEST_F(DataSharingServiceImplTest, ShouldReadAllGroups) {
+  // TODO(crbug.com/301390275): add a version of this test for unhappy path.
+  // Delegate stores 2 groups.
+  const std::string display_name1 = "group1";
+  const std::string group_id1 =
+      not_owned_sdk_delegate_->AddGroupAndReturnId(display_name1);
+  const std::string display_name2 = "group2";
+  const std::string group_id2 =
+      not_owned_sdk_delegate_->AddGroupAndReturnId(display_name2);
+
+  // Mimics initial sync for collaboration group datatype with the same two
+  // groups.
+  // TODO(crbug.com/301390275): consider faking CollaborationGroupSyncBridge
+  // instead.
+  std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
+      data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting()
+          ->CreateMetadataChangeList();
+  sync_pb::ModelTypeState model_type_state;
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
+  metadata_changes->UpdateModelTypeState(model_type_state);
+
+  syncer::EntityChangeList entity_changes;
+  entity_changes.push_back(
+      EntityChangeAddFromSpecifics(MakeCollaborationGroupSpecifics(group_id1)));
+  entity_changes.push_back(
+      EntityChangeAddFromSpecifics(MakeCollaborationGroupSpecifics(group_id2)));
+
+  data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting()
+      ->MergeFullSyncData(std::move(metadata_changes),
+                          std::move(entity_changes));
+
+  // Verify that DataSharingService reads the same groups.
+  DataSharingService::GroupsDataSetOrFailureOutcome outcome;
+  base::RunLoop run_loop;
+  data_sharing_service_->ReadAllGroups(base::BindLambdaForTesting(
+      [&run_loop, &outcome](
+          const DataSharingService::GroupsDataSetOrFailureOutcome& result) {
+        outcome = result;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  ASSERT_TRUE(outcome.has_value());
+  EXPECT_THAT(outcome->size(), Eq(2));
+  const GroupData& group1 = *outcome->begin();
+  const GroupData& group2 = *(++outcome->begin());
+  EXPECT_THAT(group1.display_name, Eq(display_name1));
+  EXPECT_THAT(group1.group_id, Eq(group_id1));
+  EXPECT_THAT(group2.display_name, Eq(display_name2));
+  EXPECT_THAT(group2.group_id, Eq(group_id2));
 }
 
 TEST_F(DataSharingServiceImplTest, ShouldInviteMember) {

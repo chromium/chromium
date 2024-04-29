@@ -55,6 +55,10 @@ class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
                                    delete_metadata_change_list) override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
+  // Own methods.
+  // Returns ids of all synced (not deleted) collaboration groups.
+  std::vector<std::string> GetCollaborationGroupIds() const;
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

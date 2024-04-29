@@ -15,6 +15,7 @@
 #include "components/data_sharing/internal/group_data_proto_utils.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -113,7 +114,34 @@ DataSharingServiceImpl::GetCollaborationGroupControllerDelegate() {
 
 void DataSharingServiceImpl::ReadAllGroups(
     base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/301390275): this method should read data from the cache
+  // instead of SDK.
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            base::unexpected(PeopleGroupActionFailure::kPersistentFailure)));
+    return;
+  }
+
+  data_sharing_pb::ReadGroupsParams params;
+  for (const std::string& group_id :
+       collaboration_group_sync_bridge_->GetCollaborationGroupIds()) {
+    params.add_group_ids(group_id);
+  }
+
+  if (params.group_ids().empty()) {
+    // No groups to read.
+    std::move(callback).Run(std::set<GroupData>());
+    return;
+  }
+
+  sdk_delegate_->ReadGroups(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnReadAllGroupsCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DataSharingServiceImpl::ReadGroup(
@@ -245,6 +273,24 @@ void DataSharingServiceImpl::OnReadSingleGroupCompleted(
       base::unexpected(StatusToPeopleGroupActionFailure(result.error())));
 }
 
+void DataSharingServiceImpl::OnReadAllGroupsCompleted(
+    base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback,
+    const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
+        result) {
+  if (result.has_value()) {
+    std::set<GroupData> groups;
+    for (const data_sharing_pb::GroupData& group_data :
+         result.value().group_data()) {
+      groups.insert(GroupDataFromProto(group_data));
+    }
+    std::move(callback).Run(groups);
+    return;
+  }
+
+  std::move(callback).Run(
+      base::unexpected(StatusToPeopleGroupActionFailure(result.error())));
+}
+
 void DataSharingServiceImpl::OnCreateGroupCompleted(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::CreateGroupResult, absl::Status>&
@@ -300,6 +346,11 @@ void DataSharingServiceImpl::OnSimpleGroupActionCompleted(
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
     const absl::Status& status) {
   std::move(callback).Run(StatusToPeopleGroupActionOutcome(status));
+}
+
+CollaborationGroupSyncBridge*
+DataSharingServiceImpl::GetCollaborationGroupSyncBridgeForTesting() {
+  return collaboration_group_sync_bridge_.get();
 }
 
 }  // namespace data_sharing

@@ -229,4 +229,14 @@ void CollaborationGroupSyncBridge::OnModelTypeStoreCommit(
   }
 }
 
+std::vector<std::string>
+CollaborationGroupSyncBridge::GetCollaborationGroupIds() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::string> ids;
+  for (const auto& [id, _] : ids_to_specifics_) {
+    ids.push_back(id);
+  }
+  return ids;
+}
+
 }  // namespace data_sharing
