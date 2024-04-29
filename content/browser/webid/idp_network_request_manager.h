@@ -188,12 +188,16 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class FedCmTokenResponseType {
-    kTokenReceivedAndErrorNotReceived = 0,
-    kTokenReceivedAndErrorReceived = 1,
-    kTokenNotReceivedAndErrorNotReceived = 2,
-    kTokenNotReceivedAndErrorReceived = 3,
+    kTokenReceivedAndErrorNotReceivedAndContinueOnNotReceived = 0,
+    kTokenReceivedAndErrorReceivedAndContinueOnNotReceived = 1,
+    kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived = 2,
+    kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived = 3,
+    kTokenReceivedAndErrorNotReceivedAndContinueOnReceived = 4,
+    kTokenReceivedAndErrorReceivedAndContinueOnReceived = 5,
+    kTokenNotReceivedAndErrorNotReceivedAndContinueOnReceived = 6,
+    kTokenNotReceivedAndErrorReceivedAndContinueOnReceived = 7,
 
-    kMaxValue = kTokenNotReceivedAndErrorReceived
+    kMaxValue = kTokenNotReceivedAndErrorReceivedAndContinueOnReceived
   };
 
   // This enum describes the type of error URL compared to the IDP's config URL.

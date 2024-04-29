@@ -219,6 +219,19 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     return {parsed_accounts_response, parsed_accounts};
   }
 
+  IdpNetworkRequestManager::RecordErrorMetricsCallback
+  CreateErrorMetricsCallback(base::RunLoop& run_loop) {
+    return base::BindLambdaForTesting(
+        [&](TokenResponseType token_response_type,
+            std::optional<ErrorDialogType> error_dialog_type,
+            std::optional<ErrorUrlType> error_url_type) {
+          token_response_type_ = token_response_type;
+          error_dialog_type_ = error_dialog_type;
+          error_url_type_ = error_url_type;
+          run_loop.Quit();
+        });
+  }
+
   std::tuple<FetchStatus, TokenResult> SendTokenRequestAndWaitForResponse(
       const char* account,
       const char* request,
@@ -237,20 +250,11 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
           token_result = result;
           run_loop.Quit();
         });
-    auto record_error_metrics_callback = base::BindLambdaForTesting(
-        [&](TokenResponseType token_response_type,
-            std::optional<ErrorDialogType> error_dialog_type,
-            std::optional<ErrorUrlType> error_url_type) {
-          token_response_type_ = token_response_type;
-          error_dialog_type_ = error_dialog_type;
-          error_url_type_ = error_url_type;
-          run_loop.Quit();
-        });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
     manager->SendTokenRequest(token_endpoint, account, request,
                               std::move(callback), base::DoNothing(),
-                              std::move(record_error_metrics_callback));
+                              CreateErrorMetricsCallback(run_loop));
     run_loop.Run();
     return {fetch_status, token_result};
   }
@@ -1456,8 +1460,80 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request",
                             std::move(callback), std::move(on_continue),
-                            base::DoNothing());
+                            CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorNotReceivedAndContinueOnReceived,
+            token_response_type());
+}
+
+//+    kTokenReceivedAndErrorReceivedAndContinueOnReceived = 5,
+
+TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] = R"({"continue_on": "/", "token": "a_token"})";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            base::DoNothing(), base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+  EXPECT_EQ(
+      TokenResponseType::kTokenReceivedAndErrorNotReceivedAndContinueOnReceived,
+      token_response_type());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithErrorAndToken) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({"continue_on": "/", "token": "a_token", "error": {"code": "foo"}})";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            base::DoNothing(), base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+  EXPECT_EQ(
+      TokenResponseType::kTokenReceivedAndErrorReceivedAndContinueOnReceived,
+      token_response_type());
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] = R"({"continue_on": "/", "error": {"code": "foo"}})";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            base::DoNothing(), base::DoNothing(),
+                            CreateErrorMetricsCallback(run_loop));
+  run_loop.Run();
+  EXPECT_EQ(
+      TokenResponseType::kTokenNotReceivedAndErrorReceivedAndContinueOnReceived,
+      token_response_type());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
@@ -1504,7 +1580,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithProperField) {
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("invalid_request", token_result.error->code);
   EXPECT_EQ("https://idp.test/error", token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kInvalidRequestWithUrl, *error_dialog_type());
@@ -1526,7 +1603,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithRelativePath) {
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("invalid_request", token_result.error->code);
   EXPECT_EQ("https://idp.test/error", token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kInvalidRequestWithUrl, *error_dialog_type());
@@ -1548,7 +1626,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithCrossSiteUrl) {
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("invalid_request", token_result.error->code);
   EXPECT_EQ(GURL(), token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kInvalidRequestWithoutUrl, *error_dialog_type());
@@ -1571,7 +1650,8 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("invalid_request", token_result.error->code);
   EXPECT_EQ("https://cross-origin.idp.test/error", token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kInvalidRequestWithUrl, *error_dialog_type());
@@ -1594,7 +1674,8 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("invalid_request", token_result.error->code);
   EXPECT_EQ(GURL(), token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kInvalidRequestWithoutUrl, *error_dialog_type());
@@ -1616,7 +1697,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("invalid_request", token_result.error->code);
   EXPECT_EQ(GURL(), token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kInvalidRequestWithoutUrl, *error_dialog_type());
@@ -1632,7 +1714,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse200NonParsable) {
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("", token_result.error->code);
   EXPECT_EQ(GURL(), token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kGenericEmptyWithoutUrl, *error_dialog_type());
@@ -1649,7 +1732,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse500NonParsable) {
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("server_error", token_result.error->code);
   EXPECT_EQ(GURL(), token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kServerErrorWithoutUrl, *error_dialog_type());
@@ -1666,7 +1750,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse503NonParsable) {
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("temporarily_unavailable", token_result.error->code);
   EXPECT_EQ(GURL(), token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kTemporarilyUnavailableWithoutUrl,
@@ -1689,7 +1774,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithErrorAndHttpError) {
   EXPECT_TRUE(token_result.error);
   EXPECT_EQ("temporarily_unavailable", token_result.error->code);
   EXPECT_EQ("https://idp.test/error", token_result.error->url);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kTemporarilyUnavailableWithUrl,
@@ -1711,7 +1797,8 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
   EXPECT_EQ("", token_result.error->url);
   EXPECT_EQ(net::HTTP_FORBIDDEN, fetch_status.response_code);
   EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
-  EXPECT_EQ(TokenResponseType::kTokenNotReceivedAndErrorNotReceived,
+  EXPECT_EQ(TokenResponseType::
+                kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived,
             token_response_type());
   EXPECT_TRUE(error_dialog_type());
   EXPECT_EQ(ErrorDialogType::kGenericEmptyWithoutUrl, *error_dialog_type());

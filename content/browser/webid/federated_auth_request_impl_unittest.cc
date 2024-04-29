@@ -340,8 +340,8 @@ struct MockConfiguration {
   std::optional<GURL> continue_on;
   MediationRequirement mediation_requirement = MediationRequirement::kOptional;
   std::optional<TokenError> token_error;
-  TokenResponseType token_response_type =
-      TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
+  TokenResponseType token_response_type = TokenResponseType::
+      kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived;
   std::optional<ErrorDialogType> error_dialog_type;
   std::optional<ErrorUrlType> error_url_type;
   blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
@@ -4857,7 +4857,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithError) {
   ErrorDialogType error_dialog_type =
       ErrorDialogType::kGenericNonEmptyWithoutUrl;
   TokenResponseType token_response_type =
-      TokenResponseType::kTokenReceivedAndErrorReceived;
+      TokenResponseType::kTokenReceivedAndErrorReceivedAndContinueOnNotReceived;
   configuration.token_response.parse_status =
       ParseStatus::kInvalidResponseError;
   configuration.error_dialog_type = error_dialog_type;
@@ -6285,8 +6285,8 @@ TEST_F(FederatedAuthRequestImplTest, RecordNumRequestsPerDocumentMetric) {
 TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithoutUrl;
-  TokenResponseType token_response_type =
-      TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
+  TokenResponseType token_response_type = TokenResponseType::
+      kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived;
   configuration.token_response.parse_status =
       ParseStatus::kInvalidResponseError;
   configuration.error_dialog_type = error_dialog_type;
@@ -6322,8 +6322,8 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
 TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithoutUrl;
-  TokenResponseType token_response_type =
-      TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
+  TokenResponseType token_response_type = TokenResponseType::
+      kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived;
   configuration.token_response.parse_status = ParseStatus::kNoResponseError;
   configuration.error_dialog_type = error_dialog_type;
   configuration.token_response_type = token_response_type;
@@ -6358,8 +6358,8 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
 TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithUrl;
-  TokenResponseType token_response_type =
-      TokenResponseType::kTokenNotReceivedAndErrorNotReceived;
+  TokenResponseType token_response_type = TokenResponseType::
+      kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived;
   ErrorUrlType error_url_type = ErrorUrlType::kCrossOriginSameSite;
   configuration.token_error =
       TokenError(/*code=*/"", GURL("https://foo.idp.example/error"));
@@ -6624,8 +6624,8 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogResultMetrics) {
 // Test that token response type metrics are recorded.
 TEST_F(FederatedAuthRequestImplTest, TokenResponseTypeMetrics) {
   MockConfiguration configuration = kConfigurationValid;
-  TokenResponseType token_response_type =
-      TokenResponseType::kTokenNotReceivedAndErrorReceived;
+  TokenResponseType token_response_type = TokenResponseType::
+      kTokenNotReceivedAndErrorReceivedAndContinueOnNotReceived;
   configuration.token_error = TokenError(/*code=*/"invalid_request",
                                          GURL("https://foo.idp.example/error"));
   configuration.token_response_type = token_response_type;

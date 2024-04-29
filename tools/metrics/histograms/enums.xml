@@ -11837,10 +11837,26 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FedCmTokenResponseType">
-  <int value="0" label="Token received and no error received"/>
-  <int value="1" label="Token received and error received"/>
-  <int value="2" label="Token not received and error not received"/>
-  <int value="3" label="Token not received and error received"/>
+  <int value="0"
+      label="Token received and error not received and continue_on not
+             received"/>
+  <int value="1"
+      label="Token received and error received and continue_on not received"/>
+  <int value="2"
+      label="Token not received and error not received and continue_on not
+             received"/>
+  <int value="3"
+      label="Token not received and error received and continue_on not
+             received"/>
+  <int value="4"
+      label="Token received and error not received and continue_on received"/>
+  <int value="5"
+      label="Token received and error received and continue_on received"/>
+  <int value="6"
+      label="Token not received and error not received and continue_on
+             received"/>
+  <int value="7"
+      label="Token not received and error received and continue_on received"/>
 </enum>
 
 <enum name="FeedbackAppContactUserConsentType">
