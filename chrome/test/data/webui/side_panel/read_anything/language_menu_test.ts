@@ -58,6 +58,11 @@ suite('LanguageMenuElement', () => {
         '.search-field')!;
   };
 
+  const getNoResultsFoundMessage = () => {
+    return languageMenu.$.languageMenu.querySelector<HTMLElement>(
+        '#noResultsMessage');
+  };
+
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     languageMenu = document.createElement('language-menu');
@@ -100,6 +105,7 @@ suite('LanguageMenuElement', () => {
         assertLanguageLineWithTextAndSwitch(
             getLanguageLineItems()[1]!, 'en-UK');
         assertEquals(getLanguageSearchField().value, '');
+        assertEquals(getNoResultsFoundMessage()!.hidden, true);
       });
     });
 
@@ -127,6 +133,7 @@ suite('LanguageMenuElement', () => {
           await getLanguageSearchField().updateComplete;
           assertTrue(isPositionedOnPage(languageMenu));
           assertEquals(getLanguageLineItems().length, 0);
+          assertEquals(getNoResultsFoundMessage()!.hidden, false);
         });
 
         test('it displays matching language with a match', async () => {
@@ -135,6 +142,7 @@ suite('LanguageMenuElement', () => {
           assertEquals(getLanguageLineItems().length, 1);
           assertLanguageLineWithTextAndSwitch(
               getLanguageLineItems()[0]!, 'English (United States)');
+          assertEquals(getNoResultsFoundMessage()!.hidden, true);
         });
       });
     });

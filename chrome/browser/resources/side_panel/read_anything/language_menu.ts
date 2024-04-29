@@ -58,6 +58,13 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       languageSearchValue_: String,
       localeToDisplayName: Object,
       voicePackInstallStatus: {type: Object, notify: true},
+      availableLanguages_: {
+        type: Array,
+        computed:
+            'computeAvailableLanguages_(availableVoices,localeToDisplayName,' +
+            ' languageSearchValue_, enabledLanguagesInPref,' +
+            ' voicePackInstallStatus)',
+      },
     };
   }
 
@@ -202,6 +209,15 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
 
   showDialog() {
     this.$.languageMenu.showModal();
+  }
+
+  private searchHasLanguages(
+      availableLanguages: LanguageDropdownItem[],
+      languageSearchValue: string): boolean {
+    // We should only show the "No results" string when there are no available
+    // languages and there is a valid search term.
+    return (availableLanguages.length > 0) || (!languageSearchValue) ||
+        (languageSearchValue.trim().length === 0);
   }
 }
 

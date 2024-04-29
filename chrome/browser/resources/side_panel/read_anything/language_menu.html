@@ -100,10 +100,11 @@
     </cr-input>
   </div>
   <div slot="body" class="language-menu-body">
+    <span id="noResultsMessage"
+    hidden$="[[searchHasLanguages(availableLanguages_, languageSearchValue_)]]">
+    $i18n{languageMenuNoResults}</span>
     <template is="dom-repeat" initial-count="30"
-        items="[[computeAvailableLanguages_(availableVoices,
-          localeToDisplayName, languageSearchValue_,
-          enabledLanguagesInPref, voicePackInstallStatus)]]">
+        items="[[availableLanguages_]]">
         <div class="language-line dropdown-line">
           <span id="language-name" class="language-name">
             [[item.language]]
