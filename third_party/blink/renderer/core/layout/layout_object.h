@@ -1290,7 +1290,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // possible for all layoutObjects to inherit from LayoutSVGObject ->
   // LayoutObject (some need LayoutBlock inheritance for instance)
   virtual void SetNeedsTransformUpdate() { NOT_DESTROYED(); }
-  virtual void SetNeedsBoundariesUpdate();
+  virtual void SetNeedsBoundariesUpdate() { NOT_DESTROYED(); }
 
   // Per the spec, mix-blend-mode applies to all non-SVG elements, and SVG
   // elements that are container elements, graphics elements or graphics

@@ -37,7 +37,6 @@ namespace blink {
 
 LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
     : LayoutSVGModelObject(node),
-      needs_boundaries_update_(true),
       needs_transform_update_(true),
       transform_uses_reference_box_(false),
       has_non_isolated_blending_descendants_(false),
@@ -71,8 +70,6 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
 
   const SVGLayoutResult content_result = content_.Layout(child_layout_info);
 
-  needs_boundaries_update_ = false;
-
   SVGLayoutResult result;
   if (content_result.bounds_changed) {
     result.bounds_changed = true;
@@ -86,7 +83,6 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
     DeprecatedInvalidateIntersectionObserverCachedRects();
   }
 
-  DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
   return result;

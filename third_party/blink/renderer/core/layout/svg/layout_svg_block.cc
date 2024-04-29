@@ -145,7 +145,6 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
       TransformHelper::UpdateReferenceBoxDependency(*this);
 
   if (diff.NeedsFullLayout()) {
-    SetNeedsBoundariesUpdate();
     if (diff.TransformChanged())
       SetNeedsTransformUpdate();
   }

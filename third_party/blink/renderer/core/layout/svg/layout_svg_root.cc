@@ -54,7 +54,7 @@ namespace blink {
 
 LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
     : LayoutReplaced(node),
-      needs_boundaries_or_transform_update_(true),
+      needs_transform_update_(true),
       has_non_isolated_blending_descendants_(false),
       has_non_isolated_blending_descendants_dirty_(false) {}
 
@@ -199,7 +199,7 @@ void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
   if (content_result.bounds_changed) {
     SetNeedsPaintPropertyUpdate();
   }
-  needs_boundaries_or_transform_update_ = false;
+  needs_transform_update_ = false;
 
   // The scale of one or more of the SVG elements may have changed, content
   // (the entire SVG) could have moved or new content may have been exposed, so
@@ -290,10 +290,6 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutReplaced::StyleDidChange(diff, old_style);
-
-  if (diff.NeedsFullLayout()) {
-    SetNeedsBoundariesUpdate();
-  }
 
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();

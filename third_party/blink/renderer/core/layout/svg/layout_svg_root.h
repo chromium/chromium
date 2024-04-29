@@ -68,13 +68,9 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     return content_.Children().LastChild();
   }
 
-  void SetNeedsBoundariesUpdate() override {
-    NOT_DESTROYED();
-    needs_boundaries_or_transform_update_ = true;
-  }
   void SetNeedsTransformUpdate() override {
     NOT_DESTROYED();
-    needs_boundaries_or_transform_update_ = true;
+    needs_transform_update_ = true;
   }
 
   void SetContainerSize(const PhysicalSize& container_size) {
@@ -205,7 +201,7 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   // laid out.
   const PhysicalSize* new_content_size_ = nullptr;
 
-  bool needs_boundaries_or_transform_update_ : 1;
+  bool needs_transform_update_ : 1;
   mutable bool has_non_isolated_blending_descendants_ : 1;
   mutable bool has_non_isolated_blending_descendants_dirty_ : 1;
 };

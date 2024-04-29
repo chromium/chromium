@@ -185,7 +185,6 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
     if (style.HasMask() || style.HasClipPath()) {
       SetNeedsPaintPropertyUpdate();
     }
-    SetNeedsBoundariesUpdate();
   }
 
   SVGResources::UpdateEffects(*this, diff, old_style);

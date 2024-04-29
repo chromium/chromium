@@ -38,7 +38,6 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   ~LayoutSVGImage() override;
   void Trace(Visitor*) const override;
 
-  void SetNeedsBoundariesUpdate() override { NOT_DESTROYED(); }
   void SetNeedsTransformUpdate() override {
     NOT_DESTROYED();
     needs_transform_update_ = true;

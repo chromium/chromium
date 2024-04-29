@@ -56,10 +56,6 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
 
   void Paint(const PaintInfo&) const override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  void SetNeedsBoundariesUpdate() final {
-    NOT_DESTROYED();
-    needs_boundaries_update_ = true;
-  }
   void SetNeedsTransformUpdate() override;
   bool IsObjectBoundingBoxValid() const {
     NOT_DESTROYED();
@@ -139,7 +135,6 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
 
  private:
   SVGContentContainer content_;
-  bool needs_boundaries_update_ : 1;
   bool needs_transform_update_ : 1;
   bool transform_uses_reference_box_ : 1;
   mutable bool has_non_isolated_blending_descendants_ : 1;

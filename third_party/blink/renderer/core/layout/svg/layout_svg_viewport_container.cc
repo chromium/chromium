@@ -54,7 +54,6 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
                       svg->width()->CurrentValue()->Value(length_context),
                       svg->height()->CurrentValue()->Value(length_context));
     if (old_viewport != viewport_) {
-      SetNeedsBoundariesUpdate();
       // The transform depends on viewport values.
       SetNeedsTransformUpdate();
     }

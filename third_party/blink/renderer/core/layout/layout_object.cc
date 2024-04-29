@@ -3899,11 +3899,6 @@ void LayoutObject::WillBeRemovedFromTree() {
 
   RemoveFromLayoutFlowThread();
 
-  // Update cached boundaries in SVG layoutObjects if a child is removed.
-  if (Parent()->IsSVG()) {
-    Parent()->SetNeedsBoundariesUpdate();
-  }
-
   if (bitfields_.IsScrollAnchorObject()) {
     // Clear the bit first so that anchor.clear() doesn't recurse into
     // findReferencingScrollAnchors.
@@ -4547,14 +4542,6 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
 SVGLayoutResult LayoutObject::UpdateSVGLayout(const SVGLayoutInfo&) {
   NOT_DESTROYED();
   NOTREACHED_NORETURN();
-}
-
-void LayoutObject::SetNeedsBoundariesUpdate() {
-  NOT_DESTROYED();
-  DCHECK(!GetDocument().InvalidationDisallowed());
-  DeprecatedInvalidateIntersectionObserverCachedRects();
-  if (LayoutObject* layout_object = Parent())
-    layout_object->SetNeedsBoundariesUpdate();
 }
 
 gfx::RectF LayoutObject::ObjectBoundingBox() const {
