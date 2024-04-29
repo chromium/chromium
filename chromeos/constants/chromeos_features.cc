@@ -34,6 +34,9 @@ BASE_FEATURE(kAppInstallServiceUri,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Adds Managed APN Policies support.
+BASE_FEATURE(kApnPolicies, "ApnPolicies", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables more filtering out of phones from the Bluetooth UI.
 BASE_FEATURE(kBluetoothPhoneFilter,
              "BluetoothPhoneFilter",
@@ -289,6 +292,10 @@ BASE_FEATURE(kFileSystemProviderContentCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kRoundedWindowsRadius[] = "window_radius";
+
+bool IsApnPoliciesEnabled() {
+  return base::FeatureList::IsEnabled(kApnPolicies);
+}
 
 bool IsAppInstallServiceUriEnabled() {
   if (g_app_install_service_uri_enabled_for_testing) {

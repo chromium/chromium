@@ -3150,7 +3150,7 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
   // If there is no key (in the case of non-managed devices), the default
   // mojom::GlobalPolicy() boolean value(s) specified explicitly in
   // cros_network_config.mojom is used instead.
-  if (features::IsApnPoliciesEnabled()) {
+  if (features::IsApnRevampAndPoliciesEnabled()) {
     result->allow_apn_modification = GetBoolean(
         global_policy_dict, ::onc::global_network_config::kAllowAPNModification,
         /*value_if_key_missing_from_dict=*/result->allow_apn_modification);
@@ -3565,7 +3565,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
     return;
   }
 
-  if (features::IsApnPoliciesEnabled() &&
+  if (features::IsApnRevampAndPoliciesEnabled() &&
       !network_configuration_handler_->AllowApnModification()) {
     NET_LOG(ERROR)
         << "Cannot create custom APN if AllowAPNModification is false.";
@@ -3683,7 +3683,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
     return;
   }
 
-  if (features::IsApnPoliciesEnabled() &&
+  if (features::IsApnRevampAndPoliciesEnabled() &&
       !network_configuration_handler_->AllowApnModification()) {
     NET_LOG(ERROR)
         << "Cannot remove custom APN if AllowAPNModification is false.";
@@ -3772,7 +3772,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
     return;
   }
 
-  if (features::IsApnPoliciesEnabled() &&
+  if (features::IsApnRevampAndPoliciesEnabled() &&
       !network_configuration_handler_->AllowApnModification()) {
     NET_LOG(ERROR)
         << "Cannot modify custom APN if AllowAPNModification is false.";

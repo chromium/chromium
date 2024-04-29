@@ -550,7 +550,7 @@ void LocalTranslator::TranslateApn() {
       onc_object_->FindList(::onc::cellular_apn::kApnTypes);
   DCHECK(apn_types) << "APN must have APN types";
 
-  if (ash::features::IsApnPoliciesEnabled()) {
+  if (ash::features::IsApnRevampAndPoliciesEnabled()) {
     const std::string* apn_source =
         onc_object_->FindString(::onc::cellular_apn::kSource);
     if (apn_source) {

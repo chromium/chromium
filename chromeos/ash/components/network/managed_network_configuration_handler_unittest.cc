@@ -51,6 +51,7 @@
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
@@ -2128,7 +2129,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowApnModification) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(/*enabled_features=*/
                                        {features::kApnRevamp,
-                                        features::kApnPolicies},
+                                        chromeos::features::kApnPolicies},
                                        /*disabled_features=*/{});
 
   // TODO(b/333100319): When feature is fully enabled, test

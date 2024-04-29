@@ -4068,7 +4068,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kAltClickAndSixPackCustomization)},
     {"apn-policies", flag_descriptions::kApnPoliciesName,
      flag_descriptions::kApnPoliciesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kApnPolicies)},
+     FEATURE_VALUE_TYPE(chromeos::features::kApnPolicies)},
     {"apn-revamp", flag_descriptions::kApnRevampName,
      flag_descriptions::kApnRevampDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kApnRevamp)},

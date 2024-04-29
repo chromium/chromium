@@ -86,11 +86,11 @@ class ApnListItem extends ApnListItemBase {
         computed: 'computeIsDisabled_(apn)',
       },
 
-      isApnPoliciesEnabled_: {
+      isApnRevampAndPoliciesEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.valueExists('isApnPoliciesEnabled') &&
-              loadTimeData.getBoolean('isApnPoliciesEnabled');
+          return loadTimeData.valueExists('isApnRevampAndPoliciesEnabled') &&
+              loadTimeData.getBoolean('isApnRevampAndPoliciesEnabled');
         },
       },
     };
@@ -176,7 +176,7 @@ class ApnListItem extends ApnListItemBase {
     if (!this.apn.id) {
       return ApnDetailDialogMode.VIEW;
     }
-    if (this.isApnPoliciesEnabled_) {
+    if (this.isApnRevampAndPoliciesEnabled_) {
       if (this.shouldDisallowApnModification) {
         return ApnDetailDialogMode.VIEW;
       }

@@ -350,11 +350,11 @@ export class SettingsInternetPageElement extends
         },
       },
 
-      isApnPoliciesEnabled_: {
+      isApnRevampAndPoliciesEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.valueExists('isApnPoliciesEnabled') &&
-              loadTimeData.getBoolean('isApnPoliciesEnabled');
+          return loadTimeData.valueExists('isApnRevampAndPoliciesEnabled') &&
+              loadTimeData.getBoolean('isApnRevampAndPoliciesEnabled');
         },
       },
 
@@ -397,13 +397,12 @@ export class SettingsInternetPageElement extends
   private eSimNetworkState_: NetworkStateProperties;
   private globalPolicy_: GlobalPolicy|undefined;
   private hasActiveCellularNetwork_: boolean;
-  private isApnRevampEnabled_: boolean;
   private isCellularCarrierLockEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
-  private isApnPoliciesEnabled_: boolean;
+  private isApnRevampAndPoliciesEnabled_: boolean;
   private isAddingBuiltInVpnProhibited_: boolean;
   private knownNetworksType_: NetworkType;
   private networkConfig_: CrosNetworkConfigInterface;
@@ -1087,7 +1086,7 @@ export class SettingsInternetPageElement extends
 
   private shouldDisallowApnModification_(globalPolicy: GlobalPolicy|
                                          undefined): boolean {
-    if (!this.isApnRevampEnabled_ || !this.isApnPoliciesEnabled_) {
+    if (!this.isApnRevampAndPoliciesEnabled_) {
       return false;
     }
     if (!globalPolicy) {

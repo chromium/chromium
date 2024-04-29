@@ -245,13 +245,13 @@ suite('ApnListItemTest', function() {
     assertFalse(apnListItem.$.dotsMenu.open);
   });
 
-  [true, false].forEach(isApnPoliciesEnabled => {
+  [true, false].forEach(isApnRevampAndPoliciesEnabled => {
     test(
         `Clicking APN details button triggers a show-apn-detail-dialog event
-        when isApnPoliciesEnabled is ${isApnPoliciesEnabled}`,
+        when isApnRevampAndPoliciesEnabled is ${isApnRevampAndPoliciesEnabled}`,
         async function() {
           loadTimeData.overrideValues({
-            isApnPoliciesEnabled,
+            isApnRevampAndPoliciesEnabled,
           });
           await init();
           apnListItem.apn = TEST_APN_EVENT_DATA.apn;
@@ -294,7 +294,7 @@ suite('ApnListItemTest', function() {
           assertEquals(ApnDetailDialogMode.EDIT, eventData.detail.mode);
           assertFalse(apnListItem.$.dotsMenu.open);
 
-          if (isApnPoliciesEnabled) {
+          if (isApnRevampAndPoliciesEnabled) {
             // Case: APN modification is disallowed.
             apnListItem.shouldDisallowApnModification = true;
             await flushTasks();

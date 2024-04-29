@@ -1163,14 +1163,14 @@ suite('<settings-internet-page>', () => {
         });
   });
 
-  [true, false].forEach(isApnPoliciesEnabled => {
+  [true, false].forEach(isApnRevampAndPoliciesEnabled => {
     test(
-        `Managed APN UI states when isApnPoliciesEnabled is ${
-            isApnPoliciesEnabled}`,
+        `Managed APN UI states when isApnRevampAndPoliciesEnabled is ${
+            isApnRevampAndPoliciesEnabled}`,
         async () => {
           loadTimeData.overrideValues({
             isApnRevampEnabled: true,
-            isApnPoliciesEnabled: isApnPoliciesEnabled,
+            isApnRevampAndPoliciesEnabled: isApnRevampAndPoliciesEnabled,
           });
           await navigateToApnSubpage();
 
@@ -1206,10 +1206,12 @@ suite('<settings-internet-page>', () => {
           } as GlobalPolicy;
           mojoApi.setGlobalPolicy(globalPolicy);
           await flushTasks();
-          assertEquals(isApnPoliciesEnabled, !!getApnManagedIcon());
-          assertEquals(isApnPoliciesEnabled, apnActionMenuButton.disabled);
+          assertEquals(isApnRevampAndPoliciesEnabled, !!getApnManagedIcon());
           assertEquals(
-              isApnPoliciesEnabled, apnSubpage.shouldDisallowApnModification);
+              isApnRevampAndPoliciesEnabled, apnActionMenuButton.disabled);
+          assertEquals(
+              isApnRevampAndPoliciesEnabled,
+              apnSubpage.shouldDisallowApnModification);
         });
   });
 

@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -116,7 +117,7 @@ TEST_F(ONCTranslatorOncToShillTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{ash::features::kApnRevamp},
-      /*disabled_features=*/{ash::features::kApnPolicies});
+      /*disabled_features=*/{chromeos::features::kApnPolicies});
 
   base::Value::Dict onc_network =
       test_utils::ReadTestDictionary("cellular_apn_policies.onc");
@@ -133,7 +134,7 @@ TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnPolicies) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{ash::features::kApnRevamp,
-                            ash::features::kApnPolicies},
+                            chromeos::features::kApnPolicies},
       /*disabled_features=*/{});
 
   base::Value::Dict onc_network =
@@ -270,7 +271,7 @@ TEST_F(ONCTranslatorShillToOncTest, TranslateCellularApnPolicies) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(/*enabled_features=*/
                                        {ash::features::kApnRevamp,
-                                        ash::features::kApnPolicies},
+                                        chromeos::features::kApnPolicies},
                                        /*disabled_features=*/{});
 
   base::Value::Dict shill_network = test_utils::ReadTestDictionary(

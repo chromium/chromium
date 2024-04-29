@@ -1009,7 +1009,7 @@ ManagedNetworkConfigurationHandlerImpl::GetAllowTextMessages() const {
 }
 
 bool ManagedNetworkConfigurationHandlerImpl::AllowApnModification() const {
-  CHECK(ash::features::IsApnPoliciesEnabled());
+  CHECK(ash::features::IsApnRevampAndPoliciesEnabled());
   return FindGlobalPolicyBool(
              ::onc::global_network_config::kAllowAPNModification)
       .value_or(true);

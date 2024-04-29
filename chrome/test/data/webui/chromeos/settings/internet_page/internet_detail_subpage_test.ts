@@ -1963,14 +1963,14 @@ suite('<settings-internet-detail-subpage>', () => {
       });
     });
 
-    [true, false].forEach(isApnPoliciesEnabled => {
+    [true, false].forEach(isApnRevampAndPoliciesEnabled => {
       test(
-          `Managed APN icon visibility when isApnPoliciesEnabled is ${
-              isApnPoliciesEnabled}`,
+          `Managed APN icon visibility when isApnRevampAndPoliciesEnabled is ${
+              isApnRevampAndPoliciesEnabled}`,
           async () => {
             loadTimeData.overrideValues({
               isApnRevampEnabled: true,
-              isApnPoliciesEnabled: isApnPoliciesEnabled,
+              isApnRevampAndPoliciesEnabled: isApnRevampAndPoliciesEnabled,
             });
             init();
             mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
@@ -2032,7 +2032,7 @@ suite('<settings-internet-detail-subpage>', () => {
               allowApnModification: false,
             };
             await flushTasks();
-            assertEquals(isApnPoliciesEnabled, !!getApnManagedIcon());
+            assertEquals(isApnRevampAndPoliciesEnabled, !!getApnManagedIcon());
           });
     });
 
