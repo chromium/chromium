@@ -100,7 +100,8 @@ std::u16string ImageViewBase::GetTooltipText(const gfx::Point& p) const {
   return tooltip_text_;
 }
 
-gfx::Size ImageViewBase::CalculatePreferredSize() const {
+gfx::Size ImageViewBase::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   gfx::Size size = GetImageSize();
   size.Enlarge(GetInsets().width(), GetInsets().height());
   return size;

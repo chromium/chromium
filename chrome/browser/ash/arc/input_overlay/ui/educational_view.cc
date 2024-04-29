@@ -163,7 +163,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
 
     if (portrait_mode_) {
       // Resize the banner image size proportionally.
-      const auto size = banner->CalculatePreferredSize();
+      const auto size = banner->CalculatePreferredSize({});
       const int width =
           GetDialogWidth(parent_width) - GetBorderSides(portrait_mode_) * 2;
       const float ratio = 1.0 * width / size.width();
