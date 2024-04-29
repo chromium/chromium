@@ -558,6 +558,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   bool is_payments_data_loaded_ = false;
 
  private:
+  // Check if credit card benefits sync flag is enabled.
+  bool IsCardBenefitsSyncEnabled() const;
+
   // Triggered when all the card art image fetches have been completed,
   // regardless of whether all of them succeeded.
   void OnCardArtImagesFetched(

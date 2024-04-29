@@ -440,7 +440,7 @@ void PaymentsDataManager::Refresh() {
   LoadPaymentsCustomerData();
   LoadAutofillOffers();
   LoadVirtualCardUsageData();
-  if (IsCardBenefitsPrefEnabled()) {
+  if (IsCardBenefitsSyncEnabled() && IsCardBenefitsPrefEnabled()) {
     LoadCreditCardBenefits();
   }
 }
@@ -847,6 +847,11 @@ bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
 
 bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {
   return prefs::IsPaymentCardBenefitsEnabled(pref_service_);
+}
+
+bool PaymentsDataManager::IsCardBenefitsSyncEnabled() const {
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableCardBenefitsSync);
 }
 
 bool PaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
