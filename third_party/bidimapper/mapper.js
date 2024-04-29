@@ -6160,9 +6160,18 @@ var mapperTab = (function () {
 	        (0, assert_js_1$2.assert)(originResult.type === 'success');
 	        const origin = deserializeDOMRect(originResult.result);
 	        (0, assert_js_1$2.assert)(origin);
-	        const rect = params.clip
-	            ? getIntersectionRect(await this.#parseRect(params.clip), origin)
-	            : origin;
+	        let rect = origin;
+	        if (params.clip) {
+	            const clip = params.clip;
+	            if (params.origin === 'viewport' && clip.type === 'box') {
+	                // For viewport origin, the clip is relative to the viewport, while the CDP
+	                // screenshot is relative to the document. So correction for the viewport position
+	                // is required.
+	                clip.x += origin.x;
+	                clip.y += origin.y;
+	            }
+	            rect = getIntersectionRect(await this.#parseRect(clip), origin);
+	        }
 	        if (rect.width === 0 || rect.height === 0) {
 	            throw new protocol_js_1$9.UnableToCaptureScreenException(`Unable to capture screenshot with zero dimensions: width=${rect.width}, height=${rect.height}`);
 	        }
@@ -6468,6 +6477,14 @@ var mapperTab = (function () {
 	                if (!locator.value.name && !locator.value.role) {
 	                    throw new protocol_js_1$9.InvalidSelectorException('Either name or role has to be specified');
 	                }
+	                // The next two commands cause a11y caches for the target to be
+	                // preserved. We probably do not need to disable them if the
+	                // client is using a11y features but we could by calling
+	                // Accessibility.disable.
+	                await Promise.all([
+	                    this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable'),
+	                    this.#cdpTarget.cdpClient.sendCommand('Accessibility.getRootAXNode'),
+	                ]);
 	                const bindings = await realm.evaluate(
 	                /* expression=*/ '({getAccessibleName, getAccessibleRole})', 
 	                /* awaitPromise=*/ false, "root" /* Script.ResultOwnership.Root */, 

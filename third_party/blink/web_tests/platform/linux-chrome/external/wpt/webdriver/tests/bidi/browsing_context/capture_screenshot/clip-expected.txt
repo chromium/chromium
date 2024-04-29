@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_clip_box_scroll_to
-  assert False
-Harness: the test ran to completion.
