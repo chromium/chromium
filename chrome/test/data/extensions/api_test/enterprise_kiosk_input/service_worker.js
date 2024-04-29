@@ -11,7 +11,12 @@ chrome.runtime.onMessageExternal.addListener(
       case "set_input_method":
         runSetInputMethod(data, sendResponse);
         return true;
+      case "version":
+        sendResponse("1.3");
+        return false;
     }
+    sendResponse('unknown message "' + message + '"');
+    return false;
   }
 );
 
