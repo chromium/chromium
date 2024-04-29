@@ -150,7 +150,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void TransformPointToRootSurface(gfx::PointF* point) override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override;
   void ProcessAckedTouchEvent(
       const TouchEventWithLatencyInfo& touch,
