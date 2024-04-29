@@ -21,7 +21,6 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_constants.h"
@@ -227,10 +226,8 @@ void MimeHandlerViewGuest::DidInitialize(
 
 void MimeHandlerViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
-  if (AreWebviewMPArchBehaviorsEnabled(browser_context())) {
-    // This situation is not possible for MimeHandlerView.
-    NOTREACHED();
-  }
+  // This situation is not possible for MimeHandlerView.
+  NOTREACHED();
 }
 
 void MimeHandlerViewGuest::EmbedderFullscreenToggled(bool entered_fullscreen) {

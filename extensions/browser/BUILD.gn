@@ -423,8 +423,6 @@ source_set("browser_sources") {
     "guest_view/extensions_guest_view_manager_delegate.h",
     "guest_view/guest_view_events.cc",
     "guest_view/guest_view_events.h",
-    "guest_view/guest_view_feature_util.cc",
-    "guest_view/guest_view_feature_util.h",
     "guest_view/mime_handler_view/mime_handler_stream_manager.cc",
     "guest_view/mime_handler_view/mime_handler_stream_manager.h",
     "guest_view/mime_handler_view/mime_handler_view_attach_helper.cc",

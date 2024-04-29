@@ -160,14 +160,6 @@ BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
 // https://chromium.googlesource.com/chromium/src/+/master/docs/telemetry_extension/README.md.
 BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
 
-// Controls the <webview> tag behaviour changes proposed as part of the guest
-// view MPArch migration. See
-// https://docs.google.com/document/d/1RVbtvklXUg9QCNvMT0r-1qDwJNeQFGoTCOD1Ur9mDa4/edit?usp=sharing
-// for details.
-// TODO(crbug.com/40202416): This has been enabled by default for long enough
-// that we can remove this flag.
-BASE_DECLARE_FEATURE(kWebviewTagMPArchBehavior);
-
 ///////////////////////////////////////////////////////////////////////////////
 // STOP!
 // Please don't just add your new feature down here.

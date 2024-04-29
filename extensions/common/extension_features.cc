@@ -134,10 +134,6 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
              "TelemetryExtensionPendingApprovalApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebviewTagMPArchBehavior,
-             "WebviewTagMPArchBehavior",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionsZipFileInstalledInProfileDir,
              "ExtensionsZipFileInstalledInProfileDir",
              base::FEATURE_ENABLED_BY_DEFAULT);

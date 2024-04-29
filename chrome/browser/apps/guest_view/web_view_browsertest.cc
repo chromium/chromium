@@ -882,31 +882,7 @@ using WebViewSizeTest = WebViewTest;
 using WebViewVisibilityTest = WebViewTest;
 using WebViewSpeechAPITest = WebViewTest;
 using WebViewAccessibilityTest = WebViewTest;
-
-class WebViewNewWindowTest : public WebViewTest,
-                             public testing::WithParamInterface<bool> {
- public:
-  WebViewNewWindowTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        extensions_features::kWebviewTagMPArchBehavior, /*enabled=*/GetParam());
-  }
-  ~WebViewNewWindowTest() override = default;
-
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "NewWindowRestricted" : "NewWindowLegacy";
-  }
-
-  bool IsNewWindowRestricted() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(WebViewNewWindowTests,
-                         WebViewNewWindowTest,
-                         testing::Bool(),
-                         WebViewNewWindowTest::DescribeParams);
+using WebViewNewWindowTest = WebViewTest;
 
 class WebViewDPITest : public WebViewTest {
  protected:
@@ -1506,7 +1482,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestAddAndRemoveContentScripts) {
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        Shim_TestAddContentScriptsWithNewWindowAPI) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   GTEST_SKIP() << "Flaky on Linux and Mac; http://crbug.com/1182801";
@@ -1615,7 +1591,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestReassignSrcAttribute) {
   TestHelper("testReassignSrcAttribute", "web_view/shim", NO_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindow) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, Shim_TestNewWindow) {
   TestHelper("testNewWindow", "web_view/shim", NEEDS_TEST_SERVER);
 
   // The first <webview> tag in the test will run window.open(), which the
@@ -1638,18 +1614,18 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindow) {
   EXPECT_TRUE(guest_instance1->IsRelatedSiteInstance(guest_instance2));
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowTwoListeners) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, Shim_TestNewWindowTwoListeners) {
   TestHelper("testNewWindowTwoListeners", "web_view/shim", NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        Shim_TestNewWindowNoPreventDefault) {
   TestHelper("testNewWindowNoPreventDefault",
              "web_view/shim",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
   GURL newwindow_url("about:blank#noreferrer");
   content::TestNavigationObserver observer(newwindow_url);
   observer.StartWatchingNewWebContents();
@@ -1687,7 +1663,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
             guest_instance1->GetStoragePartitionConfig());
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        Shim_TestWebViewAndEmbedderInNewWindow) {
   TestHelper("testWebViewAndEmbedderInNewWindow", "web_view/shim",
              NEEDS_TEST_SERVER);
@@ -1729,30 +1705,24 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   // part in order to run script in the main world.
   EXPECT_EQ(true,
             content::EvalJs(new_window_guest_frame, "!!window.newWindow"));
-  if (IsNewWindowRestricted()) {
-    EXPECT_EQ(url::kAboutBlankURL,
-              content::EvalJs(new_window_guest_frame,
-                              "window.newWindow.location.href"));
-  } else {
-    EXPECT_EQ(empty_guest_frame->GetLastCommittedURL(),
-              content::EvalJs(new_window_guest_frame,
-                              "window.newWindow.location.href"));
-  }
+  EXPECT_EQ(url::kAboutBlankURL,
+            content::EvalJs(new_window_guest_frame,
+                            "window.newWindow.location.href"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        Shim_TestWebViewAndEmbedderInNewWindow_Noopener) {
   TestHelper("testWebViewAndEmbedderInNewWindow_Noopener", "web_view/shim",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        Shim_TestNewWindowAttachToExisting) {
   TestHelper("testNewWindowAttachToExisting", "web_view/shim",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoDeadlock) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, Shim_TestNewWindowNoDeadlock) {
   TestHelper("testNewWindowNoDeadlock", "web_view/shim", NEEDS_TEST_SERVER);
 }
 
@@ -1782,76 +1752,76 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, TwoIframesWebRequest) {
   EXPECT_TRUE(finished2.WaitUntilSatisfied());
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_AttachAfterOpenerDestroyed) {
   TestHelper("testNewWindowAttachAfterOpenerDestroyed", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_AttachInSubFrame) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_AttachInSubFrame) {
   TestHelper("testNewWindowAttachInSubFrame", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_NewWindowNameTakesPrecedence) {
   TestHelper("testNewWindowNameTakesPrecedence", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_WebViewNameTakesPrecedence) {
   TestHelper("testNewWindowWebViewNameTakesPrecedence", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_NoName) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_NoName) {
   TestHelper("testNewWindowNoName", "web_view/newwindow", NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_Redirect) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_Redirect) {
   TestHelper("testNewWindowRedirect", "web_view/newwindow", NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_Close) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_Close) {
   TestHelper("testNewWindowClose", "web_view/newwindow", NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_DeferredAttachment) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_DeferredAttachment) {
   TestHelper("testNewWindowDeferredAttachment", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_ExecuteScript) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_ExecuteScript) {
   TestHelper("testNewWindowExecuteScript", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_DeclarativeWebRequest) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_DeclarativeWebRequest) {
   TestHelper("testNewWindowDeclarativeWebRequest", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_DiscardAfterOpenerDestroyed) {
   TestHelper("testNewWindowDiscardAfterOpenerDestroyed", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_WebRequest) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_WebRequest) {
   TestHelper("testNewWindowWebRequest", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
 // A custom elements bug needs to be addressed to enable this test:
 // See http://crbug.com/282477 for more information.
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        DISABLED_NewWindow_WebRequestCloseWindow) {
   TestHelper("testNewWindowWebRequestCloseWindow", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_WebRequestRemoveElement) {
   TestHelper("testNewWindowWebRequestRemoveElement", "web_view/newwindow",
              NEEDS_TEST_SERVER);
@@ -1860,7 +1830,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 // Ensure that when one <webview> makes a window.open() call that references
 // another <webview> by name, the opener is updated without a crash. Regression
 // test for https://crbug.com/1013553.
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_UpdateOpener) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_UpdateOpener) {
   TestHelper("testNewWindowAndUpdateOpener", "web_view/newwindow",
              NEEDS_TEST_SERVER);
 
@@ -1899,7 +1869,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_UpdateOpener) {
   EXPECT_EQ(true, content::EvalJs(guest2, "window.opener.opener === window"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_OpenerDestroyedWhileUnattached) {
   TestHelper("testNewWindowOpenerDestroyedWhileUnattached",
              "web_view/newwindow", NEEDS_TEST_SERVER);
@@ -1915,7 +1885,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 // Creates a guest in a unattached state, then confirms that calling
 // |RenderFrameHost::ForEachRenderFrameHost| on the embedder will include the
 // guest's frame.
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_UnattachedVisitedByForEachRenderFrameHost) {
   TestHelper("testNewWindowDeferredAttachmentIndefinitely",
              "web_view/newwindow", NEEDS_TEST_SERVER);
@@ -1967,7 +1937,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 
 // Creates a guest in a unattached state, then confirms that calling
 // the various view methods return null.
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_UnattachedVerifyViewMethods) {
   TestHelper("testNewWindowDeferredAttachmentIndefinitely",
              "web_view/newwindow", NEEDS_TEST_SERVER);
@@ -2788,7 +2758,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, OpenURLFromTab_CurrentTab_Succeed) {
   EXPECT_EQ(test_url, GetGuestWebContents()->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
   LoadAppWithGuest("web_view/simple");
 
   // Verify that OpenURLFromTab with a window disposition of NEW_BACKGROUND_TAB
@@ -2819,7 +2789,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
 // BrowsingInstance with COOP values that would normally make it impossible
 // (meaning outside of webviews special case) to group them together.
 // This is a regression test for https://crbug.com/1243711.
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
                        NewWindow_DifferentCoopStatesInRelatedWebviews) {
   // Reusing testNewWindowAndUpdateOpener because it is a convenient way to
   // obtain 2 webviews in the same BrowsingInstance. The javascript does
@@ -2853,7 +2823,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 // This test creates a situation where we have two unattached webviews which
 // have an opener relationship, and ensures that we can shutdown safely. See
 // https://crbug.com/1450397.
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, DestroyOpenerBeforeAttachment) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, DestroyOpenerBeforeAttachment) {
   TestHelper("testDestroyOpenerBeforeAttachment", "web_view/newwindow",
              NEEDS_TEST_SERVER);
   GetGuestViewManager()->WaitForNumGuestsCreated(2);
@@ -4058,7 +4028,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, UserAgent) {
 #else
 #define MAYBE_UserAgent_NewWindow UserAgent_NewWindow
 #endif
-IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, MAYBE_UserAgent_NewWindow) {
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, MAYBE_UserAgent_NewWindow) {
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
       {.custom_arg = "useragent_newwindow", .launch_as_platform_app = true}))

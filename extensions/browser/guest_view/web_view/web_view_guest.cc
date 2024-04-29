@@ -56,7 +56,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
@@ -428,10 +427,6 @@ void WebViewGuest::DidInitialize(const base::Value::Dict& create_params) {
 
 void WebViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
-  if (!AreWebviewMPArchBehaviorsEnabled(browser_context())) {
-    return;
-  }
-
   DCHECK(GetCreateParams().has_value());
   auto& [create_params, web_contents_create_params] = *GetCreateParams();
   DCHECK_EQ(web_contents_create_params.guest_delegate, this);

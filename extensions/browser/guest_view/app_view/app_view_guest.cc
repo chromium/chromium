@@ -19,7 +19,6 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/app_view/app_view_constants.h"
-#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager.h"
@@ -239,10 +238,8 @@ void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
 
 void AppViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
-  if (AreWebviewMPArchBehaviorsEnabled(browser_context())) {
-    // This situation is not possible for AppView.
-    NOTREACHED();
-  }
+  // This situation is not possible for AppView.
+  NOTREACHED();
 }
 
 const char* AppViewGuest::GetAPINamespace() const {
