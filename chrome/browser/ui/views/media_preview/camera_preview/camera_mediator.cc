@@ -12,21 +12,14 @@ CameraMediator::CameraMediator(PrefService& prefs,
                                DevicesChangedCallback devices_changed_callback)
     : prefs_(&prefs),
       devices_changed_callback_(std::move(devices_changed_callback)) {
-  if (auto* monitor = base::SystemMonitor::Get(); monitor) {
-    monitor->AddDevicesChangedObserver(this);
-  }
+  devices_observer_.Observe(media_effects::MediaDeviceInfo::GetInstance());
 
   content::GetVideoCaptureService().ConnectToVideoSourceProvider(
       video_source_provider_.BindNewPipeAndPassReceiver());
   video_source_provider_.reset_on_disconnect();
-  OnDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 }
 
-CameraMediator::~CameraMediator() {
-  if (auto* monitor = base::SystemMonitor::Get(); monitor) {
-    monitor->RemoveDevicesChangedObserver(this);
-  }
-}
+CameraMediator::~CameraMediator() = default;
 
 void CameraMediator::BindVideoSource(
     const std::string& device_id,
@@ -37,21 +30,22 @@ void CameraMediator::BindVideoSource(
   }
 }
 
-void CameraMediator::OnDevicesChanged(
-    base::SystemMonitor::DeviceType device_type) {
-  if (device_type == base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE &&
-      video_source_provider_) {
-    video_source_provider_->GetSourceInfos(
-        base::BindOnce(&CameraMediator::OnVideoSourceInfosReceived,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+void CameraMediator::InitializeDeviceList() {
+  // Get current list of video devices.
+  OnVideoDevicesChanged(
+      media_effects::MediaDeviceInfo::GetInstance()->GetVideoDeviceInfos());
 }
 
-void CameraMediator::OnVideoSourceInfosReceived(
-    const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
+void CameraMediator::OnVideoDevicesChanged(
+    const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
+        device_infos) {
+  if (!device_infos) {
+    devices_changed_callback_.Run({});
+    return;
+  }
   // Copy into a mutable vector in order to be re-ordered by
   // `PreferenceRankDeviceInfos`.
-  auto ranked_device_infos = device_infos;
+  auto ranked_device_infos = device_infos.value();
   media_prefs::PreferenceRankVideoDeviceInfos(*prefs_, ranked_device_infos);
   devices_changed_callback_.Run(ranked_device_infos);
 }

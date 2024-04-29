@@ -48,6 +48,8 @@ CameraCoordinator::CameraCoordinator(
 
   video_stream_coordinator_.emplace(
       camera_view_controller_->GetLiveFeedContainer(), metrics_context_);
+
+  camera_mediator_.InitializeDeviceList();
 }
 
 CameraCoordinator::~CameraCoordinator() {

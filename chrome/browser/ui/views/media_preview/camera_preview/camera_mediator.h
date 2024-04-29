@@ -8,14 +8,15 @@
 #include <string>
 #include <vector>
 
-#include "base/system/system_monitor.h"
+#include "base/scoped_observation.h"
+#include "components/media_effects/media_device_info.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 
 // Handles interactions with the backend services for the coordinator.
-class CameraMediator : public base::SystemMonitor::DevicesChangedObserver {
+class CameraMediator : public media_effects::MediaDeviceInfo::Observer {
  public:
   using DevicesChangedCallback = base::RepeatingCallback<void(
       const std::vector<media::VideoCaptureDeviceInfo>& device_infos)>;
@@ -32,8 +33,7 @@ class CameraMediator : public base::SystemMonitor::DevicesChangedObserver {
       const std::string& device_id,
       mojo::PendingReceiver<video_capture::mojom::VideoSource> source_receiver);
 
-  // base::SystemMonitor::DevicesChangedObserver.
-  void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
+  void InitializeDeviceList();
 
   // Passes ownership of the `video_source_provider_` to the caller.
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
@@ -42,14 +42,18 @@ class CameraMediator : public base::SystemMonitor::DevicesChangedObserver {
   }
 
  private:
-  void OnVideoSourceInfosReceived(
-      const std::vector<media::VideoCaptureDeviceInfo>& device_infos);
+  // media_effects::MediaDeviceInfo::Observer overrides.
+  void OnVideoDevicesChanged(
+      const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
+          device_infos) override;
 
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;
 
   raw_ptr<PrefService> prefs_;
   DevicesChangedCallback devices_changed_callback_;
+  base::ScopedObservation<media_effects::MediaDeviceInfo, CameraMediator>
+      devices_observer_{this};
 
   base::WeakPtrFactory<CameraMediator> weak_ptr_factory_{this};
 };

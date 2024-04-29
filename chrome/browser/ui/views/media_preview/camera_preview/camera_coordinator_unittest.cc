@@ -12,7 +12,6 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/system_monitor.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -20,8 +19,9 @@
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
-#include "content/public/browser/video_capture_service.h"
+#include "components/media_effects/test/scoped_media_device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,8 +71,6 @@ class CameraCoordinatorTest : public TestWithBrowserView {
  protected:
   void SetUp() override {
     TestWithBrowserView::SetUp();
-    content::OverrideVideoCaptureServiceForTesting(
-        &fake_video_capture_service_);
     fake_video_capture_service_.SetOnGetVideoSourceCallback(
         on_get_video_source_future_.GetRepeatingCallback());
     histogram_tester_.emplace();
@@ -84,22 +82,20 @@ class CameraCoordinatorTest : public TestWithBrowserView {
   void TearDown() override {
     coordinator_.reset();
     parent_view_.reset();
-    content::OverrideVideoCaptureServiceForTesting(nullptr);
     TestWithBrowserView::TearDown();
   }
 
   void InitializeCoordinator(std::vector<std::string> eligible_camera_ids) {
-    base::test::TestFuture<void> replied_with_source_infos_future;
-    fake_video_capture_service_.SetOnRepliedWithSourceInfosCallback(
-        replied_with_source_infos_future.GetCallback());
-
     CHECK(profile()->GetPrefs());
+
+    if (!media_device_info_) {
+      media_device_info_.emplace();
+    }
+
     coordinator_.emplace(*parent_view_,
                          /*needs_borders=*/true, eligible_camera_ids,
                          *profile()->GetPrefs(),
                          /*allow_device_selection=*/true, GetMetricsContext());
-
-    ASSERT_TRUE(replied_with_source_infos_future.WaitAndClear());
   }
 
   const ui::SimpleComboboxModel& GetComboboxModel() const {
@@ -130,11 +126,14 @@ class CameraCoordinatorTest : public TestWithBrowserView {
     histogram_tester_.emplace();
   }
 
-  base::SystemMonitor monitor_;
+  media_effects::ScopedFakeAudioService fake_audio_capture_service_;
+  media_effects::ScopedFakeVideoCaptureService fake_video_capture_service_;
+  std::optional<media_effects::ScopedMediaDeviceInfo> media_device_info_;
+
   std::optional<base::HistogramTester> histogram_tester_;
   std::optional<views::View> parent_view_;
   std::optional<CameraCoordinator> coordinator_;
-  media_effects::FakeVideoCaptureService fake_video_capture_service_;
+
   base::test::TestFuture<
       const std::string&,
       mojo::PendingReceiver<video_capture::mojom::VideoSource>>
@@ -286,4 +285,16 @@ TEST_F(CameraCoordinatorTest, UpdateDevicePreferenceRanking) {
 
   coordinator_.reset();
   ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
+}
+
+TEST_F(CameraCoordinatorTest, ConnectDevicesBeforeCoordinatorInitialize) {
+  coordinator_.reset();
+
+  ASSERT_TRUE(AddFakeCamera({kDeviceName, kDeviceId}));
+  ASSERT_TRUE(AddFakeCamera({kDeviceName2, kDeviceId2}));
+
+  InitializeCoordinator({});
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId);
+  EXPECT_THAT(GetComboboxModel(),
+              HasItems(std::vector{kDeviceName, kDeviceName2}));
 }
