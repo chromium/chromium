@@ -82,6 +82,9 @@ class ExtendedUpdatesController {
  protected:
   ExtendedUpdatesController();
 
+  // Returns true if the user has the ability to opt in the device.
+  virtual bool HasOptInAbility(ownership::OwnerSettingsService* owner_settings);
+
  private:
   friend class ScopedExtendedUpdatesController;
 
@@ -91,9 +94,6 @@ class ExtendedUpdatesController {
   // instead.
   static ExtendedUpdatesController* SetInstanceForTesting(
       ExtendedUpdatesController* controller);
-
-  // Returns true if the user has the ability to opt in the device.
-  bool HasOptInAbility(ownership::OwnerSettingsService* owner_settings);
 
   void OnOwnershipDetermined(base::WeakPtr<content::BrowserContext> context);
 

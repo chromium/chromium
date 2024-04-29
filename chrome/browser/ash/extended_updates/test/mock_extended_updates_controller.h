@@ -29,6 +29,11 @@ class MockExtendedUpdatesController : public ExtendedUpdatesController {
               OnEolInfo,
               (content::BrowserContext*, const UpdateEngineClient::EolInfo&),
               (override));
+
+  MOCK_METHOD(bool,
+              HasOptInAbility,
+              (ownership::OwnerSettingsService*),
+              (override));
 };
 
 }  // namespace ash

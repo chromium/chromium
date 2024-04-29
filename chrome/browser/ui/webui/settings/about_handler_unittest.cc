@@ -12,11 +12,13 @@
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/ash/extended_updates/test/mock_extended_updates_controller.h"
 #include "chrome/browser/ash/extended_updates/test/scoped_extended_updates_controller.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -113,6 +115,8 @@ class AboutHandlerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  ash::ScopedTestingCrosSettings test_cros_settings_;
+  ash::ScopedStubInstallAttributes test_install_attributes_;
   TestingProfile profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestAboutHandler> handler_;
@@ -241,6 +245,23 @@ TEST_F(AboutHandlerTest, HandleIsExtendedUpdatesOptInEligible) {
                                        .Append(params.opt_in_required))
                       .GetBool();
   EXPECT_TRUE(eligible);
+}
+
+TEST_F(AboutHandlerTest, ObservesExtendedUpdatesSettingChanges) {
+  ash::MockExtendedUpdatesController mock_controller;
+  ash::ScopedExtendedUpdatesController scoped_controller(&mock_controller);
+
+  EXPECT_CALL(mock_controller, HasOptInAbility(NotNull()))
+      .WillOnce(Return(true));
+
+  EXPECT_EQ(web_ui_.call_data().size(), 0u);
+  EXPECT_TRUE(mock_controller.OptIn(&profile_));
+
+  ASSERT_EQ(web_ui_.call_data().size(), 1u);
+  const auto& call_data = web_ui_.call_data()[0];
+  ASSERT_EQ(call_data->args().size(), 1u);
+  EXPECT_EQ(call_data->args()[0].GetString(),
+            "extended-updates-setting-changed");
 }
 
 }  // namespace

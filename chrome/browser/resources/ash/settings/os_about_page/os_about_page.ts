@@ -450,8 +450,8 @@ export class OsAboutPageElement extends OsAboutPageBase {
         this.onTpmFirmwareUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshTpmFirmwareUpdateStatus();
     this.addWebUiListener(
-        'extended-updates-policy-changed',
-        this.onExtendedUpdatesPolicyChanged_.bind(this));
+        'extended-updates-setting-changed',
+        this.onExtendedUpdatesSettingChanged_.bind(this));
   }
 
   private onUpdateStatusChanged_(event: UpdateStatusChangedEvent): void {
@@ -879,7 +879,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
         });
   }
 
-  private onExtendedUpdatesPolicyChanged_(): void {
+  private onExtendedUpdatesSettingChanged_(): void {
     this.updateIsExtendedUpdatesOptInEligible_();
   }
 

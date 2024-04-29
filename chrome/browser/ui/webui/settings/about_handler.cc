@@ -78,6 +78,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/version/version_loader.h"
@@ -412,10 +413,14 @@ void AboutHandler::OnJavascriptAllowed() {
                           weak_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_registrar_->Observe(
-      policy::key::kDeviceExtendedAutoUpdateEnabled,
-      base::BindRepeating(&AboutHandler::OnDeviceExtendedUpdatePolicyChanged,
-                          weak_factory_.GetWeakPtr()));
+  if (!extended_updates_setting_change_subscription_ &&
+      ash::CrosSettings::IsInitialized()) {
+    extended_updates_setting_change_subscription_ =
+        ash::CrosSettings::Get()->AddSettingsObserver(
+            ash::kDeviceExtendedAutoUpdateEnabled,
+            base::BindRepeating(&AboutHandler::OnExtendedUpdatesSettingChanged,
+                                weak_factory_.GetWeakPtr()));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -833,10 +838,8 @@ void AboutHandler::HandleOpenExtendedUpdatesDialog(
   ash::extended_updates::ExtendedUpdatesDialog::Show();
 }
 
-void AboutHandler::OnDeviceExtendedUpdatePolicyChanged(
-    const base::Value* previous_policy,
-    const base::Value* current_policy) {
-  FireWebUIListener("extended-updates-policy-changed");
+void AboutHandler::OnExtendedUpdatesSettingChanged() {
+  FireWebUIListener("extended-updates-setting-changed");
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

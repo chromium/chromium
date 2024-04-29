@@ -816,12 +816,12 @@ suite('<os-about-page> AllBuilds', () => {
       return aboutBrowserProxy.getArgs('isExtendedUpdatesOptInEligible').at(-1);
     }
 
-    function fireExtendedUpdatesPolicyChanged(): void {
-      // This policy only changes when the user opts in,
+    function fireExtendedUpdatesSettingChanged(): void {
+      // This setting only changes when the user opts in,
       // which in turn makes the device no longer eligible for opt-in,
       // so we update the return value to false here.
       aboutBrowserProxy.setExtendedUpdatesOptInEligible(false);
-      webUIListenerCallback('extended-updates-policy-changed');
+      webUIListenerCallback('extended-updates-setting-changed');
     }
 
     test('is not shown by default', async () => {
@@ -868,7 +868,7 @@ suite('<os-about-page> AllBuilds', () => {
       await initPage();
       assertExtendedUpdatesVisibility(true);
 
-      fireExtendedUpdatesPolicyChanged();
+      fireExtendedUpdatesSettingChanged();
       await aboutBrowserProxy.whenCalled('isExtendedUpdatesOptInEligible');
       assertExtendedUpdatesVisibility(false);
     });
