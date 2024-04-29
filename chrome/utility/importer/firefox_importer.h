@@ -61,7 +61,7 @@ class FirefoxImporter : public Importer {
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
   void ImportBookmarks();
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC)
   void ImportPasswords();
 #endif
   void ImportHistory();

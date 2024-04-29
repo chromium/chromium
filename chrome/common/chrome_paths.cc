@@ -568,10 +568,6 @@ bool PathProvider(int key, base::FilePath* result) {
     }
 #endif
     case chrome::DIR_EXTERNAL_EXTENSIONS:
-#if BUILDFLAG(IS_FUCHSIA)
-      // TODO(crbug.com/40194853): Support external extensions.
-      return false;
-#else
 #if BUILDFLAG(IS_MAC)
       if (!chrome::GetGlobalApplicationSupportDirectory(&cur)) {
         return false;
@@ -589,13 +585,8 @@ bool PathProvider(int key, base::FilePath* result) {
       create_dir = true;
 #endif
       break;
-#endif
 
     case chrome::DIR_DEFAULT_APPS:
-#if BUILDFLAG(IS_FUCHSIA)
-      // TODO(crbug.com/40194853): Support default-installed apps.
-      return false;
-#else
 #if BUILDFLAG(IS_MAC)
       cur = base::apple::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Default Apps"));
@@ -606,7 +597,6 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = cur.Append(FILE_PATH_LITERAL("default_apps"));
 #endif
       break;
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC))

@@ -1277,7 +1277,7 @@ const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
 };
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kHistoryEmbeddingsAtKeywordAcceleration[]{
     {"AtKeywordAcceleration", "true"},
 };
@@ -1286,7 +1286,7 @@ const FeatureEntry::FeatureVariation kHistoryEmbeddingsVariations[] = {
      std::size(kHistoryEmbeddingsAtKeywordAcceleration), nullptr},
 };
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+        // BUILDFLAG(IS_WIN)
 
 const FeatureEntry::FeatureParam kJourneysShowAllVisitsParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},
@@ -1385,7 +1385,7 @@ const FeatureEntry::FeatureVariation kChromeRefresh2023NTBVariations[] = {
      nullptr}};
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kShortcutBoostSingleUrl[] = {
     {"ShortcutBoostSearchScore", "0"},
     {"ShortcutBoostNonTopHitThreshold", "0"},
@@ -1545,7 +1545,7 @@ const FeatureEntry::FeatureVariation kOmniboxStarterPackExpansionVariations[] =
      {"staging url", kOmniboxStarterPackExpansionStagingUrl,
       std::size(kOmniboxStarterPackExpansionStagingUrl), nullptr}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+        // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment1[] = {
@@ -4969,8 +4969,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAppUniversalInstallDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebAppUniversalInstall)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"shortcuts-not-apps", flag_descriptions::kShortcutsNotAppsName,
      flag_descriptions::kShortcutsNotAppsDescription,
      kOsMac | kOsWin | kOsLinux | kOsFuchsia,
@@ -6015,7 +6014,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kZeroSuggestInMemoryCaching)},
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_WIN)
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,
      flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,
@@ -6103,7 +6102,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kStarterPackIPH)},
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+        // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
     {"animate-suggestions-list-appearance",
@@ -6335,14 +6334,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     "OrganicRepeatableQueries")},
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_WIN)
     {"history-embeddings", flag_descriptions::kHistoryEmbeddingsName,
      flag_descriptions::kHistoryEmbeddingsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_embeddings::kHistoryEmbeddings,
                                     kHistoryEmbeddingsVariations,
                                     "HistoryEmbeddings")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+        // BUILDFLAG(IS_WIN)
 
     {"history-journeys", flag_descriptions::kJourneysName,
      flag_descriptions::kJourneysDescription, kOsDesktop | kOsAndroid,
@@ -8849,7 +8848,7 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) ||                                      \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_MAC)
     {
         "ui-debug-tools",
         flag_descriptions::kUIDebugToolsName,

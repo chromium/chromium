@@ -58,7 +58,7 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
                                  sandbox::SandboxInterfaceInfo* sandbox_info,
                                  int64_t exe_entry_point_ticks);
 }
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
 extern "C" {
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
@@ -73,7 +73,7 @@ ChromeMain(int argc, const char** argv);
 DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
                                  sandbox::SandboxInterfaceInfo* sandbox_info,
                                  int64_t exe_entry_point_ticks) {
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
 int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
 #else

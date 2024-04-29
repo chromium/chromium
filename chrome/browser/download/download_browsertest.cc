@@ -3808,7 +3808,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_CrazyFilenames) {
     base::FilePath file_path(origin_directory.Append(
 #if BUILDFLAG(IS_WIN)
         crazy_w
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
         crazy8
 #endif
         ));

@@ -320,9 +320,7 @@ class RenderViewContextMenu
   // once `kPasswordManualFallbackAvailable` is rolled out.
   void AppendPasswordItems();
   void AppendSharingItems();
-#if !BUILDFLAG(IS_FUCHSIA)
   void AppendClickToCallItem();
-#endif
   void AppendRegionSearchItem();
   void AppendLiveCaptionItem();
   bool AppendFollowUnfollowItem();

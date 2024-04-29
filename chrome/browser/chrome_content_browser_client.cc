@@ -504,8 +504,6 @@
 #endif  // BUILDFLAG(DFMIFY_DEV_UI)
 #elif BUILDFLAG(IS_POSIX)
 #include "chrome/browser/chrome_browser_main_posix.h"
-#elif BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1648,9 +1646,6 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
       is_integration_test, &startup_data_);
 #elif BUILDFLAG(IS_POSIX)
   main_parts = std::make_unique<ChromeBrowserMainPartsPosix>(
-      is_integration_test, &startup_data_);
-#elif BUILDFLAG(IS_FUCHSIA)
-  main_parts = std::make_unique<ChromeBrowserMainPartsFuchsia>(
       is_integration_test, &startup_data_);
 #else
 #error "Unimplemented platform"
@@ -4338,11 +4333,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
   // WebView.
   web_prefs->databases_enabled = false;
-#endif
-
-#if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/42050450): Implement WebAuthn integration and remove.
-  web_prefs->disable_webauthn = true;
 #endif
 
   for (auto& parts : extra_parts_) {

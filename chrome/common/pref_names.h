@@ -1900,14 +1900,14 @@ inline constexpr char kPrefHasCompletedComposeFRE[] =
     "compose_has_completed_fre";
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID)
 // Integer value controlling the data region to store covered data from Chrome.
 // By default, no preference is selected.
 // - 0: No preference
 // - 1: United States
 // - 2: Europe
 inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Network annotations that are expected to be disabled based on policy values.
 // Stored as a dict with annotation hash codes as keys.
@@ -2568,10 +2568,10 @@ inline constexpr char kAuthNegotiateDelegateByKdcPolicy[] =
     "auth.negotiate_delegate_by_kdc_policy";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX)
 // Boolean that specifies whether NTLMv2 is enabled.
 inline constexpr char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
-#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Boolean whether Kerberos functionality is enabled.

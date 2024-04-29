@@ -954,10 +954,6 @@ ProfileNetworkContextService::CreateClientCertStore() {
   // cert matching is done by the OS as part of the call to show the cert
   // selection dialog.
   return nullptr;
-#elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/40244798): Implement ClientCertStore support.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
 #else
 #error Unknown platform.
 #endif

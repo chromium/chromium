@@ -19,10 +19,6 @@
 #error BrowserSwitcher is not supported on ChromeOS. Neither Ash nor LaCrOS.
 #endif
 
-#if BUILDFLAG(IS_FUCHSIA)
-#error BrowserSwitcher is not support on Fuchsia.
-#endif
-
 namespace browser_switcher {
 
 namespace {

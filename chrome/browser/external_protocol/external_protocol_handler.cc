@@ -35,8 +35,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #endif
@@ -227,8 +226,7 @@ void OnDefaultSchemeClientWorkerFinished(
   bool chrome_is_default_handler = state == shell_integration::IS_DEFAULT;
 
   // On ChromeOS, Click to Call is integrated into the external protocol dialog.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_contents && ShouldOfferClickToCallForURL(
                           web_contents->GetBrowserContext(), escaped_url)) {
     // Handle tel links by opening the Click to Call dialog. This will call back

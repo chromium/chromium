@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, TestHTTPSOCSPOldStapledButValidAIA) {
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || \
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, HardFailOnOCSPInvalid) {
   if (!ssl_test_util::SystemSupportsHardFailRevocationChecking()) {
@@ -708,8 +708,8 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
   net::CertStatus cert_status = GetCurrentCertStatus();
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
-#endif  //  BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
-        //  BUILDFLAG(IS_FUCHSIA) ||  BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+        // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 using AIABrowserTest = OCSPBrowserTest;
 

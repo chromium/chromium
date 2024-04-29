@@ -17,7 +17,7 @@
 #include <windows.h>
 // Must be after <windows.h>
 #include <winbase.h>
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
 #endif
 

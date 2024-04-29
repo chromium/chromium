@@ -199,7 +199,6 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowlist_Missing) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
 // Flaky on Linux and ChromeOS. See: crbug.com/1172978.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AutoplayDeniedByPolicy DISABLED_AutoplayDeniedByPolicy
@@ -309,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
   EXPECT_TRUE(TryAutoplay(GetPrimaryMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 class AutoplayPolicyFencedFrameTest : public AutoplayPolicyTest {
  public:
   AutoplayPolicyFencedFrameTest() = default;
@@ -344,7 +343,6 @@ class AutoplayPolicyFencedFrameTest : public AutoplayPolicyTest {
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-#if !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest, AutoplayAllowedByPolicy) {
   // Check that autoplay was not allowed.
   NavigateAndCheckAutoplayAllowed(false);
@@ -357,7 +355,6 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest, AutoplayAllowedByPolicy) {
   // Check that autoplay was allowed by policy.
   NavigateAndCheckAutoplayAllowed(true);
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest,
                        AutoplayAllowlist_Allowed) {

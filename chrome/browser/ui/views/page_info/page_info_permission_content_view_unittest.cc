@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"

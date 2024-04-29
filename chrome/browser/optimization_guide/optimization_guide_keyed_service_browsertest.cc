@@ -1389,7 +1389,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", false, 1);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID)
 
 class OptimizationGuideKeyedServiceEnterpriseBrowserTest
     : public OptimizationGuideKeyedServiceBrowserTest {
@@ -1624,6 +1624,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
       "OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction", true, 1);
 }
 
-#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#endif  //  !BUILDFLAG(IS_ANDROID)
 
 }  // namespace optimization_guide

@@ -112,9 +112,6 @@ std::string ExpectedOsPlatform() {
 #elif BUILDFLAG(IS_LINUX)
   return "Linux";
 #endif
-#if BUILDFLAG(IS_FUCHSIA)
-  return "Fuchsia";
-#endif
 }
 
 // We want a way to check whether or not any metadata was set, but the profile

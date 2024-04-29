@@ -216,7 +216,7 @@ class TestBrowserWindow : public BrowserWindow {
   void MaybeShowProfileSwitchIPH() override {}
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_LINUX)
   void ShowHatsDialog(
       const std::string& site_id,
       base::OnceClosure success_callback,

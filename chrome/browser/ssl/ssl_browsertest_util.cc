@@ -132,7 +132,7 @@ void SecurityStateWebContentsObserver::DidChangeVisibleSecurityState() {
 }
 
 bool UsingBuiltinCertVerifier() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   return true;
 #else

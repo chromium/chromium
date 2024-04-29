@@ -96,7 +96,7 @@ class TestingPrefStoreWithCustomReadError : public TestingPrefStore {
 #if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kExtensionFilePath[] =
     FILE_PATH_LITERAL("c:\\foo");
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
 const base::FilePath::CharType kExtensionFilePath[] = FILE_PATH_LITERAL("/oo");
 #endif
 

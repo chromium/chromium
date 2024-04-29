@@ -860,7 +860,6 @@ TEST_P(ExtensionProtocolsTest, VerificationSeenForFileAccessErrors) {
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
 
-#if !BUILDFLAG(IS_FUCHSIA)  // Fuchsia does not support file permissions.
   // chmod -r 1024.js.
   {
     TestContentVerifySingleJobObserver observer(extension_id, kRelativePath);
@@ -874,7 +873,6 @@ TEST_P(ExtensionProtocolsTest, VerificationSeenForFileAccessErrors) {
     // TODO(lazyboy): We may want to update this to more closely reflect the
     // real flow.
   }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // Delete 1024.js.
   {
@@ -921,7 +919,6 @@ TEST_P(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
 
-#if !BUILDFLAG(IS_FUCHSIA)  // Fuchsia does not support file permissions.
   // chmod -r empty.js.
   // Unreadable empty file doesn't generate hash mismatch. Note that this is the
   // current behavior of ContentVerifyJob.
@@ -933,7 +930,6 @@ TEST_P(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
               DoRequestOrLoad(extension, kEmptyJs).result());
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // rm empty.js.
   // Deleted empty file doesn't generate hash mismatch. Note that this is the

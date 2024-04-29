@@ -401,7 +401,7 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
 #if BUILDFLAG(IS_WIN)
   base::FilePath::StringType host_path(base::UTF8ToWide(host));
   base::FilePath::StringType scheme_port_path(base::UTF8ToWide(scheme_port));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath::StringType host_path(host);
   base::FilePath::StringType scheme_port_path(scheme_port);
 #else

@@ -896,7 +896,6 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   base::win::AllowDarkModeForApp(true);
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
   // Schedule the cleanup of persistent histogram files. These tasks must only
   // be scheduled in the main browser after taking the process singleton. They
   // cannot be scheduled immediately after InstantiatePersistentHistograms()
@@ -913,7 +912,6 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
       base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
     PersistentHistogramsCleanup(metrics_dir);
   }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // Chrome disallows cookies by default. All code paths that want to use
   // cookies need to go through one of Chrome's URLRequestContexts which have
@@ -1787,7 +1785,6 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
   SuppressWindowsErrorDialogs();
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
   // If this is a browser process, initialize the persistent histograms system.
   // This is done as soon as possible to ensure metrics collection coverage.
   // For Fuchsia, persistent histogram initialization is done after field trial
@@ -1814,7 +1811,6 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
       NOTREACHED();
     }
   }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(ENABLE_NACL)
   ChromeContentClient::SetNaClEntryFunctions(nacl_plugin::PPP_GetInterface,

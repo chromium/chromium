@@ -799,7 +799,7 @@ NativeDesktopMediaList::NativeDesktopMediaList(
   DCHECK(type_ == DesktopMediaList::Type::kWindow ||
          !add_current_process_windows_);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // webrtc::DesktopCapturer implementations on Windows, MacOS and Fuchsia
   // expect to run on a thread with a UI message pump. Under Fuchsia the
   // capturer needs an async loop to support FIDL I/O.

@@ -185,7 +185,7 @@ PermissionPromptBubbleOneOriginView::~PermissionPromptBubbleOneOriginView() =
     default;
 
 void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto button = GetPermissionDialogButton(button_id);
   if (button == PermissionDialogButton::kAccept ||
       button == PermissionDialogButton::kAcceptOnce) {
@@ -229,7 +229,7 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (request->request_type() == permissions::RequestType::kMicStream) {
     mic_permission_label_ = label;
   } else if (request->request_type() ==
@@ -254,7 +254,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     std::vector<std::string> requested_audio_capture_device_ids,
     std::vector<std::string> requested_video_capture_device_ids,
     size_t index) {
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
     return;
   }
@@ -285,7 +285,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
 #endif
 }
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
 void PermissionPromptBubbleOneOriginView::OnAudioDevicesChanged(
     const std::optional<std::vector<media::AudioDeviceDescription>>&
         device_infos) {

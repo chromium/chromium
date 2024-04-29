@@ -571,8 +571,7 @@ namespace {
 
 enum class ChromeAppDeprecationFeatureValue {
   kDefault,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   kEnabledWithNoLaunch,
   kDisabled,
 #endif
@@ -586,8 +585,7 @@ std::string ChromeAppDeprecationFeatureValueToString(
     case ChromeAppDeprecationFeatureValue::kDefault:
       result = "ChromeAppDeprecationFeatureDefault";
       break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch:
       result = "ChromeAppDeprecationFeatureEnabledWithNoLaunch";
       break;
@@ -609,8 +607,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     switch (GetParam()) {
       case ChromeAppDeprecationFeatureValue::kDefault:
         break;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
       case ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch:
         scoped_feature_list_.InitAndEnableFeature(
             features::kChromeAppsDeprecation);
@@ -629,8 +626,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
 
   void ExpectBlockLaunch(const std::string& app_id, bool force_install_dialog) {
     ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     auto waiter = views::NamedWidgetShownWaiter(
         views::test::AnyWidgetTestPasskey{},
         force_install_dialog ? "ForceInstalledDeprecatedAppsDialogView"
@@ -650,8 +646,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     EXPECT_EQ(1, other_tab_strip->count());
     EXPECT_FALSE(other_browser->is_type_app());
     EXPECT_TRUE(other_browser->is_type_normal());
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     GURL expected_url =
         force_install_dialog
@@ -729,8 +724,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   bool IsExpectedToAllowLaunch() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     return false;
 #else
     return true;

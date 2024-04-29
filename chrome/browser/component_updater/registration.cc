@@ -167,9 +167,7 @@ void RegisterComponentsForUpdate() {
   // Since file type policies are per-platform, and we don't support
   // Fuchsia-specific component versions, we don't dynamically update file type
   // policies on Fuchsia.
-#if !BUILDFLAG(IS_FUCHSIA)
   RegisterFileTypePoliciesComponent(cus);
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // CRLSetFetcher attempts to load a CRL set from either the local disk or

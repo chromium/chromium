@@ -18,7 +18,7 @@
 
 namespace enterprise_connectors {
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 using CrashReportingContextTest = InProcessBrowserTest;
 
@@ -46,6 +46,6 @@ IN_PROC_BROWSER_TEST_F(CrashReportingContextTest, OnCloudReportingLaunched) {
   crash_reporting_context->OnCloudReportingLaunched(nullptr);
 }
 
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_connectors

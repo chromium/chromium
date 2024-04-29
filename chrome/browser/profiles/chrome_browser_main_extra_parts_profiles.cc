@@ -907,7 +907,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   MediaDrmOriginIdManagerFactory::GetInstance();
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
     MediaEffectsServiceFactory::GetInstance();
   }

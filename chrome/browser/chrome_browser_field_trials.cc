@@ -58,7 +58,7 @@ ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
 ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() = default;
 
 void ChromeBrowserFieldTrials::OnVariationsSetupComplete() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Persistent histograms must be enabled ASAP, but depends on Features.
   // For non-Fuchsia platforms, it is enabled earlier on, and is not controlled
   // by variations.
@@ -78,7 +78,7 @@ void ChromeBrowserFieldTrials::OnVariationsSetupComplete() {
       NOTREACHED();
     }
   }
-#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(

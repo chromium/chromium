@@ -103,7 +103,7 @@ class DownloadTestBase : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN)
   static constexpr char kDangerousMockFilePath[] =
       "/downloads/dangerous/dangerous.exe";
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   // TODO(crbug.com/40800578): Find an actually "dangerous" extension for
   // Fuchsia.
   static constexpr char kDangerousMockFilePath[] =

@@ -2237,7 +2237,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(prefs::kPrefHasCompletedComposeFRE, false);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 #endif
 }

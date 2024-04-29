@@ -81,7 +81,7 @@ bool DownloadPathIsDangerous(const base::FilePath& download_path) {
   }
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID)
   // Neither Fuchsia nor Android have a desktop dir.
   return false;
 #else

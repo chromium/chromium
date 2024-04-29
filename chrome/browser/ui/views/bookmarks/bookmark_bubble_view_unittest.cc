@@ -145,9 +145,7 @@ class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
 class BookmarkBubbleViewTest : public BookmarkBubbleViewTestBase {
  public:
   BookmarkBubbleViewTest() {
-#if !BUILDFLAG(IS_FUCHSIA)
     test_features_.InitAndEnableFeature(commerce::kShoppingList);
-#endif  // !BUILDFLAG(IS_FUCHSIA)
   }
 };
 
@@ -173,7 +171,6 @@ TEST_F(BookmarkBubbleViewTest, SyncPromoNotSignedIn) {
 #endif
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
 // Verifies that the price tracking view is displayed for trackable product.
 TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsVisible) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -252,9 +249,7 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewWithToggleOn) {
   EXPECT_TRUE(price_tracking_view);
   EXPECT_TRUE(price_tracking_view->IsToggleOn());
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
-#if !BUILDFLAG(IS_FUCHSIA)
 class PriceTrackingViewFeatureFlagTest
     : public BookmarkBubbleViewTestBase,
       public testing::WithParamInterface<bool> {
@@ -309,8 +304,6 @@ TEST_P(PriceTrackingViewFeatureFlagTest, PriceTrackingViewCreation) {
     EXPECT_FALSE(price_tracking_view);
   }
 }
-
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 class BookmarkBubbleViewShoppingCollectionTest
     : public BookmarkBubbleViewTestBase {

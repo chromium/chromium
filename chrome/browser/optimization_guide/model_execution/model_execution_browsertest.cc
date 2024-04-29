@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
       ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID)
 
 class ModelExecutionEnterprisePolicyBrowserTest
     : public ModelExecutionEnabledBrowserTest {
@@ -1001,6 +1001,6 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       UserVisibleFeatureKey::kCompose));
 }
 
-#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#endif  //  !BUILDFLAG(IS_ANDROID)
 
 }  // namespace optimization_guide

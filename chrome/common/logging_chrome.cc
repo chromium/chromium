@@ -169,13 +169,7 @@ LoggingDestination LoggingDestFromCommandLine(
     const base::CommandLine& command_line,
     bool& filename_is_handle) {
   filename_is_handle = false;
-#if BUILDFLAG(IS_FUCHSIA)
-  // Fuchsia provides a system log that can be filtered for logs from specific
-  // components (e.g. Chrome), and which is easier to access than logs in a
-  // file in the component's namespace would be, so always use the system log
-  // by default.
-  const LoggingDestination kDefaultLoggingMode = LOG_TO_SYSTEM_DEBUG_LOG;
-#elif defined(NDEBUG)
+#if defined(NDEBUG)
   // In Release builds, log only to the log file.
   const LoggingDestination kDefaultLoggingMode = LOG_TO_FILE;
 #else

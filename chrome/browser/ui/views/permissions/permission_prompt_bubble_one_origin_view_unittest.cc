@@ -19,7 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -193,7 +193,7 @@ TEST_F(PermissionPromptBubbleOneOriginViewTest,
   EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "use your camera", title);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 

@@ -1876,9 +1876,7 @@ void RenderViewContextMenu::AppendLinkItems() {
                                 /*add_separator*/ false);
     }
 
-#if !BUILDFLAG(IS_FUCHSIA)
     AppendClickToCallItem();
-#endif
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SAVELINKAS,
@@ -2635,9 +2633,7 @@ void RenderViewContextMenu::AppendSharingItems() {
   size_t items_before_sharing = menu_model_.GetItemCount();
   bool starting_separator_added = items_before_sharing > items_initial;
 
-#if !BUILDFLAG(IS_FUCHSIA)
   AppendClickToCallItem();
-#endif
 
   // Add an ending separator if there are sharing items, otherwise remove the
   // starting separator iff we added one above.
@@ -2648,7 +2644,6 @@ void RenderViewContextMenu::AppendSharingItems() {
     menu_model_.RemoveItemAt(items_initial);
 }
 
-#if !BUILDFLAG(IS_FUCHSIA)
 void RenderViewContextMenu::AppendClickToCallItem() {
   SharingClickToCallEntryPoint entry_point;
   std::optional<std::string> phone_number;
@@ -2675,7 +2670,6 @@ void RenderViewContextMenu::AppendClickToCallItem() {
   click_to_call_context_menu_observer_->BuildMenu(*phone_number, selection_text,
                                                   entry_point);
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
   int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;

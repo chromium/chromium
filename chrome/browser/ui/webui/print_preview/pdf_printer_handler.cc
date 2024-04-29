@@ -368,7 +368,7 @@ base::FilePath PdfPrinterHandler::GetFileNameForPrintJobTitle(
   DCHECK(!job_title.empty());
 #if BUILDFLAG(IS_WIN)
   base::FilePath::StringType print_job_title(base::AsWString(job_title));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath::StringType print_job_title = base::UTF16ToUTF8(job_title);
 #endif
 
@@ -441,19 +441,7 @@ void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
 
   sticky_settings_->SaveInPrefs(profile_->GetPrefs());
 
-#if BUILDFLAG(IS_FUCHSIA)
-  // Fuchsia does not support system dialog yet. So skip the dialog
-  // and store the default download directory. See crbug.com/1226242 for the
-  // details.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CreateDirectoryIfNotExists, GetSaveLocation()),
-      base::BindOnce(&PdfPrinterHandler::OnSaveLocationReady,
-                     weak_ptr_factory_.GetWeakPtr(), default_filename,
-                     /*prompt_user=*/false));
-#else
   OnSaveLocationReady(default_filename, prompt_user, GetSaveLocation());
-#endif
 }
 
 void PdfPrinterHandler::OnSaveLocationReady(

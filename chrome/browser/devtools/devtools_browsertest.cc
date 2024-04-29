@@ -2492,7 +2492,7 @@ IN_PROC_BROWSER_TEST_F(WorkerDevToolsTest, InspectSharedWorker) {
 
 // Flaky on multiple platforms. See http://crbug.com/1263230
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_MAC)
 #define MAYBE_PauseInSharedWorkerInitialization \
   DISABLED_PauseInSharedWorkerInitialization
 #else

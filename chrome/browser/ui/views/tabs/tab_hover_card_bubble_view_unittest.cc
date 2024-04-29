@@ -19,41 +19,6 @@
 #include "base/mac/mac_util.h"
 #endif
 
-namespace {
-
-// Specifies whether to skip certain test cases on specific platforms. This is a
-// weak-typed bitfield emoji and is passed as an int so that values can be
-// combined.
-//
-// Whether a single grapheme composed of multiple glyphs/codepoints correctly
-// displays on a system is dependent on the OS version and font. Some older OSes
-// do not support some of the more complex test graphemes we are using to test
-// elision at grapheme boundaries.
-//
-// On systems which do not support a glyph or grapheme, a multi-codepoint
-// grapheme may appear as multiple glyphs. It's therefore possible for a test
-// that should have elided or shown an entire grapheme to display only one of
-// the incorrect [sub]glyphs, causing test output to be different than expected.
-// Rather than not testing these complex graphemes, we simply disable these test
-// cases on systems we know do not support them.
-enum OmitOnPlatforms {
-  kRunOnAllPlatforms = 0,
-
-  // TODO(crbug.com/40204305): Remove once emoji (including modified/joined
-  // emoji) are supported on Fuchsia.
-  kOmitOnFuchsia = 1 << 1,
-};
-
-bool ShouldOmitOnPlatform(int omit_on) {
-#if BUILDFLAG(IS_FUCHSIA)
-  if (omit_on & kOmitOnFuchsia)
-    return true;
-#endif
-  return false;
-}
-
-}  // namespace
-
 class TabHoverCardBubbleViewFilenameEliderTest {
  protected:
   static constexpr float kGlyphWidth = 10.0;
@@ -117,7 +82,6 @@ struct ElideImplTestParams {
   const size_t max_second_line_length;
   const char16_t* const expected;
   const char* const comment;
-  const int omit_on = kRunOnAllPlatforms;
 };
 
 void PrintTo(const ElideImplTestParams& params, ::std::ostream* os) {
@@ -221,11 +185,6 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(TabHoverCardBubbleViewFilenameEliderElideImplTest, ElideImpl) {
   const ElideImplTestParams& params = GetParam();
-  if (ShouldOmitOnPlatform(params.omit_on)) {
-    LOG(INFO) << "Test marked as skipped on this platform: \"" << params.comment
-              << "\"";
-    return;
-  }
   EXPECT_EQ(std::u16string(params.expected),
             ElideImpl(params.text, params.max_first_line_length,
                       params.max_second_line_length));
@@ -238,7 +197,6 @@ struct ElideTestParams {
   const size_t expected_second_line_length;
   const char16_t* const elided;
   const char* const comment;
-  const int omit_on = kRunOnAllPlatforms;
 };
 
 void PrintTo(const ElideTestParams& params, ::std::ostream* os) {
@@ -283,28 +241,24 @@ const ElideTestParams kElideTestParams[]{
      "Two-character emoji fully elided between lines."},
     {u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"efg", 4, 7, 3,
      u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"\nefg",
-     "First line ends with modified emoji.", kOmitOnFuchsia},
+     "First line ends with modified emoji."},
     {u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"efg", 3, 3, 2,
      ELLIPSIZE(u"abc", u"fg"), "Modified emoji fully elided between lines."},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efg", 4, 10, 3,
      u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"\nefg",
-     "First line ends with joined emoji, full string returned.",
-     kOmitOnFuchsia},
+     "First line ends with joined emoji, full string returned."},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efgh", 4, 10, 3,
      ELLIPSIZE(u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE, u"fgh"),
-     "First line ends with joined emoji, string cut in middle (1).",
-     kOmitOnFuchsia},
+     "First line ends with joined emoji, string cut in middle (1)."},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"defghi", 5, 11, 4,
      ELLIPSIZE(u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"d", u"fghi"),
-     "First line ends with joined emoji, string cut in middle (2).",
-     kOmitOnFuchsia},
+     "First line ends with joined emoji, string cut in middle (2)."},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efg", 3, 3, 2,
      ELLIPSIZE(u"abc", u"fg"), "Joined emoji fully elided between lines."},
     {u"abcde" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE
          MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"fg",
      4, 4, 9, ELLIPSIZE(u"abcd", MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"fg"),
-     "Joined emoji in sequence; first emoji is elided but not second.",
-     kOmitOnFuchsia},
+     "Joined emoji in sequence; first emoji is elided but not second."},
     // These test the combined function of the Elide() method, including the
     // intelligent overlapping and positioning of lines and extensions.
     {u"abcdef", 5, 5, 4, u"abcde\nf", "Wrap at last possible location."},
@@ -334,11 +288,6 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(TabHoverCardBubbleViewFilenameEliderGetLineLengthsTest, GetLineLengths) {
   const ElideTestParams& params = GetParam();
-  if (ShouldOmitOnPlatform(params.omit_on)) {
-    LOG(INFO) << "Test marked as skipped on this platform: \"" << params.comment
-              << "\"";
-    return;
-  }
   auto result = GetLineLengths(params.text, params.chars_per_line);
   EXPECT_EQ(params.expected_first_line_length, result.first)
       << "Text length is " << std::u16string(params.text).length();
@@ -347,11 +296,6 @@ TEST_P(TabHoverCardBubbleViewFilenameEliderGetLineLengthsTest, GetLineLengths) {
 
 TEST_P(TabHoverCardBubbleViewFilenameEliderGetLineLengthsTest, Elide) {
   const ElideTestParams& params = GetParam();
-  if (ShouldOmitOnPlatform(params.omit_on)) {
-    LOG(INFO) << "Test marked as skipped on this platform: \"" << params.comment
-              << "\"";
-    return;
-  }
   FilenameElider elider(CreateRenderText(std::u16string()));
   EXPECT_EQ(std::u16string(params.elided),
             elider.Elide(params.text, GetTextRect(params.chars_per_line)));

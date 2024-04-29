@@ -27,9 +27,9 @@
 #include "sql/statement.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC)
 #include "chrome/utility/importer/nss_decryptor.h"
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -150,13 +150,13 @@ void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
     ImportBookmarks();
     bridge_->NotifyItemEnded(importer::FAVORITES);
   }
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC)
   if ((items & importer::PASSWORDS) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::PASSWORDS);
     ImportPasswords();
     bridge_->NotifyItemEnded(importer::PASSWORDS);
   }
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_MAC)
   if ((items & importer::AUTOFILL_FORM_DATA) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::AUTOFILL_FORM_DATA);
     ImportAutofillFormData();
@@ -375,7 +375,7 @@ void FirefoxImporter::ImportBookmarks() {
   }
 }
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC)
 void FirefoxImporter::ImportPasswords() {
   // Initializes NSS3.
   NSSDecryptor decryptor;
@@ -401,7 +401,7 @@ void FirefoxImporter::ImportPasswords() {
     }
   }
 }
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_MAC)
 
 void FirefoxImporter::ImportHomepage() {
   GURL home_page = GetHomepage(source_path_);

@@ -91,7 +91,7 @@ std::set<base::FilePath> GetPrefsCandidateFilesFromFolder(
       base::FileEnumerator::FILES);
 #if BUILDFLAG(IS_WIN)
   base::FilePath::StringType extension = base::UTF8ToWide(".json");
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath::StringType extension(".json");
 #endif
   do {
@@ -369,7 +369,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
 #if BUILDFLAG(IS_WIN)
         base::WideToASCII(
             extension_candidate_path.RemoveExtension().BaseName().value());
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
         extension_candidate_path.RemoveExtension().BaseName().value();
 #endif
 

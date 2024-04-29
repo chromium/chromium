@@ -15,9 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||                \
-    BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&         \
-        !BUILDFLAG(IS_CHROMEOS_LACROS)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) &&               \
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -33,9 +32,8 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||
-        // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
-        // !BUILDFLAG(IS_CHROMEOS_LACROS)
+        // BUILDFLAG(IS_ANDROID)  || BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace enterprise {
 
@@ -50,9 +48,8 @@ class ProfileIdServiceFactoryTest : public testing::Test {
   ProfileIdServiceFactoryTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||                \
-    BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&         \
-        !BUILDFLAG(IS_CHROMEOS_LACROS)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) &&               \
+    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     policy::BrowserDMTokenStorage::SetForTesting(&storage_);
     storage_.SetClientId(kFakeDeviceID);
 #else
@@ -70,8 +67,8 @@ class ProfileIdServiceFactoryTest : public testing::Test {
                                                   kFakeDeviceID);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||
-        // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
+        // BUILDFLAG(IS_ANDROID)  || BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_CHROMEOS_ASH) &&
         // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
     EXPECT_TRUE(profile_manager_.SetUp());
@@ -109,7 +106,7 @@ class ProfileIdServiceFactoryTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
   raw_ptr<ProfileIdService> service_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||                \
+    BUILDFLAG(IS_ANDROID) ||                                         \
     BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&         \
         !BUILDFLAG(IS_CHROMEOS_LACROS)
   policy::FakeBrowserDMTokenStorage storage_;
@@ -119,7 +116,7 @@ class ProfileIdServiceFactoryTest : public testing::Test {
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||
+        // BUILDFLAG(IS_ANDROID)  ||
         // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_ASH) &&
         // !BUILDFLAG(IS_CHROMEOS_LACROS)
 };

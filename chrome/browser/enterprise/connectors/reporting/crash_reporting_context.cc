@@ -18,7 +18,7 @@
 
 namespace enterprise_connectors {
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -253,7 +253,7 @@ void CrashReportingContext::RemoveProfile(BrowserCrashEventRouter* router) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 CrashReportingContext::~CrashReportingContext() = default;
 

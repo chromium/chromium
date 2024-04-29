@@ -160,7 +160,7 @@ void EnsureMediaDirectoriesExists::Init() {
 base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir) {
 #if BUILDFLAG(IS_WIN)
   return base::FilePath(FILE_PATH_LITERAL("C:\\")).AppendASCII(dir);
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   return base::FilePath(FILE_PATH_LITERAL("/")).Append(dir);
 #else
 #error Unknown platform.

@@ -76,9 +76,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-#if !BUILDFLAG(IS_FUCHSIA)
   registry->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
-#endif
 }
 
 }  // namespace enterprise_connectors

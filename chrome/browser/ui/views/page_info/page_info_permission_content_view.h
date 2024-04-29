@@ -11,7 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/media_preview/page_info_previews_coordinator.h"
 #include "components/media_effects/media_device_info.h"
 #endif
@@ -52,7 +52,7 @@ class ToggleButton;
 // *---------------------------------------------------------------*
 class PageInfoPermissionContentView
     : public views::View,
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
       public media_effects::MediaDeviceInfo::Observer,
 #endif
       public PageInfoUI {
@@ -69,7 +69,7 @@ class PageInfoPermissionContentView
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
   const raw_ptr<views::Label> GetTitleForTesting() const { return title_; }
 
   const std::optional<PageInfoPreviewsCoordinator>&
@@ -87,7 +87,7 @@ class PageInfoPermissionContentView
   void PermissionChanged();
   void ToggleFileSystemExtendedPermissions();
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
   // media_effects::MediaDeviceInfo::Observer overrides.
   void OnAudioDevicesChanged(
       const std::optional<std::vector<media::AudioDeviceDescription>>&
@@ -115,7 +115,7 @@ class PageInfoPermissionContentView
   raw_ptr<views::ToggleButton> toggle_button_ = nullptr;
   raw_ptr<views::Checkbox> remember_setting_ = nullptr;
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS)
   std::optional<PageInfoPreviewsCoordinator> previews_coordinator_;
   base::ScopedObservation<media_effects::MediaDeviceInfo,
                           PageInfoPermissionContentView>

@@ -887,17 +887,8 @@ class SingleClientSessionsSyncTestWithFaviconTestServer
   }
 };
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/40212395): Re-enable after further investigation.
-#define MAYBE_ShouldDeleteOnDemandIconsOnSessionsDisabled \
-  DISABLED_ShouldDeleteOnDemandIconsOnSessionsDisabled
-#else
-#define MAYBE_ShouldDeleteOnDemandIconsOnSessionsDisabled \
-  ShouldDeleteOnDemandIconsOnSessionsDisabled
-#endif
-
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,
-                       MAYBE_ShouldDeleteOnDemandIconsOnSessionsDisabled) {
+                       ShouldDeleteOnDemandIconsOnSessionsDisabled) {
   const std::string kForeignSessionTag = "ForeignSessionTag";
   const std::string kForeignClientName = "ForeignClientName";
   const SessionID kWindowId = SessionID::FromSerializedValue(5);
