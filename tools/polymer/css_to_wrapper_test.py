@@ -91,7 +91,7 @@ class CssToWrapperTest(unittest.TestCase):
   def testCssToWrapperVarsLit(self):
     self._run_test('css_to_wrapper/foo_vars_lit_only.css',
                    'css_to_wrapper/foo_vars_lit_only.css.ts',
-                   'css_to_wrapper/expected/foo_vars_lit_only.css.ts')
+                   'css_to_wrapper/expected/foo_vars.css.ts')
 
   def testCssToWrapperMinify(self):
     self._run_test('css_to_wrapper/foo_style.css',

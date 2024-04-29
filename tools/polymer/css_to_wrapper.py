@@ -43,7 +43,7 @@ styleMod.appendChild(html`
 `.content);
 styleMod.register(\'%(id)s\');"""
 
-_POLYMER_VARS_TEMPLATE = """%(imports)s
+_VARS_TEMPLATE = """%(imports)s
 export {};
 
 const sheet = new CSSStyleSheet();
@@ -59,18 +59,12 @@ export function getCss() {
   return instance || (instance = [...[%(deps)s], css`%(content)s`]);
 }"""
 
-_LIT_VARS_TEMPLATE = """import {css} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
-%(imports)s
-
-const result = css`%(content)s`;
-document.adoptedStyleSheets = [...document.adoptedStyleSheets, result.styleSheet!];"""
-
 # Map holding all the different types of CSS files to generate wrappers for.
 _TEMPLATE_MAP = {
     'style': _POLYMER_STYLE_TEMPLATE,
     'style-lit': _LIT_STYLE_TEMPLATE,
-    'vars': _POLYMER_VARS_TEMPLATE,
-    'vars-lit': _LIT_VARS_TEMPLATE,
+    'vars': _VARS_TEMPLATE,
+    'vars-lit': _VARS_TEMPLATE,
 }
 
 # A suffix used for style files that are copies of Polymer styles ported into
