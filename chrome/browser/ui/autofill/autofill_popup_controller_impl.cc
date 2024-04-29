@@ -134,7 +134,7 @@ void AutofillPopupControllerImpl::Show(
   // Autofill popups should only be shown in focused windows because on Windows
   // the popup may overlap the focused window (see crbug.com/1239760).
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();
-      !rwhv || !rwhv->HasFocus()) {
+      (!rwhv || !rwhv->HasFocus()) && IsRootPopup()) {
     Hide(PopupHidingReason::kNoFrameHasFocus);
     return;
   }
