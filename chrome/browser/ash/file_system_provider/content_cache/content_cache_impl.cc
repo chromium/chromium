@@ -207,18 +207,20 @@ void ContentCacheImpl::OnItemRemovedFromDisk(
   if (success) {
     item_ids.emplace_back(it->second.id);
     evicted_items.bytes_evicted += it->second.bytes_on_disk;
+    // Automatically increments `it`.
     lru_cache_.Erase(it);
     evicted_items.num_items++;
     DCHECK_GT(cache_items_to_evict_, 0u);
     cache_items_to_evict_--;
   } else {
+    it++;
     LOG(ERROR) << "Failed to remove " << it->second.id << " from disk";
   }
 
-  // Increment the iterator and continue identifying files to be marked for
-  // eviction. In the event no more items are identified, all items in
-  // `item_ids` will be removed from the database.
-  EvictItemsMarkedForEviction(++it, item_ids, evicted_items);
+  // Continue identifying files to be marked for eviction. In the event no more
+  // items are identified, all items in `item_ids` will be removed from the
+  // database.
+  EvictItemsMarkedForEviction(it, item_ids, evicted_items);
 }
 
 void ContentCacheImpl::MarkItemsForEviction() {

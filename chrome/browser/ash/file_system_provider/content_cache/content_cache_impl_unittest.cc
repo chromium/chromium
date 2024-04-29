@@ -516,37 +516,47 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 
 TEST_F(FileSystemProviderContentCacheImplTest,
        SetMaxCacheItemsShouldEvictOldestFilesOnResize) {
-  content_cache_->SetMaxCacheItems(2);
+  content_cache_->SetMaxCacheItems(3);
 
-  // Inserts file into cache with size `kDefaultChunkSize`. 1 space left.
+  // Inserts file into cache with size `kDefaultChunkSize`. 2 spaces left.
   int64_t random_path1_size = kDefaultChunkSize;
   base::FilePath random_path1("random-path1");
   WriteFileToCache(random_path1, "versionA", random_path1_size);
-  // Inserts another file into cache that is `kDefaultChunkSize` * 2. 0 spaces
+  // Inserts another file into cache that is `kDefaultChunkSize` * 2. 1 space
   // left.
   int64_t random_path2_size = kDefaultChunkSize * 2;
-  WriteFileToCache(base::FilePath("random-path2"), "versionA",
-                   random_path2_size);
+  base::FilePath random_path2("random-path2");
+  WriteFileToCache(random_path2, "versionA", random_path2_size);
+  // Inserts another file into cache that is `kDefaultChunkSize` * 4. 0 spaces
+  // left.
+  int64_t random_path3_size = kDefaultChunkSize * 4;
+  WriteFileToCache(base::FilePath("random-path3"), "versionA",
+                   random_path3_size);
 
-  // Resize the cache to only have 1 spot, the `random-path1` entry
-  // (least-recently used) should be evicted.
+  // Resize the cache to only have 1 spot, the `random-path1` and `random-path2`
+  // entries (least-recently used) should be evicted.
   content_cache_->SetMaxCacheItems(1);
 
-  // The items marked for removal should not be readable again (despite being in
-  // the cache).
-  OpenedCloudFile file(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
-                       "versionA", kDefaultChunkSize);
-  EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
+  // The items marked for eviction should not be readable again (despite being
+  // in the cache).
+  OpenedCloudFile file1(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
+                        "versionA", kDefaultChunkSize);
+  EXPECT_FALSE(content_cache_->StartReadBytes(file1, /*buffer=*/nullptr,
+                                              /*offset=*/0, kDefaultChunkSize,
+                                              base::DoNothing()));
+  OpenedCloudFile file2(random_path2, OpenFileMode::OPEN_FILE_MODE_READ,
+                        "versionA", kDefaultChunkSize);
+  EXPECT_FALSE(content_cache_->StartReadBytes(file2, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
 
   // Ensure the `EvictItems` returns the correct values.
   TestFuture<EvictedItemStats> evict_items_future;
   content_cache_->EvictItems(evict_items_future.GetCallback());
-  EXPECT_THAT(
-      evict_items_future.Get(),
-      AllOf(Field(&EvictedItemStats::num_items, 1),
-            Field(&EvictedItemStats::bytes_evicted, random_path1_size)));
+  EXPECT_THAT(evict_items_future.Get(),
+              AllOf(Field(&EvictedItemStats::num_items, 2),
+                    Field(&EvictedItemStats::bytes_evicted,
+                          random_path1_size + random_path2_size)));
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
