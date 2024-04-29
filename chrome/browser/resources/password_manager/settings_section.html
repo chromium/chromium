@@ -133,7 +133,7 @@
         sub-label="$i18n{createPasskeysInICloudKeychainSubLabel}"
         on-click="onCreatePasskeysInICloudKeychainClick_"
         pref="{{prefs.webauthn.create_in_icloud_keychain}}">
-    </pref-link-row>
+    </pref-toggle-button>
   </if>
   <template is="dom-if" if="[[isPasswordManagerPinAvailable_]]" restamp>
     <cr-link-row id="changePasswordManagerPinRow"
