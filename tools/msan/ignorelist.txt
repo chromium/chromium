@@ -10,3 +10,4 @@ fun:ff_get_cpu_flags_x86
 src:*/third_party/breakpad/breakpad/src/*
 src:*/components/crash/core/app/breakpad_linux.cc
 
+src:*/third_party/swiftshader/*
