@@ -55,9 +55,9 @@ struct CacheFileContext {
   // disjoint offset ranges is currently not supported.
   bool in_progress_writer = false;
 
-  // Items marked for removal are scheduled to be removed from disk and the
+  // Items marked for eviction are scheduled to be removed from disk and the
   // database, so any further use should be disallowed.
-  bool marked_for_removal = false;
+  bool marked_for_eviction = false;
 };
 
 using PathContextPair = std::pair<base::FilePath, CacheFileContext>;

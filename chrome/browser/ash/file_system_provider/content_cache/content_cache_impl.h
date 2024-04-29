@@ -107,16 +107,16 @@ class ContentCacheImpl : public ContentCache {
   // Removes items individually from on disk then bulk removes these items from
   // the database. The `item_ids` contains a list of IDs to be removed from the
   // database once all items have been removed off the disk.
-  void EvictItemsMarkedForRemoval(ContentLRUCache::reverse_iterator it,
-                                  std::vector<int64_t>& item_ids,
-                                  EvictedItemStats& evicted_items);
+  void EvictItemsMarkedForEviction(ContentLRUCache::reverse_iterator it,
+                                   std::vector<int64_t>& item_ids,
+                                   EvictedItemStats& evicted_items);
 
   void OnItemRemovedFromDisk(ContentLRUCache::reverse_iterator it,
                              std::vector<int64_t>& item_ids,
                              EvictedItemStats& evicted_items,
                              bool success);
 
-  void OnItemsEvictedFromDatabase(EvictedItemStats& evicted_items,
+  void OnItemsRemovedFromDatabase(EvictedItemStats& evicted_items,
                                   bool success);
 
   // Generates the absolute path on disk from the supplied `item_id`.
@@ -131,7 +131,7 @@ class ContentCacheImpl : public ContentCache {
   BoundContextDatabase context_db_;
 
   size_t max_cache_items_;
-  size_t cache_items_to_remove_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  size_t cache_items_to_evict_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   base::OnceCallbackList<void(EvictedItemStats)> on_evicted_callbacks_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};

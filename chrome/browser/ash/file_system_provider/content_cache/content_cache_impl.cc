@@ -142,17 +142,17 @@ void ContentCacheImpl::EvictItems(EvictedItemStatsCallback callback) {
   }
 
   EvictedItemStats evicted_items;
-  if (cache_items_to_remove_ == 0) {
+  if (cache_items_to_evict_ == 0) {
     on_evicted_callbacks_.Notify(evicted_items);
     return;
   }
 
   ContentLRUCache::reverse_iterator it = lru_cache_.rbegin();
   std::vector<int64_t> item_ids;
-  EvictItemsMarkedForRemoval(it, item_ids, evicted_items);
+  EvictItemsMarkedForEviction(it, item_ids, evicted_items);
 }
 
-void ContentCacheImpl::EvictItemsMarkedForRemoval(
+void ContentCacheImpl::EvictItemsMarkedForEviction(
     ContentLRUCache::reverse_iterator it,
     std::vector<int64_t>& item_ids,
     EvictedItemStats& evicted_items) {
@@ -160,10 +160,10 @@ void ContentCacheImpl::EvictItemsMarkedForRemoval(
 
   // Items in the `lru_cache_` are ordered by least-recently used, so begin at
   // the last item and enumerate (in reverse order) through the list identifying
-  // all the items that are marked for removal and delete them from the disk.
+  // all the items that are marked for eviction and delete them from the disk.
   while (it != lru_cache_.rend()) {
     const CacheFileContext& ctx = it->second;
-    if (ctx.marked_for_removal) {
+    if (ctx.marked_for_eviction) {
       io_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&base::DeleteFile, GetPathOnDiskFromId(ctx.id)),
@@ -182,12 +182,12 @@ void ContentCacheImpl::EvictItemsMarkedForRemoval(
   // them into a single call.
   context_db_.AsyncCall(&ContextDatabase::RemoveItemsByIds)
       .WithArgs(std::move(item_ids))
-      .Then(base::BindOnce(&ContentCacheImpl::OnItemsEvictedFromDatabase,
+      .Then(base::BindOnce(&ContentCacheImpl::OnItemsRemovedFromDatabase,
                            weak_ptr_factory_.GetWeakPtr(),
                            base::OwnedRef(evicted_items)));
 }
 
-void ContentCacheImpl::OnItemsEvictedFromDatabase(
+void ContentCacheImpl::OnItemsRemovedFromDatabase(
     EvictedItemStats& evicted_items,
     bool success) {
   LOG_IF(ERROR, !success) << "Couldn't remove items from database";
@@ -209,47 +209,47 @@ void ContentCacheImpl::OnItemRemovedFromDisk(
     evicted_items.bytes_evicted += it->second.bytes_on_disk;
     lru_cache_.Erase(it);
     evicted_items.num_items++;
-    DCHECK_GT(cache_items_to_remove_, 0u);
-    cache_items_to_remove_--;
+    DCHECK_GT(cache_items_to_evict_, 0u);
+    cache_items_to_evict_--;
   } else {
     LOG(ERROR) << "Failed to remove " << it->second.id << " from disk";
   }
 
   // Increment the iterator and continue identifying files to be marked for
-  // removal. In the event no more items are identified, all items in `item_ids`
-  // will be evicted from the database.
-  EvictItemsMarkedForRemoval(++it, item_ids, evicted_items);
+  // eviction. In the event no more items are identified, all items in
+  // `item_ids` will be removed from the database.
+  EvictItemsMarkedForEviction(++it, item_ids, evicted_items);
 }
 
 void ContentCacheImpl::MarkItemsForEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // The cache size should not include the items that are expected to be removed
+  // The cache size should not include the items that are expected to be evicted
   // as these will get evicted on the next eviction cycle.
-  size_t cache_items_without_marked_for_removal =
-      lru_cache_.size() - cache_items_to_remove_;
-  if (cache_items_without_marked_for_removal <= max_cache_items_) {
-    VLOG(2) << "No items to evict: {cache_items_without_marked_for_removal = "
-            << cache_items_without_marked_for_removal
+  size_t cache_items_without_marked_for_eviction =
+      lru_cache_.size() - cache_items_to_evict_;
+  if (cache_items_without_marked_for_eviction <= max_cache_items_) {
+    VLOG(2) << "No items to evict: {cache_items_without_marked_for_eviction = "
+            << cache_items_without_marked_for_eviction
             << ", max_cache_items = " << max_cache_items_ << "}";
     return;
   }
 
-  // Number of items to evict (including items already marked for removal).
+  // Number of items to evict (including items already marked for eviction).
   size_t items_to_evict = lru_cache_.size() - max_cache_items_;
   VLOG(2) << items_to_evict << " items to be marked for removal, including "
-          << cache_items_to_remove_ << " already marked";
+          << cache_items_to_evict_ << " already marked";
 
   ContentLRUCache::reverse_iterator it = lru_cache_.rbegin();
   while (items_to_evict > 0) {
     CacheFileContext& ctx = it->second;
     const base::FilePath& path = it->first;
-    if (!ctx.marked_for_removal) {
-      VLOG(2) << "Marking '" << path.value() << "' for removal";
-      ctx.marked_for_removal = true;
-      cache_items_to_remove_++;
+    if (!ctx.marked_for_eviction) {
+      VLOG(2) << "Marking '" << path.value() << "' for eviction";
+      ctx.marked_for_eviction = true;
+      cache_items_to_evict_++;
     } else {
-      VLOG(2) << "Item '" << path.value() << "' already marked for removal";
+      VLOG(2) << "Item '" << path.value() << "' already marked for eviction";
     }
     items_to_evict--;
     it++;
@@ -275,8 +275,8 @@ bool ContentCacheImpl::StartReadBytes(
   }
 
   const CacheFileContext& ctx = it->second;
-  if (ctx.marked_for_removal) {
-    VLOG(1) << "Cache miss: file marked for removal";
+  if (ctx.marked_for_eviction) {
+    VLOG(1) << "Cache miss: file marked for eviction";
     return false;
   }
 
@@ -374,8 +374,8 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
   }
 
   CacheFileContext& ctx = it->second;
-  if (ctx.marked_for_removal) {
-    VLOG(1) << "Cache miss: file marked for removal";
+  if (ctx.marked_for_eviction) {
+    VLOG(1) << "Cache miss: file marked for eviction";
     return false;
   }
 
@@ -573,7 +573,7 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<base::FilePath> cached_file_paths;
   for (const auto& [file_path, cache_file_context] : lru_cache_) {
-    if (!cache_file_context.marked_for_removal) {
+    if (!cache_file_context.marked_for_eviction) {
       cached_file_paths.push_back(file_path);
     }
   }
