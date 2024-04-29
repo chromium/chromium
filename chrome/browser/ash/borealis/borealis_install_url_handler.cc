@@ -33,7 +33,8 @@ void HandleInstallUrl(base::WeakPtr<Profile> profile, GURL url) {
   }
   BorealisService::GetForProfile(profile.get())
       ->AppLauncher()
-      .Launch(kClientAppId, base::DoNothing());
+      .Launch(kClientAppId, borealis::BorealisLaunchSource::kInstallUrl,
+              base::DoNothing());
 }
 }  // namespace
 

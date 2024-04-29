@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/dbus/vm/vm_launch_service_provider.h"
 
 #include <dbus/dbus-protocol.h>
+
 #include <memory>
 #include <sstream>
 
@@ -12,6 +13,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_launcher.h"
@@ -59,7 +61,8 @@ void OnAllowChecked(Profile* profile,
     // running the client app, which will bring up the installer or launch the
     // client as needed.
     borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
-        borealis::kClientAppId, base::DoNothing());
+        borealis::kClientAppId, borealis::BorealisLaunchSource::kInsertCoin,
+        base::DoNothing());
   }
   std::move(response_sender)
       .Run(AllowStatusToResponse(new_allowed, method_call));

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 
 namespace borealis {
 
@@ -44,14 +45,18 @@ class BorealisAppLauncher {
   virtual ~BorealisAppLauncher() = default;
 
   // Launch the given |app_id|'s associated application. This can be the
-  // borealis launcher itself or one of its GuestOsRegistry apps.
-  virtual void Launch(std::string app_id, OnLaunchedCallback callback) = 0;
+  // borealis launcher itself or one of its GuestOsRegistry apps. |source|
+  // indicates the source of the launch request.
+  virtual void Launch(std::string app_id,
+                      BorealisLaunchSource source,
+                      OnLaunchedCallback callback) = 0;
 
   // Launch the given |app_id|'s associated application with the given |args|.
   // This can be the borealis launcher itself or one of its GuestOsRegistry
-  // apps.
+  // apps. |source| indicates the source of the launch request.
   virtual void Launch(std::string app_id,
                       const std::vector<std::string>& args,
+                      BorealisLaunchSource source,
                       OnLaunchedCallback callback) = 0;
 };
 

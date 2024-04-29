@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/borealis/borealis_app_uninstaller.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -238,7 +239,8 @@ void BorealisApps::LaunchAppWithIntent(const std::string& app_id,
                                        WindowInfoPtr window_info,
                                        LaunchCallback callback) {
   borealis::BorealisService::GetForProfile(profile())->AppLauncher().Launch(
-      app_id, base::DoNothing());
+      app_id, borealis::BorealisLaunchSource::kSteamInstallerApp,
+      base::DoNothing());
 }
 
 void BorealisApps::SetPermission(const std::string& app_id,

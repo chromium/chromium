@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
@@ -49,11 +50,14 @@ class BorealisLauncherMock : public BorealisAppLauncher {
               Launch,
               (std::string app_id,
                const std::vector<std::string>& args,
+               BorealisLaunchSource source,
                OnLaunchedCallback callback),
               ());
   MOCK_METHOD(void,
               Launch,
-              (std::string app_id, OnLaunchedCallback callback),
+              (std::string app_id,
+               BorealisLaunchSource source,
+               OnLaunchedCallback callback),
               ());
 };
 
@@ -152,9 +156,11 @@ TEST_F(BorealisAppUninstallerTest, BorealisGameUninstalls) {
               Call(BorealisAppUninstaller::UninstallResult::kSuccess));
   BorealisAppUninstaller uninstaller = BorealisAppUninstaller(profile_.get());
   std::vector<std::string> v = {"steam://uninstall/1439770"};
-  EXPECT_CALL(*mock_launcher_, Launch(steam_id, v, testing::_))
+  EXPECT_CALL(*mock_launcher_,
+              Launch(steam_id, v, BorealisLaunchSource::kUnknown, testing::_))
       .WillOnce(testing::Invoke(
           [&](std::string app_id, const std::vector<std::string>& args,
+              BorealisLaunchSource source,
               BorealisAppLauncher::OnLaunchedCallback callback) {
             std::move(callback).Run(
                 BorealisAppLauncher::LaunchResult::kSuccess);

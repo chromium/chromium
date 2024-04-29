@@ -23,17 +23,20 @@ BorealisAppLauncherImpl::BorealisAppLauncherImpl(Profile* profile)
     : profile_(profile) {}
 
 void BorealisAppLauncherImpl::Launch(std::string app_id,
+                                     BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
-  Launch(std::move(app_id), {}, std::move(callback));
+  Launch(std::move(app_id), {}, std::move(source), std::move(callback));
 }
 
 void BorealisAppLauncherImpl::Launch(std::string app_id,
                                      const std::vector<std::string>& args,
+                                     BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
   if (!borealis::BorealisService::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {
     ash::BorealisInstallerDialog::Show(profile_);
+    RecordBorealisInstallSourceHistogram(source);
     std::move(callback).Run(LaunchResult::kSuccess);
     return;
   }

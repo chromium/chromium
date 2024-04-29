@@ -55,6 +55,14 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Main app never showed up"/>
 </enum>
 
+<enum name="BorealisLaunchSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="chromeos-steam://install"/>
+  <int value="2" label="Unified App Installer"/>
+  <int value="3" label="Steam installer Launcher app"/>
+  <int value="4" label="insert_coin crosh command"/>
+</enum>
+
 <enum name="BorealisStartupResult">
   <int value="0" label="Success"/>
   <int value="1" label="Cancelled"/>

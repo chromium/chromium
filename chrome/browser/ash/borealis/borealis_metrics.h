@@ -12,6 +12,7 @@ namespace borealis {
 
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
+extern const char kBorealisInstallSourceHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
 extern const char kBorealisShutdownNumAttemptsHistogram[];
 extern const char kBorealisShutdownResultHistogram[];
@@ -21,6 +22,17 @@ extern const char kBorealisStartupResultHistogram[];
 extern const char kBorealisStartupOverallTimeHistogram[];
 extern const char kBorealisUninstallNumAttemptsHistogram[];
 extern const char kBorealisUninstallResultHistogram[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BorealisLaunchSource {
+  kUnknown = 0,
+  kInstallUrl = 1,
+  kUnifiedAppInstaller = 2,
+  kSteamInstallerApp = 3,
+  kInsertCoin = 4,
+  kMaxValue = kInsertCoin,
+};
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -117,6 +129,7 @@ enum class BorealisShutdownResult {
 void RecordBorealisInstallNumAttemptsHistogram();
 void RecordBorealisInstallResultHistogram(
     borealis::mojom::InstallResult install_result);
+void RecordBorealisInstallSourceHistogram(BorealisLaunchSource install_source);
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);
 void RecordBorealisUninstallNumAttemptsHistogram();
 void RecordBorealisUninstallResultHistogram(

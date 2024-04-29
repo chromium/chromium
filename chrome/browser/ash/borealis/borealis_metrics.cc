@@ -15,6 +15,7 @@ using borealis::mojom::InstallResult;
 const char kBorealisInstallNumAttemptsHistogram[] =
     "Borealis.Install.NumAttempts";
 const char kBorealisInstallResultHistogram[] = "Borealis.Install.Result";
+const char kBorealisInstallSourceHistogram[] = "Borealis.Install.Source";
 const char kBorealisInstallOverallTimeHistogram[] =
     "Borealis.Install.OverallTime";
 // Same as Borealis.Install.OverallTime, but with more appropriate bucket sizes.
@@ -43,6 +44,11 @@ void RecordBorealisInstallNumAttemptsHistogram() {
 void RecordBorealisInstallResultHistogram(InstallResult install_result) {
   base::UmaHistogramEnumeration(kBorealisInstallResultHistogram,
                                 install_result);
+}
+
+void RecordBorealisInstallSourceHistogram(BorealisLaunchSource install_source) {
+  base::UmaHistogramEnumeration(kBorealisInstallSourceHistogram,
+                                install_source);
 }
 
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time) {
