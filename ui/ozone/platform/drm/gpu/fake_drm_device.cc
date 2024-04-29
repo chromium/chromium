@@ -172,8 +172,8 @@ void FakeDrmDevice::PlaneProperties::SetProp(uint32_t prop_id, uint32_t value) {
   properties.push_back({prop_id, value});
 }
 
-FakeDrmDevice::MockDrmState::MockDrmState() = default;
-FakeDrmDevice::MockDrmState::~MockDrmState() = default;
+FakeDrmDevice::FakeDrmState::FakeDrmState() = default;
+FakeDrmDevice::FakeDrmState::~FakeDrmState() = default;
 
 void FakeDrmDevice::ResetStateWithNoProperties() {
   plane_manager_.reset();
@@ -200,7 +200,7 @@ void FakeDrmDevice::ResetStateWithAllProperties() {
                                    kCrtcOptionalPropertyNames.end());
 }
 
-FakeDrmDevice::MockDrmState& FakeDrmDevice::ResetStateWithDefaultObjects(
+FakeDrmDevice::FakeDrmState& FakeDrmDevice::ResetStateWithDefaultObjects(
     size_t crtc_count,
     size_t planes_per_crtc,
     size_t movable_planes) {
@@ -316,7 +316,7 @@ FakeDrmDevice::PlaneProperties& FakeDrmDevice::AddPlane(
   return plane;
 }
 
-bool FakeDrmDevice::MockDrmState::HasResources() const {
+bool FakeDrmDevice::FakeDrmState::HasResources() const {
   return !connector_properties.empty() || !crtc_properties.empty() ||
          !encoder_properties.empty();
 }

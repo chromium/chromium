@@ -154,11 +154,11 @@ class FakeDrmDevice : public DrmDevice {
     std::vector<DrmWrapper::Property> properties;
   };
 
-  struct MockDrmState {
-    MockDrmState();
-    MockDrmState(const MockDrmState&) = delete;
-    MockDrmState& operator=(const MockDrmState&) = delete;
-    ~MockDrmState();
+  struct FakeDrmState {
+    FakeDrmState();
+    FakeDrmState(const FakeDrmState&) = delete;
+    FakeDrmState& operator=(const FakeDrmState&) = delete;
+    ~FakeDrmState();
 
     bool HasResources() const;
 
@@ -247,7 +247,7 @@ class FakeDrmDevice : public DrmDevice {
   // overlay planes for each CRTC. Returns a reference to `drm_state_`.
   // TODO(b/335542790): Update tests to not need the returned reference to
   // `drm_state_`.
-  FakeDrmDevice::MockDrmState& ResetStateWithDefaultObjects(
+  FakeDrmDevice::FakeDrmState& ResetStateWithDefaultObjects(
       size_t crtc_count,
       size_t planes_per_crtc,
       size_t movable_planes = 0u);
@@ -268,7 +268,7 @@ class FakeDrmDevice : public DrmDevice {
   // This can only be called before InitializeState.
   void AddProperty(uint32_t object_id, const DrmWrapper::Property& property);
 
-  // Functions to configure the MockDrmState. Must be called before Initialize
+  // Functions to configure the FakeDrmState. Must be called before Initialize
   // is called.
   CrtcProperties& AddCrtc();
   CrtcProperties& AddCrtcWithPrimaryAndCursorPlanes();
@@ -445,7 +445,7 @@ class FakeDrmDevice : public DrmDevice {
 
   base::queue<PageFlipRequest::PageFlipCallback> callbacks_;
 
-  MockDrmState drm_state_;
+  FakeDrmState drm_state_;
 
   struct BlobState {
     BlobState();
