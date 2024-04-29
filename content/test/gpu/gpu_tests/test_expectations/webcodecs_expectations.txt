@@ -179,6 +179,17 @@ crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_copyTo_hw_deco
 crbug.com/333426465 [ win intel-0x4680 ] WebCodecs_PerFrameQpEncoding_offscreen_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/333426465 [ win intel-0x4680 ] WebCodecs_SVC_vp09.00.10.08_prefer-hardware_layers_2 [ Failure ]
 
+crbug.com/337665165 [ win nvidia-0x2184 angle-d3d11 passthrough release ] WebCodecs_ContentHint_avc1.42001E_text [ Failure ]
+crbug.com/337665165 [ win nvidia-0x2184 angle-d3d11 passthrough release ] WebCodecs_ContentHint_avc1.42001E_motion [ Failure ]
+crbug.com/337665165 [ win nvidia-0x2184 angle-d3d11 passthrough release ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
+crbug.com/337665165 [ win nvidia-0x2184 angle-d3d11 passthrough release ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
+crbug.com/337665165 [ win nvidia-0x2184 angle-d3d11 passthrough release ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
+
+crbug.com/337665164 [ mac intel-0x3e9b angle-metal graphite-enabled asan passthrough release ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/337665164 [ mac intel-0x3e9b angle-metal graphite-enabled asan passthrough release ] WebCodecs_EncodeDecode_offscreen_av01.0.04M.08_prefer-software [ Failure ]
+crbug.com/337665164 [ mac intel-0x3e9b angle-metal graphite-enabled asan passthrough release ] WebCodecs_SVC_avc1.42001E_prefer-hardware_layers_2 [ Failure ]
+crbug.com/337665164 [ mac intel-0x3e9b angle-metal graphite-enabled asan passthrough release ] WebCodecs_convertToRGB_offscreen [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
