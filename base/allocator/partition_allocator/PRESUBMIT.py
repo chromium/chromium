@@ -87,3 +87,57 @@ def CheckForIncludeGuards(input_api, output_api):
                     (f.LocalPath(), expected_guard)))
 
     return errors
+
+def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
+    # Excludes OS_CHROMEOS, which is not defined in build_config.h.
+    macro_re = input_api.re.compile(
+        r'^\s*#(el)?if.*\bdefined\(((COMPILER_|ARCH_CPU_|WCHAR_T_IS_)[^)]*)')
+    include_re = input_api.re.compile(
+        r'^#include\s+"partition_alloc/build_config.h"',
+        input_api.re.MULTILINE)
+    extension_re = input_api.re.compile(r'\.[a-z]+$')
+    errors = []
+    config_h_file = input_api.os_path.join('build', 'build_config.h')
+    for f in input_api.AffectedFiles(include_deletes=False):
+        # The build-config macros are allowed to be used in build_config.h
+        # without including itself.
+        if f.LocalPath() == config_h_file:
+            continue
+        if not f.LocalPath().endswith(
+            ('.h', '.c', '.cc', '.cpp', '.m', '.mm')):
+            continue
+
+        found_line_number = None
+        found_macro = None
+        all_lines = input_api.ReadFile(f, 'r').splitlines()
+        for line_num, line in enumerate(all_lines):
+            match = macro_re.search(line)
+            if match:
+                found_line_number = line_num
+                found_macro = match.group(2)
+                break
+        if not found_line_number:
+            continue
+
+        found_include_line = -1
+        for line_num, line in enumerate(all_lines):
+            if include_re.search(line):
+                found_include_line = line_num
+                break
+        if found_include_line >= 0 and found_include_line < found_line_number:
+            continue
+
+        if not f.LocalPath().endswith('.h'):
+            primary_header_path = extension_re.sub('.h', f.AbsoluteLocalPath())
+            try:
+                content = input_api.ReadFile(primary_header_path, 'r')
+                if include_re.search(content):
+                    continue
+            except IOError:
+                pass
+        errors.append('%s:%d %s macro is used without first including '
+            'partition_alloc/build_config.h.' %
+            (f.LocalPath(), found_line_number, found_macro))
+    if errors:
+        return [output_api.PresubmitPromptWarning('\n'.join(errors))]
+    return []

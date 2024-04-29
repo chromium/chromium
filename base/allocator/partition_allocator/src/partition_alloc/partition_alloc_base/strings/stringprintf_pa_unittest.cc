@@ -5,7 +5,7 @@
 #include <cerrno>
 #include <cstddef>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

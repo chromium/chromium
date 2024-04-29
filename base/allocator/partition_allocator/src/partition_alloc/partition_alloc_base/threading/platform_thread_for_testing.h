@@ -12,7 +12,7 @@
 #include <cstddef>
 #include <iosfwd>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 
 namespace partition_alloc::internal::base {

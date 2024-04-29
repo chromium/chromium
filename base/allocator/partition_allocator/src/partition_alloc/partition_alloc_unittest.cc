@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/partition_alloc_for_testing.h"
-
 #include <algorithm>
 #include <bit>
 #include <cstddef>
@@ -20,8 +18,8 @@
 
 #include "base/system/sys_info.h"
 #include "base/test/gtest_util.h"
-#include "build/build_config.h"
 #include "partition_alloc/address_space_randomization.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/chromecast_buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/freeslot_bitmap.h"
@@ -42,6 +40,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_bucket.h"
 #include "partition_alloc/partition_cookie.h"

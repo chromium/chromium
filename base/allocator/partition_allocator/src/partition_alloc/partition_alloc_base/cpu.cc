@@ -13,7 +13,7 @@
 #include <sstream>
 #include <utility>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 #if defined(ARCH_CPU_ARM_FAMILY) && \
     (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))

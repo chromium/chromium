@@ -4,7 +4,7 @@
 
 #include <malloc.h>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
 // This translation unit defines a default dispatch for the allocator shim which

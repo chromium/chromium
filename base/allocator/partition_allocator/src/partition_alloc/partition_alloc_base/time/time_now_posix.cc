@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <ctime>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
 #if BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
 #include <time64.h>

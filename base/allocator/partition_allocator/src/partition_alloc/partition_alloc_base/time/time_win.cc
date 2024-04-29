@@ -41,7 +41,7 @@
 #include <atomic>
 #include <cstdint>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/bit_cast.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"

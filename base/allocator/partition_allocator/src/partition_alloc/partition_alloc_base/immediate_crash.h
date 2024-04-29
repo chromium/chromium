@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_IMMEDIATE_CRASH_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_IMMEDIATE_CRASH_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 // Crashes in the fastest possible way with no attempt at logging.
 // There are several constraints; see http://crbug.com/664209 for more context.

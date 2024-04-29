@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/shim/winheap_stubs_win.h"

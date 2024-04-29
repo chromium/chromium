@@ -7,8 +7,8 @@
 #include <mutex>
 #include <thread>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"

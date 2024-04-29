@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 namespace partition_alloc::internal::base {
 

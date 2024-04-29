@@ -7,9 +7,9 @@
 
 #include <cstdint>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/address_pool_manager_types.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/bits.h"

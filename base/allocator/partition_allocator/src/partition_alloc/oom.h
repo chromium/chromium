@@ -7,8 +7,8 @@
 
 #include <cstddef>
 
-#include "build/build_config.h"
 #include "partition_alloc/allocation_guard.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 

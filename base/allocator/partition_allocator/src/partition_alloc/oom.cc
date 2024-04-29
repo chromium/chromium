@@ -4,7 +4,7 @@
 
 #include "partition_alloc/oom.h"
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/oom_callback.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"

@@ -11,8 +11,8 @@
 #include <string>
 #include <tuple>
 
-#include "build/build_config.h"
 #include "partition_alloc/allocation_guard.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/chromecast_buildflags.h"
 #include "partition_alloc/memory_reclaimer.h"
 #include "partition_alloc/partition_alloc.h"

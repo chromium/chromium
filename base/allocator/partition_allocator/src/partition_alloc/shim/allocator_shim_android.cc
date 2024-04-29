@@ -6,7 +6,7 @@
 
 #include <unistd.h>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

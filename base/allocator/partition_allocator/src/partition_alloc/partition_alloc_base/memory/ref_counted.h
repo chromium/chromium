@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/atomic_ref_count.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"

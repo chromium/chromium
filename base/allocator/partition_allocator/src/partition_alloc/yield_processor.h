@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_YIELD_PROCESSOR_H_
 #define PARTITION_ALLOC_YIELD_PROCESSOR_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_config.h"
 
 // The PA_YIELD_PROCESSOR macro wraps an architecture specific-instruction that

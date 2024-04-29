@@ -9,8 +9,8 @@
 #include <cstdint>
 #include <tuple>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/freeslot_bitmap.h"
 #include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/oom.h"

@@ -8,7 +8,7 @@
 #include <atomic>
 #include <vector>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/extended_api.h"
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_address_space.h"

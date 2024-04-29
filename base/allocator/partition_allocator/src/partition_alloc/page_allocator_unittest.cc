@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_space_randomization.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_base/logging.h"

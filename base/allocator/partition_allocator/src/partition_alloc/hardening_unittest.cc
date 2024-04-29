@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_page.h"

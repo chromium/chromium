@@ -17,9 +17,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/allocation_guard.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"

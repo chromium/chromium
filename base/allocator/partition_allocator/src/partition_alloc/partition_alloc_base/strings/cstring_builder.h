@@ -5,10 +5,10 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_CSTRING_BUILDER_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_STRINGS_CSTRING_BUILDER_H_
 
-#include "build/build_config.h"
-#include "partition_alloc/partition_alloc_base/component_export.h"
-
 #include <cstddef>
+
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/partition_alloc_base/component_export.h"
 
 #if !BUILDFLAG(IS_WIN)
 #include <unistd.h>

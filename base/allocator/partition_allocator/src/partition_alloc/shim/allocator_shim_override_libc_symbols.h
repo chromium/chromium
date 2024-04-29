@@ -15,7 +15,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>

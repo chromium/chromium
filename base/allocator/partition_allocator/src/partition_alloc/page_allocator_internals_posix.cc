@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include <sys/mman.h>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"

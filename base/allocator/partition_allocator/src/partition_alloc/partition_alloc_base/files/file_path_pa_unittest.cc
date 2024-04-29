@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <sstream>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

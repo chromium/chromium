@@ -10,8 +10,8 @@
 #include <cstddef>
 #include <limits>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_pool_manager_types.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/flags.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"

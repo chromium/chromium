@@ -5,15 +5,15 @@
 #ifndef PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_POSIX_H_
 #define PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNALS_POSIX_H_
 
+#include <sys/mman.h>
+
 #include <algorithm>
 #include <atomic>
 #include <cerrno>
 #include <cstdint>
 #include <cstring>
 
-#include <sys/mman.h>
-
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"

@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <new>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/allocator_dispatch.h"

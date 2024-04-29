@@ -7,7 +7,7 @@
 
 // This header will be leakily included even when
 // `!use_partition_alloc`, which is okay because it's a leaf header.
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"  // nogncheck
 #include "partition_alloc/partition_alloc_buildflags.h"
 

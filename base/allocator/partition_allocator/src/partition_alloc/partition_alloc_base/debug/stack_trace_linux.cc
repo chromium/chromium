@@ -4,7 +4,7 @@
 
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 
 namespace partition_alloc::internal::base::debug {

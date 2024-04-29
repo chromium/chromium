@@ -11,8 +11,8 @@
 #include <ostream>
 #include <string>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/compressed_pointer.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"

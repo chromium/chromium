@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_PAGE_CONSTANTS_H_
 #define PARTITION_ALLOC_PARTITION_PAGE_CONSTANTS_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_constants.h"
 

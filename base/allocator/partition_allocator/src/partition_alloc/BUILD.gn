@@ -90,6 +90,10 @@ if (!is_debug || partition_alloc_optimized_debug) {
   _add_configs += [ "//build/config/compiler:no_optimize" ]
 }
 
+source_set("build_config") {
+  sources = [ "build_config.h" ]
+}
+
 component("raw_ptr") {
   # `gn check` is unhappy with most `#includes` when PA isn't
   # actually built.
@@ -125,8 +129,9 @@ component("raw_ptr") {
     sources += [ "pointers/raw_ptr_noop_impl.h" ]
     sources += [ "pointers/empty.cc" ]
   }
+  public_deps = [ ":build_config" ]
   if (use_partition_alloc) {
-    public_deps = [ ":partition_alloc" ]
+    public_deps += [ ":partition_alloc" ]
   }
   deps = [ ":buildflags" ]
 
@@ -522,6 +527,7 @@ if (is_clang_or_gcc) {
     sources += [ "encoded_next_freelist.h" ]
 
     public_deps = [
+      ":build_config",
       ":chromecast_buildflags",
       ":chromeos_buildflags",
       ":debugging_buildflags",
@@ -747,6 +753,7 @@ if (is_clang_or_gcc) {
     }
 
     public_deps = [
+      ":build_config",
       ":chromecast_buildflags",
       ":chromeos_buildflags",
       ":debugging_buildflags",

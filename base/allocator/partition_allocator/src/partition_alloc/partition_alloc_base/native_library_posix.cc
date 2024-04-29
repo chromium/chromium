@@ -6,7 +6,7 @@
 
 #include <dlfcn.h>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/files/file_path.h"
 

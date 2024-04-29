@@ -14,7 +14,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
 #if BUILDFLAG(IS_ASMJS)

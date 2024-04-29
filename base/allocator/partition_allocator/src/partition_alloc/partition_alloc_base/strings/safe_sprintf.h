@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // For ssize_t

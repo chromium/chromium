@@ -6,7 +6,7 @@
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/page_allocator_constants.h"

@@ -17,7 +17,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_POSIX_EINTR_WRAPPER_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_POSIX_EINTR_WRAPPER_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <cerrno>

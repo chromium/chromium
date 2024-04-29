@@ -6,11 +6,10 @@
 
 #include <algorithm>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(HAS_64_BIT_POINTERS)

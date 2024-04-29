@@ -106,7 +106,7 @@
 #include <iosfwd>
 #include <string>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
 // Windows-style drive letter support and pathname separator characters can be

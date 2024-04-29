@@ -6,13 +6,8 @@
 # project in order to be a standalone library.
 noparent = True
 
-include_rules = [
-  # `partition_alloc` can depends on itself, via the `include_dirs` it declares.
-  "+partition_alloc",
-
-  # Build config to infer the architecture and operating system in use.
-  "+build/build_config.h",
-]
+# `partition_alloc` can depend only on itself, via its `include_dirs`.
+include_rules = [ "+partition_alloc" ]
 
 specific_include_rules = {
   ".*_(perf|unit)test\.cc$": [
@@ -40,7 +35,10 @@ specific_include_rules = {
   "raw_ptr_test_support\.h$": [
     "+testing/gmock/include/gmock/gmock.h",
     "+third_party/abseil-cpp/absl/types/optional.h",
-  ]
+  ],
+
+  # TODO(https://crbug.com/1508847): Remove //build dependency.
+  "build_config.h$": [ "+build/build_config.h" ],
 }
 
 # In the context of a module-level DEPS, the `deps` variable must be defined.

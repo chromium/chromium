@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <mutex>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/starscan/pcscan.h"
 #include "partition_alloc/starscan/raceful_worklist.h"

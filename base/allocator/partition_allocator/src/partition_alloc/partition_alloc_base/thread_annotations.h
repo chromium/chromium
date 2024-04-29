@@ -37,7 +37,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 
 #if defined(__clang__)

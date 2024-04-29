@@ -5795,6 +5795,14 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
         if not f.LocalPath().endswith(
             ('.h', '.c', '.cc', '.cpp', '.m', '.mm')):
             continue
+
+        # See https://crbug.com/1508847. Temporary exclusion for PartitionAlloc,
+        # the time for its dependency on //build to be removed.
+        # PartitionAlloc has its own version of this script. See
+        # base/allocator/partition_alloc/PRESUBMIT.py
+        if "base/allocator/partition_allocator/" in f.LocalPath():
+            continue
+
         found_line_number = None
         found_macro = None
         all_lines = input_api.ReadFile(f, 'r').splitlines()

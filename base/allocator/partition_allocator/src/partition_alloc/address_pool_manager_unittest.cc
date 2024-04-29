@@ -6,8 +6,8 @@
 
 #include <cstdint>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_space_stats.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_buildflags.h"

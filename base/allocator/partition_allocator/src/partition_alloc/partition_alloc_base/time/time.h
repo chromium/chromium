@@ -67,7 +67,7 @@
 #include <iosfwd>
 #include <limits>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/chromeos_buildflags.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"

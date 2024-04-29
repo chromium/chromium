@@ -6,9 +6,7 @@
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-#include "partition_alloc/starscan/pcscan.h"
-
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
@@ -21,6 +19,7 @@
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/stack/stack.h"
+#include "partition_alloc/starscan/pcscan.h"
 #include "partition_alloc/tagging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -9,7 +9,7 @@
 #include <cstring>
 #include <limits>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 #if !defined(NDEBUG)
 // In debug builds, we use RAW_CHECK() to print useful error messages, if

@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPILER_SPECIFIC_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPILER_SPECIFIC_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 // A wrapper around `__has_cpp_attribute`.
 #if defined(__has_cpp_attribute)

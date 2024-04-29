@@ -5,7 +5,7 @@
 #ifndef PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_
 #define PARTITION_ALLOC_ARM_BTI_TEST_FUNCTIONS_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 #if defined(ARCH_CPU_ARM64)
 extern "C" {
