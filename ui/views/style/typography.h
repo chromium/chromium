@@ -106,7 +106,6 @@ enum TextStyle {
 
   // The style used for links. Usually a solid shade of blue.
   STYLE_LINK,
-
   // Active tab in a tabbed pane.
   STYLE_TAB_ACTIVE,
 
@@ -142,6 +141,8 @@ enum TextStyle {
   STYLE_CAPTION_EMPHASIS,
   STYLE_CAPTION_MEDIUM = STYLE_CAPTION_EMPHASIS,
   STYLE_CAPTION_BOLD,
+  // The style used for links within blocks of STYLE_BODY_5 text.
+  STYLE_LINK_5,
   STYLE_OVERRIDE_TYPOGRAPHY_END,
 
   // Embedders must start TextStyle enum values from here.
