@@ -377,16 +377,9 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
       // we have to do it manually to ensure that if Finch enables the feature
       // the configuration we read will be correct.
       client_config = feature_engagement::GetClientSideFeatureConfig(feature);
-      if (client_config) {
-        feature_config = &client_config.value();
-      } else {
-        // This is a feature that will be auto-configured unless it is
-        // configured through Finch. Since auto-configuration should be correct,
-        // assume there is not a problem.
-        LOG(INFO) << "IPH feature " << feature
-                  << " is auto-configuration only.";
-        continue;
-      }
+      ASSERT_TRUE(client_config.has_value())
+          << "Auto-configuration failed for \"" << feature->name
+          << "\" - this should never happen and is not a normal failure.";
     }
 
     const bool limits_other_iph =
