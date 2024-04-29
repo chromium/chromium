@@ -293,6 +293,7 @@
 //components/test/data/viz/yuv_stripes_fcc_limited.png
 //components/test/data/viz/yuv_stripes_gbr_limited.png
 //components/test/data/viz/yuv_stripes_offset.png
+//components/test/data/viz/yuv_stripes_offset_graphite.png
 //components/test/data/viz/yuv_stripes_smpte240m_limited.png
 //components/test/data/viz/yuv_stripes_ycocg_limited.png
 //components/test/data/viz/yuv_stripes_ydzdx_limited.png

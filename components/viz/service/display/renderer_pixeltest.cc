@@ -2585,11 +2585,6 @@ INSTANTIATE_TEST_SUITE_P(,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(VideoRendererPixelTest);
 
 TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
-  // TODO(b/283271538): Enable this test once YUV sampling/subset issues are
-  // fixed in Graphite.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
   gfx::Rect rect(this->device_viewport_size_);
 
   CompositorRenderPassId id{1};
@@ -2612,15 +2607,19 @@ TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("yuv_stripes_offset.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII(kGraphiteStr);
+  }
   // TODO(crbug.com/40276184): Remove error relaxations once software pixel
   // upload support lands for Windows for multiplanar SI.
-  EXPECT_TRUE(this->RunPixelTest(
-      &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_offset.png")),
-      cc::FuzzyPixelComparator()
-          .DiscardAlpha()
-          .SetErrorPixelsPercentageLimit(100.f)
-          .SetAvgAbsErrorLimit(1.2f)
-          .SetAbsErrorLimit(2)));
+  EXPECT_TRUE(this->RunPixelTest(&pass_list, expected_result,
+                                 cc::FuzzyPixelComparator()
+                                     .DiscardAlpha()
+                                     .SetErrorPixelsPercentageLimit(100.f)
+                                     .SetAvgAbsErrorLimit(1.2f)
+                                     .SetAbsErrorLimit(2)));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleYUVRectBlack) {
@@ -2739,11 +2738,6 @@ TEST_P(VideoRendererPixelTest, SimpleNV12JRect) {
 // Test that a YUV video doesn't bleed outside of its tex coords when the
 // tex coord rect is only a partial subrectangle of the coded contents.
 TEST_P(VideoRendererPixelTest, YUVEdgeBleed) {
-  // TODO(b/283271538): Enable this test once YUV sampling/subset issues are
-  // fixed in Graphite.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
   AggregatedRenderPassList pass_list;
   this->CreateEdgeBleedPass(media::PIXEL_FORMAT_I420,
                             gfx::ColorSpace::CreateJpeg(), &pass_list);
@@ -2753,11 +2747,6 @@ TEST_P(VideoRendererPixelTest, YUVEdgeBleed) {
 }
 
 TEST_P(VideoRendererPixelTest, YUVAEdgeBleed) {
-  // TODO(b/283271538): Enable this test once YUV sampling/subset issues are
-  // fixed in Graphite.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
   AggregatedRenderPassList pass_list;
   this->CreateEdgeBleedPass(media::PIXEL_FORMAT_I420A,
                             gfx::ColorSpace::CreateREC601(), &pass_list);
