@@ -8,10 +8,13 @@
 #include "base/metrics/field_trial_params.h"
 
 namespace tab_groups {
-
 // Core feature flag for tab group sync on Android.
 BASE_FEATURE(kTabGroupSyncAndroid,
              "TabGroupSyncAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabGroupSyncForceOff,
+             "TabGroupSyncForceOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Builds off of the original TabGroupsSave feature by making some UI tweaks and

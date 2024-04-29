@@ -11025,6 +11025,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupSyncAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncAndroid)},
 
+    {"tab-group-sync-force-off", flag_descriptions::kTabGroupSyncForceOffName,
+     flag_descriptions::kTabGroupSyncForceOffDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncForceOff)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls the view mode for (history) sync screen.

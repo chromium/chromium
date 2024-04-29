@@ -16872,6 +16872,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlTrivialSubdomains:enabled"/>
   <int value="-1931712004" label="ConsolidatedSiteStorageControls:disabled"/>
   <int value="-1930720286" label="nacl-debug-mask"/>
+  <int value="-1930656203" label="TabGroupSyncForceOff:disabled"/>
   <int value="-1930487223"
       label="EnableFrameSinkDesktopCapturerInCrd:disabled"/>
   <int value="-1928198763" label="enable-async-dns"/>
@@ -24164,6 +24165,7 @@ from previous Chrome versions.
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:disabled"/>
   <int value="1302421166" label="NativeNotifications:disabled"/>
   <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
+  <int value="1304609573" label="TabGroupSyncForceOff:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1304791513" label="EnableFakeMouseHeuristic:disabled"/>
   <int value="1304892658" label="AuthenticateUsingNewWindowsHelloApi:disabled"/>

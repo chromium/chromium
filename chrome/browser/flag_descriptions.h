@@ -2628,6 +2628,9 @@ extern const char kTabGroupsForTabletsDescription[];
 extern const char kTabGroupSyncAndroidName[];
 extern const char kTabGroupSyncAndroidDescription[];
 
+extern const char kTabGroupSyncForceOffName[];
+extern const char kTabGroupSyncForceOffDescription[];
+
 extern const char kTabStripGroupCollapseAndroidName[];
 extern const char kTabStripGroupCollapseAndroidDescription[];
 
