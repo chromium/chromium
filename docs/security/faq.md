@@ -977,6 +977,53 @@ See our dedicated [Extensions Security FAQ](https://chromium.googlesource.com/ch
 
 See our [Chrome Custom Tabs security FAQ](custom-tabs-faq.md).
 
+<a name="TOC-How-is-security-different-in-Chrome-for-iOS--"></a>
+### How is security different in Chrome for iOS?
+
+Chrome for iOS does not use Chrome's standard rendering engine. Due to Apple's
+iOS platform restrictions, it instead uses Apple's WebKit engine and a more
+restricted process isolation model. This means its security properties are
+different from Chrome on all other platforms.
+
+The differences in security are far too extensive to list exhaustively, but some
+notable points are:
+
+* Chromium's [site
+  isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
+  isn't used; WebKit has its own alternative implementation with different costs
+  and benefits.
+* WebKit has [historically been slower at shipping security
+  fixes](https://googleprojectzero.blogspot.com/2022/02/a-walk-through-project-zero-metrics.html).
+* Chrome's network stack, [root
+  store](https://www.chromium.org/Home/chromium-security/root-ca-policy/) and
+  associated technology are not used, so
+  the platform will make different decisions about what web servers to trust.
+* Sandboxing APIs are not available for native code.
+
+Given that the fundamentals of the browser are so different, and given these
+limitations, Chrome for iOS has historically not consistently implemented some
+of Chrome's [standard security guidelines](rules.md). This includes the
+important [Rule of Two](rule-of-2.md). Future Chrome for iOS features should
+meet all guidelines except in cases where the lack of platform APIs make it
+unrealistic. (The use of WebAssembly-based sandboxing is currently considered
+unrealistic though this could change in future.)
+
+If the Rule of Two cannot be followed, features for Chrome for iOS should
+nevertheless follow it as closely as possible, and adopt additional mitigations
+where they cannot:
+
+* First consider adding a validation layer between unsafe code and web contents,
+  or adopting memory-safe parsers at the boundary between the renderer and the
+  browser process. Consider changing the design of the feature so the riskiest
+  parsing can happen in javascript injected in the renderer process.
+* Any unsafe unsandboxed code that is exposed to web contents or other
+  untrustworthy data sources must be extensively tested and fuzzed.
+
+The Chrome team is enthusiastic about the future possibility of making a version
+of Chrome for iOS that meets our usual security standards if richer platform
+facilities become widely available: this will require revisiting existing
+features to see if adjustment is required.
+
 <a name="TOC-Are-all-Chrome-updates-important--"></a>
 ### Are all Chrome updates important?
 
