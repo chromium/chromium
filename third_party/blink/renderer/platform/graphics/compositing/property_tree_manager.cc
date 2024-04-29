@@ -258,8 +258,9 @@ uint32_t PropertyTreeManager::GetMainThreadScrollingReasons(
   const auto* property_trees = host.property_trees();
   const auto* cc_scroll = property_trees->scroll_tree().Node(
       scroll.CcNodeId(property_trees->sequence_number()));
-  DCHECK(cc_scroll);
-  return cc_scroll->main_thread_scrolling_reasons;
+  return cc_scroll
+             ? cc_scroll->main_thread_scrolling_reasons
+             : cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
 }
 
 bool PropertyTreeManager::UsesCompositedScrolling(
