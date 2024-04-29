@@ -749,7 +749,7 @@ BASE_FEATURE(kEcheSWACheckAndroidNetworkInfo,
 // accessibility tree information.
 BASE_FEATURE(kEcheSWAProcessAndroidAccessibilityTree,
              "EcheSWAProcessAndroidAccessibilityTree",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables metrics revamp for Eche.
 BASE_FEATURE(kEcheMetricsRevamp,

@@ -35,7 +35,7 @@ const bool kFakeMeasureLatency = false;
 const bool kFakeSendStartSignaling = true;
 const bool kFakeDisableStunServer = false;
 const bool kFakeCheckAndroidNetworkInfo = true;
-const bool kFakeProcessAndroidAccessibilityTree = false;
+const bool kFakeProcessAndroidAccessibilityTree = true;
 
 void ParseJson(const std::string& json,
                std::string& device_name,
