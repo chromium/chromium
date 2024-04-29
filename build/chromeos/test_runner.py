@@ -561,7 +561,8 @@ class GTestTest(RemoteTest):
       if not os.path.exists(vpython_path) or not os.path.exists(cpython_path):
         raise TestFormatError(
             '--vpython-dir must point to a dir with both '
-            'infra/3pp/tools/cpython3 and infra/tools/luci/vpython installed.')
+            'infra/3pp/tools/cpython3 and infra/tools/luci/vpython3 '
+            'installed.')
       vpython_spec_path = os.path.relpath(
           os.path.join(CHROMIUM_SRC_PATH, '.vpython3'), self._path_to_outdir)
       # Initialize the vpython cache. This can take 10-20s, and some tests
