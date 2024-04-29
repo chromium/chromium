@@ -835,7 +835,7 @@
   {
     "name": "autofill-shared-storage-server-card-data",
     "owners": [ "nburris@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "autofill-sticky-infobar",
