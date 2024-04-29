@@ -19,8 +19,8 @@ desc: |-
   For more details please see
   https://support.google.com/chrome/a/?p=extended_updates_support.
 
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:126-
 
 device_only: true
 
