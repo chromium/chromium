@@ -7,6 +7,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
@@ -182,12 +183,11 @@ using l10n_util::GetNSStringF;
 // Sets non-profile image to a given `signinPromoView`.
 - (void)assignNonProfileImageToSigninPromoView:
     (SigninPromoView*)signinPromoView {
-  UIImage* logo = nil;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  logo = [UIImage imageNamed:@"signin_promo_logo_chrome_color"];
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImage* logo = [UIImage imageNamed:kChromeSigninPromoLogoImage];
 #else
-  logo = [UIImage imageNamed:@"signin_promo_logo_chromium_color"];
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  UIImage* logo = [UIImage imageNamed:kChromiumSigninPromoLogoImage];
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   DCHECK(logo);
   [signinPromoView setNonProfileImage:logo];
 }

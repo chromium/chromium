@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -19,7 +20,11 @@
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
       first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
-  self.bannerName = @"default_browser_screen_banner";
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  self.bannerName = kChromeDefaultBrowserScreenBannerImage;
+#else
+  self.bannerName = kChromiumDefaultBrowserScreenBannerImage;
+#endif
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
   self.subtitleText =

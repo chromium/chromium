@@ -143,5 +143,5 @@ group("assets") {
 }
 
 group("branded") {
-  # Empty in the non-branded repo.
+  deps = [ "//ios/chrome/browser/shared/ui/symbols/resources:branded_assets" ]
 }

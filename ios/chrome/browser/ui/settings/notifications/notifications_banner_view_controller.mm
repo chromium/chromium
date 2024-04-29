@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -37,12 +38,20 @@ CGFloat const kTitleHorizontalMargin = 25.0;
 CGFloat const kContentWidthConstant = 23.0;
 //  Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
-// Name of the banner image above the title.
-NSString* const kBanner = @"notifications_opt_in_banner";
-// Name of the banner image above the title in landscape.
-NSString* const kBannerLandscape = @"notifications_opt_in_banner_landscape";
 // Space above the title.
 CGFloat const kSpaceAboveTitle = 20.0;
+
+// Returns the name of the banner image above the title.
+NSString* BannerImageName(bool landscape) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return landscape ? kChromeNotificationsOptInBannerLandscapeImage
+                   : kChromeNotificationsOptInBannerImage;
+#else
+  return landscape ? kChromiumNotificationsOptInBannerLandscapeImage
+                   : kChromiumNotificationsOptInBannerImage;
+#endif
+}
+
 }  // namespace
 
 @interface NotificationsBannerViewController () <UITableViewDelegate>
@@ -71,7 +80,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
   self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
   self.titleHorizontalMargin = kTitleHorizontalMargin;
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
-  self.bannerName = IsLandscape(self.view.window) ? kBannerLandscape : kBanner;
+  self.bannerName = BannerImageName(IsLandscape(self.view.window));
   self.bannerSize = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
                         ? BannerImageSizeType::kStandard
                         : BannerImageSizeType::kShort;
@@ -119,7 +128,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
   [self updateTableViewHeightConstraint];
-  self.bannerName = IsLandscape(self.view.window) ? kBannerLandscape : kBanner;
+  self.bannerName = BannerImageName(IsLandscape(self.view.window));
   // Make the navigation bar buttons white when the banner is visible.
   self.navigationController.navigationBar.tintColor =
       self.shouldHideBanner ? nil : UIColor.whiteColor;

@@ -22,6 +22,7 @@ source_set("post_restore_signin") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/sync/model",

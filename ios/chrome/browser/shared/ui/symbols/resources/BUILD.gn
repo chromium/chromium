@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ios/asset_catalog.gni")
-import("//build/config/ios/ios_sdk.gni")
+import("//build/config/ios/rules.gni")
 
 symbolset("arrow_clockwise") {
   sources = [
@@ -299,5 +299,45 @@ symbolset("bottom_omnibox_option") {
   sources = [
     "bottom_omnibox_option.symbolset/Contents.json",
     "bottom_omnibox_option.symbolset/bottom.omnibox.cr.svg",
+  ]
+}
+
+bundle_data_xcassets("branded_assets") {
+  catalog = "Chromium.xcassets"
+  sources = [
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner@2x.png",
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner@3x.png",
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner@3x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner_dark_ipad@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner_ipad@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner_landscape.imageset/Contents.json",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner_landscape.imageset/chromium_notifications_opt_in_banner_landscape@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner_landscape.imageset/chromium_notifications_opt_in_banner_landscape_dark@2x.png",
+    "Chromium.xcassets/chromium_password_manager_widget_promo.imageset/Contents.json",
+    "Chromium.xcassets/chromium_password_manager_widget_promo.imageset/chromium_password_manager_widget_promo@2x.png",
+    "Chromium.xcassets/chromium_password_manager_widget_promo.imageset/chromium_password_manager_widget_promo@3x.png",
+    "Chromium.xcassets/chromium_password_manager_widget_promo_disabled.imageset/Contents.json",
+    "Chromium.xcassets/chromium_password_manager_widget_promo_disabled.imageset/chromium_password_manager_widget_promo_disabled@2x.png",
+    "Chromium.xcassets/chromium_password_manager_widget_promo_disabled.imageset/chromium_password_manager_widget_promo_disabled@3x.png",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/chromium_settings_passwords_in_other_apps_banner@2x.png",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/chromium_settings_passwords_in_other_apps_banner@3x.png",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/chromium_settings_passwords_in_other_apps_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/chromium_settings_passwords_in_other_apps_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_signin_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_signin_banner.imageset/chromium_signin_banner@2x.png",
+    "Chromium.xcassets/chromium_signin_banner.imageset/chromium_signin_banner@3x.png",
+    "Chromium.xcassets/chromium_signin_banner.imageset/chromium_signin_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_signin_banner.imageset/chromium_signin_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_signin_promo_logo.imageset/Contents.json",
+    "Chromium.xcassets/chromium_signin_promo_logo.imageset/chromium_signin_promo_logo@2x.png",
+    "Chromium.xcassets/chromium_signin_promo_logo.imageset/chromium_signin_promo_logo@3x.png",
   ]
 }

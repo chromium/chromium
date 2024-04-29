@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
@@ -549,8 +550,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   InlinePromoItem* inlinePromoItem =
       [[InlinePromoItem alloc] initWithType:ItemTypeInlinePromo];
-  inlinePromoItem.promoImage =
-      [UIImage imageNamed:@"password_manager_widget_promo"];
+  inlinePromoItem.promoImage = [UIImage imageNamed:WidgetPromoImageName()];
   inlinePromoItem.promoText =
       @"Text to promote some cool stuff in Settings. Can be on multiple lines.";
   inlinePromoItem.moreInfoButtonTitle = @"Show Me How";

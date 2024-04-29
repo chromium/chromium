@@ -44,13 +44,14 @@ extern NSString* const kDeleteButtonForPasswordDetailsID;
 // only stored locally and not backed up to any account.
 extern NSString* const kLocalOnlyPasswordIconID;
 
-// Name of the image shown in the Password Manager widget promo that's presented
-// in the Password Manager.
-extern NSString* const kWidgetPromoImageName;
+// Returns the name of the image shown in the Password Manager widget
+// promo that's presented in the Password Manager.
+NSString* WidgetPromoImageName();
 
-// Name of the image shown in the Password Manager widget promo that's presented
-// in the Password Manager when the promo cell is disabled.
-extern NSString* const kWidgetPromoDisabledImageName;
+// Returns the name of the image shown in the Password Manager widget
+// promo that's presented in the Password Manager when the promo cell
+// is disabled.
+NSString* WidgetPromoDisabledImageName();
 
 // Accessibility identifier for the Password Manager widget promo.
 extern NSString* const kWidgetPromoID;

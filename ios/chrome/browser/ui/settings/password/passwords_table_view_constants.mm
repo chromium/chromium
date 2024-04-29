@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 NSString* const kPasswordsTableViewID = @"PasswordsTableViewID";
 NSString* const kPasswordsSearchBarID = @"PasswordsSearchBar";
 NSString* const kPasswordsScrimViewID = @"PasswordsScrimViewID";
@@ -33,10 +35,21 @@ NSString* const kDeleteButtonForPasswordDetailsID =
 
 NSString* const kLocalOnlyPasswordIconID = @"kLocalOnlyPasswordIconID";
 
-NSString* const kWidgetPromoImageName = @"password_manager_widget_promo";
+NSString* WidgetPromoImageName() {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return kGooglePasswordManagerWidgetPromoImage;
+#else
+  return kChromiumPasswordManagerWidgetPromoImage;
+#endif
+}
 
-NSString* const kWidgetPromoDisabledImageName =
-    @"password_manager_widget_promo_disabled";
+NSString* WidgetPromoDisabledImageName() {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return kGooglePasswordManagerWidgetPromoDisabledImage;
+#else
+  return kChromiumPasswordManagerWidgetPromoDisabledImage;
+#endif
+}
 
 NSString* const kWidgetPromoID = @"WidgetPromoID";
 

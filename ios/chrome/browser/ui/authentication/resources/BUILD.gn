@@ -12,21 +12,3 @@ imageset("signin_confirmation_more") {
     "signin_confirmation_more.imageset/signin_confirmation_more@3x.png",
   ]
 }
-
-imageset("signin_promo_logo_chrome_color") {
-  sources = [
-    "signin_promo_logo_chrome_color.imageset/Contents.json",
-    "signin_promo_logo_chrome_color.imageset/signin_promo_logo_chrome_color.png",
-    "signin_promo_logo_chrome_color.imageset/signin_promo_logo_chrome_color@2x.png",
-    "signin_promo_logo_chrome_color.imageset/signin_promo_logo_chrome_color@3x.png",
-  ]
-}
-
-imageset("signin_promo_logo_chromium_color") {
-  sources = [
-    "signin_promo_logo_chromium_color.imageset/Contents.json",
-    "signin_promo_logo_chromium_color.imageset/signin_promo_logo_chromium_color.png",
-    "signin_promo_logo_chromium_color.imageset/signin_promo_logo_chromium_color@2x.png",
-    "signin_promo_logo_chromium_color.imageset/signin_promo_logo_chromium_color@3x.png",
-  ]
-}

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+Testing.h"
 
 #import <UIKit/UIKit.h>
 
@@ -37,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_items.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
@@ -684,7 +685,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 
   _widgetPromoItem = [[InlinePromoItem alloc] initWithType:ItemTypeWidgetPromo];
-  _widgetPromoItem.promoImage = [UIImage imageNamed:kWidgetPromoImageName];
+  _widgetPromoItem.promoImage = [UIImage imageNamed:WidgetPromoImageName()];
   _widgetPromoItem.promoText =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_TEXT);
   _widgetPromoItem.moreInfoButtonTitle = l10n_util::GetNSString(
@@ -1414,8 +1415,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
   self.widgetPromoItem.enabled = enabled;
   self.widgetPromoItem.promoImage =
-      [UIImage imageNamed:enabled ? kWidgetPromoImageName
-                                  : kWidgetPromoDisabledImageName];
+      [UIImage imageNamed:enabled ? WidgetPromoImageName()
+                                  : WidgetPromoDisabledImageName()];
   [self reconfigureCellsForItems:@[ self.widgetPromoItem ]];
 }
 

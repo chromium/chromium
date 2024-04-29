@@ -1221,7 +1221,7 @@ TEST_F(PasswordManagerViewControllerTest, WidgetPromo) {
   InlinePromoItem* item = static_cast<InlinePromoItem*>(
       GetTableViewItem(GetSectionIndex(SectionIdentifierWidgetPromo), 0));
 
-  EXPECT_NSEQ(item.promoImage, [UIImage imageNamed:kWidgetPromoImageName]);
+  EXPECT_NSEQ(item.promoImage, [UIImage imageNamed:WidgetPromoImageName()]);
   EXPECT_NSEQ(item.promoText, l10n_util::GetNSString(
                                   IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_TEXT));
   EXPECT_NSEQ(item.moreInfoButtonTitle,
@@ -1234,7 +1234,7 @@ TEST_F(PasswordManagerViewControllerTest, WidgetPromo) {
   SetEditing(true);
   EXPECT_FALSE(item.enabled);
   EXPECT_NSEQ(item.promoImage,
-              [UIImage imageNamed:kWidgetPromoDisabledImageName]);
+              [UIImage imageNamed:WidgetPromoDisabledImageName()]);
   SetEditing(false);
 
   [GetPasswordManagerViewController() settingsWillBeDismissed];

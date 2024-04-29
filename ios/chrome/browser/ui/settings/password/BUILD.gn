@@ -145,6 +145,7 @@ source_set("password_constants") {
   deps = [
     "//base",
     "//ios/chrome/browser/shared/ui/list_model:list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
   ]
 }
 

@@ -14,18 +14,39 @@
 /// Import `symbols.h` and not this file directly.
 /// *******
 
-// Custom symbol names.
+// Branded symbol names.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+extern NSString* const kChromeDefaultBrowserIllustrationImage;
+extern NSString* const kChromeDefaultBrowserScreenBannerImage;
+extern NSString* const kChromeNotificationsOptInBannerImage;
+extern NSString* const kChromeNotificationsOptInBannerLandscapeImage;
+extern NSString* const kChromeSigninBannerImage;
+extern NSString* const kChromeSigninPromoLogoImage;
 extern NSString* const kGoogleIconSymbol;
 extern NSString* const kGoogleShieldSymbol;
-extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kGoogleMapsSymbol;
+extern NSString* const kGooglePasswordManagerWidgetPromoImage;
+extern NSString* const kGooglePasswordManagerWidgetPromoDisabledImage;
 extern NSString* const kGooglePhotosSymbol;
+extern NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage;
+extern NSString* const kLensKeyboardAccessoryImage;
+extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kPageInsightsSymbol;
-extern NSString* const kFedexCarrierImage;
 extern NSString* const kUPSCarrierImage;
 extern NSString* const kUSPSCarrierImage;
+#else
+extern NSString* const kChromiumDefaultBrowserIllustrationImage;
+extern NSString* const kChromiumDefaultBrowserScreenBannerImage;
+extern NSString* const kChromiumNotificationsOptInBannerImage;
+extern NSString* const kChromiumNotificationsOptInBannerLandscapeImage;
+extern NSString* const kChromiumPasswordManagerWidgetPromoImage;
+extern NSString* const kChromiumPasswordManagerWidgetPromoDisabledImage;
+extern NSString* const kChromiumSettingsPasswordsInOtherAppsBannerImage;
+extern NSString* const kChromiumSigninBannerImage;
+extern NSString* const kChromiumSigninPromoLogoImage;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+
+// Custom symbol names.
 extern NSString* const kPrivacySymbol;
 extern NSString* const kSyncDisabledSymbol;
 extern NSString* const kSafetyCheckSymbol;

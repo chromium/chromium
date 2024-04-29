@@ -19,7 +19,6 @@ source_set("keyboard_assist") {
     "omnibox_ui_bar_button_item.mm",
   ]
   deps = [
-    "resources:keyboard_accessory_lens",
     "resources:keyboard_accessory_qr_scanner",
     "resources:keyboard_accessory_voice_search",
     "//base",

@@ -4,26 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("default_browser_screen_banner") {
-  sources = [
-    "default_browser_screen_banner.imageset/Contents.json",
-    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@2x.png",
-    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@3x.png",
-    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@2x.png",
-    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@3x.png",
-  ]
-}
-
-imageset("signin_banner") {
-  sources = [
-    "signin_banner.imageset/Contents.json",
-    "signin_banner.imageset/signin_banner_dark@2x.png",
-    "signin_banner.imageset/signin_banner_dark@3x.png",
-    "signin_banner.imageset/signin_banner_light@2x.png",
-    "signin_banner.imageset/signin_banner_light@3x.png",
-  ]
-}
-
 imageset("read_more_arrow") {
   sources = [
     "read_more_arrow.imageset/Contents.json",

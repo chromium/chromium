@@ -762,12 +762,11 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 // Updates promo for no accounts mode.
 - (void)activateNoAccountsMode {
   DCHECK_EQ(self.mode, SigninPromoViewModeNoAccounts);
-  UIImage* logo = nil;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  logo = [UIImage imageNamed:@"signin_promo_logo_chrome_color"];
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  UIImage* logo = [UIImage imageNamed:kChromeSigninPromoLogoImage];
 #else
-  logo = [UIImage imageNamed:@"signin_promo_logo_chromium_color"];
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  UIImage* logo = [UIImage imageNamed:kChromiumSigninPromoLogoImage];
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   DCHECK(logo);
   self.imageView.image = logo;
   self.secondaryButton.hidden = YES;

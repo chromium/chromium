@@ -70,11 +70,10 @@ source_set("notifications_opt_in_ui") {
     "notifications_opt_in_view_controller.mm",
   ]
   deps = [
-    "resources:notifications_opt_in_banner",
-    "resources:notifications_opt_in_banner_landscape",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
