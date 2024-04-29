@@ -103,7 +103,7 @@
     <template is="dom-repeat" initial-count="30"
         items="[[computeAvailableLanguages_(availableVoices,
           localeToDisplayName, languageSearchValue_,
-          enabledLanguagesInPref)]]">
+          enabledLanguagesInPref, voicePackInstallStatus)]]">
         <div class="language-line dropdown-line">
           <span id="language-name" class="language-name">
             [[item.language]]

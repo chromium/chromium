@@ -79,8 +79,9 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private computeAvailableLanguages_(
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
-      languageSearchValue: string|undefined,
-      enabledLanguagesInPref: string[]): LanguageDropdownItem[] {
+      languageSearchValue: string|undefined, enabledLanguagesInPref: string[],
+      voicePackInstallStatus: {[language: string]: VoicePackStatus}):
+      LanguageDropdownItem[] {
     if (!availableVoices) {
       return [];
     }
@@ -108,11 +109,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
                checked: enabledLanguagesInPref &&
                    enabledLanguagesInPref.includes(lang),
                notificationText:
-                   this.getNotificationText(lang, this.voicePackInstallStatus),
+                   this.getNotificationText(lang, voicePackInstallStatus),
                isNotificationError:
-                   this.isNotificationError(lang, this.voicePackInstallStatus),
-               ariaString:
-                   this.getAriaSetting(lang, this.voicePackInstallStatus),
+                   this.isNotificationError(lang, voicePackInstallStatus),
+               ariaString: this.getAriaSetting(lang, voicePackInstallStatus),
                callback: () =>
                    this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
                      bubbles: true,
