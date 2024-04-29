@@ -122,20 +122,6 @@ class TestUrlCheckerClient {
     }
   }
 
-  void CheckSubFrameUrl(const GURL& url) {
-    result_pending_ = true;
-    url_checker_ = safe_browsing_service_->CreateUrlChecker(
-        network::mojom::RequestDestination::kIframe, &web_state_,
-        safe_browsing_client_);
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      CheckUrlOnSBThread(url);
-    } else {
-      web::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnSBThread,
-                                    base::Unretained(this), url));
-    }
-  }
-
   bool result_pending() const { return result_pending_; }
 
   void WaitForResult() {
@@ -613,13 +599,6 @@ TEST_F(SafeBrowsingServiceTest,
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
 
-  MarkUrlAsRealTimeSafe(safe_url);
-  client.CheckSubFrameUrl(safe_url);
-  EXPECT_TRUE(client.result_pending());
-  client.WaitForResult();
-  EXPECT_FALSE(client.result_pending());
-  EXPECT_FALSE(client.url_is_unsafe());
-
   GURL unsafe_url(kMalwarePage);
   MarkUrlAsRealTimeUnsafe(unsafe_url);
   client.CheckUrl(unsafe_url);
@@ -627,14 +606,6 @@ TEST_F(SafeBrowsingServiceTest,
   client.WaitForResult();
   EXPECT_FALSE(client.result_pending());
   EXPECT_TRUE(client.url_is_unsafe());
-
-  // Subframe URL should not be checked.
-  MarkUrlAsRealTimeUnsafe(unsafe_url);
-  client.CheckSubFrameUrl(unsafe_url);
-  EXPECT_TRUE(client.result_pending());
-  client.WaitForResult();
-  EXPECT_FALSE(client.result_pending());
-  EXPECT_FALSE(client.url_is_unsafe());
 
   // Opt out of real-time checks, and ensure that unsafe URLs are no longer
   // flagged.
