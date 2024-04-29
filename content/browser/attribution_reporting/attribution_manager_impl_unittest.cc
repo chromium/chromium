@@ -3077,177 +3077,6 @@ TEST_F(AttributionManagerImplTest,
   run_loop.Run();
 }
 
-class AttributionManagerImplDebugReportTest
-    : public AttributionManagerImplTest {
- protected:
-  void ConfigureStorageDelegate(
-      ConfigurableStorageDelegate& delegate) const override {
-    delegate.set_max_destinations_per_source_site_reporting_site(1);
-  }
-};
-
-TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
-  base::HistogramTester histograms;
-
-  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
-  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
-
-  std::optional<AttributionDebugReport> sent_report;
-
-  Checkpoint checkpoint;
-  {
-    InSequence seq;
-
-    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, _))
-        .WillOnce([&](AttributionDebugReport report,
-                      DebugReportSentCallback callback) {
-          sent_report = std::move(report);
-        });
-  }
-
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetReportingOrigin(reporting_origin).Build(), kFrameId);
-
-  const auto destination_site =
-      net::SchemefulSite::Deserialize("https://d.test");
-
-  // Failed without debug reporting.
-  attribution_manager_->HandleSource(
-      SourceBuilder()
-          .SetReportingOrigin(reporting_origin)
-          .SetDestinationSites({destination_site})
-          .Build(),
-      kFrameId);
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_THAT(StoredSources(), SizeIs(1));
-
-  // Source registered within a fenced frame failed with debug reporting, but
-  // no debug report is sent.
-  attribution_manager_->HandleSource(
-      SourceBuilder()
-          .SetReportingOrigin(reporting_origin)
-          .SetDestinationSites({destination_site})
-          .SetIsWithinFencedFrame(true)
-          .SetDebugReporting(true)
-          .Build(),
-      kFrameId);
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_THAT(StoredSources(), SizeIs(1));
-
-  // Source registered outside a fenced frame tree failed with debug reporting
-  // but no debug cookie is set, therefore no debug report is sent.
-  attribution_manager_->HandleSource(
-      SourceBuilder()
-          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r1.test"))
-          .SetDestinationSites({destination_site})
-          .SetIsWithinFencedFrame(true)
-          .SetDebugReporting(true)
-          .Build(),
-      kFrameId);
-  task_environment_.RunUntilIdle();
-
-  EXPECT_THAT(StoredSources(), SizeIs(1));
-
-  {
-    // Source registered outside a fenced frame failed with debug reporting and
-    // debug cookie is set, but feature off.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        kAttributionVerboseDebugReporting);
-
-    attribution_manager_->HandleSource(
-        SourceBuilder()
-            .SetReportingOrigin(reporting_origin)
-            .SetDestinationSites({destination_site})
-            .SetDebugReporting(true)
-            .Build(),
-        kFrameId);
-
-    task_environment_.RunUntilIdle();
-
-    EXPECT_THAT(StoredSources(), SizeIs(1));
-  }
-
-  checkpoint.Call(1);
-
-  histograms.ExpectTotalCount(kSentVerboseDebugReportTypeMetric, 0);
-
-  {
-    // Source registered outside a fenced frame failed with debug reporting and
-    // debug cookie is set, and feature on.
-    base::test::ScopedFeatureList scoped_feature_list{
-        kAttributionVerboseDebugReporting};
-
-    attribution_manager_->HandleSource(
-        SourceBuilder()
-            .SetReportingOrigin(reporting_origin)
-            .SetDestinationSites({destination_site})
-            .SetDebugReporting(true)
-            .Build(),
-        kFrameId);
-
-    task_environment_.RunUntilIdle();
-
-    EXPECT_THAT(StoredSources(), SizeIs(1));
-    ASSERT_TRUE(sent_report);
-    const base::Value::List& report_body = sent_report->ReportBody();
-    ASSERT_EQ(report_body.size(), 1u);
-    ASSERT_TRUE(report_body.front().is_dict());
-    const base::Value::Dict* report_data =
-        report_body.front().GetDict().FindDict("body");
-    ASSERT_TRUE(report_data);
-    EXPECT_TRUE(report_data->Find("source_site"));
-  }
-
-  // kSourceDestinationLimit = 0
-  histograms.ExpectUniqueSample(kSentVerboseDebugReportTypeMetric, 0, 1);
-}
-
-TEST_F(AttributionManagerImplDebugReportTest,
-       EmbedderDisallowsSourceVerboseDebugReport_NoReportSent) {
-  MockAttributionReportingContentBrowserClient browser_client;
-  EXPECT_CALL(
-      browser_client,
-      IsAttributionReportingOperationAllowed(
-          _,
-          AnyOf(
-              AttributionReportingOperation::kSource,
-              AttributionReportingOperation::kSourceTransitionalDebugReporting),
-          _, _, _, _, _))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      browser_client,
-      IsAttributionReportingOperationAllowed(
-          _, AttributionReportingOperation::kSourceVerboseDebugReport, _,
-          Pointee(url::Origin::Create(GURL("https://impression.test/"))),
-          IsNull(), Pointee(url::Origin::Create(GURL("https://report.test/"))),
-          _))
-      .WillRepeatedly(Return(false));
-  ScopedContentBrowserClientSetting setting(&browser_client);
-
-  EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
-
-  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
-
-  attribution_manager_->HandleSource(
-      SourceBuilder()
-          .SetDestinationSites(
-              {net::SchemefulSite::Deserialize("https://d.test")})
-          .SetDebugReporting(true)
-          .Build(),
-      kFrameId);
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_THAT(StoredSources(), SizeIs(1));
-}
-
 class AttributionManagerImplCookieBasedDebugReportTest
     : public AttributionManagerImplTest {
  protected:
@@ -3319,6 +3148,46 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
                                          .SetDebugReporting(true)
                                          .Build(),
                                      kFrameId);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
+       EmbedderDisallowsVerboseDebugReport_NoReportSent) {
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _,
+          AnyOf(
+              AttributionReportingOperation::kSource,
+              AttributionReportingOperation::kSourceTransitionalDebugReporting),
+          _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _, AttributionReportingOperation::kSourceVerboseDebugReport, _,
+          Pointee(url::Origin::Create(GURL("https://impression.test/"))),
+          IsNull(), Pointee(reporting_origin), _))
+      .WillRepeatedly(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+
+  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
+
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetReportingOrigin(reporting_origin)
+                                         .SetDebugReporting(true)
+                                         .Build(),
+                                     kFrameId);
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+
   task_environment_.RunUntilIdle();
 }
 
