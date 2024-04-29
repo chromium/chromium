@@ -7196,6 +7196,27 @@
             ]
         }
     ],
+    "EnsureExistingRendererAlive": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnsureExistingRendererAlive"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterprisePolicyOnSignin": [
         {
             "platforms": [

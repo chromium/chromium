@@ -1126,6 +1126,10 @@ bool IsKeepAliveRefCountAllowed() {
              blink::features::kAttributionReportingInBrowserMigration);
 }
 
+BASE_FEATURE(kEnsureExistingRendererAlive,
+             "EnsureExistingRendererAlive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace
 
 // A RenderProcessHostImpl's IO thread implementation of the
@@ -4842,6 +4846,11 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
       site_instance->set_process_assignment(
           SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS);
     }
+  }
+
+  if (render_process_host &&
+      base::FeatureList::IsEnabled(kEnsureExistingRendererAlive)) {
+    render_process_host->Init();
   }
 
   // If we found a process to reuse, double-check that it is suitable for

@@ -982,6 +982,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "MojoPredictiveAllocation",
                 "Predictively allocate some serialization buffers for Mojo"),
+        Flag.baseFeature("EnsureExistingRendererAlive"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
