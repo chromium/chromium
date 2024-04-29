@@ -564,6 +564,9 @@ crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/fun
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/pow/pow_017_to_024.html [ Failure ]
 
+## Linux Swangle
+crbug.com/337665166 [ linux angle-swiftshader passthrough release ] conformance/context/context-eviction-with-garbage-collection.html [ Failure ]
+
 
 ####################
 # Android failures #
