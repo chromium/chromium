@@ -2611,7 +2611,6 @@ crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removin
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/337069171 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/csp-allowed.https.html [ Timeout ]
-crbug.com/336588276 [ Win11-arm64 ] external/wpt/webnn/conformance_tests/parallel-compute.https.any.worker.html [ Skip Timeout ]
 crbug.com/336588276 [ Mac14-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/parallel-compute.https.any.worker.html [ Crash Failure ]
 crbug.com/336346440 [ Win11-arm64 ] external/wpt/webrtc-extensions/RTCRtpSynchronizationSource-captureTimestamp.html [ Skip Timeout ]
 crbug.com/335769262 [ Win11-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
@@ -2713,24 +2712,6 @@ crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-percent
 crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-percent-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text-decor/text-shadow/svg-stroke.html [ Failure ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/batch_normalization.https.any.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/batch_normalization.https.any.worker.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/conv2d.https.any.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/conv2d.https.any.worker.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/conv_transpose2d.https.any.html [ Crash ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/conv_transpose2d.https.any.worker.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/gemm.https.any.html [ Crash ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/gemm.https.any.worker.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/instance_normalization.https.any.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/instance_normalization.https.any.worker.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/layer_normalization.https.any.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/layer_normalization.https.any.worker.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/matmul.https.any.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/matmul.https.any.worker.html [ Crash ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/pooling.https.any.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/pooling.https.any.worker.html [ Crash Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/reduction.https.any.html [ Crash ]
-crbug.com/626703 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/reduction.https.any.worker.html [ Crash Timeout ]
 crbug.com/626703 [ Mac12-arm64 ] external/wpt/css/css-pseudo/text-selection.html [ Timeout ]
 crbug.com/626703 external/wpt/quirks/line-height-preserved-segment-break.html [ Failure ]
 crbug.com/626703 [ Win11-arm64 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure Timeout ]
@@ -6748,9 +6729,6 @@ crbug.com/1421694 http/tests/devtools/extensions/extensions-api.js [ Failure Pas
 crbug.com/626703 external/wpt/webauthn/public-key-credential-to-json.https.window.html [ Failure ]
 crbug.com/626703 external/wpt/clipboard-apis/async-promise-write-blobs-read-blobs.https.html [ Failure Pass ]
 crbug.com/1519053 external/wpt/webnn/conformance_tests/pad.https.any.html [ Crash Pass ]
-crbug.com/1519053 [ Release Win11-arm64 ] external/wpt/webnn/conformance_tests/pad.https.any.worker.html [ Crash Pass ]
-crbug.com/1519053 [ Release Win11-arm64 ] external/wpt/webnn/conformance_tests/softmax.https.any.html [ Crash Pass ]
-crbug.com/1519053 [ Release Win11-arm64 ] external/wpt/webnn/conformance_tests/softmax.https.any.worker.html [ Crash Pass ]
 
 # Disable to land revert
 crbug.com/40615943 http/tests/security/dataURL/xss-DENIED-to-data-url-in-foreign-domain-subframe-location-change.html [ Failure Pass ]
@@ -6789,7 +6767,6 @@ crbug.com/1521140 [ Mac ] inspector-protocol/timeline/render-blocking-style.js [
 crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-domainhint.https.html [ Pass Timeout ]
 crbug.com/323699772 [ Win ] external/wpt/credential-management/fedcm-error-basic.https.html [ Pass Timeout ]
 crbug.com/41496645 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-008.html [ Failure Pass ]
-crbug.com/323752584 [ Win11-arm64 ] external/wpt/webnn/* [ Failure Pass ]
 crbug.com/41490297 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Failure Pass ]
 
 # Flaky test in virtual suite.
