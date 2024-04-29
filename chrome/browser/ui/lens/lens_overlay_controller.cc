@@ -399,6 +399,16 @@ void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
   results_side_panel_coordinator_->RegisterEntryAndShow();
 }
 
+void LensOverlayController::SetSearchboxInputText(const std::string& text) {
+  if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
+    searchbox_handler_->SetInputText(text);
+  } else {
+    // If the side panel was not bound at the time of request, we store the
+    // query as pending to send it to the searchbox on bind.
+    pending_text_query_ = text;
+  }
+}
+
 void LensOverlayController::OnSidePanelEntryDeregistered() {
   CloseUIAsync();
 }
@@ -668,7 +678,7 @@ void LensOverlayController::OnPageBound() {
 
   // Send any pending inputs for the searchbox.
   if (pending_text_query_.has_value()) {
-    searchbox_handler_->SetInputText(*pending_text_query_);
+    SetSearchboxInputText(*pending_text_query_);
     pending_text_query_.reset();
   }
   if (pending_thumbnail_uri_.has_value()) {
@@ -829,15 +839,5 @@ void LensOverlayController::SetSearchboxThumbnail(
     // If the side panel was not bound at the time of request, we store the
     // thumbnail as pending to send it to the searchbox on bind.
     pending_thumbnail_uri_ = thumbnail_uri;
-  }
-}
-
-void LensOverlayController::SetSearchboxInputText(const std::string& text) {
-  if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
-    searchbox_handler_->SetInputText(text);
-  } else {
-    // If the side panel was not bound at the time of request, we store the
-    // query as pending to send it to the searchbox on bind.
-    pending_text_query_ = text;
   }
 }

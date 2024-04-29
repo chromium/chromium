@@ -74,6 +74,15 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
     return content::NavigationThrottle::CANCEL;
   }
 
+  // The navigation is to a search URL. Get the text query from the URL and set
+  // it as the input text on the searchbox.
+  auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
+      navigation_handle()->GetWebContents());
+  const std::string text_query = GetTextQueryParameterValue(url);
+  if (!text_query.empty()) {
+    controller->SetSearchboxInputText(text_query);
+  }
+
   // If this is a same-site navigation and search URL, we make sure that the URL
   // has the parameters needed to preserve lens overlay features (e.g. framing).
   // If no such parameters were needed, we can just proceed.
@@ -84,8 +93,6 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   // If this is a same site navigation and search URL that does not have common
   // search parameters, we need to append them to the URL and then load it
   // manually into the side panel frame.
-  auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
-      navigation_handle()->GetWebContents());
   auto url_with_params = lens::AppendCommonSearchParametersToURL(url);
   controller->LoadURLInResultsFrame(url_with_params);
   return content::NavigationThrottle::CANCEL;

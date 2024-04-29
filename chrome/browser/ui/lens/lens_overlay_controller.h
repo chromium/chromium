@@ -203,6 +203,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Pass a result frame URL to load in the side panel.
   void LoadURLInResultsFrame(const GURL& url);
 
+  // Sets the input text for the searchbox. If the searchbox has not been bound,
+  // it stores it in `pending_text_query_` instead.
+  void SetSearchboxInputText(const std::string& text);
+
   // Handles when the side panel has been deregistered to do any required
   // cleanup.
   void OnSidePanelEntryDeregistered();
@@ -370,11 +374,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Handles the creation of a new thumbnail based on the user selection.
   void HandleThumbnailCreated(const std::string& thumbnail_bytes);
 
-  // Sets the thumbnail URI or input text values on the searchbox if it is
+  // Sets the thumbnail URI values on the searchbox if it is
   // bound. If it hasn't yet been bound, stores the value in
-  // `pending_thumbnail_uri_` or `pending_text_query_` instead.
+  // `pending_thumbnail_uri_` instead.
   void SetSearchboxThumbnail(const std::string& thumbnail_uri);
-  void SetSearchboxInputText(const std::string& text);
 
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;

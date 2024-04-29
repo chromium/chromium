@@ -109,6 +109,12 @@ GURL BuildLensSearchURL(
   return url_with_query_params;
 }
 
+const std::string GetTextQueryParameterValue(const GURL& url) {
+  std::string param_value = "";
+  net::GetValueForKeyInQuery(url, kTextQueryParameterKey, &param_value);
+  return param_value;
+}
+
 bool HasCommonSearchQueryParameters(const GURL& url) {
   // Needed to prevent memory leaks even though we do not use the output.
   std::string temp_output_string;

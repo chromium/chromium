@@ -54,13 +54,19 @@ using State = LensOverlayController::State;
 
 constexpr char kNewTabLinkClickScript[] =
     "(function() {const anchor = document.createElement('a');anchor.href = "
-    "'http://new.domain.com/';anchor.target = "
+    "$1;anchor.target = "
     "'_blank';document.body.appendChild(anchor);anchor.click();})();";
 
 constexpr char kSameTabLinkClickScript[] =
     "(function() {const anchor = document.createElement('a');anchor.href = "
-    "'http://new.domain.com/"
-    "';document.body.appendChild(anchor);anchor.click();})();";
+    "$1;document.body.appendChild(anchor);anchor.click();})();";
+
+constexpr char kCheckSearchboxInput[] =
+    "(function() {const root = "
+    "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
+    "const searchboxInputLoaded = "
+    "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
+    "  === $1; return  searchboxInputLoaded;})();";
 
 constexpr char kRequestNotificationsScript[] = R"(
       new Promise(resolve => {
@@ -763,6 +769,66 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       SidePanel_SameTabSameOriginLinkClick) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+
+  // Loading a url in the side panel should show the results page. This needs to
+  // be done to set up the WebContentsObserver.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+  int tabs = browser()->tab_strip_model()->count();
+
+  // The results frame should be the only child frame of the side panel web
+  // contents.
+  content::RenderFrameHost* results_frame = content::ChildFrameAt(
+      controller->GetSidePanelWebContentsForTesting()->GetPrimaryMainFrame(),
+      0);
+  EXPECT_TRUE(results_frame);
+
+  // Simulate a same-origin navigation on the results frame.
+  const GURL nav_url("https://www.google.com/search?q=apples&gsc=1&masfc=c");
+  EXPECT_TRUE(content::ExecJs(
+      results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // It should not open a new tab as this is a same-origin navigation.
+  EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+
+  // We should find that the input text on the searchbox is the same as the text
+  // query of the nav_url.
+  EXPECT_TRUE(content::EvalJs(
+                  controller->GetSidePanelWebContentsForTesting()
+                      ->GetPrimaryMainFrame(),
+                  content::JsReplace(kCheckSearchboxInput, "apples"),
+                  content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES)
+                  .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        SidePanel_SameTabCrossOriginLinkClick) {
   WaitForPaint();
 
@@ -806,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   const GURL nav_url("http://new.domain.com/");
   // Simulate a cross-origin navigation on the results frame.
   EXPECT_TRUE(content::ExecJs(
-      results_frame, kSameTabLinkClickScript,
+      results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
       content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Verify the new tab has the URL.
@@ -861,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Simulate a cross-origin navigation on the results frame.
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   EXPECT_TRUE(content::ExecJs(
-      results_frame, kNewTabLinkClickScript,
+      results_frame, content::JsReplace(kNewTabLinkClickScript, nav_url),
       content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Verify the new tab has the URL.
@@ -916,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Simulate a cross-origin navigation on the results frame.
   EXPECT_TRUE(content::ExecJs(
-      results_frame, kNewTabLinkClickScript,
+      results_frame, content::JsReplace(kNewTabLinkClickScript, nav_url),
       content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // It should not open a new tab as the initatior origin should not be

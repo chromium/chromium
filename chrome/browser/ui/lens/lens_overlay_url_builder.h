@@ -25,6 +25,10 @@ GURL BuildLensSearchURL(
     lens::LensOverlayClusterInfo cluster_info,
     std::map<std::string, std::string> additional_search_query_params);
 
+// Returns the value of the text query parameter value from the provided search
+// URL if any. Empty string otherwise.
+const std::string GetTextQueryParameterValue(const GURL& url);
+
 // Returns whether the given |url| contains all the common search query
 // parameters required to properly enable the lens overlay results in the side
 // panel. This does not check the value of these query parameters.
