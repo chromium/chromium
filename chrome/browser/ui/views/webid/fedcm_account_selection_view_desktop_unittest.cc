@@ -202,6 +202,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   blink::mojom::RpContext GetRpContext() { return rp_context_; }
   size_t num_dialogs_{0u};
 
+  MOCK_METHOD(void, MaybeResetAccountSelectionView, (), (override));
+
  protected:
   AccountSelectionViewBase* CreateAccountSelectionView(
       const std::u16string& top_frame_etld_plus_one,
@@ -562,7 +564,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             account_selection_view_->sheet_type_);
 
-  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 // Test transitioning from IdP sign-in status mismatch failure dialog to regular
@@ -600,7 +602,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             account_selection_view_->sheet_type_);
 
-  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, AutoReauthnSingleAccountFlow) {
@@ -1246,7 +1248,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 // Test the use another account flow, resulting in the new account being shown
@@ -1740,7 +1742,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpMismatchAndShow) {
   Show(*controller, new_accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kButton, new_idp_data);
 
-  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(1u, controller->num_dialogs_);
 }
 
 // Tests that if a single account chooser is opened in button flow mode,
@@ -2235,4 +2237,38 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
   }
   histogram_tester_->ExpectTotalCount("Blink.FedCm.Button.AccountChooserResult",
                                       0);
+}
+
+// Tests that for button flows, going from an accounts dialog to an error dialog
+// resets the account selection view. This is needed to switch from modal to
+// bubble, since the error UI does not have a modal equivalent.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       AccountsToErrorButtonFlowResetsView) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+
+  EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(1);
+  controller->ShowErrorDialog(
+      kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne,
+      blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kButton,
+      content::IdentityProviderMetadata(), /*error=*/std::nullopt);
+}
+
+// Tests that for button flows, going from a loading dialog to an accounts
+// dialog does not reset the account selection view. This is important because
+// the accounts dialog reuses the header from the loading dialog.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       LoadingToAccountsButtonFlowReusesView) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowLoadingDialog();
+
+  EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(0);
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+      {kAccountId1, LoginState::kSignUp},
+  });
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kButton);
 }

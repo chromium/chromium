@@ -282,8 +282,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   base::WeakPtr<views::Widget> GetDialogWidget();
 
   // Resets `account_selection_view_`. Typically, to recreate it later to show a
-  // different kind of dialog.
-  void MaybeResetAccountSelectionView();
+  // different kind of dialog. Virtual for testing purposes.
+  virtual void MaybeResetAccountSelectionView();
 
   // Returns whether an IDP sign-in pop-up window is currently open.
   bool IsIdpSigninPopupOpen();
