@@ -245,7 +245,9 @@ constexpr CGFloat kSpace = 8;
 
 // Returns the navigation item which contain the back button.
 - (UINavigationItem*)configuredBackButton {
-  return [[UINavigationItem alloc] init];
+  UINavigationItem* back = [[UINavigationItem alloc] init];
+  back.title = @"";
+  return back;
 }
 
 // Returns the navigation item which contain the plus button and the overflow
