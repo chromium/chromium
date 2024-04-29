@@ -114,7 +114,7 @@ export class BackgroundKeyboardHandler {
   }
 
   /** Returns true if the key should continue propagation. */
-  private callOnKeyDownHandlers_(evt: Event): boolean {
+  private callOnKeyDownHandlers_(evt: KeyboardEvent): boolean {
     // Defer first to the math handler, if it exists, then ordinary keyboard
     // commands.
     if (!MathHandler.onKeyDown(evt)) {

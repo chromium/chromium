@@ -11,7 +11,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';
-import {KeySequence} from '../common/key_sequence.js';
+import {KeySequence, SerializedKeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {QueueMode} from '../common/tts_types.js';
@@ -19,46 +19,14 @@ import {QueueMode} from '../common/tts_types.js';
 import {CommandHandlerInterface} from './input/command_handler_interface.js';
 import {Output} from './output/output.js';
 
-// TODO(anastasi): Import these types from key_sequence.js once this file is
-// converted to TypeScript.
-
-/**
- * @typedef {{
- *   keyCode: !Array<!KeyCode>,
- *   altGraphKey: Array<boolean>,
- *   altKey: Array<boolean>,
- *   ctrlKey: Array<boolean>,
- *   metaKey: Array<boolean>,
- *   searchKeyHeld: Array<boolean>,
- *   shiftKey: Array<boolean>,
- * }}
- */
-let Keys;
-
-/**
- * @typedef {{
- *   keys: Keys,
- *   cvoxModifier: (boolean|undefined),
- *   doubleTap: (boolean|undefined),
- *   prefixKey: (boolean|undefined),
- *   requireStickyMode: (boolean|undefined),
- *   skipStripping: (boolean|undefined),
- *   stickyMode: (boolean|undefined),
- * }}
- */
-let SerializedKeySequence;
-
-/**
- * The types of actions we want to monitor.
- * @enum {string}
- */
-const ActionType = {
-  BRAILLE: 'braille',
-  GESTURE: 'gesture',
-  KEY_SEQUENCE: 'key_sequence',
-  MOUSE_EVENT: 'mouse_event',
-  RANGE_CHANGE: 'range_change',
-};
+/** The types of actions we want to monitor. */
+enum ActionType {
+  BRAILLE = 'braille',
+  GESTURE = 'gesture',
+  KEY_SEQUENCE = 'key_sequence',
+  MOUSE_EVENT = 'mouse_event',
+  RANGE_CHANGE = 'range_change',
+}
 
 /**
  * Monitors user actions and forces them down a predetermined path. Receives a
@@ -67,49 +35,37 @@ const ActionType = {
  * actions before they are processed by the rest of ChromeVox.
  */
 export class ForcedActionPath {
+  private actionIndex_: number = 0;
+  private actions_: Action[] = [];
+  private onFinishedCallback_: VoidFunction;
+
   /**
-   * @param {!Array<ActionInfo>} actionInfos A queue of expected actions.
-   * @param {function():void} onFinishedCallback Runs once after all expected
-   *     actions have been matched.
+   * @param actionInfos A queue of expected actions.
+   * @param onFinishedCallback Runs once after all expected actions have been
+   *     matched.
    */
-  constructor(actionInfos, onFinishedCallback) {
+  constructor(actionInfos: ActionInfo[], onFinishedCallback: VoidFunction) {
     if (actionInfos.length === 0) {
       throw new Error(`ForcedActionPath: actionInfos can't be empty`);
     }
 
-    /** @private {number} */
-    this.actionIndex_ = 0;
-    /** @private {!Array<!Action>} */
-    this.actions_ = [];
-    /** @private {function():void} */
-    this.onFinishedCallback_ = onFinishedCallback;
-
     for (let i = 0; i < actionInfos.length; ++i) {
-      this.actions_.push(ForcedActionPath.createAction(actionInfos[i]));
+      this.actions_.push(ForcedActionPath.createAction(actionInfos[i]!));
     }
-    if (this.actions_[0].beforeActionCallback) {
-      this.actions_[0].beforeActionCallback();
+    if (this.actions_[0]!.beforeActionCallback) {
+      this.actions_[0]!.beforeActionCallback();
     }
+
+    this.onFinishedCallback_ = onFinishedCallback;
   }
 
   // Static methods.
 
-  /** @private */
-  static closeChromeVox_() {
+  private static closeChromeVox_(): void {
     (new PanelCommand(PanelCommandType.CLOSE_CHROMEVOX)).send();
   }
 
-  /**
-   * Creates a new forced action path.
-   * @param {!Array<{
-   *    type: string,
-   *    value: (string|Object),
-   *    beforeActionMsg: (string|undefined),
-   *    afterActionMsg: (string|undefined)
-   * }>} actions
-   * @param {function(): void} callback
-   */
-  static create(actions, callback) {
+  static create(actions: ActionInfo[], callback: VoidFunction): void {
     if (ForcedActionPath.instance) {
       throw 'Error: trying to create a second ForcedActionPath';
     }
@@ -117,7 +73,7 @@ export class ForcedActionPath {
   }
 
   /** Destroys the forced action path. */
-  static destroy() {
+  static destroy(): void {
     ForcedActionPath.instance = null;
   }
 
@@ -126,7 +82,7 @@ export class ForcedActionPath {
    * @param {!ActionInfo} info
    * @return {!Action}
    */
-  static createAction(info) {
+  static createAction(info: ActionInfo): Action{
     switch (info.type) {
       case ActionType.KEY_SEQUENCE:
         if (typeof info.value !== 'object') {
@@ -147,28 +103,27 @@ export class ForcedActionPath {
     const type = info.type;
     const value = (typeof info.value === 'string') ?
         info.value :
-        KeySequence.deserialize(
-            /** @type {!SerializedKeySequence} */ (info.value));
+        KeySequence.deserialize(info.value as SerializedKeySequence);
     const shouldPropagate = info.shouldPropagate;
     const beforeActionMsg = info.beforeActionMsg;
     const afterActionMsg = info.afterActionMsg;
     const afterActionCmd = info.afterActionCmd;
 
-    const beforeActionCallback = () => {
+    const beforeActionCallback = (): void => {
       if (!beforeActionMsg) {
         return;
       }
 
-      Action.output_(beforeActionMsg);
+      output(beforeActionMsg);
     };
 
     // A function that either provides output or performs a command when the
     // action has been matched.
-    const afterActionCallback = () => {
+    const afterActionCallback = (): void => {
       if (afterActionMsg) {
-        Action.output_(afterActionMsg);
+        output(afterActionMsg);
       } else if (afterActionCmd) {
-        Action.onCommand_(afterActionCmd);
+        onCommand(afterActionCmd);
       }
     };
 
@@ -193,10 +148,8 @@ export class ForcedActionPath {
   /**
    * Returns true if the key sequence should be allowed to propagate to other
    * handlers. Returns false otherwise.
-   * @param {!KeySequence} actualSequence
-   * @return {boolean}
    */
-  onKeySequence(actualSequence) {
+  onKeySequence(actualSequence: KeySequence): boolean {
     if (actualSequence.equals(CLOSE_CHROMEVOX_KEY_SEQUENCE)) {
       ForcedActionPath.closeChromeVox_();
       return true;
@@ -207,22 +160,20 @@ export class ForcedActionPath {
       return false;
     }
 
-    const expectedSequence = expectedAction.value;
+    const expectedSequence = expectedAction.value as KeySequence;
     if (!expectedSequence.equals(actualSequence)) {
       return false;
     }
 
     this.expectedActionMatched_();
-    return expectedAction.shouldPropagate;
+    return Boolean(expectedAction.shouldPropagate);
   }
 
   /**
    * Returns true if the gesture should be allowed to propagate, false
    * otherwise.
-   * @param {string} actualGesture
-   * @return {boolean}
    */
-  onGesture(actualGesture) {
+  onGesture(actualGesture: string): boolean {
     const expectedAction = this.getExpectedAction_();
     if (expectedAction.type !== ActionType.GESTURE) {
       return false;
@@ -237,20 +188,15 @@ export class ForcedActionPath {
     return expectedAction.shouldPropagate;
   }
 
-  /**
-   * @param {Event} evt The key down event to process.
-   * @return {boolean} Whether the event should continue propagating.
-   */
-  onKeyDown(evt) {
+  /** @return Whether the event should continue propagating. */
+  onKeyDown(evt: KeyboardEvent): boolean {
     const keySequence = KeyUtil.keyEventToKeySequence(evt);
     return this.onKeySequence(keySequence);
   }
 
-
   // Private methods.
 
-  /** @private */
-  expectedActionMatched_() {
+  private expectedActionMatched_(): void {
     const action = this.getExpectedAction_();
     if (action.afterActionCallback) {
       action.afterActionCallback();
@@ -259,8 +205,7 @@ export class ForcedActionPath {
     this.nextAction_();
   }
 
-  /** @private */
-  nextAction_() {
+  private nextAction_(): void {
     if (this.actionIndex_ < 0 || this.actionIndex_ >= this.actions_.length) {
       throw new Error(
           `ForcedActionPath: can't call nextAction_(), invalid index`);
@@ -278,16 +223,11 @@ export class ForcedActionPath {
     }
   }
 
-  /** @private */
-  onAllMatched_() {
+  private onAllMatched_(): void {
     this.onFinishedCallback_();
   }
 
-  /**
-   * @return {!Action}
-   * @private
-   */
-  getExpectedAction_() {
+  private getExpectedAction_(): Action {
     if (this.actionIndex_ >= 0 && this.actionIndex_ < this.actions_.length) {
       return this.actions_[this.actionIndex_];
     }
@@ -296,37 +236,44 @@ export class ForcedActionPath {
   }
 }
 
-/** @type {ForcedActionPath} */
-ForcedActionPath.instance;
+export namespace ForcedActionPath {
+  export let instance: ForcedActionPath | null | undefined;
+}
 
 // Local to module.
 
-/**
- * The key sequence used to close ChromeVox.
- * @const {!KeySequence}
- * @private
- */
+/** The key sequence used to close ChromeVox. */
 const CLOSE_CHROMEVOX_KEY_SEQUENCE = KeySequence.deserialize(
     {keys: {keyCode: [KeyCode.Z], ctrlKey: [true], altKey: [true]}});
 
-/**
- * Defines an object that is used to create a ForcedActionPath Action.
- * @typedef {{
- *    type: ActionType,
- *    value: (string|Object),
- *    shouldPropagate: (boolean|undefined),
- *    beforeActionMsg: (string|undefined),
- *    afterActionMsg: (string|undefined),
- *    afterActionCmd: (!Command|undefined),
- * }}
- */
-let ActionInfo;
+type SerializedValueType = string | Object;
+type ValueType = string | KeySequence;
 
-/**
- * Represents an expected action.
- * @abstract
- */
-class Action {
+/** Defines an object that is used to create a ForcedActionPath Action. */
+interface ActionInfo {
+  type: ActionType;
+  value: SerializedValueType;
+  shouldPropagate?: boolean;
+  beforeActionMsg?: string;
+  afterActionMsg?: string;
+  afterActionCmd?: Command;
+}
+
+interface ActionParamsInternal {
+  type: ActionType;
+  value: ValueType;
+  shouldPropagate?: boolean;
+  beforeActionCallback?: VoidFunction;
+  afterActionCallback?: VoidFunction;
+}
+
+abstract class Action {
+  type: ActionType;
+  value: ValueType;
+  shouldPropagate: boolean;
+  beforeActionCallback?: VoidFunction;
+  afterActionCallback?: VoidFunction;
+
   /**
    * Please see below for more information on arguments:
    * type: The type of action.
@@ -335,104 +282,68 @@ class Action {
    *  handlers e.g. CommandHandler.
    * beforeActionCallback: A callback that runs once before this action is seen.
    * afterActionCallback: A callback that runs once after this action is seen.
-   * @param {!{
-   *  type: ActionType,
-   *  value: (string|!KeySequence),
-   *  shouldPropagate: (boolean|undefined),
-   *  beforeActionCallback: (function(): void|undefined),
-   *  afterActionCallback: (function(): void|undefined)
-   * }} params
-   * @protected
    */
-  constructor(params) {
-    /** @type {ActionType} */
+  constructor(params: ActionParamsInternal) {
     this.type = params.type;
-    /** @type {string|!KeySequence} */
     this.value = this.typedValue(params.value);
-    /** @type {boolean} */
     this.shouldPropagate =
         (params.shouldPropagate !== undefined) ? params.shouldPropagate : true;
-    /** @type {(function():void)|undefined} */
     this.beforeActionCallback = params.beforeActionCallback;
-    /** @type {(function():void)|undefined} */
     this.afterActionCallback = params.afterActionCallback;
   }
 
-  /**
-   * @param {!Action} other
-   * @return {boolean}
-   */
-  equals(other) {
+  equals(other: Action): boolean {
     return this.type === other.type;
   }
 
-  /**
-   * @param {string|Object} value
-   * @return {string|!KeySequence}
-   * @abstract
-   */
-  typedValue(value) {}
+  abstract typedValue(value: SerializedValueType): ValueType;
+}
 
-  // Static methods.
+/** Uses Output module to provide speech and braille feedback. */
+function output(message: string): void {
+  new Output().withString(message).withQueueMode(QueueMode.FLUSH).go();
+}
 
-  /**
-   * Uses Output module to provide speech and braille feedback.
-   * @param {string} message
-   * @private
-   */
-  static output_(message) {
-    new Output().withString(message).withQueueMode(QueueMode.FLUSH).go();
-  }
-
-  /**
-   * Uses the CommandHandler to perform a command.
-   * @param {!Command} command
-   * @private
-   */
-  static onCommand_(command) {
-    CommandHandlerInterface.instance.onCommand(command);
-  }
+/** Uses the CommandHandler to perform a command. */
+function onCommand(command: Command): void {
+  CommandHandlerInterface.instance.onCommand(command);
 }
 
 class KeySequenceAction extends Action {
-  /** @override */
-  equals(other) {
+  override equals(other: Action): boolean {
     return super.equals(other) &&
-        this.value.equals(/**@type {!KeySequence} */ (other.value));
+        (this.value as KeySequence).equals(other.value as KeySequence);
   }
 
-  /** @override */
-  typedValue(value) {
+  override typedValue(value: SerializedValueType): KeySequence {
     if (!(value instanceof KeySequence)) {
       throw new Error(
           'ForcedActionPath: Must provide a KeySequence value for ' +
           'Actions of type ActionType.KEY_SEQUENCE');
     }
-    return /** @type {!KeySequence} */ (value);
+    return value;
   }
 }
 
 class StringAction extends Action {
-  /** @override */
-  equals(other) {
+  override equals(other: Action): boolean {
     return super.equals(other) && this.value === other.value;
   }
 
-  /** @override */
-  typedValue(value) {
+  override typedValue(value: SerializedValueType): string {
     if (typeof value !== 'string') {
       throw new Error(`ForcedActionPath: Must provide string value for ${
           this.type} actions`);
     }
-    return String(value);
+    return value;
   }
 }
 
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
     BridgeConstants.ForcedActionPath.Action.CREATE,
-    actions =>
-        new Promise(resolve => ForcedActionPath.create(actions, resolve)));
+    (actions: ActionInfo[]) => new Promise<void>(
+        resolve => ForcedActionPath.create(actions, resolve)));
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
     BridgeConstants.ForcedActionPath.Action.DESTROY,
@@ -440,6 +351,6 @@ BridgeHelper.registerHandler(
 BridgeHelper.registerHandler(
     BridgeConstants.ForcedActionPath.TARGET,
     BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN,
-    evt => ForcedActionPath.instance?.onKeyDown(evt) ?? true);
+    (evt: KeyboardEvent) => ForcedActionPath.instance?.onKeyDown(evt) ?? true);
 
 TestImportManager.exportForTesting(ForcedActionPath);
