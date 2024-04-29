@@ -11,11 +11,18 @@ namespace ash::tether {
 TetherHost::TetherHost(const multidevice::RemoteDeviceRef remote_device_ref)
     : remote_device_ref_(remote_device_ref) {}
 
+TetherHost::TetherHost(const nearby::presence::PresenceDevice presence_device)
+    : presence_device_(presence_device) {}
+
 TetherHost::~TetherHost() = default;
 
 const std::string TetherHost::GetDeviceId() const {
   if (remote_device_ref_.has_value()) {
     return remote_device_ref_->GetDeviceId();
+  }
+
+  if (presence_device_.has_value()) {
+    return presence_device_->GetEndpointId();
   }
 
   NOTREACHED_NORETURN();
@@ -24,6 +31,10 @@ const std::string TetherHost::GetDeviceId() const {
 const std::string& TetherHost::GetName() const {
   if (remote_device_ref_.has_value()) {
     return remote_device_ref_->name();
+  }
+
+  if (presence_device_.has_value()) {
+    return presence_device_->GetDeviceIdentityMetadata().device_name();
   }
 
   NOTREACHED_NORETURN();
