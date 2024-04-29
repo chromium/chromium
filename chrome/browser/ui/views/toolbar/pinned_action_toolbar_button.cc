@@ -130,7 +130,8 @@ bool PinnedActionToolbarButton::OnKeyPressed(const ui::KeyEvent& event) {
   return ToolbarButton::OnKeyPressed(event);
 }
 
-gfx::Size PinnedActionToolbarButton::CalculatePreferredSize() const {
+gfx::Size PinnedActionToolbarButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // This makes sure the buttons are at least the toolbar button sized width.
   // The preferred size might be smaller when the button's icon is removed
   // during drag/drop.
@@ -140,7 +141,8 @@ gfx::Size PinnedActionToolbarButton::CalculatePreferredSize() const {
       browser_view
           ? browser_view->toolbar_button_provider()->GetToolbarButtonSize()
           : gfx::Size();
-  const gfx::Size preferred_size = ToolbarButton::CalculatePreferredSize();
+  const gfx::Size preferred_size =
+      ToolbarButton::CalculatePreferredSize(available_size);
   return std::max(preferred_size, toolbar_button_size,
                   [](const gfx::Size s1, const gfx::Size s2) {
                     return s1.width() < s2.width();

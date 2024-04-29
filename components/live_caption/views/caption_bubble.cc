@@ -1498,7 +1498,7 @@ void CaptionBubble::UpdateContentSize() {
     download_progress_label_->SetPreferredSize(
         gfx::Size(width, content_height));
     language_label_->SetPreferredSize(
-        language_label_->CalculatePreferredSize());
+        language_label_->CalculatePreferredSize({}));
   }
 
 #if BUILDFLAG(IS_WIN)

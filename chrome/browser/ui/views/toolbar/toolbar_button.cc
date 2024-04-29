@@ -387,7 +387,7 @@ const gfx::Insets ToolbarButton::GetTargetInsets() const {
 }
 
 const gfx::Size ToolbarButton::GetTargetSize() const {
-  const gfx::Size current_preferred_size = CalculatePreferredSize();
+  const gfx::Size current_preferred_size = CalculatePreferredSize({});
   const gfx::Insets current_insets = GetInsets();
   const gfx::Size target_contents_size =
       current_preferred_size - current_insets.size();

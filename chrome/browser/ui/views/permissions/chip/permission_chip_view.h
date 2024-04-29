@@ -57,7 +57,8 @@ class PermissionChipView : public views::MdTextButton {
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   // views::MdTextButton:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
   void UpdateBackgroundColor() override;
 

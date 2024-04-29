@@ -61,7 +61,8 @@ void OptionButtonBase::SetLabelStyle(TypographyToken token) {
   TypographyProvider::Get()->StyleLabel(token, *label());
 }
 
-gfx::Size OptionButtonBase::CalculatePreferredSize() const {
+gfx::Size OptionButtonBase::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int preferred_width =
       kIconSize + image_label_spacing_ +
       label()

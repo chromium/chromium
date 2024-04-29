@@ -91,7 +91,7 @@ void BackToTabLabelButton::UpdateSizingAndPosition() {
 
   SetMaxSize(gfx::Size(window_size_->width() - kBackToTabButtonMargin,
       kBackToTabButtonSize));
-  SetSize(CalculatePreferredSize());
+  SetSize(CalculatePreferredSize({}));
   LabelButton::SetPosition(
       gfx::Point((window_size_->width() / 2) - (size().width() / 2),
                  (window_size_->height() / 2) - (size().height() / 2)));

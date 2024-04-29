@@ -311,7 +311,8 @@ void LabelButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   Button::OnBoundsChanged(previous_bounds);
 }
 
-gfx::Size LabelButton::CalculatePreferredSize() const {
+gfx::Size LabelButton::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   gfx::Size size = GetUnclampedSizeWithoutLabel();
 
   // Account for the label only when the button is not shrinking down to hide

@@ -306,7 +306,8 @@ bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
   return true;
 }
 
-gfx::Size TabStripControlButton::CalculatePreferredSize() const {
+gfx::Size TabStripControlButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size size = TabStripControlButton::kButtonSize;
   const auto insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());

@@ -72,7 +72,8 @@ class RichHoverButton : public HoverButton {
   // HoverButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   int GetHeightForWidth(int w) const override;
 
  private:

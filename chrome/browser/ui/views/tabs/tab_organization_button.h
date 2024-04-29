@@ -28,7 +28,8 @@ class TabOrganizationButton : public TabStripControlButton {
   float width_factor_for_testing() { return width_factor_; }
 
   // TabStripControlButton:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  protected:
   // TabStripControlButton:

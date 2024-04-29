@@ -35,7 +35,7 @@ class TabStripControlButtonTest : public ChromeViewsTestBase {
         tab_strip_controller_.get(), base::BindLambdaForTesting([]() {}), u"");
     button_->SetBorder(
         views::CreateEmptyBorder(gfx::Insets::VH(kBorderThickness, 0)));
-    button_->SetSize(button_->CalculatePreferredSize());
+    button_->SetSize(button_->CalculatePreferredSize({}));
   }
 
  protected:

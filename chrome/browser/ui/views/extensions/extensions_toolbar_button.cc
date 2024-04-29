@@ -108,7 +108,8 @@ ExtensionsToolbarButton::~ExtensionsToolbarButton() {
   CHECK(!IsInObserverList());
 }
 
-gfx::Size ExtensionsToolbarButton::CalculatePreferredSize() const {
+gfx::Size ExtensionsToolbarButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return extensions_container_->GetToolbarActionSize();
 }
 

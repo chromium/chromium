@@ -98,7 +98,8 @@ SkColor SelectedKeywordView::GetForegroundColor() const {
   return GetColorProvider()->GetColor(kColorOmniboxKeywordSelected);
 }
 
-gfx::Size SelectedKeywordView::CalculatePreferredSize() const {
+gfx::Size SelectedKeywordView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Height will be ignored by the LocationBarView.
   return GetSizeForLabelWidth(full_label_.GetPreferredSize().width());
 }

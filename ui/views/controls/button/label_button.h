@@ -158,7 +158,8 @@ class VIEWS_EXPORT LabelButton : public Button,
   // Button:
   void SetBorder(std::unique_ptr<Border> border) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int w) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

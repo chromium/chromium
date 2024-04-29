@@ -62,7 +62,8 @@ class ASH_EXPORT OptionButtonBase : public views::LabelButton {
   void SetLabelColorId(ui::ColorId color_id);
 
   // views::LabelButton:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int width) const override;
   void Layout(PassKey) override;

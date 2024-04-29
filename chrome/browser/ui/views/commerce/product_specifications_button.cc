@@ -104,10 +104,13 @@ ProductSpecificationsButton::ProductSpecificationsButton(
 
 ProductSpecificationsButton::~ProductSpecificationsButton() = default;
 
-gfx::Size ProductSpecificationsButton::CalculatePreferredSize() const {
-  const int full_width = GetLayoutManager()->GetPreferredSize(this).width();
+gfx::Size ProductSpecificationsButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int full_width =
+      GetLayoutManager()->GetPreferredSize(this, available_size).width();
   const int width = full_width * width_factor_;
-  const int height = TabStripControlButton::CalculatePreferredSize().height();
+  const int height =
+      TabStripControlButton::CalculatePreferredSize(available_size).height();
   return gfx::Size(width, height);
 }
 

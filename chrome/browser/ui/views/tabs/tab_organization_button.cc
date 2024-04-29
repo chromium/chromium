@@ -79,10 +79,14 @@ void TabOrganizationButton::SetWidthFactor(float factor) {
   PreferredSizeChanged();
 }
 
-gfx::Size TabOrganizationButton::CalculatePreferredSize() const {
-  const int full_width = GetLayoutManager()->GetPreferredSize(this).width();
+gfx::Size TabOrganizationButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int full_width =
+      GetLayoutManager()->GetPreferredSize(this, available_size).width();
   const int width = full_width * width_factor_;
-  const int height = TabStripControlButton::CalculatePreferredSize().height();
+  const int height = TabStripControlButton::CalculatePreferredSize(
+                         views::SizeBounds(width, available_size.height()))
+                         .height();
   return gfx::Size(width, height);
 }
 

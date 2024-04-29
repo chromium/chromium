@@ -169,7 +169,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
   virtual void OnTouchUiChanged();
 
   // views::LabelButton:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;

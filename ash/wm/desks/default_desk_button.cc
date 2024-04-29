@@ -54,7 +54,8 @@ void DefaultDeskButton::UpdateLabelText() {
       bounds().width() - 2 * kDefaultButtonHorizontalPadding, gfx::ELIDE_TAIL));
 }
 
-gfx::Size DefaultDeskButton::CalculatePreferredSize() const {
+gfx::Size DefaultDeskButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto* root_window =
       bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
   const int preview_width = DeskMiniView::GetPreviewWidth(

@@ -94,9 +94,9 @@ void OmniboxChipButton::ResetAnimation(double value) {
   OnAnimationValueMaybeChanged();
 }
 
-// TODO(crbug.com/40232718): Use the CalculatePreferredSize(SizeBounds) method
-// to avoid double calculations.
-gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
+// TODO(crbug.com/40232718): Respect `available_size`.
+gfx::Size OmniboxChipButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int fixed_width = GetIconSize() + GetInsets().width();
   const int collapsable_width =
       label()

@@ -36,16 +36,16 @@ class TabOrganizationButtonTest : public ChromeViewsTestBase {
 
 TEST_F(TabOrganizationButtonTest, AppliesWidthFactor) {
   ASSERT_EQ(0, button_->width_factor_for_testing());
-  ASSERT_EQ(0, button_->CalculatePreferredSize().width());
+  ASSERT_EQ(0, button_->CalculatePreferredSize({}).width());
 
   button_->SetWidthFactor(0.5);
 
-  const int half_width = button_->CalculatePreferredSize().width();
+  const int half_width = button_->CalculatePreferredSize({}).width();
   ASSERT_LT(0, half_width);
 
   button_->SetWidthFactor(1);
 
-  const int full_width = button_->CalculatePreferredSize().width();
+  const int full_width = button_->CalculatePreferredSize({}).width();
   const int half_full_width = full_width / 2;
   ASSERT_LT(0, full_width);
   ASSERT_EQ(half_width, half_full_width);

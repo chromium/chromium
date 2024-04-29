@@ -210,8 +210,9 @@ void RichHoverButton::UpdateAccessibleName() {
   HoverButton::SetAccessibleName(accessible_name);
 }
 
-gfx::Size RichHoverButton::CalculatePreferredSize() const {
-  return Button::CalculatePreferredSize();
+gfx::Size RichHoverButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return Button::CalculatePreferredSize(available_size);
 }
 
 int RichHoverButton::GetHeightForWidth(int w) const {

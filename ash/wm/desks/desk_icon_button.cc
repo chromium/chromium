@@ -133,7 +133,8 @@ bool DeskIconButton::IsPointOnButton(const gfx::Point& screen_location) const {
   return hit_test_bounds.Contains(screen_location);
 }
 
-gfx::Size DeskIconButton::CalculatePreferredSize() const {
+gfx::Size DeskIconButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (state_ == State::kZero) {
     return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
   }

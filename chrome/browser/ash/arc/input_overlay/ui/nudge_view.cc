@@ -115,7 +115,8 @@ class ContentView : public views::LabelButton {
         views::CreateRoundedRectBackground(background_color, kCornerRadius));
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     int button_width = std::min(
         label()->GetPreferredSize(views::SizeBounds(label()->width(), {}))
                 .width() +

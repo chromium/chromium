@@ -426,7 +426,7 @@ void SavedDeskItemView::Layout(PassKey) {
   }
 
   const gfx::Size launch_button_preferred_size =
-      launch_button_->CalculatePreferredSize();
+      launch_button_->CalculatePreferredSize({});
   launch_button_->SetBoundsRect(
       gfx::Rect({(width() - launch_button_preferred_size.width()) / 2,
                  height() - launch_button_preferred_size.height() -

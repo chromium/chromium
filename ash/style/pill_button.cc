@@ -209,7 +209,8 @@ PillButton::PillButton(PressedCallback callback,
 
 PillButton::~PillButton() = default;
 
-gfx::Size PillButton::CalculatePreferredSize() const {
+gfx::Size PillButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int button_width =
       label()
           ->GetPreferredSize(views::SizeBounds(label()->width(), {}))

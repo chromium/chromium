@@ -100,9 +100,9 @@ void PermissionChipView::ResetAnimation(double value) {
   OnAnimationValueMaybeChanged();
 }
 
-// TODO(crbug.com/40232718): Use the CalculatePreferredSize(SizeBounds) method
-// to avoid double calculations.
-gfx::Size PermissionChipView::CalculatePreferredSize() const {
+// TODO(crbug.com/40232718): Respect `available_size`.
+gfx::Size PermissionChipView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int icon_width = GetIconViewWidth();
   const int label_width =
       label()

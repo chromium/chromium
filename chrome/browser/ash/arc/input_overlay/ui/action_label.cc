@@ -94,7 +94,7 @@ class ActionLabelTap : public ActionLabel {
 
   void UpdateBounds() override {
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
-    const auto label_size = CalculatePreferredSize();
+    const auto label_size = CalculatePreferredSize({});
     SetSize(label_size);
     // Label position is not set yet.
     if (label_position_ == TapLabelPosition::kNone) {
@@ -199,7 +199,7 @@ class ActionLabelMove : public ActionLabel {
 
   void UpdateBounds() override {
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, 0)));
-    auto label_size = CalculatePreferredSize();
+    auto label_size = CalculatePreferredSize({});
     SetSize(label_size);
     // TODO(b/241966781): Mouse is not supported yet.
     DCHECK_EQ(mouse_action_, MouseAction::NONE);
@@ -401,8 +401,9 @@ ActionView* ActionLabel::GetParent() {
   return view;
 }
 
-gfx::Size ActionLabel::CalculatePreferredSize() const {
-  auto size = LabelButton::CalculatePreferredSize();
+gfx::Size ActionLabel::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  auto size = LabelButton::CalculatePreferredSize(available_size);
   size.SetToMax(kLabelSize);
   return size;
 }
@@ -486,7 +487,7 @@ void ActionLabel::SetToViewMode() {
 
   SetBackground(views::CreateRoundedRectBackground(kBackgroundColorDefault,
                                                    kCornerRadius));
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
 }
 
 void ActionLabel::SetToEditMode() {
@@ -543,7 +544,7 @@ void ActionLabel::SetToEditHover(bool hovered) {
 void ActionLabel::SetToEditFocus() {
   label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::BOLD));
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   SetEnabledTextColors(kTextColorDefault);
   SetBackgroundForEdit();
   views::FocusRing::Get(this)->SetColorId(
@@ -557,7 +558,7 @@ void ActionLabel::SetToEditError() {
 }
 
 void ActionLabel::SetToEditUnbindInput() {
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   SetBackground(
       views::CreateRoundedRectBackground(kEditedUnboundBgColor, kCornerRadius));
 }

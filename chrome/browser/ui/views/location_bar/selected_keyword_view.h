@@ -48,7 +48,8 @@ class SelectedKeywordView : public IconLabelBubbleView {
   void SetCustomImage(const gfx::Image& image);
 
   // IconLabelBubbleView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   void OnThemeChanged() override;
   SkColor GetForegroundColor() const override;

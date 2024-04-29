@@ -172,7 +172,8 @@ int ToolbarActionView::GetDragOperationsForTest(const gfx::Point& point) {
   return views::View::GetDragOperations(point);
 }
 
-gfx::Size ToolbarActionView::CalculatePreferredSize() const {
+gfx::Size ToolbarActionView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return delegate_->GetToolbarActionSize();
 }
 

@@ -121,7 +121,8 @@ class SystemUIComponentsStyleViewerView::ComponentButton
         GetColorProvider()->GetColor(background_color_id_)));
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kMenuWidth, kDefaultButtonHeight);
   }
 

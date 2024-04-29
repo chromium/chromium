@@ -245,7 +245,7 @@ void SavedTabGroupButton::UpdateButtonLayout() {
     // When the text is empty force the button to have square dimensions.
     SetPreferredSize(gfx::Size(kButtonSize, kButtonSize));
   } else {
-    SetPreferredSize(CalculatePreferredSize());
+    SetPreferredSize(CalculatePreferredSize({}));
   }
 }
 

@@ -79,7 +79,8 @@ class ASH_EXPORT DeskIconButton : public DeskButtonBase {
   bool IsPointOnButton(const gfx::Point& screen_location) const;
 
   // DeskButtonBase:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   // Updates the focus ring based on the dragged item's position and
   // `paint_as_active_`.
   void UpdateFocusState() override;

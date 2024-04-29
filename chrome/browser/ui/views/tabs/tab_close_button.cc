@@ -141,7 +141,8 @@ void TabCloseButton::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 }
 
-gfx::Size TabCloseButton::CalculatePreferredSize() const {
+gfx::Size TabCloseButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return kButtonSize;
 }
 

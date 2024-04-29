@@ -53,7 +53,8 @@ class ActionLabel : public views::LabelButton {
   virtual void UpdateLabelPositionType(TapLabelPosition label_position) = 0;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void ChildPreferredSizeChanged(View* child) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;

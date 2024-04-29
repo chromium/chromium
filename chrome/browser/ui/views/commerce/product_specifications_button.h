@@ -31,7 +31,8 @@ class ProductSpecificationsButton : public TabStripControlButton,
   ~ProductSpecificationsButton() override;
 
   // TabStripControlButton:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;

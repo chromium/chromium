@@ -130,7 +130,8 @@ bool ActionTypeButton::IsIconOnTheLeftSide() {
   return false;
 }
 
-gfx::Size ActionTypeButton::CalculatePreferredSize() const {
+gfx::Size ActionTypeButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kButtonWidth, kActionTypeButtonHeight);
 }
 

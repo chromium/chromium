@@ -28,7 +28,8 @@ class DefaultDeskButton : public DeskButtonBase {
   void UpdateLabelText();
 
   // DeskButtonBase:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   void OnButtonPressed();

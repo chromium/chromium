@@ -152,14 +152,10 @@ class CheckboxControl : public Checkbox {
     AddChildView(std::move(label));
   }
 
-  void Layout(PassKey) override {
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override {
     // Skip LabelButton to use LayoutManager.
-    LayoutSuperclass<View>(this);
-  }
-
-  gfx::Size CalculatePreferredSize() const override {
-    // Skip LabelButton to use LayoutManager.
-    return View::CalculatePreferredSize();
+    return View::CalculatePreferredSize(available_size);
   }
 
   int GetHeightForWidth(int width) const override {
