@@ -3522,7 +3522,6 @@ bool BaseRenderingContext2D::CopyGPUTextureToResourceProvider(
   CHECK(mailbox_texture);
 
   const gpu::Mailbox& mailbox = mailbox_texture->GetMailbox();
-  CHECK(mailbox.IsSharedImage());
 
   // Dissociating the mailbox texture from WebGPU forces the GPU queue to drain,
   // and yields a sync token for OverwriteImage.
