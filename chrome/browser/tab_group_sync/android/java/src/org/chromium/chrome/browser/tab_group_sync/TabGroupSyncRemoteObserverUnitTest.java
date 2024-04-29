@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -144,7 +145,9 @@ public class TabGroupSyncRemoteObserverUnitTest {
                 .setTabGroupColor(
                         eq(ROOT_ID_1),
                         eq(org.chromium.components.tab_groups.TabGroupColorId.GREEN));
-        verify(mTabGroupModelFilter, times(2)).mergeTabsToGroup(anyInt(), eq(ROOT_ID_1));
+        verify(mTabGroupModelFilter, times(2))
+                .mergeListOfTabsToGroup(
+                        anyList(), argThat(tab -> tab.getId() == ROOT_ID_1), eq(false), eq(false));
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         verify(mTabModel).closeMultipleTabs(anyList(), eq(false));

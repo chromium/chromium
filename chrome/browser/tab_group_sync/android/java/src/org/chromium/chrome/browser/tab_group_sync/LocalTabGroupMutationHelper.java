@@ -128,9 +128,13 @@ public class LocalTabGroupMutationHelper {
                 localTab =
                         mTabCreationDelegate.createBackgroundTab(
                                 savedTab.url, savedTab.title, parent, desiredTabIndex);
-
-                mTabGroupModelFilter.mergeTabsToGroup(
-                        /* sourceTabId= */ localTab.getId(), /* destinationTabId= */ rootId);
+                List<Tab> tabsToMerge = new ArrayList<>();
+                tabsToMerge.add(localTab);
+                mTabGroupModelFilter.mergeListOfTabsToGroup(
+                        tabsToMerge,
+                        TabModelUtils.getTabById(getTabModel(), rootId),
+                        /* isSameGroup= */ false,
+                        /* notify= */ false);
                 mTabGroupSyncService.updateLocalTabId(
                         tabGroup.localId, savedTab.syncId, localTab.getId());
             }
