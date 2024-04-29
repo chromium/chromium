@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("//build/toolchain/goma.gni")
 import("clang.gni")
@@ -94,9 +95,14 @@ config("find_bad_constructs") {
 #
 # See //build/config/unsafe_buffers_paths.txt for an example file, this it the
 # file used by Chromium.
+#
+# This build configuration is not supported when `enable_precompiled_headers`
+# is on because the pragmas that enable and disable unsafe-buffers warnings are
+# not serialized to precompiled header files, and thus we get warnings that we
+# should not.
 config("unsafe_buffers") {
   if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "" &&
-      !use_goma) {
+      !use_goma && !enable_precompiled_headers) {
     cflags = [
       "-DUNSAFE_BUFFERS_BUILD",
 
