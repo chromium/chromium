@@ -6,7 +6,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -1223,101 +1222,6 @@ TEST_P(MLGraphTest, ConcatTest) {
                                  2.0, 3.0, 4.0, 2.0, 3.0, 4.0, 4.0,
                                  5.0, 6.0, 5.0, 6.0, 7.0, 8.0}}
         .Test(*this, scope);
-  }
-}
-
-template <typename T>
-struct PadTester {
-  OperandInfo<T> input;
-  Vector<uint32_t> beginning_padding;
-  Vector<uint32_t> ending_padding;
-  Vector<T> expected;
-
-  void Test(MLGraphTest& helper,
-            V8TestingScope& scope,
-            MLGraphBuilder* builder,
-            MLPadOptions* options = MLPadOptions::Create()) {
-    auto* input_operand =
-        BuildInput(builder, "input", input.dimensions, input.data_type,
-                   scope.GetExceptionState());
-    auto* output_operand = BuildPad(scope, builder, input_operand,
-                                    beginning_padding, ending_padding, options);
-    auto [graph, error_name, error_message] =
-        helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_THAT(graph, testing::NotNull());
-
-    MLNamedArrayBufferViews inputs(
-        {{"input",
-          CreateArrayBufferViewForOperand(input_operand, input.values)}});
-    MLNamedArrayBufferViews outputs(
-        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
-    std::tie(error_name, error_message) =
-        helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_TRUE(error_name.IsNull());
-    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
-    EXPECT_EQ(results, expected);
-  }
-};
-
-TEST_P(MLGraphTest, PadTest) {
-  V8TestingScope scope;
-  auto* builder =
-      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
-                           scope.GetExceptionState());
-  {
-    // Test pad operator with default options.
-    auto* options = MLPadOptions::Create();
-    PadTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {2, 3},
-                  .values = {1, 2, 3, 4, 5, 6}},
-        .beginning_padding = {1, 2},
-        .ending_padding = {1, 2},
-        .expected = {0., 0., 0., 0., 0., 0., 0., 0., 0., 1., 2., 3., 0., 0.,
-                     0., 0., 4., 5., 6., 0., 0., 0., 0., 0., 0., 0., 0., 0.}}
-        .Test(*this, scope, builder, options);
-  }
-  {
-    // Test pad operator with options->value = 8.
-    auto* options = MLPadOptions::Create();
-    options->setValue(8);
-    PadTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {2, 3},
-                  .values = {1, 2, 3, 4, 5, 6}},
-        .beginning_padding = {1, 2},
-        .ending_padding = {1, 2},
-        .expected = {8., 8., 8., 8., 8., 8., 8., 8., 8., 1., 2., 3., 8., 8.,
-                     8., 8., 4., 5., 6., 8., 8., 8., 8., 8., 8., 8., 8., 8.}}
-        .Test(*this, scope, builder, options);
-  }
-  // Reflection and Symmetric padding mode are not implemented on XNNPACK.
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kXnnpack);
-  {
-    // Test pad with mode = "reflection".
-    auto* options = MLPadOptions::Create();
-    options->setMode("reflection");
-    PadTester<float>{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                               .dimensions = {1, 1, 2, 3},
-                               .values = {0, 1, 2, 3, 4, 5}},
-                     .beginning_padding = {0, 0, 1, 2},
-                     .ending_padding = {0, 0, 1, 2},
-                     .expected = {5, 4, 3, 4, 5, 4, 3, 2, 1, 0, 1, 2, 1, 0,
-                                  5, 4, 3, 4, 5, 4, 3, 2, 1, 0, 1, 2, 1, 0}}
-        .Test(*this, scope, builder, options);
-  }
-  {
-    // Test pad with mode = "symmetric".
-    auto* options = MLPadOptions::Create();
-    options->setMode("symmetric");
-    PadTester<float>{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                               .dimensions = {1, 2, 3, 1},
-                               .values = {0, 1, 2, 3, 4, 5}},
-                     .beginning_padding = {0, 1, 2, 0},
-                     .ending_padding = {0, 1, 2, 0},
-                     .expected = {1, 0, 0, 1, 2, 2, 1, 1, 0, 0, 1, 2, 2, 1,
-                                  4, 3, 3, 4, 5, 5, 4, 4, 3, 3, 4, 5, 5, 4}}
-        .Test(*this, scope, builder, options);
   }
 }
 

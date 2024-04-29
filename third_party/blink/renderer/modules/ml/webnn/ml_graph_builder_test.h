@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -60,13 +59,6 @@ MLOperand* BuildElementWiseBinary(
     webnn::mojom::blink::ElementWiseBinary::Kind kind,
     const MLOperand* a,
     const MLOperand* b);
-
-MLOperand* BuildPad(V8TestingScope& scope,
-                    MLGraphBuilder* builder,
-                    const MLOperand* input,
-                    const Vector<uint32_t>& beginningPadding,
-                    const Vector<uint32_t>& endingPadding,
-                    const MLPadOptions* options = MLPadOptions::Create());
 
 MLOperand* BuildGemm(V8TestingScope& scope,
                      MLGraphBuilder* builder,
