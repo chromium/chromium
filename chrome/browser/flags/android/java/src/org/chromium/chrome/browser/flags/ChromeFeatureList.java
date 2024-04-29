@@ -630,8 +630,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_GROUP_PANE_ANDROID, false);
     public static final CachedFlag sTabGroupParityAndroid =
             newCachedFlag(TAB_GROUP_PARITY_ANDROID, false);
-    public static final CachedFlag sTabGroupSyncAndroid =
-            newCachedFlag(TAB_GROUP_SYNC_ANDROID, false);
     public static final CachedFlag sTabLinkDragDropAndroid =
             newCachedFlag(TAB_LINK_DRAG_DROP_ANDROID, true);
     public static final CachedFlag sTabResumptionModuleAndroid =
@@ -738,7 +736,6 @@ public abstract class ChromeFeatureList {
                     sTabDragDropAsWindowAndroid,
                     sTabGroupPaneAndroid,
                     sTabGroupParityAndroid,
-                    sTabGroupSyncAndroid,
                     sTabLinkDragDropAndroid,
                     sTabResumptionModuleAndroid,
                     sTabStateFlatBuffer,

@@ -46,6 +46,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -469,8 +470,7 @@ ChromeSyncClient::CreateModelTypeControllers(
     BUILDFLAG(IS_WIN)
     enable_tab_group_sync = true;
 #elif BUILDFLAG(IS_ANDROID)
-    enable_tab_group_sync =
-        base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid);
+    enable_tab_group_sync = tab_groups::IsTabGroupSyncEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -661,7 +661,7 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
       CHECK(keyed_service);
       return keyed_service->GetSavedTabGroupControllerDelegate();
 #elif BUILDFLAG(IS_ANDROID)
-      DCHECK(base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid));
+      DCHECK(tab_groups::IsTabGroupSyncEnabled());
       return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_)
           ->GetSavedTabGroupControllerDelegate();
 #else

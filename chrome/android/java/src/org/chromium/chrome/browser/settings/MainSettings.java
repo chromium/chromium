@@ -297,7 +297,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateAutofillPreferences();
         updatePlusAddressesPreference();
 
-        if (ChromeFeatureList.sTabGroupSyncAndroid.isEnabled()) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
             addPreferenceIfAbsent(PREF_TABS);
         } else {
             removePreferenceIfPresent(PREF_TABS);

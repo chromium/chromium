@@ -9,8 +9,10 @@ if (is_android) {
 }
 
 if (is_android) {
-  source_set("prefs") {
+  source_set("utils") {
     sources = [
+      "feature_utils.cc",
+      "feature_utils.h",
       "prefs.cc",
       "prefs.h",
     ]
@@ -22,6 +24,10 @@ if (is_android) {
       "//components/prefs",
       "//components/saved_tab_groups:model",
     ]
+
+    if (is_android) {
+      deps += [ ":utils_jni_headers" ]
+    }
   }
 
   android_library("factory_java") {
@@ -71,6 +77,7 @@ if (is_android) {
       "//components/tab_groups:tab_groups_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
       "//url:url_java",
     ]
@@ -146,5 +153,9 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactory.java" ]
+  }
+
+  generate_jni("utils_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncFeatures.java" ]
   }
 }
