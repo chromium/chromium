@@ -18,6 +18,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -245,12 +246,20 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 
+  // Need to cleanup trailing prefs to avoid crashes.
+  // TODO(b/337114717): Improve APIs so that we don't need to do this.
+  profile()->GetPrefs()->ClearPref(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+
   search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,
       SearchEngineChoiceDialogService::EntryPoint::kFirstRunExperience);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
+
+  profile()->GetPrefs()->ClearPref(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
 
   search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,

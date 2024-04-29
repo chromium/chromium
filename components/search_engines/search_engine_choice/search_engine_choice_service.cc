@@ -358,7 +358,8 @@ void SearchEngineChoiceService::RecordChoiceMade(
 }
 
 void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
-    const ChoiceScreenDisplayState& display_state) const {
+    const ChoiceScreenDisplayState& display_state,
+    bool is_from_cached_state) const {
   if (!IsEeaChoiceCountry(display_state.country_id)) {
     // Tests or command line can force this, but we want to avoid polluting the
     // histograms with unwanted country data.
@@ -374,19 +375,28 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     return;
   }
 
-  if (display_state.selected_engine_index.has_value()) {
+  // TODO(b/337114717): This could crash if for some reason this is called
+  // multiple times in a row for the same profile. This would clearly be a bug
+  // that needs to be fixed, but this is not the most obvious way to detect
+  // such an issue. The API should be cleanup to handle this case a bit better.
+  CHECK_EQ(is_from_cached_state,
+           profile_prefs_->HasPrefPath(
+               prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState),
+           base::NotFatalUntil::M127);
+
+  if (!is_from_cached_state &&
+      display_state.selected_engine_index.has_value()) {
     RecordChoiceScreenSelectedIndex(
         display_state.selected_engine_index.value());
   }
 
   if (display_state.country_id != variations_country_id_) {
-    RecordChoiceScreenPositionsCountryMismatch(true);
     // Not recording if adding position data, which can be used as a proxy for
     // the profile country, would add new hard to control location info to a
     // logs session.
-    // Instead we persist it, to attempt to send it later.
-    if (!profile_prefs_->HasPrefPath(
-            prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState)) {
+    if (!is_from_cached_state) {
+      // Persist the data so we can attempt to send it later.
+      RecordChoiceScreenPositionsCountryMismatch(true);
       profile_prefs_->SetDict(
           prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
           display_state.ToDict());
@@ -394,11 +404,13 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     return;
   }
 
-  RecordChoiceScreenPositionsCountryMismatch(false);
   RecordChoiceScreenPositions(display_state.search_engines);
-
-  profile_prefs_->ClearPref(
-      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+  if (is_from_cached_state) {
+    profile_prefs_->ClearPref(
+        prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+  } else {
+    RecordChoiceScreenPositionsCountryMismatch(false);
+  }
 }
 
 void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
@@ -508,7 +520,7 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
     // Check if the obtained display state is still valid.
     std::optional<base::Time> completion_time =
         GetChoiceScreenCompletionTimestamp(profile_prefs_.get());
-    constexpr base::TimeDelta kDisplayStateMaxPendingDuration = base::Days(14);
+    constexpr base::TimeDelta kDisplayStateMaxPendingDuration = base::Days(7);
     if (base::Time::Now() - completion_time.value_or(base::Time::Min()) >
         kDisplayStateMaxPendingDuration) {
       display_state = std::nullopt;
@@ -521,7 +533,8 @@ void SearchEngineChoiceService::ProcessPendingChoiceScreenDisplayState() {
     return;
   }
 
-  MaybeRecordChoiceScreenDisplayState(display_state.value());
+  MaybeRecordChoiceScreenDisplayState(display_state.value(),
+                                      /*is_from_cached_state=*/true);
 }
 
 int SearchEngineChoiceService::GetCountryIdInternal() {
