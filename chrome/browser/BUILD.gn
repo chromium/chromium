@@ -3066,6 +3066,7 @@ static_library("browser") {
       "android/usage_stats/usage_stats_database.h",
       "android/warmup_manager.cc",
       "android/webapk/pwa_restore_bottom_sheet_mediator.cc",
+      "android/webapk/pwa_restore_bottom_sheet_mediator.h",
       "android/webapk/webapk_database.cc",
       "android/webapk/webapk_database.h",
       "android/webapk/webapk_database_factory.cc",

@@ -13,11 +13,15 @@ import android.widget.LinearLayout.LayoutParams;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
@@ -27,6 +31,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,6 +63,8 @@ public class PwaRestoreBottomSheetViewRenderTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_WEB_APP_INSTALLS)
                     .build();
 
+    @Rule public JniMocker mocker = new JniMocker();
+
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
@@ -65,6 +72,15 @@ public class PwaRestoreBottomSheetViewRenderTest {
                 () -> {
                     sActivity = sActivityTestRule.getActivity();
                 });
+    }
+
+    @Mock private PwaRestoreBottomSheetMediator.Natives mNativeMock;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mocker.mock(PwaRestoreBottomSheetMediatorJni.TEST_HOOKS, mNativeMock);
+        Mockito.when(mNativeMock.initialize(Mockito.any())).thenReturn(0L);
     }
 
     public PwaRestoreBottomSheetViewRenderTest(boolean nightModeEnabled) {

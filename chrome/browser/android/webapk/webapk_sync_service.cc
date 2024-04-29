@@ -101,9 +101,8 @@ void WebApkSyncService::PrepareRestorableAppsInfo(
       std::move(result_callback));
 }
 
-void WebApkSyncService::RestoreAppList(
-    const std::vector<std::string>& app_ids_to_restore) {
-  restore_manager_->ScheduleRestoreTasks(app_ids_to_restore);
+WebApkRestoreManager* WebApkSyncService::GetWebApkRestoreManager() const {
+  return restore_manager_.get();
 }
 
 // static

@@ -31,6 +31,8 @@ class PwaRestoreBottomSheetMediator {
     // The callback for the parent to get notified on when Restore is clicked.
     private final Runnable mParentRestoreClickHandler;
 
+    private long mNativeMediator;
+
     PwaRestoreBottomSheetMediator(
             ArrayList recentApps,
             ArrayList olderApps,
@@ -47,6 +49,7 @@ class PwaRestoreBottomSheetMediator {
                         this::onDeselectButtonClicked,
                         this::onRestoreButtonClicked,
                         this::onSelectionToggled);
+        mNativeMediator = PwaRestoreBottomSheetMediatorJni.get().initialize(this);
 
         initializeState(recentApps, olderApps);
         setPeekingState();
@@ -116,8 +119,12 @@ class PwaRestoreBottomSheetMediator {
                 selectedAppLists.add(app.getId());
             }
         }
-        PwaRestoreBottomSheetMediatorJni.get()
-                .onRestoreWebapps(selectedAppLists.toArray(new String[selectedAppLists.size()]));
+        if (mNativeMediator != 0) {
+            PwaRestoreBottomSheetMediatorJni.get()
+                    .onRestoreWebapps(
+                            mNativeMediator,
+                            selectedAppLists.toArray(new String[selectedAppLists.size()]));
+        }
 
         // Notify the parent.
         mParentRestoreClickHandler.run();
@@ -150,6 +157,10 @@ class PwaRestoreBottomSheetMediator {
 
     @NativeMethods
     interface Natives {
-        void onRestoreWebapps(String[] restoreAppsList);
+        long initialize(PwaRestoreBottomSheetMediator instance);
+
+        void onRestoreWebapps(long nativePwaRestoreBottomSheetMediator, String[] restoreAppsList);
+
+        void destroy(long nativePwaRestoreBottomSheetMediator);
     }
 }

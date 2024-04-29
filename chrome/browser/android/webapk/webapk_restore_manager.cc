@@ -95,8 +95,7 @@ void WebApkRestoreManager::MaybeStartNextTask() {
   }
 
   if (tasks_.empty()) {
-    // No tasks to run, clear the shared web contents and stop.
-    web_contents_manager()->ClearSharedWebContents();
+    ResetIfNotRunning();
     return;
   }
 
@@ -115,6 +114,19 @@ void WebApkRestoreManager::OnTaskFinished(const GURL& manifest_id,
   sequenced_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&WebApkRestoreManager::MaybeStartNextTask,
                                 weak_factory_.GetWeakPtr()));
+}
+
+void WebApkRestoreManager::ResetIfNotRunning() {
+  if (is_running_ || !tasks_.empty()) {
+    return;
+  }
+
+  restorable_tasks_.clear();
+  web_contents_manager()->ClearSharedWebContents();
+}
+
+base::WeakPtr<WebApkRestoreManager> WebApkRestoreManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace webapk

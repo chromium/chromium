@@ -46,6 +46,11 @@ class WebApkRestoreManager {
   void ScheduleRestoreTasks(
       const std::vector<webapps::AppId>& app_ids_to_restore);
 
+  // If no restore task is running, clear all tasks and reset states.
+  void ResetIfNotRunning();
+
+  base::WeakPtr<WebApkRestoreManager> GetWeakPtr();
+
   uint32_t GetTasksCountForTesting() const { return tasks_.size(); }
 
  protected:
