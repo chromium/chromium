@@ -57,7 +57,8 @@ class BruschettaInstallerView
   bool ShouldShowWindowTitle() const override;
   bool Accept() override;
   bool Cancel() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override;
 
   // bruschetta::BruschettaInstaller::Observer implementation.
   void StateChanged(InstallerState state) override;

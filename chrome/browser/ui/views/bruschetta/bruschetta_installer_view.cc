@@ -365,7 +365,8 @@ bool BruschettaInstallerView::ShouldShowWindowTitle() const {
   return false;
 }
 
-gfx::Size BruschettaInstallerView::CalculatePreferredSize() const {
+gfx::Size BruschettaInstallerView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   return gfx::Size(kWindowWidth, kWindowHeight);
 }
 
