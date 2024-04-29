@@ -2771,194 +2771,6 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
     AssertResultMatches(result, expected_data);
   }
 }
-
-TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
-  scoped_refptr<FakeAutocompleteProvider> provider =
-      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
-  using OmniboxActionId::ACTION_IN_SUGGEST;
-  using OmniboxActionId::HISTORY_CLUSTERS;
-  using OmniboxActionId::PEDAL;
-  using OmniboxActionId::UNKNOWN;
-  const std::set<OmniboxActionId> all_actions_to_test{ACTION_IN_SUGGEST,
-                                                      HISTORY_CLUSTERS, PEDAL};
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kActionsInSuggest,
-      {{OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name,
-        "false"}});
-
-  struct FilterOmniboxActionsTestData {
-    std::string test_name;
-    std::vector<std::vector<OmniboxActionId>> input_matches_and_actions;
-    std::vector<std::vector<OmniboxActionId>> result_matches_and_actions_zps;
-    std::vector<std::vector<OmniboxActionId>> result_matches_and_actions_typed;
-  } test_cases[]{
-      {"No actions attached to matches",
-       {{}, {}, {}, {}},
-       {{}, {}, {}, {}},
-       {{}, {}, {}, {}}},
-      {"Pedals shown only in top three slots",
-       {{PEDAL}, {PEDAL}, {PEDAL}, {PEDAL}},
-       // ZPS
-       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
-       // Typed
-       {{PEDAL}, {PEDAL}, {PEDAL}, {}}},
-      {"Actions are shown only in top two slots",
-       {{ACTION_IN_SUGGEST},
-        {ACTION_IN_SUGGEST},
-        {ACTION_IN_SUGGEST},
-        {ACTION_IN_SUGGEST}},
-       // ZPS
-       {{}, {}, {}, {}},
-       // Typed
-       {{ACTION_IN_SUGGEST}, {ACTION_IN_SUGGEST}, {}, {}}},
-      {"History Clusters are allowed everywhere",
-       {{HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}},
-       // ZPS
-       {{HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}},
-       // Typed
-       {{HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}}},
-      {"Actions are promoted over Pedals; positions dictate preference",
-       {{ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL}},
-       // ZPS
-       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
-       // Typed
-       {{ACTION_IN_SUGGEST}, {ACTION_IN_SUGGEST}, {PEDAL}, {}}},
-      {"Actions are promoted over History clusters; positions dictate "
-       "preference",
-       {{ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL}},
-       // ZPS
-       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
-       // Typed
-       {{ACTION_IN_SUGGEST}, {ACTION_IN_SUGGEST}, {PEDAL}, {}}},
-      {"Actions are promoted over History clusters; positions dictate "
-       "preference",
-       {{ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
-        {ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
-        {ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
-        {ACTION_IN_SUGGEST, HISTORY_CLUSTERS}},
-       // ZPS
-       {{HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}},
-       // Typed
-       {{ACTION_IN_SUGGEST},
-        {ACTION_IN_SUGGEST},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}}},
-      {"History clusters are promoted over Pedals; positions dictate "
-       "preference",
-       {{PEDAL, HISTORY_CLUSTERS},
-        {PEDAL, HISTORY_CLUSTERS},
-        {PEDAL, HISTORY_CLUSTERS},
-        {PEDAL, HISTORY_CLUSTERS}},
-       // ZPS
-       {{HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}},
-       // Typed
-       {{HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}}},
-      {"All variants for every position leaves only one appropriate variant",
-       {{PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
-        {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
-        {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS},
-        {PEDAL, ACTION_IN_SUGGEST, HISTORY_CLUSTERS}},
-       // ZPS
-       {{HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}},
-       // Typed
-       {{ACTION_IN_SUGGEST},
-        {ACTION_IN_SUGGEST},
-        {HISTORY_CLUSTERS},
-        {HISTORY_CLUSTERS}}},
-  };
-
-  // Crete matches following the `input_matches_and_actions` input.
-  // The input specifies what type of OMNIBOX_ACTION should be added to every
-  // individual match.
-  // Once done, run the trimming and verify that the output contains exactly the
-  // matches we want to see.
-  auto run_test = [&](const FilterOmniboxActionsTestData& data) {
-    // Create AutocompleteResult from the test data
-    AutocompleteResult zps_result;
-    for (const auto& actions : data.input_matches_and_actions) {
-      AutocompleteMatch match(provider.get(), 1, false,
-                              AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
-      for (auto& action_id : actions) {
-        if (action_id == OmniboxActionId::ACTION_IN_SUGGEST) {
-          omnibox::ActionInfo info;
-          info.set_action_type(omnibox::ActionInfo_ActionType_DIRECTIONS);
-          match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
-              std::move(info), std::nullopt));
-        } else {
-          match.actions.push_back(
-              base::MakeRefCounted<FakeOmniboxAction>(action_id));
-        }
-      }
-      zps_result.AppendMatches({std::move(match)});
-    }
-
-    AutocompleteResult typed_result;
-    typed_result.CopyMatchesFrom(zps_result);
-
-    auto check_results =
-        [&](AutocompleteResult& result,
-            std::vector<std::vector<OmniboxActionId>> expected_actions) {
-          // Check results.
-          EXPECT_EQ(result.size(), expected_actions.size())
-              << "while testing variant: " << data.test_name;
-
-          for (size_t index = 0u; index < result.size(); ++index) {
-            const auto* match = result.match_at(index);
-            const auto& expected_actions_at_position = expected_actions[index];
-            EXPECT_EQ(match->actions.size(),
-                      expected_actions_at_position.size());
-            for (size_t action_index = 0u;
-                 action_index < expected_actions_at_position.size();
-                 ++action_index) {
-              EXPECT_EQ(expected_actions_at_position[action_index],
-                        match->actions[action_index]->ActionId())
-                  << "match " << index << "action " << action_index
-                  << " while testing variant: " << data.test_name;
-            }
-          }
-        };
-
-    // Run the trimmer. ZPS, then typed.
-    zps_result.TrimOmniboxActions(true);
-    check_results(zps_result, data.result_matches_and_actions_zps);
-
-    typed_result.TrimOmniboxActions(false);
-    check_results(typed_result, data.result_matches_and_actions_typed);
-  };
-
-  for (const auto& test_case : test_cases) {
-    run_test(test_case);
-  }
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
@@ -3112,4 +2924,125 @@ TEST_F(AutocompleteResultTest, IOS_InspireMe) {
     }
   }
 }
+#endif
+
+#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+
+TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
+  using OmniboxActionId::ACTION_IN_SUGGEST;
+  using OmniboxActionId::PEDAL;
+  using OmniboxActionId::UNKNOWN;
+  const std::set<OmniboxActionId> all_actions_to_test{ACTION_IN_SUGGEST, PEDAL};
+
+  struct FilterOmniboxActionsTestData {
+    std::string test_name;
+    std::vector<std::vector<OmniboxActionId>> input_matches_and_actions;
+    std::vector<std::vector<OmniboxActionId>> result_matches_and_actions_zps;
+    std::vector<std::vector<OmniboxActionId>> result_matches_and_actions_typed;
+  } test_cases[]{
+      {"No actions attached to matches",
+       {{}, {}, {}, {}},
+       {{}, {}, {}, {}},
+       {{}, {}, {}, {}}},
+      {"Pedals shown only in top three slots",
+       {{PEDAL}, {PEDAL}, {PEDAL}, {PEDAL}},
+       // ZPS
+       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
+       // Typed
+       {{PEDAL}, {PEDAL}, {PEDAL}, {}}},
+      {"Actions are shown only in first position",
+       {{ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST}},
+       // ZPS
+       {{}, {}, {}, {}},
+       // Typed
+       {{ACTION_IN_SUGGEST}, {}, {}, {}}},
+      {"Actions are promoted over Pedals; positions dictate preference",
+       {{ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL}},
+       // ZPS
+       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
+       // Typed
+       {{ACTION_IN_SUGGEST}, {PEDAL}, {PEDAL}, {}}},
+      {"Actions are promoted over History clusters; positions dictate "
+       "preference",
+       {{ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL},
+        {ACTION_IN_SUGGEST, PEDAL}},
+       // ZPS
+       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
+       // Typed
+       {{ACTION_IN_SUGGEST}, {PEDAL}, {PEDAL}, {}}},
+  };
+
+  // Crete matches following the `input_matches_and_actions` input.
+  // The input specifies what type of OMNIBOX_ACTION should be added to every
+  // individual match.
+  // Once done, run the trimming and verify that the output contains exactly the
+  // matches we want to see.
+  auto run_test = [&](const FilterOmniboxActionsTestData& data) {
+    // Create AutocompleteResult from the test data
+    AutocompleteResult zps_result;
+    AutocompleteResult typed_result;
+    for (const auto& actions : data.input_matches_and_actions) {
+      AutocompleteMatch match(provider.get(), 1, false,
+                              AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+      for (auto& action_id : actions) {
+        if (action_id == OmniboxActionId::ACTION_IN_SUGGEST) {
+          omnibox::ActionInfo info;
+          info.set_action_type(omnibox::ActionInfo_ActionType_DIRECTIONS);
+          match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
+              std::move(info), std::nullopt));
+        } else {
+          match.actions.push_back(
+              base::MakeRefCounted<FakeOmniboxAction>(action_id));
+        }
+      }
+      zps_result.AppendMatches({match});
+      typed_result.AppendMatches({match});
+    }
+
+    auto check_results =
+        [&](AutocompleteResult& result,
+            std::vector<std::vector<OmniboxActionId>> expected_actions) {
+          // Check results.
+          EXPECT_EQ(result.size(), expected_actions.size())
+              << "while testing variant: " << data.test_name;
+
+          for (size_t index = 0u; index < result.size(); ++index) {
+            const auto* match = result.match_at(index);
+            const auto& expected_actions_at_position = expected_actions[index];
+            EXPECT_EQ(match->actions.size(),
+                      expected_actions_at_position.size());
+            for (size_t action_index = 0u;
+                 action_index < expected_actions_at_position.size();
+                 ++action_index) {
+              EXPECT_EQ(expected_actions_at_position[action_index],
+                        match->actions[action_index]->ActionId())
+                  << "match " << index << "action " << action_index
+                  << " while testing variant: " << data.test_name;
+            }
+          }
+        };
+
+    // Run the trimmer. ZPS, then typed.
+    zps_result.TrimOmniboxActions(true);
+    check_results(zps_result, data.result_matches_and_actions_zps);
+
+    typed_result.TrimOmniboxActions(false);
+    check_results(typed_result, data.result_matches_and_actions_typed);
+  };
+
+  for (const auto& test_case : test_cases) {
+    run_test(test_case);
+  }
+}
+
 #endif
