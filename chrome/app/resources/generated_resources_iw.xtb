@@ -106,7 +106,7 @@
 <translation id="107450319332239199">משהו השתבש. במקום זאת, יש לפתוח את החלונות באופן ידני.</translation>
 <translation id="1075920807995555452">‏הפעלת כלים, עורכים וסביבות פיתוח משולבות (IDE) בסביבה שמנוהלת על ידי הארגון שלך ב-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">ניווט בדפים באמצעות סמן הטקסט</translation>
-<translation id="1076382954055048850">‏הצגת סשנים אחרים של העברה (cast)</translation>
+<translation id="1076382954055048850">‏הצגת סשנים אחרים של הפעלת Cast</translation>
 <translation id="1076698951459398590">הפעלת עיצוב</translation>
 <translation id="1076766328672150609">לילד או לילדה שלך יש אפשרות להשתמש בקוד אימות כדי לבטל את נעילת המכשיר הזה.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -152,7 +152,7 @@
 <translation id="1110155001042129815">יש להמתין</translation>
 <translation id="1110965959145884739">צריך לבחור את השפות שרוצים להגדיר במכשיר הזה. קובצי השפה משותפים עם משתמשים כדי לחסוך מקום בכונן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">‏כרטיסיית הרקע משתמשת ב-Bluetooth</translation>
-<translation id="1112998165730922436">‏ההעברה (cast) הושהתה</translation>
+<translation id="1112998165730922436">‏הפעלתה ה-Cast הושהתה</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">יהלום</translation>
 <translation id="1114525161406758033">מצב שינה מופעל כשהמכסה סגור</translation>
@@ -316,7 +316,7 @@
 <translation id="1225177025209879837">עיבוד הבקשה מתבצע...</translation>
 <translation id="1227107020813934021">חיפוש של סורקי מסמכים</translation>
 <translation id="1227660082540388410">עריכת מפתח הגישה</translation>
-<translation id="1227993798763400520">ההעברה נכשלה. יש לנסות שוב.</translation>
+<translation id="1227993798763400520">‏לא הופעל Cast. צריך לנסות שוב.</translation>
 <translation id="1230417814058465809">מופעלת הגנה רגילה. כדי להוסיף שכבת אבטחה, יש להשתמש בהגנה המשופרת.</translation>
 <translation id="1231426483209637778">נזכור את הרשת שלך בשימוש הבא ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="1232569758102978740">ללא שם</translation>
@@ -421,7 +421,7 @@
 <translation id="1307431692088049276">אין צורך לשאול אותי שוב</translation>
 <translation id="1307559529304613120">‏אופס! המערכת לא הצליחה לאחסן את אסימון הגישה לטווח ארוך אל ממשק ה-API עבור המכשיר הזה.</translation>
 <translation id="131112695174432497">יימחקו הנתונים שמשפיעים על ההתאמה האישית של מודעות</translation>
-<translation id="1311294419381837540">‏מתבצעת העברה (cast) של כרטיסייה. ניתן להשהות או להפסיק את ההעברה בכל שלב.</translation>
+<translation id="1311294419381837540">‏Cast של כרטיסייה מופעל. אפשר להשהות או להפסיק אותו בכל שלב.</translation>
 <translation id="131188242279372879">‏כדאי להכיר את ההגנה המשופרת כדי ליהנות מרמת האבטחה הגבוהה ביותר ב-Chrome להורדות</translation>
 <translation id="1312811472299082263">‏יצירה מפלייבוק של Ansible או מקובץ גיבוי של Crostini</translation>
 <translation id="13130607084115184">‏הסיסמאות השמורות יופיעו כאן. כדי לייבא סיסמאות אל <ph name="BRAND" /> במכשיר הזה, צריך <ph name="BEGIN_LINK" />לבחור קובץ CSV<ph name="END_LINK" />.</translation>
@@ -461,7 +461,7 @@
 <translation id="1342886103232377846">‏כדי לבדוק אם יש סיסמאות שנחשפו, צריך לעבור למנהל הסיסמאות של Google</translation>
 <translation id="1343865611738742294">‏הענקת הרשאה לאפליקציות Linux לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של Linux.</translation>
 <translation id="1343920184519992513">להמשיך מהמקום שבו הפסקת ולפתוח קבוצת דפים מסוימת</translation>
-<translation id="1344141078024003905">‏מתבצעת העברה (cast) של המסך. אפשר להשהות או להפסיק את העברת המסך בכל שלב.</translation>
+<translation id="1344141078024003905">‏Cast של המסך מופעל. אפשר להשהות או להפסיק את הפעלת ה-Cast של המסך בכל שלב.</translation>
 <translation id="1346630054604077329">אישור והפעלה מחדש</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1347256498747320987">‏התקנת עדכונים ואפליקציות. המשך משמעו שהסכמת לכך שהמכשיר גם יוריד ויתקין באופן אוטומטי עדכונים ואפליקציות מ-Google, מהספק ומיצרן המכשיר. ייתכן שההורדה תיעשה באמצעות חבילת הגלישה. חלק מהאפליקציות האלה עשויות לכלול אפשרות לרכישות מהאפליקציה. <ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
@@ -684,7 +684,7 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> מוצפן. צריך לבקש מהבעלים שלו לפענח אותו.</translation>
 <translation id="151501797353681931">‏יובא מ-Safari</translation>
 <translation id="1515163294334130951">הפעלה</translation>
-<translation id="1517467582299994451">‏כדי להעביר (cast) באמצעות קוד, צריך להפעיל את הגדרות הסנכרון של דפדפן Chrome</translation>
+<translation id="1517467582299994451">‏כדי להתשמש בקוד לצורך הפעלת Cast, צריך להפעיל את הגדרות הסנכרון של דפדפן Chrome</translation>
 <translation id="1521442365706402292">ניהול אישורים</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
@@ -957,10 +957,10 @@
 <translation id="1704230497453185209">לא לאפשר לאתרים להפעיל צליל</translation>
 <translation id="1704970325597567340">בדיקת הבטיחות פעלה בתאריך <ph name="DATE" /></translation>
 <translation id="1706586824377653884">נוסף על ידי מנהל המערכת שלך</translation>
-<translation id="170658918174941828">‏נתונים על גרסת Chrome, גרסת מערכת ההפעלה, הגדרות ההעברה (Cast),
+<translation id="170658918174941828">‏נתונים על גרסת Chrome, גרסת מערכת ההפעלה, הגדרות להפעלת Cast,
     נתונים סטטיסטיים של ביצועי שיקוף מסך ויומני אבחון של ערוץ
-    התקשורת שלך, יישלחו יחד עם כל מידע אחר שהגדרתך
-    תכלול למעלה. משוב זה משמש לאבחון בעיות
+    התקשורת שלך, יישלחו יחד עם כל מידע אחר שבחרת
+    להוסיף למעלה. המשוב הזה משמש לאבחון בעיות
     וכדי לעזור בשיפור התכונה. כל המידע האישי שיישלח
     במפורש או באופן מקרי יהיה מוגן בהתאם
     למדיניות הפרטיות שלנו. שליחת המשוב הזה
@@ -1575,7 +1575,7 @@
 <translation id="2147402320887035428">‏יכול להיות שהקובץ הזה הוא תוכנה זדונית.<ph name="LINE_BREAK" />הגלישה הבטוחה של Google בודקת אם הקובץ הזה לא בטוח – הסריקה נמשכת בדרך כלל כמה שניות.</translation>
 <translation id="2148219725039824548">קרתה שגיאה בטעינת התקן הרשת לשיתוף קבצים. ההתקן שצוין לא נמצא ברשת.</translation>
 <translation id="2148756636027685713">הפרמוט הסתיים</translation>
-<translation id="2148892889047469596">העברת הכרטיסייה</translation>
+<translation id="2148892889047469596">‏הפעלת Cast של כרטיסייה</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2150139952286079145">יעדי חיפוש</translation>
 <translation id="2150661552845026580">להוסיף את "<ph name="EXTENSION_NAME" />"?</translation>
@@ -1891,7 +1891,7 @@
 <translation id="2379281330731083556">הדפסה באמצעות תיבת דו-שיח של המערכת... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">הפעולה עשויה לגרום לניתוק הרשת הסלולרית למשך מספר דקות</translation>
 <translation id="2381499968174336913">תצוגה מקדימה של כרטיסייה משותפת</translation>
-<translation id="2382875860893882175">‏ההעברה (cast) מושהית. אפשר להמשיך בהעברה או להפסיק אותה בכל שלב.</translation>
+<translation id="2382875860893882175">‏הפעלת ה-Cast מושהית. אפשר להמשיך או להפסיק אותה בכל שלב.</translation>
 <translation id="2383825469508278924">שינוי המיפוי של מקשי המקלדת, מקשי הפונקציות ועוד</translation>
 <translation id="2387052489799050037">מעבר לדף הבית</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (הנוכחי)</translation>
@@ -2298,7 +2298,7 @@
 <translation id="2674764818721168631">כבוי</translation>
 <translation id="2676084251379299915">‏התוסף הזה הושבת על ידי מדיניות הארגון כי הוא לא זמין יותר בחנות האינטרנט של Chrome.</translation>
 <translation id="2678063897982469759">הפעלה מחדש</translation>
-<translation id="2678100101831051676">‏לא ניתן להעביר (cast).</translation>
+<translation id="2678100101831051676">‏אי אפשר להפעיל Cast.</translation>
 <translation id="268053382412112343">הי&amp;סטוריה</translation>
 <translation id="2681124317993121768">פרופילים של אורחים אינם נתמכים</translation>
 <translation id="2682498795777673382">בוצע עדכון על-ידי הורה</translation>
@@ -2808,7 +2808,7 @@
 <translation id="3046910703532196514">דף אינטרנט, שלם</translation>
 <translation id="304747341537320566">מנועי דיבור</translation>
 <translation id="3048336643003835855">‏מכשירי HID מהספק <ph name="VENDOR_ID" /></translation>
-<translation id="3048917188684939573">יומני העברה ומכשירים</translation>
+<translation id="3048917188684939573">‏יומנים של הפעלת Cast ויומנים של מכשירים</translation>
 <translation id="3051250416341590778">גודל תצוגה</translation>
 <translation id="3053013834507634016">שימוש במפתח אישור </translation>
 <translation id="3053273573829329829">הפעלה של קוד אימות משתמש</translation>
@@ -3204,7 +3204,7 @@
 <translation id="3390530051434634135">הערה: <ph name="NOTE" /></translation>
 <translation id="3391721320619127327">‏קורא המסך ב-ChromeOS Flex,‏ ChromeVox, משמש בעיקר עיוורים ולקויי ראייה כדי לקרוא טקסט שמוצג במסך באמצעות סינתיסייזר דיבור או צג ברייל. כדי להפעיל את ChromeVox, לוחצים לחיצה ארוכה על שני מקשי עוצמת הקול למשך 5 שניות. לאחר הפעלת ChromeVox, יופעל סיור היכרות קצר.</translation>
 <translation id="3393554941209044235">‏ניתוח מסמכים ב-Chrome</translation>
-<translation id="3393582007140394275">‏לא ניתן להעביר (cast) את המסך.</translation>
+<translation id="3393582007140394275">‏אי אפשר להפעיל Cast של התוכן במסך.</translation>
 <translation id="3394850431319394743">אתרים שמורשים להשתמש במזהים כדי להפעיל תוכן מוגן</translation>
 <translation id="3396800784455899911">‏לחיצה על הלחצן "קבלה והמשך" מבטאת את הסכמתך לעיבוד שתואר קודם לכן לגבי השירותים האלה של Google.</translation>
 <translation id="339722927132407568">קופא</translation>
@@ -3487,7 +3487,7 @@
 <translation id="3611634011145829814">לדף המינוי</translation>
 <translation id="3611658447322220736">אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים</translation>
 <translation id="3612673635130633812">‏ההורדה בוצעה באמצעות &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="3612731022682274718">‏אפשר להעביר (cast) קובצי וידאו מהמכשיר שלך למסך אחר</translation>
+<translation id="3612731022682274718">‏אפשר להפעיל Cast של קובצי וידאו מהמכשיר שלך למסך אחר</translation>
 <translation id="3613134908380545408">הצגת <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;פתיחה בכרטיסייה חדשה</translation>
 <translation id="3615579745882581859">מתבצעת סריקה בקובץ <ph name="FILE_NAME" />.</translation>
@@ -3567,7 +3567,7 @@
 <translation id="3670480940339182416">‏אתרים יכולים להשתמש בכלי האופטימיזציה של V8</translation>
 <translation id="3672681487849735243">אותרה שגיאה שמקורה ביצרן</translation>
 <translation id="3673097791729989571">ספק הכניסה הוא <ph name="SAML_DOMAIN" /></translation>
-<translation id="3673622964532248901">אין לך הרשאה להעביר אל המכשיר הזה.</translation>
+<translation id="3673622964532248901">‏אין לך הרשאה להפעיל Cast אל המכשיר הזה.</translation>
 <translation id="3675683621636519363">‏שליחת דוחות קריסה ונתוני אבחון ושימוש במכשיר אל ChromeOS Flex</translation>
 <translation id="367645871420407123">‏יש להשאיר ריק אם ברצונך להגדיר את סיסמת root לערך תמונת בדיקת ברירת המחדל</translation>
 <translation id="3677911431265050325">בקשת אתר לנייד</translation>
@@ -4225,7 +4225,7 @@
 <translation id="413915106327509564">‏<ph name="WINDOW_TITLE" /> - התקן HID מחובר</translation>
 <translation id="4139326893730851150">עדכוני קושחה</translation>
 <translation id="4142052906269098341">אפשר לבטל את הנעילה של <ph name="DEVICE_TYPE" /> בעזרת הטלפון. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">שיפור איכות הווידאו וחיסכון בחיי הסוללה. תוכן וידאו יופעל רק במסך התומך בהעברה.</translation>
+<translation id="4144218403971135344">‏שיפור איכות הווידאו וחיסכון בחיי הסוללה. תוכן וידאו יופעל רק במסך שתומך בהפעלת Cast.</translation>
 <translation id="4146026355784316281">פתיחה תמיד באמצעות מציג המערכת</translation>
 <translation id="4146785383423576110">איפוס וניקוי</translation>
 <translation id="4147099377280085053">בחירת טבלת ברייל</translation>
@@ -4319,7 +4319,7 @@
 <translation id="4225397296022057997">בכל האתרים</translation>
 <translation id="4228071595943929139">שימוש בכתובת האימייל של הארגון שלך</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{אסור להתקין את התוסף הזה}one{אסור להתקין את חלק מהתוספים האלה}two{אסור להתקין את חלק מהתוספים האלה}other{אסור להתקין את חלק מהתוספים האלה}}</translation>
-<translation id="4231053948789591973">‏ההעברה (cast) מושהית. אפשר להמשיך בהעברת המסך או להפסיק אותה בכל שלב.</translation>
+<translation id="4231053948789591973">‏הפעלת ה-Cast מושהית. אפשר להמשיך להפעיל Cast של המסך או להפסיק את ההפעלה בכל שלב.</translation>
 <translation id="4231095370974836764">‏ניתן להתקין אפליקציות ומשחקים מ-Google Play ב-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">סגירת פקדי המשחקים</translation>
 <translation id="4231231258999726714">‏אנחנו מתקינים את Steam ל-Chromebook במכשיר</translation>
@@ -4499,7 +4499,7 @@
 <translation id="4361745360460842907">פתיחה ככרטיסייה</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> הוא חשבון ברירת המחדל ב-<ph name="DEVICE_TYPE" /> שלך</translation>
 <translation id="4363262124589131906">‏הסנכרון האוטומטי של קבצים חדשים ב'אחסון שלי' יופסק ב-Chromebook הזה</translation>
-<translation id="4363771538994847871">לא נמצא יעד להעברה. רוצה עזרה?</translation>
+<translation id="4363771538994847871">‏לא נמצא יעד שאפשר להפעיל אליו Cast. איך אפשר לעזור?</translation>
 <translation id="4364327530094270451">מלון</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> משתף חלון.</translation>
 <translation id="4364830672918311045">הצגת הודעות</translation>
@@ -4549,7 +4549,7 @@
 <translation id="439817266247065935">‏המכשיר שלך לא כובה כהלכה. כדי להשתמש באפליקציות של Linux, יש להפעיל את Linux מחדש.</translation>
 <translation id="4400632832271803360">יש להחזיק את המקש של מרכז האפליקציות כדי לשנות את ההתנהגות של מקשי השורה העליונה</translation>
 <translation id="4400963414856942668">בלחיצה על סימן הכוכב אפשר להוסיף כרטיסייה לסימניות</translation>
-<translation id="4401912261345737180">‏התחברות עם קוד כדי להעביר (cast)</translation>
+<translation id="4401912261345737180">‏התחברות עם קוד כדי להפעיל Cast</translation>
 <translation id="4403012369005671154">‏המרת דיבור לטקסט (STT)</translation>
 <translation id="4403266582403435904">‏קל לשחזר נתונים או להחליף מכשירים בכל שלב. הגיבויים מועלים ל-Google ומוצפנים באמצעות הסיסמה לחשבון Google של הילד או הילדה שלך.</translation>
 <translation id="4403775189117163360">בחירת תיקייה אחרת</translation>
@@ -4786,7 +4786,7 @@
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> – הכרטיסייה לא פעילה</translation>
 <translation id="4577995939477504370">שירותי מערכת וגם אפליקציות ואתרים עם הרשאת גישה למיקרופון יכולים להשתמש במיקרופון</translation>
 <translation id="4579453506923101210">הסרת הטלפון המחובר</translation>
-<translation id="4579581181964204535">לא ניתן להעביר את <ph name="HOST_NAME" />.</translation>
+<translation id="4579581181964204535">‏אי אפשר להפעיל Cast של <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">‏כדי לעבור להתראות של הדפדפן, נכנסים אל <ph name="LINK_BEGIN" />הגדרות הדפדפן Chrome<ph name="LINK_END" /></translation>
 <translation id="4580389561674319558">במצב גלוי לכל אנשי הקשר</translation>
 <translation id="4580596421317071374">הסיסמאות נשמרות ב<ph name="GOOGLE_PASSWORD_MANAGER" /> במכשיר הזה.</translation>
@@ -5228,7 +5228,7 @@
 <translation id="4924002401726507608">שליחת משוב</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">היציאות שלך יופיעו כאן</translation>
-<translation id="49265687513387605">לא ניתן להעביר את המסך. יש לבדוק אם אישרת את הבקשה להתחיל בשיתוף המסך.</translation>
+<translation id="49265687513387605">‏אי אפשר להפעיל Cast של התוכן במסך. צריך לבדוק אם אישרת את הבקשה להתחיל בשיתוף המסך.</translation>
 <translation id="4927753642311223124">אין התראות להצגה, המשך הלאה.</translation>
 <translation id="4928629450964837566">אפשר להשתמש בסיסמה בטוחה יותר</translation>
 <translation id="4929386379796360314">יעדי הדפסה</translation>
@@ -5268,7 +5268,7 @@
 <translation id="4959262764292427323">‏סיסמאות נשמרות בחשבון Google כדי לאפשר לך להשתמש בהן בכל המכשירים</translation>
 <translation id="4960020053211143927">בחלק מהאפליקציות אין תמיכה בשיטה הזו</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
-<translation id="4961318399572185831">העברת המסך</translation>
+<translation id="4961318399572185831">‏הפעלת Cast של התוכן שמוצג במסך</translation>
 <translation id="4961361269522589229">מתכונים</translation>
 <translation id="496185450405387901">האפליקציה הזו הותקנה על ידי מנהל המערכת.</translation>
 <translation id="4963789650715167449">הסרת הכרטיסייה הנוכחית</translation>
@@ -5989,7 +5989,7 @@
 <translation id="5532223876348815659">גלובלי</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> מבקש</translation>
 <translation id="5533343601674003130">‏שירות PDF</translation>
-<translation id="5537725057119320332">העברה</translation>
+<translation id="5537725057119320332">‏הפעלת Cast</translation>
 <translation id="5539070192556911367">‏לא ניתן להתחבר ל-Google</translation>
 <translation id="5541694225089836610">האפשרות לבצע את הפעולה הזו הושבתה על-ידי מנהל המערכת</translation>
 <translation id="5542132724887566711">פרופיל</translation>
@@ -6646,7 +6646,7 @@
 <translation id="6051811090255711417">הקובץ הזה לא עמד בתנאים של מדיניות האבטחה ולכן הוא נחסם על ידי הארגון שלך</translation>
 <translation id="6052261338768299955">האפליקציה <ph name="APP_NAME" /> מנסה להדפיס במדפסת <ph name="PRINTER_NAME" /></translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6052488962264772833">‏צריך להזין את קוד הגישה כדי להתחיל בהעברה (cast)</translation>
+<translation id="6052488962264772833">‏צריך להזין את קוד הגישה כדי להתחיל הפעלת Cast</translation>
 <translation id="6052976518993719690">‏רשות אישורי SSL </translation>
 <translation id="6053401458108962351">&amp;ניקוי נתוני גלישה...</translation>
 <translation id="6053717018321787060">‏חשבון Google הוא אותו חשבון שמשמש אותך ב-Gmail, ב-YouTube, ב-Chrome ובמוצרי Google אחרים.
@@ -7483,7 +7483,7 @@
 <translation id="6697690052557311665">‏כדי לשתף, יש ללחוץ לחיצה ימנית על תיקייה באפליקציית הקבצים, ולאחר מכן לבחור "שיתוף עם Linux".</translation>
 <translation id="6698810901424468597">לקרוא ולשנות את הנתונים שלך ב-<ph name="WEBSITE_1" /> וב-<ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">‏נעילת כרטיס ה-SIM הסלולרי</translation>
-<translation id="6700480081846086223">העברה של <ph name="HOST_NAME" /></translation>
+<translation id="6700480081846086223">‏הפעלת Cast של <ph name="HOST_NAME" /></translation>
 <translation id="670121579181704262">&amp;הסנכרון מופעל</translation>
 <translation id="6701535245008341853">לא ניתן לקבל פרופיל.</translation>
 <translation id="6702639462873609204">&amp;עריכה...</translation>
@@ -7512,7 +7512,7 @@
 <translation id="672208878794563299">תתקבל בקשה מהאתר הזה בפעם הבאה.</translation>
 <translation id="6722744767592605627">יש לך אפשרות לשחזר את <ph name="EMAIL" />, אבל הנתונים המקומיים יימחקו.</translation>
 <translation id="6723661294526996303">ייבוא סימניות והגדרות...</translation>
-<translation id="6723839827191551955">‏שליטה במדיה בזמן ההעברה (cast)</translation>
+<translation id="6723839827191551955">‏שליטה במדיה בזמן הפעלת Cast</translation>
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="6725073593266469338">UI service</translation>
 <translation id="6725206449694821596">‏פרוטוקול הדפסה באינטרנט (IPP)</translation>
@@ -7818,7 +7818,7 @@
 <translation id="6950143189069683062">פרטי הזיכרון</translation>
 <translation id="6950627417367801484">שחזור אפליקציות</translation>
 <translation id="6954910832698269894">‏צריך להפעיל את הסנכרון במכשיר כדי לשחזר את האפליקציות, ההגדרות, רשתות ה-Wi-Fi והטפט ממכשיר Chromebook הקודם. תמיד אפשר לערוך שינויים דרך 'הגדרות' &gt; 'חשבונות'.</translation>
-<translation id="6954936693361896459">העברת הכרטיסייה הזו</translation>
+<translation id="6954936693361896459">‏הפעלת Cast של הכרטיסייה הזו</translation>
 <translation id="6955446738988643816">בדיקת חלון מוקפץ</translation>
 <translation id="6955535239952325894">ההגדרה הזו מושבתת בדפדפנים מנוהלים</translation>
 <translation id="6955698182324067397">‏הפעולה הזו מאפשרת את פעילות התכונות לניפוי באגים ב-ChromeOS שיגדירו sshd daemon ויאפשרו אתחול מכונני USB.</translation>
@@ -8003,7 +8003,7 @@
 <translation id="7090714929377281710">כיבוי אוטומטי של הנקודה לשיתוף אינטרנט</translation>
 <translation id="7093220653036489319">תשובות מהירות</translation>
 <translation id="7093866338626856921">החלפת נתונים עם המכשירים ששמותיהם: <ph name="HOSTNAMES" /></translation>
-<translation id="7094680343477712655">‏יש לאשר את בקשת ההעברה (cast) במכשיר <ph name="DEVICE_NAME" />.</translation>
+<translation id="7094680343477712655">‏צריך לאשר את הבקשה להפעלת Cast במכשיר <ph name="DEVICE_NAME" />.</translation>
 <translation id="7098389117866926363">‏מכשיר עם יציאת USB-C (יציאה שמאלית מאחור)</translation>
 <translation id="7098447629416471489">כאן יופיעו מנועי חיפוש אחרים ששמרת</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{הסרת האפליקציה}one{הסרת האפליקציות}two{הסרת האפליקציות}other{הסרת האפליקציות}}</translation>
@@ -8324,7 +8324,7 @@
 <translation id="7362387053578559123">‏אתרים יכולים לבקש הרשאה להתחבר למכשירי Bluetooth</translation>
 <translation id="7363349185727752629">מדריך לבחירות שלך בנושא פרטיות</translation>
 <translation id="7364591875953874521">התקבלה בקשת גישה</translation>
-<translation id="7364745943115323529">העבר...</translation>
+<translation id="7364745943115323529">‏הפעלת Cast...</translation>
 <translation id="7364796246159120393">בחירת קובץ</translation>
 <translation id="7365076891350562061">גודל צג</translation>
 <translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – הכרטיסייה מוצמדת</translation>
@@ -8398,7 +8398,7 @@
 <translation id="7409854300652085600">הסימניות יובאו.</translation>
 <translation id="7410344089573941623">לבקש ממני רשות אם <ph name="HOST" /> רוצה גישה למצלמה ולמיקרופון</translation>
 <translation id="7410421966064092098">אתרים לא יכולים לעזור לאמת שלא מדובר בבוט</translation>
-<translation id="7410852728357935715">העברה למכשיר</translation>
+<translation id="7410852728357935715">‏הפעלת Cast למכשיר</translation>
 <translation id="741204030948306876">כן, אני רוצה</translation>
 <translation id="7412226954991670867">‏זיכרון GPU</translation>
 <translation id="7414464185801331860">18x</translation>
@@ -9249,7 +9249,7 @@
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – נשלחה בקשה להרשאה, יש ללחוץ על ⌘ + אפשרות + חץ למעלה כדי להשיב</translation>
 <translation id="8030169304546394654">מנותק</translation>
 <translation id="8030852056903932865">אישור</translation>
-<translation id="8032244173881942855">לא ניתן להעביר את הכרטיסייה.</translation>
+<translation id="8032244173881942855">‏אי אפשר להפעיל Cast של הכרטיסייה.</translation>
 <translation id="8032569120109842252">במעקב</translation>
 <translation id="8033827949643255796">מסומן</translation>
 <translation id="8033958968890501070">הזמן שהוקצב תם</translation>
@@ -9379,7 +9379,7 @@
 <translation id="8119438628456698432">יצירת קובצי יומן מתבצעת...</translation>
 <translation id="811994229154425014">רווח כפול להקלדת נקודה</translation>
 <translation id="8120505434908124087">‏התקנת פרופיל eSim</translation>
-<translation id="8121750884985440809">‏מתבצעת העברה (cast) של המסך</translation>
+<translation id="8121750884985440809">‏Cast של המסך מופעל</translation>
 <translation id="8122898034710982882">‏Phone Hub,‏ <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">פרח צהוב ולבן</translation>
 <translation id="8123975449645947908">גלילה אחורה</translation>
@@ -9476,7 +9476,7 @@
 <translation id="8198457270656084773">רוצה לאתר את דף יומן המכשיר של המערכת? צריך לעבור אל <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">מאפייני רשת (שירות) ומכשיר</translation>
 <translation id="8200772114523450471">חידוש</translation>
-<translation id="8200789660596905522">צריך לאשר את בקשת ההעברה במכשיר <ph name="DEVICE_NAME" />.</translation>
+<translation id="8200789660596905522">‏צריך לאשר את הבקשה להפעלת Cast במכשיר <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">יש להזין שוב את הסיסמה כדי לעדכן את פרופיל <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8202827109322349110">פתיחה בכלי לעריכה בסיסית</translation>
 <translation id="8203152941016626022">הגדרת שם המכשיר לשיתוף בקרבת מקום</translation>
@@ -9796,7 +9796,7 @@
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8438566539970814960">שיפור החיפושים והגלישה</translation>
 <translation id="8439506636278576865">הצעות לתרגום דפים שנכתבו בשפה זו</translation>
-<translation id="8440004142066757254">‏התחלת ההעברה (cast) של קובצי וידאו מהמכשיר למסך אחר</translation>
+<translation id="8440004142066757254">‏הפעלת Cast של קובצי וידאו מהמכשיר למסך אחר</translation>
 <translation id="8440630305826533614">‏אפליקציות Linux</translation>
 <translation id="844063558976952706">תמיד באתר זה</translation>
 <translation id="8441313165929432954">‏הפעלה/השבתה של שיתוף אינטרנט (tethering)</translation>
@@ -10204,7 +10204,7 @@
 <translation id="8745034592125932220">אין לאתר הזה הרשאה לשמור נתונים במכשיר שלך</translation>
 <translation id="8746654918629346731">כבר הגשת בקשה בנושא "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{להעלות קובץ אחד אל האתר הזה?}one{להעלות # קבצים אל האתר הזה?}two{להעלות # קבצים אל האתר הזה?}other{להעלות # קבצים אל האתר הזה?}}</translation>
-<translation id="8749805710397399240">לא ניתן להעביר את המסך. יש לבדוק את הרשאת מקליט המסך ב'העדפות מערכת'.</translation>
+<translation id="8749805710397399240">‏אי אפשר להפעיל Cast של התוכן שמוצג במסך. יש לבדוק את הרשאת מקליט המסך ב'העדפות מערכת'.</translation>
 <translation id="8749826920799243530">המכשיר לא רשום</translation>
 <translation id="8749863574775030885">‏גישה למכשירי USB מספק לא ידוע</translation>
 <translation id="8750155211039279868"><ph name="ORIGIN" /> רוצה להתחבר אל יציאה טורית</translation>
@@ -10373,7 +10373,7 @@
 <translation id="8872506776304248286">פתח ביישום</translation>
 <translation id="8872774989979382243">השמע כבוי. הפעלת השמע.</translation>
 <translation id="887292602123626481">מידע נוסף על מנועי חיפוש שמוגדרים כברירת מחדל</translation>
-<translation id="8874341931345877644">‏העברה (cast) למכשיר:</translation>
+<translation id="8874341931345877644">‏הפעלת Cast למכשיר:</translation>
 <translation id="8874790741333031443">‏אפשר להפעיל קובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו כצפוי.</translation>
 <translation id="8875520811099717934">‏שדרוג של Linux</translation>
 <translation id="8875736897340638404">בחירת הרשאות הגישה שלך</translation>
