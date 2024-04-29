@@ -166,7 +166,7 @@ struct PrintParams {
   // embedder choice provided by PrintRenderFrameHelper delegate.
   bool? generate_tagged_pdf;
   // Whether the document outline should be embedded in the PDF.
-  bool generate_document_outline = false;
+  GenerateDocumentOutline generate_document_outline = kNone;
 };
 
 // Parameters for a print setting that has parameters for a print request and an

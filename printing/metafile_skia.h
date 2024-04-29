@@ -15,7 +15,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "printing/common/metafile_utils.h"
 #include "printing/metafile.h"
-#include "printing/mojom/print.mojom-forward.h"
+#include "printing/mojom/print.mojom.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
   ui::AXTreeUpdate& accessibility_tree() { return accessibility_tree_; }
 
   void set_generate_document_outline(
-      GeneratePdfDocumentOutline generate_document_outline) {
+      mojom::GenerateDocumentOutline generate_document_outline) {
     generate_document_outline_ = generate_document_outline;
   }
 
@@ -153,8 +153,8 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafileSkia : public Metafile {
   std::unique_ptr<MetafileSkiaData> data_;
 
   ui::AXTreeUpdate accessibility_tree_;
-  GeneratePdfDocumentOutline generate_document_outline_ =
-      GeneratePdfDocumentOutline::kNone;
+  mojom::GenerateDocumentOutline generate_document_outline_ =
+      mojom::GenerateDocumentOutline::kNone;
   std::string title_;
 };
 

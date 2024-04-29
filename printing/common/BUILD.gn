@@ -10,10 +10,11 @@ source_set("common") {
 
   configs += [ "//printing/:strict" ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//printing/buildflags",
+    "//printing/mojom",
     "//skia",
     "//ui/accessibility",
   ]
+  deps = [ "//printing/buildflags" ]
 }

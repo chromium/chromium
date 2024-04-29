@@ -16,6 +16,7 @@ static_library("print_compositor") {
     "//components/discardable_memory/client",
     "//content/public/utility",
     "//printing/common",
+    "//printing/mojom",
     "//third_party/blink/public:blink_headers",
     "//ui/accessibility",
   ]

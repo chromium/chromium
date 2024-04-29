@@ -118,6 +118,12 @@ enum MetafileDataType {
   kPostScriptEmf,
 };
 
+// What kind of document outline to generate.
+enum GenerateDocumentOutline {
+  kNone,
+  kFromAccessibilityTreeHeaders,
+};
+
 // What kind of margins to use.
 enum MarginType {
   // Default varies depending on headers being enabled or not

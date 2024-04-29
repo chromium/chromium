@@ -2321,9 +2321,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(
             ? &accessibility_tree
             : &metafile.accessibility_tree());
     metafile.set_generate_document_outline(
-        print_params.generate_document_outline
-            ? GeneratePdfDocumentOutline::kFromHeaders
-            : GeneratePdfDocumentOutline::kNone);
+        print_params.generate_document_outline);
   }
 
   blink::WebString title = frame->GetDocument().Title();

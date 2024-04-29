@@ -177,8 +177,11 @@ GetPrintPagesParams(const GURL& page_url,
   print_pages_params->params->prefer_css_page_size =
       prefer_css_page_size.value_or(false);
   print_pages_params->params->generate_tagged_pdf = generate_tagged_pdf;
+  using GenerateDocumentOutline = printing::mojom::GenerateDocumentOutline;
   print_pages_params->params->generate_document_outline =
-      generate_document_outline.value_or(false);
+      generate_document_outline.value_or(false)
+          ? GenerateDocumentOutline::kFromAccessibilityTreeHeaders
+          : GenerateDocumentOutline::kNone;
 
   CHECK(!print_pages_params->params->page_size.IsEmpty())
       << print_pages_params->params->page_size.ToString();

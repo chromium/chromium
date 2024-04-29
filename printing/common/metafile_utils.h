@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "printing/mojom/print.mojom-forward.h"
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -38,16 +39,11 @@ using PictureSerializationContext = ContentToProxyTokenMap;
 // Stores the set of typeface unique ids used by the picture frame content.
 using TypefaceSerializationContext = ContentProxySet;
 
-enum class GeneratePdfDocumentOutline : bool {
-  kNone = false,
-  kFromHeaders = true,
-};
-
 sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,
     std::string_view title,
     const ui::AXTreeUpdate& accessibility_tree,
-    GeneratePdfDocumentOutline generate_document_outline,
+    mojom::GenerateDocumentOutline generate_document_outline,
     SkWStream* stream);
 
 #if BUILDFLAG(IS_WIN)

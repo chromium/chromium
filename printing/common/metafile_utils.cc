@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -239,7 +240,7 @@ sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,
     std::string_view title,
     const ui::AXTreeUpdate& accessibility_tree,
-    GeneratePdfDocumentOutline generate_document_outline,
+    mojom::GenerateDocumentOutline generate_document_outline,
     SkWStream* stream) {
   SkPDF::Metadata metadata;
   SkPDF::DateTime now = TimeToSkTime(base::Time::Now());
@@ -256,9 +257,9 @@ sk_sp<SkDocument> MakePdfDocument(
     if (RecursiveBuildStructureTree(tree.root(), &tag_root)) {
       metadata.fStructureElementTreeRoot = &tag_root;
       metadata.fOutline =
-          generate_document_outline == GeneratePdfDocumentOutline::kFromHeaders
-              ? SkPDF::Metadata::Outline::StructureElementHeaders
-              : SkPDF::Metadata::Outline::None;
+          generate_document_outline == mojom::GenerateDocumentOutline::kNone
+              ? SkPDF::Metadata::Outline::None
+              : SkPDF::Metadata::Outline::StructureElementHeaders;
     }
   }
 

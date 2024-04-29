@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "printing/common/metafile_utils.h"
+#include "printing/mojom/print.mojom.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/web_image_generator.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -51,7 +52,7 @@ sk_sp<SkDocument> MakeDocument(
     const std::string& creator,
     const std::string& title,
     ui::AXTreeUpdate* accessibility_tree,
-    GeneratePdfDocumentOutline generate_document_outline,
+    mojom::GenerateDocumentOutline generate_document_outline,
     mojom::PrintCompositor::DocumentType document_type,
     SkWStream& stream) {
 #if BUILDFLAG(IS_WIN)
@@ -228,8 +229,8 @@ void PrintCompositorImpl::FinishDocumentComposition(
   if (!docinfo_->doc) {
     docinfo_->doc =
         MakeDocument(creator_, title_, &accessibility_tree_,
-                     GeneratePdfDocumentOutline::kNone, docinfo_->document_type,
-                     docinfo_->compositor_stream);
+                     mojom::GenerateDocumentOutline::kNone,
+                     docinfo_->document_type, docinfo_->compositor_stream);
   }
 
   HandleDocumentCompletionRequest();
@@ -397,9 +398,9 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
   // document composition is not in effect, i.e. when handling
   // CompositeDocumentToPdf() call.
   SkDynamicMemoryWStream wstream;
-  sk_sp<SkDocument> doc =
-      MakeDocument(creator_, title_, docinfo_ ? nullptr : &accessibility_tree_,
-                   GeneratePdfDocumentOutline::kNone, document_type, wstream);
+  sk_sp<SkDocument> doc = MakeDocument(
+      creator_, title_, docinfo_ ? nullptr : &accessibility_tree_,
+      mojom::GenerateDocumentOutline::kNone, document_type, wstream);
 
   for (const auto& page : pages) {
     TRACE_EVENT0("print", "PrintCompositorImpl::CompositePages draw page");
@@ -411,7 +412,7 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
       if (!docinfo_->doc) {
         docinfo_->doc =
             MakeDocument(creator_, title_, &accessibility_tree_,
-                         GeneratePdfDocumentOutline::kNone,
+                         mojom::GenerateDocumentOutline::kNone,
                          docinfo_->document_type, docinfo_->compositor_stream);
       }
 

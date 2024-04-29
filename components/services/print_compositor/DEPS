@@ -9,6 +9,7 @@ include_rules = [
   "+printing/backend",
   "+printing/buildflags",
   "+printing/common",
+  "+printing/mojom",
   "+skia",
   "+third_party/skia",
   "+third_party/blink/public/platform", # Test web sandbox support.
