@@ -893,8 +893,7 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
  public:
   AuthenticatorWindowTest() {
     scoped_feature_list_.InitWithFeatures(
-        {trusted_vault::kSetClientEncryptionKeysJsApi,
-         device::kWebAuthnEnclaveAuthenticator},
+        {device::kWebAuthnEnclaveAuthenticator},
         /*disabled_features=*/{});
   }
 

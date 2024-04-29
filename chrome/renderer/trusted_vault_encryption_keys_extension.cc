@@ -20,6 +20,7 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "device/fido/features.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -244,7 +245,8 @@ void TrustedVaultEncryptionKeysExtension::Install() {
       .Check();
 
   if (base::FeatureList::IsEnabled(
-          trusted_vault::kSetClientEncryptionKeysJsApi)) {
+          trusted_vault::kSetClientEncryptionKeysJsApi) ||
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
     chrome
         ->Set(context, gin::StringToSymbol(isolate, "setClientEncryptionKeys"),
               gin::CreateFunctionTemplate(
