@@ -116,7 +116,7 @@ BASE_FEATURE(kPrivacySandboxAttestationsHigherComponentRegistrationPriority,
 
 BASE_FEATURE(kPrivacySandboxAttestationsUserBlockingPriority,
              "PrivacySandboxAttestationsUserBlockingPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
