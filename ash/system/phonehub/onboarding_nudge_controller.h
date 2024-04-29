@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 
 class PrefRegistrySimple;
@@ -104,6 +105,8 @@ class ASH_EXPORT OnboardingNudgeController
   base::RepeatingClosure stop_animation_callback_;
   base::RepeatingClosure start_animation_callback_;
   raw_ptr<base::Clock> clock_;
+
+  base::WeakPtrFactory<OnboardingNudgeController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
