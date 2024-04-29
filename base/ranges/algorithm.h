@@ -38,6 +38,25 @@ constexpr auto ProjectedUnaryPredicate(Pred& pred, Proj& proj) noexcept {
   };
 }
 
+// Helper concept that is true if the binary predicate can be invoked on the
+// result of projecting T and projecting U. See `BinaryPredicateProjector` for
+// additional background.
+template <typename BinaryPred,
+          typename ProjT,
+          typename ProjU,
+          typename T,
+          typename U>
+concept BinaryPredicateProjectorIsInvokable = requires(BinaryPred& predicate,
+                                                       ProjT& project_t,
+                                                       ProjU& project_u,
+                                                       T&& t,
+                                                       U&& u) {
+  {
+    std::invoke(predicate, std::invoke(project_t, std::forward<T>(t)),
+                std::invoke(project_u, std::forward<U>(u)))
+  } -> std::same_as<bool>;
+};
+
 // Returns a transformed version of the binary predicate `pred` applying `proj1`
 // and `proj2` to its arguments before invoking `pred` on them.
 //
@@ -67,47 +86,30 @@ class BinaryPredicateProjector {
       : pred_(pred), proj1_(proj1), proj2_(proj2) {}
 
  private:
-  template <typename ProjT, typename ProjU, typename T, typename U>
-  using InvokeResult = std::invoke_result_t<Pred&,
-                                            std::invoke_result_t<ProjT&, T&&>,
-                                            std::invoke_result_t<ProjU&, U&&>>;
-
-  template <typename T, typename U, typename = InvokeResult<Proj1, Proj2, T, U>>
-  constexpr std::pair<Proj1&, Proj2&> GetProjs(priority_tag<3>) const {
-    return {proj1_, proj2_};
-  }
-
-  template <typename T,
-            typename U,
-            bool LazyPermute = kPermute,
-            typename = std::enable_if_t<LazyPermute>,
-            typename = InvokeResult<Proj2, Proj1, T, U>>
-  constexpr std::pair<Proj2&, Proj1&> GetProjs(priority_tag<2>) const {
-    return {proj2_, proj1_};
-  }
-
-  template <typename T,
-            typename U,
-            bool LazyPermute = kPermute,
-            typename = std::enable_if_t<LazyPermute>,
-            typename = InvokeResult<Proj1, Proj1, T, U>>
-  constexpr std::pair<Proj1&, Proj1&> GetProjs(priority_tag<1>) const {
-    return {proj1_, proj1_};
-  }
-
-  template <typename T,
-            typename U,
-            bool LazyPermute = kPermute,
-            typename = std::enable_if_t<LazyPermute>,
-            typename = InvokeResult<Proj2, Proj2, T, U>>
-  constexpr std::pair<Proj2&, Proj2&> GetProjs(priority_tag<0>) const {
-    return {proj2_, proj2_};
+  template <typename T, typename U>
+  constexpr auto GetProjs() const {
+    if constexpr (BinaryPredicateProjectorIsInvokable<Pred, Proj1, Proj2, T,
+                                                      U>) {
+      return std::pair<Proj1&, Proj2&>(proj1_, proj2_);
+    } else if constexpr (kPermute &&
+                         BinaryPredicateProjectorIsInvokable<Pred, Proj2, Proj1,
+                                                             T, U>) {
+      return std::pair<Proj2&, Proj1&>(proj2_, proj1_);
+    } else if constexpr (kPermute &&
+                         BinaryPredicateProjectorIsInvokable<Pred, Proj1, Proj1,
+                                                             T, U>) {
+      return std::pair<Proj1&, Proj1&>(proj1_, proj1_);
+    } else if constexpr (kPermute &&
+                         BinaryPredicateProjectorIsInvokable<Pred, Proj2, Proj2,
+                                                             T, U>) {
+      return std::pair<Proj2&, Proj2&>(proj2_, proj2_);
+    }
   }
 
  public:
   template <typename T, typename U>
   constexpr bool operator()(T&& lhs, U&& rhs) const {
-    auto projs = GetProjs<T, U>(priority_tag<3>());
+    auto projs = GetProjs<T, U>();
     return std::invoke(pred_, std::invoke(projs.first, std::forward<T>(lhs)),
                        std::invoke(projs.second, std::forward<U>(rhs)));
   }
