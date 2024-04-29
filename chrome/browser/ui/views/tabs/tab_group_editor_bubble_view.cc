@@ -28,6 +28,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
@@ -78,6 +80,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -90,6 +93,9 @@
 namespace {
 
 constexpr base::TimeDelta kTemporaryBookmarkBarDuration = base::Seconds(15);
+constexpr int kDialogWidth = 240;
+constexpr const char kLearnMoreURL[] =
+    "https://support.google.com/chrome/answer/165139";
 
 std::unique_ptr<views::LabelButton> CreateMenuItem(
     int button_id,
@@ -369,6 +375,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
                                            ? kTrashCanRefreshIcon
                                            : kTrashCanIcon))));
+    footer_ = AddChildView(std::make_unique<Footer>(browser_));
   }
 
   // The move menu item must be added to the menu by this point.
@@ -383,9 +390,14 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   const int vertical_spacing = control_insets.top();
   const int horizontal_spacing = control_insets.left();
 
+  gfx::Insets interior_margins = gfx::Insets::VH(vertical_spacing, 0);
+  if (footer_) {
+    interior_margins.set_bottom(0);
+  }
+
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(gfx::Insets::VH(vertical_spacing, 0));
+      .SetInteriorMargin(interior_margins);
 
   title_field_->SetProperty(
       views::kMarginsKey,
@@ -693,4 +705,73 @@ void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
 }
 
 BEGIN_METADATA(TabGroupEditorBubbleView, TitleField)
+END_METADATA
+
+TabGroupEditorBubbleView::Footer::Footer(const Browser* browser) {
+  views::FlexLayout* flex_layout =
+      views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
+  flex_layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetCollapseMargins(true);
+
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
+
+  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser->profile());
+  CHECK(saved_tab_group_service);
+
+  // Get the keyed service and check if saved.
+  views::StyledLabel* footer_label =
+      AddChildView(std::make_unique<views::StyledLabel>());
+  footer_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  std::vector<std::u16string> footer_text_substr;
+
+  // Strings for the footer are different if the user has sync enabled.
+  footer_text_substr.push_back(l10n_util::GetStringUTF16(
+      saved_tab_group_service->AreSavedTabGroupsSynced()
+          ? IDS_TAB_GROUP_EDITOR_BUBBLE_FOOTER_SYNC_ENABLED
+          : IDS_TAB_GROUP_EDITOR_BUBBLE_FOOTER_SYNC_DISABLED));
+
+  // Learn more link for the footer.
+  footer_text_substr.push_back(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+
+  std::vector<size_t> offsets;
+  std::u16string styled_text =
+      base::ReplaceStringPlaceholders(u"$1 $2", footer_text_substr, &offsets);
+  footer_label->SetText(styled_text);
+
+  gfx::Range details_range(offsets[1], styled_text.length());
+
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &TabGroupEditorBubbleView::Footer::OpenLearnMorePage, browser));
+
+  footer_label->AddStyleRange(details_range, link_style);
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int horizontal_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
+  const int vertical_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const gfx::Insets control_insets =
+      ui::TouchUiController::Get()->touch_ui()
+          ? gfx::Insets::VH(5 * vertical_spacing / 4, horizontal_spacing)
+          : gfx::Insets::VH(vertical_spacing, horizontal_spacing);
+  footer_label->SizeToFit(kDialogWidth - control_insets.right() -
+                          control_insets.left());
+  SetSize({kDialogWidth, height()});
+  SetBorder(views::CreateEmptyBorder(control_insets));
+}
+
+// static
+void TabGroupEditorBubbleView::Footer::OpenLearnMorePage(
+    const Browser* browser) {
+  browser->tab_strip_model()->delegate()->AddTabAt(GURL(kLearnMoreURL), -1,
+                                                   true);
+}
+
+BEGIN_METADATA(TabGroupEditorBubbleView, Footer)
 END_METADATA

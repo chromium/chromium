@@ -32,6 +32,9 @@ class SavedTabGroupKeyedService : public KeyedService,
       delete;
   ~SavedTabGroupKeyedService() override;
 
+  // Whether the sync setting is on for saved tab groups.
+  bool AreSavedTabGroupsSynced();
+
   SavedTabGroupModelListener* listener() { return &listener_; }
   const SavedTabGroupModel* model() const { return &model_; }
   SavedTabGroupModel* model() { return &model_; }

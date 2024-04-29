@@ -19,6 +19,7 @@
 #include "chrome/browser/bookmarks/url_and_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -37,6 +38,8 @@
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
@@ -70,6 +73,19 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
 
 SavedTabGroupKeyedService::~SavedTabGroupKeyedService() {
   model_.RemoveObserver(this);
+}
+
+// Whether the sync setting is on for saved tab groups.
+bool SavedTabGroupKeyedService::AreSavedTabGroupsSynced() {
+  const syncer::SyncService* const sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+
+  if (!sync_service->IsSyncFeatureEnabled()) {
+    return false;
+  }
+
+  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups);
 }
 
 syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {

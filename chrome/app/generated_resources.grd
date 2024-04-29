@@ -9613,6 +9613,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP" desc="Text shown on the overflow chevron, if visible">
         Hidden saved tab groups
       </message>
+      <message name="IDS_TAB_GROUP_EDITOR_BUBBLE_FOOTER_SYNC_DISABLED" desc="Text shown on the footer of the editor bubble when sync is disabled, if visible">
+        Your tab groups now automatically save.
+      </message>
+      <message name="IDS_TAB_GROUP_EDITOR_BUBBLE_FOOTER_SYNC_ENABLED" desc="Text shown on the footer of the editor bubble when sync is enabled, if visible">
+        Your tab groups automatically save and update across all your signed-in devices.
+      </message>
       <message name="IDS_ACCNAME_TAB_GROUPS_EVERYTHING" desc="The accessible name for the tab group everything button in the bookmarks bar.">
         Tab groups
       </message>

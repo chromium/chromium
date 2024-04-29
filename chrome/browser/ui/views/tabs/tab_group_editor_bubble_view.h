@@ -144,6 +144,16 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   raw_ptr<TitleField> title_field_;
 
+  class Footer : public views::View {
+    METADATA_HEADER(Footer, views::View)
+   public:
+    explicit Footer(const Browser* browser_);
+    ~Footer() override = default;
+
+    static void OpenLearnMorePage(const Browser* browser_);
+  };
+  raw_ptr<Footer> footer_;
+
   Colors colors_;
   raw_ptr<ColorPickerView> color_selector_;
 
