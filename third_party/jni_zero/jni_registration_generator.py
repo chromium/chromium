@@ -209,8 +209,7 @@ To bypass this check, add stubs to Java with --add-stubs-for-missing-jni.
 Excess Java files:
 '''
     sys.stderr.write(warning_message)
-    sys.stderr.write('\n'.join(jni_obj.filename
-                               for jni_obj in java_only_jni_objs))
+    sys.stderr.write('\n'.join(o.filename for o in java_only_jni_objs))
     sys.stderr.write('\n')
   if not options.remove_uncalled_methods and native_only_jni_objs:
     failed = True
@@ -221,15 +220,12 @@ To bypass this check, delete these extra methods with --remove-uncalled-jni.
 Unneeded Java files:
 '''
     sys.stderr.write(warning_message)
-    sys.stderr.write('\n'.join(native_only_jni_objs.filename
-                               for jni_obj in native_only_jni_objs))
+    sys.stderr.write('\n'.join(o.filename for o in native_only_jni_objs))
     sys.stderr.write('\n')
   if failed:
     sys.exit(1)
 
-  return [
-      _GenerateStubs(jni_obj.proxy_natives) for jni_obj in java_only_jni_objs
-  ]
+  return [_GenerateStubs(o.proxy_natives) for o in java_only_jni_objs]
 
 
 def _GenerateStubs(natives):
