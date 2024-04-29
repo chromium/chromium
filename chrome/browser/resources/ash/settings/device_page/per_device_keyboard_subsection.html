@@ -26,13 +26,14 @@
   </template>
   <template is="dom-if" if="[[isChromeOsKeyboard(keyboard)]]" restamp>
     <template is="dom-if" if="[[isKeyboardBacklightControlInSettingsEnabled]]">
-      <div id="keyboardBrightnessSection" hidden="[[!hasKeyboardBacklight]]">
+      <template is="dom-if" if="[[hasKeyboardBacklight]]">
         <settings-toggle-button id="keyboardAutoBrightnessToggle"
             pref="{{keyboardAutoBrightnessPref}}"
             on-settings-boolean-control-change=
                 "onKeyboardAutoBrightnessToggleChanged"
             label="$i18n{keyboardEnableAutoBrightnessLabel}"
-            sub-label="$i18n{keyboardEnableAutoBrightnessSubLabel}">
+            sub-label="$i18n{keyboardEnableAutoBrightnessSubLabel}"
+            hidden="[[!hasAmbientLightSensor]]">
         </settings-toggle-button>
         <div class="settings-box">
           <div class="start" id="keyboardBrightnessPercentLabel">
@@ -45,7 +46,7 @@
               on-cr-slider-value-changed="onKeyboardBrightnessSliderChanged">
           </settings-slider>
         </div>
-      </div>
+      </template>
       <cr-link-row id="rgbKeyboardControlLink" label="$i18n{keyboardColors}"
         hidden="[[!isRgbKeyboardSupported]]" on-click="openPersonalizationHub"
         external>
