@@ -76,6 +76,8 @@ export enum TimePeriod {
   LAST_WEEK = 2,
   FOUR_WEEKS = 3,
   ALL_TIME = 4,
+  // OLDER_THAN_30_DAYS = 5 is not used on Desktop.
+  // LAST_15_MINUTES = 6 is not used on Desktop.
   TIME_PERIOD_LAST = ALL_TIME
 }
 
@@ -87,7 +89,7 @@ export enum TimePeriodExperiment {
   LAST_WEEK = 2,
   FOUR_WEEKS = 3,
   ALL_TIME = 4,
-  OLDER_THAN_30_DAYS = 5,
+  // OLDER_THAN_30_DAYS = 5 is not used on Desktop.
   LAST_15_MINUTES = 6,
   TIME_PERIOD_LAST = LAST_15_MINUTES
 }
