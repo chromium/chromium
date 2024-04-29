@@ -79,13 +79,15 @@ constexpr char kCheckSidePanelResultsLoadedScript[] =
     "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
 
-constexpr char kCheckSidePanelThumbnailLoadedScript[] =
+constexpr char kCheckSidePanelThumbnailShownScript[] =
     "(function() {const appRoot = "
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
     "const realboxRoot = appRoot.getElementById('realbox').shadowRoot;"
+    "const thumbContainer = realboxRoot.getElementById('thumbnailContainer');"
     "const thumbnailRoot = realboxRoot.getElementById('thumbnail').shadowRoot;"
     "const imageSrc = thumbnailRoot.getElementById('image').src;"
-    "return imageSrc.startsWith('data:image/jpeg');})();";
+    "return window.getComputedStyle(thumbContainer).display !== 'none' && "
+    "       imageSrc.startsWith('data:image/jpeg');})();";
 
 constexpr char kTestSuggestSignals[] = "suggest_signals";
 
@@ -427,6 +429,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        MAYBE_ShowSidePanelAfterManualRegionSelection) {
   WaitForPaint();
 
+  std::string text_query = "Apples";
   // State should start in off.
   auto* controller = browser()
                          ->tab_strip_model()
@@ -467,8 +470,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
     return true ==
            content::EvalJs(
                controller->GetSidePanelWebContentsForTesting(),
-               content::JsReplace(kCheckSidePanelThumbnailLoadedScript));
+               content::JsReplace(kCheckSidePanelThumbnailShownScript));
   }));
+
+  // Verify that after text selection, the thumbnail is no longer shown.
+  controller->IssueTextSelectionRequestForTesting(text_query);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return false ==
+           content::EvalJs(
+               controller->GetSidePanelWebContentsForTesting(),
+               content::JsReplace(kCheckSidePanelThumbnailShownScript));
+  }));
+
 }
 
 // TODO(b/335028577): Test flaky on Mac.

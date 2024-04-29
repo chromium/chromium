@@ -277,10 +277,6 @@ class LensOverlayController : public LensSearchboxClient,
     // Overlay objects returned from the full image response.
     std::vector<lens::mojom::OverlayObjectPtr> objects_;
 
-    // The last search box text, used in conjunction with the current region
-    // to construct Lens requests.
-    std::optional<std::string> last_search_box_text_ = std::nullopt;
-
     // The additional query parameters to pass to the query controller for
     // generating urls, set by the search box.
     std::map<std::string, std::string> additional_search_query_params_;
@@ -370,6 +366,12 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Handles the creation of a new thumbnail based on the user selection.
   void HandleThumbnailCreated(const std::string& thumbnail_bytes);
+
+  // Sets the thumbnail URI or input text values on the searchbox if it is
+  // bound. If it hasn't yet been bound, stores the value in
+  // `pending_thumbnail_uri_` or `pending_text_query_` instead.
+  void SetSearchboxThumbnail(const std::string& thumbnail_uri);
+  void SetSearchboxInputText(const std::string& text);
 
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;

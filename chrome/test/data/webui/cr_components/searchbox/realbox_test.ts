@@ -2466,49 +2466,10 @@ suite('NewTabPageRealboxTest', () => {
         realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
     testProxy.callbackRouterRemote.setThumbnail('foo.png');
     await waitAfterNextRender(realbox);
-    assertTrue(
-        realbox.$.inputWrapper.querySelector('#thumbnailContainer') !== null);
-  });
-
-  test('setting thumbnail clears input text', async () => {
-    assertEquals(realbox.$.input.value, '');
-    assertTrue(
-        realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
-
-    testProxy.callbackRouterRemote.setInputText('Hello');
-    await waitAfterNextRender(realbox);
-    assertEquals(realbox.$.input.value, 'Hello');
-    assertTrue(
-        realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
-
-    testProxy.callbackRouterRemote.setThumbnail('foo.png');
-    await waitAfterNextRender(realbox);
-    assertEquals(realbox.$.input.value, '');
-    assertTrue(
-        realbox.$.inputWrapper.querySelector('#thumbnailContainer') !== null);
-  });
-
-  test('setting input text clears thumbnail', async () => {
-    assertEquals(realbox.$.input.value, '');
-    assertTrue(
-        realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
-
-    testProxy.callbackRouterRemote.setThumbnail('foo.png');
-    await waitAfterNextRender(realbox);
-    assertEquals(realbox.$.input.value, '');
-    let thumbnailContainer =
+    const thumbnailContainer =
         realbox.$.inputWrapper.querySelector('#thumbnailContainer');
     assertTrue(thumbnailContainer !== null);
     assertTrue(isVisible(thumbnailContainer));
-
-    testProxy.callbackRouterRemote.setInputText('Hello');
-    await waitAfterNextRender(realbox);
-    assertEquals(realbox.$.input.value, 'Hello');
-    // The thumbnail container should still be present but hidden.
-    thumbnailContainer =
-        realbox.$.inputWrapper.querySelector('#thumbnailContainer');
-    assertTrue(thumbnailContainer !== null);
-    assertFalse(isVisible(thumbnailContainer));
   });
 
   test('thumbnail clicked deletion', async () => {

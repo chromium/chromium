@@ -730,24 +730,19 @@ void LensOverlayController::IssueLensRequest(
     lens::mojom::CenterRotatedBoxPtr region) {
   CHECK(initialization_data_);
   CHECK(region);
+  SetSearchboxInputText(std::string());
   initialization_data_->selected_region_ = region.Clone();
   // TODO(b/332787629): Append the 'mactx' param.
-  if (initialization_data_->last_search_box_text_) {
-    lens_overlay_query_controller_->SendMultimodalRequest(
-        region.Clone(), *initialization_data_->last_search_box_text_,
-        initialization_data_->additional_search_query_params_);
-  } else {
-    // TODO(b/335718601): Remove query parameters from region search.
-    lens_overlay_query_controller_->SendRegionSearch(
-        region.Clone(), initialization_data_->additional_search_query_params_);
-  }
+  // TODO(b/335718601): Remove query parameters from region search.
+  lens_overlay_query_controller_->SendRegionSearch(
+      region.Clone(), initialization_data_->additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   state_ = State::kOverlayAndResults;
 }
 
 void LensOverlayController::IssueObjectSelectionRequest(
     const std::string& object_id) {
-  initialization_data_->last_search_box_text_.reset();
+  SetSearchboxInputText(std::string());
   // TODO(b/332787629): Append the 'mactx' param.
   initialization_data_->additional_search_query_params_.clear();
   initialization_data_->selected_region_.reset();
@@ -760,18 +755,12 @@ void LensOverlayController::IssueObjectSelectionRequest(
 
 void LensOverlayController::IssueTextSelectionRequest(
     const std::string& query) {
-  initialization_data_->last_search_box_text_.reset();
   initialization_data_->additional_search_query_params_.clear();
   initialization_data_->selected_region_.reset();
   thumbnail_uri_.clear();
 
-  if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
-    searchbox_handler_->SetInputText(query);
-  } else {
-    // If the side panel was not bound at the time of request, we store the
-    // query as pending to send it to the searchbox on bind.
-    pending_text_query_ = query;
-  }
+  SetSearchboxInputText(query);
+  SetSearchboxThumbnail(std::string());
 
   // TODO(b/332787629): Append the 'mactx' param.
   lens_overlay_query_controller_->SendTextOnlyQuery(
@@ -784,8 +773,6 @@ void LensOverlayController::IssueSearchBoxRequest(
     const std::string& search_box_text,
     std::map<std::string, std::string> additional_query_params) {
   // TODO(b/332787629): Append the 'mactx' param.
-  initialization_data_->last_search_box_text_ =
-      std::make_optional<std::string>(search_box_text);
   initialization_data_->additional_search_query_params_ =
       additional_query_params;
   if (initialization_data_->selected_region_.is_null()) {
@@ -828,12 +815,26 @@ void LensOverlayController::HandleThumbnailCreated(
     const std::string& thumbnail_bytes) {
   thumbnail_uri_ = webui::MakeDataURIForImage(
       base::as_bytes(base::make_span(thumbnail_bytes)), "jpeg");
+  SetSearchboxThumbnail(thumbnail_uri_);
+}
 
+void LensOverlayController::SetSearchboxThumbnail(
+    const std::string& thumbnail_uri) {
   if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
-    searchbox_handler_->SetThumbnail(thumbnail_uri_);
+    searchbox_handler_->SetThumbnail(thumbnail_uri);
   } else {
     // If the side panel was not bound at the time of request, we store the
     // thumbnail as pending to send it to the searchbox on bind.
-    pending_thumbnail_uri_ = thumbnail_uri_;
+    pending_thumbnail_uri_ = thumbnail_uri;
+  }
+}
+
+void LensOverlayController::SetSearchboxInputText(const std::string& text) {
+  if (searchbox_handler_ && searchbox_handler_->IsRemoteBound()) {
+    searchbox_handler_->SetInputText(text);
+  } else {
+    // If the side panel was not bound at the time of request, we store the
+    // query as pending to send it to the searchbox on bind.
+    pending_text_query_ = text;
   }
 }
