@@ -67,8 +67,9 @@ class PaymentsWindowManager {
     bool user_consent_already_given = false;
   };
 
-  // The error type of the 3DS authentication inside of the pop-up.
-  enum class Vcn3dsAuthenticationPopupErrorType {
+  // The result of the 3DS authentication inside of the pop-up if it was not a
+  // success.
+  enum class Vcn3dsAuthenticationPopupNonSuccessResult {
     // The authentication inside of the 3DS pop-up was a failure. The reason for
     // the failure is unknown to Chrome, and can be due to any of several
     // possible reasons. Some reasons can be that the user failed to

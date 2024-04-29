@@ -17,13 +17,13 @@ class AutofillClient;
 
 namespace payments {
 
-// Parses the final URL for VCN 3DS, which is set in `url`. If the parsed URL
-// denotes the authentication completed successfully, this function will return
-// a PaymentsWindowManager::RedirectCompletionProof as the expected response.
-// Otherwise this function will return the error type.
+// Parses the URL for VCN 3DS, which is set in `url`. If the parsed URL denotes
+// the authentication completed successfully, this function will return a
+// PaymentsWindowManager::RedirectCompletionProof as the expected response.
+// Otherwise this function will return the non-success result.
 base::expected<PaymentsWindowManager::RedirectCompletionProof,
-               PaymentsWindowManager::Vcn3dsAuthenticationPopupErrorType>
-ParseFinalUrlForVcn3ds(const GURL& url);
+               PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult>
+ParseUrlForVcn3ds(const GURL& url);
 
 // Creates UnmaskRequestDetails specific to VCN 3DS. `client` is the
 // AutofillClient associated with the original browser window. `context` is the

@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
           /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  ClosePopup();
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was successful and an UnmaskCardRequest was triggered
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  ClosePopup();
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
           /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  ClosePopup();
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
 
   EXPECT_TRUE(

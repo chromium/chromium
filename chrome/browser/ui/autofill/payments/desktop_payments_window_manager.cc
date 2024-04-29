@@ -66,6 +66,13 @@ void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
   }
 }
 
+void DesktopPaymentsWindowManager::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (flow_type_ == FlowType::kVcn3ds) {
+    OnDidFinishNavigationForVcn3ds();
+  }
+}
+
 void DesktopPaymentsWindowManager::WebContentsDestroyed() {
   if (flow_type_ == FlowType::kVcn3ds) {
     OnWebContentsDestroyedForVcn3ds();
@@ -115,11 +122,36 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
   }
 }
 
+void DesktopPaymentsWindowManager::OnDidFinishNavigationForVcn3ds() {
+  base::expected<RedirectCompletionProof,
+                 Vcn3dsAuthenticationPopupNonSuccessResult>
+      result = ParseUrlForVcn3ds(web_contents()->GetVisibleURL());
+  if (result.has_value() ||
+      result.error() ==
+          Vcn3dsAuthenticationPopupNonSuccessResult::kAuthenticationFailed) {
+    // To safely close the pop-up during a navigation event, a task must be
+    // posted to the current base::SequencedTaskRunner, as the web contents must
+    // complete notifying all of its observers of the navigation event before
+    // closing. Closing before this has finished can result in a use-after-free.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&content::WebContents::Close,
+                                  web_contents()->GetWeakPtr()));
+  }
+}
+
 void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
-  base::expected<RedirectCompletionProof, Vcn3dsAuthenticationPopupErrorType>
-      result = ParseFinalUrlForVcn3ds(web_contents()->GetVisibleURL());
+  base::expected<RedirectCompletionProof,
+                 Vcn3dsAuthenticationPopupNonSuccessResult>
+      result = ParseUrlForVcn3ds(web_contents()->GetVisibleURL());
+  // If the result implies that the authentication inside of the pop-up was
+  // successful, continue the flow without resetting.
   if (result.has_value()) {
     CHECK(!result.value()->empty());
+    client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
+        AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
+        base::BindOnce(&DesktopPaymentsWindowManager::
+                           OnVcn3dsAuthenticationProgressDialogCancelled,
+                       weak_ptr_factory_.GetWeakPtr()));
     return client_->GetPaymentsAutofillClient()->LoadRiskData(base::BindOnce(
         &DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds,
         weak_ptr_factory_.GetWeakPtr(), std::move(result.value())));
@@ -134,7 +166,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
   // to handle that correctly, but it is not feasible to distinguish that from
   // the user closing the pop-up.
   if (result.error() ==
-      Vcn3dsAuthenticationPopupErrorType::kAuthenticationFailed) {
+      Vcn3dsAuthenticationPopupNonSuccessResult::kAuthenticationFailed) {
     client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/true));
@@ -153,11 +185,6 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
 void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
     RedirectCompletionProof redirect_completion_proof,
     const std::string& risk_data) {
-  client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
-      AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
-      base::BindOnce(&DesktopPaymentsWindowManager::
-                         OnVcn3dsAuthenticationProgressDialogCancelled,
-                     weak_ptr_factory_.GetWeakPtr()));
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->UnmaskCard(CreateUnmaskRequestDetailsForVcn3ds(

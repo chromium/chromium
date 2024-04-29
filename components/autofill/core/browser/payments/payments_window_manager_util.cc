@@ -17,8 +17,8 @@
 namespace autofill::payments {
 
 base::expected<PaymentsWindowManager::RedirectCompletionProof,
-               PaymentsWindowManager::Vcn3dsAuthenticationPopupErrorType>
-ParseFinalUrlForVcn3ds(const GURL& url) {
+               PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult>
+ParseUrlForVcn3ds(const GURL& url) {
   std::optional<bool> should_proceed;
   std::string redirect_completion_proof;
   std::string_view query_piece = url.query_piece();
@@ -48,12 +48,12 @@ ParseFinalUrlForVcn3ds(const GURL& url) {
   // Payments server's way of telling Chrome that the authentication failed.
   if (!should_proceed.value_or(true)) {
     return base::unexpected(
-        PaymentsWindowManager::Vcn3dsAuthenticationPopupErrorType::
+        PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult::
             kAuthenticationFailed);
   }
 
   return base::unexpected(
-      PaymentsWindowManager::Vcn3dsAuthenticationPopupErrorType::
+      PaymentsWindowManager::Vcn3dsAuthenticationPopupNonSuccessResult::
           kAuthenticationNotCompleted);
 }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_DESKTOP_PAYMENTS_WINDOW_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -20,6 +21,10 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class GURL;
+
+namespace content {
+class NavigationHandle;
+}  // namespace content
 
 namespace autofill {
 
@@ -49,6 +54,8 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   void InitVcn3dsAuthentication(Vcn3dsContext context) override;
 
   // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -70,6 +77,10 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // `popup_size`. This pop-up will go through a couple of URL navigations
   // specific to the flow that it is created for.
   void CreatePopup(const GURL& url, gfx::Rect popup_size);
+
+  // Triggered when a pop-up navigation has finished, and the `flow_type_` is
+  // kVcn3ds.
+  void OnDidFinishNavigationForVcn3ds();
 
   // Triggered when a pop-up is destroyed, and the `flow_type_` is kVcn3ds.
   void OnWebContentsDestroyedForVcn3ds();
