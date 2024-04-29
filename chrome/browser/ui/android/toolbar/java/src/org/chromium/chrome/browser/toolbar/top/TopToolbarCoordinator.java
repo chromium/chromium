@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.Tab
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -134,6 +135,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private IncognitoStateObserver mIncognitoStateObserver;
 
     private TabObscuringHandler mTabObscuringHandler;
+    private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     /** Token used to block the tab strip transition when find in page toolbar is showing. */
     private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
@@ -181,6 +183,8 @@ public class TopToolbarCoordinator implements Toolbar {
      *     toolbar. True if the logo should be created in the Start surface toolbar; False if the
      *     logo should be shown in Start surface content.
      * @param fullscreenManager Used to check whether in fullscreen.
+     * @param tabObscuringHandler Delegate object handling obscuring views.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -215,7 +219,8 @@ public class TopToolbarCoordinator implements Toolbar {
                     browserStateBrowserControlsVisibilityDelegate,
             boolean shouldCreateLogoInStartToolbar,
             FullscreenManager fullscreenManager,
-            TabObscuringHandler tabObscuringHandler) {
+            TabObscuringHandler tabObscuringHandler,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -230,6 +235,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarColorObserverManager = new ToolbarColorObserverManager();
         mToolbarLayout.setToolbarColorObserver(mToolbarColorObserverManager);
         mTabObscuringHandler = tabObscuringHandler;
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
 
         if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
             mStartSurfaceToolbarCoordinator =
@@ -384,7 +390,8 @@ public class TopToolbarCoordinator implements Toolbar {
                             mControlContainer,
                             mToolbarLayout,
                             tabStripHeightResource,
-                            mTabObscuringHandler);
+                            mTabObscuringHandler,
+                            mDesktopWindowStateProvider);
             mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
             mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         }

@@ -54,7 +54,8 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler.Target;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
-import org.chromium.components.browser_ui.widget.InsetsRectProvider;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
@@ -82,21 +83,22 @@ public class TabStripTransitionCoordinatorUnitTest {
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private ControlContainer mControlContainer;
     @Mock private ViewResourceAdapter mViewResourceAdapter;
-    @Mock private InsetsRectProvider mInsetsRectProvider;
+    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
     @Captor private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserver;
     @Captor private ArgumentCaptor<Callback<Resource>> mOnCaptureReadyCallback;
-    @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetsRectObserver;
 
     private TestControlContainerView mSpyControlContainer;
     private TabStripTransitionCoordinator mCoordinator;
     private TestActivity mActivity;
+    // private TestDesktopWindowStateProvider mDesktopWindowStateProvider =
+    //         new TestDesktopWindowStateProvider();
     private TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
     private TestObserver mObserver;
     private int mReservedTopPadding;
 
     // Test variables
     private int mTopControlsContentOffset;
-    private Rect mWidesUnoccludedRect = new Rect();
+    private AppHeaderState mAppHeaderState;
 
     @Before
     public void setup() {
@@ -116,20 +118,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 .addOnResourceReadyCallback(mOnCaptureReadyCallback.capture());
         doAnswer(inv -> triggerCapture()).when(mViewResourceAdapter).triggerBitmapCapture();
 
-        // Set up mocks for mInsetsRectProvider
-        doReturn(mWidesUnoccludedRect).when(mInsetsRectProvider).getWidestUnoccludedRect();
-        doNothing().when(mInsetsRectProvider).addObserver(mInsetsRectObserver.capture());
-
-        mCoordinator =
-                new TabStripTransitionCoordinator(
-                        mBrowserControlsVisibilityManager,
-                        mControlContainer,
-                        mSpyControlContainer.toolbarLayout,
-                        TEST_TAB_STRIP_HEIGHT,
-                        mTabObscuringHandler);
-        mObserver = new TestObserver();
-        mCoordinator.addObserver(mObserver);
-
+        // Set up test browser controls manger.
         mTopControlsContentOffset = TEST_TAB_STRIP_HEIGHT + TEST_TOOLBAR_HEIGHT;
         doNothing()
                 .when(mBrowserControlsVisibilityManager)
@@ -140,6 +129,11 @@ public class TabStripTransitionCoordinatorUnitTest {
         doAnswer(invocationOnMock -> mTopControlsContentOffset)
                 .when(mBrowserControlsVisibilityManager)
                 .getContentOffset();
+
+        // Setup other mocks.
+        doAnswer((arg) -> mAppHeaderState).when(mDesktopWindowStateProvider).getAppHeaderState();
+
+        setUpTabStripTransitionCoordinator();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 
@@ -522,14 +516,13 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void useInsetsRectProvider_IncreaseHeight() {
+    public void useDesktopWindowStateProvider_IncreaseHeight() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
-        mCoordinator.setInsetRectProvider(mInsetsRectProvider);
-
         // Simulate a rect update.
         int newHeight = 10 + TEST_TAB_STRIP_HEIGHT;
-        mWidesUnoccludedRect.set(new Rect(0, 0, 600, newHeight));
-        mInsetsRectObserver.getValue().onBoundingRectsUpdated(mWidesUnoccludedRect);
+        Rect appHeaderRect = new Rect(0, 0, 600, newHeight);
+        mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, true);
+        mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         Assert.assertEquals(
@@ -546,15 +539,14 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void useInsetsRectProvider_DecreasedHeight() {
+    public void useDesktopWindowStateProvider_DecreasedHeight() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
-        mCoordinator.setInsetRectProvider(mInsetsRectProvider);
-
         // Simulate a rect update that has a smaller height.
         int newHeight = TEST_TAB_STRIP_HEIGHT - 10;
         int expectedHeight = mReservedTopPadding + TEST_TAB_STRIP_HEIGHT;
-        mWidesUnoccludedRect.set(new Rect(0, 0, 600, newHeight));
-        mInsetsRectObserver.getValue().onBoundingRectsUpdated(mWidesUnoccludedRect);
+        Rect appHeaderRect = new Rect(0, 0, 600, newHeight);
+        mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, true);
+        mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         Assert.assertEquals(
@@ -571,20 +563,50 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    public void useInsetsRectProvider_DecreasedWidth() {
+    public void useDesktopWindowStateProvider_DecreasedWidth() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
-        mCoordinator.setInsetRectProvider(mInsetsRectProvider);
-
         // Simulate a rect update that has a smaller width.
         int newHeight = TEST_TAB_STRIP_HEIGHT + 10;
-        mWidesUnoccludedRect.set(new Rect(0, 0, NARROW_WINDOW_WIDTH, newHeight));
-        mInsetsRectObserver.getValue().onBoundingRectsUpdated(mWidesUnoccludedRect);
+        Rect appHeaderRect = new Rect(0, 0, NARROW_WINDOW_WIDTH, newHeight);
+        mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, true);
+        mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         Assert.assertEquals(
                 "Narrower width does not trigger tab strip hiding, instead use the height only.",
                 newHeight,
                 mObserver.heightRequested);
+    }
+
+    @Test
+    public void useDesktopWindowStateProvider_InitialWidth() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        // Simulate a rect update that has a smaller width.
+        int newHeight = TEST_TAB_STRIP_HEIGHT + 10;
+        Rect appHeaderRect = new Rect(0, 0, NARROW_WINDOW_WIDTH, newHeight);
+        mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, true);
+
+        // Create the transition coordinator again with initial value of AppHeaderState
+        setUpTabStripTransitionCoordinator();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertEquals(
+                "Narrower width does not trigger tab strip hiding, instead use the height only.",
+                newHeight,
+                mObserver.heightRequested);
+    }
+
+    private void setUpTabStripTransitionCoordinator() {
+        mCoordinator =
+                new TabStripTransitionCoordinator(
+                        mBrowserControlsVisibilityManager,
+                        mControlContainer,
+                        mSpyControlContainer.toolbarLayout,
+                        TEST_TAB_STRIP_HEIGHT,
+                        mTabObscuringHandler,
+                        mDesktopWindowStateProvider);
+        mObserver = new TestObserver();
+        mCoordinator.addObserver(mObserver);
     }
 
     /** Run #onControlsOffsetChanged, changing content offset from |beginOffset| to |endOffset|. */

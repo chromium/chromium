@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
-import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.InsetObserver;
@@ -79,8 +78,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     private final InsetsRectProvider mInsetsRectProvider;
     private final WindowInsetsController mInsetsController;
     private final OneshotSupplier<AppHeaderDelegate> mAppHeaderDelegateSupplier;
-    private final OneshotSupplier<TabStripTransitionCoordinator>
-            mTabStripTransitionCoordinatorSupplier;
     private final ObserverList<AppHeaderObserver> mObservers = new ObserverList<>();
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
@@ -99,6 +96,7 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
      *     controls visibility.
      * @param insetObserver {@link InsetObserver} that manages insets changes on the
      *     CoordinatorView.
+     * @param appHeaderDelegateSupplier Supplier for {@link AppHeaderDelegate}.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to dispatch {@link
      *     TopResumedActivityChangedObserver#onTopResumedActivityChanged(boolean)} and {@link
      *     SaveInstanceStateObserver#onSaveInstanceState(Bundle)} events observed by this class.
@@ -112,7 +110,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             InsetObserver insetObserver,
             OneshotSupplier<AppHeaderDelegate> appHeaderDelegateSupplier,
-            OneshotSupplier<TabStripTransitionCoordinator> tabStripTransitionCoordinatorSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Bundle savedInstanceState) {
         mActivity = activity;
@@ -121,7 +118,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         mInsetObserver = insetObserver;
         mInsetsController = mRootView.getWindowInsetsController();
         mAppHeaderDelegateSupplier = appHeaderDelegateSupplier;
-        mTabStripTransitionCoordinatorSupplier = tabStripTransitionCoordinatorSupplier;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         // Whether the app started in an unfocused desktop window, so that relevant UI state can be
@@ -151,9 +147,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
 
         mAppHeaderDelegateSupplier.runSyncOrOnAvailable(
                 (delegate) -> maybeUpdateAppHeaderPaddings());
-        mTabStripTransitionCoordinatorSupplier.runSyncOrOnAvailable(
-                (tabStripTransitionCoordinator) ->
-                        tabStripTransitionCoordinator.setInsetRectProvider(mInsetsRectProvider));
     }
 
     /** Destroy the instances and remove all the dependencies. */
@@ -161,9 +154,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         mActivity = null;
         mInsetsRectProvider.destroy();
         mObservers.clear();
-        if (mTabStripTransitionCoordinatorSupplier.get() != null) {
-            mTabStripTransitionCoordinatorSupplier.get().setInsetRectProvider(null);
-        }
         mActivityLifecycleDispatcher.unregister(this);
     }
 
@@ -285,7 +275,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     // TODO(crbug/328446763): Add metrics to record the failure reason.
     private static boolean checkIsInDesktopWindow(
             Activity activity, InsetObserver insetObserver, InsetsRectProvider insetsRectProvider) {
-
         if (!activity.isInMultiWindowMode()) return false;
 
         // Disable DW mode if there is a navigation bar (though it may or may not be visible /
@@ -340,11 +329,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
                 useLightCaptionBar, APPEARANCE_LIGHT_CAPTION_BARS);
     }
 
-    public static void setInsetsRectProviderForTesting(InsetsRectProvider providerForTesting) {
-        sInsetsRectProviderForTesting = providerForTesting;
-        ResettersForTesting.register(() -> sInsetsRectProviderForTesting = null);
-    }
-
     /** Set states for testing. */
     public void setStateForTesting(boolean isInDesktopWindow, AppHeaderState appHeaderState) {
         mIsInDesktopWindow = isInDesktopWindow;
@@ -354,5 +338,10 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
             observer.onAppHeaderStateChanged(mAppHeaderState);
             observer.onDesktopWindowingModeChanged(mIsInDesktopWindow);
         }
+    }
+
+    public static void setInsetsRectProviderForTesting(InsetsRectProvider providerForTesting) {
+        sInsetsRectProviderForTesting = providerForTesting;
+        ResettersForTesting.register(() -> sInsetsRectProviderForTesting = null);
     }
 }

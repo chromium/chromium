@@ -52,6 +52,12 @@ public class AppHeaderState {
         return mAppWindowRect.right - mWidestUnoccludedRect.right;
     }
 
+    /** Returns the available width of the widest unoccluded rect in the app header. */
+    public int getUnoccludedRectWidth() {
+        assertValid();
+        return mWidestUnoccludedRect.width();
+    }
+
     /** Return the height of the app header region. */
     public int getAppHeaderHeight() {
         assertValid();

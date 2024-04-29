@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.desktop_windowing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW;
 
@@ -26,8 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -75,7 +71,6 @@ public class AppHeaderCoordinatorBrowserTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private @Mock InsetsRectProvider mInsetsRectProvider;
-    private @Captor ArgumentCaptor<InsetsRectProvider.Observer> mInsetsRectObserverCaptor;
 
     private Rect mWidestUnoccludedRect = new Rect();
     private Rect mWindowRect = new Rect();
@@ -102,19 +97,9 @@ public class AppHeaderCoordinatorBrowserTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.DYNAMIC_TOP_CHROME)
     public void testTabStripHeightChangeForTabStripLayoutOptimization() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        setupAppHeaderRects(true);
-
-        // Invoke observer to trigger browser controls transition.
-        verify(mInsetsRectProvider, atLeastOnce()).addObserver(mInsetsRectObserverCaptor.capture());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    for (var obs : mInsetsRectObserverCaptor.getAllValues()) {
-                        obs.onBoundingRectsUpdated(mWidestUnoccludedRect);
-                    }
-                });
+        triggerDesktopWindowingModeChange(true);
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -420,7 +405,10 @@ public class AppHeaderCoordinatorBrowserTest {
         activity.getWindow().getDecorView().getGlobalVisibleRect(mWindowRect);
         if (isInDesktopWindow) {
             mWidestUnoccludedRect.set(
-                    APP_HEADER_LEFT_PADDING, 0, APP_HEADER_RIGHT_PADDING, mTestAppHeaderHeight);
+                    APP_HEADER_LEFT_PADDING,
+                    0,
+                    mWindowRect.right - APP_HEADER_RIGHT_PADDING,
+                    mTestAppHeaderHeight);
         } else {
             mWidestUnoccludedRect.setEmpty();
         }

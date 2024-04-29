@@ -120,7 +120,6 @@ import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarControl
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
-import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -197,8 +196,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     // TODO(crbug/325351108): Remove the use of supplier and inject through ctor.
     private final OneshotSupplierImpl<AppHeaderDelegate> mAppHeaderDelegateSupplier =
             new OneshotSupplierImpl<>();
-    private final OneshotSupplierImpl<TabStripTransitionCoordinator>
-            mTabStripTransitionCoordinatorSupplier = new OneshotSupplierImpl<>();
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private DesktopWindowStateProvider.AppHeaderObserver mAppHeaderObserver;
     private Destroyable mTabGroupCreationDialogManager;
@@ -1219,9 +1216,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
-        assert mToolbarManager.getTabStripTransitionCoordinator() != null;
-        mTabStripTransitionCoordinatorSupplier.set(
-                mToolbarManager.getTabStripTransitionCoordinator());
     }
 
     private void initAppHeaderCoordinator(Bundle savedInstanceState) {
@@ -1240,7 +1234,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mBrowserControlsManager.getBrowserVisibilityDelegate(),
                         mInsetObserverViewSupplier.get(),
                         mAppHeaderDelegateSupplier,
-                        mTabStripTransitionCoordinatorSupplier,
                         mActivityLifecycleDispatcher,
                         savedInstanceState);
         mAppHeaderCoordinator.addObserver(mAppHeaderObserver);

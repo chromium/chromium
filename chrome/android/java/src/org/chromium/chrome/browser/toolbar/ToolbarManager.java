@@ -1421,7 +1421,8 @@ public class ToolbarManager
                         mControlsVisibilityDelegate,
                         !ReturnToChromeUtil.moveDownLogo(),
                         mFullscreenManager,
-                        mTabObscuringHandler);
+                        mTabObscuringHandler,
+                        mDesktopWindowStateProvider);
 
         mHomepageStateListener =
                 () -> {

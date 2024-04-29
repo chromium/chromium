@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -49,7 +48,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.AppHeaderDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.InsetObserver;
@@ -82,7 +80,6 @@ public class AppHeaderCoordinatorUnitTest {
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisDelegate;
     @Mock private InsetObserver mInsetObserver;
     @Mock private InsetsRectProvider mInsetsRectProvider;
-    @Mock private TabStripTransitionCoordinator mTabStripTransitionCoordinator;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private DesktopWindowStateProvider.AppHeaderObserver mObserver;
     @Captor private ArgumentCaptor<InsetsRectProvider.Observer> mInsetRectObserverCaptor;
@@ -93,8 +90,6 @@ public class AppHeaderCoordinatorUnitTest {
     private WindowInsetsCompat mLastSeenRawWindowInsets = new WindowInsetsCompat(null);
     private final OneshotSupplierImpl<AppHeaderDelegate> mAppHeaderDelegateSupplier =
             new OneshotSupplierImpl<>();
-    private final OneshotSupplierImpl<TabStripTransitionCoordinator>
-            mTabStripTransitionCoordinatorSupplier = new OneshotSupplierImpl<>();
     private Bundle mSavedInstanceStateBundle;
 
     @Before
@@ -293,7 +288,6 @@ public class AppHeaderCoordinatorUnitTest {
         mAppHeaderCoordinator.destroy();
 
         verify(mInsetsRectProvider).destroy();
-        verify(mTabStripTransitionCoordinator).setInsetRectProvider(isNull());
         verify(mAppHeaderDelegate, times(0)).updateHorizontalPaddings(anyInt(), anyInt());
     }
 
@@ -350,7 +344,6 @@ public class AppHeaderCoordinatorUnitTest {
                         mBrowserControlsVisDelegate,
                         mInsetObserver,
                         mAppHeaderDelegateSupplier,
-                        mTabStripTransitionCoordinatorSupplier,
                         mActivityLifecycleDispatcher,
                         mSavedInstanceStateBundle);
         mAppHeaderCoordinator.addObserver(mObserver);
@@ -358,7 +351,6 @@ public class AppHeaderCoordinatorUnitTest {
 
     private void initPostNative() {
         mAppHeaderDelegateSupplier.set(mAppHeaderDelegate);
-        mTabStripTransitionCoordinatorSupplier.set(mTabStripTransitionCoordinator);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 

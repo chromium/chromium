@@ -29,13 +29,15 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
-import org.chromium.components.browser_ui.widget.InsetsRectProvider;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
 import org.chromium.ui.util.TokenHolder;
 
 /** Subclass used to manage tab strip visibility and height presents. */
-public class TabStripTransitionCoordinator implements ComponentCallbacks {
+public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHeaderObserver {
     private static final String TAG = "DTCStripTransition";
 
     // Delay to kickoff the transition to avoid frame drops while application is too busy when the
@@ -77,6 +79,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private final TabObscuringHandler mTabObscuringHandler;
     private final TokenHolder mDeferTransitionTokenHolder;
     private final int mTabStripReservedTopPadding;
+    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     /**
      * Current height of the tab strip represented by the space reserved on top of the toolbar
@@ -110,6 +113,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private int mTopPadding;
 
     private boolean mIsDestroyed;
+    private @Nullable AppHeaderState mAppHeaderState;
 
     private OnLayoutChangeListener mOnLayoutChangedListener;
     private TabObscuringHandler.Observer mTabObscuringHandlerObserver;
@@ -117,8 +121,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
 
     private @Nullable BrowserControlsStateProvider.Observer mTransitionKickoffObserver;
     private @Nullable BrowserControlsStateProvider.Observer mTransitionFinishedObserver;
-    private @Nullable InsetsRectProvider mInsetsRectProvider;
-    private @Nullable InsetsRectProvider.Observer mInsetsRectObserver;
 
     /**
      * Create the coordinator managing transitions for when showing / hiding the tab strip.
@@ -128,17 +130,21 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
      * @param controlContainer The {@link ControlContainer} for the containing activity.
      * @param toolbarLayout {@link ToolbarLayout} for the current toolbar.
      * @param tabStripHeightFromResource The height of the tab strip defined in resource.
+     * @param tabObscuringHandler Delegate object handling obscuring views.
+     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
      */
     TabStripTransitionCoordinator(
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             ControlContainer controlContainer,
             View toolbarLayout,
             int tabStripHeightFromResource,
-            TabObscuringHandler tabObscuringHandler) {
+            TabObscuringHandler tabObscuringHandler,
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mTabStripHeightFromResource = tabStripHeightFromResource;
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
         mHandler = new Handler(Looper.getMainLooper());
 
         mTabStripHeight = tabStripHeightFromResource;
@@ -177,9 +183,19 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         mTabObscuringHandler.addObserver(mTabObscuringHandlerObserver);
 
         updateTabStripTransitionThreshold();
-        // Initialize the tab strip size based on the control container.
-        // TODO(wenyufu): Check the inset rect provider if exists.
-        onLayoutWidthChanged(controlContainerView().getWidth());
+
+        AppHeaderState appHeaderState = null;
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.addObserver(this);
+            appHeaderState = mDesktopWindowStateProvider.getAppHeaderState();
+        }
+
+        // Initialize the tab strip size based on whether we have app header.
+        if (appHeaderState != null) {
+            onAppHeaderStateChanged(appHeaderState);
+        } else {
+            onLayoutWidthChanged(controlContainerView().getWidth());
+        }
     }
 
     /** Return the current tab strip height. */
@@ -230,10 +246,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
             mTabObscuringHandler.removeObserver(mTabObscuringHandlerObserver);
             mTabObscuringHandlerObserver = null;
         }
-        if (mInsetsRectProvider != null) {
-            mInsetsRectProvider.removeObserver(mInsetsRectObserver);
-            mInsetsRectObserver = null;
-            mInsetsRectProvider = null;
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.removeObserver(this);
         }
         mCallbackController.destroy();
         mTabStripHeightObservers.clear();
@@ -247,35 +261,20 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     @Override
     public void onLowMemory() {}
 
-    /**
-     * Set the |insetsRectProvider|, and switch the width provider from the width of the control
-     * container to use {@link InsetsRectProvider.Observer}.
-     */
-    public void setInsetRectProvider(@Nullable InsetsRectProvider insetsRectProvider) {
-        if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(/* isTablet= */ true)) {
-            return;
-        }
+    @Override
+    public void onAppHeaderStateChanged(AppHeaderState newState) {
+        assert mDesktopWindowStateProvider != null;
+        assert newState != null;
 
-        if (insetsRectProvider == null) {
-            if (mInsetsRectProvider != null && mInsetsRectObserver != null) {
-                mInsetsRectProvider.removeObserver(mInsetsRectObserver);
-            }
-            mInsetsRectObserver = null;
-            mInsetsRectProvider = null;
-            return;
+        mAppHeaderState = newState;
+        if (mAppHeaderState.isInDesktopWindow()) {
+            int height = mAppHeaderState.getAppHeaderHeight();
+            int topPadding =
+                    Math.max(mTabStripReservedTopPadding, height - mTabStripHeightFromResource);
+            onTabStripSizeChanged(mAppHeaderState.getUnoccludedRectWidth(), topPadding);
+        } else {
+            onTabStripSizeChanged(controlContainerView().getWidth(), 0);
         }
-
-        mInsetsRectProvider = insetsRectProvider;
-        mInsetsRectObserver =
-                widestUnoccludedRect -> {
-                    int height = widestUnoccludedRect.height();
-                    int topPadding =
-                            Math.max(
-                                    mTabStripReservedTopPadding,
-                                    height - mTabStripHeightFromResource);
-                    onTabStripSizeChanged(widestUnoccludedRect.width(), topPadding);
-                };
-        mInsetsRectProvider.addObserver(mInsetsRectObserver);
     }
 
     /**
@@ -323,12 +322,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     }
 
     private void onLayoutWidthChanged(int newWidth) {
-        // If mInsetRectObserver exists, check the widestUnoccludedRect too. This is needed as
-        // updates in mInsetRectProvider can happen prior / during a layout pass, while the
+        // If mAppHeaderState exists, check the widestUnoccludedRect too. This is needed as
+        // updates in mAppHeaderState can happen prior / during a layout pass, while the
         // transition needs to wait until UI is in a stable state.
-        if (mInsetsRectProvider != null
-                && mInsetsRectProvider.getWidestUnoccludedRect().width() > 0) {
-            newWidth = Math.min(newWidth, mInsetsRectProvider.getWidestUnoccludedRect().width());
+        if (mAppHeaderState != null && mAppHeaderState.getUnoccludedRectWidth() > 0) {
+            newWidth = Math.min(newWidth, mAppHeaderState.getUnoccludedRectWidth());
         }
 
         onTabStripSizeChanged(newWidth, mTopPadding);
