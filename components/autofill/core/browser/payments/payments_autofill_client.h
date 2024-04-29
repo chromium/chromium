@@ -21,6 +21,7 @@ class CardUnmaskDelegate;
 struct CardUnmaskPromptOptions;
 class CreditCard;
 class CreditCardCvcAuthenticator;
+class CreditCardOtpAuthenticator;
 class MigratableCreditCard;
 class OtpUnmaskDelegate;
 struct CardUnmaskChallengeOption;
@@ -146,6 +147,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Gets the CreditCardCvcAuthenticator owned by the client.
   virtual CreditCardCvcAuthenticator& GetCvcAuthenticator() = 0;
+
+  // Gets the CreditCardOtpAuthenticator owned by the client. This function will
+  // return a nullptr on iOS WebView.
+  virtual CreditCardOtpAuthenticator* GetOtpAuthenticator();
 };
 
 }  // namespace payments

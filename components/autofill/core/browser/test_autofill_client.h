@@ -33,7 +33,6 @@
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -154,13 +153,6 @@ class TestAutofillClientTemplate : public T {
 
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override {
     return &mock_merchant_promo_code_manager_;
-  }
-
-  CreditCardOtpAuthenticator* GetOtpAuthenticator() override {
-    if (!otp_authenticator_) {
-      otp_authenticator_ = std::make_unique<CreditCardOtpAuthenticator>(this);
-    }
-    return otp_authenticator_.get();
   }
 
   TestCreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override {
@@ -550,11 +542,6 @@ class TestAutofillClientTemplate : public T {
     payments_autofill_client_ = std::move(payments_client);
   }
 
-  void set_otp_authenticator(
-      std::unique_ptr<CreditCardOtpAuthenticator> authenticator) {
-    otp_authenticator_ = std::move(authenticator);
-  }
-
   void set_test_strike_database(
       std::unique_ptr<TestStrikeDatabase> test_strike_database) {
     test_strike_database_ = std::move(test_strike_database);
@@ -744,7 +731,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
-  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<TestCreditCardRiskBasedAuthenticator>
       risk_based_authenticator_;
 

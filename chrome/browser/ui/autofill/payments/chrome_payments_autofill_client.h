@@ -26,6 +26,7 @@ class ContentAutofillClient;
 struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogControllerImpl;
 class CreditCardCvcAuthenticator;
+class CreditCardOtpAuthenticator;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class VirtualCardEnrollmentManager;
@@ -91,6 +92,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       AutofillClient::PaymentsRpcResult result) override;
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
+  CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
@@ -133,6 +135,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       virtual_card_enrollment_manager_;
 
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
+
+  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 };
 
 }  // namespace payments

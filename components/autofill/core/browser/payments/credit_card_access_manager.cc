@@ -626,11 +626,13 @@ void CreditCardAccessManager::Authenticate(
     case UnmaskAuthFlowType::kOtpFallbackFromFido: {
       // Delegate the task to CreditCardOtpAuthenticator.
       DCHECK(selected_challenge_option_);
-      client_->GetOtpAuthenticator()->OnChallengeOptionSelected(
-          card_.get(), *selected_challenge_option_,
-          weak_ptr_factory_.GetWeakPtr(),
-          virtual_card_unmask_response_details_.context_token,
-          payments::GetBillingCustomerId(personal_data_manager_));
+      client_->GetPaymentsAutofillClient()
+          ->GetOtpAuthenticator()
+          ->OnChallengeOptionSelected(
+              card_.get(), *selected_challenge_option_,
+              weak_ptr_factory_.GetWeakPtr(),
+              virtual_card_unmask_response_details_.context_token,
+              payments::GetBillingCustomerId(personal_data_manager_));
       break;
     }
     case UnmaskAuthFlowType::kThreeDomainSecure:
@@ -1548,7 +1550,7 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
     // Virtual Card Unmask request, so we need to reset the state of the
     // CreditCardOtpAuthenticator as well to ensure the flow does not continue,
     // as continuing the flow can cause a crash.
-    client_->GetOtpAuthenticator()->Reset();
+    client_->GetPaymentsAutofillClient()->GetOtpAuthenticator()->Reset();
   }
 
   autofill_metrics::ServerCardUnmaskFlowType flow_type;

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
-#include <memory>
-
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -16,6 +14,7 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -283,6 +282,15 @@ ChromePaymentsAutofillClient::GetCvcAuthenticator() {
         std::make_unique<CreditCardCvcAuthenticator>(&client_.get());
   }
   return *cvc_authenticator_;
+}
+
+CreditCardOtpAuthenticator*
+ChromePaymentsAutofillClient::GetOtpAuthenticator() {
+  if (!otp_authenticator_) {
+    otp_authenticator_ =
+        std::make_unique<CreditCardOtpAuthenticator>(&client_.get());
+  }
+  return otp_authenticator_.get();
 }
 
 }  // namespace autofill::payments

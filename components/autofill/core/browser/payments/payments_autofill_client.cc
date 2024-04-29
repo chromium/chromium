@@ -83,4 +83,8 @@ PaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   return nullptr;
 }
 
+CreditCardOtpAuthenticator* PaymentsAutofillClient::GetOtpAuthenticator() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

@@ -14,6 +14,7 @@ namespace autofill {
 
 class AutofillClient;
 class CreditCardCvcAuthenticator;
+class CreditCardOtpAuthenticator;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
@@ -58,6 +59,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   PaymentsWindowManager* GetPaymentsWindowManager() override;
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
+  CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
 
   void set_migration_card_selections(
       const std::vector<std::string>& migration_card_selection) {
@@ -89,6 +91,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   void set_virtual_card_enrollment_manager(
       std::unique_ptr<VirtualCardEnrollmentManager> vcem);
+
+  void set_otp_authenticator(
+      std::unique_ptr<CreditCardOtpAuthenticator> authenticator);
 
  private:
   const raw_ref<AutofillClient> client_;
@@ -123,6 +128,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       virtual_card_enrollment_manager_;
 
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
+
+  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 };
 
 }  // namespace payments

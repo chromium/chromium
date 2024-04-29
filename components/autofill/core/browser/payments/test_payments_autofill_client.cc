@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
@@ -111,9 +112,22 @@ CreditCardCvcAuthenticator& TestPaymentsAutofillClient::GetCvcAuthenticator() {
   return *cvc_authenticator_;
 }
 
+CreditCardOtpAuthenticator* TestPaymentsAutofillClient::GetOtpAuthenticator() {
+  if (!otp_authenticator_) {
+    otp_authenticator_ =
+        std::make_unique<CreditCardOtpAuthenticator>(&client_.get());
+  }
+  return otp_authenticator_.get();
+}
+
 void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
     std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
   virtual_card_enrollment_manager_ = std::move(vcem);
+}
+
+void TestPaymentsAutofillClient::set_otp_authenticator(
+    std::unique_ptr<CreditCardOtpAuthenticator> authenticator) {
+  otp_authenticator_ = std::move(authenticator);
 }
 
 }  // namespace autofill::payments

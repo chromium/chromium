@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/otp_unmask_result.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -163,6 +164,15 @@ IOSChromePaymentsAutofillClient::GetCvcAuthenticator() {
         std::make_unique<CreditCardCvcAuthenticator>(&client_.get());
   }
   return *cvc_authenticator_;
+}
+
+CreditCardOtpAuthenticator*
+IOSChromePaymentsAutofillClient::GetOtpAuthenticator() {
+  if (!otp_authenticator_) {
+    otp_authenticator_ =
+        std::make_unique<CreditCardOtpAuthenticator>(&client_.get());
+  }
+  return otp_authenticator_.get();
 }
 
 }  // namespace autofill::payments
