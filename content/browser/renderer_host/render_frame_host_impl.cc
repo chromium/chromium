@@ -2988,7 +2988,7 @@ void RenderFrameHostImpl::AccessibilityReset() {
 }
 
 void RenderFrameHostImpl::UnrecoverableAccessibilityError() {
-  CHECK(!BrowserAccessibilityManager::IsFailFastMode());
+  CHECK(!ui::AXTreeManager::IsFailFastMode());
   browser_accessibility_manager_.reset();
   if (!render_accessibility_) {
     return;

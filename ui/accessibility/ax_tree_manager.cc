@@ -15,6 +15,9 @@
 
 namespace ui {
 
+// A flag to ensure that accessibility fatal errors crash immediately.
+bool AXTreeManager::is_fail_fast_mode_ = false;
+
 // static
 AXTreeManagerMap& AXTreeManager::GetMap() {
   static base::NoDestructor<AXTreeManagerMap> map;
