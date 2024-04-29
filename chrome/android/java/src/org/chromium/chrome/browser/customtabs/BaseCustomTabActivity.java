@@ -460,8 +460,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     public void finishNativeInitialization() {
         if (isTaskRoot()) {
-            UsageStatsService.createPageViewObserverIfEnabled(
-                    this, getActivityTabProvider(), getTabContentManagerSupplier());
+            getProfileProviderSupplier()
+                    .runSyncOrOnAvailable(
+                            (profileProvider) -> {
+                                UsageStatsService.createPageViewObserverIfEnabled(
+                                        this,
+                                        profileProvider.getOriginalProfile(),
+                                        getActivityTabProvider(),
+                                        getTabContentManagerSupplier());
+                            });
         }
         if (!getIntentDataProvider().isWebappOrWebApkActivity()) {
             mTabController.finishNativeInitialization();

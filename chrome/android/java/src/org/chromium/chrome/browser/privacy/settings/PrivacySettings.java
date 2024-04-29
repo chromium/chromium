@@ -336,6 +336,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                         preference -> {
                             UsageStatsConsentDialog.create(
                                             getActivity(),
+                                            getProfile(),
                                             true,
                                             (didConfirm) -> {
                                                 if (didConfirm) {

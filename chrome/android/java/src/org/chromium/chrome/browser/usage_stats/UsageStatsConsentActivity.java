@@ -38,6 +38,7 @@ public class UsageStatsConsentActivity extends SynchronousInitializationActivity
         boolean isRevocation = TextUtils.equals(action, UNAUTHORIZE_ACTION);
         UsageStatsConsentDialog.create(
                         this,
+                        getProfileProvider().getOriginalProfile(),
                         isRevocation,
                         (didConfirm) -> {
                             setResult(didConfirm ? Activity.RESULT_OK : Activity.RESULT_CANCELED);

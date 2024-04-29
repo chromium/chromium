@@ -13,11 +13,13 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -30,10 +32,12 @@ import java.util.List;
  * Public interface for all usage stats related functionality. All calls to instances of
  * UsageStatsService must be made on the UI thread.
  */
-public class UsageStatsService {
+public class UsageStatsService implements Destroyable {
     private static final String TAG = "UsageStatsService";
 
-    private static UsageStatsService sInstance;
+    private static ProfileKeyedMap<UsageStatsService> sProfileMap =
+            ProfileKeyedMap.createMapOfDestroyables(
+                    ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
 
     private Profile mProfile;
     private EventTracker mEventTracker;
@@ -54,34 +58,39 @@ public class UsageStatsService {
     }
 
     /** Get the global instance of UsageStatsService */
+    @Deprecated // Delete once downstream clients have migrated.
     public static UsageStatsService getInstance() {
-        assert isEnabled();
-        if (sInstance == null) {
-            sInstance = new UsageStatsService();
-        }
+        return getForProfile(ProfileManager.getLastUsedRegularProfile());
+    }
 
-        return sInstance;
+    /** Return the {@link UsageStatsService} for the given {@link Profile}. */
+    public static UsageStatsService getForProfile(Profile profile) {
+        assert isEnabled();
+        return sProfileMap.getForProfile(profile, UsageStatsService::new);
     }
 
     /**
      * Creates a UsageStatsService for the given Activity if the feature is enabled.
+     *
      * @param activity The activity in which page view events are occurring.
+     * @param profile The {@link Profile} associated with the activity.
      * @param activityTabProvider The provider of the active tab for the activity.
      * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
      */
     public static void createPageViewObserverIfEnabled(
             Activity activity,
+            Profile profile,
             ActivityTabProvider activityTabProvider,
             Supplier<TabContentManager> tabContentManagerSupplier) {
         if (!isEnabled()) return;
 
-        getInstance()
+        getForProfile(profile)
                 .createPageViewObserver(activity, activityTabProvider, tabContentManagerSupplier);
     }
 
     @VisibleForTesting
-    UsageStatsService() {
-        mProfile = ProfileManager.getLastUsedRegularProfile();
+    UsageStatsService(Profile profile) {
+        mProfile = profile;
         mBridge = new UsageStatsBridge(mProfile, this);
         mEventTracker = new EventTracker(mBridge);
         mSuspensionTracker = new SuspensionTracker(mBridge, mProfile);
@@ -97,6 +106,11 @@ public class UsageStatsService {
                         });
 
         mOptInState = getOptInState();
+    }
+
+    @Override
+    public void destroy() {
+        mBridge.destroy();
     }
 
     public SuspensionTracker getSuspensionTracker() {

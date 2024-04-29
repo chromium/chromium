@@ -631,6 +631,7 @@ public class NotificationPlatformBridge {
                                                         profileId,
                                                         incognito,
                                                         webApkPackage),
+                                                profile,
                                                 vibrateEnabled,
                                                 title,
                                                 body,
@@ -660,6 +661,7 @@ public class NotificationPlatformBridge {
     /** Called after querying whether the browser backs the given WebAPK. */
     private void displayNotificationInternal(
             NotificationIdentifyingAttributes identifyingAttributes,
+            Profile profile,
             boolean vibrateEnabled,
             String title,
             String body,
@@ -752,7 +754,7 @@ public class NotificationPlatformBridge {
         // Either display the notification right away; or, if this kind of notification is currently
         // under suspension, store the notification's resources back into the NotificationDatabase.
         // Once the suspension is over, displayNotification() will be called again.
-        storeNotificationResourcesIfSuspended(identifyingAttributes, notification)
+        storeNotificationResourcesIfSuspended(identifyingAttributes, profile, notification)
                 .then(
                         (suspended) -> {
                             if (suspended) {
@@ -793,6 +795,7 @@ public class NotificationPlatformBridge {
 
     private Promise<Boolean> storeNotificationResourcesIfSuspended(
             NotificationIdentifyingAttributes identifyingAttributes,
+            Profile profile,
             NotificationWrapper notification) {
         if (identifyingAttributes.notificationType != NotificationType.WEB_PERSISTENT) {
             return Promise.fulfilled(false);
@@ -809,7 +812,7 @@ public class NotificationPlatformBridge {
         // Only native calls into this here code, so the native process must be running, which is
         // important if we end up lazily constructing `UsageStatsService` here, which uses JNI.
         assert BrowserStartupController.getInstance().isFullBrowserStarted();
-        return UsageStatsService.getInstance()
+        return UsageStatsService.getForProfile(profile)
                 .getSuspensionTracker()
                 .storeNotificationResourcesIfSuspended(notification);
     }

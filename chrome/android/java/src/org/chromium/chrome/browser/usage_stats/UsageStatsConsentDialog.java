@@ -9,6 +9,7 @@ import android.content.res.Resources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -17,21 +18,25 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Dialog prompting a user to either enable integration with Digital Wellbeing or to revoke
- * permission for that integration.
- * TODO(pnoland): Revisit the style of this dialog and where it's used(i.e. whether it's used from
- * PrivacySettings or not) to ensure that the visual style is consistent.
+ * permission for that integration. TODO(pnoland): Revisit the style of this dialog and where it's
+ * used(i.e. whether it's used from PrivacySettings or not) to ensure that the visual style is
+ * consistent.
  */
 public class UsageStatsConsentDialog {
-    private Activity mActivity;
+    private final Activity mActivity;
+    private final Profile mProfile;
+    private final boolean mIsRevocation;
+    private final Callback<Boolean> mDidConfirmCallback;
+
     private ModalDialogManager mManager;
     private PropertyModel mDialogModel;
 
-    private boolean mIsRevocation;
-    private Callback<Boolean> mDidConfirmCallback;
-
     public static UsageStatsConsentDialog create(
-            Activity activity, boolean isRevocation, Callback<Boolean> didConfirmCallback) {
-        return new UsageStatsConsentDialog(activity, isRevocation, didConfirmCallback);
+            Activity activity,
+            Profile profile,
+            boolean isRevocation,
+            Callback<Boolean> didConfirmCallback) {
+        return new UsageStatsConsentDialog(activity, profile, isRevocation, didConfirmCallback);
     }
 
     /** Show this dialog in the context of its enclosing activity. */
@@ -67,8 +72,12 @@ public class UsageStatsConsentDialog {
     }
 
     private UsageStatsConsentDialog(
-            Activity activity, boolean isRevocation, Callback<Boolean> didConfirmCallback) {
+            Activity activity,
+            Profile profile,
+            boolean isRevocation,
+            Callback<Boolean> didConfirmCallback) {
         mActivity = activity;
+        mProfile = profile;
         mIsRevocation = isRevocation;
         mDidConfirmCallback = didConfirmCallback;
     }
@@ -77,7 +86,7 @@ public class UsageStatsConsentDialog {
         return new ModalDialogProperties.Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
-                UsageStatsService service = UsageStatsService.getInstance();
+                UsageStatsService service = UsageStatsService.getForProfile(mProfile);
                 boolean didConfirm = false;
                 switch (buttonType) {
                     case ModalDialogProperties.ButtonType.POSITIVE:
