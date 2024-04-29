@@ -185,8 +185,8 @@ class DownloadBubbleDeepScanNotice : public views::View {
     label->SetText(notice_text);
     label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
     label->SetDefaultTextStyle(features::IsChromeRefresh2023()
-                                   ? views::style::STYLE_BODY_3_MEDIUM
-                                   : views::style::STYLE_PRIMARY);
+                                   ? views::style::STYLE_BODY_5
+                                   : views::style::STYLE_SECONDARY);
     views::StyledLabel::RangeStyleInfo link_style =
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
             [](base::WeakPtr<Browser> browser) {
@@ -196,6 +196,9 @@ class DownloadBubbleDeepScanNotice : public views::View {
               chrome::ShowSafeBrowsingEnhancedProtection(browser.get());
             },
             browser));
+    link_style.text_style = features::IsChromeRefresh2023()
+                                ? views::style::STYLE_LINK_5
+                                : views::style::STYLE_LINK;
     label->AddStyleRange(
         gfx::Range{link_offset, link_offset + link_text.length()}, link_style);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -227,9 +230,9 @@ class DownloadBubbleDeepScanNotice : public views::View {
     const gfx::VectorIcon& vector_icon = features::IsChromeRefresh2023()
                                              ? views::kInfoChromeRefreshIcon
                                              : views::kInfoIcon;
-    icon_->SetImage(
-        ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorSysPrimary,
-                                       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+    icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icon, ui::kColorSecondaryForeground,
+        GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   }
 
  private:
