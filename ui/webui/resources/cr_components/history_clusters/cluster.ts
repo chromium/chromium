@@ -9,7 +9,6 @@ import './search_query.js';
 import './shared_vars.css.js';
 import './url_visit.js';
 import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {HistoryResultType} from '//resources/cr_components/history/constants.js';

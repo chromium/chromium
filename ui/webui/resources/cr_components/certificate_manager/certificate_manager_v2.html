@@ -27,13 +27,13 @@
         certs -->
       <cr-button class="action-button">Export</cr-button>
     </cr-expand-button>
-    <iron-collapse id="expandedContent" opened="[[crsTrustedCertsOpened_]]">
+    <cr-collapse id="expandedContent" opened="[[crsTrustedCertsOpened_]]">
       <template is="dom-repeat" items="[[crsCertificates]]">
         <div class="cr-row cr-padded-text">
             [[item.displayName]] - [[item.sha256hashHex]]
         </div>
       </template>
-    </iron-collapse>
+    </cr-collapse>
   </div>
 
 </iron-pages>
