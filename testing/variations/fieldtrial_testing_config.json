@@ -21858,6 +21858,24 @@
             ]
         }
     ],
+    "WebAuthenticationAndroidCredMan": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "min_gms_core_version_no_dots": "241000000"
+                    },
+                    "enable_features": [
+                        "WebAuthenticationAndroidCredMan"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebContentsCaptureHiDPI": [
         {
             "platforms": [
