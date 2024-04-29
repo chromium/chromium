@@ -94,8 +94,8 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIcon) {
   task.DownloadIcon(run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_NE(task.app_icon(), nullptr);
-  EXPECT_NE(task.app_icon()->width(), 256);
+  EXPECT_FALSE(task.app_icon().drawsNothing());
+  EXPECT_NE(task.app_icon().width(), 256);
 }
 
 IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIconNoIconUrl) {
@@ -113,8 +113,7 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIconNoIconUrl) {
   task.DownloadIcon(run_loop.QuitClosure());
   run_loop.Run();
 
-  // TODO(crbug.com/41496289): This should fallback to generated icon.
-  EXPECT_EQ(task.app_icon(), nullptr);
+  EXPECT_FALSE(task.app_icon().drawsNothing());
 }
 
 IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIconBadIcon) {
@@ -133,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIconBadIcon) {
   task.DownloadIcon(run_loop.QuitClosure());
   run_loop.Run();
 
-  // TODO(crbug.com/41496289): This should fallback to generated icon.
-  EXPECT_EQ(task.app_icon(), nullptr);
+  EXPECT_FALSE(task.app_icon().drawsNothing());
 }
 
 }  // namespace webapk

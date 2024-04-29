@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPPS_ICON_UTILS_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/webapk/webapk.pb.h"
 
 class SkBitmap;
@@ -49,13 +50,16 @@ class WebappsIconUtils {
   // 26)
   static bool DoesAndroidSupportMaskableIcons();
 
-  // Returns the given icon, modified to match the launcher requirements.
-  // This method may generate an entirely new icon; if this is the case,
-  // |is_generated| will be set to |true|.
-  // Must be called on a background worker thread.
-  static SkBitmap FinalizeLauncherIconInBackground(const SkBitmap& icon,
-                                                   const GURL& url,
-                                                   bool* is_generated);
+  // Finalize the launcher icon from |icon|. |start_url| is used to generate the
+  // icon if |icon| is empty or is not large enough. When complete, posts
+  // |callback| on |ui_thread_task_runner| binding:
+  // - the generated icon
+  // - whether |icon| was used in generating the launcher icon
+  static void FinalizeLauncherIconInBackground(
+      const SkBitmap& bitmap,
+      const GURL& url,
+      scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
+      base::OnceCallback<void(const SkBitmap&, bool)> callback);
 
   // Generate an adaptive icon for given maskable icon bitmap.
   static SkBitmap GenerateAdaptiveIconBitmap(const SkBitmap& icon);

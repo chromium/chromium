@@ -47,15 +47,17 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
   void DownloadIcon(base::OnceClosure fetch_icon_callback);
 
   std::u16string AppName();
-  SkBitmap* app_icon() { return app_icon_.get(); }
+  const SkBitmap& app_icon() const { return app_icon_; }
 
  protected:
   std::unique_ptr<webapps::ShortcutInfo> fallback_info_;
 
  private:
-  void OnIconFetched(base::OnceClosure fetch_icon_callback,
-                     const SkBitmap& bitmap);
-  void GenerateFallbackIcon(base::OnceClosure fetch_icon_callback);
+  void OnIconDownloaded(base::OnceClosure fetch_icon_callback,
+                        const SkBitmap& bitmap);
+  void OnIconCreated(base::OnceClosure fetch_icon_callback,
+                     const SkBitmap& bitmap,
+                     bool is_generated);
 
   void OnWebAppUrlLoaded(webapps::WebAppUrlLoaderResult result);
 
@@ -78,7 +80,7 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
 
   CompleteCallback complete_callback_;
 
-  std::unique_ptr<SkBitmap> app_icon_;
+  SkBitmap app_icon_;
 
   std::unique_ptr<webapps::AddToHomescreenDataFetcher> data_fetcher_;
 

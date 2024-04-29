@@ -5,7 +5,10 @@
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,7 +41,7 @@ WebApkRestoreTask::~WebApkRestoreTask() = default;
 
 void WebApkRestoreTask::DownloadIcon(base::OnceClosure fetch_icon_callback) {
   if (!fallback_info_->best_primary_icon_url.is_valid()) {
-    GenerateFallbackIcon(std::move(fetch_icon_callback));
+    OnIconDownloaded(std::move(fetch_icon_callback), app_icon_);
     return;
   }
 
@@ -48,29 +51,39 @@ void WebApkRestoreTask::DownloadIcon(base::OnceClosure fetch_icon_callback) {
       webapps::WebappsIconUtils::GetIdealHomescreenIconSizeInPx(),
       webapps::WebappsIconUtils::GetMinimumHomescreenIconSizeInPx(),
       std::numeric_limits<int>::max(),
-      base::BindOnce(&WebApkRestoreTask::OnIconFetched,
+      base::BindOnce(&WebApkRestoreTask::OnIconDownloaded,
                      weak_factory_.GetWeakPtr(),
                      std::move(fetch_icon_callback)));
 }
 
-void WebApkRestoreTask::OnIconFetched(base::OnceClosure fetch_icon_callback,
-                                      const SkBitmap& bitmap) {
-  if (bitmap.drawsNothing()) {
-    GenerateFallbackIcon(std::move(fetch_icon_callback));
-    return;
+void WebApkRestoreTask::OnIconDownloaded(base::OnceClosure fetch_icon_callback,
+                                         const SkBitmap& bitmap) {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(
+          &webapps::WebappsIconUtils::FinalizeLauncherIconInBackground, bitmap,
+          fallback_info_->url,
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&WebApkRestoreTask::OnIconCreated,
+                         weak_factory_.GetWeakPtr(),
+                         std::move(fetch_icon_callback))));
+}
+
+void WebApkRestoreTask::OnIconCreated(base::OnceClosure fetch_icon_callback,
+                                      const SkBitmap& bitmap,
+                                      bool is_generated) {
+  if ((is_generated || fallback_info_->is_primary_icon_maskable) &&
+      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+    app_icon_ = webapps::WebappsIconUtils::GenerateAdaptiveIconBitmap(bitmap);
+  } else {
+    app_icon_ = bitmap;
   }
-  app_icon_ = std::make_unique<SkBitmap>(bitmap);
   std::move(fetch_icon_callback).Run();
 }
 
-void WebApkRestoreTask::GenerateFallbackIcon(
-    base::OnceClosure fetch_icon_callback) {
-  // TODO(crbug.com/41496289): Generate icon.
-  std::move(fetch_icon_callback).Run();
-}
-
-void WebApkRestoreTask::Start(
-    CompleteCallback complete_callback) {
+void WebApkRestoreTask::Start(CompleteCallback complete_callback) {
   complete_callback_ = std::move(complete_callback);
 
   web_contents_manager_->LoadUrl(
@@ -107,9 +120,9 @@ void WebApkRestoreTask::OnDataAvailable(
 
   // TODO(crbug.com/41496289): This should go through WebApkInstallService to
   // track current ongoing installs.
-  // TODO(crbug.com/41496289): We need web_contents to construct the proto, but
-  // generating WebAPK on server side and installing the apk can be done in
-  // parallel with the next task.
+  // TODO(crbug.com/41496289): We need web_contents to construct the proto,
+  // but generating WebAPK on server side and installing the apk can be done
+  // in parallel with the next task.
   WebApkInstaller::InstallAsync(
       profile_, web_contents_manager_->web_contents(), info,
       webapps::WebappInstallSource::WEBAPK_RESTORE,

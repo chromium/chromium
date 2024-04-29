@@ -85,24 +85,6 @@ InstallableParams ParamsToPerformInstallableCheck() {
   return params;
 }
 
-// Creates a launcher icon from |icon|. |start_url| is used to generate the icon
-// if |icon| is empty or is not large enough. When complete, posts |callback| on
-// |ui_thread_task_runner| binding:
-// - the generated icon
-// - whether |icon| was used in generating the launcher icon
-void CreateLauncherIconInBackground(
-    const GURL& start_url,
-    const SkBitmap& icon,
-    scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
-    base::OnceCallback<void(const SkBitmap&, bool)> callback) {
-  bool is_generated = false;
-  SkBitmap primary_icon = WebappsIconUtils::FinalizeLauncherIconInBackground(
-      icon, start_url, &is_generated);
-  ui_thread_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), primary_icon, is_generated));
-}
-
 // Creates a launcher icon from |bitmap_result|. |start_url| is used to
 // generate the icon if there is no bitmap in |bitmap_result| or the bitmap is
 // not large enough.
@@ -117,8 +99,8 @@ void CreateLauncherIconFromFaviconInBackground(
     gfx::PNGCodec::Decode(bitmap_result.bitmap_data->front(),
                           bitmap_result.bitmap_data->size(), &decoded);
   }
-  CreateLauncherIconInBackground(start_url, decoded, ui_thread_task_runner,
-                                 std::move(callback));
+  WebappsIconUtils::FinalizeLauncherIconInBackground(
+      decoded, start_url, ui_thread_task_runner, std::move(callback));
 }
 
 void RecordAddToHomescreenDialogDuration(base::TimeDelta duration) {
@@ -343,8 +325,8 @@ void AddToHomescreenDataFetcher::CreateIconForView(const SkBitmap& base_icon) {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&CreateLauncherIconInBackground, shortcut_info_.url,
-                     base_icon,
+      base::BindOnce(&WebappsIconUtils::FinalizeLauncherIconInBackground,
+                     base_icon, shortcut_info_.url,
                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                      base::BindOnce(&AddToHomescreenDataFetcher::OnIconCreated,
                                     weak_ptr_factory_.GetWeakPtr())));
