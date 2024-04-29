@@ -94,6 +94,10 @@ public class RemoteTabGroupMutationHelper {
                 tabGroupId, tab.getId(), tab.getTitle(), tab.getUrl(), position);
     }
 
+    public void moveTab(LocalTabGroupId tabGroupId, int tabId, int newPosition) {
+        mTabGroupSyncService.moveTab(tabGroupId, tabId, newPosition);
+    }
+
     public void removeTab(LocalTabGroupId tabGroupId, int tabId) {
         mTabGroupSyncService.removeTab(tabGroupId, tabId);
     }

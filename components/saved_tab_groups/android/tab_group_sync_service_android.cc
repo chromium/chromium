@@ -182,6 +182,18 @@ void TabGroupSyncServiceAndroid::RemoveTab(
   tab_group_sync_service_->RemoveTab(group_id, tab_id);
 }
 
+void TabGroupSyncServiceAndroid::MoveTab(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jobject>& j_group_id,
+    jint j_tab_id,
+    int j_new_index_in_group) {
+  auto group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
+  auto tab_id = FromJavaTabId(j_tab_id);
+  tab_group_sync_service_->MoveTab(group_id, tab_id, j_new_index_in_group);
+}
+
 ScopedJavaLocalRef<jobjectArray> TabGroupSyncServiceAndroid::GetAllGroupIds(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller) {

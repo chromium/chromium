@@ -39,6 +39,9 @@ public class TabGroupSyncServiceAndroidUnitTest {
     private static final String TEST_TAB_TITLE = "Test Tab";
     private static final String TEST_URL = "https://google.com";
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
+    private static final int LOCAL_TAB_ID_1 = 2;
+    private static final int LOCAL_TAB_ID_2 = 4;
+    private static final int TAB_POSITION = 3;
 
     private TabGroupSyncService mService;
     private TabGroupSyncService.Observer mObserver;
@@ -129,19 +132,35 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testAddTab() {
-        mService.addTab(LOCAL_TAB_GROUP_ID_1, 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
-        mService.addTab(LOCAL_TAB_GROUP_ID_1, 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
+        mService.addTab(
+                LOCAL_TAB_GROUP_ID_1,
+                LOCAL_TAB_ID_1,
+                TEST_TAB_TITLE,
+                new GURL(TEST_URL),
+                TAB_POSITION);
+        mService.addTab(
+                LOCAL_TAB_GROUP_ID_1, LOCAL_TAB_ID_2, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
     }
 
     @CalledByNative
     public void testUpdateTab() {
-        mService.updateTab(LOCAL_TAB_GROUP_ID_1, 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
+        mService.updateTab(
+                LOCAL_TAB_GROUP_ID_1,
+                LOCAL_TAB_ID_1,
+                TEST_TAB_TITLE,
+                new GURL(TEST_URL),
+                TAB_POSITION);
         mService.updateTab(LOCAL_TAB_GROUP_ID_1, 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
     }
 
     @CalledByNative
     public void testRemoveTab() {
-        mService.removeTab(LOCAL_TAB_GROUP_ID_1, 2);
+        mService.removeTab(LOCAL_TAB_GROUP_ID_1, LOCAL_TAB_ID_1);
+    }
+
+    @CalledByNative
+    public void testMoveTab() {
+        mService.moveTab(LOCAL_TAB_GROUP_ID_1, LOCAL_TAB_ID_1, TAB_POSITION);
     }
 
     @CalledByNative

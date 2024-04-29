@@ -75,6 +75,12 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
                  const JavaParamRef<jobject>& j_group_id,
                  jint j_tab_id);
 
+  void MoveTab(JNIEnv* env,
+               const JavaParamRef<jobject>& j_caller,
+               const JavaParamRef<jobject>& j_group_id,
+               jint j_tab_id,
+               int j_new_index_in_group);
+
   // Accessor methods.
   ScopedJavaLocalRef<jobjectArray> GetAllGroupIds(
       JNIEnv* env,

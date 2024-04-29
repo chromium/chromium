@@ -172,7 +172,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabGroupModelFilter.getIndexOfTabInGroup(mTab1)).thenReturn(0);
         mTabGroupModelFilterObserverCaptor.getValue().didMoveWithinGroup(mTab1, 0, 1);
         verify(mTabGroupSyncService, times(1))
-                .updateTab(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), any(), any(), anyInt());
+                .moveTab(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyInt());
     }
 
     @Test

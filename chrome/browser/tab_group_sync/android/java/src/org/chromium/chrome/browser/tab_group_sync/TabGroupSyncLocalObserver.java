@@ -161,7 +161,8 @@ public final class TabGroupSyncLocalObserver {
                 LocalTabGroupId tabGroupId =
                         TabGroupSyncUtils.getLocalTabGroupId(
                                 mTabGroupModelFilter, movedTab.getRootId());
-                mRemoteTabGroupMutationHelper.updateTab(tabGroupId, movedTab, positionInGroup);
+                mRemoteTabGroupMutationHelper.moveTab(
+                        tabGroupId, movedTab.getId(), positionInGroup);
             }
 
             @Override

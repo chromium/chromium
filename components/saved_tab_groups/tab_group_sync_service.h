@@ -107,6 +107,9 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                          std::optional<size_t> position) = 0;
   virtual void RemoveTab(const LocalTabGroupID& group_id,
                          const LocalTabID& tab_id) = 0;
+  virtual void MoveTab(const LocalTabGroupID& group_id,
+                       const LocalTabID& tab_id,
+                       int new_group_index) = 0;
 
   // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() = 0;

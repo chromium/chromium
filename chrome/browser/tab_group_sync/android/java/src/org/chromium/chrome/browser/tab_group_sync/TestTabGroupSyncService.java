@@ -53,6 +53,9 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void removeTab(LocalTabGroupId tabGroupId, int tabId) {}
 
     @Override
+    public void moveTab(LocalTabGroupId tabGroupId, int tabId, int newIndexInGroup) {}
+
+    @Override
     public String[] getAllGroupIds() {
         return new String[0];
     }

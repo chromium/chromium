@@ -167,6 +167,23 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
   model_->RemoveTabFromGroupLocally(group->saved_guid(), tab->saved_tab_guid());
 }
 
+void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
+                                      const LocalTabID& tab_id,
+                                      int new_group_index) {
+  auto* group = model_->Get(group_id);
+  if (!group) {
+    return;
+  }
+
+  auto* tab = group->GetTab(tab_id);
+  if (!tab) {
+    return;
+  }
+
+  model_->MoveTabInGroupTo(group->saved_guid(), tab->saved_tab_guid(),
+                           new_group_index);
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
   VLOG(2) << __func__;
   return model_->saved_tab_groups();

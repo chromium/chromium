@@ -65,11 +65,10 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public void updateVisualData(LocalTabGroupId tabGroupId, String title, int color) {
+    public void updateVisualData(LocalTabGroupId groupId, String title, int color) {
         if (mNativePtr == 0) return;
-        assert tabGroupId != null;
-        TabGroupSyncServiceImplJni.get()
-                .updateVisualData(mNativePtr, this, tabGroupId, title, color);
+        assert groupId != null;
+        TabGroupSyncServiceImplJni.get().updateVisualData(mNativePtr, this, groupId, title, color);
     }
 
     @Override
@@ -97,6 +96,13 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
+    public void moveTab(LocalTabGroupId groupId, int tabId, int newIndexInGroup) {
+        if (mNativePtr == 0) return;
+        assert groupId != null;
+        TabGroupSyncServiceImplJni.get().moveTab(mNativePtr, this, groupId, tabId, newIndexInGroup);
+    }
+
+    @Override
     public String[] getAllGroupIds() {
         if (mNativePtr == 0) return new String[0];
         return TabGroupSyncServiceImplJni.get().getAllGroupIds(mNativePtr, this);
@@ -111,7 +117,7 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
 
     @Override
     public SavedTabGroup getGroup(LocalTabGroupId localGroupId) {
-        if (mNativePtr == 0) return null;
+        assert localGroupId != null;
         return TabGroupSyncServiceImplJni.get()
                 .getGroupByLocalGroupId(mNativePtr, this, localGroupId);
     }
@@ -234,6 +240,13 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 TabGroupSyncServiceImpl caller,
                 LocalTabGroupId groupId,
                 int tabId);
+
+        void moveTab(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                LocalTabGroupId groupId,
+                int tabId,
+                int newIndexInGroup);
 
         String[] getAllGroupIds(
                 long nativeTabGroupSyncServiceAndroid, TabGroupSyncServiceImpl caller);

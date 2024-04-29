@@ -135,6 +135,15 @@ public interface TabGroupSyncService {
     void removeTab(LocalTabGroupId tabGroupId, int tabId);
 
     /**
+     * Moves a tab within a group.
+     *
+     * @param tabGroupId The local group ID of the corresponding tab group.
+     * @param tabId The local tab ID of the tab being removed.
+     * @param newIndexInGroup The new index of the tab in the group.
+     */
+    void moveTab(LocalTabGroupId tabGroupId, int tabId, int newIndexInGroup);
+
+    /**
      * Called to return all the remote tab group IDs currently existing in the system.
      *
      * @return An array of IDs of the currently known tab groups.

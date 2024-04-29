@@ -32,6 +32,9 @@ const char kTestUuid[] = "abcdefgh";
 const char16_t kTestGroupTitle[] = u"Test Group";
 const char kTestUrl[] = "https://google.com";
 const char16_t kTestTabTitle[] = u"Test Tab";
+const int kTabId1 = 2;
+const int kTabId2 = 4;
+const int kPosition = 3;
 
 class MockTabGroupSyncService : public TabGroupSyncService {
  public:
@@ -58,6 +61,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
                GURL,
                std::optional<size_t>));
   MOCK_METHOD(void, RemoveTab, (const LocalTabGroupID&, const LocalTabID&));
+  MOCK_METHOD(void, MoveTab, (const LocalTabGroupID&, const LocalTabID&, int));
 
   MOCK_METHOD(std::vector<SavedTabGroup>, GetAllGroups, ());
   MOCK_METHOD(std::optional<SavedTabGroup>, GetGroup, (const base::Uuid&));
@@ -229,15 +233,13 @@ TEST_F(TabGroupSyncServiceAndroidTest, AddTab) {
   auto* env = AttachCurrentThread();
 
   GURL url(kTestUrl);
-  std::optional<int> position = 3;
+  EXPECT_CALL(tab_group_sync_service_,
+              AddTab(Eq(test_tab_group_id_), Eq(kTabId1), Eq(kTestTabTitle),
+                     Eq(url), Eq(kPosition)));
 
   EXPECT_CALL(tab_group_sync_service_,
-              AddTab(Eq(test_tab_group_id_), Eq(2), Eq(kTestTabTitle), Eq(url),
-                     Eq(position)));
-
-  EXPECT_CALL(tab_group_sync_service_,
-              AddTab(Eq(test_tab_group_id_), Eq(4), Eq(kTestTabTitle), Eq(url),
-                     Eq(std::nullopt)));
+              AddTab(Eq(test_tab_group_id_), Eq(kTabId2), Eq(kTestTabTitle),
+                     Eq(url), Eq(std::nullopt)));
   Java_TabGroupSyncServiceAndroidUnitTest_testAddTab(env, j_test_);
 }
 
@@ -245,13 +247,11 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateTab) {
   auto* env = AttachCurrentThread();
 
   GURL url(kTestUrl);
-  std::optional<int> position = 3;
-
   EXPECT_CALL(tab_group_sync_service_,
-              UpdateTab(Eq(test_tab_group_id_), Eq(2), Eq(kTestTabTitle),
-                        Eq(url), Eq(position)));
+              UpdateTab(Eq(test_tab_group_id_), Eq(kTabId1), Eq(kTestTabTitle),
+                        Eq(url), Eq(kPosition)));
   EXPECT_CALL(tab_group_sync_service_,
-              UpdateTab(Eq(test_tab_group_id_), Eq(4), Eq(kTestTabTitle),
+              UpdateTab(Eq(test_tab_group_id_), Eq(kTabId2), Eq(kTestTabTitle),
                         Eq(url), Eq(std::nullopt)));
   Java_TabGroupSyncServiceAndroidUnitTest_testUpdateTab(env, j_test_);
 }
@@ -260,8 +260,16 @@ TEST_F(TabGroupSyncServiceAndroidTest, RemoveTab) {
   auto* env = AttachCurrentThread();
 
   EXPECT_CALL(tab_group_sync_service_,
-              RemoveTab(Eq(test_tab_group_id_), Eq(2)));
+              RemoveTab(Eq(test_tab_group_id_), Eq(kTabId1)));
   Java_TabGroupSyncServiceAndroidUnitTest_testRemoveTab(env, j_test_);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, MoveTab) {
+  auto* env = AttachCurrentThread();
+
+  EXPECT_CALL(tab_group_sync_service_,
+              MoveTab(Eq(test_tab_group_id_), Eq(kTabId1), Eq(kPosition)));
+  Java_TabGroupSyncServiceAndroidUnitTest_testMoveTab(env, j_test_);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, GetAllGroups) {
