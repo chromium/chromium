@@ -49,8 +49,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
-#include "chrome/browser/feed/web_feed_tab_helper.h"
-#include "chrome/browser/feed/web_feed_ui_util.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -137,7 +135,6 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/browser/language_model_manager.h"
@@ -494,8 +491,8 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 116},
        {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 117},
        {IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, 118},
-       {IDC_FOLLOW, 119},
-       {IDC_UNFOLLOW, 120},
+       // Removed: {IDC_FOLLOW, 119},
+       // Removed: {IDC_UNFOLLOW, 120},
        // Removed: {IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST, 121},
        {IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE, 123},
        {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 124},
@@ -3015,10 +3012,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return false;
 #endif
 
-    case IDC_FOLLOW:
-    case IDC_UNFOLLOW:
-      return !GetProfile()->IsOffTheRecord();
-
     default:
       DUMP_WILL_BE_NOTREACHED_NORETURN() << "Unhandled id: " << id;
       return false;
@@ -3511,14 +3504,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
     }
 
-    case IDC_FOLLOW:
-      feed::FollowSite(source_web_contents_);
-      break;
-
-    case IDC_UNFOLLOW:
-      feed::UnfollowSite(source_web_contents_);
-      break;
-
     default:
       DUMP_WILL_BE_NOTREACHED_NORETURN() << "Unhandled id: " << id;
       break;
@@ -3903,25 +3888,6 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
 void RenderViewContextMenu::AppendUserNotesItems() {
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_ADD_A_NOTE,
                                   IDS_CONTENT_CONTEXT_ADD_A_NOTE);
-}
-
-// Returns true if the item was appended (along with a SEPARATOR).
-bool RenderViewContextMenu::AppendFollowUnfollowItem() {
-  TabWebFeedFollowState follow_state =
-      feed::WebFeedTabHelper::GetFollowState(source_web_contents_);
-  if (follow_state == TabWebFeedFollowState::kNotFollowed) {
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    menu_model_.AddItem(IDC_FOLLOW,
-                        l10n_util::GetStringUTF16(IDS_TAB_CXMENU_FOLLOW_SITE));
-    return true;
-  }
-  if (follow_state == TabWebFeedFollowState::kFollowed) {
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    menu_model_.AddItem(
-        IDC_UNFOLLOW, l10n_util::GetStringUTF16(IDS_TAB_CXMENU_UNFOLLOW_SITE));
-    return true;
-  }
-  return false;
 }
 
 std::unique_ptr<ui::DataTransferEndpoint>

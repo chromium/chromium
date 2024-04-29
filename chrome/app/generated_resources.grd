@@ -10849,14 +10849,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The of 'Show Product Spec' menu item." translateable="false">
           Show specifications
         </message>
-        <message name="IDS_TAB_CXMENU_FOLLOW_SITE" desc="The label of the tab context menu item
- for following a site.">
-          Follow site
-        </message>
-        <message name="IDS_TAB_CXMENU_UNFOLLOW_SITE" desc="The label of the tab context menu item
- for unfollowing a site.">
-          Unfollow site
-        </message>
         <if expr="is_chromeos">
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y" desc="The a11y message for menu items in 'Move tabs to another window' when grouped by desk.">
             <ph name="TAB_TITLE">$1<ex>Google News</ex></ph> belongs to desk <ph name="DESK_TITLE">$2<ex>School</ex></ph>
@@ -10954,13 +10946,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The of 'Show Product Spec' menu item." translateable="false">
           Show specifications
-        </message>
-
-        <message name="IDS_TAB_CXMENU_FOLLOW_SITE" desc="In Title Case: The label of the tab context menu item for following a site.">
-          Follow Site
-        </message>
-        <message name="IDS_TAB_CXMENU_UNFOLLOW_SITE" desc="In Title Case: The label of the tab context menu item for unfollowing a site.">
-          Unfollow Site
         </message>
       </if>
 
@@ -11886,12 +11871,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_SHARING_HUB_SHARE_LABEL" desc="The Label for the Third Party Targets in the Sharing Hub dialog.">
         Share link to
-      </message>
-      <message name="IDS_SHARING_HUB_FOLLOW_LABEL" desc="The text label for the follow button in the Sharing Hub dialog and app menu.">
-        Follow
-      </message>
-      <message name="IDS_SHARING_HUB_FOLLOWING_LABEL" desc="The text label for the following button in the Sharing Hub dialog and app menu.">
-        Following
       </message>
 
       <!-- Desktop Screenshots feature within the share hub; desktop-only. -->

@@ -9065,6 +9065,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DesktopFeed.FollowSite">
+  <obsolete>Removed as of 05/2024.</obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
@@ -9073,6 +9074,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DesktopFeed.UnfollowSite">
+  <obsolete>Removed as of 05/2024.</obsolete>
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>

@@ -164,12 +164,6 @@ class TabStripModelDelegate {
   // Returns whether the tabstrip supports the read later feature.
   virtual bool SupportsReadLater() = 0;
 
-  // Follows a web feed for the specified WebContents.
-  virtual void FollowSite(content::WebContents* web_contents) = 0;
-
-  // Unfollows a web feed for the specified WebContents.
-  virtual void UnfollowSite(content::WebContents* web_contents) = 0;
-
   // Returns whether this tab strip model is for a web app.
   virtual bool IsForWebApp() = 0;
 

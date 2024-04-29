@@ -540,18 +540,6 @@ static_library("browser") {
     "external_protocol/external_protocol_observer.h",
     "feature_engagement/tracker_factory.cc",
     "feature_engagement/tracker_factory.h",
-    "feed/feed_service_factory.cc",
-    "feed/feed_service_factory.h",
-    "feed/rss_links_fetcher.cc",
-    "feed/rss_links_fetcher.h",
-    "feed/web_feed_page_information_fetcher.cc",
-    "feed/web_feed_page_information_fetcher.h",
-    "feed/web_feed_tab_helper.cc",
-    "feed/web_feed_tab_helper.h",
-    "feed/web_feed_ui_util.cc",
-    "feed/web_feed_ui_util.h",
-    "feed/web_feed_util.cc",
-    "feed/web_feed_util.h",
     "file_select_helper.cc",
     "file_select_helper.h",
     "file_system_access/chrome_file_system_access_permission_context.cc",
@@ -2269,11 +2257,8 @@ static_library("browser") {
     "//components/favicon_base",
     "//components/feature_engagement",
     "//components/feed:buildflags",
-    "//components/feed:feature_list",
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
-    "//components/feed/core/v2:feed_core_v2",
-    "//components/feed/mojom:mojo_bindings",
     "//components/filename_generation",
     "//components/find_in_page",
     "//components/fingerprinting_protection_filter/browser",
@@ -2665,6 +2650,28 @@ static_library("browser") {
       "//components/manta",
       "//components/manta/proto",
       "//components/user_education/common",
+    ]
+  }
+
+  if (enable_feed_v2) {
+    sources += [
+      "feed/feed_service_factory.cc",
+      "feed/feed_service_factory.h",
+      "feed/rss_links_fetcher.cc",
+      "feed/rss_links_fetcher.h",
+      "feed/web_feed_page_information_fetcher.cc",
+      "feed/web_feed_page_information_fetcher.h",
+      "feed/web_feed_tab_helper.cc",
+      "feed/web_feed_tab_helper.h",
+      "feed/web_feed_ui_util.cc",
+      "feed/web_feed_ui_util.h",
+      "feed/web_feed_util.cc",
+      "feed/web_feed_util.h",
+    ]
+    deps += [
+      "//components/feed:feature_list",
+      "//components/feed/core/v2:feed_core_v2",
+      "//components/feed/mojom:mojo_bindings",
     ]
   }
 

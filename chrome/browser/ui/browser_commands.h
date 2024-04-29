@@ -265,11 +265,6 @@ bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
 void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
                                                       const GURL& url);
 
-// Follows/unfollows a web feed associated with the main frame of specified web
-// contents.
-void FollowSite(content::WebContents* web_contents);
-void UnfollowSite(content::WebContents* web_contents);
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // Triggers the Screen AI layout extraction to be run once on the |browser|.
 void RunScreenAILayoutExtraction(Browser* browser);

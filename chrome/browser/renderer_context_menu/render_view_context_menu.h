@@ -323,7 +323,6 @@ class RenderViewContextMenu
   void AppendClickToCallItem();
   void AppendRegionSearchItem();
   void AppendLiveCaptionItem();
-  bool AppendFollowUnfollowItem();
   void AppendSendTabToSelfItem(bool add_separator);
   void AppendUserNotesItems();
   bool AppendQRCodeGeneratorItem(bool for_image,

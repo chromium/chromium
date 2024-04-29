@@ -22,7 +22,6 @@
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/image_service/image_service_factory.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
-#include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion_handler.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_page_handler.h"
@@ -68,6 +67,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
@@ -104,6 +104,10 @@
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo_handler.h"
 #endif
+
+#if BUILDFLAG(ENABLE_FEED_V2)
+#include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
 
 using content::BrowserContext;
 using content::WebContents;
@@ -915,8 +919,10 @@ void NewTabPageUI::BindInterface(
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::feed::mojom::FeedHandler> pending_receiver) {
+#if BUILDFLAG(ENABLE_FEED_V2)
   feed_handler_ =
       ntp::FeedHandler::Create(std::move(pending_receiver), profile_);
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
 }
 
 #if !defined(OFFICIAL_BUILD)

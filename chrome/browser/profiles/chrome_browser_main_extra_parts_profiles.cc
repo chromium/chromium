@@ -223,6 +223,7 @@
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
+#include "components/feed/buildflags.h"
 #include "components/media_effects/media_effects_service_factory.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
@@ -820,7 +821,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   FederatedIdentityApiPermissionContextFactory::GetInstance();
   FederatedIdentityAutoReauthnPermissionContextFactory::GetInstance();
   FederatedIdentityPermissionContextFactory::GetInstance();
+#if BUILDFLAG(ENABLE_FEED_V2)
   feed::FeedServiceFactory::GetInstance();
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
 #if !BUILDFLAG(IS_ANDROID)
   feedback::FeedbackUploaderFactoryChrome::GetInstance();
 #endif

@@ -1387,18 +1387,6 @@ std::u16string TabStripModel::GetTitleAt(int index) const {
   return TabUIHelper::FromWebContents(GetWebContentsAt(index))->GetTitle();
 }
 
-void TabStripModel::FollowSites(const std::vector<int>& indices) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  for (int index : indices)
-    delegate_->FollowSite(GetWebContentsAt(index));
-}
-
-void TabStripModel::UnfollowSites(const std::vector<int>& indices) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  for (int index : indices)
-    delegate_->UnfollowSite(GetWebContentsAt(index));
-}
-
 int TabStripModel::GetTabCount() const {
   return IsContentsDataVector()
              ? static_cast<int>(GetContentsDataAsVector().size())
@@ -1494,17 +1482,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
                  profile_, GetWebContentsAt(context_index)) &&
              commerce::IsWebContentsListEligibleForProductSpecs(
                  selected_web_contents);
-    }
-
-    case CommandFollowSite:
-    case CommandUnfollowSite: {
-      std::vector<int> indices = GetIndicesForCommand(context_index);
-      // Since all tabs should belong to same profile, it is enough to do the
-      // check based on the first tab.
-      content::WebContents* web_contents = GetWebContentsAt(indices[0]);
-      Profile* profile =
-          Profile::FromBrowserContext(web_contents->GetBrowserContext());
-      return !profile->IsIncognitoProfile();
     }
 
     case CommandCopyURL:
@@ -1728,18 +1705,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
       chrome::OpenCommerceProductSpecificationsTab(browser, eligible_urls,
                                                    indices.back());
-      break;
-    }
-
-    case CommandFollowSite: {
-      base::RecordAction(UserMetricsAction("DesktopFeed.FollowSite"));
-      FollowSites(GetIndicesForCommand(context_index));
-      break;
-    }
-
-    case CommandUnfollowSite: {
-      base::RecordAction(UserMetricsAction("DesktopFeed.UnfollowSite"));
-      UnfollowSites(GetIndicesForCommand(context_index));
       break;
     }
 

@@ -62,20 +62,6 @@ bool IsSiteMuted(const TabStripModel& tab_strip, const int index);
 bool AreAllSitesMuted(const TabStripModel& tab_strip,
                       const std::vector<int>& indices);
 
-// Returns the follow state of the site at |index| in |tab_strip|.
-TabWebFeedFollowState GetSiteFollowState(const TabStripModel& tab_strip,
-                                         const int index);
-
-// Returns the aggregated follow state of all the sites at the |indices| in
-// |tab_strip|. The aggregated follow state is computed as:
-// * kUnknown if at least one site is in kUnknown state.
-// * kFollowed if all sites are in kFollowed state.
-// * kNotFollowed if no site is in kUnknown state and at least one site is in
-//   kNotFollowed state.
-TabWebFeedFollowState GetAggregatedFollowStateOfAllSites(
-    const TabStripModel& tab_strip,
-    const std::vector<int>& indices);
-
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_UTILS_H_

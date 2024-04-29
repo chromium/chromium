@@ -33,11 +33,6 @@ class WebFeedTabHelper : public content::WebContentsObserver,
         base::OnceCallback<void(WebFeedMetadata)> callback) = 0;
   };
 
-  // Returns the follow state for |web_contents|. kUnknown will be returned if
-  // the feature is not enabled or the follow state can't be determined.
-  static TabWebFeedFollowState GetFollowState(
-      content::WebContents* web_contents);
-
   WebFeedTabHelper(const WebFeedTabHelper&) = delete;
   WebFeedTabHelper& operator=(const WebFeedTabHelper&) = delete;
 

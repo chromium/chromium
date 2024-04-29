@@ -514,10 +514,6 @@ class TabStripModel : public TabGroupController {
   // Saves tabs with url supported by Read Later.
   void AddToReadLater(const std::vector<int>& indices);
 
-  // Follows/unfollows a web feed for a set of website.
-  void FollowSites(const std::vector<int>& indices);
-  void UnfollowSites(const std::vector<int>& indices);
-
   // TabGroupController:
   void CreateTabGroup(const tab_groups::TabGroupId& group) override;
   void OpenTabGroupEditor(const tab_groups::TabGroupId& group) override;
@@ -555,8 +551,6 @@ class TabStripModel : public TabGroupController {
     CommandMoveToExistingWindow,
     CommandMoveTabsToNewWindow,
     CommandOrganizeTabs,
-    CommandFollowSite,
-    CommandUnfollowSite,
     CommandCopyURL,
     CommandGoBack,
     CommandCloseAllTabs,

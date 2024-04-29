@@ -687,12 +687,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHARING_HUB_SCREENSHOT:
       ScreenshotCapture(browser_);
       break;
-    case IDC_FOLLOW:
-      FollowSite(browser_->tab_strip_model()->GetActiveWebContents());
-      break;
-    case IDC_UNFOLLOW:
-      UnfollowSite(browser_->tab_strip_model()->GetActiveWebContents());
-      break;
 
     // Clipboard commands
     case IDC_CUT:
@@ -1758,8 +1752,6 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
                                         show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_APP_MENU, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_MANAGEMENT_PAGE, true);
-  command_updater_.UpdateCommandEnabled(IDC_FOLLOW, show_main_ui);
-  command_updater_.UpdateCommandEnabled(IDC_UNFOLLOW, show_main_ui);
 
   if (base::debug::IsProfilingSupported())
     command_updater_.UpdateCommandEnabled(IDC_PROFILING_ENABLED, show_main_ui);

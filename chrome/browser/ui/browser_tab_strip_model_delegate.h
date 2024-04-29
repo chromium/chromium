@@ -59,8 +59,6 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool CanReload() const override;
   void AddToReadLater(content::WebContents* web_contents) override;
   bool SupportsReadLater() override;
-  void FollowSite(content::WebContents* web_contents) override;
-  void UnfollowSite(content::WebContents* web_contents) override;
   bool IsForWebApp() override;
   void CopyURL(content::WebContents* web_contents) override;
   void GoBack(content::WebContents* web_contents) override;

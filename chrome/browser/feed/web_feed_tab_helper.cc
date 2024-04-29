@@ -33,24 +33,6 @@ class WebFeedInfoFinderImpl : public WebFeedTabHelper::WebFeedInfoFinder {
 
 }  // namespace
 
-// static
-TabWebFeedFollowState WebFeedTabHelper::GetFollowState(
-    content::WebContents* web_contents) {
-  feed::WebFeedTabHelper* tab_helper =
-      feed::WebFeedTabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
-    return TabWebFeedFollowState::kUnknown;
-
-  // Make sure that the URL used to fetch the follow state matches the latest
-  // committed URL. There may be a chance that the contents have navigated to
-  // a different URL and the next asynchronous follow state fetch has not
-  // completed.
-  if (tab_helper->url() != web_contents->GetLastCommittedURL())
-    return TabWebFeedFollowState::kUnknown;
-
-  return tab_helper->follow_state();
-}
-
 WebFeedTabHelper::WebFeedTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<WebFeedTabHelper>(*web_contents) {
