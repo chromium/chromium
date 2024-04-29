@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
@@ -42,6 +44,10 @@ namespace blink {
 using mojom::blink::MediaStreamRequestResult;
 
 namespace {
+
+MATCHER_P2(IsExpectedDOMException, name, message, "") {
+  return arg->name() == name && arg->message() == message;
+}
 
 class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
  public:
@@ -422,5 +428,39 @@ TEST_F(MediaStreamVideoCapturerSourceTest, FailStartCamInUse) {
   EXPECT_TRUE(source_stopped_);
   EXPECT_EQ(start_result_, MediaStreamRequestResult::DEVICE_IN_USE);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(MediaStreamVideoCapturerSourceTest, SendWheelWithoutSessionIdFails) {
+  InSequence s;
+  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
+  WebMediaStreamTrack track =
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(mock_dispatcher_host_, SendWheel(_, _, _)).Times(0);
+  base::MockOnceCallback<void(DOMException*)> callback;
+  EXPECT_CALL(callback, Run(IsExpectedDOMException("UnknownError",
+                                                   "Missing session ID.")));
+
+  video_capturer_source_->SendWheel(/*relative_x=*/0, /*relative_y=*/0,
+                                    /*wheel_delta_x=*/0, /*wheel_delta_y=*/0,
+                                    callback.Get());
+}
+
+TEST_F(MediaStreamVideoCapturerSourceTest, SetZoomLevelWithoutSessionIdFails) {
+  InSequence s;
+  EXPECT_CALL(mock_delegate(), MockStartCapture(_, _, _));
+  WebMediaStreamTrack track =
+      StartSource(VideoTrackAdapterSettings(), std::nullopt, false, 0.0);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(mock_dispatcher_host_, SetZoomLevel(_, _, _)).Times(0);
+  base::MockOnceCallback<void(DOMException*)> callback;
+  EXPECT_CALL(callback, Run(IsExpectedDOMException("UnknownError",
+                                                   "Missing session ID.")));
+
+  video_capturer_source_->SetZoomLevel(/*zoom_level=*/100, callback.Get());
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace blink
