@@ -482,7 +482,8 @@ void PaymentRequestSheetController::PopulateSheetHeaderView(
   DCHECK_EQ(container, header_view_);
 
   container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
-  container->SetBackground(GetHeaderBackground(header_view_));
+  container->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDialogBackground));
   views::BoxLayout* layout =
       container->SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_cross_axis_alignment(
@@ -506,24 +507,15 @@ void PaymentRequestSheetController::PopulateSheetHeaderView(
   }
 
   layout->SetFlexForView(
-      container->AddChildView(CreateHeaderContentView(header_view_)), 1);
-}
-
-std::unique_ptr<views::View>
-PaymentRequestSheetController::CreateHeaderContentView(
-    views::View* header_view) {
-  return views::Builder<views::Label>()
-      .SetText(GetSheetTitle())
-      .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-      .SetID(static_cast<int>(DialogViewID::SHEET_TITLE))
-      .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
-      .Build();
-}
-
-std::unique_ptr<views::Background>
-PaymentRequestSheetController::GetHeaderBackground(views::View* header_view) {
-  return views::CreateThemedSolidBackground(ui::kColorDialogBackground);
+      container->AddChildView(
+          views::Builder<views::Label>()
+              .SetText(GetSheetTitle())
+              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetID(static_cast<int>(DialogViewID::SHEET_TITLE))
+              .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
+              .Build()),
+      1);
 }
 
 std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {

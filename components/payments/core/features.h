@@ -45,10 +45,6 @@ BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 
 #if !BUILDFLAG(IS_ANDROID)
-// Desktop only, if enabled PaymentHandler will use the new minimal header UX.
-// See https://crbug.com/1385136.
-BASE_DECLARE_FEATURE(kPaymentHandlerMinimalHeaderUX);
-
 // Desktop only, if enabled the Task Manager will show the PaymentHandler
 // window.
 BASE_DECLARE_FEATURE(kPaymentHandlerWindowInTaskManager);

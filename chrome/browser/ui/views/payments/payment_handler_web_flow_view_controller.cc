@@ -98,106 +98,7 @@ SkColor GetContrastingGoogleColor(SkColor light_mode_color,
 
 }  // namespace
 
-// The header view for the current PaymentHandler UX (see also
-// |PopulateSheetHeaderView| below for how the future UX is drawn). Displays a
-// header consisting of:
-//
-//   - The payment app title (taken from the WebContents)
-//   - The payment app origin
-//   - The payment app icon (if present)
-//
-// Note that the back button on the header is drawn instead by the parent
-// PaymentRequestSheetController class in the current UX.
-class ReadOnlyOriginView : public views::View {
-  METADATA_HEADER(ReadOnlyOriginView, views::View)
-
- public:
-  ReadOnlyOriginView(const std::u16string& page_title,
-                     const url::Origin& origin,
-                     const SkBitmap* icon_bitmap,
-                     Profile* profile,
-                     SkColor background_color) {
-    auto title_origin_container = std::make_unique<views::View>();
-    SkColor foreground = color_utils::GetColorWithMaxContrast(background_color);
-    title_origin_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical));
-
-    bool title_is_valid = !page_title.empty();
-    if (title_is_valid) {
-      auto* title_label =
-          title_origin_container->AddChildView(std::make_unique<views::Label>(
-              page_title, views::style::CONTEXT_DIALOG_TITLE));
-      title_label->SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
-      title_label->SetFocusBehavior(
-          views::View::FocusBehavior::ACCESSIBLE_ONLY);
-      // Turn off autoreadability because the computed |foreground| color takes
-      // contrast into account.
-      title_label->SetAutoColorReadabilityEnabled(false);
-      title_label->SetEnabledColor(foreground);
-      title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-    }
-
-    auto* origin_label =
-        title_origin_container->AddChildView(std::make_unique<views::Label>(
-            url_formatter::FormatOriginForSecurityDisplay(
-                origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
-    origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
-    if (!title_is_valid) {
-      // Set the origin as title when the page title is invalid.
-      origin_label->SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
-
-      // Pad to keep header as the same height as when the page title is valid.
-      constexpr int kVerticalPadding = 13;
-      origin_label->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets::TLBR(kVerticalPadding, 0, kVerticalPadding, 0)));
-    }
-    // Turn off autoreadability because the computed |foreground| color takes
-    // contrast into account.
-    origin_label->SetAutoColorReadabilityEnabled(false);
-    origin_label->SetEnabledColor(foreground);
-    origin_label->SetBackgroundColor(background_color);
-    origin_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-    title_origin_container->AddChildView(std::move(origin_label));
-
-    views::BoxLayout* top_level_layout =
-        SetLayoutManager(std::make_unique<views::BoxLayout>());
-    const bool has_icon = icon_bitmap && !icon_bitmap->drawsNothing();
-    float adjusted_width =
-        base::checked_cast<float>(has_icon ? icon_bitmap->width() : 0);
-    if (has_icon) {
-      adjusted_width =
-          adjusted_width *
-          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight /
-          icon_bitmap->height();
-    }
-
-    // Expand the title to take the remaining width.
-    top_level_layout->SetFlexForView(
-        AddChildView(std::move(title_origin_container)), 1);
-    if (has_icon) {
-      views::ImageView* app_icon_view =
-          AddChildView(CreateAppIconView(/*icon_resource_id=*/0, icon_bitmap,
-                                         /*tooltip_text=*/page_title));
-      app_icon_view->SetID(
-          static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
-      // We should set image size in density independent pixels here, since
-      // views::ImageView objects are rastered at the device scale factor.
-      app_icon_view->SetImageSize(gfx::Size(
-          adjusted_width,
-          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
-      app_icon_view->SetProperty(views::kMarginsKey,
-                                 gfx::Insets::TLBR(0, 0, 0, 8));
-    }
-  }
-  ReadOnlyOriginView(const ReadOnlyOriginView&) = delete;
-  ReadOnlyOriginView& operator=(const ReadOnlyOriginView&) = delete;
-  ~ReadOnlyOriginView() override = default;
-};
-
-BEGIN_METADATA(ReadOnlyOriginView)
-END_METADATA
-
-// The close ('X') button used in the minimal PaymentHandler header UX. See
+// The close ('X') button used in the PaymentHandler header UX. See
 // |PopulateSheetHeaderView|.
 class PaymentHandlerCloseButton : public views::ImageButton {
   METADATA_HEADER(PaymentHandlerCloseButton, views::ImageButton)
@@ -269,14 +170,6 @@ void PaymentHandlerWebFlowViewController::FillContentView(
     progress_bar_ = header_content_separator_container()->AddChildView(
         std::make_unique<views::ProgressBar>());
     progress_bar_->SetPreferredHeight(2);
-    if (!spec()->IsPaymentHandlerMinimalHeaderUXEnabled()) {
-      // Prior to minimal UX, the separator container used a Separator view,
-      // which uses the Chrome theme color which may not match the header color.
-      progress_bar_->SetBackgroundColor(SK_ColorTRANSPARENT);
-      progress_bar_->SetVisible(false);
-      separator_ = header_content_separator_container()->AddChildView(
-          std::make_unique<views::Separator>());
-    }
   }
 
   content_view->SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -325,11 +218,6 @@ bool PaymentHandlerWebFlowViewController::ShouldShowSecondaryButton() {
 
 void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
     views::View* container) {
-  if (!spec()->IsPaymentHandlerMinimalHeaderUXEnabled()) {
-    PaymentRequestSheetController::PopulateSheetHeaderView(container);
-    return;
-  }
-
   // The PaymentHandler header consists of the payment app icon (if available),
   // the current web contents origin, and a close button. The origin is centered
   // on the dialog, whilst the icon and close are aligned with the LHS and RHS
@@ -461,37 +349,6 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
       close_icon_color, close_icon_disabled_color));
 }
 
-std::unique_ptr<views::View>
-PaymentHandlerWebFlowViewController::CreateHeaderContentView(
-    views::View* header_view) {
-  const url::Origin origin =
-      web_contents()
-          ? web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()
-          : url::Origin::Create(target_);
-  std::unique_ptr<views::Background> background =
-      GetHeaderBackground(header_view);
-  return std::make_unique<ReadOnlyOriginView>(
-      GetPaymentHandlerDialogTitle(web_contents()), origin,
-      state()->selected_app()->icon_bitmap(), profile_,
-      background->get_color());
-}
-
-std::unique_ptr<views::Background>
-PaymentHandlerWebFlowViewController::GetHeaderBackground(
-    views::View* header_view) {
-  DCHECK(header_view);
-  auto default_header_background =
-      PaymentRequestSheetController::GetHeaderBackground(header_view);
-  if (web_contents() && header_view->GetWidget()) {
-    // Make sure the color is actually set before using it.
-    default_header_background->OnViewThemeChanged(header_view);
-    return views::CreateSolidBackground(color_utils::GetResultingPaintColor(
-        web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
-        default_header_background->get_color()));
-  }
-  return default_header_background;
-}
-
 bool PaymentHandlerWebFlowViewController::GetSheetId(DialogViewID* sheet_id) {
   *sheet_id = DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET;
   return true;
@@ -583,21 +440,14 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 }
 
 void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
-  if (spec()->IsPaymentHandlerMinimalHeaderUXEnabled()) {
-    // The progress bar reflects the load progress until it reaches 1.0, at
-    // which point it's reset to 0 to just show the separator color.
-    progress_bar_->SetValue(progress < 1.0 ? progress : 0);
+  // The progress bar reflects the load progress until it reaches 1.0, at
+  // which point it's reset to 0 to just show the separator color.
+  progress_bar_->SetValue(progress < 1.0 ? progress : 0);
 
-    // The progress bar is accessibility-visible while loading, and then ignored
-    // once it just serves as a separator.
-    progress_bar_->GetViewAccessibility().SetIsIgnored(progress == 1.0);
-    progress_bar_->GetViewAccessibility().SetIsLeaf(progress == 1.0);
-  } else {
-    progress_bar_->SetValue(progress);
-    const bool show_progress = progress < 1.0;
-    progress_bar_->SetVisible(show_progress);
-    separator_->SetVisible(!show_progress);
-  }
+  // The progress bar is accessibility-visible while loading, and then ignored
+  // once it just serves as a separator.
+  progress_bar_->GetViewAccessibility().SetIsIgnored(progress == 1.0);
+  progress_bar_->GetViewAccessibility().SetIsLeaf(progress == 1.0);
 }
 
 void PaymentHandlerWebFlowViewController::TitleWasSet(
@@ -614,6 +464,22 @@ void PaymentHandlerWebFlowViewController::AbortPayment() {
     web_contents()->Close();
 
   state()->OnPaymentResponseError(errors::kPaymentHandlerInsecureNavigation);
+}
+
+std::unique_ptr<views::Background>
+PaymentHandlerWebFlowViewController::GetHeaderBackground(
+    views::View* header_view) {
+  DCHECK(header_view);
+  auto default_header_background =
+      views::CreateThemedSolidBackground(ui::kColorDialogBackground);
+  if (web_contents() && header_view->GetWidget()) {
+    // Make sure the color is actually set before using it.
+    default_header_background->OnViewThemeChanged(header_view);
+    return views::CreateSolidBackground(color_utils::GetResultingPaintColor(
+        web_contents()->GetThemeColor().value_or(SK_ColorTRANSPARENT),
+        default_header_background->get_color()));
+  }
+  return default_header_background;
 }
 
 }  // namespace payments

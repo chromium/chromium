@@ -3821,7 +3821,6 @@ enum WebFeature {
   kGetDisplayMediaWithPreferCurrentTabTrue = 4476,
   kFencedFrameConfigAttribute = 4477,
   kURLSearchParams_Has_Delete_MultipleArguments = 4478,
-  kPaymentHandlerMinimalHeaderUX = 4479,
   // The items above roughly this point are available in the M112 branch.
 
   kPopoverTypeHint = 4480,

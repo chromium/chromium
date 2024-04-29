@@ -151,23 +151,6 @@ class PaymentRequestSheetController {
   // +---------------------------+
   virtual void PopulateSheetHeaderView(views::View* view);
 
-  // Creates and returns the view to be inserted in the header, next to the
-  // close/back button. This is typically the sheet's title but it can be
-  // overriden to return a different kind of view as long as it fits inside the
-  // header.
-  //
-  // TODO(crbug.com/40246629): Remove once minimal PaymentHandler UX rolls out
-  // and this override is no longer needed.
-  virtual std::unique_ptr<views::View> CreateHeaderContentView(
-      views::View* header_view);
-
-  // Returns the background to use for the header section of the sheet.
-  //
-  // TODO(crbug.com/40246629): Remove once minimal PaymentHandler UX rolls out
-  // and this override is no longer needed.
-  virtual std::unique_ptr<views::Background> GetHeaderBackground(
-      views::View* header_view);
-
   // Creates the row of button containing the Pay, cancel, and extra buttons.
   // |controller| is installed as the listener for button events.
   std::unique_ptr<views::View> CreateFooterView();

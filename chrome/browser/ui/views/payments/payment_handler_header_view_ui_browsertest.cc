@@ -22,45 +22,18 @@
 namespace payments {
 namespace {
 
-class PaymentHandlerHeaderViewUITest
-    : public PaymentRequestBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+class PaymentHandlerHeaderViewUITest : public PaymentRequestBrowserTestBase {
  public:
-  PaymentHandlerHeaderViewUITest() : minimal_header_ux_enabled_(GetParam()) {}
+  PaymentHandlerHeaderViewUITest() = default;
   ~PaymentHandlerHeaderViewUITest() override = default;
 
   void SetUpOnMainThread() override {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
     NavigateTo("/payment_handler.html");
   }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
-    if (!minimal_header_ux_enabled_) {
-      command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
-                                      "PaymentHandlerMinimalHeaderUX");
-    }
-  }
-
-  void ExpectHistograms() {
-    // Navigate away in order to flush use counters.
-    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
-                                       GURL(url::kAboutBlankURL)));
-    histograms_.ExpectBucketCount(
-        "Blink.UseCounter.Features",
-        blink::mojom::WebFeature::kPaymentHandlerMinimalHeaderUX,
-        minimal_header_ux_enabled_ ? 1 : 0);
-  }
-
- protected:
-  bool minimal_header_ux_enabled_;
-
- private:
-  base::test::ScopedFeatureList features_;
-  base::HistogramTester histograms_;
 };
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
                        HeaderHasCorrectDetails) {
   std::string method_name;
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
@@ -86,36 +59,22 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
   // front PaymentHandler view here.
   ViewStack* view_stack = dialog_view()->view_stack_for_testing();
 
-  if (minimal_header_ux_enabled_) {
-    EXPECT_TRUE(IsViewVisible(DialogViewID::CANCEL_BUTTON, view_stack->top()));
-    EXPECT_FALSE(IsViewVisible(DialogViewID::BACK_BUTTON, view_stack->top()));
-  } else {
-    EXPECT_TRUE(IsViewVisible(DialogViewID::BACK_BUTTON, view_stack->top()));
-    EXPECT_FALSE(IsViewVisible(DialogViewID::CANCEL_BUTTON, view_stack->top()));
-  }
+  EXPECT_TRUE(IsViewVisible(DialogViewID::CANCEL_BUTTON, view_stack->top()));
+  EXPECT_FALSE(IsViewVisible(DialogViewID::BACK_BUTTON, view_stack->top()));
   EXPECT_TRUE(IsViewVisible(DialogViewID::SHEET_TITLE, view_stack->top()));
   EXPECT_TRUE(
       IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON, view_stack->top()));
   EXPECT_TRUE(IsViewVisible(DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET,
                             view_stack->top()));
 
-  if (minimal_header_ux_enabled_) {
-    // In the minimal header UX, only the origin is shown and is marked as the
-    // title. For this test, the origin can be derived from the method name.
-    ASSERT_TRUE(base::StartsWith(method_name, "https://"));
-    EXPECT_EQ(base::ASCIIToUTF16(method_name.substr(8)),
-              GetLabelText(DialogViewID::SHEET_TITLE, view_stack->top()));
-  } else {
-    // This page has a <title>, and so should show the sheet title rather than
-    // the origin as the title.
-    EXPECT_EQ(u"Payment App",
-              GetLabelText(DialogViewID::SHEET_TITLE, view_stack->top()));
-  }
-
-  ExpectHistograms();
+  // Only the origin is shown and is marked as the title. For this test, the
+  // origin can be derived from the method name.
+  ASSERT_TRUE(base::StartsWith(method_name, "https://"));
+  EXPECT_EQ(base::ASCIIToUTF16(method_name.substr(8)),
+            GetLabelText(DialogViewID::SHEET_TITLE, view_stack->top()));
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
   std::string method_name;
   InstallPaymentAppWithoutIcon("a.com", "/payment_handler_sw.js", &method_name);
 
@@ -151,11 +110,9 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
 
   // The payment app has no icon, so it should not be displayed on the header.
   EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON));
-
-  ExpectHistograms();
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
   std::string a_method_name;
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &a_method_name);
   std::string b_method_name;
@@ -194,26 +151,16 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
                                DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON);
 
-  if (minimal_header_ux_enabled_) {
-    // In the minimal header UX, the cancel button is shown and closes the
-    // dialog instead of returning to the payment handler sheet.
-    ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
-    ClickOnDialogViewAndWait(DialogViewID::CANCEL_BUTTON,
-                             /*wait_for_animation=*/false);
-  } else {
-    // Prior to the minimal header UX, the back button is shown and returns to
-    // the payment handler sheet.
-    ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
-    ClickOnDialogViewAndWait(DialogViewID::BACK_BUTTON);
-  }
-
-  ExpectHistograms();
+  // The cancel button is shown and closes the dialog.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  ClickOnDialogViewAndWait(DialogViewID::CANCEL_BUTTON,
+                           /*wait_for_animation=*/false);
 }
 
 // Test that the header and dialog heights are consistent with when there is no
 // title.
 // Flakily failing: https://crbug.com/1430351
-IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
                        DISABLED_ConsistentHeaderHeight) {
   // Install a payment app that will open a window.
   std::string method_name;
@@ -270,11 +217,9 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
           ->height());
 
   ClickOnCancel();
-
-  ExpectHistograms();
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, LargeIcon) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, LargeIcon) {
   // Install a payment app with a large icon that will be sized down at render.
   std::string method_name = PaymentAppInstallUtil::InstallPaymentApp(
       *GetActiveWebContents(), *https_server(), "a.com",
@@ -312,11 +257,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, LargeIcon) {
                                  DialogViewID::PAYMENT_APP_HEADER_ICON))
           ->GetImageBounds()
           .size());
-
-  ExpectHistograms();
 }
-
-INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerHeaderViewUITest, testing::Bool());
 
 }  // namespace
 }  // namespace payments
