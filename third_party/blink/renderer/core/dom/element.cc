@@ -3037,6 +3037,13 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     SetIsInCanvasSubtree(true);
   }
 
+  if (GetDocument().StatePreservingAtomicMoveInProgress() &&
+      Fullscreen::IsFullscreenElement(*this)) {
+    // We don't actually need to cross frame boundaries, but we do need to mark
+    // all our ancestors as containing a full screen element.
+    SetContainsFullScreenElementOnAncestorsCrossingFrameBoundaries(true);
+  }
+
   return kInsertionDone;
 }
 
@@ -3099,7 +3106,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   document.GetRootScrollerController().ElementRemoved(*this);
 
-  if (IsInTopLayer()) {
+  if (IsInTopLayer() && !document.StatePreservingAtomicMoveInProgress()) {
     Fullscreen::ElementRemoved(*this);
     document.RemoveFromTopLayerImmediately(this);
   }
