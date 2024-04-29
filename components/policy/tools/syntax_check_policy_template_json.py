@@ -881,6 +881,7 @@ class PolicyTemplateChecker(object):
           'default_for_managed_devices_doc_only',
           'default_policy_level',
           'arc_support',
+          'generate_device_proto',
       ):
         self._PolicyError(f'Unknown key: {key}', policy, key)
 
@@ -915,6 +916,9 @@ class PolicyTemplateChecker(object):
 
     # If 'arc_support' is present, it must be a string.
     self._CheckContains(policy, 'arc_support', str, True)
+
+    # If 'generate_device_proto' is present, it must be a bool.
+    self._CheckContains(policy, 'generate_device_proto', bool, True)
 
     if policy_type == 'group':
       # Each policy group must have a list of policies.

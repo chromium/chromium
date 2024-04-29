@@ -375,3 +375,10 @@ max_size: 123456
 #   - user-description: A text that helps users understand what a policy with
 #       this tag means for their privacy and/or security.
 tags: []
+
+# Automatically generate proto definitions for the policy.
+# Only applies to device policies, for user policies this is always true.
+# Currently only generates an entry in device_policy_proto_map. More code
+# generation is planned in the future.
+# Default setting is false and will change to true in the future.
+generate_device_proto: true

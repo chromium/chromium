@@ -42,7 +42,7 @@ _ENUMS_PATH = os.path.join(
 _DEVICE_POLICY_PROTO_PATH = os.path.join(
       _COMPONENTS_POLICY_PATH, 'proto', 'chrome_device_policy.proto')
 _DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
-      _TEMPLATES_PATH, 'device_policy_proto_map.yaml')
+      _TEMPLATES_PATH, 'manual_device_policy_proto_map.yaml')
 _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
       _TEMPLATES_PATH, 'legacy_device_policy_proto_map.yaml')
 
@@ -796,12 +796,18 @@ def CheckDevicePolicies(input_api, output_api):
   for policy in policy_definitions:
     if not policy.get('device_only', False):
       continue
+
     policy_name = policy['name']
-    if (policy_name not in proto_map and
-        policy_name not in legacy_proto_map):
-      results.append(output_api.PresubmitError(
-          f"Please add '{policy_name}' to device_policy_proto_map.yaml and map "
-          "it to the corresponding field in chrome_device_policy.proto."))
+    if policy.get('generate_device_proto', False):
+      if policy_name in proto_map or policy_name in legacy_proto_map:
+        results.append(output_api.PresubmitError(
+          f"'{policy_name}' generates the path to the proto. "
+          "Please remove it from *_device_policy_proto_map.yaml"))
+    else:
+      if (policy_name not in proto_map and
+          policy_name not in legacy_proto_map):
+        results.append(output_api.PresubmitError(
+            f"Please add generate_device_proto: true to '{policy_name}.yaml'"))
 
   # Check that the proto field is equal to the policy name for new policies
   for policy_change in policy_changelist:
