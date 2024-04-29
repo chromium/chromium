@@ -176,7 +176,7 @@ void DataSharingServiceImpl::DeleteGroup(
   params.set_group_id(group_id);
   sdk_delegate_->DeleteGroup(
       params,
-      base::BindOnce(&DataSharingServiceImpl::OnDeleteGroupCompleted,
+      base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -184,14 +184,44 @@ void DataSharingServiceImpl::InviteMember(
     const std::string& group_id,
     const std::string& invitee_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
-  NOTIMPLEMENTED();
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       PeopleGroupActionOutcome::kPersistentFailure));
+    return;
+  }
+
+  data_sharing_pb::LookupGaiaIdByEmailParams lookup_params;
+  lookup_params.set_email(invitee_email);
+  sdk_delegate_->LookupGaiaIdByEmail(
+      lookup_params,
+      base::BindOnce(
+          &DataSharingServiceImpl::OnGaiaIdLookupForAddMemberCompleted,
+          weak_ptr_factory_.GetWeakPtr(), group_id, std::move(callback)));
 }
 
 void DataSharingServiceImpl::RemoveMember(
     const std::string& group_id,
     const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
-  NOTIMPLEMENTED();
+  if (!sdk_delegate_) {
+    // Reply in a posted task to avoid reentrance on the calling side.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       PeopleGroupActionOutcome::kPersistentFailure));
+    return;
+  }
+
+  data_sharing_pb::LookupGaiaIdByEmailParams lookup_params;
+  lookup_params.set_email(member_email);
+  sdk_delegate_->LookupGaiaIdByEmail(
+      lookup_params,
+      base::BindOnce(
+          &DataSharingServiceImpl::OnGaiaIdLookupForRemoveMemberCompleted,
+          weak_ptr_factory_.GetWeakPtr(), group_id, std::move(callback)));
 }
 
 void DataSharingServiceImpl::OnReadSingleGroupCompleted(
@@ -228,10 +258,48 @@ void DataSharingServiceImpl::OnCreateGroupCompleted(
       base::unexpected(StatusToPeopleGroupActionFailure(result.error())));
 }
 
-void DataSharingServiceImpl::OnDeleteGroupCompleted(
+void DataSharingServiceImpl::OnGaiaIdLookupForAddMemberCompleted(
+    const std::string& group_id,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
-    const absl::Status& result) {
-  std::move(callback).Run(StatusToPeopleGroupActionOutcome(result));
+    const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
+                         absl::Status>& result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(StatusToPeopleGroupActionOutcome(result.error()));
+    return;
+  }
+
+  data_sharing_pb::AddMemberParams params;
+  params.set_group_id(group_id);
+  params.set_member_gaia_id(result.value().gaia_id());
+  sdk_delegate_->AddMember(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DataSharingServiceImpl::OnGaiaIdLookupForRemoveMemberCompleted(
+    const std::string& group_id,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
+    const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
+                         absl::Status>& result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(StatusToPeopleGroupActionOutcome(result.error()));
+    return;
+  }
+
+  data_sharing_pb::RemoveMemberParams params;
+  params.set_group_id(group_id);
+  params.set_member_gaia_id(result.value().gaia_id());
+  sdk_delegate_->RemoveMember(
+      params,
+      base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DataSharingServiceImpl::OnSimpleGroupActionCompleted(
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
+    const absl::Status& status) {
+  std::move(callback).Run(StatusToPeopleGroupActionOutcome(status));
 }
 
 }  // namespace data_sharing

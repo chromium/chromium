@@ -86,7 +86,21 @@ class DataSharingServiceImpl : public DataSharingService {
       base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
       const base::expected<data_sharing_pb::CreateGroupResult, absl::Status>&
           result);
-  void OnDeleteGroupCompleted(
+  void OnGaiaIdLookupForAddMemberCompleted(
+      const std::string& group_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
+      const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
+                           absl::Status>& result);
+  void OnGaiaIdLookupForRemoveMemberCompleted(
+      const std::string& group_id,
+      base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
+      const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
+                           absl::Status>& result);
+
+  // Converts absl::Status to PeopleGroupActionOutcome and passes it to
+  // `callback`, used by DeleteGroup(), InviteMember(), and RemoveMember()
+  // flows.
+  void OnSimpleGroupActionCompleted(
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
       const absl::Status& result);
 

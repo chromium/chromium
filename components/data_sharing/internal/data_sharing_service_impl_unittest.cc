@@ -55,6 +55,20 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
     return group_data.group_id();
   }
 
+  void AddMember(const std::string& group_id,
+                 const std::string& member_gaia_id) {
+    auto group_it = groups_.find(group_id);
+    ASSERT_TRUE(group_it != groups_.end());
+
+    data_sharing_pb::GroupMember member;
+    member.set_gaia_id(member_gaia_id);
+    *group_it->second.add_members() = member;
+  }
+
+  void AddAccount(const std::string& email, const std::string& gaia_id) {
+    email_to_gaia_id_[email] = gaia_id;
+  }
+
   // DataSharingSDKDelegate implementation.
   void CreateGroup(
       const data_sharing_pb::CreateGroupParams& params,
@@ -97,13 +111,47 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
   void AddMember(
       const data_sharing_pb::AddMemberParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) override {
-    NOTIMPLEMENTED();
+    auto group_it = groups_.find(params.group_id());
+    absl::Status status = absl::OkStatus();
+    if (group_it != groups_.end()) {
+      data_sharing_pb::GroupMember member;
+      member.set_gaia_id(params.member_gaia_id());
+      *group_it->second.add_members() = member;
+    } else {
+      status = absl::Status(absl::StatusCode::kNotFound, "Group not found");
+    }
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), status));
   }
 
   void RemoveMember(
       const data_sharing_pb::RemoveMemberParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) override {
-    NOTIMPLEMENTED();
+    auto group_it = groups_.find(params.group_id());
+    if (group_it == groups_.end()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    absl::Status(absl::StatusCode::kNotFound,
+                                                 "Group not found")));
+      return;
+    }
+
+    absl::Status status = absl::OkStatus();
+    auto* group_members = group_it->second.mutable_members();
+    auto member_it =
+        std::find_if(group_members->begin(), group_members->end(),
+                     [&params](const data_sharing_pb::GroupMember& member) {
+                       return member.gaia_id() == params.member_gaia_id();
+                     });
+    if (member_it != group_members->end()) {
+      group_members->erase(member_it);
+    } else {
+      status = absl::Status(absl::StatusCode::kNotFound, "Member not found");
+    }
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), status));
   }
 
   void DeleteGroup(
@@ -125,11 +173,26 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
       base::OnceCallback<
           void(const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
                                     absl::Status>&)> callback) override {
-    NOTIMPLEMENTED();
+    auto it = email_to_gaia_id_.find(params.email());
+    if (it != email_to_gaia_id_.end()) {
+      data_sharing_pb::LookupGaiaIdByEmailResult result;
+      result.set_gaia_id(it->second);
+
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), result));
+      return;
+    }
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       base::unexpected(absl::Status(
+                           absl::StatusCode::kNotFound, "Account not found"))));
   }
 
  private:
   std::map<std::string, data_sharing_pb::GroupData> groups_;
+  std::map<std::string, std::string> email_to_gaia_id_;
   int next_group_id_ = 0;
 };
 
@@ -238,6 +301,56 @@ TEST_F(DataSharingServiceImplTest, ShouldReadGroup) {
   ASSERT_TRUE(outcome.has_value());
   EXPECT_THAT(outcome->display_name, Eq(display_name));
   EXPECT_THAT(outcome->group_id, Eq(group_id));
+}
+
+TEST_F(DataSharingServiceImplTest, ShouldInviteMember) {
+  // TODO(crbug.com/301390275): add a version of this test for unhappy paths.
+  const std::string group_id =
+      not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
+
+  const std::string email = "user@gmail.com";
+  const std::string gaia_id = "123456789";
+  not_owned_sdk_delegate_->AddAccount(email, gaia_id);
+
+  base::RunLoop run_loop;
+  base::MockOnceCallback<void(DataSharingService::PeopleGroupActionOutcome)>
+      callback;
+  EXPECT_CALL(callback,
+              Run(DataSharingService::PeopleGroupActionOutcome::kSuccess))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  data_sharing_service_->InviteMember(group_id, email, callback.Get());
+  run_loop.Run();
+
+  auto group = not_owned_sdk_delegate_->GetGroup(group_id);
+  ASSERT_TRUE(group.has_value());
+  ASSERT_THAT(group->members().size(), Eq(1));
+  EXPECT_THAT(group->members(0).gaia_id(), Eq(gaia_id));
+}
+
+TEST_F(DataSharingServiceImplTest, ShouldRemoveMember) {
+  // TODO(crbug.com/301390275): add a version of this test for unhappy paths.
+  const std::string group_id =
+      not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
+
+  const std::string email = "user@gmail.com";
+  const std::string gaia_id = "123456789";
+  not_owned_sdk_delegate_->AddAccount(email, gaia_id);
+  not_owned_sdk_delegate_->AddMember(group_id, gaia_id);
+
+  base::RunLoop run_loop;
+  base::MockOnceCallback<void(DataSharingService::PeopleGroupActionOutcome)>
+      callback;
+  EXPECT_CALL(callback,
+              Run(DataSharingService::PeopleGroupActionOutcome::kSuccess))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  data_sharing_service_->RemoveMember(group_id, email, callback.Get());
+  run_loop.Run();
+
+  auto group = not_owned_sdk_delegate_->GetGroup(group_id);
+  ASSERT_TRUE(group.has_value());
+  EXPECT_TRUE(group->members().empty());
 }
 
 }  // namespace data_sharing
