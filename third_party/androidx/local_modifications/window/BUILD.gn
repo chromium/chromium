@@ -27,6 +27,9 @@ android_library("androidx_window_shims_java") {
 # Helpers to use in place of androidx.window APIs.
 # See //third_party/android_sdk/window_extensions/README.md
 android_library("window_util_java") {
-  sources = [ "java/org/chromium/window/WindowUtil.java" ]
+  sources = [
+    "java/org/chromium/window/WindowApiCheck.java",
+    "java/org/chromium/window/WindowUtil.java",
+  ]
   deps = [ "//third_party/android_sdk:android_window_extensions_java" ]
 }

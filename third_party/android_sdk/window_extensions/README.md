@@ -11,7 +11,7 @@ when a `<uses-library>` tag exists in an app's `AndroidManifest.xml` (which is
 added via manifest merging when depending on the GN target).
 
 Not all devices have this optional library available. You can check if it's
-available via `org.chromium.window.WindowUtil#isAvailable()`.
+available via `org.chromium.window.WindowApiCheck#isAvailable()`.
 
 Library documentation: https://source.android.com/docs/core/display/windowmanager-extensions
 

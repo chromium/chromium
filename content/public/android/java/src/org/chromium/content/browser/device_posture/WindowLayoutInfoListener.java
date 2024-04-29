@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.window.extensions.core.util.function.Consumer;
 import androidx.window.extensions.layout.WindowLayoutInfo;
 
@@ -15,8 +16,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.blink_public.common.BlinkFeatures;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.window.WindowUtil;
 
@@ -78,16 +77,9 @@ public class WindowLayoutInfoListener implements UnownedUserData {
      * Attach an instance of WindowLayoutInfoListener to the activity's window user data and return
      * it.
      */
-    public static @Nullable WindowLayoutInfoListener getWindowLayoutListenerForWindow(
+    @RequiresApi(Build.VERSION_CODES.S) // For isUiContext()
+    static @Nullable WindowLayoutInfoListener getWindowLayoutListenerForWindow(
             WindowAndroid window) {
-        // WindowUtil is only available on Android 13+.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                || !ContentFeatureMap.isEnabled(BlinkFeatures.DEVICE_POSTURE)
-                || !WindowUtil.isAvailable()
-                || window == null) {
-            return null;
-        }
-
         Context context = window.getContext().get();
         if (context == null || !context.isUiContext()) {
             return null;

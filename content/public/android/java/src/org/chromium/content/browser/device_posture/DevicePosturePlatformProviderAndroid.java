@@ -5,6 +5,7 @@
 package org.chromium.content.browser.device_posture;
 
 import android.graphics.Rect;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
 import androidx.window.extensions.layout.DisplayFeature;
@@ -21,6 +22,7 @@ import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.window.WindowApiCheck;
 
 /**
  * Java implementation of DevicePosturePlatformProviderAndroid. WindowLayoutInfoManager will call
@@ -63,7 +65,10 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
     }
 
     private void observeWindowLayoutListener(@Nullable WindowAndroid window) {
-        if (window == null) {
+        if (window == null
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                || !ContentFeatureMap.isEnabled(BlinkFeatures.DEVICE_POSTURE)
+                || !WindowApiCheck.isAvailable()) {
             return;
         }
 

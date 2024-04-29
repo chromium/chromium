@@ -35,8 +35,8 @@ public class WindowUtil {
 
     private WindowUtil() {}
 
-    /** Returns whether the required system library is loaded. */
-    public static boolean isAvailable() {
+    // Use WindowApiCheck.isAvailable() instead.
+    static boolean isAvailable() {
         return sWindowLayoutComponent != null;
     }
 
