@@ -1158,6 +1158,13 @@ class PolicyTemplateChecker(object):
                                           optional=True,
                                           container_name='features')
 
+      # 'user_only' feature must be an optional boolean flag.
+      user_only = self._CheckContains(features,
+                                      'user_only',
+                                      bool,
+                                      optional=True,
+                                      container_name='features')
+
       # 'private' feature must be an optional boolean flag.
       is_unlisted = self._CheckContains(features,
                                         'unlisted',
@@ -1180,6 +1187,14 @@ class PolicyTemplateChecker(object):
         self._PolicyError(
             '"cloud_only" and "platfrom_only" are true at the same time.',
             policy, 'features')
+
+      if user_only and not cloud_only:
+        self._PolicyError('"user_only" is used by non cloud only policy.',
+                          policy, 'features')
+
+      if user_only and not features.get('per_profile', False):
+        self._PolicyError('"user_only" is used by non per_profile policy.',
+                          policy, 'features')
 
       if is_unlisted and not cloud_only:
         self._PolicyError('"unlisted" is used by non cloud only policy.',

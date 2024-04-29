@@ -15,6 +15,19 @@
 
 namespace policy {
 
+// An enum defines what the policy can control, generated based on policy
+// templates.
+// Note that `kProfile` policy may be set to control all profiles simultaneously
+// while `kSingleProfile` policy can only control one profile at a time.
+enum Scope {
+  kDevice,   // Policy controls Chrome OS device behavior, like wifi setup.
+  kBrowser,  // Policy controls browser behavior, like guest profile setting.
+  kProfile,  // Policy controls one or multiple profiles behavior, like homepage
+             // url.
+  kSingleProfile,  // Policy controls only one profile behavior, like the
+                   // profile label.
+};
+
 // Contains read-only metadata about a Chrome policy.
 struct POLICY_EXPORT PolicyDetails {
   // True if this policy has been deprecated.
@@ -23,8 +36,8 @@ struct POLICY_EXPORT PolicyDetails {
   // True if the policy hasn't been released yet.
   bool is_future : 1;
 
-  // True if this policy is a Chrome OS device policy.
-  bool is_device_policy : 1;
+  // The scope of the policy.
+  Scope scope;
 
   // The id of the protobuf field that contains this policy,
   // in the cloud policy protobuf.

@@ -142,14 +142,26 @@ features:
   per_profile: true
 
   # Optional field that is `false` by default.
-  # Set to True if the policy can only be set from platform policy but do not
+  # Set to True if the policy can only be set from platform policy but does not
   # support Admin console.
   platform_only: false
 
+  # Optional field that is false by default.
+  # Set to True if the policy can only be set from Admin Console but does not
+  # support any platform management tools.
+  cloud_only: false
+
+  # Optional field that is false by default.
+  # Set to True if the policy can only be set with a signed in managed account
+  # but does not support any other management tools.
+  # It can only be used when 'cloud_only' tag is set to true.
+  # It can only be used when 'per_profile' tag is set to true.
+  user_only: false
+
   # Set to True if the policy is controlled by Admin Console without any user
-  # interface for administrator. It can only be used for policies with the
-  # 'cloud_only' tag. Policy that are 'unlisted' will be hidden from all
-  # documentations, policy templates and Admin Console UI.
+  # interface for administrator. Policy that are 'unlisted' will be hidden from
+  # all documentations, policy templates and Admin Console UI.
+  # It can only be used when 'cloud_only' tag is set to true.
   unlisted: false
 
   # Optional field.

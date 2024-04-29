@@ -93,6 +93,7 @@ class PolicyDetails:
     self.is_deprecated = policy.get('deprecated', False)
     self.is_device_only = policy.get('device_only', False)
     self.per_profile = features.get('per_profile', False)
+    self.is_user_only = features.get('user_only', False)
     self.schema = policy['schema']
     self.validation_schema = policy.get('validation_schema')
     self.has_enterprise_default = 'default_for_enterprise_users' in policy
@@ -172,6 +173,21 @@ class PolicyDetails:
         raise RuntimeError('Invalid Tag:' + tag + '!\n'
                            'Chose a valid tag from \'risk_tag_definitions\' (a '
                            'subproperty of root in policy_templates.json)!')
+
+  @property
+  def scope(self):
+    """Get policy scope string based on per_profile and user_only feature.
+       The string is defined in policy_details.h.
+    """
+    if self.is_device_only:
+      return 'kDevice'
+    if self.per_profile:
+      if self.is_user_only:
+        return 'kSingleProfile'
+      else:
+        return 'kProfile'
+    else:
+      return 'kBrowser'
 
   # Simplistic grit placeholder stripper.
   @staticmethod
@@ -999,7 +1015,6 @@ class SchemaNodesGenerator:
 
     return has_sensitive_children or node.is_sensitive_value
 
-
 def _GenerateDefaultValue(value):
   """Converts a JSON object into a base::Value entry. Returns a tuple, the first
   entry being a list of declaration statements to define the variable, the
@@ -1074,7 +1089,7 @@ namespace policy {
   # TODO(crbug.com/40127969): kChromePolicyDetails shouldn't be declare if there
   # is no policy.
   f.write('''[[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
-// is_deprecated is_future is_device_policy id max_external_data_size, risk tags
+// is_deprecated is_future scope id max_external_data_size, risk tags
 ''')
   for policy in policies:
     if policy.is_supported:
@@ -1084,9 +1099,8 @@ namespace policy {
       f.write('  // %s\n' % policy.name)
       f.write('  { %-14s%-10s%-17s%4s,%22s, %s },\n' %
               ('true,' if policy.is_deprecated else 'false,',
-               'true,' if policy.is_future else 'false, ',
-               'true,' if policy.is_device_only else 'false,', policy.id,
-               policy.max_size, risk_tags.ToInitString(policy.tags)))
+               'true,' if policy.is_future else 'false, ', policy.scope + ",",
+               policy.id, policy.max_size, risk_tags.ToInitString(policy.tags)))
   f.write('};\n\n')
 
   schema_generator = SchemaNodesGenerator(shared_strings)

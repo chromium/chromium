@@ -99,6 +99,10 @@ doc_feature_unlisted:
   desc: The name of the feature that indicates whether a policy is set from cloud
     without any user interface.
   text: Unlisted
+doc_feature_user_only:
+  desc: The name of the feature that indicates whether a policy can only be set with
+    signed in managed account.
+  text: User Only
 doc_group_intro:
   desc: Introduction text for the generated policy atomic group documentation
   text: Both Chromium and Google Chrome have some groups of policies that depend on

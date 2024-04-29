@@ -122,8 +122,13 @@ void CheckPolicyMap(const PolicyMap& policy_map,
     const PolicyDetails* policy_details = GetChromePolicyDetails(policy_name);
     CHECK(policy_details) << "Policy " << policy_name
                           << " has no policy details";
-    CHECK_EQ(policy_details->is_device_policy, expected_is_device_policy)
-        << "Policy " << policy_name << " is of unexpected type";
+    if (expected_is_device_policy) {
+      CHECK_EQ(policy_details->scope, kDevice)
+        << "Policy " << policy_name << " should be device policy";
+    } else {
+      CHECK_NE(policy_details->scope, kDevice)
+        << "Policy " << policy_name << " should not be device policy";
+    }
   }
 }
 

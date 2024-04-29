@@ -180,6 +180,29 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
 #endif
 }
 
+TEST(GeneratePolicySource, PolicyScope) {
+  const PolicyDetails* details;
+#if !BUILDFLAG(IS_IOS)
+  details = GetChromePolicyDetails(key::kCloudProfileReportingEnabled);
+  ASSERT_TRUE(details);
+  EXPECT_EQ(kSingleProfile, details->scope);
+#endif
+
+  details = GetChromePolicyDetails(key::kDefaultSearchProviderEnabled);
+  ASSERT_TRUE(details);
+  EXPECT_EQ(kProfile, details->scope);
+
+  details = GetChromePolicyDetails(key::kCloudReportingEnabled);
+  ASSERT_TRUE(details);
+  EXPECT_EQ(kBrowser, details->scope);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  details = GetChromePolicyDetails(key::kDeviceGuestModeEnabled);
+  ASSERT_TRUE(details);
+  EXPECT_EQ(kDevice, details->scope);
+#endif
+}
+
 TEST(GeneratePolicySource, PolicyDetails) {
   EXPECT_FALSE(GetChromePolicyDetails(""));
   EXPECT_FALSE(GetChromePolicyDetails("no such policy"));
@@ -191,7 +214,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
       GetChromePolicyDetails(key::kSearchSuggestEnabled);
   ASSERT_TRUE(details);
   EXPECT_FALSE(details->is_deprecated);
-  EXPECT_FALSE(details->is_device_policy);
+  EXPECT_EQ(kProfile, details->scope);
   EXPECT_EQ(6, details->id);
   EXPECT_EQ(0u, details->max_external_data_size);
 
@@ -199,7 +222,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
   details = GetChromePolicyDetails(key::kJavascriptEnabled);
   ASSERT_TRUE(details);
   EXPECT_TRUE(details->is_deprecated);
-  EXPECT_FALSE(details->is_device_policy);
+  EXPECT_EQ(kProfile, details->scope);
   EXPECT_EQ(9, details->id);
   EXPECT_EQ(0u, details->max_external_data_size);
 #endif
@@ -208,7 +231,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
   details = GetChromePolicyDetails(key::kDevicePolicyRefreshRate);
   ASSERT_TRUE(details);
   EXPECT_FALSE(details->is_deprecated);
-  EXPECT_TRUE(details->is_device_policy);
+  EXPECT_EQ(kDevice, details->scope);
   EXPECT_EQ(90, details->id);
   EXPECT_EQ(0u, details->max_external_data_size);
 
@@ -217,7 +240,7 @@ TEST(GeneratePolicySource, PolicyDetails) {
   details = GetChromePolicyDetails(key::kWallpaperImage);
   ASSERT_TRUE(details);
   EXPECT_FALSE(details->is_deprecated);
-  EXPECT_FALSE(details->is_device_policy);
+  EXPECT_EQ(kProfile, details->scope);
   EXPECT_EQ(262, details->id);
   EXPECT_GT(details->max_external_data_size, 0u);
 #endif

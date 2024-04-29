@@ -579,29 +579,29 @@ EXPECTED_POLICY_CONSTANTS_SOURCE = '''\
 namespace policy {
 
 [[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
-// is_deprecated is_future is_device_policy id max_external_data_size, risk tags
+// is_deprecated is_future scope id max_external_data_size, risk tags
   // ExampleStringPolicy
-  { false,        false,    false,              1,                     0, {  } },
+  { false,        false,    kBrowser,           1,                     0, {  } },
   // ExampleBoolPolicy
-  { false,        false,    false,              2,                     0, {  } },
+  { false,        false,    kBrowser,           2,                     0, {  } },
   // ExampleBoolMergeMetapolicy
-  { false,        false,    false,              3,                     0, {  } },
+  { false,        false,    kBrowser,           3,                     0, {  } },
   // ExampleBoolPrecedenceMetapolicy
-  { false,        false,    false,              4,                     0, {  } },
+  { false,        false,    kBrowser,           4,                     0, {  } },
   // CloudOnlyPolicy
-  { false,        false,    false,              5,                     0, {  } },
+  { false,        false,    kBrowser,           5,                     0, {  } },
   // CloudManagementEnrollmentToken
-  { false,        false,    false,              6,                     0, {  } },
+  { false,        false,    kBrowser,           6,                     0, {  } },
   // ChunkZeroLastFieldBooleanPolicy
-  { false,        false,    false,           1040,                     0, {  } },
+  { false,        false,    kBrowser,        1040,                     0, {  } },
   // ChunkOneFirstFieldBooleanPolicy
-  { false,        false,    false,           1041,                     0, {  } },
+  { false,        false,    kBrowser,        1041,                     0, {  } },
   // ChunkOneLastFieldBooleanPolicy
-  { false,        false,    false,           1840,                     0, {  } },
+  { false,        false,    kBrowser,        1840,                     0, {  } },
   // ChunkTwoFirstFieldStringPolicy
-  { false,        false,    false,           1841,                     0, {  } },
+  { false,        false,    kBrowser,        1841,                     0, {  } },
   // ChunkTwoLastFieldStringPolicy
-  { false,        false,    false,           2640,                     0, {  } },
+  { false,        false,    kBrowser,        2640,                     0, {  } },
 };
 
 const internal::SchemaNode kSchemas[] = {
