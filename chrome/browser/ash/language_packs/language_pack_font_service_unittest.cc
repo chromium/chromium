@@ -350,6 +350,27 @@ TEST_P(LanguagePackFontServiceLaddlTest, AddNothingOnInitWithUnrelatedLocale) {
   base::RunLoop().RunUntilIdle();
 }
 
+// This test should be split once the "load after download during login" feature
+// is implemented.
+TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
+       AddNothingOnInitWithValidLanguageLocaleWhenNotDownloaded) {
+  const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
+
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call).Times(0);
+  dlcservice::DlcState state;
+  state.set_id(test_case.dlc_prefix);
+  state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
+  state.set_is_verified(false);
+  dlcservice_client()->set_install_root_path(test_case.dlc_path);
+  dlcservice_client()->set_dlc_state(state);
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
+
+  InitProfileWithServices();
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
        AddValidLanguageOnInitWithValidLanguageLocale) {
   const ValidFontLanguageTestCase& test_case = GetValidFontLanguageParam();
