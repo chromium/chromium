@@ -87,7 +87,8 @@
 <!-- TODO(b/333785012): Add initial-counts to the dom-repeats here. -->
 <cr-lazy-render id="voiceSelectionMenu">
   <template>
-    <cr-action-menu on-close="onClose_" on-keydown="onVoiceMenuKeyDown_">
+    <cr-action-menu on-close="onClose_" on-keydown="onVoiceMenuKeyDown_"
+        accessibility-label="$i18n{voiceSelectionLabel}">
       <template is="dom-repeat"
                 items="[[downloadingMessages_]]"
                 initial-count="0">
@@ -119,8 +120,6 @@
                 iron-icon="[[previewIcon_(item.previewPlaying)]]">
               </cr-icon-button>
             </button>
-          <!-- TODO(crbug.com/40927698) Pause the preview when pause button is
-                    pressed -->
           </template>
         </div>
       </template>
