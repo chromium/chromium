@@ -14,7 +14,7 @@
 
 namespace ui {
 
-#if !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
 }
 #endif
