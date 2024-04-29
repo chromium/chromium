@@ -2765,6 +2765,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Secagentd.CommandLineLength" units="bytes"
+    expires_after="2025-01-31">
+  <owner>rborzello@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records the size of the commandline length in bytes. It is emmited once per
+    XDR exec event.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Secagentd.Policy" enum="SecagentdPolicy"
     expires_after="2025-01-31">
   <owner>rborzello@google.com</owner>
