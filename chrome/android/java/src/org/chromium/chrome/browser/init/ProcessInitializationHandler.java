@@ -332,11 +332,6 @@ public class ProcessInitializationHandler {
         if (mInitializedDeferredStartupTasks) return;
         mInitializedDeferredStartupTasks = true;
 
-        handleDeferredStartupTasksInitialization();
-    }
-
-    /** Performs the deferred startup task initialization. */
-    protected void handleDeferredStartupTasksInitialization() {
         DeferredStartupHandler deferredStartupHandler = DeferredStartupHandler.getInstance();
         List<Runnable> deferredTasks = new ArrayList<>();
         addPerApplicationStartupDeferredTasks(deferredTasks);
