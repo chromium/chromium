@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -45,7 +45,7 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
       .hide_on_web_contents_lost_focus = false};
   AutofillPopupHideHelper::HidingCallback hiding_callback =
       base::BindRepeating([](AutofillFieldPromoControllerImpl& controller,
-                             PopupHidingReason) { controller.Hide(); },
+                             SuggestionHidingReason) { controller.Hide(); },
                           std::ref(*this));
   AutofillPopupHideHelper::PictureInPictureDetectionCallback
       pip_detection_callback = base::BindRepeating(

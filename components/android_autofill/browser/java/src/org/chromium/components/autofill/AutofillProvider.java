@@ -573,7 +573,7 @@ public class AutofillProvider {
                             .setLabel(datalistValues[i])
                             .setSubLabel(datalistLabels[i])
                             .setItemTag("")
-                            .setPopupItemId(PopupItemId.DATALIST_ENTRY)
+                            .setSuggestionType(SuggestionType.DATALIST_ENTRY)
                             .setFeatureForIPH("")
                             .build();
         }

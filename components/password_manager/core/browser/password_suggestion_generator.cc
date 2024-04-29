@@ -73,8 +73,7 @@ autofill::Suggestion CreateWebAuthnEntry(bool listed_passkeys) {
       listed_passkeys ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
                       : IDS_PASSWORD_MANAGER_USE_PASSKEY));
   suggestion.icon = autofill::Suggestion::Icon::kDevice;
-  suggestion.popup_item_id =
-      autofill::PopupItemId::kWebauthnSignInWithAnotherDevice;
+  suggestion.type = autofill::SuggestionType::kWebauthnSignInWithAnotherDevice;
   return suggestion;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -84,7 +83,7 @@ autofill::Suggestion CreateGenerationEntry() {
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD));
   // The UI code will pick up an icon from the resources based on the string.
   suggestion.icon = autofill::Suggestion::Icon::kKey;
-  suggestion.popup_item_id = autofill::PopupItemId::kGeneratePasswordEntry;
+  suggestion.type = autofill::SuggestionType::kGeneratePasswordEntry;
   return suggestion;
 }
 
@@ -99,8 +98,7 @@ autofill::Suggestion CreateEntryToOptInToAccountStorageThenFill() {
       has_passkey_sync
           ? IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE_WITH_PASSKEYS
           : IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE));
-  suggestion.popup_item_id =
-      autofill::PopupItemId::kPasswordAccountStorageOptIn;
+  suggestion.type = autofill::SuggestionType::kPasswordAccountStorageOptIn;
   suggestion.icon = autofill::Suggestion::Icon::kGoogle;
   return suggestion;
 }
@@ -109,8 +107,8 @@ autofill::Suggestion CreateEntryToOptInToAccountStorageThenFill() {
 autofill::Suggestion CreateEntryToOptInToAccountStorageThenGenerate() {
   autofill::Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_GENERATE_PASSWORD));
-  suggestion.popup_item_id =
-      autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate;
+  suggestion.type =
+      autofill::SuggestionType::kPasswordAccountStorageOptInAndGenerate;
   suggestion.icon = autofill::Suggestion::Icon::kKey;
   return suggestion;
 }
@@ -119,8 +117,7 @@ autofill::Suggestion CreateEntryToOptInToAccountStorageThenGenerate() {
 autofill::Suggestion CreateEntryToReSignin() {
   autofill::Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_RE_SIGNIN_ACCOUNT_STORE));
-  suggestion.popup_item_id =
-      autofill::PopupItemId::kPasswordAccountStorageReSignin;
+  suggestion.type = autofill::SuggestionType::kPasswordAccountStorageReSignin;
   suggestion.icon = autofill::Suggestion::Icon::kGoogle;
   return suggestion;
 }
@@ -129,35 +126,35 @@ void MaybeAppendManagePasswordsEntry(
     std::vector<autofill::Suggestion>* suggestions) {
   bool has_no_fillable_suggestions = base::ranges::none_of(
       *suggestions,
-      [](autofill::PopupItemId id) {
-        return id == autofill::PopupItemId::kPasswordEntry ||
-               id == autofill::PopupItemId::kAccountStoragePasswordEntry ||
-               id == autofill::PopupItemId::kGeneratePasswordEntry ||
-               id == autofill::PopupItemId::kWebauthnCredential;
+      [](autofill::SuggestionType id) {
+        return id == autofill::SuggestionType::kPasswordEntry ||
+               id == autofill::SuggestionType::kAccountStoragePasswordEntry ||
+               id == autofill::SuggestionType::kGeneratePasswordEntry ||
+               id == autofill::SuggestionType::kWebauthnCredential;
       },
-      &autofill::Suggestion::popup_item_id);
+      &autofill::Suggestion::type);
   if (has_no_fillable_suggestions) {
     return;
   }
 
   bool has_webauthn_credential = base::ranges::any_of(
       *suggestions,
-      [](autofill::PopupItemId popup_item_id) {
-        return popup_item_id == autofill::PopupItemId::kWebauthnCredential;
+      [](autofill::SuggestionType type) {
+        return type == autofill::SuggestionType::kWebauthnCredential;
       },
-      &autofill::Suggestion::popup_item_id);
+      &autofill::Suggestion::type);
 
   // Add a separator before the manage option unless there are no suggestions
   // yet.
   if (!suggestions->empty()) {
-    suggestions->emplace_back(autofill::PopupItemId::kSeparator);
+    suggestions->emplace_back(autofill::SuggestionType::kSeparator);
   }
 
   autofill::Suggestion suggestion(l10n_util::GetStringUTF16(
       has_webauthn_credential
           ? IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_AND_PASSKEYS
           : IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS));
-  suggestion.popup_item_id = autofill::PopupItemId::kAllSavedPasswordsEntry;
+  suggestion.type = autofill::SuggestionType::kAllSavedPasswordsEntry;
   suggestion.icon = autofill::Suggestion::Icon::kSettings;
   // The UI code will pick up an icon from the resources based on the string.
   suggestion.trailing_icon = autofill::Suggestion::Icon::kGooglePasswordManager;
@@ -197,9 +194,10 @@ void AppendSuggestionIfMatching(
       *suggestion.voice_over += u", ";
       *suggestion.voice_over += suggestion.labels[0][0].value;
     }
-    suggestion.popup_item_id =
-        from_account_store ? autofill::PopupItemId::kAccountStoragePasswordEntry
-                           : autofill::PopupItemId::kPasswordEntry;
+    suggestion.type =
+        from_account_store
+            ? autofill::SuggestionType::kAccountStoragePasswordEntry
+            : autofill::SuggestionType::kPasswordEntry;
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = autofill::Suggestion::Icon::kGlobe;
@@ -242,7 +240,7 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
 void AddPasswordUsernameChildSuggestion(const std::u16string& username,
                                         autofill::Suggestion& suggestion) {
   suggestion.children.emplace_back(
-      username, autofill::PopupItemId::kPasswordFieldByFieldFilling);
+      username, autofill::SuggestionType::kPasswordFieldByFieldFilling);
 }
 
 void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion,
@@ -251,7 +249,7 @@ void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion,
   autofill::Suggestion fill_password(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
-      autofill::PopupItemId::kFillPassword);
+      autofill::SuggestionType::kFillPassword);
   fill_password.payload = autofill::Suggestion::PasswordSuggestionDetails(
       credential.password,
       GetHumanReadableRealm(credential.GetFirstSignonRealm()),
@@ -263,7 +261,7 @@ void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
   autofill::Suggestion view_password_details(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_VIEW_DETAILS_ENTRY),
-      autofill::PopupItemId::kViewPasswordDetails);
+      autofill::SuggestionType::kViewPasswordDetails);
   view_password_details.icon = autofill::Suggestion::Icon::kKey;
   suggestion.children.emplace_back(std::move(view_password_details));
 }
@@ -282,7 +280,7 @@ void AppendManualFallbackSuggestions(
     const std::u16string kDisplaySingonRealm =
         base::UTF8ToUTF16(domain_info.name);
     autofill::Suggestion suggestion(kDisplaySingonRealm,
-                                    autofill::PopupItemId::kPasswordEntry);
+                                    autofill::SuggestionType::kPasswordEntry);
     bool replaced;
     const std::u16string maybe_username =
         ReplaceEmptyUsername(credential.username, &replaced);
@@ -296,7 +294,7 @@ void AppendManualFallbackSuggestions(
       AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
     }
     AddFillPasswordChildSuggestion(suggestion, credential, is_cross_origin);
-    suggestion.children.emplace_back(autofill::PopupItemId::kSeparator);
+    suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
     AddViewPasswordDetailsChildSuggestion(suggestion);
 
     suggestions->emplace_back(std::move(suggestion));
@@ -346,7 +344,7 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
         [&page_favicon](const auto& passkey) {
           autofill::Suggestion suggestion(ToUsernameString(passkey.username()));
           suggestion.icon = autofill::Suggestion::Icon::kGlobe;
-          suggestion.popup_item_id = autofill::PopupItemId::kWebauthnCredential;
+          suggestion.type = autofill::SuggestionType::kWebauthnCredential;
           suggestion.custom_icon = page_favicon;
           suggestion.payload = autofill::Suggestion::Guid(
               base::Base64Encode(passkey.credential_id()));
@@ -413,7 +411,7 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
     suggestions.emplace_back(
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_SUGGESTED_PASSWORDS_SECTION_TITLE),
-        autofill::PopupItemId::kTitle);
+        autofill::SuggestionType::kTitle);
   }
 
   std::set<std::string> suggested_signon_realms;
@@ -427,7 +425,7 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
     suggestions.emplace_back(
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_ALL_PASSWORDS_SECTION_TITLE),
-        autofill::PopupItemId::kTitle);
+        autofill::SuggestionType::kTitle);
   }
 
   // Only the "All passwords" section should be sorted alphabetically.

@@ -51,7 +51,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-using autofill::PopupHidingReason;
+using autofill::SuggestionHidingReason;
 #if !BUILDFLAG(IS_ANDROID)
 using password_manager::features::kPasswordGenerationExperimentVariationParam;
 using password_manager::features::PasswordGenerationVariation;
@@ -378,7 +378,7 @@ void PasswordGenerationPopupControllerImpl::OnZoomChanged(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void PasswordGenerationPopupControllerImpl::Hide(PopupHidingReason) {
+void PasswordGenerationPopupControllerImpl::Hide(SuggestionHidingReason) {
 #if !BUILDFLAG(IS_ANDROID)
   if (ShouldShowNudgePassword()) {
     pref_service_->SetInteger(

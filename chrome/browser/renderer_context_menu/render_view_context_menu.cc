@@ -129,8 +129,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -1343,7 +1342,7 @@ void RenderViewContextMenu::InitMenu() {
         autofill::ContentAutofillClient::FromWebContents(web_contents);
     if (autofill_client) {
       autofill_client->HideAutofillSuggestions(
-          autofill::PopupHidingReason::kContextMenuOpened);
+          autofill::SuggestionHidingReason::kContextMenuOpened);
     }
   }
 }

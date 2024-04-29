@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <set>
 #include <string>
@@ -26,7 +27,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/signatures.h"
@@ -1024,7 +1025,7 @@ class AutofillMetrics {
   static void LogNumberOfAddressesSuppressedForDisuse(size_t num_profiles);
 
   // Log the reason for which the Autofill popup disappeared.
-  static void LogAutofillPopupHidingReason(PopupHidingReason reason);
+  static void LogAutofillSuggestionHidingReason(SuggestionHidingReason reason);
 
   // Log the number of days since an Autocomplete suggestion was last used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);

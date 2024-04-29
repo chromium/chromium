@@ -50,8 +50,8 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -440,14 +440,14 @@ class TestAutofillClientTemplate : public T {
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override {}
 
-  void HideAutofillSuggestions(PopupHidingReason reason) override {
+  void HideAutofillSuggestions(SuggestionHidingReason reason) override {
     popup_hidden_reason_ = reason;
     is_showing_popup_ = false;
   }
 
   bool IsShowingAutofillPopup() { return is_showing_popup_; }
 
-  PopupHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
+  SuggestionHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
 
   void ShowAutofillFieldIphForManualFallbackFeature(
       const FormFieldData& field) override {
@@ -794,7 +794,7 @@ class TestAutofillClientTemplate : public T {
 
   bool is_showing_popup_ = false;
 
-  PopupHidingReason popup_hidden_reason_;
+  SuggestionHidingReason popup_hidden_reason_;
 
   bool is_showing_manual_fallback_iph_ = false;
 

@@ -18,7 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.PopupItemId;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -161,7 +161,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param sublabel Hint for the suggested text. The text that's going to be filled in the
      *     unfocused fields of the form. If {@see label} is empty, then this must be empty too.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
-     * @param popupItemId Determines the type of the suggestion.
+     * @param suggestionType Determines the type of the suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
      * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
      *     suggestion.
@@ -174,7 +174,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             @JniType("std::u16string") String label,
             @JniType("std::u16string") String sublabel,
             int iconId,
-            @PopupItemId int popupItemId,
+            @SuggestionType int suggestionType,
             boolean isDeletable,
             @JniType("std::string") String featureForIPH,
             GURL customIconUrl) {
@@ -184,7 +184,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .setSubLabel(sublabel)
                 .setIconId(drawableId)
                 .setIsIconAtStart(false)
-                .setPopupItemId(popupItemId)
+                .setSuggestionType(suggestionType)
                 .setIsDeletable(isDeletable)
                 .setIsMultiLineLabel(false)
                 .setIsBoldLabel(false)

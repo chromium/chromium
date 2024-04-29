@@ -26,7 +26,7 @@ class WebContents;
 
 namespace autofill {
 
-enum class PopupHidingReason;
+enum class SuggestionHidingReason;
 
 // AutofillPopupHideHelper is a class which detects events that should hide an
 // Autofill Popup or any class that should have the same hiding behavior. The
@@ -45,7 +45,7 @@ class AutofillPopupHideHelper : public content::WebContentsObserver,
  public:
   // This is a `RepeatingCallback` because multiple hiding events can occur at
   // the same time.
-  using HidingCallback = base::RepeatingCallback<void(PopupHidingReason)>;
+  using HidingCallback = base::RepeatingCallback<void(SuggestionHidingReason)>;
   using PictureInPictureDetectionCallback = base::RepeatingCallback<bool()>;
 
   // This struct configures what type of events the helper should call the

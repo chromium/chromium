@@ -15,8 +15,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
@@ -43,8 +43,8 @@ namespace plus_addresses {
 
 namespace {
 
-using autofill::PopupItemId;
 using autofill::Suggestion;
+using autofill::SuggestionType;
 
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
 // equivalently. See `GetDomainAndRegistry` for concrete examples.
@@ -205,7 +205,7 @@ std::vector<Suggestion> PlusAddressService::GetSuggestions(
     }
     Suggestion create_plus_address_suggestion(
         l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
-        PopupItemId::kCreateNewPlusAddress);
+        SuggestionType::kCreateNewPlusAddress);
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                       kCreateNewPlusAddressSuggested);
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
@@ -219,7 +219,7 @@ std::vector<Suggestion> PlusAddressService::GetSuggestions(
     return {};
   }
   Suggestion existing_plus_address_suggestion(
-      std::move(address), PopupItemId::kFillExistingPlusAddress);
+      std::move(address), SuggestionType::kFillExistingPlusAddress);
   RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                     kExistingPlusAddressSuggested);
   existing_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;

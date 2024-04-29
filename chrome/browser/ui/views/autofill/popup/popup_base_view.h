@@ -124,7 +124,7 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   // Hide the controller of this view. This assumes that doing so will
   // eventually hide this view in the process.
-  void HideController(PopupHidingReason reason);
+  void HideController(SuggestionHidingReason reason);
 
   // Return the web contents related to this.
   content::WebContents* GetWebContents() const;

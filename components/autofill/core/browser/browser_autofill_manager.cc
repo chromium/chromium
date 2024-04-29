@@ -102,9 +102,9 @@
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -156,13 +156,13 @@ constexpr size_t kMinFormSizeToTriggerUserPerceptionSurvey = 4;
 
 // Checks if the user triggered address Autofill through the
 // Chrome context menu on a field not classified as address.
-// `popup_item_id` defines the suggestion type shown.
+// `type` defines the suggestion type shown.
 // `autofill_field` is the `AutofillField` from where the user triggered
 // suggestions.
 bool IsAddressAutofillManuallyTriggeredOnNonAddressField(
-    PopupItemId popup_item_id,
+    SuggestionType type,
     const AutofillField* autofill_field) {
-  return GetFillingProductFromPopupItemId(popup_item_id) ==
+  return GetFillingProductFromSuggestionType(type) ==
              FillingProduct::kAddress &&
          (!autofill_field ||
           !IsAddressType(autofill_field->Type().GetStorableType()));
@@ -170,13 +170,13 @@ bool IsAddressAutofillManuallyTriggeredOnNonAddressField(
 
 // Checks if the user triggered payments Autofill through the
 // Chrome context menu on a field not classified as credit card.
-// `popup_item_id` defines the suggestion type shown.
+// `type` defines the suggestion type shown.
 // `autofill_field` is the `AutofillField` from where the user triggered
 // suggestions.
 bool IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
-    PopupItemId popup_item_id,
+    SuggestionType type,
     const AutofillField* autofill_field) {
-  return GetFillingProductFromPopupItemId(popup_item_id) ==
+  return GetFillingProductFromSuggestionType(type) ==
              FillingProduct::kCreditCard &&
          (!autofill_field ||
           GroupTypeOfFieldType(autofill_field->Type().GetStorableType()) !=
@@ -290,7 +290,7 @@ void MaybeLogAutocompleteSuppressionByPlusAddresses(
   }
 
   if (suggestions.empty() ||
-      GetFillingProductFromPopupItemId(suggestions[0].popup_item_id) !=
+      GetFillingProductFromSuggestionType(suggestions[0].type) !=
           FillingProduct::kAutocomplete) {
     return;
   }
@@ -323,7 +323,7 @@ void LogTimeDelayForSingleFieldFormFill(
     return;
   }
   const FillingProduct filling_product =
-      GetFillingProductFromPopupItemId(suggestions[0].popup_item_id);
+      GetFillingProductFromSuggestionType(suggestions[0].type);
   CHECK(IsSingleFieldFormFillerFillingProduct(filling_product));
   base::UmaHistogramTimes(
       base::StrCat({"Autofill.Popup.SingleFieldFormFillerDelay.",
@@ -331,59 +331,59 @@ void LogTimeDelayForSingleFieldFormFill(
       delay);
 }
 
-FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
-    PopupItemId popup_item_id) {
-  switch (popup_item_id) {
-    case PopupItemId::kAutocompleteEntry:
+FillDataType GetEventTypeFromSingleFieldSuggestionSuggestionType(
+    SuggestionType type) {
+  switch (type) {
+    case SuggestionType::kAutocompleteEntry:
       return FillDataType::kSingleFieldFormFillerAutocomplete;
-    case PopupItemId::kMerchantPromoCodeEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
       return FillDataType::kSingleFieldFormFillerPromoCode;
-    case PopupItemId::kIbanEntry:
+    case SuggestionType::kIbanEntry:
       return FillDataType::kSingleFieldFormFillerIban;
-    case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAddressEntry:
-    case PopupItemId::kAllSavedPasswordsEntry:
-    case PopupItemId::kAutofillOptions:
-    case PopupItemId::kClearForm:
-    case PopupItemId::kCompose:
-    case PopupItemId::kComposeDisable:
-    case PopupItemId::kComposeGoToSettings:
-    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
-    case PopupItemId::kComposeSavedStateNotification:
-    case PopupItemId::kCreateNewPlusAddress:
-    case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kDatalistEntry:
-    case PopupItemId::kDeleteAddressProfile:
-    case PopupItemId::kEditAddressProfile:
-    case PopupItemId::kAddressFieldByFieldFilling:
-    case PopupItemId::kCreditCardFieldByFieldFilling:
-    case PopupItemId::kFillEverythingFromAddressProfile:
-    case PopupItemId::kFillExistingPlusAddress:
-    case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFillFullName:
-    case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kFillFullEmail:
-    case PopupItemId::kGeneratePasswordEntry:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kPasswordAccountStorageEmpty:
-    case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
-    case PopupItemId::kPasswordAccountStorageReSignin:
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kPasswordFieldByFieldFilling:
-    case PopupItemId::kFillPassword:
-    case PopupItemId::kViewPasswordDetails:
-    case PopupItemId::kScanCreditCard:
-    case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kTitle:
-    case PopupItemId::kSeparator:
-    case PopupItemId::kShowAccountCards:
-    case PopupItemId::kVirtualCreditCardEntry:
-    case PopupItemId::kWebauthnCredential:
-    case PopupItemId::kWebauthnSignInWithAnotherDevice:
-    case PopupItemId::kDevtoolsTestAddresses:
-    case PopupItemId::kDevtoolsTestAddressEntry:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kAutofillOptions:
+    case SuggestionType::kClearForm:
+    case SuggestionType::kCompose:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kEditAddressProfile:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kCreditCardFieldByFieldFilling:
+    case SuggestionType::kFillEverythingFromAddressProfile:
+    case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kFillFullAddress:
+    case SuggestionType::kFillFullName:
+    case SuggestionType::kFillFullPhoneNumber:
+    case SuggestionType::kFillFullEmail:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kPasswordAccountStorageEmpty:
+    case SuggestionType::kPasswordAccountStorageOptIn:
+    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
+    case SuggestionType::kPasswordAccountStorageReSignin:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kTitle:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kShowAccountCards:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddressEntry:
       NOTREACHED();
   }
   NOTREACHED();
@@ -1143,8 +1143,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         autofill_metrics::LogSuggestionsCount(
             base::ranges::count_if(suggestions,
                                    [](const Suggestion& suggestion) {
-                                     return GetFillingProductFromPopupItemId(
-                                                suggestion.popup_item_id) ==
+                                     return GetFillingProductFromSuggestionType(
+                                                suggestion.type) ==
                                             FillingProduct::kCreditCard;
                                    }),
             FillingProduct::kCreditCard);
@@ -1154,8 +1154,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         autofill_metrics::LogSuggestionsCount(
             base::ranges::count_if(suggestions,
                                    [](const Suggestion& suggestion) {
-                                     return GetFillingProductFromPopupItemId(
-                                                suggestion.popup_item_id) ==
+                                     return GetFillingProductFromSuggestionType(
+                                                suggestion.type) ==
                                             FillingProduct::kAddress;
                                    }),
             FillingProduct::kAddress);
@@ -1386,21 +1386,20 @@ void BrowserAutofillManager::FillOrPreviewField(
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& value,
-    PopupItemId popup_item_id) {
+    SuggestionType type) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   GetCachedFormAndField(form, field, &form_structure, &autofill_field);
   form_filler_->FillOrPreviewField(action_persistence, action_type, form, field,
-                                   form_structure, autofill_field, value,
-                                   popup_item_id);
+                                   form_structure, autofill_field, value, type);
   if (action_persistence == mojom::ActionPersistence::kFill) {
     const FormFieldData* const_field = &field;
     const AutofillField* const_autofill_field = autofill_field;
-    if (popup_item_id == PopupItemId::kAddressFieldByFieldFilling) {
+    if (type == SuggestionType::kAddressFieldByFieldFilling) {
       address_form_event_logger_->RecordFillingOperation(
           form.global_id(), base::make_span(&const_field, 1u),
           base::make_span(&const_autofill_field, 1u));
-    } else if (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling) {
+    } else if (type == SuggestionType::kCreditCardFieldByFieldFilling) {
       credit_card_form_event_logger_->RecordFillingOperation(
           form.global_id(), base::make_span(&const_field, 1u),
           base::make_span(&const_autofill_field, 1u));
@@ -1408,14 +1407,14 @@ void BrowserAutofillManager::FillOrPreviewField(
 
     const bool is_address_manual_fallback_on_non_address_field =
         IsAddressAutofillManuallyTriggeredOnNonAddressField(
-            popup_item_id, const_autofill_field);
+            type, const_autofill_field);
     const bool is_payments_manual_fallback_on_non_payments_field =
         IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
-            popup_item_id, const_autofill_field);
+            type, const_autofill_field);
     if (is_address_manual_fallback_on_non_address_field ||
         is_payments_manual_fallback_on_non_payments_field) {
       manual_fallback_logger_->OnDidFillSuggestion(
-          GetFillingProductFromPopupItemId(popup_item_id));
+          GetFillingProductFromSuggestionType(type));
     }
   }
 }
@@ -1546,7 +1545,7 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
 }
 
 void BrowserAutofillManager::DidShowSuggestions(
-    base::span<const PopupItemId> shown_suggestions_types,
+    base::span<const SuggestionType> shown_suggestions_types,
     const FormData& form,
     const FormFieldData& field) {
   NotifyObservers(&Observer::OnSuggestionsShown);
@@ -1559,7 +1558,7 @@ void BrowserAutofillManager::DidShowSuggestions(
   }
 
   if (base::Contains(shown_suggestions_types, FillingProduct::kCreditCard,
-                     GetFillingProductFromPopupItemId) &&
+                     GetFillingProductFromSuggestionType) &&
       IsCreditCardFidoAuthenticationEnabled()) {
     credit_card_access_manager_->PrepareToFetchCreditCard();
   }
@@ -1576,15 +1575,15 @@ void BrowserAutofillManager::DidShowSuggestions(
   // not mess with the current denominator (classified forms).
   const bool is_address_manual_fallback_on_non_address_field =
       base::ranges::any_of(
-          shown_suggestions_types, [autofill_field](PopupItemId popup_item_id) {
+          shown_suggestions_types, [autofill_field](SuggestionType type) {
             return IsAddressAutofillManuallyTriggeredOnNonAddressField(
-                popup_item_id, autofill_field);
+                type, autofill_field);
           });
   const bool is_payments_manual_fallback_on_non_payments_field =
       base::ranges::any_of(
-          shown_suggestions_types, [autofill_field](PopupItemId popup_item_id) {
+          shown_suggestions_types, [autofill_field](SuggestionType type) {
             return IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
-                popup_item_id, autofill_field);
+                type, autofill_field);
           });
   if (is_address_manual_fallback_on_non_address_field) {
     manual_fallback_logger_->OnDidShowSuggestions(FillingProduct::kAddress);
@@ -1614,7 +1613,7 @@ void BrowserAutofillManager::DidShowSuggestions(
 
 void BrowserAutofillManager::OnHidePopupImpl() {
   single_field_form_fill_router_->CancelPendingQueries();
-  client().HideAutofillSuggestions(PopupHidingReason::kRendererEvent);
+  client().HideAutofillSuggestions(SuggestionHidingReason::kRendererEvent);
   client().HideAutofillFieldIphForManualFallbackFeature();
   if (fast_checkout_delegate_) {
     fast_checkout_delegate_->HideFastCheckout(/*allow_further_runs=*/false);
@@ -1651,29 +1650,28 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
 void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
     const std::u16string& name,
     const std::u16string& value,
-    PopupItemId popup_item_id) {
+    SuggestionType type) {
   single_field_form_fill_router_->OnRemoveCurrentSingleFieldSuggestion(
-      name, value, popup_item_id);
+      name, value, type);
 }
 
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    PopupItemId popup_item_id,
+    SuggestionType type,
     const FormData& form,
     const FormFieldData& field) {
-  single_field_form_fill_router_->OnSingleFieldSuggestionSelected(
-      value, popup_item_id);
+  single_field_form_fill_router_->OnSingleFieldSuggestionSelected(value, type);
 
   AutofillField* autofill_trigger_field = GetAutofillField(form, field);
   if (!autofill_trigger_field) {
     return;
   }
   if (IsSingleFieldFormFillerFillingProduct(
-          GetFillingProductFromPopupItemId(popup_item_id))) {
+          GetFillingProductFromSuggestionType(type))) {
     autofill_trigger_field->AppendLogEventIfNotRepeated(
         TriggerFillFieldLogEvent{
             .data_type =
-                GetEventTypeFromSingleFieldSuggestionPopupItemId(popup_item_id),
+                GetEventTypeFromSingleFieldSuggestionSuggestionType(type),
             .associated_country_code = "",
             .timestamp = AutofillClock::Now()});
   }
@@ -2567,7 +2565,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     } else {
       Suggestion warning_suggestion(
           l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
-      warning_suggestion.popup_item_id = PopupItemId::kMixedFormMessage;
+      warning_suggestion.type = SuggestionType::kMixedFormMessage;
       suggestions->emplace_back(warning_suggestion);
     }
     return;
@@ -2665,8 +2663,8 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     // credit card autofill HTTP warning experiment is enabled.
     Suggestion warning_suggestion(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
-    warning_suggestion.popup_item_id =
-        PopupItemId::kInsecureContextPaymentDisabledMessage;
+    warning_suggestion.type =
+        SuggestionType::kInsecureContextPaymentDisabledMessage;
     suggestions->assign(1, warning_suggestion);
   }
 }

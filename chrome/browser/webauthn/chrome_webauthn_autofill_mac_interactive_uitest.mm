@@ -16,7 +16,7 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -125,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   autofill::Suggestion webauthn_entry;
   for (suggestion_index = 0; suggestion_index < suggestions.size();
        ++suggestion_index) {
-    if (suggestions[suggestion_index].popup_item_id ==
-        autofill::PopupItemId::kWebauthnCredential) {
+    if (suggestions[suggestion_index].type ==
+        autofill::SuggestionType::kWebauthnCredential) {
       webauthn_entry = suggestions[suggestion_index];
       break;
     }

@@ -726,16 +726,16 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 // Logs information about what type of suggestion the user selected.
 - (void)logReauthenticationEvent:(ReauthenticationEvent)reauthenticationEvent
-                     popupItemId:(autofill::PopupItemId)popupItemId {
+                     popupItemId:(autofill::SuggestionType)popupItemId {
   std::string histogramName;
   if (self.currentProvider.type == SuggestionProviderTypePassword) {
     histogramName = "IOS.Reauth.Password.Autofill";
   } else if (self.currentProvider.type == SuggestionProviderTypeAutofill) {
     switch (popupItemId) {
-      case autofill::PopupItemId::kCreditCardEntry:
+      case autofill::SuggestionType::kCreditCardEntry:
         histogramName = "IOS.Reauth.CreditCard.Autofill";
         break;
-      case autofill::PopupItemId::kAddressEntry:
+      case autofill::SuggestionType::kAddressEntry:
         histogramName = "IOS.Reauth.Address.Autofill";
         break;
       default:

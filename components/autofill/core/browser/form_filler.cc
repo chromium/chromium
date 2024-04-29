@@ -432,7 +432,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     FormStructure* form_structure,
                                     AutofillField* autofill_field,
                                     const std::u16string& value,
-                                    PopupItemId popup_item_id) {
+                                    SuggestionType type) {
   if (autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
     autofill_field->set_is_autofilled(true);
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
@@ -443,14 +443,14 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = FillingMethod::kFieldByFieldFilling});
 
-    if (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
-        popup_item_id == PopupItemId::kAddressFieldByFieldFilling) {
+    if (type == SuggestionType::kCreditCardFieldByFieldFilling ||
+        type == SuggestionType::kAddressFieldByFieldFilling) {
       // TODO(crbug.com/40232021): Only use AutofillField.
       const FormFieldData* const filled_field = &field;
       form_autofill_history_.AddFormFillEntry(
           base::make_span(&filled_field, 1u),
           base::make_span(&autofill_field, 1u),
-          GetFillingProductFromPopupItemId(popup_item_id),
+          GetFillingProductFromSuggestionType(type),
           /*is_refill=*/false);
     }
   }

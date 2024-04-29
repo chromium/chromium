@@ -46,7 +46,7 @@ class PasswordCrossDomainConfirmationPopupControllerImpl
             base::OnceClosure confirmation_callback) override;
 
   // autofill::AutofillPopupViewDelegate:
-  void Hide(autofill::PopupHidingReason reason) override;
+  void Hide(autofill::SuggestionHidingReason reason) override;
   void ViewDestroyed() override;
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;

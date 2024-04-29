@@ -255,14 +255,14 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   CGSize windowSize = [[UIScreen mainScreen] bounds].size;
   CGFloat portraitScreenWidth = MIN(windowSize.width, windowSize.height);
   switch (_suggestion.popupItemId) {
-    case autofill::PopupItemId::kCreditCardEntry: {
+    case autofill::SuggestionType::kCreditCardEntry: {
       // Max width is just enough to show half of the credit card icon on the
       // 2nd suggestion, in portrait mode.
       CGFloat staticButtonsWidth = accessoryTrailingView.frame.size.width;
       maxWidth = (portraitScreenWidth - staticButtonsWidth) -
                  kHalfCreditCardIconOffset;
     } break;
-    case autofill::PopupItemId::kAddressEntry:
+    case autofill::SuggestionType::kAddressEntry:
       // Max width is half width, in portrait mode.
       maxWidth = portraitScreenWidth * 0.5;
       break;

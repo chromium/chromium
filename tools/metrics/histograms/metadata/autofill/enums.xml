@@ -1587,67 +1587,6 @@ Called by update_autofill_enums.py.-->
              response"/>
 </enum>
 
-<enum name="AutofillPopupHidingReason">
-  <int value="0" label="A suggestion was accepted."/>
-  <int value="1" label="An interstitial page displaces the popup."/>
-  <int value="2"
-      label="A field isn't edited anymore but remains focused for now."/>
-  <int value="3" label="Focus removed from field. Follows kEndEditing."/>
-  <int value="4"
-      label="Scrolling or zooming into the page displaces the popup."/>
-  <int value="5" label="A navigation on the page or frame level."/>
-  <int value="6" label="The popup is or would become empty."/>
-  <int value="7" label="The renderer explicitly requested closing the popup."/>
-  <int value="8"
-      label="The tab with the popup is destroyed, hidden or has become
-             inactive."/>
-  <int value="9" label="The popup contains stale data."/>
-  <int value="10"
-      label="The user explicitly dismissed the popup (e.g. ESC key)."/>
-  <int value="11"
-      label="The popup view (or its controller) goes out of scope."/>
-  <int value="12" label="The platform-native UI changed (e.g. window resize)."/>
-  <int value="13"
-      label="Not enough space in the content area to display at least one row
-             of the popup within the bounds of the content area."/>
-  <int value="14"
-      label="The popup would overlap with another open prompt, and may hide
-             sensitive information in the prompt."/>
-  <int value="15"
-      label="The anchor element for which the popup would be shown is not
-             visible in the content area."/>
-  <int value="16" label="The frame holds a pointer lock."/>
-  <int value="17"
-      label="The password generation popup would overlap and hide autofill
-             popup."/>
-  <int value="18"
-      label="The Touch To Fill surface is shown instead of autofill
-             suggestions."/>
-  <int value="19"
-      label="The context menu is shown instead of the autofill suggestions."/>
-  <int value="20"
-      label="The Fast Checkout surface is shown instead of autofill
-             suggestions."/>
-  <int value="21"
-      label="The Picture-in-picture window overlaps with the autofill
-             suggestion."/>
-  <int value="22"
-      label="The context menu was open after the autofill popup, which could
-             overlap with the autofill popup."/>
-  <int value="23"
-      label="No frame currently has focus. This case is caught for safety
-             because it might be reachable due to race conditions."/>
-  <int value="24"
-      label="The sub-popup was closed, e.g. because the mouse was moved to a
-             different suggestion in the parent popup."/>
-  <int value="25"
-      label="The user edited the field. Currently applied only to Compose
-             suggestions."/>
-  <int value="26"
-      label="The popup has faded due to an expired timer. Currently applied
-             only to Compose suggestions."/>
-</enum>
-
 <enum name="AutofillPredictionsComparisonResult">
 <!-- Generated from components/autofill/core/browser/field_types.h.
 Called by update_autofill_enums.py.-->
@@ -3449,6 +3388,67 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Expiration date did not match, full server card"/>
   <int value="2" label="Expiration date matched, masked server card"/>
   <int value="3" label="Expiration date did not match, masked server card"/>
+</enum>
+
+<enum name="AutofillSuggestionHidingReason">
+  <int value="0" label="A suggestion was accepted."/>
+  <int value="1" label="An interstitial page displaces the popup."/>
+  <int value="2"
+      label="A field isn't edited anymore but remains focused for now."/>
+  <int value="3" label="Focus removed from field. Follows kEndEditing."/>
+  <int value="4"
+      label="Scrolling or zooming into the page displaces the popup."/>
+  <int value="5" label="A navigation on the page or frame level."/>
+  <int value="6" label="The popup is or would become empty."/>
+  <int value="7" label="The renderer explicitly requested closing the popup."/>
+  <int value="8"
+      label="The tab with the popup is destroyed, hidden or has become
+             inactive."/>
+  <int value="9" label="The popup contains stale data."/>
+  <int value="10"
+      label="The user explicitly dismissed the popup (e.g. ESC key)."/>
+  <int value="11"
+      label="The popup view (or its controller) goes out of scope."/>
+  <int value="12" label="The platform-native UI changed (e.g. window resize)."/>
+  <int value="13"
+      label="Not enough space in the content area to display at least one row
+             of the popup within the bounds of the content area."/>
+  <int value="14"
+      label="The popup would overlap with another open prompt, and may hide
+             sensitive information in the prompt."/>
+  <int value="15"
+      label="The anchor element for which the popup would be shown is not
+             visible in the content area."/>
+  <int value="16" label="The frame holds a pointer lock."/>
+  <int value="17"
+      label="The password generation popup would overlap and hide autofill
+             popup."/>
+  <int value="18"
+      label="The Touch To Fill surface is shown instead of autofill
+             suggestions."/>
+  <int value="19"
+      label="The context menu is shown instead of the autofill suggestions."/>
+  <int value="20"
+      label="The Fast Checkout surface is shown instead of autofill
+             suggestions."/>
+  <int value="21"
+      label="The Picture-in-picture window overlaps with the autofill
+             suggestion."/>
+  <int value="22"
+      label="The context menu was open after the autofill popup, which could
+             overlap with the autofill popup."/>
+  <int value="23"
+      label="No frame currently has focus. This case is caught for safety
+             because it might be reachable due to race conditions."/>
+  <int value="24"
+      label="The sub-popup was closed, e.g. because the mouse was moved to a
+             different suggestion in the parent popup."/>
+  <int value="25"
+      label="The user edited the field. Currently applied only to Compose
+             suggestions."/>
+  <int value="26"
+      label="The popup has faded due to an expired timer. Currently applied
+             only to Compose suggestions."/>
 </enum>
 
 <enum name="AutofillSuggestionManageType">

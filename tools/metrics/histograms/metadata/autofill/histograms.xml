@@ -3746,8 +3746,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Autofill.PopupHidingReason" enum="AutofillPopupHidingReason"
-    expires_after="2024-09-22">
+<histogram name="Autofill.PopupHidingReason"
+    enum="AutofillSuggestionHidingReason" expires_after="2024-09-22">
   <owner>koerber@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>

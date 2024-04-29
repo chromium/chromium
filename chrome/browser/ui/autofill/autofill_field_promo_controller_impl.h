@@ -25,7 +25,7 @@ class RectF;
 
 namespace autofill {
 
-enum class PopupHidingReason;
+enum class SuggestionHidingReason;
 
 class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
  public:

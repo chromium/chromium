@@ -19,8 +19,8 @@
 #import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/browser/ui/mock_autofill_popup_delegate.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/browser/ui/suggestion.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -53,7 +53,7 @@ using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FillingProduct;
 using autofill::FormRendererId;
-using autofill::PopupItemId;
+using autofill::SuggestionType;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 @interface AutofillAgent (Testing)
@@ -329,7 +329,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   std::vector<autofill::Suggestion> autofillSuggestions;
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
-                           PopupItemId::kShowAccountCards));
+                           SuggestionType::kShowAccountCards));
   [autofill_agent_ showAutofillPopup:autofillSuggestions
                        popupDelegate:mock_delegate.GetWeakPtr()];
 
@@ -361,7 +361,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
 
   // "Show credit cards from account" should be the only suggestion.
   EXPECT_EQ(1U, completion_handler_suggestions.count);
-  EXPECT_EQ(PopupItemId::kShowAccountCards,
+  EXPECT_EQ(SuggestionType::kShowAccountCards,
             completion_handler_suggestions[0].popupItemId);
 }
 
@@ -397,10 +397,10 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
       autofill::Suggestion("Virtual card", "Quicksilver ••1111",
                            expiration_date_label,
                            autofill::Suggestion::Icon::kCardVisa,
-                           autofill::PopupItemId::kVirtualCreditCardEntry),
+                           autofill::SuggestionType::kVirtualCreditCardEntry),
       autofill::Suggestion("Quicksilver ••1111", "", expiration_date_label,
                            autofill::Suggestion::Icon::kCardVisa,
-                           autofill::PopupItemId::kCreditCardEntry),
+                           autofill::SuggestionType::kCreditCardEntry),
   };
 
   // Completion handler to retrieve suggestions.
@@ -446,7 +446,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
               virtual_card_suggestion.displayDescription);
   EXPECT_TRUE(
       gfx::test::PlatformImagesEqual(virtual_card_suggestion.icon, visa_icon));
-  EXPECT_EQ(autofill::PopupItemId::kVirtualCreditCardEntry,
+  EXPECT_EQ(autofill::SuggestionType::kVirtualCreditCardEntry,
             virtual_card_suggestion.popupItemId);
   EXPECT_NSEQ(@"", virtual_card_suggestion.backendIdentifier);
   EXPECT_EQ(false, virtual_card_suggestion.requiresReauth);
@@ -459,7 +459,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
               credit_card_suggestion.displayDescription);
   EXPECT_TRUE(
       gfx::test::PlatformImagesEqual(credit_card_suggestion.icon, visa_icon));
-  EXPECT_EQ(autofill::PopupItemId::kCreditCardEntry,
+  EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
             credit_card_suggestion.popupItemId);
   EXPECT_NSEQ(@"", credit_card_suggestion.backendIdentifier);
   EXPECT_EQ(false, credit_card_suggestion.requiresReauth);
@@ -480,11 +480,11 @@ TEST_F(AutofillAgentTests,
   // Initialize suggestion.
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kCardVisa,
-                           autofill::PopupItemId::kCreditCardEntry),
+                           autofill::SuggestionType::kCreditCardEntry),
       // This suggestion has a valid credit card icon, but the Suggestion type
       // (kShowAccountCards) is wrong.
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kCardVisa,
-                           autofill::PopupItemId::kShowAccountCards),
+                           autofill::SuggestionType::kShowAccountCards),
   };
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -532,7 +532,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
 
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
-                           autofill::PopupItemId::kCreditCardEntry)};
+                           autofill::SuggestionType::kCreditCardEntry)};
 
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -561,10 +561,10 @@ TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion(createSuggestionText, "",
                            autofill::Suggestion::Icon::kNoIcon,
-                           autofill::PopupItemId::kCreateNewPlusAddress),
+                           autofill::SuggestionType::kCreateNewPlusAddress),
       autofill::Suggestion(fillExistingSuggestionText, "",
                            autofill::Suggestion::Icon::kNoIcon,
-                           autofill::PopupItemId::kFillExistingPlusAddress)};
+                           autofill::SuggestionType::kFillExistingPlusAddress)};
 
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -590,11 +590,11 @@ TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
   // The plus address suggestions should be handled by the conversion to
   // `FormSuggestion` objects.
   EXPECT_EQ(2U, completion_handler_suggestions.count);
-  EXPECT_EQ(PopupItemId::kCreateNewPlusAddress,
+  EXPECT_EQ(SuggestionType::kCreateNewPlusAddress,
             completion_handler_suggestions[0].popupItemId);
   EXPECT_NSEQ(base::SysUTF8ToNSString(createSuggestionText),
               completion_handler_suggestions[0].value);
-  EXPECT_EQ(autofill::PopupItemId::kFillExistingPlusAddress,
+  EXPECT_EQ(autofill::SuggestionType::kFillExistingPlusAddress,
             completion_handler_suggestions[1].popupItemId);
   EXPECT_NSEQ(base::SysUTF8ToNSString(fillExistingSuggestionText),
               completion_handler_suggestions[1].value);
@@ -627,7 +627,7 @@ TEST_F(AutofillAgentTests,
   // Initialize suggestion, initially without a custom icon.
   std::vector<autofill::Suggestion> autofillSuggestions = {
       autofill::Suggestion("", "", suggestion_network_icon,
-                           autofill::PopupItemId::kCreditCardEntry)};
+                           autofill::SuggestionType::kCreditCardEntry)};
   ASSERT_TRUE(autofillSuggestions[0].custom_icon.IsEmpty());
 
   // When the custom icon is not present, the default icon should be used.
@@ -661,12 +661,12 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   std::vector<autofill::Suggestion> autofillSuggestions;
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
-                           autofill::PopupItemId::kAddressEntry));
+                           autofill::SuggestionType::kAddressEntry));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
-                           autofill::PopupItemId::kAddressEntry));
+                           autofill::SuggestionType::kAddressEntry));
   autofillSuggestions.push_back(autofill::Suggestion(
-      "", "", autofill::Suggestion::Icon::kNoIcon, PopupItemId::kClearForm));
+      "", "", autofill::Suggestion::Icon::kNoIcon, SuggestionType::kClearForm));
   [autofill_agent_
       showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
@@ -700,11 +700,11 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   // "Clear Form" should appear as the first suggestion. Otherwise, the order of
   // suggestions should not change.
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(PopupItemId::kClearForm,
+  EXPECT_EQ(SuggestionType::kClearForm,
             completion_handler_suggestions[0].popupItemId);
-  EXPECT_EQ(autofill::PopupItemId::kAddressEntry,
+  EXPECT_EQ(autofill::SuggestionType::kAddressEntry,
             completion_handler_suggestions[1].popupItemId);
-  EXPECT_EQ(autofill::PopupItemId::kAddressEntry,
+  EXPECT_EQ(autofill::SuggestionType::kAddressEntry,
             completion_handler_suggestions[2].popupItemId);
 }
 
@@ -718,12 +718,12 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   std::vector<autofill::Suggestion> autofillSuggestions;
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
-                           autofill::PopupItemId::kCreditCardEntry));
+                           autofill::SuggestionType::kCreditCardEntry));
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", autofill::Suggestion::Icon::kNoIcon,
-                           autofill::PopupItemId::kCreditCardEntry));
+                           autofill::SuggestionType::kCreditCardEntry));
   autofillSuggestions.push_back(autofill::Suggestion(
-      "", "", autofill::Suggestion::Icon::kNoIcon, PopupItemId::kClearForm));
+      "", "", autofill::Suggestion::Icon::kNoIcon, SuggestionType::kClearForm));
   [autofill_agent_
       showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
@@ -755,11 +755,11 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
       }));
 
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(PopupItemId::kClearForm,
+  EXPECT_EQ(SuggestionType::kClearForm,
             completion_handler_suggestions[0].popupItemId);
-  EXPECT_EQ(autofill::PopupItemId::kCreditCardEntry,
+  EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
             completion_handler_suggestions[1].popupItemId);
-  EXPECT_EQ(autofill::PopupItemId::kCreditCardEntry,
+  EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
             completion_handler_suggestions[2].popupItemId);
 }
 

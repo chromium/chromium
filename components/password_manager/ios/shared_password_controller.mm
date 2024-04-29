@@ -24,7 +24,7 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -524,7 +524,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                suggestionWithValue:value
                 displayDescription:rawSuggestion.displayDescription
                               icon:nil
-                       popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                       popupItemId:autofill::SuggestionType::kAutocompleteEntry
                  backendIdentifier:nil
                     requiresReauth:YES
         acceptanceA11yAnnouncement:nil
@@ -546,7 +546,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
         suggestionWithValue:suggestPassword
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::PopupItemId::kGeneratePasswordEntry
+                popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
           backendIdentifier:nil
              requiresReauth:NO];
 
@@ -579,7 +579,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   }
 
   switch (suggestion.popupItemId) {
-    case autofill::PopupItemId::kAllSavedPasswordsEntry: {
+    case autofill::SuggestionType::kAllSavedPasswordsEntry: {
       completion();
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
@@ -587,7 +587,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
           [self IsOffTheRecord]);
       return;
     }
-    case autofill::PopupItemId::kGeneratePasswordEntry: {
+    case autofill::SuggestionType::kGeneratePasswordEntry: {
       // Don't call completion because current suggestion state should remain
       // whether user injects a generated password or cancels.
       [self generatePasswordForFormId:formRendererID

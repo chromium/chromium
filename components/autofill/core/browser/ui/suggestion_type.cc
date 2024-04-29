@@ -2,151 +2,151 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 
 namespace autofill {
 
-std::ostream& operator<<(std::ostream& os, PopupItemId popup_item_id) {
-  switch (popup_item_id) {
-    case PopupItemId::kAutocompleteEntry:
+std::ostream& operator<<(std::ostream& os, SuggestionType type) {
+  switch (type) {
+    case SuggestionType::kAutocompleteEntry:
       os << "kAutocompleteEntry";
       break;
-    case PopupItemId::kAddressEntry:
+    case SuggestionType::kAddressEntry:
       os << "kAddressEntry";
       break;
-    case PopupItemId::kFillFullAddress:
+    case SuggestionType::kFillFullAddress:
       os << "kFillFullAddress";
       break;
-    case PopupItemId::kFillFullName:
+    case SuggestionType::kFillFullName:
       os << "kFillFullName";
       break;
-    case PopupItemId::kFillEverythingFromAddressProfile:
+    case SuggestionType::kFillEverythingFromAddressProfile:
       os << "kFillEverythingFromAddressProfile";
       break;
-    case PopupItemId::kFillFullPhoneNumber:
+    case SuggestionType::kFillFullPhoneNumber:
       os << "kFillFullPhoneNumber";
       break;
-    case PopupItemId::kFillFullEmail:
+    case SuggestionType::kFillFullEmail:
       os << "kFillFullEmail";
       break;
-    case PopupItemId::kAddressFieldByFieldFilling:
+    case SuggestionType::kAddressFieldByFieldFilling:
       os << "kAddressFieldByFieldFilling";
       break;
-    case PopupItemId::kEditAddressProfile:
+    case SuggestionType::kEditAddressProfile:
       os << "kEditAddressProfile";
       break;
-    case PopupItemId::kDeleteAddressProfile:
+    case SuggestionType::kDeleteAddressProfile:
       os << "kDeleteAddressProfile";
       break;
-    case PopupItemId::kAutofillOptions:
+    case SuggestionType::kAutofillOptions:
       os << "kAutofillOptions";
       break;
-    case PopupItemId::kCompose:
+    case SuggestionType::kCompose:
       os << "kCompose";
       break;
-    case PopupItemId::kComposeDisable:
+    case SuggestionType::kComposeDisable:
       os << "kComposeDisable";
       break;
-    case PopupItemId::kComposeGoToSettings:
+    case SuggestionType::kComposeGoToSettings:
       os << "kComposeGoToSettings";
       break;
-    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
       os << "kComposeNeverShowOnThisSiteAgain";
       break;
-    case PopupItemId::kComposeSavedStateNotification:
+    case SuggestionType::kComposeSavedStateNotification:
       os << "kComposeSavedStateNotification";
       break;
-    case PopupItemId::kDatalistEntry:
+    case SuggestionType::kDatalistEntry:
       os << "kDatalistEntry";
       break;
-    case PopupItemId::kPasswordEntry:
+    case SuggestionType::kPasswordEntry:
       os << "kPasswordEntry";
       break;
-    case PopupItemId::kAllSavedPasswordsEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
       os << "kAllSavedPasswordsEntry";
       break;
-    case PopupItemId::kGeneratePasswordEntry:
+    case SuggestionType::kGeneratePasswordEntry:
       os << "kGeneratePasswordEntry";
       break;
-    case PopupItemId::kShowAccountCards:
+    case SuggestionType::kShowAccountCards:
       os << "kShowAccountCards";
       break;
-    case PopupItemId::kPasswordAccountStorageOptIn:
+    case SuggestionType::kPasswordAccountStorageOptIn:
       os << "kPasswordAccountStorageOptIn";
       break;
-    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
       os << "kPasswordAccountStorageOptInAndGenerate";
       break;
-    case PopupItemId::kAccountStoragePasswordEntry:
+    case SuggestionType::kAccountStoragePasswordEntry:
       os << "kAccountStoragePasswordEntry";
       break;
-    case PopupItemId::kPasswordAccountStorageReSignin:
+    case SuggestionType::kPasswordAccountStorageReSignin:
       os << "kPasswordAccountStorageReSignin";
       break;
-    case PopupItemId::kPasswordAccountStorageEmpty:
+    case SuggestionType::kPasswordAccountStorageEmpty:
       os << "kPasswordAccountStorageEmpty";
       break;
-    case PopupItemId::kPasswordFieldByFieldFilling:
+    case SuggestionType::kPasswordFieldByFieldFilling:
       os << "kPasswordFieldByFieldFilling";
       break;
-    case PopupItemId::kFillPassword:
+    case SuggestionType::kFillPassword:
       os << "kFillPassword";
       break;
-    case PopupItemId::kViewPasswordDetails:
+    case SuggestionType::kViewPasswordDetails:
       os << "kViewPasswordDetails";
       break;
-    case PopupItemId::kCreditCardEntry:
+    case SuggestionType::kCreditCardEntry:
       os << "kCreditCardEntry";
       break;
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
       os << "kInsecureContextPaymentDisabledMessage";
       break;
-    case PopupItemId::kScanCreditCard:
+    case SuggestionType::kScanCreditCard:
       os << "kScanCreditCard";
       break;
-    case PopupItemId::kVirtualCreditCardEntry:
+    case SuggestionType::kVirtualCreditCardEntry:
       os << "kVirtualCreditCardEntry";
       break;
-    case PopupItemId::kCreditCardFieldByFieldFilling:
+    case SuggestionType::kCreditCardFieldByFieldFilling:
       os << "kCreditCardFieldByFieldFilling";
       break;
-    case PopupItemId::kIbanEntry:
+    case SuggestionType::kIbanEntry:
       os << "kIbanEntry";
       break;
-    case PopupItemId::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddress:
       os << "kCreateNewPlusAddress";
       break;
-    case PopupItemId::kFillExistingPlusAddress:
+    case SuggestionType::kFillExistingPlusAddress:
       os << "kFillExistingPlusAddress";
       break;
-    case PopupItemId::kMerchantPromoCodeEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
       os << "kMerchantPromoCodeEntry";
       break;
-    case PopupItemId::kSeePromoCodeDetails:
+    case SuggestionType::kSeePromoCodeDetails:
       os << "kSeePromoCodeDetails";
       break;
-    case PopupItemId::kWebauthnCredential:
+    case SuggestionType::kWebauthnCredential:
       os << "kWebauthnCredential";
       break;
-    case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
       os << "kWebauthnSignInWithAnotherDevice";
       break;
-    case PopupItemId::kTitle:
+    case SuggestionType::kTitle:
       os << "kTitle";
       break;
-    case PopupItemId::kSeparator:
+    case SuggestionType::kSeparator:
       os << "kSeparator";
       break;
-    case PopupItemId::kClearForm:
+    case SuggestionType::kClearForm:
       os << "kClearForm";
       break;
-    case PopupItemId::kMixedFormMessage:
+    case SuggestionType::kMixedFormMessage:
       os << "kMixedFormMessage";
       break;
-    case PopupItemId::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddresses:
       os << "kDevtoolsTestAddresses";
       break;
-    case PopupItemId::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddressEntry:
       os << "kDevtoolsTestAddressEntry";
       break;
   }

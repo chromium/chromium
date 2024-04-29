@@ -175,9 +175,9 @@ class AutofillMetricsBaseTest {
   void DidShowAutofillSuggestions(
       const FormData& form,
       size_t field_index = 0,
-      PopupItemId suggestion_type = PopupItemId::kAddressEntry) {
+      SuggestionType suggestion_type = SuggestionType::kAddressEntry) {
     autofill_manager().DidShowSuggestions(
-        std::vector<PopupItemId>({suggestion_type}), form,
+        std::vector<SuggestionType>({suggestion_type}), form,
         form.fields[field_index]);
   }
 

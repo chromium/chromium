@@ -11,7 +11,7 @@
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
@@ -46,12 +46,11 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override {}
   void CancelPendingQueries() override {}
-  void OnRemoveCurrentSingleFieldSuggestion(
-      const std::u16string& field_name,
-      const std::u16string& value,
-      PopupItemId popup_item_id) override {}
+  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
+                                            const std::u16string& value,
+                                            SuggestionType type) override {}
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       PopupItemId popup_item_id) override;
+                                       SuggestionType type) override;
 
  private:
   // Records metrics related to the IBAN suggestions popup.

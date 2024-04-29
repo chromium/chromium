@@ -895,7 +895,7 @@ void DownloadToolbarButtonView::CloseAutofillPopup() {
   if (auto* autofill_client =
           autofill::ContentAutofillClient::FromWebContents(web_contents)) {
     autofill_client->HideAutofillSuggestions(
-        autofill::PopupHidingReason::kOverlappingWithAnotherPrompt);
+        autofill::SuggestionHidingReason::kOverlappingWithAnotherPrompt);
   }
 }
 

@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/user_education/common/new_badge_controller.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +31,7 @@ using ::testing::Return;
 namespace {
 
 Suggestion CreatePasswordSuggestion(const std::u16string& main_text) {
-  Suggestion suggestion(main_text, PopupItemId::kPasswordEntry);
+  Suggestion suggestion(main_text, SuggestionType::kPasswordEntry);
   suggestion.icon = Suggestion::Icon::kKey;
   suggestion.additional_label = u"****";
   return suggestion;
@@ -39,7 +39,7 @@ Suggestion CreatePasswordSuggestion(const std::u16string& main_text) {
 
 Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
                                         std::vector<Suggestion> children) {
-  Suggestion suggestion(main_text, PopupItemId::kAddressEntry);
+  Suggestion suggestion(main_text, SuggestionType::kAddressEntry);
   suggestion.children = std::move(children);
   return suggestion;
 }
@@ -51,36 +51,36 @@ const Suggestion kSuggestions[] = {
                "Minor text",
                "label",
                Suggestion::Icon::kLocation,
-               PopupItemId::kAddressEntry),
+               SuggestionType::kAddressEntry),
     Suggestion("Fill_Full_Email_entry",
                "Minor text",
                "label",
                Suggestion::Icon::kNoIcon,
-               PopupItemId::kFillFullEmail),
+               SuggestionType::kFillFullEmail),
     CreatePasswordSuggestion(u"Password_entry"),
     Suggestion("Autofill_options",
                "Minor text",
                "label",
                Suggestion::Icon::kSettings,
-               PopupItemId::kAutofillOptions),
-    Suggestion(u"Autocomplete", PopupItemId::kAutocompleteEntry),
+               SuggestionType::kAutofillOptions),
+    Suggestion(u"Autocomplete", SuggestionType::kAutocompleteEntry),
     Suggestion("Compose",
                "Minor text",
                "label",
                Suggestion::Icon::kMagic,
-               PopupItemId::kCompose),
+               SuggestionType::kCompose),
     Suggestion("Edit_address",
                "label",
                Suggestion::Icon::kEdit,
-               PopupItemId::kEditAddressProfile),
+               SuggestionType::kEditAddressProfile),
     Suggestion("Promo_code",
                "label",
                Suggestion::Icon::kGlobe,
-               PopupItemId::kSeePromoCodeDetails),
+               SuggestionType::kSeePromoCodeDetails),
 };
 const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
     u"Address_entry",
-    {Suggestion(u"Username", PopupItemId::kPasswordEntry)})};
+    {Suggestion(u"Username", SuggestionType::kPasswordEntry)})};
 
 }  // namespace
 

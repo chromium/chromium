@@ -202,7 +202,7 @@ class AutofillCapturedSitesInteractiveTest
       TryToCloseAllPrompts(web_contents);
 
       autofill_manager.client().HideAutofillSuggestions(
-          autofill::PopupHidingReason::kViewDestroyed);
+          autofill::SuggestionHidingReason::kViewDestroyed);
 
       testing::AssertionResult suggestions_shown = ShowAutofillSuggestion(
           focus_element_css_selector, iframe_path, frame);
@@ -255,7 +255,7 @@ class AutofillCapturedSitesInteractiveTest
     }
 
     autofill_manager.client().HideAutofillSuggestions(
-        autofill::PopupHidingReason::kViewDestroyed);
+        autofill::SuggestionHidingReason::kViewDestroyed);
     ADD_FAILURE() << "Failed to autofill the form!";
     return false;
   }

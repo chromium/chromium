@@ -149,7 +149,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
       suggestionWithValue:@"value"
        displayDescription:@"display-description"
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+              popupItemId:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   NSArray<FormSuggestion*>* suggestions = [NSArray arrayWithObject:suggestion];
@@ -199,7 +199,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
       suggestionWithValue:@"value"
        displayDescription:@"display-description"
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+              popupItemId:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   NSArray<FormSuggestion*>* suggestions_from_first_query =
@@ -209,7 +209,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
       suggestionWithValue:@"value2"
        displayDescription:@"display-description"
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+              popupItemId:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   NSArray<FormSuggestion*>* suggestions_from_second_query =

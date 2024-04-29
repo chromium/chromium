@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_ITEM_IDS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_ITEM_IDS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_TYPE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_TYPE_H_
 
 #include <ostream>
 
@@ -11,15 +11,14 @@
 
 namespace autofill {
 
-// This enum defines item identifiers for Autofill popup controller.
+// This enum defines item identifiers for Autofill suggestion controller.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
-enum class PopupItemId : int {
+enum class SuggestionType {
   // Autocomplete suggestions.
   kAutocompleteEntry,
 
   // Autofill profile suggestions.
-  // Fill the whole for the current address. Triggered from the main/root
-  // popup suggestion.
+  // Fill the whole for the current address. On Desktop, it is triggered from the main (i.e. root popup) suggestion.
   kAddressEntry,
   // Fills all address related fields, e.g ADDRESS_HOME_LINE1,
   // ADDRESS_HOME_HOUSE_NUMBER etc.
@@ -105,18 +104,18 @@ enum class PopupItemId : int {
   kMaxValue = kDevtoolsTestAddressEntry
 };
 
-std::ostream& operator<<(std::ostream& os, PopupItemId popup_item_id);
+std::ostream& operator<<(std::ostream& os, SuggestionType type);
 
-// Set of `PopupItemId`s that trigger filling a value into an input element
+// Set of `SuggestionType`s that trigger filling a value into an input element
 // when the user selects a suggestion with that id.
 inline constexpr auto kItemsTriggeringFieldFilling = DenseSet(
-    {PopupItemId::kAccountStoragePasswordEntry, PopupItemId::kAddressEntry,
-     PopupItemId::kAutocompleteEntry, PopupItemId::kCompose,
-     PopupItemId::kCreditCardEntry, PopupItemId::kDatalistEntry,
-     PopupItemId::kFillEverythingFromAddressProfile,
-     PopupItemId::kMerchantPromoCodeEntry, PopupItemId::kPasswordEntry,
-     PopupItemId::kVirtualCreditCardEntry});
+    {SuggestionType::kAccountStoragePasswordEntry, SuggestionType::kAddressEntry,
+     SuggestionType::kAutocompleteEntry, SuggestionType::kCompose,
+     SuggestionType::kCreditCardEntry, SuggestionType::kDatalistEntry,
+     SuggestionType::kFillEverythingFromAddressProfile,
+     SuggestionType::kMerchantPromoCodeEntry, SuggestionType::kPasswordEntry,
+     SuggestionType::kVirtualCreditCardEntry});
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_ITEM_IDS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_TYPE_H_

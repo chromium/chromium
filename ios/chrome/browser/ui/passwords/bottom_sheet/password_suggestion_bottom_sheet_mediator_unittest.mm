@@ -46,7 +46,7 @@ FormSuggestion* SuggestionForSingleUsernameForm() {
              suggestionWithValue:@"foo"
               displayDescription:nil
                             icon:nil
-                     popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                     popupItemId:autofill::SuggestionType::kAutocompleteEntry
                backendIdentifier:nil
                   requiresReauth:NO
       acceptanceA11yAnnouncement:nil
@@ -113,13 +113,13 @@ NSString* PrimaryActionLabelForUsernameFill() {
         suggestionWithValue:@"foo"
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                popupItemId:autofill::SuggestionType::kAutocompleteEntry
           backendIdentifier:nil
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
-                            popupItemId:autofill::PopupItemId::kAddressEntry
+                            popupItemId:autofill::SuggestionType::kAddressEntry
                       backendIdentifier:nil
                          requiresReauth:NO]
   ];
@@ -414,7 +414,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
                                                kPasswordFormSuggestionSuffix]
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+              popupItemId:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   std::optional<password_manager::CredentialUIEntry> credential =
@@ -441,7 +441,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
       suggestionWithValue:@"test1"
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+              popupItemId:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   std::optional<password_manager::CredentialUIEntry> credential =

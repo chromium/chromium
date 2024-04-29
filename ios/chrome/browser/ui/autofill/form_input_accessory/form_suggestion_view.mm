@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/i18n/rtl.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"

@@ -24,8 +24,8 @@
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -267,8 +267,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     size_t webauthn_entry_count = 0;
     autofill::Suggestion webauthn_entry;
     for (size_t i = 0; i < suggestions.size(); ++i) {
-      if (suggestions[i].popup_item_id ==
-          autofill::PopupItemId::kWebauthnCredential) {
+      if (suggestions[i].type ==
+          autofill::SuggestionType::kWebauthnCredential) {
         webauthn_entry = suggestions[i];
         suggestion_index = i;
         webauthn_entry_count++;
@@ -317,8 +317,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     autofill::Suggestion webauthn_entry;
     for (suggestion_index = 0; suggestion_index < suggestions.size();
          ++suggestion_index) {
-      if (suggestions[suggestion_index].popup_item_id ==
-          autofill::PopupItemId::kWebauthnCredential) {
+      if (suggestions[suggestion_index].type ==
+          autofill::SuggestionType::kWebauthnCredential) {
         webauthn_entry = suggestions[suggestion_index];
         break;
       }
@@ -338,7 +338,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
     // The popup may have gone away while waiting. If not, make sure it's gone.
     if (suggestion_controller) {
-      suggestion_controller->Hide(autofill::PopupHidingReason::kUserAborted);
+      suggestion_controller->Hide(
+          autofill::SuggestionHidingReason::kUserAborted);
     }
 
     // Interact with the username field. Since there is still a saved password,
@@ -349,10 +350,9 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
           autofill_client->suggestion_controller_for_testing();
     }
     for (const auto& suggestion : suggestion_controller->GetSuggestions()) {
-      EXPECT_NE(suggestion.popup_item_id,
-                autofill::PopupItemId::kWebauthnCredential);
-      EXPECT_NE(suggestion.popup_item_id,
-                autofill::PopupItemId::kWebauthnSignInWithAnotherDevice);
+      EXPECT_NE(suggestion.type, autofill::SuggestionType::kWebauthnCredential);
+      EXPECT_NE(suggestion.type,
+                autofill::SuggestionType::kWebauthnSignInWithAnotherDevice);
     }
   }
 
@@ -472,8 +472,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   size_t webauthn_entry_count = 0;
   autofill::Suggestion webauthn_entry;
   for (size_t i = 0; i < suggestions.size(); ++i) {
-    if (suggestions[i].popup_item_id ==
-        autofill::PopupItemId::kWebauthnCredential) {
+    if (suggestions[i].type == autofill::SuggestionType::kWebauthnCredential) {
       webauthn_entry = suggestions[i];
       suggestion_index = i;
       webauthn_entry_count++;
@@ -499,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   // popup so that the autofill client can be destroyed, avoiding
   // a DCHECK on test tear down.
   autofill_client->HideAutofillSuggestions(
-      autofill::PopupHidingReason::kTabGone);
+      autofill::SuggestionHidingReason::kTabGone);
   // The tracker outlives the test. Clean up the device_info to avoid flakiness.
   tracker->Remove(&device_info);
 }
@@ -535,8 +534,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   // There should be no webauthn suggestions.
   auto suggestions = suggestion_controller->GetSuggestions();
   for (const auto& suggestion : suggestions) {
-    ASSERT_NE(suggestion.popup_item_id,
-              autofill::PopupItemId::kWebauthnCredential);
+    ASSERT_NE(suggestion.type, autofill::SuggestionType::kWebauthnCredential);
   }
 
   // Simulate the user opting in to sync by injecting a phone and a passkey.
@@ -560,8 +558,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
         autofill_client->suggestion_controller_for_testing();
     suggestions = suggestion_controller->GetSuggestions();
     for (size_t i = 0; i < suggestions.size(); ++i) {
-      if (suggestions[i].popup_item_id ==
-          autofill::PopupItemId::kWebauthnCredential) {
+      if (suggestions[i].type ==
+          autofill::SuggestionType::kWebauthnCredential) {
         webauthn_entry = suggestions[i];
         suggestion_index = i;
       }
@@ -585,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   // popup so that the autofill client can be destroyed, avoiding
   // a DCHECK on test tear down.
   autofill_client->HideAutofillSuggestions(
-      autofill::PopupHidingReason::kTabGone);
+      autofill::SuggestionHidingReason::kTabGone);
   // The tracker outlives the test. Clean up the device_info to avoid flakiness.
   tracker->Remove(&device_info);
 }

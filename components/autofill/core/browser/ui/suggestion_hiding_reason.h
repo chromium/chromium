@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_HIDING_REASONS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_HIDING_REASONS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_HIDING_REASON_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_HIDING_REASON_H_
 
 namespace autofill {
 
@@ -12,7 +12,7 @@ namespace autofill {
 // numeric values should never be reused.
 // When adding a value to this enum, please update
 // tools/metrics/histograms/enums.xml.
-enum class PopupHidingReason {
+enum class SuggestionHidingReason {
   // A suggestion was accepted.
   kAcceptSuggestion = 0,
   // An interstitial page displaces the popup.
@@ -83,4 +83,4 @@ enum class PopupHidingReason {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_POPUP_HIDING_REASONS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_HIDING_REASON_H_

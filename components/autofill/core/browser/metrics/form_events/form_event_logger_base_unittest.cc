@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -257,7 +257,7 @@ TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields[2], u"CC_NAME_VALUE",
-      PopupItemId::kCreditCardFieldByFieldFilling);
+      SuggestionType::kCreditCardFieldByFieldFilling);
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form, form.fields[3],
       test::GetCreditCard(), std::u16string(),
@@ -288,7 +288,7 @@ TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields[3], u"SOME_VALUE",
-      PopupItemId::kCreditCardFieldByFieldFilling);
+      SuggestionType::kCreditCardFieldByFieldFilling);
 
   base::HistogramTester histogram_tester;
   ResetDriverToCommitMetrics();

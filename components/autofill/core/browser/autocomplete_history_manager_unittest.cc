@@ -741,7 +741,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Now simulate one autocomplete entry being selected, and expect a metric
   // being logged for that value alone.
   autocomplete_manager_->OnSingleFieldSuggestionSelected(
-      test_value, PopupItemId::kAutocompleteEntry);
+      test_value, SuggestionType::kAutocompleteEntry);
 
   histogram_tester.ExpectBucketCount("Autocomplete.DaysSinceLastUse",
                                      days_since_last_use, 1);

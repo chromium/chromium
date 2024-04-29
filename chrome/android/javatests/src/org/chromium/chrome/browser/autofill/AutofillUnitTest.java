@@ -26,7 +26,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.PopupItemId;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -110,14 +110,14 @@ public class AutofillUnitTest {
                     .setLabel("Sherlock Holmes")
                     .setSubLabel("221B Baker Street")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthur Dent")
                     .setSubLabel("West Country")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build()
         };
@@ -129,35 +129,35 @@ public class AutofillUnitTest {
                     .setLabel("Sherlock Holmes")
                     .setSubLabel("221B Baker Street")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthur Dent")
                     .setSubLabel("West Country")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Arthos")
                     .setSubLabel("France")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Porthos")
                     .setSubLabel("France")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build(),
             new AutofillSuggestion.Builder()
                     .setLabel("Aramis")
                     .setSubLabel("France")
                     .setItemTag("")
-                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                     .setFeatureForIPH("")
                     .build()
         };

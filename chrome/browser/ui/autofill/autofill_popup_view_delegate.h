@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_DELEGATE_H_
 
 #include "base/i18n/rtl.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -26,7 +26,7 @@ class AutofillPopupViewDelegate {
   // Called when the popup should be hidden. Controller will be deleted after
   // the view has been hidden and destroyed. The reason can be used to decide
   // whether to defer that.
-  virtual void Hide(PopupHidingReason reason) = 0;
+  virtual void Hide(SuggestionHidingReason reason) = 0;
 
   // Called when the popup view was destroyed.
   virtual void ViewDestroyed() = 0;

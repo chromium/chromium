@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,7 +52,7 @@ class PopupRowWithButtonViewTest : public ChromeViewsTestBase {
     widget_ = CreateTestWidget();
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    controller_.set_suggestions({PopupItemId::kAddressEntry});
+    controller_.set_suggestions({SuggestionType::kAddressEntry});
   }
 
   void ShowView(std::unique_ptr<PopupRowWithButtonView> view) {

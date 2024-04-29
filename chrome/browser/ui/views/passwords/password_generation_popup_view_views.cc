@@ -317,7 +317,7 @@ class NudgePasswordButtons : public views::View {
  private:
   void CancelButtonPressed() {
     if (controller_) {
-      controller_->Hide(autofill::PopupHidingReason::kUserAborted);
+      controller_->Hide(autofill::SuggestionHidingReason::kUserAborted);
     }
   }
   void AcceptButtonPressed() {

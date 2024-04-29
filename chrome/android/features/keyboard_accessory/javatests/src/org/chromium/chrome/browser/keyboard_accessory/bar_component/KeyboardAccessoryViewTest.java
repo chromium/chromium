@@ -82,7 +82,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.PopupItemId;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -324,7 +324,8 @@ public class KeyboardAccessoryViewTest {
                                                         .setLabel("Johnathan")
                                                         .setSubLabel("Smith")
                                                         .setItemTag("")
-                                                        .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                                                        .setSuggestionType(
+                                                                SuggestionType.ADDRESS_ENTRY)
                                                         .setFeatureForIPH("")
                                                         .build(),
                                                 new Action(
@@ -441,7 +442,7 @@ public class KeyboardAccessoryViewTest {
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
                                 .setItemTag("")
-                                .setPopupItemId(PopupItemId.PASSWORD_ENTRY)
+                                .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
                                 .setFeatureForIPH("")
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
@@ -478,7 +479,7 @@ public class KeyboardAccessoryViewTest {
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
                                 .setItemTag("")
-                                .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                                .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                                 .setFeatureForIPH("")
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
@@ -513,7 +514,7 @@ public class KeyboardAccessoryViewTest {
                                 .setLabel("Johnathan")
                                 .setSubLabel("Smith")
                                 .setItemTag("")
-                                .setPopupItemId(PopupItemId.CREDIT_CARD_ENTRY)
+                                .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                                 .setFeatureForIPH("")
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
@@ -586,7 +587,7 @@ public class KeyboardAccessoryViewTest {
                                 .setSubLabel("Smith")
                                 .setItemTag(itemTag)
                                 .setIconId(R.drawable.ic_offer_tag)
-                                .setPopupItemId(PopupItemId.CREDIT_CARD_ENTRY)
+                                .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                                 .setFeatureForIPH("")
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
@@ -754,7 +755,7 @@ public class KeyboardAccessoryViewTest {
                 .setLabel("Johnathan")
                 .setSubLabel("Smith")
                 .setIconId(R.drawable.visa_card)
-                .setPopupItemId(PopupItemId.ADDRESS_ENTRY);
+                .setSuggestionType(SuggestionType.ADDRESS_ENTRY);
     }
 
     // Convert a drawable to a Bitmap for comparison.
@@ -815,7 +816,7 @@ public class KeyboardAccessoryViewTest {
                         .setLabel(label)
                         .setSubLabel("Smith")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIPH("")
                         .build(),
                 new Action(AUTOFILL_SUGGESTION, chipCallback));

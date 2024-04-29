@@ -56,9 +56,9 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
   void CancelPendingQueries() override;
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
-                                            PopupItemId popup_item_id) override;
+                                            SuggestionType type) override;
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       PopupItemId popup_item_id) override;
+                                       SuggestionType type) override;
 
  private:
   // Handles autocompleting single fields. The `AutocompleteHistoryManager` is

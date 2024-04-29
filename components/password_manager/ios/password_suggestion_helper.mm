@@ -170,15 +170,16 @@ enum class FormExtractionStatus {
       FormSuggestionMetadata metadata;
       metadata.is_single_username_form = is_single_username_form;
       [results
-          addObject:[FormSuggestion suggestionWithValue:username
-                                     displayDescription:realm
-                                                   icon:nil
-                                            popupItemId:autofill::PopupItemId::
-                                                            kAutocompleteEntry
-                                      backendIdentifier:nil
-                                         requiresReauth:YES
-                             acceptanceA11yAnnouncement:nil
-                                               metadata:std::move(metadata)]];
+          addObject:[FormSuggestion
+                               suggestionWithValue:username
+                                displayDescription:realm
+                                              icon:nil
+                                       popupItemId:autofill::SuggestionType::
+                                                       kAutocompleteEntry
+                                 backendIdentifier:nil
+                                    requiresReauth:YES
+                        acceptanceA11yAnnouncement:nil
+                                          metadata:std::move(metadata)]];
     }
   }
 

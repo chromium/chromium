@@ -6,7 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/memory/ptr_util.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -47,13 +47,13 @@ AutofillPopupHideHelper::AutofillPopupHideHelper(
 AutofillPopupHideHelper::~AutofillPopupHideHelper() = default;
 
 void AutofillPopupHideHelper::WebContentsDestroyed() {
-  hiding_callback_.Run(PopupHidingReason::kTabGone);
+  hiding_callback_.Run(SuggestionHidingReason::kTabGone);
 }
 
 void AutofillPopupHideHelper::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
   if (hiding_params_.hide_on_web_contents_lost_focus) {
-    hiding_callback_.Run(PopupHidingReason::kFocusChanged);
+    hiding_callback_.Run(SuggestionHidingReason::kFocusChanged);
   }
 }
 
@@ -64,13 +64,13 @@ void AutofillPopupHideHelper::PrimaryMainFrameWasResized(bool width_changed) {
       return;
     }
   }
-  hiding_callback_.Run(PopupHidingReason::kWidgetChanged);
+  hiding_callback_.Run(SuggestionHidingReason::kWidgetChanged);
 }
 
 void AutofillPopupHideHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
-    hiding_callback_.Run(PopupHidingReason::kTabGone);
+    hiding_callback_.Run(SuggestionHidingReason::kTabGone);
   }
 }
 
@@ -82,7 +82,7 @@ void AutofillPopupHideHelper::RenderFrameDeleted(
   // which is not notified about `rfh`'s destruction and therefore won't close
   // the popup.
   if (rfh_id_ == rfh->GetGlobalId()) {
-    hiding_callback_.Run(PopupHidingReason::kRendererEvent);
+    hiding_callback_.Run(SuggestionHidingReason::kRendererEvent);
   }
 }
 
@@ -90,7 +90,7 @@ void AutofillPopupHideHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (rfh_id_ == navigation_handle->GetPreviousRenderFrameHostId() &&
       !navigation_handle->IsSameDocument()) {
-    hiding_callback_.Run(PopupHidingReason::kNavigation);
+    hiding_callback_.Run(SuggestionHidingReason::kNavigation);
   }
 }
 
@@ -102,14 +102,14 @@ void AutofillPopupHideHelper::OnZoomControllerDestroyed(
 
 void AutofillPopupHideHelper::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
-  hiding_callback_.Run(PopupHidingReason::kContentAreaMoved);
+  hiding_callback_.Run(SuggestionHidingReason::kContentAreaMoved);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void AutofillPopupHideHelper::OnEnterPictureInPicture() {
   if (pip_detection_callback_.Run()) {
     hiding_callback_.Run(
-        PopupHidingReason::kOverlappingWithPictureInPictureWindow);
+        SuggestionHidingReason::kOverlappingWithPictureInPictureWindow);
   }
 }
 
@@ -117,7 +117,7 @@ void AutofillPopupHideHelper::OnBeforeTextFieldDidChange(
     AutofillManager& manager,
     FormGlobalId form,
     FieldGlobalId field) {
-  hiding_callback_.Run(PopupHidingReason::kFieldValueChanged);
+  hiding_callback_.Run(SuggestionHidingReason::kFieldValueChanged);
 }
 
 }  // namespace autofill

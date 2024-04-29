@@ -51,7 +51,8 @@ class TestAutofillPopupControllerAutofillClient
       cast_popup_controller().SetViewForTesting(popup_view_->GetWeakPtr());
       manager_of_last_controller_ = manager.GetWeakPtr();
       ON_CALL(cast_popup_controller(), Hide)
-          .WillByDefault([this](PopupHidingReason reason) { DoHide(reason); });
+          .WillByDefault(
+              [this](SuggestionHidingReason reason) { DoHide(reason); });
     }
     return cast_popup_controller();
   }
@@ -61,7 +62,7 @@ class TestAutofillPopupControllerAutofillClient
   MockAutofillPopupView* sub_popup_view() { return sub_popup_view_.get(); }
 
  private:
-  void DoHide(PopupHidingReason reason) {
+  void DoHide(SuggestionHidingReason reason) {
     if (popup_controller_) {
       cast_popup_controller().DoHide(reason);
     }

@@ -48,7 +48,7 @@ class KeyboardAccessoryIPHUtils {
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED);
                 return;
             case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:
-                // Noop as the event is triggered in native AutofillPopupControllerImpl.
+                // Noop as the event is triggered in native AutofillKeyboardAccessoryControllerImpl.
                 return;
         }
         assert false : "No filling event emitted for feature: " + feature;

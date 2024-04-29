@@ -40,17 +40,17 @@ class ManualFallbackEventLoggerTest
         form, /*field_index=*/0,
         fallback_trigger_source ==
                 AutofillSuggestionTriggerSource::kManualFallbackAddress
-            ? PopupItemId::kAddressEntry
-            : PopupItemId::kCreditCardEntry);
+            ? SuggestionType::kAddressEntry
+            : SuggestionType::kCreditCardEntry);
   }
 
   // Fills the first field in the form by calling `FillOrPreviewField()`. Uses a
-  // hardcoded value to be filled but makes the `popup_item_id` passed to the
-  // filling function depend on whether the `manual_fallback_option` param
+  // hardcoded value to be filled but makes the `type` passed to
+  // the filling function depend on whether the `manual_fallback_option` param
   // attribute is `AutofillSuggestionTriggerSource::kManualFallbackAddress` or
   // `AutofillSuggestionTriggerSource::kManualFallbackPayments`. Using
-  // `PopupItemId::kAddressFieldByFieldFilling` for the former and
-  // `PopupItemId::kCreditCardFieldByFieldFilling` for the latter.
+  // `SuggestionType::kAddressFieldByFieldFilling` for the former and
+  // `SuggestionType::kCreditCardFieldByFieldFilling` for the latter.
   void FillFirstFormField(const FormData& form) {
     const ManualFallbackTestParams& params = GetParam();
     autofill_manager().FillOrPreviewField(
@@ -58,8 +58,8 @@ class ManualFallbackEventLoggerTest
         form, form.fields[0], u"value to fill",
         params.manual_fallback_option ==
                 AutofillSuggestionTriggerSource::kManualFallbackAddress
-            ? PopupItemId::kAddressFieldByFieldFilling
-            : PopupItemId::kCreditCardFieldByFieldFilling);
+            ? SuggestionType::kAddressFieldByFieldFilling
+            : SuggestionType::kCreditCardFieldByFieldFilling);
   }
 
   std::string ExpectedBucketNameForManualFallbackOption() const {

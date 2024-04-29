@@ -78,7 +78,7 @@ class BrowserAutofillManagerForPopupTest : public BrowserAutofillManager {
 //     TestAutofillPopupControllerAutofillClient<>>;
 //
 // TEST_F(SampleTest, AcceptSuggestionWorksAfter500Ms) {
-//   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+//   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
 //   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
 //   task_environment()->FastForwardBy(base::Milliseconds(500));
 //   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
@@ -150,17 +150,17 @@ class AutofillSuggestionControllerTestBase
         *PersonalDataManagerFactory::GetForProfile(profile()));
   }
 
-  // Shows empty suggestions with the popup_item_id ids passed as
-  // `popup_item_ids`.
+  // Shows empty suggestions with the type ids passed as
+  // `types`.
   void ShowSuggestions(
       Manager& manager,
-      const std::vector<PopupItemId>& popup_item_ids,
+      const std::vector<SuggestionType>& types,
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kFormControlElementClicked) {
     std::vector<Suggestion> suggestions;
-    suggestions.reserve(popup_item_ids.size());
-    for (PopupItemId popup_item_id : popup_item_ids) {
-      suggestions.emplace_back(u"", popup_item_id);
+    suggestions.reserve(types.size());
+    for (SuggestionType type : types) {
+      suggestions.emplace_back(u"", type);
     }
     ShowSuggestions(manager, std::move(suggestions), trigger_source);
   }
@@ -252,9 +252,10 @@ class AutofillSuggestionControllerForTest
 
   // Making protected functions public for testing
   using AutofillSuggestionControllerForTestBase::element_bounds;
-  MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
+  MOCK_METHOD(void, Hide, (SuggestionHidingReason reason), (override));
 
-  void DoHide(PopupHidingReason reason = PopupHidingReason::kTabGone) {
+  void DoHide(
+      SuggestionHidingReason reason = SuggestionHidingReason::kTabGone) {
     AutofillSuggestionControllerForTestBase::Hide(reason);
   }
 };

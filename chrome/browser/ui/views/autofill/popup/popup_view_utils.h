@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 
 #include "base/containers/span.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
@@ -124,14 +124,14 @@ bool BoundsOverlapWithPictureInPictureWindow(const gfx::Rect& screen_bounds);
 // extension popup) and stays within the bounds of the browser window.
 bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
 
-// Returns whether the suggestion with this `popup_item_id` belongs into the
-// footer section of the popup. Returns `false` for separators, which may belong
-// either to the main or the footer section.
-bool IsFooterPopupItemId(PopupItemId popup_item_id);
+// Returns whether the suggestion with this `type` belongs into
+// the footer section of the popup. Returns `false` for separators, which may
+// belong either to the main or the footer section.
+bool IsFooterSuggestionType(SuggestionType type);
 
-// Returns whether the suggestion with this `popup_item_id` can have child
+// Returns whether the suggestion with this `type` can have child
 // suggestions.
-bool IsExpandablePopupItemId(PopupItemId popup_item_id);
+bool IsExpandableSuggestionType(SuggestionType type);
 
 // Returns styles for primary and secondary texts.
 views::style::TextStyle GetPrimaryTextStyle();

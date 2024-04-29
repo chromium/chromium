@@ -25,7 +25,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -128,7 +128,8 @@ void UserTriggeredManualGenerationFromContextMenu(
     autofill::AutofillClient* autofill_client) {
   if (autofill_client) {
     autofill_client->HideAutofillSuggestions(
-        autofill::PopupHidingReason::kOverlappingWithPasswordGenerationPopup);
+        autofill::SuggestionHidingReason::
+            kOverlappingWithPasswordGenerationPopup);
     autofill_client->HideAutofillFieldIphForManualFallbackFeature();
   }
   if (!password_manager_client->GetPasswordFeatureManager()

@@ -155,7 +155,7 @@ class PasswordGenerationPopupControllerImpl
   };
 
   // AutofillPopupViewDelegate implementation:
-  void Hide(autofill::PopupHidingReason) override;
+  void Hide(autofill::SuggestionHidingReason) override;
   void ViewDestroyed() override;
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;

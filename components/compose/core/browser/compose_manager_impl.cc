@@ -14,8 +14,8 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -33,8 +33,8 @@ using autofill::AutofillDriver;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::FieldGlobalId;
 using autofill::FormGlobalId;
-using autofill::PopupItemId;
 using autofill::Suggestion;
+using autofill::SuggestionType;
 
 // Passes the autofill `text` back into the `field` the dialog was opened on.
 // Called upon insertion.
@@ -50,7 +50,7 @@ void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
   static_cast<autofill::BrowserAutofillManager*>(manager.get())
       ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
                            autofill::mojom::FieldActionType::kReplaceSelection,
-                           form, field, trimmed_text, PopupItemId::kCompose);
+                           form, field, trimmed_text, SuggestionType::kCompose);
 }
 
 }  // namespace
@@ -167,7 +167,7 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   }
   std::u16string suggestion_text;
   std::u16string label_text;
-  PopupItemId popup_item_id = PopupItemId::kCompose;
+  SuggestionType type = SuggestionType::kCompose;
   // State is saved as a `ComposeSession` in the `ComposeClient`. A user can
   // resume where they left off in a field if the `ComposeClient` has a
   // `ComposeSession` for that field.
@@ -180,7 +180,7 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
     label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_LABEL);
     if (trigger_source ==
         AutofillSuggestionTriggerSource::kComposeDialogLostFocus) {
-      popup_item_id = PopupItemId::kComposeSavedStateNotification;
+      type = SuggestionType::kComposeSavedStateNotification;
     }
   } else {
     // Text for a new Compose session.
@@ -190,7 +190,7 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   }
   Suggestion suggestion(std::move(suggestion_text));
   suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
-  suggestion.popup_item_id = popup_item_id;
+  suggestion.type = type;
   suggestion.icon = Suggestion::Icon::kPenSpark;
 
   if (!has_session &&
@@ -199,15 +199,15 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
     Suggestion never_show_on_site = Suggestion(
         l10n_util::GetStringUTF16(
             IDS_COMPOSE_NEVER_SHOW_ON_THIS_SITE_AGAIN_CHILD_SUGGESTION_TEXT),
-        PopupItemId::kComposeNeverShowOnThisSiteAgain);
+        SuggestionType::kComposeNeverShowOnThisSiteAgain);
     Suggestion disable =
         Suggestion(l10n_util::GetStringUTF16(
                        IDS_COMPOSE_DISABLE_HELP_ME_WRITE_CHILD_SUGGESTION_TEXT),
-                   PopupItemId::kComposeDisable);
+                   SuggestionType::kComposeDisable);
     Suggestion go_to_settings =
         Suggestion(l10n_util::GetStringUTF16(
                        IDS_COMPOSE_GO_TO_SETTINGS_CHILD_SUGGESTION_TEXT),
-                   PopupItemId::kComposeGoToSettings);
+                   SuggestionType::kComposeGoToSettings);
     suggestion.children = {std::move(never_show_on_site), std::move(disable),
                            std::move(go_to_settings)};
   }

@@ -368,7 +368,7 @@ void PopupBaseView::OnWidgetBoundsChanged(views::Widget* widget,
     return;
   }
 
-  HideController(PopupHidingReason::kWidgetChanged);
+  HideController(SuggestionHidingReason::kWidgetChanged);
 }
 
 void PopupBaseView::OnWidgetDestroying(views::Widget* widget) {
@@ -386,7 +386,7 @@ void PopupBaseView::OnWidgetDestroying(views::Widget* widget) {
   // destruction (e.g., by attempting to remove observers).
   parent_widget_ = nullptr;
 
-  HideController(PopupHidingReason::kWidgetChanged);
+  HideController(SuggestionHidingReason::kWidgetChanged);
 }
 
 void PopupBaseView::RemoveWidgetObservers() {
@@ -499,7 +499,7 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   // visually attached to the input element.
   element_bounds.Intersect(content_area_bounds);
   if (element_bounds.IsEmpty()) {
-    HideController(PopupHidingReason::kElementOutsideOfContentArea);
+    HideController(SuggestionHidingReason::kElementOutsideOfContentArea);
     return false;
   }
 
@@ -514,7 +514,7 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   int item_height =
       children().size() > 0 ? children()[0]->GetPreferredSize().height() : 0;
   if (!CanShowDropdownHere(item_height, max_bounds_for_popup, element_bounds)) {
-    HideController(PopupHidingReason::kInsufficientSpace);
+    HideController(SuggestionHidingReason::kInsufficientSpace);
     return false;
   }
 
@@ -522,7 +522,8 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
       element_bounds, max_bounds_for_popup, preferred_size);
 
   if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
-    HideController(PopupHidingReason::kOverlappingWithPictureInPictureWindow);
+    HideController(
+        SuggestionHidingReason::kOverlappingWithPictureInPictureWindow);
     return false;
   }
 
@@ -538,7 +539,7 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
 
 void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
   if (GetWidget() && GetWidget()->GetNativeView() != focused_now) {
-    HideController(PopupHidingReason::kFocusChanged);
+    HideController(SuggestionHidingReason::kFocusChanged);
   }
 }
 
@@ -553,7 +554,7 @@ void PopupBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
-void PopupBaseView::HideController(PopupHidingReason reason) {
+void PopupBaseView::HideController(SuggestionHidingReason reason) {
   if (delegate_) {
     delegate_->Hide(reason);
   }

@@ -42,7 +42,7 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
   MockAutofillPopupViewDelegate() = default;
   ~MockAutofillPopupViewDelegate() override = default;
 
-  MOCK_METHOD(void, Hide, (PopupHidingReason), (override));
+  MOCK_METHOD(void, Hide, (SuggestionHidingReason), (override));
   MOCK_METHOD(void, ViewDestroyed, (), (override));
 
   MOCK_METHOD(gfx::NativeView, container_view, (), (const override));

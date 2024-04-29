@@ -12,8 +12,8 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
@@ -68,7 +68,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
   autofill_manager().OnFormsSeen({form}, {});
   {
     Suggestion address_suggestion;
-    address_suggestion.popup_item_id = PopupItemId::kAddressEntry;
+    address_suggestion.type = SuggestionType::kAddressEntry;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(address_suggestion, {1, 0});
@@ -77,7 +77,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
   }
   {
     Suggestion credit_card_suggestion;
-    credit_card_suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
+    credit_card_suggestion.type = SuggestionType::kCreditCardEntry;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(credit_card_suggestion, {0, 0});
@@ -99,7 +99,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
   autofill_manager().OnFormsSeen({form}, {});
   {
     Suggestion address_suggestion;
-    address_suggestion.popup_item_id = PopupItemId::kAddressEntry;
+    address_suggestion.type = SuggestionType::kAddressEntry;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(address_suggestion,
@@ -109,7 +109,7 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
   }
   {
     Suggestion credit_card_suggestion;
-    credit_card_suggestion.popup_item_id = PopupItemId::kCreditCardEntry;
+    credit_card_suggestion.type = SuggestionType::kCreditCardEntry;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
     base::HistogramTester histogram_tester;
     external_delegate().DidAcceptSuggestion(credit_card_suggestion,

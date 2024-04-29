@@ -1696,7 +1696,7 @@ TEST_F(ChromePasswordManagerClientWithAccountStoreAndroidTest,
 class MockPasswordCrossDomainConfirmationPopupController
     : public password_manager::PasswordCrossDomainConfirmationPopupController {
  public:
-  MOCK_METHOD(void, Hide, (autofill::PopupHidingReason), (override));
+  MOCK_METHOD(void, Hide, (autofill::SuggestionHidingReason), (override));
   MOCK_METHOD(void,
               Show,
               (const gfx::RectF&,

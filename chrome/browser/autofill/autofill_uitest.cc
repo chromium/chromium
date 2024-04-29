@@ -173,7 +173,7 @@ void AutofillUiTest::TearDownOnMainThread() {
   BrowserAutofillManager* autofill_manager = GetBrowserAutofillManager();
   if (autofill_manager)
     autofill_manager->client().HideAutofillSuggestions(
-        PopupHidingReason::kTabGone);
+        SuggestionHidingReason::kTabGone);
   current_main_rfh_ = nullptr;
   InProcessBrowserTest::TearDownOnMainThread();
 }

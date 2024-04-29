@@ -66,7 +66,7 @@ void PasswordCrossDomainConfirmationPopupControllerImpl::Show(
 }
 
 void PasswordCrossDomainConfirmationPopupControllerImpl::Hide(
-    autofill::PopupHidingReason) {
+    autofill::SuggestionHidingReason) {
   HideImpl();
 }
 

@@ -14,8 +14,8 @@
 #import "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/grit/components_scaled_resources.h"
 #import "ui/base/cocoa/touch_bar_util.h"
@@ -97,9 +97,9 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
   for (int i = 0; i < _controller->GetLineCount() && i < maxTouchBarItems;
        i++) {
     const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(i);
-    if (suggestion.popup_item_id != autofill::PopupItemId::kAutocompleteEntry &&
-        suggestion.popup_item_id != autofill::PopupItemId::kAddressEntry &&
-        suggestion.popup_item_id != autofill::PopupItemId::kCreditCardEntry) {
+    if (suggestion.type != autofill::SuggestionType::kAutocompleteEntry &&
+        suggestion.type != autofill::SuggestionType::kAddressEntry &&
+        suggestion.type != autofill::SuggestionType::kCreditCardEntry) {
       continue;
     }
 

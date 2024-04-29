@@ -1537,7 +1537,8 @@ void AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
 }
 
 // static
-void AutofillMetrics::LogAutofillPopupHidingReason(PopupHidingReason reason) {
+void AutofillMetrics::LogAutofillSuggestionHidingReason(
+    SuggestionHidingReason reason) {
   base::UmaHistogramEnumeration("Autofill.PopupHidingReason", reason);
 }
 

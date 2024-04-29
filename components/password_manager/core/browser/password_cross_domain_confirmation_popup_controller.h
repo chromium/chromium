@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 
@@ -19,7 +19,7 @@ class PasswordCrossDomainConfirmationPopupController {
  public:
   virtual ~PasswordCrossDomainConfirmationPopupController() = default;
 
-  virtual void Hide(autofill::PopupHidingReason reason) = 0;
+  virtual void Hide(autofill::SuggestionHidingReason reason) = 0;
 
   // Creates and shows a popup pointing to `element_bounds` and presenting
   // a message regarding cross domain password usage. `domain` is the domain

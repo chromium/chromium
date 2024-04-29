@@ -138,7 +138,7 @@ class AutofillTest : public InProcessBrowserTest {
         ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
         ->GetAutofillManager()
         .client()
-        .HideAutofillSuggestions(PopupHidingReason::kTabGone);
+        .HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
     test::ReenableSystemServices();
     InProcessBrowserTest::TearDownOnMainThread();
   }

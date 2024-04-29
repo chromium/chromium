@@ -110,20 +110,20 @@ class IbanManagerTest : public testing::Test {
   // Get an IBAN suggestion with the given `iban`.
   Suggestion GetSuggestionForIban(const Iban& iban) {
     Suggestion iban_suggestion(iban.GetIdentifierStringForAutofillDisplay());
-    iban_suggestion.popup_item_id = PopupItemId::kIbanEntry;
+    iban_suggestion.type = SuggestionType::kIbanEntry;
     return iban_suggestion;
   }
 
   Suggestion SetUpSeparator() {
     Suggestion separator;
-    separator.popup_item_id = PopupItemId::kSeparator;
+    separator.type = SuggestionType::kSeparator;
     return separator;
   }
 
   Suggestion SetUpFooterManagePaymentMethods() {
     Suggestion footer_suggestion(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-    footer_suggestion.popup_item_id = PopupItemId::kAutofillOptions;
+    footer_suggestion.type = SuggestionType::kAutofillOptions;
     footer_suggestion.icon = Suggestion::Icon::kSettings;
     return footer_suggestion;
   }
@@ -138,9 +138,8 @@ class IbanManagerTest : public testing::Test {
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
 
-MATCHER_P(MatchesTextAndPopupItemId, suggestion, "") {
-  return arg.main_text == suggestion.main_text &&
-         arg.popup_item_id == suggestion.popup_item_id;
+MATCHER_P(MatchesTextAndSuggestionType, suggestion, "") {
+  return arg.main_text == suggestion.main_text && arg.type == suggestion.type;
 }
 
 TEST_F(IbanManagerTest, ShowsAllIbanSuggestions) {
@@ -168,12 +167,12 @@ TEST_F(IbanManagerTest, ShowsAllIbanSuggestions) {
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndPopupItemId(local_iban_suggestion_0),
-                      MatchesTextAndPopupItemId(local_iban_suggestion_1),
-                      MatchesTextAndPopupItemId(server_iban_suggestion_0),
-                      MatchesTextAndPopupItemId(server_iban_suggestion_1),
-                      MatchesTextAndPopupItemId(seperator_suggestion),
-                      MatchesTextAndPopupItemId(footer_suggestion))));
+                      MatchesTextAndSuggestionType(local_iban_suggestion_0),
+                      MatchesTextAndSuggestionType(local_iban_suggestion_1),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_0),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_1),
+                      MatchesTextAndSuggestionType(seperator_suggestion),
+                      MatchesTextAndSuggestionType(footer_suggestion))));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -216,9 +215,9 @@ TEST_F(IbanManagerTest, IbanSuggestions_SeparatorAndFooter) {
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndPopupItemId(iban_suggestion_0),
-                      MatchesTextAndPopupItemId(iban_suggestion_1),
-                      MatchesTextAndPopupItemId(iban_suggestion_2))));
+                      MatchesTextAndSuggestionType(iban_suggestion_0),
+                      MatchesTextAndSuggestionType(iban_suggestion_1),
+                      MatchesTextAndSuggestionType(iban_suggestion_2))));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -271,10 +270,10 @@ TEST_F(IbanManagerTest,
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndPopupItemId(iban_suggestion_0),
-                      MatchesTextAndPopupItemId(iban_suggestion_1),
-                      MatchesTextAndPopupItemId(iban_suggestion_2),
-                      MatchesTextAndPopupItemId(iban_suggestion_3))));
+                      MatchesTextAndSuggestionType(iban_suggestion_0),
+                      MatchesTextAndSuggestionType(iban_suggestion_1),
+                      MatchesTextAndSuggestionType(iban_suggestion_2),
+                      MatchesTextAndSuggestionType(iban_suggestion_3))));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -291,9 +290,9 @@ TEST_F(IbanManagerTest,
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndPopupItemId(iban_suggestion_0),
-                      MatchesTextAndPopupItemId(iban_suggestion_2),
-                      MatchesTextAndPopupItemId(iban_suggestion_3))));
+                      MatchesTextAndSuggestionType(iban_suggestion_0),
+                      MatchesTextAndSuggestionType(iban_suggestion_2),
+                      MatchesTextAndSuggestionType(iban_suggestion_3))));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -342,10 +341,10 @@ TEST_F(IbanManagerTest,
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndPopupItemId(server_iban_suggestion_0),
-                      MatchesTextAndPopupItemId(server_iban_suggestion_1),
-                      MatchesTextAndPopupItemId(separator_suggestion),
-                      MatchesTextAndPopupItemId(footer_suggestion))));
+                      MatchesTextAndSuggestionType(server_iban_suggestion_0),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_1),
+                      MatchesTextAndSuggestionType(separator_suggestion),
+                      MatchesTextAndSuggestionType(footer_suggestion))));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -382,9 +381,9 @@ TEST_F(IbanManagerTest,
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndPopupItemId(server_iban_suggestion_0),
-                      MatchesTextAndPopupItemId(separator_suggestion),
-                      MatchesTextAndPopupItemId(footer_suggestion))));
+                      MatchesTextAndSuggestionType(server_iban_suggestion_0),
+                      MatchesTextAndSuggestionType(separator_suggestion),
+                      MatchesTextAndSuggestionType(footer_suggestion))));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -422,11 +421,11 @@ TEST_F(
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndPopupItemId(server_iban_suggestion_0),
-                      MatchesTextAndPopupItemId(server_iban_suggestion_1),
-                      MatchesTextAndPopupItemId(server_iban_suggestion_2),
-                      MatchesTextAndPopupItemId(separator_suggestion),
-                      MatchesTextAndPopupItemId(footer_suggestion))));
+                      MatchesTextAndSuggestionType(server_iban_suggestion_0),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_1),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_2),
+                      MatchesTextAndSuggestionType(separator_suggestion),
+                      MatchesTextAndSuggestionType(footer_suggestion))));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -441,11 +440,11 @@ TEST_F(
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::UnorderedElementsAre(
-                      MatchesTextAndPopupItemId(server_iban_suggestion_0),
-                      MatchesTextAndPopupItemId(server_iban_suggestion_1),
-                      MatchesTextAndPopupItemId(server_iban_suggestion_2),
-                      MatchesTextAndPopupItemId(separator_suggestion),
-                      MatchesTextAndPopupItemId(footer_suggestion))));
+                      MatchesTextAndSuggestionType(server_iban_suggestion_0),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_1),
+                      MatchesTextAndSuggestionType(server_iban_suggestion_2),
+                      MatchesTextAndSuggestionType(separator_suggestion),
+                      MatchesTextAndSuggestionType(footer_suggestion))));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -527,7 +526,7 @@ TEST_F(IbanManagerTest, ShowsIbanSuggestions_OptimizationGuideNotPresent) {
   EXPECT_CALL(mock_callback,
               Run(test_field.global_id(),
                   testing::IsSupersetOf(
-                      {MatchesTextAndPopupItemId(iban_suggestion_0)})));
+                      {MatchesTextAndSuggestionType(iban_suggestion_0)})));
 
   // Simulate request for suggestions.
   // Because all criteria are met to trigger returning to the handler,
@@ -666,7 +665,8 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_field, autofill_client_, mock_callback.Get(), context));
-  iban_manager_.OnSingleFieldSuggestionSelected(u"", PopupItemId::kIbanEntry);
+  iban_manager_.OnSingleFieldSuggestionSelected(u"",
+                                                SuggestionType::kIbanEntry);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
@@ -677,7 +677,8 @@ TEST_F(IbanManagerTest, Metrics_SuggestionSelected) {
 
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       test_field, autofill_client_, mock_callback.Get(), context));
-  iban_manager_.OnSingleFieldSuggestionSelected(u"", PopupItemId::kIbanEntry);
+  iban_manager_.OnSingleFieldSuggestionSelected(u"",
+                                                SuggestionType::kIbanEntry);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",

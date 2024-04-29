@@ -231,7 +231,10 @@ class MockFastCheckoutTriggerValidator : public FastCheckoutTriggerValidator {
 class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(void, HideAutofillSuggestions, (autofill::PopupHidingReason), ());
+  MOCK_METHOD(void,
+              HideAutofillSuggestions,
+              (autofill::SuggestionHidingReason),
+              ());
 };
 
 class MockFastCheckoutAccessibilityService
@@ -543,10 +546,9 @@ TEST_F(DISABLED_FastCheckoutClientImplTest, Start_ShouldRunReturnsSuccess_Run) {
                                 Pointee(kIncompleteProfile)),
            UnorderedElementsAre(Pointee(kCreditCard1), Pointee(kCreditCard2))));
   // Expect call to `HideAutofillSuggestions`.
-  EXPECT_CALL(
-      *autofill_client(),
-      HideAutofillSuggestions(
-          autofill::PopupHidingReason::kOverlappingWithFastCheckoutSurface));
+  EXPECT_CALL(*autofill_client(),
+              HideAutofillSuggestions(autofill::SuggestionHidingReason::
+                                          kOverlappingWithFastCheckoutSurface));
 
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),

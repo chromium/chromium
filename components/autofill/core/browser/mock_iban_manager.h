@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/iban_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -34,11 +34,11 @@ class MockIbanManager : public IbanManager {
   MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&, const std::u16string&, PopupItemId),
+              (const std::u16string&, const std::u16string&, SuggestionType),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,
-              (const std::u16string&, PopupItemId),
+              (const std::u16string&, SuggestionType),
               (override));
 };
 

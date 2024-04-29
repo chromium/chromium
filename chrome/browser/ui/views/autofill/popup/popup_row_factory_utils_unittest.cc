@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,7 +94,8 @@ class AutocompleteRowWithDeleteButtonTest
   }
 
   void ShowAutocompleteSuggestion() {
-    ShowSuggestion(Suggestion(u"Some entry", PopupItemId::kAutocompleteEntry));
+    ShowSuggestion(
+        Suggestion(u"Some entry", SuggestionType::kAutocompleteEntry));
   }
 
  protected:
@@ -168,7 +169,7 @@ class PasswordPopupRowViewTest : public PopupRowFactoryUtilsTestBase {
   }
 
   void ShowPasswordSuggestionWithLoadingState(bool is_loading) {
-    Suggestion suggestion{u"ortiler", PopupItemId::kPasswordEntry};
+    Suggestion suggestion{u"ortiler", SuggestionType::kPasswordEntry};
     suggestion.is_loading = Suggestion::IsLoading(is_loading);
     ShowSuggestion(suggestion);
   }

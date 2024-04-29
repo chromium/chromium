@@ -18,7 +18,7 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -123,23 +123,23 @@ struct Suggestion {
   // refactored.
   Suggestion();
   explicit Suggestion(std::u16string main_text);
-  explicit Suggestion(PopupItemId popup_item_id);
-  Suggestion(std::u16string main_text, PopupItemId popup_item_id);
+  explicit Suggestion(SuggestionType type);
+  Suggestion(std::u16string main_text, SuggestionType type);
   // Constructor for unit tests. It will convert the strings from UTF-8 to
   // UTF-16.
   Suggestion(std::string_view main_text,
              std::string_view label,
              Icon icon,
-             PopupItemId popup_item_id);
+             SuggestionType type);
   Suggestion(std::string_view main_text,
              std::vector<std::vector<Text>> labels,
              Icon icon,
-             PopupItemId popup_item_id);
+             SuggestionType type);
   Suggestion(std::string_view main_text,
              std::string_view minor_text,
              std::string_view label,
              Icon icon,
-             PopupItemId popup_item_id);
+             SuggestionType type);
   Suggestion(const Suggestion& other);
   Suggestion(Suggestion&& other);
   Suggestion& operator=(const Suggestion& other);
@@ -162,20 +162,20 @@ struct Suggestion {
 
 #if DCHECK_IS_ON()
   bool Invariant() const {
-    switch (popup_item_id) {
-      case PopupItemId::kPasswordEntry:
+    switch (type) {
+      case SuggestionType::kPasswordEntry:
         // Manual fallback password suggestions store the password to preview or
         // fill in the suggestion's payload. Regular per-domain contain empty
         // `BackendId`.
         // TODO(b/333992198): Use `PasswordSuggestionDetails` for all
-        // suggestions with `PopupItemId::kPasswordEntry`.
+        // suggestions with `SuggestionType::kPasswordEntry`.
         return absl::holds_alternative<BackendId>(payload) ||
                absl::holds_alternative<PasswordSuggestionDetails>(payload);
-      case PopupItemId::kFillPassword:
+      case SuggestionType::kFillPassword:
         return absl::holds_alternative<PasswordSuggestionDetails>(payload);
-      case PopupItemId::kSeePromoCodeDetails:
+      case SuggestionType::kSeePromoCodeDetails:
         return absl::holds_alternative<GURL>(payload);
-      case PopupItemId::kIbanEntry:
+      case SuggestionType::kIbanEntry:
         return absl::holds_alternative<ValueToFill>(payload) ||
                absl::holds_alternative<BackendId>(payload);
       default:
@@ -195,7 +195,7 @@ struct Suggestion {
   Payload payload;
 
   // Determines popup identifier for the suggestion.
-  PopupItemId popup_item_id = PopupItemId::kAutocompleteEntry;
+  SuggestionType type = SuggestionType::kAutocompleteEntry;
 
   // The texts that will be displayed on the first line in a suggestion. The
   // order of showing the two texts on the first line depends on whether it is
@@ -257,8 +257,8 @@ struct Suggestion {
   // suggestion.
   std::optional<std::u16string> acceptance_a11y_announcement;
 
-  // When `popup_item_id` is
-  // `PopupItemId::k(Address|CreditCard)FieldByFieldFilling`, specifies the
+  // When `type` is
+  // `SuggestionType::k(Address|CreditCard)FieldByFieldFilling`, specifies the
   // `FieldType` used to build the suggestion's `main_text`.
   std::optional<FieldType> field_by_field_filling_type_used;
 

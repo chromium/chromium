@@ -81,7 +81,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
 }
 
 void IbanManager::OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                                  PopupItemId popup_item_id) {
+                                                  SuggestionType type) {
   uma_recorder_.OnIbanSuggestionSelected();
 }
 

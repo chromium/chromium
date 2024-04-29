@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.PopupItemId;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -146,26 +146,27 @@ class KeyboardAccessoryMediator
     /**
      * Next to the regular suggestion that we always want to show, there is a number of special
      * suggestions which we want to suppress (e.g. replaced entry points, old warnings, separators).
+     *
      * @param suggestion This {@link AutofillSuggestion} will be checked for usefulness.
      * @return True iff the suggestion should be displayed.
      */
     private boolean shouldShowSuggestion(AutofillSuggestion suggestion) {
-        switch (suggestion.getPopupItemId()) {
-            case PopupItemId.INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
+        switch (suggestion.getSuggestionType()) {
+            case SuggestionType.INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
                 // The insecure context warning has a replacement in the fallback sheet.
-            case PopupItemId.TITLE:
-            case PopupItemId.SEPARATOR:
-            case PopupItemId.CLEAR_FORM:
-            case PopupItemId.ALL_SAVED_PASSWORDS_ENTRY:
-            case PopupItemId.GENERATE_PASSWORD_ENTRY:
-            case PopupItemId.SHOW_ACCOUNT_CARDS:
-            case PopupItemId.AUTOFILL_OPTIONS:
+            case SuggestionType.TITLE:
+            case SuggestionType.SEPARATOR:
+            case SuggestionType.CLEAR_FORM:
+            case SuggestionType.ALL_SAVED_PASSWORDS_ENTRY:
+            case SuggestionType.GENERATE_PASSWORD_ENTRY:
+            case SuggestionType.SHOW_ACCOUNT_CARDS:
+            case SuggestionType.AUTOFILL_OPTIONS:
                 return false;
-            case PopupItemId.AUTOCOMPLETE_ENTRY:
-            case PopupItemId.PASSWORD_ENTRY:
-            case PopupItemId.DATALIST_ENTRY:
-            case PopupItemId.SCAN_CREDIT_CARD:
-            case PopupItemId.ACCOUNT_STORAGE_PASSWORD_ENTRY:
+            case SuggestionType.AUTOCOMPLETE_ENTRY:
+            case SuggestionType.PASSWORD_ENTRY:
+            case SuggestionType.DATALIST_ENTRY:
+            case SuggestionType.SCAN_CREDIT_CARD:
+            case SuggestionType.ACCOUNT_STORAGE_PASSWORD_ENTRY:
                 return true;
         }
         return true; // If it's not a special id, show the regular suggestion!
@@ -359,15 +360,15 @@ class KeyboardAccessoryMediator
     }
 
     private static boolean containsPasswordInfo(AutofillSuggestion suggestion) {
-        return suggestion.getPopupItemId() == PopupItemId.PASSWORD_ENTRY;
+        return suggestion.getSuggestionType() == SuggestionType.PASSWORD_ENTRY;
     }
 
     private static boolean containsCreditCardInfo(AutofillSuggestion suggestion) {
-        return suggestion.getPopupItemId() == PopupItemId.CREDIT_CARD_ENTRY;
+        return suggestion.getSuggestionType() == SuggestionType.CREDIT_CARD_ENTRY;
     }
 
     private static boolean containsAddressInfo(AutofillSuggestion suggestion) {
-        return suggestion.getPopupItemId() == PopupItemId.ADDRESS_ENTRY;
+        return suggestion.getSuggestionType() == SuggestionType.ADDRESS_ENTRY;
     }
 
     private @StringRes int getCaptionId(@AccessoryAction int actionType) {
@@ -395,8 +396,8 @@ class KeyboardAccessoryMediator
         Predicate<BarItem> hasWebAuthnCredential =
                 barItem ->
                         barItem.getViewType() == BarItem.Type.SUGGESTION
-                                && ((AutofillBarItem) barItem).getSuggestion().getPopupItemId()
-                                        == PopupItemId.WEBAUTHN_CREDENTIAL;
+                                && ((AutofillBarItem) barItem).getSuggestion().getSuggestionType()
+                                        == SuggestionType.WEBAUTHN_CREDENTIAL;
         return StreamSupport.stream(mModel.get(BAR_ITEMS).spliterator(), true)
                         .anyMatch(hasWebAuthnCredential)
                 ? R.string.more_passkeys

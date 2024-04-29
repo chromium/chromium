@@ -53,6 +53,8 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"
@@ -1186,7 +1188,7 @@ TEST_F(RenderViewContextMenuHideAutofillSuggestionsTest,
 
   EXPECT_FALSE(autofill_client()->IsShowingAutofillPopup());
   EXPECT_EQ(autofill_client()->popup_hiding_reason(),
-            autofill::PopupHidingReason::kContextMenuOpened);
+            autofill::SuggestionHidingReason::kContextMenuOpened);
 }
 
 // Verify that the Lens Image Search menu item is disabled on non-image content

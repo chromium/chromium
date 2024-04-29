@@ -31,9 +31,9 @@
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/config.h"
@@ -103,7 +103,7 @@ AutofillSuggestionController::GetOrCreate(
   }
 
   if (previous) {
-    previous->Hide(PopupHidingReason::kViewDestroyed);
+    previous->Hide(SuggestionHidingReason::kViewDestroyed);
   }
   auto* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, std::move(controller_common), form_control_ax_id,
@@ -135,7 +135,7 @@ void AutofillPopupControllerImpl::Show(
   // the popup may overlap the focused window (see crbug.com/1239760).
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();
       (!rwhv || !rwhv->HasFocus()) && IsRootPopup()) {
-    Hide(PopupHidingReason::kNoFrameHasFocus);
+    Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }
 
@@ -151,12 +151,12 @@ void AutofillPopupControllerImpl::Show(
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
   if (!rfh || !delegate_ ||
       !IsAncestorOf(GetRenderFrameHost(*delegate_), rfh)) {
-    Hide(PopupHidingReason::kNoFrameHasFocus);
+    Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }
 
   if (IsPointerLocked(web_contents_.get())) {
-    Hide(PopupHidingReason::kMouseLocked);
+    Hide(SuggestionHidingReason::kMouseLocked);
     return;
   }
 
@@ -165,7 +165,7 @@ void AutofillPopupControllerImpl::Show(
       // Currently, this is only relevant for Compose.
       .hide_on_text_field_change =
           IsRootPopup() && suggestions.size() == 1 &&
-          GetFillingProductFromPopupItemId(suggestions[0].popup_item_id) ==
+          GetFillingProductFromSuggestionType(suggestions[0].type) ==
               FillingProduct::kCompose,
       .hide_on_web_contents_lost_focus = true};
 
@@ -200,7 +200,7 @@ void AutofillPopupControllerImpl::Show(
     // It is possible to fail to create the popup, in this case
     // treat the popup as hiding right away.
     if (!view_) {
-      Hide(PopupHidingReason::kViewDestroyed);
+      Hide(SuggestionHidingReason::kViewDestroyed);
       return;
     }
     if (!view_->Show(autoselect_first_suggestion)) {
@@ -226,14 +226,14 @@ void AutofillPopupControllerImpl::Show(
     key_press_observer_.Observe(web_contents_->GetFocusedFrame());
 
     if (non_filtered_suggestions_.size() == 1 &&
-        non_filtered_suggestions_[0].popup_item_id ==
-            PopupItemId::kComposeSavedStateNotification) {
+        non_filtered_suggestions_[0].type ==
+            SuggestionType::kComposeSavedStateNotification) {
       const compose::Config& config = compose::GetComposeConfig();
       fading_popup_timer_.Start(
           FROM_HERE,
           base::Milliseconds(config.saved_state_timeout_milliseconds),
           base::BindOnce(&AutofillSuggestionController::Hide, GetWeakPtr(),
-                         PopupHidingReason::kFadeTimerExpired));
+                         SuggestionHidingReason::kFadeTimerExpired));
     }
 
     delegate_->OnPopupShown();
@@ -257,7 +257,7 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   if (HasSuggestions()) {
     OnSuggestionsChanged();
   } else {
-    Hide(PopupHidingReason::kNoSuggestions);
+    Hide(SuggestionHidingReason::kNoSuggestions);
   }
 }
 
@@ -265,25 +265,25 @@ void AutofillPopupControllerImpl::PinView() {
   is_view_pinned_ = true;
 }
 
-void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
+void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   // If the reason for hiding is only stale data or a user interacting with
   // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == PopupHidingReason::kStaleData ||
-                          reason == PopupHidingReason::kFocusChanged ||
-                          reason == PopupHidingReason::kEndEditing)) {
+  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
+                          reason == SuggestionHidingReason::kFocusChanged ||
+                          reason == SuggestionHidingReason::kEndEditing)) {
     return;  // Don't close the popup while waiting for an update.
   }
 
-  if ((reason == PopupHidingReason::kFocusChanged ||
-       reason == PopupHidingReason::kEndEditing) &&
+  if ((reason == SuggestionHidingReason::kFocusChanged ||
+       reason == SuggestionHidingReason::kEndEditing) &&
       view_ && view_->HasFocus()) {
     return;
   }
 
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
-      (reason == PopupHidingReason::kWidgetChanged ||
-       reason == PopupHidingReason::kEndEditing)) {
+      (reason == SuggestionHidingReason::kWidgetChanged ||
+       reason == SuggestionHidingReason::kEndEditing)) {
     return;  // Don't close the popup because the browser window is resized or
              // because too many fields get focus one after each other (this can
              // happen on Desktop, if multiple password forms are present, and
@@ -296,14 +296,14 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   }
   key_press_observer_.Reset();
   popup_hide_helper_.reset();
-  AutofillMetrics::LogAutofillPopupHidingReason(reason);
+  AutofillMetrics::LogAutofillSuggestionHidingReason(reason);
   HideViewAndDie();
 }
 
 void AutofillPopupControllerImpl::ViewDestroyed() {
   // The view has already been destroyed so clear the reference to it.
   view_ = nullptr;
-  Hide(PopupHidingReason::kViewDestroyed);
+  Hide(SuggestionHidingReason::kViewDestroyed);
 }
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
@@ -361,7 +361,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   }
 
   if (IsPointerLocked(web_contents_.get())) {
-    Hide(PopupHidingReason::kMouseLocked);
+    Hide(SuggestionHidingReason::kMouseLocked);
     return;
   }
 
@@ -438,7 +438,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     int list_index,
     AutofillMetrics::SingleEntryRemovalMethod removal_method) {
   if (IsPointerLocked(web_contents_.get())) {
-    Hide(PopupHidingReason::kMouseLocked);
+    Hide(SuggestionHidingReason::kMouseLocked);
     return false;
   }
 
@@ -458,8 +458,8 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   if (!delegate_->RemoveSuggestion(GetSuggestions()[list_index])) {
     return false;
   }
-  PopupItemId suggestion_type = GetSuggestions()[list_index].popup_item_id;
-  switch (GetFillingProductFromPopupItemId(suggestion_type)) {
+  SuggestionType suggestion_type = GetSuggestions()[list_index].type;
+  switch (GetFillingProductFromSuggestionType(suggestion_type)) {
     case FillingProduct::kAddress:
       switch (removal_method) {
         case AutofillMetrics::SingleEntryRemovalMethod::
@@ -509,10 +509,10 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   if (HasSuggestions()) {
     delegate_->ClearPreviewedForm();
     should_ignore_mouse_observed_outside_item_bounds_check_ =
-        suggestion_type == PopupItemId::kAutocompleteEntry;
+        suggestion_type == SuggestionType::kAutocompleteEntry;
     OnSuggestionsChanged();
   } else {
-    Hide(PopupHidingReason::kNoSuggestions);
+    Hide(SuggestionHidingReason::kNoSuggestions);
   }
 
   return true;
@@ -532,9 +532,9 @@ bool AutofillPopupControllerImpl::HasSuggestions() const {
   if (GetSuggestions().empty()) {
     return false;
   }
-  PopupItemId popup_item_id = GetSuggestions()[0].popup_item_id;
-  return base::Contains(kItemsTriggeringFieldFilling, popup_item_id) ||
-         popup_item_id == PopupItemId::kScanCreditCard;
+  SuggestionType type = GetSuggestions()[0].type;
+  return base::Contains(kItemsTriggeringFieldFilling, type) ||
+         type == SuggestionType::kScanCreditCard;
 }
 
 void AutofillPopupControllerImpl::SetSuggestions(
@@ -696,11 +696,11 @@ void AutofillPopupControllerImpl::SelectSuggestion(int index) {
   CHECK_LT(base::checked_cast<size_t>(index), GetSuggestions().size());
 
   if (IsPointerLocked(web_contents_.get())) {
-    Hide(PopupHidingReason::kMouseLocked);
+    Hide(SuggestionHidingReason::kMouseLocked);
     return;
   }
 
-  if (!IsAcceptablePopupItemId(GetSuggestionAt(index).popup_item_id)) {
+  if (!IsAcceptableSuggestionType(GetSuggestionAt(index).type)) {
     UnselectSuggestion();
     return;
   }
@@ -735,7 +735,7 @@ AutofillPopupControllerImpl::OpenSubPopup(
 void AutofillPopupControllerImpl::HideSubPopup() {
   if (sub_popup_controller_) {
     sub_popup_controller_->Hide(
-        PopupHidingReason::kExpandedSuggestionCollapsedSubPopup);
+        SuggestionHidingReason::kExpandedSuggestionCollapsedSubPopup);
     sub_popup_controller_ = nullptr;
   }
 }

@@ -165,7 +165,7 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
 
   // Simulates an autofill event.
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      u"TestValue", PopupItemId::kIbanEntry, form, field);
+      u"TestValue", SuggestionType::kIbanEntry, form, field);
 
   ASSERT_OK_AND_ASSIGN(
       auto expected_data,
@@ -197,7 +197,7 @@ TEST_F(AutofillFeedbackDataUnitTest,
 
   // Simulates an autofill event.
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      u"TestValue", PopupItemId::kIbanEntry, form, field);
+      u"TestValue", SuggestionType::kIbanEntry, form, field);
 
   // Advance the clock 4 minutes should disregard the last autofill event log.
   clock.Advance(base::Minutes(4));

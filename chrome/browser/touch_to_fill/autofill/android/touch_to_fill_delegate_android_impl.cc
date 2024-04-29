@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -205,13 +205,14 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
 
   ttf_payment_method_state_ = TouchToFillState::kIsShowing;
   manager_->client().HideAutofillSuggestions(
-      PopupHidingReason::kOverlappingWithTouchToFillSurface);
+      SuggestionHidingReason::kOverlappingWithTouchToFillSurface);
   if (absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
     manager_->DidShowSuggestions(
-        std::vector<PopupItemId>({PopupItemId::kCreditCardEntry}), form, field);
+        std::vector<SuggestionType>({SuggestionType::kCreditCardEntry}), form,
+        field);
   } else {
     manager_->DidShowSuggestions(
-        std::vector<PopupItemId>({PopupItemId::kIbanEntry}), form, field);
+        std::vector<SuggestionType>({SuggestionType::kIbanEntry}), form, field);
   }
   return true;
 }
@@ -307,7 +308,7 @@ void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(Iban::Guid guid) {
               delegate->manager_->FillOrPreviewField(
                   mojom::ActionPersistence::kFill,
                   mojom::FieldActionType::kReplaceAll, delegate->query_form_,
-                  delegate->query_field_, value, PopupItemId::kIbanEntry);
+                  delegate->query_field_, value, SuggestionType::kIbanEntry);
             }
           },
           GetWeakPtr()));

@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/test/test_renderer_host.h"
@@ -74,7 +74,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 
   void ShowView(int line_number, bool has_control) {
     std::vector<Suggestion> suggestions(line_number + 1);
-    suggestions[line_number].popup_item_id = PopupItemId::kAddressEntry;
+    suggestions[line_number].type = SuggestionType::kAddressEntry;
     suggestions[line_number].main_text = Suggestion::Text(u"Suggestion");
     if (has_control) {
       suggestions[line_number].children = {Suggestion()};
@@ -87,7 +87,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
     ShowView(line_number);
   }
 
-  void ShowView(int line_number, std::vector<PopupItemId> suggestions) {
+  void ShowView(int line_number, std::vector<SuggestionType> suggestions) {
     mock_controller_.set_suggestions(suggestions);
     ShowView(line_number);
   }
@@ -408,7 +408,7 @@ TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
 TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
   ShowView(/*line_number=*/0,
            {Suggestion("dummy_value", "dummy_label", Suggestion::Icon::kNoIcon,
-                       PopupItemId::kAddressEntry)});
+                       SuggestionType::kAddressEntry)});
 
   views::ViewAccessibility& accessibility =
       row_view().GetContentView().GetViewAccessibility();
@@ -425,7 +425,7 @@ TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
 
 struct PosInSetTestdata {
   // The popup item ids of the suggestions to be shown.
-  std::vector<PopupItemId> popup_item_ids;
+  std::vector<SuggestionType> types;
   // The index of the suggestion to be tested.
   int line_number;
   // The number of (non-separator) entries and the 1-indexed position of the
@@ -436,40 +436,38 @@ struct PosInSetTestdata {
 
 const PosInSetTestdata kPosInSetTestcases[] = {
     PosInSetTestdata{
-        .popup_item_ids = {PopupItemId::kAddressEntry,
-                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
-                           PopupItemId::kAutofillOptions},
+        .types = {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
+                  SuggestionType::kSeparator, SuggestionType::kAutofillOptions},
         .line_number = 1,
         .set_size = 3,
         .set_index = 2,
     },
     PosInSetTestdata{
-        .popup_item_ids = {PopupItemId::kPasswordEntry,
-                           PopupItemId::kAccountStoragePasswordEntry,
-                           PopupItemId::kSeparator,
-                           PopupItemId::kAllSavedPasswordsEntry},
+        .types = {SuggestionType::kPasswordEntry,
+                  SuggestionType::kAccountStoragePasswordEntry,
+                  SuggestionType::kSeparator,
+                  SuggestionType::kAllSavedPasswordsEntry},
         .line_number = 0,
         .set_size = 3,
         .set_index = 1,
     },
     PosInSetTestdata{
-        .popup_item_ids = {PopupItemId::kAddressEntry,
-                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
-                           PopupItemId::kAutofillOptions},
+        .types = {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
+                  SuggestionType::kSeparator, SuggestionType::kAutofillOptions},
         .line_number = 3,
         .set_size = 3,
         .set_index = 3,
     },
     PosInSetTestdata{
-        .popup_item_ids = {PopupItemId::kAutocompleteEntry,
-                           PopupItemId::kAutocompleteEntry,
-                           PopupItemId::kAutocompleteEntry},
+        .types = {SuggestionType::kAutocompleteEntry,
+                  SuggestionType::kAutocompleteEntry,
+                  SuggestionType::kAutocompleteEntry},
         .line_number = 1,
         .set_size = 3,
         .set_index = 2,
     },
     PosInSetTestdata{
-        .popup_item_ids = {PopupItemId::kCompose},
+        .types = {SuggestionType::kCompose},
         .line_number = 0,
         .set_size = 1,
         .set_index = 1,
@@ -482,7 +480,7 @@ class PopupRowPosInSetViewTest
 TEST_P(PopupRowPosInSetViewTest, All) {
   const PosInSetTestdata kTestdata = GetParam();
 
-  ShowView(kTestdata.line_number, kTestdata.popup_item_ids);
+  ShowView(kTestdata.line_number, kTestdata.types);
 
   ui::AXNodeData node_data;
   row_view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(

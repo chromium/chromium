@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -89,7 +89,7 @@ class AutofillPopupControllerImpl
   FillingProduct GetMainFillingProduct() const override;
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
       const override;
-  void Hide(PopupHidingReason reason) override;
+  void Hide(SuggestionHidingReason reason) override;
   void ViewDestroyed() override;
   void Show(std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,

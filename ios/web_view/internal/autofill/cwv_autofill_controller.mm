@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
-
 #import <memory>
 #import <string>
 #import <vector>
@@ -17,7 +15,7 @@
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -33,6 +31,7 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
@@ -316,13 +315,12 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
                     delegate {
   // We only want Autofill suggestions.
   std::vector<autofill::Suggestion> filtered_suggestions;
-  base::ranges::copy_if(suggestions, std::back_inserter(filtered_suggestions),
-                        [](const autofill::Suggestion& suggestion) {
-                          return suggestion.popup_item_id ==
-                                     autofill::PopupItemId::kAddressEntry ||
-                                 suggestion.popup_item_id ==
-                                     autofill::PopupItemId::kCreditCardEntry;
-                        });
+  base::ranges::copy_if(
+      suggestions, std::back_inserter(filtered_suggestions),
+      [](const autofill::Suggestion& suggestion) {
+        return suggestion.type == autofill::SuggestionType::kAddressEntry ||
+               suggestion.type == autofill::SuggestionType::kCreditCardEntry;
+      });
   [_autofillAgent showAutofillPopup:filtered_suggestions
                       popupDelegate:delegate];
 }

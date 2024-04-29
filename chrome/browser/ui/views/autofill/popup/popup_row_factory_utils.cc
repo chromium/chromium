@@ -47,17 +47,17 @@ constexpr int kCloseIconSize = 16;
 
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons =
-    base::MakeFixedFlatSet<PopupItemId>(
-        {PopupItemId::kClearForm, PopupItemId::kShowAccountCards,
-         PopupItemId::kAutofillOptions, PopupItemId::kEditAddressProfile,
-         PopupItemId::kDeleteAddressProfile,
-         PopupItemId::kAllSavedPasswordsEntry,
-         PopupItemId::kFillEverythingFromAddressProfile,
-         PopupItemId::kPasswordAccountStorageEmpty,
-         PopupItemId::kPasswordAccountStorageOptIn,
-         PopupItemId::kPasswordAccountStorageReSignin,
-         PopupItemId::kPasswordAccountStorageOptInAndGenerate,
-         PopupItemId::kViewPasswordDetails});
+    base::MakeFixedFlatSet<SuggestionType>(
+        {SuggestionType::kClearForm, SuggestionType::kShowAccountCards,
+         SuggestionType::kAutofillOptions, SuggestionType::kEditAddressProfile,
+         SuggestionType::kDeleteAddressProfile,
+         SuggestionType::kAllSavedPasswordsEntry,
+         SuggestionType::kFillEverythingFromAddressProfile,
+         SuggestionType::kPasswordAccountStorageEmpty,
+         SuggestionType::kPasswordAccountStorageOptIn,
+         SuggestionType::kPasswordAccountStorageReSignin,
+         SuggestionType::kPasswordAccountStorageOptInAndGenerate,
+         SuggestionType::kViewPasswordDetails});
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -90,7 +90,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
       popup_cell_utils::GetIconImageView(suggestion);
 
   const bool kUseLeadingIcon =
-      kPopupItemTypesUsingLeadingIcons.contains(suggestion.popup_item_id);
+      kPopupItemTypesUsingLeadingIcons.contains(suggestion.type);
 
   if (suggestion.is_loading) {
     view->AddChildView(std::make_unique<views::Throbber>())->Start();
@@ -306,32 +306,32 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
   CHECK(controller);
 
   const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
-  PopupItemId popup_item_id = suggestion.popup_item_id;
+  SuggestionType type = suggestion.type;
   FillingProduct main_filling_product = controller->GetMainFillingProduct();
 
-  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
+  if (type == SuggestionType::kAutocompleteEntry) {
     return CreateAutocompleteRowWithDeleteButton(
         controller, a11y_selection_delegate, selection_delegate, line_number);
   }
 
-  if (IsFooterPopupItemId(popup_item_id)) {
+  if (IsFooterSuggestionType(type)) {
     return std::make_unique<PopupRowView>(
         a11y_selection_delegate, selection_delegate, controller, line_number,
         CreateFooterPopupRowContentView(suggestion));
   }
 
-  switch (popup_item_id) {
-    // These `popup_item_id` should never be displayed in a `PopupRowView`.
-    case PopupItemId::kSeparator:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+  switch (type) {
+    // These `type` should never be displayed in a `PopupRowView`.
+    case SuggestionType::kSeparator:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
       NOTREACHED_NORETURN();
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kAccountStoragePasswordEntry:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kAccountStoragePasswordEntry:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreatePasswordPopupRowContentView(suggestion));
-    case PopupItemId::kCompose: {
+    case SuggestionType::kCompose: {
       const bool show_new_badge = UserEducationService::MaybeShowNewBadge(
           controller->GetWebContents()->GetBrowserContext(),
           compose::features::kEnableComposeNudge);

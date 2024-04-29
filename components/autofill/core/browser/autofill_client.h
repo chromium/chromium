@@ -24,9 +24,9 @@
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -730,7 +730,7 @@ class AutofillClient {
                            AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Hides the Autofill suggestions UI if it is currently showing.
-  virtual void HideAutofillSuggestions(PopupHidingReason reason) = 0;
+  virtual void HideAutofillSuggestions(SuggestionHidingReason reason) = 0;
 
   // TODO(crbug.com/40134864): Rename all the "domain" in this flow to origin.
   //                          The server is passing down full origin of the

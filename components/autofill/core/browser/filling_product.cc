@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
@@ -35,63 +35,63 @@ std::string FillingProductToString(FillingProduct filling_product) {
   NOTREACHED_NORETURN();
 }
 
-FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
-  switch (popup_item_id) {
-    case PopupItemId::kAddressEntry:
-    case PopupItemId::kFillFullAddress:
-    case PopupItemId::kFillFullName:
-    case PopupItemId::kFillEverythingFromAddressProfile:
-    case PopupItemId::kFillFullPhoneNumber:
-    case PopupItemId::kFillFullEmail:
-    case PopupItemId::kAddressFieldByFieldFilling:
-    case PopupItemId::kEditAddressProfile:
-    case PopupItemId::kDeleteAddressProfile:
-    case PopupItemId::kDevtoolsTestAddresses:
-    case PopupItemId::kDevtoolsTestAddressEntry:
+FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
+  switch (type) {
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kFillFullAddress:
+    case SuggestionType::kFillFullName:
+    case SuggestionType::kFillEverythingFromAddressProfile:
+    case SuggestionType::kFillFullPhoneNumber:
+    case SuggestionType::kFillFullEmail:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kEditAddressProfile:
+    case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddressEntry:
       return FillingProduct::kAddress;
-    case PopupItemId::kCreditCardEntry:
-    case PopupItemId::kCreditCardFieldByFieldFilling:
-    case PopupItemId::kVirtualCreditCardEntry:
-    case PopupItemId::kScanCreditCard:
-    case PopupItemId::kShowAccountCards:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kCreditCardFieldByFieldFilling:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kShowAccountCards:
       return FillingProduct::kCreditCard;
-    case PopupItemId::kMerchantPromoCodeEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
       return FillingProduct::kMerchantPromoCode;
-    case PopupItemId::kIbanEntry:
+    case SuggestionType::kIbanEntry:
       return FillingProduct::kIban;
-    case PopupItemId::kAutocompleteEntry:
+    case SuggestionType::kAutocompleteEntry:
       return FillingProduct::kAutocomplete;
-    case PopupItemId::kPasswordEntry:
-    case PopupItemId::kAllSavedPasswordsEntry:
-    case PopupItemId::kGeneratePasswordEntry:
-    case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
-    case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kPasswordAccountStorageReSignin:
-    case PopupItemId::kPasswordAccountStorageEmpty:
-    case PopupItemId::kWebauthnCredential:
-    case PopupItemId::kWebauthnSignInWithAnotherDevice:
-    case PopupItemId::kPasswordFieldByFieldFilling:
-    case PopupItemId::kFillPassword:
-    case PopupItemId::kViewPasswordDetails:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kPasswordAccountStorageOptIn:
+    case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kPasswordAccountStorageReSignin:
+    case SuggestionType::kPasswordAccountStorageEmpty:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kViewPasswordDetails:
       return FillingProduct::kPassword;
-    case PopupItemId::kCompose:
-    case PopupItemId::kComposeDisable:
-    case PopupItemId::kComposeGoToSettings:
-    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
-    case PopupItemId::kComposeSavedStateNotification:
+    case SuggestionType::kCompose:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
-    case PopupItemId::kCreateNewPlusAddress:
-    case PopupItemId::kFillExistingPlusAddress:
+    case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kFillExistingPlusAddress:
       return FillingProduct::kPlusAddresses;
-    case PopupItemId::kAutofillOptions:
-    case PopupItemId::kSeePromoCodeDetails:
-    case PopupItemId::kTitle:
-    case PopupItemId::kSeparator:
-    case PopupItemId::kClearForm:
-    case PopupItemId::kDatalistEntry:
-    case PopupItemId::kMixedFormMessage:
-    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kAutofillOptions:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kTitle:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kClearForm:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
       return FillingProduct::kNone;
   }
 }

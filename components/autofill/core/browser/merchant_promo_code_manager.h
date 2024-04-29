@@ -8,7 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -45,9 +45,9 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   void CancelPendingQueries() override {}
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
-                                            PopupItemId popup_item_id) override;
+                                            SuggestionType type) override;
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       PopupItemId popup_item_id) override;
+                                       SuggestionType type) override;
 
   // Initializes the instance with the given parameters. |personal_data_manager|
   // is a profile-scope data manager used to retrieve promo code offers from the
@@ -76,7 +76,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
     void OnOffersSuggestionsShown(
         const FieldGlobalId& field_global_id,
         const std::vector<const AutofillOfferData*>& offers);
-    void OnOfferSuggestionSelected(PopupItemId popup_item_id);
+    void OnOfferSuggestionSelected(SuggestionType type);
 
    private:
     // The global id of the field that most recently had suggestions shown.

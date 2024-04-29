@@ -97,8 +97,7 @@ void TestAutofillExternalDelegate::CheckSuggestions(
               suggestions_[i].minor_text.value);
     EXPECT_EQ(expected_suggestions[i].labels, suggestions_[i].labels);
     EXPECT_EQ(expected_suggestions[i].icon, suggestions_[i].icon);
-    EXPECT_EQ(expected_suggestions[i].popup_item_id,
-              suggestions_[i].popup_item_id);
+    EXPECT_EQ(expected_suggestions[i].type, suggestions_[i].type);
     EXPECT_EQ(expected_suggestions[i].is_acceptable,
               suggestions_[i].is_acceptable);
   }

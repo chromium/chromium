@@ -248,7 +248,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
     main_autofill_manager().client().HideAutofillSuggestions(
-        PopupHidingReason::kTabGone);
+        SuggestionHidingReason::kTabGone);
     test::ReenableSystemServices();
     InProcessBrowserTest::TearDownOnMainThread();
   }

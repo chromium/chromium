@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -146,7 +146,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override;
-  void HideAutofillSuggestions(PopupHidingReason reason) override;
+  void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,

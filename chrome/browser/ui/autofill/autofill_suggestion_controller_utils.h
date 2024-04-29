@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 
 namespace content {
 class BrowserContext;
@@ -22,9 +22,9 @@ class AutofillPopupDelegate;
 struct SelectOption;
 struct Suggestion;
 
-// Returns whether this `PopupItemId` can, in principle, be accepted. Note that
-// even if this is true, the suggestion itself may still not be acceptable.
-bool IsAcceptablePopupItemId(PopupItemId id);
+// Returns whether this `SuggestionType` can, in principle, be accepted. Note
+// that even if this is true, the suggestion itself may still not be acceptable.
+bool IsAcceptableSuggestionType(SuggestionType id);
 
 // Returns the RenderFrameHost` corresponding to an `AutofillPopupDelegate`.
 content::RenderFrameHost* GetRenderFrameHost(AutofillPopupDelegate& delegate);

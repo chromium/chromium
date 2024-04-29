@@ -53,7 +53,7 @@ class AutofillKeyboardAccessoryControllerImpl
   ~AutofillKeyboardAccessoryControllerImpl() override;
 
   // AutofillPopupViewDelegate:
-  void Hide(PopupHidingReason reason) override;
+  void Hide(SuggestionHidingReason reason) override;
   void ViewDestroyed() override;
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;

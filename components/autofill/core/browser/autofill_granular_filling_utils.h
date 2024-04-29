@@ -7,7 +7,7 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 
 // Helper methods specific for granular filling related behavior.
 namespace autofill {
@@ -18,7 +18,7 @@ namespace autofill {
 // either the full form, a group of related fields or a single field.
 enum class FillingMethod : uint8_t {
   // User chose to fill the whole form. Either from the main suggestion or from
-  // the extended menu `PopupItemId::kFillEverything`.
+  // the extended menu `SuggestionType::kFillEverything`.
   kFullForm = 0,
   // User chose to fill all name fields.
   kGroupFillingName = 1,
@@ -51,7 +51,7 @@ bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types);
 FillingMethod GetFillingMethodFromTargetedFields(
     const FieldTypeSet& targeted_field_types);
 
-FillingMethod GetFillingMethodFromPopupItemId(PopupItemId popup_item_id);
+FillingMethod GetFillingMethodFromSuggestionType(SuggestionType type);
 
 FieldTypeSet GetTargetFieldTypesFromFillingMethod(FillingMethod filling_method);
 

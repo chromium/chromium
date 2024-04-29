@@ -24,9 +24,9 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -691,9 +691,9 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
 
   UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
                                                &test_autofill_client);
-  EXPECT_EQ(
-      test_autofill_client.popup_hiding_reason(),
-      autofill::PopupHidingReason::kOverlappingWithPasswordGenerationPopup);
+  EXPECT_EQ(test_autofill_client.popup_hiding_reason(),
+            autofill::SuggestionHidingReason::
+                kOverlappingWithPasswordGenerationPopup);
   EXPECT_FALSE(test_autofill_client.IsShowingManualFallbackIph());
 }
 

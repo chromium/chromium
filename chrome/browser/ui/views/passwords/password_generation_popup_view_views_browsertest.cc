@@ -38,7 +38,7 @@ class MockPasswordGenerationPopupController
   ~MockPasswordGenerationPopupController() override = default;
 
   // AutofillPopupViewDelegate:
-  MOCK_METHOD(void, Hide, (autofill::PopupHidingReason), (override));
+  MOCK_METHOD(void, Hide, (autofill::SuggestionHidingReason), (override));
   MOCK_METHOD(void, ViewDestroyed, (), (override));
   MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));

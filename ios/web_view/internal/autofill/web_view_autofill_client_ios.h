@@ -109,7 +109,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override;
-  void HideAutofillSuggestions(PopupHidingReason reason) override;
+  void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,

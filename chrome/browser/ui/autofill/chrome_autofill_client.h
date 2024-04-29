@@ -29,7 +29,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -221,7 +221,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override;
-  void HideAutofillSuggestions(PopupHidingReason reason) override;
+  void HideAutofillSuggestions(SuggestionHidingReason reason) override;
   void UpdateOfferNotification(
       const AutofillOfferData* offer,
       const OfferNotificationOptions& options) override;

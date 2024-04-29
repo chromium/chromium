@@ -15,8 +15,8 @@
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -130,27 +130,27 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void UpdatePopup(std::vector<autofill::Suggestion> suggestions);
 
   // Attempts to find and fill the suggestions with the user name |username| and
-  // the `popup_item_id` indicating the store (account-stored or local). Returns
-  // true if it was successful.
+  // the `type` indicating the store (account-stored or local).
+  // Returns true if it was successful.
   bool FillSuggestion(const std::u16string& username,
-                      autofill::PopupItemId popup_item_id);
+                      autofill::SuggestionType type);
 
   // Attempts to find and preview the suggestions with the user name |username|
-  // and the `popup_item_id` indicating the store (account-stored or local).
-  // Returns true if it was successful.
+  // and the `type` indicating the store (account-stored or
+  // local). Returns true if it was successful.
   bool PreviewSuggestion(const std::u16string& username,
-                         autofill::PopupItemId popup_item_id);
+                         autofill::SuggestionType type);
 
   // If one of the login mappings in |fill_data| matches |current_username| and
-  // `popup_item_id` (indicating whether a credential is stored in account or
-  // locally), return true and assign the password and the original signon
+  // `type` (indicating whether a credential is stored in account
+  // or locally), return true and assign the password and the original signon
   // realm to |password_and_meta_data|. Note that if the credential comes from
   // the same realm as the one we're filling to, the |realm| field will be left
   // empty, as this is the behavior of |PasswordFormFillData|.
   // Otherwise, returns false and leaves |password_and_meta_data| untouched.
   bool GetPasswordAndMetadataForUsername(
       const std::u16string& current_username,
-      autofill::PopupItemId popup_item_id,
+      autofill::SuggestionType type,
       const autofill::PasswordFormFillData& fill_data,
       autofill::PasswordAndMetadata* password_and_meta_data);
 
@@ -162,22 +162,23 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // store is canceled on navigation.
   void OnFaviconReady(const favicon_base::FaviconImageResult& result);
 
-  // Replaces |unlock_item| with a loading symbol and triggers a reauth flow to
-  // opt in for the account-scoped password storage, with
-  // OnUnlockReauthCompleted as callback.
-  void OnUnlockItemAccepted(autofill::PopupItemId unlock_item);
+  // Replaces `type` with a loading symbol and triggers a reauth flow to opt in
+  // for the account-scoped password storage, with OnUnlockReauthCompleted as
+  // callback.
+  void OnUnlockItemAccepted(autofill::SuggestionType type);
 
-  // If reauth failed, resets the suggestions to show the |unlock_item| again.
-  // Otherwise, triggers either generation or filling based on the |unlock_item|
-  // that was clicked.
+  // If reauth failed, resets the suggestions to show the `type` again.
+  // Otherwise, triggers either generation or filling based on the `type` that
+  // was clicked.
   void OnUnlockReauthCompleted(
-      autofill::PopupItemId unlock_item,
+      autofill::SuggestionType type,
       PasswordManagerClient::ReauthSucceeded reauth_succeeded);
 
   // Called when the biometric reauth that guards password filling completes.
-  // `popup_item_id` identifies the suggestion that was selected for filling.
+  // `type` identifies the suggestion that was selected for
+  // filling.
   void OnBiometricReauthCompleted(const std::u16string& username_value,
-                                  autofill::PopupItemId popup_item_id,
+                                  autofill::SuggestionType type,
                                   bool auth_succeded);
 
   // Cancels an ongoing biometric re-authentication. Usually, because

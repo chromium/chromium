@@ -18,8 +18,8 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -48,7 +48,7 @@ AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
     : autofill::ContentAutofillClient(web_contents) {}
 
 AndroidAutofillClient::~AndroidAutofillClient() {
-  HideAutofillSuggestions(autofill::PopupHidingReason::kTabGone);
+  HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
 }
 
 bool AndroidAutofillClient::IsOffTheRecord() const {
@@ -222,7 +222,7 @@ void AndroidAutofillClient::UpdatePopup(
 }
 
 void AndroidAutofillClient::HideAutofillSuggestions(
-    autofill::PopupHidingReason reason) {
+    autofill::SuggestionHidingReason reason) {
   // TODO(321950502): Analyze hiding the datalist popup here.
 }
 

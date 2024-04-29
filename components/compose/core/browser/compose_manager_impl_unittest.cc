@@ -13,9 +13,9 @@
 #include "components/autofill/core/browser/mock_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/compose/core/browser/compose_client.h"
@@ -177,7 +177,7 @@ TEST_F(
                 {{autofill::Suggestion::Text(l10n_util::GetStringUTF16(
                     IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}},
                 autofill::Suggestion::Icon::kPenSpark,
-                autofill::PopupItemId::kComposeSavedStateNotification));
+                autofill::SuggestionType::kComposeSavedStateNotification));
 }
 
 TEST_F(
@@ -195,9 +195,9 @@ TEST_F(
       suggestion->children,
       ElementsAre(
           EqualsSuggestion(
-              autofill::PopupItemId::kComposeNeverShowOnThisSiteAgain),
-          EqualsSuggestion(autofill::PopupItemId::kComposeDisable),
-          EqualsSuggestion(autofill::PopupItemId::kComposeGoToSettings)));
+              autofill::SuggestionType::kComposeNeverShowOnThisSiteAgain),
+          EqualsSuggestion(autofill::SuggestionType::kComposeDisable),
+          EqualsSuggestion(autofill::SuggestionType::kComposeGoToSettings)));
 }
 
 TEST_F(
@@ -226,7 +226,7 @@ TEST_F(
                 {{autofill::Suggestion::Text(l10n_util::GetStringUTF16(
                     IDS_COMPOSE_SUGGESTION_SAVED_LABEL))}},
                 autofill::Suggestion::Icon::kPenSpark,
-                autofill::PopupItemId::kCompose));
+                autofill::SuggestionType::kCompose));
 }
 
 TEST_F(ComposeManagerImplTest,
@@ -241,7 +241,7 @@ TEST_F(ComposeManagerImplTest,
                 {{autofill::Suggestion::Text(
                     l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL))}},
                 autofill::Suggestion::Icon::kPenSpark,
-                autofill::PopupItemId::kCompose));
+                autofill::SuggestionType::kCompose));
 }
 
 TEST_F(ComposeManagerImplTest,

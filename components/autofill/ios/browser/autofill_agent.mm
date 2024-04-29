@@ -33,8 +33,8 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/core/browser/ui/suggestion.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -451,13 +451,14 @@ constexpr CGFloat kSuggestionIconWidth = 32;
         });
   }
 
-  if (suggestion.popupItemId == autofill::PopupItemId::kAddressEntry ||
-      suggestion.popupItemId == autofill::PopupItemId::kCreditCardEntry ||
-      suggestion.popupItemId == autofill::PopupItemId::kCreateNewPlusAddress ||
+  if (suggestion.popupItemId == autofill::SuggestionType::kAddressEntry ||
+      suggestion.popupItemId == autofill::SuggestionType::kCreditCardEntry ||
+      suggestion.popupItemId ==
+          autofill::SuggestionType::kCreateNewPlusAddress ||
       (base::FeatureList::IsEnabled(
            autofill::features::kAutofillEnableVirtualCards) &&
        suggestion.popupItemId ==
-           autofill::PopupItemId::kVirtualCreditCardEntry)) {
+           autofill::SuggestionType::kVirtualCreditCardEntry)) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_popupDelegate) {
       // TODO(crbug.com/41460687): Replace 0 with the index of the selected
@@ -465,7 +466,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
-      autofill_suggestion.popup_item_id = suggestion.popupItemId;
+      autofill_suggestion.type = suggestion.popupItemId;
       if (!suggestion.backendIdentifier.length) {
         autofill_suggestion.payload = autofill::Suggestion::BackendId();
       } else {
@@ -494,16 +495,16 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     return;
   }
 
-  if (suggestion.popupItemId == autofill::PopupItemId::kAutocompleteEntry ||
+  if (suggestion.popupItemId == autofill::SuggestionType::kAutocompleteEntry ||
       suggestion.popupItemId ==
-          autofill::PopupItemId::kFillExistingPlusAddress) {
+          autofill::SuggestionType::kFillExistingPlusAddress) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         fieldRendererID:fieldRendererID
                formName:SysNSStringToUTF8(formName)
                   value:SysNSStringToUTF16(suggestion.value)
                 inFrame:frame];
-  } else if (suggestion.popupItemId == autofill::PopupItemId::kClearForm) {
+  } else if (suggestion.popupItemId == autofill::SuggestionType::kClearForm) {
     __weak AutofillAgent* weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
@@ -520,7 +521,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
         }));
 
   } else if (suggestion.popupItemId ==
-             autofill::PopupItemId::kShowAccountCards) {
+             autofill::SuggestionType::kShowAccountCards) {
     autofill::BrowserAutofillManager* autofillManager =
         [self autofillManagerFromWebState:_webState webFrame:frame];
     if (autofillManager) {
@@ -673,26 +674,23 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     // for example. We can't include that enum because it's from WebKit, but
     // fortunately almost all the entries we are interested in (profile or
     // autofill entries) are zero or positive. Negative entries we are
-    // interested in is autofill::PopupItemId::kClearForm, used to show the
+    // interested in is autofill::SuggestionType::kClearForm, used to show the
     // "clear form" button.
     NSString* value = nil;
     NSString* minorValue = nil;
     NSString* displayDescription = nil;
     UIImage* icon = nil;
 
-    if (popup_suggestion.popup_item_id ==
-            autofill::PopupItemId::kAutocompleteEntry ||
-        popup_suggestion.popup_item_id ==
-            autofill::PopupItemId::kAddressEntry ||
-        popup_suggestion.popup_item_id ==
-            autofill::PopupItemId::kCreditCardEntry ||
+    if (popup_suggestion.type == autofill::SuggestionType::kAutocompleteEntry ||
+        popup_suggestion.type == autofill::SuggestionType::kAddressEntry ||
+        popup_suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
         (base::FeatureList::IsEnabled(
              autofill::features::kAutofillEnableVirtualCards) &&
-         popup_suggestion.popup_item_id ==
-             autofill::PopupItemId::kVirtualCreditCardEntry)) {
+         popup_suggestion.type ==
+             autofill::SuggestionType::kVirtualCreditCardEntry)) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
-      if (popup_suggestion.popup_item_id ==
-              autofill::PopupItemId::kAutocompleteEntry &&
+      if (popup_suggestion.type ==
+              autofill::SuggestionType::kAutocompleteEntry &&
           [_typedValue length] == 0) {
         continue;
       }
@@ -722,18 +720,17 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                           autofill::FillingProduct::kCreditCard) {
         icon = [self createIcon:popup_suggestion];
       }
-    } else if (popup_suggestion.popup_item_id ==
-               autofill::PopupItemId::kClearForm) {
+    } else if (popup_suggestion.type == autofill::SuggestionType::kClearForm) {
       // Show the "clear form" button.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-    } else if (popup_suggestion.popup_item_id ==
-               autofill::PopupItemId::kShowAccountCards) {
+    } else if (popup_suggestion.type ==
+               autofill::SuggestionType::kShowAccountCards) {
       // Show opt-in for showing cards from account.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-    } else if (popup_suggestion.popup_item_id ==
-                   autofill::PopupItemId::kFillExistingPlusAddress ||
-               popup_suggestion.popup_item_id ==
-                   autofill::PopupItemId::kCreateNewPlusAddress) {
+    } else if (popup_suggestion.type ==
+                   autofill::SuggestionType::kFillExistingPlusAddress ||
+               popup_suggestion.type ==
+                   autofill::SuggestionType::kCreateNewPlusAddress) {
       // Show any plus_address suggestions.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
       icon = [self plusAddressIcon:popup_suggestion];
@@ -752,7 +749,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                         minorValue:minorValue
                 displayDescription:displayDescription
                               icon:icon
-                       popupItemId:popup_suggestion.popup_item_id
+                       popupItemId:popup_suggestion.type
                  backendIdentifier:SysUTF8ToNSString(
                                        popup_suggestion
                                            .GetBackendId<
@@ -767,7 +764,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     }
 
     // Put "clear form" entry at the front of the suggestions.
-    if (popup_suggestion.popup_item_id == autofill::PopupItemId::kClearForm) {
+    if (popup_suggestion.type == autofill::SuggestionType::kClearForm) {
       [suggestions insertObject:suggestion atIndex:0];
     } else {
       [suggestions addObject:suggestion];
@@ -1182,14 +1179,14 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 }
 
 // Helper method to create icons for plus_address icons. Intended to be called
-// only with `autofill::Suggestion`s whose `popup_item_id` is
+// only with `autofill::Suggestion`s whose `type` is
 // `kFillExistingPlusAddress` or `kCreateNewPlusAddress`.
 - (UIImage*)plusAddressIcon:(autofill::Suggestion)plus_address_suggestion {
   // Ensure the suggestion is of the correct type.
-  if (plus_address_suggestion.popup_item_id !=
-          autofill::PopupItemId::kFillExistingPlusAddress &&
-      plus_address_suggestion.popup_item_id !=
-          autofill::PopupItemId::kCreateNewPlusAddress) {
+  if (plus_address_suggestion.type !=
+          autofill::SuggestionType::kFillExistingPlusAddress &&
+      plus_address_suggestion.type !=
+          autofill::SuggestionType::kCreateNewPlusAddress) {
     return nil;
   }
   // TODO(crbug.com/40276862): Finalize icons, including in the unbranded case.

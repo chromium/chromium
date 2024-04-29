@@ -22,8 +22,8 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -67,7 +67,7 @@ constexpr int kExpandChildSuggestionsViewHorizontalPadding =
     (kExpandChildSuggestionsViewWidth - kExpandChildSuggestionsIconWidth) / 2;
 
 // Computes the position and set size of the suggestion at `suggestion_index` in
-// `controller`'s suggestions ignoring `PopupItemId::kSeparator`s.
+// `controller`'s suggestions ignoring `SuggestionType::kSeparator`s.
 // Returns a pair of numbers: <position, size>. The position value is 1-base.
 std::pair<int, int> ComputePositionInSet(
     base::WeakPtr<AutofillPopupController> controller,
@@ -77,8 +77,7 @@ std::pair<int, int> ComputePositionInSet(
   int set_size = 0;
   int set_index = suggestion_index + 1;
   for (int i = 0; i < controller->GetLineCount(); ++i) {
-    if (controller->GetSuggestionAt(i).popup_item_id !=
-        PopupItemId::kSeparator) {
+    if (controller->GetSuggestionAt(i).type != SuggestionType::kSeparator) {
       ++set_size;
       continue;
     }
@@ -95,9 +94,9 @@ std::u16string GetSuggestionA11yString(const Suggestion& suggestion,
       {popup_cell_utils::GetVoiceOverStringFromSuggestion(suggestion)});
 
   if (!suggestion.children.empty()) {
-    CHECK(IsExpandablePopupItemId(suggestion.popup_item_id));
+    CHECK(IsExpandableSuggestionType(suggestion.type));
 
-    if (suggestion.popup_item_id == PopupItemId::kAddressEntry &&
+    if (suggestion.type == SuggestionType::kAddressEntry &&
         add_call_to_action_if_expandable) {
       text.push_back(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_EXPANDABLE_SUGGESTION_FILL_ADDRESS_A11Y_ADDON));
@@ -241,7 +240,7 @@ PopupRowView::PopupRowView(
             gfx::Insets(kExpandChildSuggestionsViewHorizontalPadding)));
     expand_child_suggestions_view_->AddChildView(
         popup_cell_utils::ImageViewFromVectorIcon(
-            popup_cell_utils::GetExpandableMenuIcon(suggestion.popup_item_id),
+            popup_cell_utils::GetExpandableMenuIcon(suggestion.type),
             kExpandChildSuggestionsIconWidth));
     expand_child_suggestions_view_->AddObserver(this);
     control_event_handler_ = set_exit_enter_callbacks(

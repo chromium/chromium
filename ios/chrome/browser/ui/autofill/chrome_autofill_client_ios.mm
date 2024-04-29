@@ -30,7 +30,7 @@
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_util.h"
@@ -120,7 +120,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
           base::RepeatingClosure())) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
-  HideAutofillSuggestions(PopupHidingReason::kTabGone);
+  HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
 }
 
 void ChromeAutofillClientIOS::SetBaseViewController(
@@ -494,7 +494,7 @@ void ChromeAutofillClientIOS::UpdatePopup(
 }
 
 void ChromeAutofillClientIOS::HideAutofillSuggestions(
-    PopupHidingReason reason) {
+    SuggestionHidingReason reason) {
   [bridge_ hideAutofillPopup];
 }
 

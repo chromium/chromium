@@ -15,7 +15,7 @@
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -87,7 +87,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       log_manager_(std::move(log_manager)) {}
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
-  HideAutofillSuggestions(PopupHidingReason::kTabGone);
+  HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
 }
 
 bool WebViewAutofillClientIOS::IsOffTheRecord() const {
@@ -288,7 +288,7 @@ void WebViewAutofillClientIOS::UpdatePopup(
 }
 
 void WebViewAutofillClientIOS::HideAutofillSuggestions(
-    PopupHidingReason reason) {
+    SuggestionHidingReason reason) {
   [bridge_ hideAutofillPopup];
 }
 

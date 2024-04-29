@@ -22,7 +22,7 @@
 #import "base/test/task_environment.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -610,7 +610,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
       suggestionWithValue:suggestion_text
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+              popupItemId:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
 

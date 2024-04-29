@@ -64,12 +64,12 @@ These classes serve the following purposes:
    * An example of usage is the Autocomplete suggestion with a "Delete" button
 * [`CreatePopupRowView()`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h): Row construction method.
    * It is the entry point for creating rows of different types. Based on the suggestion (mostly
-     its `PopupItemId`) it instantiates a row class and its content view.
+     its `SuggestionType`) it instantiates a row class and its content view.
 
 
 ## Adding new popup content
 
-There are currently about ~30 different `PopupItemId`s, that correspond to a different type of popup row. When a new type is added and it cannot be properly processed by `CreatePopupRowView()`, use the
+There are currently about ~30 different `SuggestionType`s, that correspond to a different type of popup row. When a new type is added and it cannot be properly processed by `CreatePopupRowView()`, use the
 following steps to support it by the popup UI:
 * Create a new factory method for `PopupRowContentView` (or even for `PopupRowView` if needed, e.g. `CreateAutocompleteRowWithDeleteButton()`),
   e.g. `CreatePasswordPopupRowContentView()` in [popup_row_factory_utils.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.cc).

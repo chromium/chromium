@@ -74,18 +74,19 @@ class SingleFieldFormFiller {
   virtual void CancelPendingQueries() = 0;
 
   // If applicable, removes the currently-selected suggestion from the database.
-  // `popup_item_id` is the PopupItemId of the suggestion to be removed.
+  // `type` is the SuggestionType of the suggestion to be
+  // removed.
   virtual void OnRemoveCurrentSingleFieldSuggestion(
       const std::u16string& field_name,
       const std::u16string& value,
-      PopupItemId popup_item_id) = 0;
+      SuggestionType type) = 0;
 
   // Invoked when the user selects |value| in the list of suggestions. For
   // Autocomplete, this function logs the DaysSinceLastUse of the Autocomplete
-  // entry associated with |value|. `popup_item_id` is the PopupItemId of the
-  // suggestion selected.
+  // entry associated with |value|. `type` is the SuggestionType
+  // of the suggestion selected.
   virtual void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                               PopupItemId popup_item_id) = 0;
+                                               SuggestionType type) = 0;
 };
 
 }  // namespace autofill

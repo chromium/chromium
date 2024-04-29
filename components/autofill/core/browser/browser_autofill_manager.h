@@ -46,8 +46,8 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/ui/fast_checkout_delegate.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -173,7 +173,7 @@ class BrowserAutofillManager : public AutofillManager {
                                   const FormData& form,
                                   const FormFieldData& field,
                                   const std::u16string& value,
-                                  PopupItemId popup_item_id);
+                                  SuggestionType type);
 
   // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
@@ -181,7 +181,7 @@ class BrowserAutofillManager : public AutofillManager {
                             const FormFieldData& trigger_field);
   // Virtual for testing
   virtual void DidShowSuggestions(
-      base::span<const PopupItemId> shown_suggestions_types,
+      base::span<const SuggestionType> shown_suggestions_types,
       const FormData& form,
       const FormFieldData& field);
 
@@ -207,16 +207,17 @@ class BrowserAutofillManager : public AutofillManager {
   // from the database. Returns true if deletion is allowed.
   bool RemoveAutofillProfileOrCreditCard(Suggestion::BackendId backend_id);
 
-  // Remove the specified suggestion from single field filling. `popup_item_id`
-  // is the PopupItemId of the suggestion.
+  // Remove the specified suggestion from single field filling.
+  // `type` is the SuggestionType of the suggestion.
   void RemoveCurrentSingleFieldSuggestion(const std::u16string& name,
                                           const std::u16string& value,
-                                          PopupItemId popup_item_id);
+                                          SuggestionType type);
 
   // Invoked when the user selected |value| in a suggestions list from single
-  // field filling. `popup_item_id` is the PopupItemId of the suggestion.
+  // field filling. `type` is the SuggestionType of the
+  // suggestion.
   void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       PopupItemId popup_item_id,
+                                       SuggestionType type,
                                        const FormData& form,
                                        const FormFieldData& field);
 

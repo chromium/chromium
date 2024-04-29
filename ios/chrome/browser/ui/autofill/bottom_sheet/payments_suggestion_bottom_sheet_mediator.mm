@@ -246,8 +246,9 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                                    kAutofillEnableVirtualCards) &&
                            ([creditCardData recordType] ==
                             autofill::CreditCard::RecordType::kVirtualCard))
-                              ? autofill::PopupItemId::kVirtualCreditCardEntry
-                              : autofill::PopupItemId::kCreditCardEntry)
+                              ? autofill::SuggestionType::
+                                    kVirtualCreditCardEntry
+                              : autofill::SuggestionType::kCreditCardEntry)
                backendIdentifier:[creditCardData backendIdentifier]
                   requiresReauth:NO
       acceptanceA11yAnnouncement:

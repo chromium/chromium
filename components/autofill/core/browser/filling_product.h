@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PRODUCT_H_
 
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
@@ -26,7 +26,7 @@ enum class FillingProduct {
   kMaxValue = kPlusAddresses
 };
 
-FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id);
+FillingProduct GetFillingProductFromSuggestionType(SuggestionType type);
 
 FillingProduct GetFillingProductFromFieldTypeGroup(
     FieldTypeGroup field_type_group);

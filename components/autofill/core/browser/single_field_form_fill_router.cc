@@ -95,33 +95,31 @@ void SingleFieldFormFillRouter::CancelPendingQueries() {
 void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
-    PopupItemId popup_item_id) {
+    SuggestionType type) {
   if (merchant_promo_code_manager_ &&
-      popup_item_id == PopupItemId::kMerchantPromoCodeEntry) {
+      type == SuggestionType::kMerchantPromoCodeEntry) {
     merchant_promo_code_manager_->OnRemoveCurrentSingleFieldSuggestion(
-        field_name, value, popup_item_id);
-  } else if (iban_manager_ && popup_item_id == PopupItemId::kIbanEntry) {
+        field_name, value, type);
+  } else if (iban_manager_ && type == SuggestionType::kIbanEntry) {
     iban_manager_->OnRemoveCurrentSingleFieldSuggestion(field_name, value,
-                                                        popup_item_id);
-  } else if (popup_item_id == PopupItemId::kAutocompleteEntry) {
+                                                        type);
+  } else if (type == SuggestionType::kAutocompleteEntry) {
     autocomplete_history_manager_->OnRemoveCurrentSingleFieldSuggestion(
-        field_name, value, popup_item_id);
+        field_name, value, type);
   }
 }
 
 void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    PopupItemId popup_item_id) {
+    SuggestionType type) {
   if (merchant_promo_code_manager_ &&
-      (popup_item_id == PopupItemId::kMerchantPromoCodeEntry ||
-       popup_item_id == PopupItemId::kSeePromoCodeDetails)) {
-    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(
-        value, popup_item_id);
-  } else if (iban_manager_ && popup_item_id == PopupItemId::kIbanEntry) {
-    iban_manager_->OnSingleFieldSuggestionSelected(value, popup_item_id);
-  } else if (popup_item_id == PopupItemId::kAutocompleteEntry) {
-    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(
-        value, popup_item_id);
+      (type == SuggestionType::kMerchantPromoCodeEntry ||
+       type == SuggestionType::kSeePromoCodeDetails)) {
+    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(value, type);
+  } else if (iban_manager_ && type == SuggestionType::kIbanEntry) {
+    iban_manager_->OnSingleFieldSuggestionSelected(value, type);
+  } else if (type == SuggestionType::kAutocompleteEntry) {
+    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(value, type);
   }
 }
 

@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 
 // Metadata tied to the form suggestion that gives more context around the
 // suggestion.
@@ -35,7 +35,7 @@ struct FormSuggestionMetadata {
 @property(copy, readonly, nonatomic) UIImage* icon;
 
 // Denotes the popup type.
-@property(assign, readonly, nonatomic) autofill::PopupItemId popupItemId;
+@property(assign, readonly, nonatomic) autofill::SuggestionType popupItemId;
 
 // Indicates if the user should re-authenticate with the device before applying
 // the suggestion.
@@ -58,7 +58,7 @@ struct FormSuggestionMetadata {
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::PopupItemId)popupItemId
+                           popupItemId:(autofill::SuggestionType)popupItemId
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
@@ -69,7 +69,7 @@ struct FormSuggestionMetadata {
                             minorValue:(NSString*)minorValue
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::PopupItemId)popupItemId
+                           popupItemId:(autofill::SuggestionType)popupItemId
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement;
@@ -78,7 +78,7 @@ struct FormSuggestionMetadata {
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::PopupItemId)popupItemId
+                           popupItemId:(autofill::SuggestionType)popupItemId
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth;
 

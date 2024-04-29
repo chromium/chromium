@@ -27,8 +27,8 @@
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -89,7 +89,7 @@ AutofillSuggestionController::GetOrCreate(
   }
 
   if (previous) {
-    previous->Hide(PopupHidingReason::kViewDestroyed);
+    previous->Hide(SuggestionHidingReason::kViewDestroyed);
   }
   auto* controller = new AutofillKeyboardAccessoryControllerImpl(
       delegate, web_contents, std::move(controller_common),
@@ -113,18 +113,19 @@ AutofillKeyboardAccessoryControllerImpl::
 AutofillKeyboardAccessoryControllerImpl::
     ~AutofillKeyboardAccessoryControllerImpl() = default;
 
-void AutofillKeyboardAccessoryControllerImpl::Hide(PopupHidingReason reason) {
+void AutofillKeyboardAccessoryControllerImpl::Hide(
+    SuggestionHidingReason reason) {
   // If the reason for hiding is only stale data or a user interacting with
   // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == PopupHidingReason::kStaleData ||
-                          reason == PopupHidingReason::kFocusChanged ||
-                          reason == PopupHidingReason::kEndEditing)) {
+  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
+                          reason == SuggestionHidingReason::kFocusChanged ||
+                          reason == SuggestionHidingReason::kEndEditing)) {
     return;  // Don't close the popup while waiting for an update.
   }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
-      (reason == PopupHidingReason::kWidgetChanged ||
-       reason == PopupHidingReason::kEndEditing)) {
+      (reason == SuggestionHidingReason::kWidgetChanged ||
+       reason == SuggestionHidingReason::kEndEditing)) {
     // Don't close the popup because the browser window is resized or because
     // too many fields get focus one after each other (this can happen on
     // Desktop, if multiple password forms are present, and they are all
@@ -137,7 +138,7 @@ void AutofillKeyboardAccessoryControllerImpl::Hide(PopupHidingReason reason) {
     delegate_->OnPopupHidden();
   }
   popup_hide_helper_.reset();
-  AutofillMetrics::LogAutofillPopupHidingReason(reason);
+  AutofillMetrics::LogAutofillSuggestionHidingReason(reason);
   HideViewAndDie();
 }
 
@@ -182,7 +183,7 @@ void AutofillKeyboardAccessoryControllerImpl::HideViewAndDie() {
 }
 
 void AutofillKeyboardAccessoryControllerImpl::ViewDestroyed() {
-  Hide(PopupHidingReason::kViewDestroyed);
+  Hide(SuggestionHidingReason::kViewDestroyed);
 }
 
 gfx::NativeView AutofillKeyboardAccessoryControllerImpl::container_view()
@@ -254,7 +255,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   }
 
   if (IsPointerLocked(web_contents_.get())) {
-    Hide(PopupHidingReason::kMouseLocked);
+    Hide(SuggestionHidingReason::kMouseLocked);
     return;
   }
 
@@ -280,7 +281,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   delegate_->DidAcceptSuggestion(
       suggestion, AutofillPopupDelegate::SuggestionPosition{.row = index});
 
-  if (suggestion.popup_item_id == PopupItemId::kPasswordEntry &&
+  if (suggestion.type == SuggestionType::kPasswordEntry &&
       base::FeatureList::IsEnabled(
           password_manager::features::
               kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
@@ -323,7 +324,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
   CHECK_EQ(suggestions_.size(), labels_.size());
 
   const FillingProduct filling_product =
-      GetFillingProductFromPopupItemId(GetSuggestionAt(index).popup_item_id);
+      GetFillingProductFromSuggestionType(GetSuggestionAt(index).type);
   if (!confirmed) {
     if (filling_product == FillingProduct::kAddress) {
       autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
@@ -368,7 +369,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     delegate_->ClearPreviewedForm();
     OnSuggestionsChanged();
   } else {
-    Hide(PopupHidingReason::kNoSuggestions);
+    Hide(SuggestionHidingReason::kNoSuggestions);
   }
 }
 
@@ -402,7 +403,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();
       !rwhv || !rwhv->HasFocus()) {
-    Hide(PopupHidingReason::kNoFrameHasFocus);
+    Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }
 
@@ -418,12 +419,12 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
   if (!rfh || !delegate_ ||
       !IsAncestorOf(GetRenderFrameHost(*delegate_), rfh)) {
-    Hide(PopupHidingReason::kNoFrameHasFocus);
+    Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }
 
   if (IsPointerLocked(web_contents_.get())) {
-    Hide(PopupHidingReason::kMouseLocked);
+    Hide(SuggestionHidingReason::kMouseLocked);
     return;
   }
 
@@ -449,7 +450,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     view_ = AutofillKeyboardAccessoryView::Create(GetWeakPtr());
     // It is possible to fail to create the accessory view.
     if (!view_) {
-      Hide(PopupHidingReason::kViewDestroyed);
+      Hide(SuggestionHidingReason::kViewDestroyed);
       return;
     }
 
@@ -487,7 +488,7 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
   if (HasSuggestions()) {
     OnSuggestionsChanged();
   } else {
-    Hide(PopupHidingReason::kNoSuggestions);
+    Hide(SuggestionHidingReason::kNoSuggestions);
   }
 }
 
@@ -499,9 +500,9 @@ bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
   if (suggestions_.empty()) {
     return false;
   }
-  PopupItemId popup_item_id = suggestions_[0].popup_item_id;
-  return base::Contains(kItemsTriggeringFieldFilling, popup_item_id) ||
-         popup_item_id == PopupItemId::kScanCreditCard;
+  SuggestionType type = suggestions_[0].type;
+  return base::Contains(kItemsTriggeringFieldFilling, type) ||
+         type == SuggestionType::kScanCreditCard;
 }
 
 // AutofillKeyboardAccessoryController implementation:
@@ -518,11 +519,11 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     std::u16string* body) {
   CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
-  const PopupItemId popup_item_id = suggestions_[index].popup_item_id;
+  const SuggestionType type = suggestions_[index].type;
   const Suggestion::BackendId backend_id =
       suggestions_[index].GetPayload<Suggestion::BackendId>();
 
-  if (popup_item_id == PopupItemId::kAutocompleteEntry) {
+  if (type == SuggestionType::kAutocompleteEntry) {
     if (title) {
       title->assign(value);
     }
@@ -533,8 +534,8 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     return true;
   }
 
-  if (popup_item_id != PopupItemId::kAddressEntry &&
-      popup_item_id != PopupItemId::kCreditCardEntry) {
+  if (type != SuggestionType::kAddressEntry &&
+      type != SuggestionType::kCreditCardEntry) {
     return false;
   }
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
@@ -580,8 +581,8 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
 void AutofillKeyboardAccessoryControllerImpl::
     OrderSuggestionsAndCreateLabels() {
   // If there is a "clear form" entry, move it to the front.
-  if (auto it = base::ranges::find(suggestions_, PopupItemId::kClearForm,
-                                   &Suggestion::popup_item_id);
+  if (auto it = base::ranges::find(suggestions_, SuggestionType::kClearForm,
+                                   &Suggestion::type);
       it != suggestions_.end()) {
     std::rotate(suggestions_.begin(), it, it + 1);
   }
@@ -589,7 +590,7 @@ void AutofillKeyboardAccessoryControllerImpl::
   labels_.clear();
   labels_.reserve(suggestions_.size());
   for (const Suggestion& suggestion : suggestions_) {
-    if (suggestion.popup_item_id != PopupItemId::kClearForm) {
+    if (suggestion.type != SuggestionType::kClearForm) {
       labels_.push_back(CreateLabel(suggestion));
     } else if (suggestion.labels.empty()) {
       labels_.emplace_back();

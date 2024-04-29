@@ -22,8 +22,8 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -617,11 +617,10 @@ void ApplyDeactivatedStyle(views::View& view) {
   view.layer()->SetOpacity(kGrayedOutOpacity);
 }
 
-const gfx::VectorIcon& GetExpandableMenuIcon(PopupItemId popup_item_id) {
-  CHECK(IsExpandablePopupItemId(popup_item_id));
+const gfx::VectorIcon& GetExpandableMenuIcon(SuggestionType type) {
+  CHECK(IsExpandableSuggestionType(type));
   // Only compose suggestions have a different expandable icon.
-  return GetFillingProductFromPopupItemId(popup_item_id) ==
-                 FillingProduct::kCompose
+  return GetFillingProductFromSuggestionType(type) == FillingProduct::kCompose
              ? kBrowserToolsChromeRefreshIcon
              : vector_icons::kSubmenuArrowChromeRefreshIcon;
 }

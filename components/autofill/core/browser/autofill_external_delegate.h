@@ -19,8 +19,8 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -50,7 +50,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
   // Returns true if `item_id` identifies a suggestion which can appear on the
   // first layer of the Autofill popup and can fill form fields.
-  static bool IsAutofillAndFirstLayerSuggestionId(PopupItemId item_id);
+  static bool IsAutofillAndFirstLayerSuggestionId(SuggestionType item_id);
 
   // AutofillPopupDelegate implementation.
   absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
@@ -168,7 +168,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // If `is_preview` is true then this is just a preview to show the user what
   // would be selected and if `is_preview` is false then the user has selected
   // this data.
-  void FillAutofillFormData(PopupItemId popup_item_id,
+  void FillAutofillFormData(SuggestionType type,
                             Suggestion::BackendId backend_id,
                             bool is_preview,
                             const AutofillTriggerDetails& trigger_details);
@@ -269,7 +269,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
   bool show_cards_from_account_suggestion_was_shown_ = false;
 
-  std::vector<PopupItemId> shown_suggestion_types_;
+  std::vector<SuggestionType> shown_suggestion_types_;
 
   // The current data list values.
   std::vector<SelectOption> datalist_;

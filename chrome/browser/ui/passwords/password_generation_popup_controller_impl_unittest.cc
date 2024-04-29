@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -227,7 +227,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, DestroyInPasswordAccepted) {
   EXPECT_CALL(*driver,
               GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _))
       .WillOnce([controller](auto, auto, auto) {
-        controller->Hide(autofill::PopupHidingReason::kViewDestroyed);
+        controller->Hide(autofill::SuggestionHidingReason::kViewDestroyed);
       });
   controller->PasswordAccepted();
 }
@@ -307,7 +307,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, ClearsFormPreviewOnHide) {
           /*pref_service=*/nullptr);
 
   EXPECT_CALL(*driver, ClearPreviewedForm());
-  controller->Hide(autofill::PopupHidingReason::kViewDestroyed);
+  controller->Hide(autofill::SuggestionHidingReason::kViewDestroyed);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -421,7 +421,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
 
   EXPECT_EQ(
       pref_service.GetInteger(kPasswordGenerationNudgePasswordDismissCount), 0);
-  controller->Hide(autofill::PopupHidingReason::kUserAborted);
+  controller->Hide(autofill::SuggestionHidingReason::kUserAborted);
   EXPECT_EQ(
       pref_service.GetInteger(kPasswordGenerationNudgePasswordDismissCount), 1);
 }

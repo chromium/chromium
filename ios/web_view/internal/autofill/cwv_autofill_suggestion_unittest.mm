@@ -20,13 +20,13 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
   NSString* formName = @"TestFormName";
   NSString* fieldIdentifier = @"TestFieldIdentifier";
   NSString* frameID = @"TestFrameID";
-  FormSuggestion* formSuggestion =
-      [FormSuggestion suggestionWithValue:@"TestValue"
-                       displayDescription:@"TestDisplayDescription"
-                                     icon:nil
-                              popupItemId:autofill::PopupItemId::kAddressEntry
-                        backendIdentifier:nil
-                           requiresReauth:NO];
+  FormSuggestion* formSuggestion = [FormSuggestion
+      suggestionWithValue:@"TestValue"
+       displayDescription:@"TestDisplayDescription"
+                     icon:nil
+              popupItemId:autofill::SuggestionType::kAddressEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:formSuggestion
                                                    formName:formName

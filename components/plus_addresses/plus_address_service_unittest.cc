@@ -55,19 +55,19 @@ namespace {
 using SuggestionEvent = autofill::AutofillPlusAddressDelegate::SuggestionEvent;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
-using autofill::PopupItemId;
 using autofill::Suggestion;
+using autofill::SuggestionType;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
 
 auto IsSingleCreatePlusAddressSuggestion() {
-  return ElementsAre(EqualsSuggestion(PopupItemId::kCreateNewPlusAddress));
+  return ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress));
 }
 
 auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
-  return ElementsAre(EqualsSuggestion(PopupItemId::kFillExistingPlusAddress,
+  return ElementsAre(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
                                       /*main_text=*/base::UTF8ToUTF16(address),
                                       Suggestion::Icon::kPlusAddress));
 }

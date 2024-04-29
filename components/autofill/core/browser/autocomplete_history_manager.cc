@@ -131,14 +131,14 @@ void AutocompleteHistoryManager::CancelPendingQueries() {
 void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
-    PopupItemId popup_item_id) {
+    SuggestionType type) {
   if (profile_database_)
     profile_database_->RemoveFormValueForElementName(field_name, value);
 }
 
 void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    PopupItemId popup_item_id) {
+    SuggestionType type) {
   // Try to find the AutofillEntry associated with the given suggestion.
   auto last_entries_iter = last_entries_.find(value);
   if (last_entries_iter == last_entries_.end()) {

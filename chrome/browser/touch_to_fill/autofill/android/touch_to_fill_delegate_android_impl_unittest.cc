@@ -53,7 +53,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, HideTouchToFillCreditCard, (), (override));
   MOCK_METHOD(void,
               HideAutofillSuggestions,
-              (PopupHidingReason reason),
+              (SuggestionHidingReason reason),
               (override));
 
   void ExpectDelegateWeakPtrFromShowInvalidatedOnHide() {
@@ -98,7 +98,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const AutofillTriggerDetails& trigger_details));
   MOCK_METHOD(void,
               DidShowSuggestions,
-              (base::span<const PopupItemId> shown_suggestions_types,
+              (base::span<const SuggestionType> shown_suggestions_types,
                const FormData& form,
                const FormFieldData& field),
               (override));
@@ -195,7 +195,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
   void TryToShowTouchToFill(bool expected_success) {
     EXPECT_CALL(autofill_client_,
                 HideAutofillSuggestions(
-                    PopupHidingReason::kOverlappingWithTouchToFillSurface))
+                    SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
         .Times(expected_success ? 1 : 0);
 
     OnFormsSeen();
@@ -484,7 +484,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   EXPECT_CALL(autofill_client_,
               HideAutofillSuggestions(
-                  PopupHidingReason::kOverlappingWithTouchToFillSurface))
+                  SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
   TryToShowTouchToFill(/*expected_success=*/false);
 }
@@ -495,7 +495,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   EXPECT_CALL(autofill_client_,
               HideAutofillSuggestions(
-                  PopupHidingReason::kOverlappingWithTouchToFillSurface))
+                  SuggestionHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
   EXPECT_FALSE(
       touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields[0]));

@@ -51,7 +51,8 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
           std::make_unique<MockAutofillKeyboardAccessoryView>());
       manager_of_last_controller_ = manager.GetWeakPtr();
       ON_CALL(cast_popup_controller(), Hide)
-          .WillByDefault([this](PopupHidingReason reason) { DoHide(reason); });
+          .WillByDefault(
+              [this](SuggestionHidingReason reason) { DoHide(reason); });
     }
     return cast_popup_controller();
   }
@@ -68,7 +69,7 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
   }
 
  private:
-  void DoHide(PopupHidingReason reason) {
+  void DoHide(SuggestionHidingReason reason) {
     if (popup_controller_) {
       cast_popup_controller().DoHide(reason);
     }

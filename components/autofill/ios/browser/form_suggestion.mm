@@ -10,7 +10,7 @@
                     minorValue:(NSString*)minorValue
             displayDescription:(NSString*)displayDescription
                           icon:(UIImage*)icon
-                   popupItemId:(autofill::PopupItemId)popupItemId
+                   popupItemId:(autofill::SuggestionType)popupItemId
              backendIdentifier:(NSString*)backendIdentifier
                 requiresReauth:(BOOL)requiresReauth
     acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
@@ -33,7 +33,7 @@
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::PopupItemId)popupItemId
+                           popupItemId:(autofill::SuggestionType)popupItemId
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
@@ -53,7 +53,7 @@
                             minorValue:(NSString*)minorValue
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::PopupItemId)popupItemId
+                           popupItemId:(autofill::SuggestionType)popupItemId
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement {
@@ -71,7 +71,7 @@
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::PopupItemId)popupItemId
+                           popupItemId:(autofill::SuggestionType)popupItemId
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth {
   return [[FormSuggestion alloc] initWithValue:value

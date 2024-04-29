@@ -14,8 +14,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -29,7 +29,7 @@ class MockAutofillPopupController : public AutofillPopupController {
   ~MockAutofillPopupController() override;
 
   // AutofillPopupViewDelegate:
-  MOCK_METHOD(void, Hide, (PopupHidingReason), (override));
+  MOCK_METHOD(void, Hide, (SuggestionHidingReason), (override));
   MOCK_METHOD(void, ViewDestroyed, (), (override));
   MOCK_METHOD(bool, HasSelection, (), (const override));
   MOCK_METHOD(gfx::Rect, popup_bounds, (), (const override));
@@ -111,7 +111,7 @@ class MockAutofillPopupController : public AutofillPopupController {
   MOCK_METHOD(void, PinView, (), (override));
   MOCK_METHOD(void, SetFilter, (std::optional<SuggestionFilter>), (override));
 
-  void set_suggestions(const std::vector<PopupItemId>& ids) {
+  void set_suggestions(const std::vector<SuggestionType>& ids) {
     suggestions_.clear();
 
     for (const auto& id : ids) {

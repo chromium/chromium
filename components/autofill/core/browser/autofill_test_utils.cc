@@ -29,7 +29,7 @@
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -984,11 +984,11 @@ void AddFieldPredictionsToForm(
   }
 }
 
-Suggestion CreateAutofillSuggestion(PopupItemId popup_item_id,
+Suggestion CreateAutofillSuggestion(SuggestionType type,
                                     const std::u16string& main_text_value,
                                     const Suggestion::Payload& payload) {
   Suggestion suggestion;
-  suggestion.popup_item_id = popup_item_id;
+  suggestion.type = type;
   suggestion.main_text.value = main_text_value;
   suggestion.payload = payload;
   return suggestion;

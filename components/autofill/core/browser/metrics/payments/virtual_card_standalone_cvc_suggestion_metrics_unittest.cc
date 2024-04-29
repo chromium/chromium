@@ -67,7 +67,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
   // Simulate activating the autofill popup for the CVC field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   DidShowAutofillSuggestions(form(), /*field_index=*/0,
-                             PopupItemId::kCreditCardEntry);
+                             SuggestionType::kCreditCardEntry);
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
@@ -84,7 +84,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
   // Simulate activating the autofill popup for the CVC field again.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   DidShowAutofillSuggestions(form(), /*field_index=*/0,
-                             PopupItemId::kCreditCardEntry);
+                             SuggestionType::kCreditCardEntry);
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),

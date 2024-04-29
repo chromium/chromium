@@ -10,8 +10,8 @@
 #include "base/functional/overloaded.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -23,8 +23,8 @@
 
 namespace autofill {
 
-bool IsAcceptablePopupItemId(PopupItemId id) {
-  using enum PopupItemId;
+bool IsAcceptableSuggestionType(SuggestionType id) {
+  using enum SuggestionType;
   static constexpr auto kUnacceptableItemIds =
       DenseSet({kSeparator, kInsecureContextPaymentDisabledMessage,
                 kMixedFormMessage, kTitle});
@@ -65,7 +65,7 @@ bool IsPointerLocked(content::WebContents* web_contents) {
 
 void NotifyIphAboutAcceptedSuggestion(content::BrowserContext* browser_context,
                                       const Suggestion& suggestion) {
-  if (suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
+  if (suggestion.type == SuggestionType::kVirtualCreditCardEntry) {
     feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
         ->NotifyEvent(suggestion.feature_for_iph ==
                               &feature_engagement::
@@ -88,14 +88,14 @@ std::vector<Suggestion> UpdateSuggestionsFromDataList(
   // Remove all the old data list values, which should always be at the top of
   // the list if they are present.
   std::erase_if(suggestions, [](const Suggestion& suggestion) {
-    return suggestion.popup_item_id == PopupItemId::kDatalistEntry;
+    return suggestion.type == SuggestionType::kDatalistEntry;
   });
 
   // If there are no new data list values, exit (clearing the separator if there
   // is one).
   if (options.empty()) {
     if (!suggestions.empty() &&
-        suggestions[0].popup_item_id == PopupItemId::kSeparator) {
+        suggestions[0].type == SuggestionType::kSeparator) {
       suggestions.erase(suggestions.begin());
     }
     return suggestions;
@@ -103,9 +103,9 @@ std::vector<Suggestion> UpdateSuggestionsFromDataList(
 
   // Add a separator if there are any other values.
   if (!suggestions.empty() &&
-      suggestions[0].popup_item_id != PopupItemId::kSeparator) {
+      suggestions[0].type != SuggestionType::kSeparator) {
     suggestions.insert(suggestions.begin(),
-                       Suggestion(PopupItemId::kSeparator));
+                       Suggestion(SuggestionType::kSeparator));
   }
 
   // Prepend the parameters to the suggestions we already have.
@@ -114,7 +114,7 @@ std::vector<Suggestion> UpdateSuggestionsFromDataList(
     suggestions[i].main_text =
         Suggestion::Text(options[i].value, Suggestion::Text::IsPrimary(true));
     suggestions[i].labels = {{Suggestion::Text(options[i].content)}};
-    suggestions[i].popup_item_id = PopupItemId::kDatalistEntry;
+    suggestions[i].type = SuggestionType::kDatalistEntry;
   }
   return suggestions;
 }

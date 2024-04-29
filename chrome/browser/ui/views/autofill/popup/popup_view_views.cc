@@ -39,9 +39,9 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -109,10 +109,10 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
 
   // Separators are a special case: They belong into the footer iff the next
   // item exists and is a footer item.
-  PopupItemId popup_item_id = suggestions[line_number].popup_item_id;
-  return popup_item_id == PopupItemId::kSeparator
+  SuggestionType type = suggestions[line_number].type;
+  return type == SuggestionType::kSeparator
              ? IsFooterItem(suggestions, line_number + 1)
-             : IsFooterPopupItemId(popup_item_id);
+             : IsFooterSuggestionType(type);
 }
 
 bool CanShowRootPopup(AutofillSuggestionController& controller) {
@@ -365,7 +365,7 @@ bool PopupViewViews::HandleKeyPressEvent(
       // If this is the root popup view and there was no sub-popup open (find
       // the check for it above) just close itself.
       if (!parent_) {
-        controller_->Hide(PopupHidingReason::kUserAborted);
+        controller_->Hide(SuggestionHidingReason::kUserAborted);
         return true;
       }
       return false;
@@ -391,7 +391,7 @@ bool PopupViewViews::HandleKeyPressEventForCompose(
       (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
   switch (event.windows_key_code) {
     case ui::VKEY_ESCAPE:
-      controller_->Hide(PopupHidingReason::kUserAborted);
+      controller_->Hide(SuggestionHidingReason::kUserAborted);
       return true;
     case ui::VKEY_TAB:
       if (GetSelectedCell()) {
@@ -402,7 +402,7 @@ bool PopupViewViews::HandleKeyPressEventForCompose(
         }
         // TAB should close the popup and focus the next HTML element if the
         // Compose entry is selected.
-        controller_->Hide(PopupHidingReason::kUserAborted);
+        controller_->Hide(SuggestionHidingReason::kUserAborted);
         return false;
       }
 
@@ -509,10 +509,9 @@ bool PopupViewViews::AcceptSelectedContentOrCreditCardCell() {
     return false;
   }
 
-  const PopupItemId popup_item_id =
-      controller_->GetSuggestionAt(index->first).popup_item_id;
-  if (!base::Contains(kItemsTriggeringFieldFilling, popup_item_id) &&
-      popup_item_id != PopupItemId::kScanCreditCard) {
+  const SuggestionType type = controller_->GetSuggestionAt(index->first).type;
+  if (!base::Contains(kItemsTriggeringFieldFilling, type) &&
+      type != SuggestionType::kScanCreditCard) {
     return false;
   }
 
@@ -767,20 +766,20 @@ void PopupViewViews::CreateSuggestionViews() {
     for (; current_line_number < kSuggestions.size() &&
            !IsFooterItem(kSuggestions, current_line_number);
          ++current_line_number) {
-      switch (kSuggestions[current_line_number].popup_item_id) {
-        case PopupItemId::kSeparator:
+      switch (kSuggestions[current_line_number].type) {
+        case SuggestionType::kSeparator:
           rows_.push_back(body_container->AddChildView(
               std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
           break;
 
-        case PopupItemId::kTitle:
+        case SuggestionType::kTitle:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupTitleView>(
                   kSuggestions[current_line_number].main_text.value)));
           break;
 
-        case PopupItemId::kMixedFormMessage:
-        case PopupItemId::kInsecureContextPaymentDisabledMessage:
+        case SuggestionType::kMixedFormMessage:
+        case SuggestionType::kInsecureContextPaymentDisabledMessage:
           rows_.push_back(
               body_container->AddChildView(std::make_unique<PopupWarningView>(
                   kSuggestions[current_line_number])));
@@ -854,8 +853,7 @@ void PopupViewViews::CreateSuggestionViews() {
   } else {
     // Add a separator between the main list of suggestions and the footer with
     // no vertical padding as these elements have their own top/bottom paddings.
-    if (kSuggestions[current_line_number].popup_item_id ==
-        PopupItemId::kSeparator) {
+    if (kSuggestions[current_line_number].type == SuggestionType::kSeparator) {
       rows_.push_back(suggestions_container_->AddChildView(
           std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0)));
       ++current_line_number;
@@ -871,8 +869,7 @@ void PopupViewViews::CreateSuggestionViews() {
   for (; current_line_number < kSuggestions.size(); ++current_line_number) {
     DCHECK(IsFooterItem(kSuggestions, current_line_number));
     // The footer can contain either footer views or separator lines.
-    if (kSuggestions[current_line_number].popup_item_id ==
-        PopupItemId::kSeparator) {
+    if (kSuggestions[current_line_number].type == SuggestionType::kSeparator) {
       rows_.push_back(footer_container_->AddChildView(
           std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
     } else {
@@ -929,7 +926,7 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   // visually attached to the input element.
   element_bounds.Intersect(content_area_bounds);
   if (element_bounds.IsEmpty()) {
-    controller_->Hide(PopupHidingReason::kElementOutsideOfContentArea);
+    controller_->Hide(SuggestionHidingReason::kElementOutsideOfContentArea);
     return false;
   }
 
@@ -941,12 +938,12 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
 
   if ((!body_container_ || body_container_->children().empty()) &&
       (!footer_container_ || footer_container_->children().empty())) {
-    controller_->Hide(PopupHidingReason::kNoSuggestions);
+    controller_->Hide(SuggestionHidingReason::kNoSuggestions);
     return false;
   }
 
   if (!CanShowDropdownInBounds(max_bounds_for_popup)) {
-    controller_->Hide(PopupHidingReason::kInsufficientSpace);
+    controller_->Hide(SuggestionHidingReason::kInsufficientSpace);
     return false;
   }
 
@@ -972,7 +969,7 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
 
   if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
                                      controller_->GetWebContents())) {
-    controller_->Hide(PopupHidingReason::kOverlappingWithAnotherPrompt);
+    controller_->Hide(SuggestionHidingReason::kOverlappingWithAnotherPrompt);
     return false;
   }
   // On Windows, due to platform-specific implementation details, the previous
@@ -980,7 +977,7 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   // critical bubble is the permission bubble, we check for that specifically.
   if (BoundsOverlapWithOpenPermissionsPrompt(popup_bounds,
                                              controller_->GetWebContents())) {
-    controller_->Hide(PopupHidingReason::kOverlappingWithAnotherPrompt);
+    controller_->Hide(SuggestionHidingReason::kOverlappingWithAnotherPrompt);
     return false;
   }
 
@@ -990,7 +987,7 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   // For more details on how this can happen, see crbug.com/1358647.
   if (BoundsOverlapWithPictureInPictureWindow(popup_bounds)) {
     controller_->Hide(
-        PopupHidingReason::kOverlappingWithPictureInPictureWindow);
+        SuggestionHidingReason::kOverlappingWithPictureInPictureWindow);
     return false;
   }
 
@@ -1131,7 +1128,7 @@ void PopupViewViews::OnSearchBarFocusLost() {
     GetWidget()->Deactivate();
   }
   if (controller_) {
-    controller_->Hide(PopupHidingReason::kFocusChanged);
+    controller_->Hide(SuggestionHidingReason::kFocusChanged);
   }
 }
 

@@ -12,7 +12,7 @@
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/browser/test_browser_autofill_manager.h"
-#import "components/autofill/core/browser/ui/popup_item_ids.h"
+#import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_generation_data.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -508,7 +508,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
              suggestionWithValue:@"value"
               displayDescription:@"display-description"
                             icon:nil
-                     popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                     popupItemId:autofill::SuggestionType::kAutocompleteEntry
                backendIdentifier:nil
                   requiresReauth:NO
       acceptanceA11yAnnouncement:nil
@@ -590,7 +590,7 @@ TEST_F(SharedPasswordControllerTest,
                                    id<FormSuggestionProvider> delegate) {
                  ASSERT_EQ(1UL, suggestions.count);
                  FormSuggestion* suggestion = suggestions.firstObject;
-                 EXPECT_EQ(autofill::PopupItemId::kGeneratePasswordEntry,
+                 EXPECT_EQ(autofill::SuggestionType::kGeneratePasswordEntry,
                            suggestion.popupItemId);
                  EXPECT_EQ(delegate, controller_);
                  completion_was_called = YES;
@@ -640,7 +640,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-              popupItemId:autofill::PopupItemId::kGeneratePasswordEntry
+              popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
 
@@ -709,7 +709,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-              popupItemId:autofill::PopupItemId::kGeneratePasswordEntry
+              popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
 
@@ -1445,7 +1445,7 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-              popupItemId:autofill::PopupItemId::kGeneratePasswordEntry
+              popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
 

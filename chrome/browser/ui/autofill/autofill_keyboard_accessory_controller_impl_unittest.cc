@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,7 +34,7 @@ std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
                                  std::string_view username,
                                  std::string_view origin) {
     Suggestion s(/*main_text=*/username, /*label=*/origin,
-                 Suggestion::Icon::kNoIcon, PopupItemId::kPasswordEntry);
+                 Suggestion::Icon::kNoIcon, SuggestionType::kPasswordEntry);
     s.additional_label = base::UTF8ToUTF16(password);
     return s;
   };
@@ -43,7 +43,7 @@ std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
       create_pw_suggestion("****************", "Berta", "psl.origin.eg"),
       create_pw_suggestion("***", "Carl", "")};
   suggestions.emplace(suggestions.begin() + clear_form_offset, "Clear", "",
-                      Suggestion::Icon::kNoIcon, PopupItemId::kClearForm);
+                      Suggestion::Icon::kNoIcon, SuggestionType::kClearForm);
   return suggestions;
 }
 
@@ -54,10 +54,10 @@ class AutofillKeyboardAccessoryControllerImplTest
   AutofillProfile ShowAutofillProfileSuggestion() {
     AutofillProfile complete_profile = test::GetFullProfile();
     personal_data().AddProfile(complete_profile);
-    ShowSuggestions(
-        manager(), {test::CreateAutofillSuggestion(
-                       PopupItemId::kAddressEntry, u"Complete autofill profile",
-                       Suggestion::Guid(complete_profile.guid()))});
+    ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
+                                   SuggestionType::kAddressEntry,
+                                   u"Complete autofill profile",
+                                   Suggestion::Guid(complete_profile.guid()))});
     return complete_profile;
   }
 
@@ -66,7 +66,7 @@ class AutofillKeyboardAccessoryControllerImplTest
     personal_data().AddCreditCard(local_card);
     ShowSuggestions(manager(),
                     {test::CreateAutofillSuggestion(
-                        PopupItemId::kCreditCardEntry, u"Local credit card",
+                        SuggestionType::kCreditCardEntry, u"Local credit card",
                         Suggestion::Guid(local_card.guid()))});
     return local_card;
   }
@@ -81,27 +81,27 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, ShowCallsView) {
 
   EXPECT_CALL(*client().popup_view(), Show());
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
-                                         PopupItemId::kAutocompleteEntry)});
+                                         SuggestionType::kAutocompleteEntry)});
 }
 
 // Tests that calling `Hide()` on the controller hides and destroys the view.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, HideDestroysView) {
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
-                                         PopupItemId::kAutocompleteEntry)});
+                                         SuggestionType::kAutocompleteEntry)});
 
   EXPECT_CALL(*client().popup_view(), Hide);
-  client().popup_controller(manager()).Hide(PopupHidingReason::kTabGone);
+  client().popup_controller(manager()).Hide(SuggestionHidingReason::kTabGone);
   // The keyboard accessory view is destroyed synchronously.
   EXPECT_FALSE(client().popup_view());
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       GetRemovalConfirmationText_UnrelatedPopupItemId) {
+       GetRemovalConfirmationText_UnrelatedSuggestionType) {
   std::u16string title;
   std::u16string body;
   ShowSuggestions(
       manager(),
-      {Suggestion(u"Entry", PopupItemId::kAddressFieldByFieldFilling)});
+      {Suggestion(u"Entry", SuggestionType::kAddressFieldByFieldFilling)});
 
   EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
       0, &title, &body));
@@ -112,7 +112,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   std::u16string title;
   std::u16string body;
   ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
-                                 PopupItemId::kAddressFieldByFieldFilling,
+                                 SuggestionType::kAddressFieldByFieldFilling,
                                  u"Entry", Suggestion::Guid("1111"))});
 
   EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
@@ -124,7 +124,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   std::u16string title;
   std::u16string body;
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
-                                         PopupItemId::kAutocompleteEntry)});
+                                         SuggestionType::kAutocompleteEntry)});
 
   EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
       0, &title, &body));
@@ -157,7 +157,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   std::u16string body;
   ShowSuggestions(manager(),
                   {test::CreateAutofillSuggestion(
-                      PopupItemId::kCreditCardEntry, u"Server credit card",
+                      SuggestionType::kCreditCardEntry, u"Server credit card",
                       Suggestion::Guid(server_card.guid()))});
 
   EXPECT_FALSE(client().popup_controller(manager()).GetRemovalConfirmationText(
@@ -187,7 +187,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   std::u16string title;
   std::u16string body;
   ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
-                                 PopupItemId::kAddressEntry,
+                                 SuggestionType::kAddressEntry,
                                  u"Autofill profile without city",
                                  Suggestion::Guid(profile.guid()))});
 
@@ -204,7 +204,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 // the a11y announcement that it was deleted.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
   const auto suggestion =
-      Suggestion(u"Autocomplete entry", PopupItemId::kAutocompleteEntry);
+      Suggestion(u"Autocomplete entry", SuggestionType::kAutocompleteEntry);
   ShowSuggestions(manager(), {suggestion});
   ASSERT_TRUE(client().popup_view());
 
@@ -265,7 +265,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
+  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
 
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
@@ -282,7 +282,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
+  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
 
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
@@ -297,7 +297,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   scoped_feature_list.InitAndDisableFeature(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
+  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
 
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
@@ -311,7 +311,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::
           kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
 
   // Calls are accepted immediately.
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(1);
@@ -326,13 +326,13 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 // dereferencing or other memory violations occur.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        AcceptSuggestionIsMemorySafe) {
-  ShowSuggestions(manager(), {PopupItemId::kPasswordEntry});
+  ShowSuggestions(manager(), {SuggestionType::kPasswordEntry});
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion)
       .WillOnce([this]() {
         client().popup_controller(manager()).Hide(
-            PopupHidingReason::kAcceptSuggestion);
+            SuggestionHidingReason::kAcceptSuggestion);
       });
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 }

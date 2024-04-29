@@ -46,47 +46,49 @@ std::vector<Suggestion> CreateTypicalAutofillProfileChildSuggestions() {
   Suggestion fill_full_name(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED),
-      PopupItemId::kFillFullName);
+      SuggestionType::kFillFullName);
   fill_full_name.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestions.push_back(std::move(fill_full_name));
   suggestions.emplace_back(u"Charles",
-                           PopupItemId::kAddressFieldByFieldFilling);
+                           SuggestionType::kAddressFieldByFieldFilling);
   suggestions.emplace_back(u"Stewart",
-                           PopupItemId::kAddressFieldByFieldFilling);
-  suggestions.emplace_back(PopupItemId::kSeparator);
+                           SuggestionType::kAddressFieldByFieldFilling);
+  suggestions.emplace_back(SuggestionType::kSeparator);
 
   // Fill address fields child suggestions
   Suggestion fill_full_address(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED),
-      PopupItemId::kFillFullAddress);
+      SuggestionType::kFillFullAddress);
   fill_full_address.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestions.push_back(std::move(fill_full_address));
   // Also add another child suggestions layer.
   Suggestion street_address(u"123 Apple St.",
-                            PopupItemId::kAddressFieldByFieldFilling);
+                            SuggestionType::kAddressFieldByFieldFilling);
   Suggestion street_name(u"Apple St.",
-                         PopupItemId::kAddressFieldByFieldFilling);
+                         SuggestionType::kAddressFieldByFieldFilling);
   street_name.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}};
   street_address.children = {std::move(street_name)};
 
   suggestions.push_back(std::move(street_address));
-  suggestions.emplace_back(u"Munich", PopupItemId::kAddressFieldByFieldFilling);
-  suggestions.emplace_back(u"8951", PopupItemId::kAddressFieldByFieldFilling);
-  suggestions.emplace_back(PopupItemId::kSeparator);
+  suggestions.emplace_back(u"Munich",
+                           SuggestionType::kAddressFieldByFieldFilling);
+  suggestions.emplace_back(u"8951",
+                           SuggestionType::kAddressFieldByFieldFilling);
+  suggestions.emplace_back(SuggestionType::kSeparator);
 
   Suggestion edit_profile_suggestion(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED),
-      PopupItemId::kDeleteAddressProfile);
+      SuggestionType::kDeleteAddressProfile);
   edit_profile_suggestion.icon = Suggestion::Icon::kDelete;
   suggestions.push_back(std::move(edit_profile_suggestion));
 
   Suggestion delete_profile_suggestion(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED),
-      PopupItemId::kDeleteAddressProfile);
+      SuggestionType::kDeleteAddressProfile);
   delete_profile_suggestion.icon = Suggestion::Icon::kDelete;
   suggestions.push_back(std::move(delete_profile_suggestion));
 
@@ -97,15 +99,15 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back("123 Apple St.", "Charles Stewart",
                            Suggestion::Icon::kAccount,
-                           PopupItemId::kAddressEntry);
+                           SuggestionType::kAddressEntry);
   suggestions.emplace_back("3734 Elvis Presley Blvd.", "Elvis",
                            Suggestion::Icon::kAccount,
-                           PopupItemId::kAddressEntry);
+                           SuggestionType::kAddressEntry);
 
-  suggestions.emplace_back(PopupItemId::kSeparator);
+  suggestions.emplace_back(SuggestionType::kSeparator);
 
   Suggestion settings(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES));
-  settings.popup_item_id = PopupItemId::kAutofillOptions;
+  settings.type = SuggestionType::kAutofillOptions;
   settings.icon = Suggestion::Icon::kSettings;
   suggestions.push_back(std::move(settings));
 
@@ -116,15 +118,15 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back("Credit card main text", "Credit card minor text",
                            Suggestion::Icon::kCardUnionPay,
-                           PopupItemId::kCreditCardEntry);
+                           SuggestionType::kCreditCardEntry);
   suggestions.emplace_back("Credit card main text", "Credit card minor text",
                            Suggestion::Icon::kCardVisa,
-                           PopupItemId::kCreditCardEntry);
-  suggestions.emplace_back(PopupItemId::kSeparator);
+                           SuggestionType::kCreditCardEntry);
+  suggestions.emplace_back(SuggestionType::kSeparator);
 
   Suggestion settings(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  settings.popup_item_id = PopupItemId::kAutofillOptions;
+  settings.type = SuggestionType::kAutofillOptions;
   settings.icon = Suggestion::Icon::kSettings;
   suggestions.push_back(std::move(settings));
 
@@ -133,16 +135,17 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
 
 std::vector<Suggestion> CreatePasswordSuggestions() {
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(u"Title suggestion", PopupItemId::kTitle);
+  suggestions.emplace_back(u"Title suggestion", SuggestionType::kTitle);
 
-  suggestions.emplace_back(u"Password main text", PopupItemId::kPasswordEntry);
+  suggestions.emplace_back(u"Password main text",
+                           SuggestionType::kPasswordEntry);
   suggestions.back().additional_label = u"example.username@gmail.com";
   suggestions.back().icon = Suggestion::Icon::kGlobe;
 
-  suggestions.emplace_back(autofill::PopupItemId::kSeparator);
+  suggestions.emplace_back(autofill::SuggestionType::kSeparator);
 
   suggestions.emplace_back(u"Manage passwords",
-                           PopupItemId::kAllSavedPasswordsEntry);
+                           SuggestionType::kAllSavedPasswordsEntry);
   suggestions.back().icon = Suggestion::Icon::kSettings;
   suggestions.back().trailing_icon = Suggestion::Icon::kGooglePasswordManager;
 
@@ -151,9 +154,9 @@ std::vector<Suggestion> CreatePasswordSuggestions() {
 
 std::vector<Suggestion> CreateAutocompleteSuggestions() {
   return {Suggestion("Autocomplete entry 1", "", Suggestion::Icon::kNoIcon,
-                     PopupItemId::kAutocompleteEntry),
+                     SuggestionType::kAutocompleteEntry),
           Suggestion("Autocomplete entry 2", "", Suggestion::Icon::kNoIcon,
-                     PopupItemId::kAutocompleteEntry)};
+                     SuggestionType::kAutocompleteEntry)};
 }
 
 }  // namespace
@@ -178,8 +181,7 @@ class PopupViewViewsBrowsertestBase
   void PrepareSuggestions(std::vector<Suggestion> suggestions) {
     ON_CALL(controller(), GetMainFillingProduct())
         .WillByDefault([&c = controller()] {
-          return GetFillingProductFromPopupItemId(
-              c.GetSuggestionAt(0).popup_item_id);
+          return GetFillingProductFromSuggestionType(c.GetSuggestionAt(0).type);
         });
     controller().set_suggestions(std::move(suggestions));
   }
@@ -290,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
        Suggestion::Text(u"Alexander Joseph Ricardo Park")},
       {Suggestion::Text(u"Fill full address"), Suggestion::Text(u"Alex Park")}};
   Suggestion suggestion("Google", std::move(labels), Suggestion::Icon::kAccount,
-                        PopupItemId::kAddressEntry);
+                        SuggestionType::kAddressEntry);
   PrepareSuggestions({suggestion});
   ShowAndVerifyUi();
 }
@@ -312,13 +314,13 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
       {{Suggestion::Text(u"Filling credit card - your card for payments"),
         Suggestion::Text(u"Alexander Joseph Ricardo Park")},
        {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}},
-      Suggestion::Icon::kCardVisa, PopupItemId::kCreditCardEntry);
+      Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
 
   // Also create a 1 label line suggestion to make sure they work well together.
   Suggestion suggestion2(
       "Visa",
       {{Suggestion::Text(u"Filling credit card - your card for payments")}},
-      Suggestion::Icon::kCardVisa, PopupItemId::kCreditCardEntry);
+      Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
   PrepareSuggestions({suggestion1, suggestion2});
   ShowAndVerifyUi();
 }
@@ -331,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   entry1.main_text.is_primary = Suggestion::Text::IsPrimary(true);
   entry1.additional_label =
       std::u16string(10, gfx::RenderText::kPasswordReplacementChar);
-  entry1.popup_item_id = PopupItemId::kAccountStoragePasswordEntry;
+  entry1.type = SuggestionType::kAccountStoragePasswordEntry;
   entry1.icon = Suggestion::Icon::kGlobe;
   entry1.trailing_icon = Suggestion::Icon::kGoogle;
   suggestions.push_back(std::move(entry1));
@@ -341,17 +343,17 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   entry2.main_text.is_primary = Suggestion::Text::IsPrimary(true);
   entry2.additional_label =
       std::u16string(6, gfx::RenderText::kPasswordReplacementChar);
-  entry2.popup_item_id = PopupItemId::kPasswordEntry;
+  entry2.type = SuggestionType::kPasswordEntry;
   entry2.icon = Suggestion::Icon::kGlobe;
   entry2.trailing_icon = Suggestion::Icon::kNoIcon;
   suggestions.push_back(std::move(entry2));
 
-  suggestions.emplace_back(PopupItemId::kSeparator);
+  suggestions.emplace_back(SuggestionType::kSeparator);
 
   // The entry to open settings.
   Suggestion settings(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS));
-  settings.popup_item_id = PopupItemId::kAllSavedPasswordsEntry;
+  settings.type = SuggestionType::kAllSavedPasswordsEntry;
   settings.icon = Suggestion::Icon::kSettings;
   settings.trailing_icon = Suggestion::Icon::kGooglePasswordManager;
   suggestions.push_back(std::move(settings));
@@ -364,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_InsecureContext_PaymentDisabled) {
   Suggestion warning(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
-  warning.popup_item_id = PopupItemId::kInsecureContextPaymentDisabledMessage;
+  warning.type = SuggestionType::kInsecureContextPaymentDisabledMessage;
   PrepareSuggestions({std::move(warning)});
   ShowAndVerifyUi();
 }
@@ -372,25 +374,25 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        NoScrollingForNonExcessiveHeightRootPopup) {
   controller().set_suggestions(
-      {PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
-       PopupItemId::kSeparator, PopupItemId::kAutofillOptions});
+      {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
+       SuggestionType::kSeparator, SuggestionType::kAutofillOptions});
   ShowAndVerifyUi(/*popup_has_parent=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        NoScrollingForNonExcessiveHeightNonRootPopup) {
   controller().set_suggestions(
-      {PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
-       PopupItemId::kSeparator, PopupItemId::kAutofillOptions});
+      {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
+       SuggestionType::kSeparator, SuggestionType::kAutofillOptions});
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        ScrollingInRootPopupStickyFooter) {
   // Create many suggestions that don't fit the height and activate scrolling.
-  std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);
-  suggestions.push_back(PopupItemId::kSeparator);
-  suggestions.push_back(PopupItemId::kAutofillOptions);
+  std::vector<SuggestionType> suggestions(20, SuggestionType::kAddressEntry);
+  suggestions.push_back(SuggestionType::kSeparator);
+  suggestions.push_back(SuggestionType::kAutofillOptions);
   controller().set_suggestions(std::move(suggestions));
   ShowAndVerifyUi();
 }
@@ -398,15 +400,15 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        ScrollingInNonRootPopupNonStickyFooter) {
   // Create many suggestions that don't fit the height and activate scrolling.
-  std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);
-  suggestions.push_back(PopupItemId::kSeparator);
-  suggestions.push_back(PopupItemId::kAutofillOptions);
+  std::vector<SuggestionType> suggestions(20, SuggestionType::kAddressEntry);
+  suggestions.push_back(SuggestionType::kSeparator);
+  suggestions.push_back(SuggestionType::kAutofillOptions);
   controller().set_suggestions(std::move(suggestions));
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
-  controller().set_suggestions({PopupItemId::kAddressEntry});
+  controller().set_suggestions({SuggestionType::kAddressEntry});
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
       PopupViewSearchBarConfig{.enabled = true, .placeholder = u"Search"});

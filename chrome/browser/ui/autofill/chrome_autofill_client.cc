@@ -88,8 +88,8 @@
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
-#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -215,7 +215,7 @@ ChromeAutofillClient::~ChromeAutofillClient() {
   if (suggestion_controller_) {
     base::debug::DumpWithoutCrashing();
     // Hide the controller to avoid a memory leak.
-    suggestion_controller_->Hide(PopupHidingReason::kTabGone);
+    suggestion_controller_->Hide(SuggestionHidingReason::kTabGone);
   }
 }
 
@@ -977,7 +977,7 @@ void ChromeAutofillClient::UpdatePopup(
   // delegate. Hence, just close the existing popup (crbug/1113241).
   if (main_filling_product !=
       suggestion_controller_.get()->GetMainFillingProduct()) {
-    suggestion_controller_->Hide(PopupHidingReason::kStaleData);
+    suggestion_controller_->Hide(SuggestionHidingReason::kStaleData);
     return;
   }
 
@@ -987,7 +987,8 @@ void ChromeAutofillClient::UpdatePopup(
       ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source));
 }
 
-void ChromeAutofillClient::HideAutofillSuggestions(PopupHidingReason reason) {
+void ChromeAutofillClient::HideAutofillSuggestions(
+    SuggestionHidingReason reason) {
   if (suggestion_controller_.get()) {
     suggestion_controller_->Hide(reason);
   }

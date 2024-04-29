@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessoryS
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.PopupItemId;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -211,7 +211,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("FirstSuggestion")
                         .setSubLabel("")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.AUTOCOMPLETE_ENTRY)
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIPH("")
                         .build();
         AutofillSuggestion suggestion2 =
@@ -219,7 +219,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("SecondSuggestion")
                         .setSubLabel("")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.AUTOCOMPLETE_ENTRY)
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIPH("")
                         .build();
         Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
@@ -259,7 +259,7 @@ public class KeyboardAccessoryControllerTest {
                 new AutofillSuggestion.Builder()
                         .setLabel("bulbasaur")
                         .setSubLabel("passkey")
-                        .setPopupItemId(PopupItemId.WEBAUTHN_CREDENTIAL)
+                        .setSuggestionType(SuggestionType.WEBAUTHN_CREDENTIAL)
                         .build();
         Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, (a) -> {});
         autofillSuggestionProvider.notifyObservers(List.of(suggestion));
@@ -317,7 +317,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("Suggestion")
                         .setSubLabel("")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.AUTOCOMPLETE_ENTRY)
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIPH("")
                         .build();
         Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
@@ -367,7 +367,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("John")
                         .setSubLabel("Main Str")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIPH("")
                         .build();
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
@@ -392,7 +392,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("John")
                         .setSubLabel("4828 ****")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.CREDIT_CARD_ENTRY)
+                        .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                         .setFeatureForIPH("")
                         .build();
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
@@ -417,7 +417,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("John")
                         .setSubLabel("4828 ****")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.CREDIT_CARD_ENTRY)
+                        .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                         .setFeatureForIPH(
                                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE)
                         .build();
@@ -445,7 +445,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("John")
                         .setSubLabel("****")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.PASSWORD_ENTRY)
+                        .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
                         .setFeatureForIPH("")
                         .build();
         AutofillSuggestion passwordSuggestion2 =
@@ -453,7 +453,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("Eva")
                         .setSubLabel("*******")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.PASSWORD_ENTRY)
+                        .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
                         .setFeatureForIPH("")
                         .build();
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
@@ -478,7 +478,7 @@ public class KeyboardAccessoryControllerTest {
                         .setLabel("John")
                         .setSubLabel("Man Str")
                         .setItemTag("")
-                        .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIPH(
                                 FeatureConstants
                                         .KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE)

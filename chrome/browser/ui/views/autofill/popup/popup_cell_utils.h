@@ -9,8 +9,8 @@
 #include <optional>
 
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/style/typography.h"
 
@@ -136,8 +136,8 @@ std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
 // deactivated and non-acceptable.
 void ApplyDeactivatedStyle(views::View& view);
 
-// Returns the expandable menu icon depending on `popup_item_id`.
-const gfx::VectorIcon& GetExpandableMenuIcon(PopupItemId popup_item_id);
+// Returns the expandable menu icon depending on `type`.
+const gfx::VectorIcon& GetExpandableMenuIcon(SuggestionType type);
 
 }  // namespace autofill::popup_cell_utils
 
