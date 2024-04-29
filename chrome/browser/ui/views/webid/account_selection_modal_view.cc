@@ -36,6 +36,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -85,7 +86,6 @@ AccountSelectionModalView::AccountSelectionModalView(
 
   title_ = GetTitle(top_frame_for_display, /*iframe_for_display=*/std::nullopt,
                     idp_title, rp_context);
-  SetAccessibleTitle(title_);
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
@@ -123,7 +123,10 @@ void AccountSelectionModalView::UpdateModalPositionAndTitle() {
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
           ->delegate()
           ->GetWebContentsModalDialogHost());
-  GetWidget()->UpdateWindowTitle();
+
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
+    GetInitiallyFocusedView()->RequestFocus();
+  }
 }
 
 void AccountSelectionModalView::InitDialogWidget() {
@@ -236,6 +239,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
               &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
               base::Unretained(observer_)),
           l10n_util::GetStringUTF16(IDS_CANCEL));
+  cancel_button_ = cancel_button.get();
   // When a continue button is present, the cancel button should be more
   // prominent (Tonal) to align with common practice.
   cancel_button->SetStyle(continue_callback ? ui::ButtonStyle::kTonal
@@ -315,12 +319,14 @@ AccountSelectionModalView::CreateAccountChooserHeader(
       std::make_unique<views::Label>(title_, views::style::CONTEXT_DIALOG_TITLE,
                                      views::style::STYLE_HEADLINE_4));
   SetLabelProperties(title_label_);
+  title_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
 
   // Add the body.
   body_label_ = header->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
   SetLabelProperties(body_label_);
+  body_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
   return header;
 }
 
@@ -406,6 +412,8 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   // This might change if we choose to integrate auto re-authn with button mode.
   CHECK(dialog_widget_);
 
+  queued_announcement_ = l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
+
   // When a user signs in to the IdP with a returning account while the loading
   // modal is shown, we can exit without updating the UI.
   if (account.browser_trusted_login_state != Account::LoginState::kSignUp &&
@@ -476,6 +484,7 @@ AccountSelectionModalView::CreateSingleAccountChooser(
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
     disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0, /*right=*/0)));
+    queued_announcement_ = disclosure_label->GetText();
     row->AddChildView(std::move(disclosure_label));
   }
   return row;
@@ -582,14 +591,6 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
           base::Unretained(observer_))));
 
   InitDialogWidget();
-
-  // Focusing `continue_button_` without screen reader on makes the UI look
-  // awkward, so we only want to do so when screen reader is enabled.
-  if (accessibility_state_utils::IsScreenReaderEnabled()) {
-    CHECK(continue_button_);
-    continue_button_->RequestFocus();
-  }
-  SendAccessibilityEvent(GetWidget());
 }
 
 void AccountSelectionModalView::ShowSingleReturningAccountDialog(
@@ -678,6 +679,39 @@ std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
   return std::nullopt;
 }
 
+std::u16string AccountSelectionModalView::GetQueuedAnnouncementForTesting() {
+  return queued_announcement_;
+}
+
+views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
+  // If title has not been announced before, focus and announce the title.
+  if (!has_announced_title_) {
+    has_announced_title_ = true;
+    return title_label_;
+  }
+
+  // Make the queued announcement, if available. This can either be the
+  // disclosure text or the verifying status.
+  if (!queued_announcement_.empty()) {
+    GetViewAccessibility().AnnounceAlert(queued_announcement_);
+    queued_announcement_ = u"";
+  }
+
+  // If there is a progress bar and an account chooser, we are on the verifying
+  // sheet so focus on the cancel button.
+  if (has_progress_bar_ && account_chooser_) {
+    return cancel_button_;
+  }
+
+  // If there is a continue button, focus on the continue button.
+  if (continue_button_) {
+    return continue_button_;
+  }
+
+  // Default to the title.
+  return title_label_;
+}
+
 void AccountSelectionModalView::RemoveNonHeaderChildViews() {
   // If removing progress bar, adjust the header margins so the rest of the
   // dialog doesn't get shifted when the progress bar is removed.
@@ -690,12 +724,14 @@ void AccountSelectionModalView::RemoveNonHeaderChildViews() {
     has_progress_bar_ = false;
   }
 
-  // Make sure not to keep dangling pointers around first.
+  // Make sure not to keep dangling pointers around first. We do not reset
+  // `header_view_`, `title_label_`, `body_label_` and `brand_icon_` because
+  // this method does not remove the header.
   use_other_account_button_ = nullptr;
   back_button_ = nullptr;
   continue_button_ = nullptr;
+  cancel_button_ = nullptr;
   account_chooser_ = nullptr;
-  title_label_ = nullptr;
 
   const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
       children();
