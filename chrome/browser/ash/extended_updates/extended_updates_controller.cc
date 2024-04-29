@@ -14,6 +14,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_notification.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
@@ -47,6 +48,11 @@ bool HasNoAndroidApps(content::BrowserContext* context) {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     // Likely incognito profile, which is not applicable here.
     return false;
+  }
+
+  if (!arc::IsArcPlayStoreEnabledForProfile(profile)) {
+    // Play store turned off.
+    return true;
   }
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
