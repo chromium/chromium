@@ -19,7 +19,14 @@
         <!-- WebAuthn Lottie resources -->
         <structure type="lottie" name="IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT" file="resources/webauthn/hybrid_connecting_light.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEBAUTHN_HYBRID_CONNECTING_DARK" file="resources/webauthn/hybrid_connecting_dark.json" compress="brotli" />
-        <structure type="lottie" name="IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT" file="resources/webauthn/gpm_fingerprint_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_PASSKEY_LIGHT" file="resources/webauthn/passkey_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_PASSKEY_DARK" file="resources/webauthn/passkey_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PASSKEY_LIGHT" file="resources/webauthn/gpm_passkey_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PASSKEY_DARK" file="resources/webauthn/gpm_passkey_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_LIGHT" file="resources/webauthn/gpm_pin_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_DARK" file="resources/webauthn/gpm_pin_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_LAPTOP_LIGHT" file="resources/webauthn/laptop_light.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_LAPTOP_DARK" file="resources/webauthn/laptop_dark.json" compress="brotli" />
       </if>
     </structures>
     <includes>

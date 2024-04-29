@@ -151,7 +151,8 @@ AuthenticatorMechanismSelectorSheetModel::
     AuthenticatorMechanismSelectorSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model) {
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_PASSKEY_DARK);
 }
 
 bool AuthenticatorMechanismSelectorSheetModel::IsActivityIndicatorVisible()
@@ -1129,7 +1130,8 @@ AuthenticatorSelectAccountSheetModel::AuthenticatorSelectAccountSheetModel(
               : OtherMechanismButtonVisibility::kHidden),
       user_verification_mode_(mode),
       selection_type_(type) {
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_PASSKEY_DARK);
 }
 
 AuthenticatorSelectAccountSheetModel::~AuthenticatorSelectAccountSheetModel() =
@@ -1420,7 +1422,8 @@ AuthenticatorCreatePasskeySheetModel::AuthenticatorCreatePasskeySheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_PASSKEY_DARK);
 }
 
 AuthenticatorCreatePasskeySheetModel::~AuthenticatorCreatePasskeySheetModel() =
@@ -1474,7 +1477,8 @@ AuthenticatorGPMErrorSheetModel::AuthenticatorGPMErrorSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_PASSKEY_DARK);
 }
 
 AuthenticatorGPMErrorSheetModel::~AuthenticatorGPMErrorSheetModel() = default;
@@ -1555,7 +1559,8 @@ AuthenticatorMultiSourcePickerSheetModel::
     AuthenticatorMultiSourcePickerSheetModel(
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model) {
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_PASSKEY_DARK);
 
   using CredentialMech = AuthenticatorRequestDialogModel::Mechanism::Credential;
   using ICloudKeychainMech =
@@ -1649,7 +1654,8 @@ AuthenticatorPriorityMechanismSheetModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_PASSKEY_DARK);
 }
 AuthenticatorPriorityMechanismSheetModel::
     ~AuthenticatorPriorityMechanismSheetModel() = default;
@@ -1693,8 +1699,8 @@ AuthenticatorGPMPinSheetModel::AuthenticatorGPMPinSheetModel(
       pin_digits_count_(pin_digits_count),
       mode_(mode),
       error_(error) {
-  // TODO(rgod): Add correct illustration.
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PIN_LIGHT,
+                                IDR_WEBAUTHN_GPM_PIN_DARK);
 }
 
 AuthenticatorGPMPinSheetModel::~AuthenticatorGPMPinSheetModel() = default;
@@ -1808,8 +1814,8 @@ AuthenticatorGPMArbitraryPinSheetModel::AuthenticatorGPMArbitraryPinSheetModel(
                                   OtherMechanismButtonVisibility::kHidden),
       mode_(mode),
       error_(error) {
-  // TODO(rgod): Add correct illustration.
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PIN_LIGHT,
+                                IDR_WEBAUTHN_GPM_PIN_DARK);
 }
 
 AuthenticatorGPMArbitraryPinSheetModel::
@@ -1912,8 +1918,8 @@ AuthenticatorTrustThisComputerAssertionSheetModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
-  // TODO(derinel): Add correct illustration.
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_LAPTOP_LIGHT,
+                                IDR_WEBAUTHN_LAPTOP_DARK);
 }
 
 AuthenticatorTrustThisComputerAssertionSheetModel::
@@ -1972,8 +1978,8 @@ AuthenticatorCreateGpmPasskeySheetModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
-  // TODO(derinel): Add correct illustration.
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_GPM_PASSKEY_DARK);
 }
 
 AuthenticatorCreateGpmPasskeySheetModel::
@@ -2030,8 +2036,8 @@ AuthenticatorGpmOnboardingSheetModel::AuthenticatorGpmOnboardingSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
-  // TODO(rgod): Add correct illustration.
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_GPM_PASSKEY_DARK);
 }
 
 AuthenticatorGpmOnboardingSheetModel::~AuthenticatorGpmOnboardingSheetModel() =
@@ -2089,8 +2095,8 @@ AuthenticatorTrustThisComputerCreationSheetModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
-  // TODO(rgod): Add correct illustration.
-  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_LAPTOP_LIGHT,
+                                IDR_WEBAUTHN_LAPTOP_DARK);
 }
 
 AuthenticatorTrustThisComputerCreationSheetModel::

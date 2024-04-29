@@ -31,13 +31,14 @@
 
 namespace {
 
-// Margin between the top of the dialog and the start of any illustration.
+// Margins around any illustration.
 constexpr int kImageMarginTop = 22;
+constexpr int kImageMarginBottom = 2;
 
 template <typename T>
 void ConfigureHeaderIllustration(T* illustration, gfx::Size header_size) {
   illustration->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginTop, 0)));
+      gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginBottom, 0)));
   illustration->SetSize(header_size);
   illustration->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 }
@@ -90,7 +91,7 @@ AuthenticatorRequestSheetView::BuildStepSpecificContent() {
 
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
-  constexpr int kImageHeight = 112, kImageMarginBottom = 2;
+  constexpr int kImageHeight = 112;
   constexpr int kHeaderHeight =
       kImageHeight + kImageMarginTop + kImageMarginBottom;
   const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -103,7 +104,10 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   View* illustration;
   if (model()->lottie_illustrations()) {
     auto animation = std::make_unique<views::AnimatedImageView>();
-    animation->SetPreferredSize(gfx::Size(dialog_width, kImageHeight));
+    // `AnimatedImageView` will horizontally center if the width is larger than
+    // the size from the Lottie file, but the height is just used to truncate
+    // the image, so that is disabled with a very large value.
+    animation->SetPreferredSize(gfx::Size(dialog_width, 9999));
     ConfigureHeaderIllustration(animation.get(), header_size);
     child_views_.step_illustration_animation_ = animation.get();
     illustration = animation.release();

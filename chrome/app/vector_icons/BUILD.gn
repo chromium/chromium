@@ -275,8 +275,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webauthn/passkey_error_dark.icon",
     "webauthn/passkey_fingerprint.icon",
     "webauthn/passkey_fingerprint_dark.icon",
-    "webauthn/passkey_header.icon",
-    "webauthn/passkey_header_dark.icon",
     "webauthn/passkey_phone.icon",
     "webauthn/passkey_phone_dark.icon",
     "webauthn/passkey_usb.icon",
