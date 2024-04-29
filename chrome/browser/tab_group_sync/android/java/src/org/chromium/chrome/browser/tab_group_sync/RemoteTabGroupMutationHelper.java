@@ -115,9 +115,9 @@ public class RemoteTabGroupMutationHelper {
         List<Integer> tabIds = mTabGroupModelFilter.getRelatedTabIds(rootId);
         // We just reconciled local state with sync. The tabs should match.
         assert tabIds.size() == group.savedTabs.size()
-                : "Local tab count doesn't match with remote : "
+                : "Local tab count doesn't match with remote : local #"
                         + tabIds.size()
-                        + " vs "
+                        + " vs remote #"
                         + group.savedTabs.size();
         for (int i = 0; i < group.savedTabs.size() && i < tabIds.size(); i++) {
             SavedTabGroupTab savedTab = group.savedTabs.get(i);

@@ -93,57 +93,108 @@ public class LocalTabGroupMutationHelper {
 
     /**
      * Called in response to a tab group being updated from sync that is already mapped in memory.
-     * Also invoked on startup to force update local state to sync. It will try to match the local
-     * tabs to the sync ones based on their IDs. Removes any tabs that don't have mapping in sync
-     * already. Updates the URLs and positions of the tabs to match sync. Creates new tabs for new
-     * incoming sync tabs.
+     * It will try to match the local tabs to the sync ones based on their IDs. Removes any tabs
+     * that don't have mapping in sync already. Updates the URLs and positions of the tabs to match
+     * sync. Creates new tabs for new incoming sync tabs.
      */
     public void updateTabGroup(SavedTabGroup tabGroup) {
-        LogUtils.log(TAG, "updateTabGroup " + tabGroup);
-        assert tabGroup.localId != null;
+        LogUtils.log(TAG, "updateTabGroup ");
+        reconcileGroup(tabGroup, /* isOnStartup= */ false);
+    }
 
-        // We got the updated tab group from sync. We need to update the local one to match.
-        // First close any extra tabs that aren't in sync.
-        closeLocalTabsNotInSync(tabGroup);
+    /**
+     * Called on startup to force update local state to sync. It will apply the sync tab URLs to
+     * their local counterparts in order of their position in the group. Creates new tabs if the
+     * local group has less tabs than the synced one.
+     */
+    public void reconcileGroupOnStartup(SavedTabGroup tabGroup) {
+        LogUtils.log(TAG, "reconcileGroupOnStartup ");
+        reconcileGroup(tabGroup, /* isOnStartup= */ true);
+    }
+
+    /**
+     * Called to reconcile a local tab group with its synced counterpart. Called both on startup and
+     * on subsequent sync updates. Depending on {@code isOnStartup}, it matches the tab by position
+     * or by ID. Closes any tabs that are extra, and creates new ones when needed. Navigates the
+     * tabs if they aren't on the correct URL already.
+     *
+     * <p>TODO(b/322856551): Persist tab ID mapping along with the group ID mapping. After that we
+     * won't need to run a different routine on startup.
+     */
+    private void reconcileGroup(SavedTabGroup tabGroup, boolean isOnStartup) {
+        LogUtils.log(TAG, "reconcileGroup " + tabGroup);
+        assert tabGroup.localId != null;
 
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroup.localId);
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
-        if (tabs.isEmpty()) {
-            return;
+        assert !tabs.isEmpty();
+
+        // We want to reconcile the local group with the synced group.
+        // The algorithm is different depending on whether we are running this on startup or for a
+        // subsequent sync update.
+        // For subsequent sync updates, we need to close any extra tabs that aren't in sync.
+        List<Tab> tabsToClose = new ArrayList<>();
+        if (isOnStartup) {
+            if (tabs.size() > tabGroup.savedTabs.size()) {
+                tabsToClose = tabs.subList(tabGroup.savedTabs.size(), tabs.size());
+            }
+        } else {
+            tabsToClose = findLocalTabsNotInSync(tabGroup);
+        }
+
+        if (!tabsToClose.isEmpty()) {
+            getTabModel().closeMultipleTabs(tabsToClose, /* canUndo= */ false);
         }
 
         // Update the remaining tabs. If the tab is already there, ensure its URL is up-to-date.
         // If the tab doesn't exist yet, create a new one.
-        // TODO(b/333721527): This is assuming that the tabs are continuous and the first tab in
-        // the related tab list has the lowest index. Verify if this is correct.
+        tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         int groupStartIndex = TabModelUtils.getTabIndexById(getTabModel(), tabs.get(0).getId());
         Tab parent = tabs.get(0);
         for (int i = 0; i < tabGroup.savedTabs.size(); i++) {
             SavedTabGroupTab savedTab = tabGroup.savedTabs.get(i);
-            Tab localTab = getLocalTab(savedTab.localId);
-            int desiredTabIndex = groupStartIndex + i;
+            int desiredTabModelIndex = groupStartIndex + i;
+            Tab localTab = null;
+            // Find the tab by position on startup, or by tab ID on subsequent update.
+            if (isOnStartup) {
+                localTab = i < tabs.size() ? tabs.get(i) : null;
+            } else {
+                localTab = getLocalTab(savedTab.localId);
+            }
+
+            // If the tab exists, navigate to the desired URL. Otherwise, create a new tab.
             if (localTab != null) {
                 maybeNavigateToUrl(localTab, savedTab.url, savedTab.title);
             } else {
                 localTab =
-                        mTabCreationDelegate.createBackgroundTab(
-                                savedTab.url, savedTab.title, parent, desiredTabIndex);
-                List<Tab> tabsToMerge = new ArrayList<>();
-                tabsToMerge.add(localTab);
-                mTabGroupModelFilter.mergeListOfTabsToGroup(
-                        tabsToMerge,
-                        TabModelUtils.getTabById(getTabModel(), rootId),
-                        /* isSameGroup= */ false,
-                        /* notify= */ false);
+                        createTabAndAddToGroup(
+                                savedTab.url, savedTab.title, desiredTabModelIndex, parent, rootId);
                 mTabGroupSyncService.updateLocalTabId(
                         tabGroup.localId, savedTab.syncId, localTab.getId());
             }
 
             // Move tab if required.
-            getTabModel().moveTab(localTab.getId(), desiredTabIndex);
+            getTabModel().moveTab(localTab.getId(), desiredTabModelIndex);
         }
 
         updateTabGroupVisuals(tabGroup, rootId);
+    }
+
+    /** Helper method to create a tab with a given URL and add it to the tab group. */
+    private Tab createTabAndAddToGroup(
+            GURL url, String title, int desiredTabModelIndex, Tab parentTab, int rootId) {
+        Tab newTab =
+                mTabCreationDelegate.createBackgroundTab(
+                        url, title, parentTab, desiredTabModelIndex);
+
+        List<Tab> tabsToMerge = new ArrayList<>();
+        tabsToMerge.add(newTab);
+        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                tabsToMerge,
+                TabModelUtils.getTabById(getTabModel(), rootId),
+                /* isSameGroup= */ false,
+                /* notify= */ false);
+        return newTab;
     }
 
     /**
@@ -165,11 +216,6 @@ public class LocalTabGroupMutationHelper {
 
         // Remove mapping from service.
         mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId);
-    }
-
-    private void closeLocalTabsNotInSync(SavedTabGroup savedTabGroup) {
-        List<Tab> tabs = findLocalTabsNotInSync(savedTabGroup);
-        getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);
     }
 
     private List<Tab> findLocalTabsNotInSync(SavedTabGroup savedTabGroup) {
@@ -196,7 +242,9 @@ public class LocalTabGroupMutationHelper {
         // If the tab is already at the correct URL, don't do anything.
         if (url.equals(tab.getUrl())) return;
 
-        boolean isCurrentTab = getTabModel().getCurrentTabSupplier().get().getId() == tab.getId();
+        boolean isCurrentTab =
+                getTabModel().getCurrentTabSupplier().get() != null
+                        && getTabModel().getCurrentTabSupplier().get().getId() == tab.getId();
         mTabCreationDelegate.navigateToUrl(tab, url, title, isCurrentTab);
     }
 

@@ -62,12 +62,18 @@ class TestTabGroupSyncService implements TabGroupSyncService {
 
     @Override
     public SavedTabGroup getGroup(String syncGroupId) {
-        return mTabGroups.isEmpty() ? null : mTabGroups.get(0);
+        for (SavedTabGroup group : mTabGroups) {
+            if (syncGroupId.equals(group.syncId)) return group;
+        }
+        return null;
     }
 
     @Override
     public SavedTabGroup getGroup(LocalTabGroupId localGroupId) {
-        return mTabGroups.isEmpty() ? null : mTabGroups.get(0);
+        for (SavedTabGroup group : mTabGroups) {
+            if (localGroupId.equals(group.localId)) return group;
+        }
+        return null;
     }
 
     @Override

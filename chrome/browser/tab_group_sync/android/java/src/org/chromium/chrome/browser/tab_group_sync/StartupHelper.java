@@ -109,7 +109,7 @@ public class StartupHelper {
         for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
             assert savedTabGroup != null;
-            mLocalTabGroupMutationHelper.updateTabGroup(savedTabGroup);
+            mLocalTabGroupMutationHelper.reconcileGroupOnStartup(savedTabGroup);
         }
     }
 

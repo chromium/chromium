@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,11 +25,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -81,27 +76,15 @@ public class StartupHelperUnitTest {
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
 
-        // Override closeMultipleTabs to customize its behavior
         doAnswer(
                         invocation -> {
-                            List<Tab> tabsToClose = invocation.getArgument(0);
-                            for (Tab tab : tabsToClose) {
-                                mTabModel.removeTab(tab);
-                            }
+                            LocalTabGroupId groupId = invocation.getArgument(0);
+                            mTabGroupSyncService.createGroup(groupId);
                             return null;
                         })
-                .when(mTabModel)
-                .closeMultipleTabs(anyList(), anyBoolean());
+                .when(mRemoteMutationHelper)
+                .createRemoteTabGroup(any());
 
-        mLocalMutationHelper =
-                spy(
-                        new LocalTabGroupMutationHelper(
-                                mTabGroupModelFilter,
-                                mTabGroupSyncService,
-                                new TestTabCreationDelegate(),
-                                new NavigationTracker()));
-        mRemoteMutationHelper =
-                spy(new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService));
         mStartupHelper =
                 new StartupHelper(
                         mTabGroupModelFilter,
@@ -149,7 +132,6 @@ public class StartupHelperUnitTest {
     public void testDeletedGroupsAreClosedOnStartup() {
         // Setup one local group that was deleted from sync.
         createLocalGroupWithTwoTabs();
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         List<LocalTabGroupId> deletedIds = new ArrayList<>();
         deletedIds.add(LOCAL_TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(deletedIds);
@@ -157,8 +139,7 @@ public class StartupHelperUnitTest {
         // Init. Deleted groups should be closed.
         mStartupHelper.initializeTabGroupSync();
         verify(mTabGroupSyncService).getDeletedGroupIds();
-        verify(mLocalMutationHelper).closeTabGroup(any());
-        verify(mTabModel, times(1)).closeMultipleTabs(argThat(tabs -> tabs.size() == 2), eq(false));
+        verify(mLocalMutationHelper).closeTabGroup(eq(LOCAL_TAB_GROUP_ID_1));
     }
 
     @Test
@@ -170,7 +151,11 @@ public class StartupHelperUnitTest {
         // Init. The group should be updated.
         mStartupHelper.initializeTabGroupSync();
         verify(mTabGroupSyncService).getDeletedGroupIds();
-        verify(mLocalMutationHelper).updateTabGroup(any());
+        verify(mLocalMutationHelper)
+                .reconcileGroupOnStartup(
+                        argThat(
+                                savedTabGroup ->
+                                        savedTabGroup.localId.equals(LOCAL_TAB_GROUP_ID_1)));
     }
 
     @Test
@@ -181,18 +166,5 @@ public class StartupHelperUnitTest {
         // Initialize. It should add the group to sync and add ID mapping to prefs.
         mStartupHelper.initializeTabGroupSync();
         verify(mRemoteMutationHelper).createRemoteTabGroup(eq(LOCAL_TAB_GROUP_ID_1));
-        verify(mTabGroupSyncService).createGroup(LOCAL_TAB_GROUP_ID_1);
-    }
-
-    private class TestTabCreationDelegate implements TabCreationDelegate {
-        private int mNextTabId;
-
-        @Override
-        public Tab createBackgroundTab(GURL url, String title, Tab parent, int position) {
-            return new MockTab(++mNextTabId, mProfile);
-        }
-
-        @Override
-        public void navigateToUrl(Tab tab, GURL url, String title, boolean isForegroundTab) {}
     }
 }
