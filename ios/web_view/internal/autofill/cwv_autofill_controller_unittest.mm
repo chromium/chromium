@@ -106,7 +106,7 @@ class CWVAutofillControllerTest : public web::WebTest {
     password_manager_client_ = password_manager_client.get();
 
     auto autofill_client = std::make_unique<autofill::WebViewAutofillClientIOS>(
-        kApplicationLocale, &pref_service_, &personal_data_manager_,
+        &pref_service_, &personal_data_manager_,
         /*autocomplete_history_manager=*/nullptr, &web_state_,
         /*identity_manager=*/nullptr, &strike_database_, &sync_service_,
         std::make_unique<autofill::StubLogManager>());

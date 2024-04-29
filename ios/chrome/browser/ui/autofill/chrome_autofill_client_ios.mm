@@ -104,13 +104,6 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       bridge_(bridge),
       identity_manager_(IdentityManagerFactory::GetForBrowserState(
           browser_state->GetOriginalChromeBrowserState())),
-      form_data_importer_(std::make_unique<FormDataImporter>(
-          this,
-          personal_data_manager_,
-          ios::HistoryServiceFactory::GetForBrowserState(
-              browser_state,
-              ServiceAccessType::EXPLICIT_ACCESS),
-          GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
       // TODO(crbug.com/40612524): Replace the closure with a callback to the
       // renderer that indicates if log messages should be sent from the
@@ -199,6 +192,14 @@ signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager() {
 }
 
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
+  if (!form_data_importer_) {
+    form_data_importer_ = std::make_unique<FormDataImporter>(
+        this, personal_data_manager_,
+        ios::HistoryServiceFactory::GetForBrowserState(
+            browser_state_, ServiceAccessType::EXPLICIT_ACCESS),
+        GetApplicationContext()->GetApplicationLocale());
+  }
+
   return form_data_importer_.get();
 }
 

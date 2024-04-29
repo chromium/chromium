@@ -38,7 +38,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
       ios_web_view::WebViewBrowserState* browser_state);
 
   WebViewAutofillClientIOS(
-      const std::string& locale,
       PrefService* pref_service,
       PersonalDataManager* personal_data_manager,
       AutocompleteHistoryManager* autocomplete_history_manager,

@@ -40,7 +40,6 @@ std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
     web::WebState* web_state,
     ios_web_view::WebViewBrowserState* browser_state) {
   return std::make_unique<autofill::WebViewAutofillClientIOS>(
-      ios_web_view::ApplicationContext::GetInstance()->GetApplicationLocale(),
       browser_state->GetPrefs(),
       ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
           browser_state->GetRecordingBrowserState()),
@@ -63,7 +62,6 @@ std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
 }
 
 WebViewAutofillClientIOS::WebViewAutofillClientIOS(
-    const std::string& locale,
     PrefService* pref_service,
     PersonalDataManager* personal_data_manager,
     AutocompleteHistoryManager* autocomplete_history_manager,
@@ -77,11 +75,6 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       autocomplete_history_manager_(autocomplete_history_manager),
       web_state_(web_state),
       identity_manager_(identity_manager),
-      form_data_importer_(
-          std::make_unique<FormDataImporter>(this,
-                                             personal_data_manager_,
-                                             /*history_service=*/nullptr,
-                                             locale)),
       strike_database_(strike_database),
       sync_service_(sync_service),
       log_manager_(std::move(log_manager)) {}
@@ -143,6 +136,13 @@ signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager() {
 }
 
 FormDataImporter* WebViewAutofillClientIOS::GetFormDataImporter() {
+  if (!form_data_importer_) {
+    form_data_importer_ = std::make_unique<FormDataImporter>(
+        this, personal_data_manager_,
+        /*history_service=*/nullptr,
+        ios_web_view::ApplicationContext::GetInstance()
+            ->GetApplicationLocale());
+  }
   return form_data_importer_.get();
 }
 
