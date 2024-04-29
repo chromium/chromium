@@ -302,6 +302,11 @@ packager_builder(
                 "sdk_package_name": "system-images;android-34;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/google_apis/x86_64.yaml",
             },
+            # TODO(crbug.com/337112189): Replace Android-V system images with the finalized API level once available
+            {
+                "sdk_package_name": "system-images;android-VanillaIceCream;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-VanillaIceCream/google_apis/x86_64.yaml",
+            },
         ],
     },
 )
