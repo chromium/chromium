@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -209,6 +210,9 @@ class MagicStackRankingModelTest : public PlatformTest {
     ClearDefaultBrowserPromoData();
     WriteFirstRunSentinel();
 
+    // Necessary set up for parcel tracking.
+    scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
+
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -309,6 +313,7 @@ class MagicStackRankingModelTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
   FakeUrlLoadingBrowserAgent* url_loader_;
+  IOSChromeScopedTestingVariationsService scoped_variations_service_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
   FakeSetUpListMediator* _setUpListMediator;
   FakeParcelTrackingMediator* _parcelTrackingMediator;

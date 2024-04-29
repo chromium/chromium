@@ -6,6 +6,9 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/mock_shopping_service.h"
+#import "components/variations/service/variations_service.h"
+#import "components/variations/service/variations_service_client.h"
+#import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -16,7 +19,10 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/test/test_network_connection_tracker.h"
 #import "testing/platform_test.h"
 
 class ParcelTrackingUtilTest : public PlatformTest {
@@ -75,6 +81,8 @@ class ParcelTrackingUtilTest : public PlatformTest {
 TEST_F(ParcelTrackingUtilTest, UserIsEligibleForPrompt) {
   SignIn();
   SetPromptDisplayedStatus(false);
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
   EXPECT_TRUE(IsUserEligibleParcelTrackingOptInPrompt(
       browser_state_->GetPrefs(), shopping_service_.get()));
 }
@@ -85,6 +93,8 @@ TEST_F(ParcelTrackingUtilTest, NotSignedIn) {
   SignOut();
   SetPromptDisplayedStatus(false);
   shopping_service_->SetIsParcelTrackingEligible(false);
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
   EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
       browser_state_->GetPrefs(), shopping_service_.get()));
 }
@@ -92,6 +102,17 @@ TEST_F(ParcelTrackingUtilTest, NotSignedIn) {
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
 // user has seen the prompt.
 TEST_F(ParcelTrackingUtilTest, UserHasSeenPrompt) {
+  SignIn();
+  SetPromptDisplayedStatus(true);
+  IOSChromeScopedTestingVariationsService scoped_variations_service;
+  scoped_variations_service.Get()->OverrideStoredPermanentCountry("us");
+  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
+      browser_state_->GetPrefs(), shopping_service_.get()));
+}
+
+// Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
+// permanent country is not set to US.
+TEST_F(ParcelTrackingUtilTest, CountryNotUS) {
   SignIn();
   SetPromptDisplayedStatus(true);
   EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
