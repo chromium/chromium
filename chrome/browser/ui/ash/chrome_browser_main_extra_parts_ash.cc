@@ -10,6 +10,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/display/refresh_rate_controller.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -80,7 +81,7 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
-#include "chromeos/ash/components/display/refresh_rate_controller.h"
+#include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/heatmap/heatmap_palm_detector_impl.h"
@@ -108,6 +109,8 @@
 namespace {
 ChromeBrowserMainExtraPartsAsh* g_instance = nullptr;
 }  // namespace
+
+using GameMode = ash::ResourcedClient::GameMode;
 
 namespace internal {
 
@@ -375,8 +378,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   }
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
-  bool force_throttle = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kForceRefreshRateThrottle);
 
   if (auto* picker_controller = ash::Shell::Get()->picker_controller()) {
     picker_client_ = std::make_unique<PickerClientImpl>(
@@ -386,10 +387,12 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();
 
   game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
-  refresh_rate_controller_ = std::make_unique<ash::RefreshRateController>(
-      ash::Shell::Get()->display_configurator(), ash::PowerStatus::Get(),
-      game_mode_controller_.get(),
-      ash::Shell::Get()->display_performance_mode_controller(), force_throttle);
+
+  game_mode_controller_->set_game_mode_changed_callback(
+      base::BindRepeating([](aura::Window* window, GameMode game_mode) {
+        ash::Shell::Get()->refresh_rate_controller()->SetGameMode(
+            window, game_mode == GameMode::BOREALIS);
+      }));
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
@@ -446,7 +449,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   tab_cluster_ui_client_.reset();
 
   // Initialized in PostProfileInit (which may not get called in some tests).
-  refresh_rate_controller_.reset();
   game_mode_controller_.reset();
   oobe_dialog_util_.reset();
   picker_client_.reset();

@@ -467,10 +467,13 @@ bool IsVariableRefreshRateEnabled() {
   }
 
   // Special default case for devices with |kVariableRefreshRateDefaultEnabled|
-  // set. Requires |kVariableRefreshRateAvailable| to also be set.
+  // set. Requires |kVariableRefreshRateAvailable| to also be set. We also check
+  // if the FeatureList exists as it can be null during the ASSERT_DEATH
+  // handling.
   // TODO(b/310666603): Remove after VRR is enabled-by-default for all hardware.
-  if (!base::FeatureList::GetInstance()->IsFeatureOverridden(
-          kEnableVariableRefreshRate.name) &&
+  if (!(base::FeatureList::GetInstance() &&
+        base::FeatureList::GetInstance()->IsFeatureOverridden(
+            kEnableVariableRefreshRate.name)) &&
       base::FeatureList::IsEnabled(kVariableRefreshRateDefaultEnabled) &&
       base::FeatureList::IsEnabled(kVariableRefreshRateAvailable)) {
     return true;

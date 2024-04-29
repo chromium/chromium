@@ -1,6 +1,7 @@
 include_rules = [
   "+ash/components/arc",
   "+ash/public/cpp",
+  "+ash/display",
   "+ash/shell.h",
   "+ash/wm",
   "+chromeos/ash/components/arc",

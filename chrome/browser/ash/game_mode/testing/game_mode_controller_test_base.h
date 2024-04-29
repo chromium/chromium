@@ -17,18 +17,6 @@
 
 namespace game_mode {
 
-class MockGameModeObserver
-    : public testing::NiceMock<GameModeController::Observer> {
- public:
-  MockGameModeObserver() = default;
-  ~MockGameModeObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnSetGameMode,
-              (GameMode mode, ash::WindowState* window_state),
-              (override));
-};
-
 // Test base for all game mode types (e.g. Borealis, ARC).
 class GameModeControllerTestBase : public ChromeAshTestBase {
  public:

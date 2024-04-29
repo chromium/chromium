@@ -71,6 +71,7 @@
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/projecting_observer.h"
+#include "ash/display/refresh_rate_controller.h"
 #include "ash/display/resolution_notification_controller.h"
 #include "ash/display/screen_ash.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -885,8 +886,6 @@ Shell::~Shell() {
 
   display_highlight_controller_.reset();
 
-  display_performance_mode_controller_.reset();
-
   // VideoActivityNotifier must be deleted before |video_detector_| is
   // deleted because it's observing video activity through
   // VideoDetector::Observer interface.
@@ -1096,6 +1095,10 @@ Shell::~Shell() {
   partial_magnifier_controller_.reset();
 
   laser_pointer_controller_.reset();
+
+  refresh_rate_controller_.reset();
+
+  display_performance_mode_controller_.reset();
 
   if (display_change_observer_) {
     display_manager_->configurator()->RemoveObserver(
@@ -1747,9 +1750,6 @@ void Shell::Init(
   display_highlight_controller_ =
       std::make_unique<DisplayHighlightController>();
 
-  display_performance_mode_controller_ =
-      std::make_unique<DisplayPerformanceModeController>();
-
   if (features::IsDisplayAlignmentAssistanceEnabled()) {
     display_alignment_controller_ =
         std::make_unique<DisplayAlignmentController>();
@@ -1904,6 +1904,13 @@ void Shell::InitializeDisplayManager() {
   if (!display_initialized) {
     display_manager_->InitDefaultDisplay();
   }
+
+  display_performance_mode_controller_ =
+      std::make_unique<DisplayPerformanceModeController>();
+
+  refresh_rate_controller_ = std::make_unique<RefreshRateController>(
+      display_configurator(), PowerStatus::Get(),
+      display_performance_mode_controller());
 }
 
 void Shell::InitRootWindow(aura::Window* root_window) {

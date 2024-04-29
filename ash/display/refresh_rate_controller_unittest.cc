@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/display/refresh_rate_controller.h"
+#include "ash/display/refresh_rate_controller.h"
 
 #include <memory>
 #include <vector>
@@ -10,7 +10,9 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -130,11 +132,17 @@ class RefreshRateControllerTest : public AshTestBase {
     display_manager()->configurator()->SetDelegateForTesting(
         std::unique_ptr<NativeDisplayDelegate>(native_display_delegate_));
     game_mode_controller_ = std::make_unique<GameModeController>();
+    game_mode_controller_->set_game_mode_changed_callback(
+        base::BindRepeating([](aura::Window* window, GameMode game_mode) {
+          ash::Shell::Get()->refresh_rate_controller()->SetGameMode(
+              window, game_mode == GameMode::BOREALIS);
+        }));
+
     performance_controller_ =
         Shell::Get()->display_performance_mode_controller();
     controller_ = std::make_unique<RefreshRateController>(
         Shell::Get()->display_configurator(), PowerStatus::Get(),
-        game_mode_controller_.get(), performance_controller_.get());
+        performance_controller_.get());
     display_change_observer_ =
         std::make_unique<display::DisplayChangeObserver>(display_manager());
     display_manager()->configurator()->AddObserver(
@@ -199,11 +207,13 @@ TEST_F(RefreshRateControllerTest, ThrottleStateSetAtConstruction) {
   }
 
   // Create a new RefreshRateController, and force throttle it.
-  const bool force_throttle = true;
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kForceRefreshRateThrottle);
+
   std::unique_ptr<RefreshRateController> controller =
       std::make_unique<RefreshRateController>(
           Shell::Get()->display_configurator(), PowerStatus::Get(),
-          game_mode_controller_.get(), performance_controller_, force_throttle);
+          performance_controller_);
 
   // Expect the state to be 60 Hz.
   {

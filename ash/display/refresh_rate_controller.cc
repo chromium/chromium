@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/display/refresh_rate_controller.h"
+#include "ash/display/refresh_rate_controller.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/task/single_thread_task_runner.h"
@@ -11,11 +11,12 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/display_util.h"
+#include "base/command_line.h"
+#include "ash/constants/ash_switches.h"
 
 namespace ash {
 
 namespace {
-using GameMode = ash::ResourcedClient::GameMode;
 using DisplayStateList = display::DisplayConfigurator::DisplayStateList;
 using ModeState = DisplayPerformanceModeController::ModeState;
 }  // namespace
@@ -23,15 +24,14 @@ using ModeState = DisplayPerformanceModeController::ModeState;
 RefreshRateController::RefreshRateController(
     display::DisplayConfigurator* display_configurator,
     PowerStatus* power_status,
-    game_mode::GameModeController* game_mode_controller,
-    DisplayPerformanceModeController* display_performance_mode_controller,
-    bool force_throttle)
+    DisplayPerformanceModeController* display_performance_mode_controller)
     : display_configurator_(display_configurator),
       power_status_(power_status),
       display_performance_mode_controller_(display_performance_mode_controller),
-      force_throttle_(force_throttle) {
+      force_throttle_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kForceRefreshRateThrottle)) {
   power_status_observer_.Observe(power_status);
-  game_mode_observer_.Observe(game_mode_controller);
   display_configurator_observer_.Observe(display_configurator);
   current_performance_mode_ =
       display_performance_mode_controller_->AddObserver(this);
@@ -47,22 +47,22 @@ void RefreshRateController::OnPowerStatusChanged() {
   UpdateStates();
 }
 
-void RefreshRateController::OnSetGameMode(GameMode game_mode,
-                                          WindowState* window_state) {
-  // Update the |borealis_window_observer_|.
-  if (game_mode == GameMode::BOREALIS) {
+void RefreshRateController::SetGameMode(aura::Window* window,
+                                        bool game_mode_on) {
+  // Update the |game_window_observer_|.
+  if (game_mode_on) {
     // The GameModeController will always turn off game mode before the observed
     // window is destroyed.
-    borealis_window_observer_.Observe(window_state->window());
+    game_window_observer_.Observe(window);
   } else {
-    borealis_window_observer_.Reset();
+    game_window_observer_.Reset();
   }
 
   UpdateStates();
 }
 
 void RefreshRateController::OnWindowAddedToRootWindow(aura::Window* window) {
-  DCHECK_EQ(window, borealis_window_observer_.GetSource());
+  DCHECK_EQ(window, game_window_observer_.GetSource());
   // Refresh state in case the window changed displays.
   UpdateStates();
 }
@@ -75,6 +75,11 @@ void RefreshRateController::OnDisplayModeChanged(
     }
     UpdateSeamlessRefreshRates(snapshot->display_id());
   }
+}
+
+void RefreshRateController::StopObservingPowerStatusForTest() {
+  power_status_observer_.Reset();
+  power_status_ = nullptr;
 }
 
 void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
@@ -101,7 +106,7 @@ void RefreshRateController::OnSeamlessRefreshRangeReceived(
 void RefreshRateController::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
-  if (borealis_window_observer_.IsObserving() &&
+  if (game_window_observer_.IsObserving() &&
       (changed_metrics & DISPLAY_METRIC_PRIMARY)) {
     // Refresh state in case the window is affected by the primary display
     // change.
@@ -152,11 +157,11 @@ void RefreshRateController::RefreshVrrState() {
   }
 
   // Enable VRR on the borealis-hosting display if battery saver is inactive.
-  if (borealis_window_observer_.IsObserving() &&
+  if (game_window_observer_.IsObserving() &&
       current_performance_mode_ != ModeState::kPowerSaver) {
     display_configurator_->SetVrrEnabled(
         {display::Screen::GetScreen()
-             ->GetDisplayNearestWindow(borealis_window_observer_.GetSource())
+             ->GetDisplayNearestWindow(game_window_observer_.GetSource())
              .id()});
   } else {
     display_configurator_->SetVrrEnabled({});
@@ -185,9 +190,9 @@ RefreshRateController::GetDesiredThrottleState() {
 display::RefreshRateThrottleState
 RefreshRateController::GetDynamicThrottleState() {
   // Do not throttle when Borealis is active on the internal display.
-  if (borealis_window_observer_.IsObserving() &&
+  if (game_window_observer_.IsObserving() &&
       display::Screen::GetScreen()
-              ->GetDisplayNearestWindow(borealis_window_observer_.GetSource())
+              ->GetDisplayNearestWindow(game_window_observer_.GetSource())
               .id() == display::Display::InternalDisplayId()) {
     return display::kRefreshRateThrottleDisabled;
   }

@@ -191,18 +191,10 @@ void GameModeController::GameModeEnabler::OnSetGameMode(
   }
 }
 
-void GameModeController::AddObserver(Observer* obs) {
-  observers_.AddObserver(obs);
-}
-
-void GameModeController::RemoveObserver(Observer* obs) {
-  observers_.RemoveObserver(obs);
-}
-
 void GameModeController::NotifySetGameMode(GameMode game_mode,
                                            ash::WindowState* window_state) {
-  for (auto& obs : observers_) {
-    obs.OnSetGameMode(game_mode, window_state);
+  if (!callback_.is_null()) {
+    callback_.Run(window_state->window(), game_mode);
   }
 }
 

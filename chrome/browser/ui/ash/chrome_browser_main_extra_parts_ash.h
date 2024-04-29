@@ -18,7 +18,6 @@ class ArcWindowWatcher;
 class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class OobeDialogUtil;
-class RefreshRateController;
 class VideoConferenceTrayController;
 }  // namespace ash
 
@@ -151,7 +150,6 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;
   std::unique_ptr<DesksClient> desks_client_;
-  std::unique_ptr<ash::RefreshRateController> refresh_rate_controller_;
   std::unique_ptr<CampaignsManagerClientImpl> campaigns_manager_client_;
   std::unique_ptr<CampaignsManagerSession> campaigns_manager_session_;
 

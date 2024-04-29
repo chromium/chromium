@@ -142,20 +142,18 @@ class GameModeController : public aura::client::FocusChangeObserver {
     const NotifySetGameModeCallback notify_set_game_mode_callback_;
   };
 
-  // Observer class which subscribes to changes in the GameMode state.
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnSetGameMode(GameMode game_mode,
-                               ash::WindowState* window_state) = 0;
-  };
+  using GameModeChangedCallback =
+      base::RepeatingCallback<void(aura::Window*, GameMode)>;
 
-  void AddObserver(Observer* obs);
-  void RemoveObserver(Observer* obs);
+  void set_game_mode_changed_callback(GameModeChangedCallback callback) {
+    callback_ = callback;
+  }
+
   void NotifySetGameMode(GameMode game_mode, ash::WindowState* window_state);
 
  private:
   std::unique_ptr<WindowTracker> focused_;
-  base::ObserverList<Observer> observers_;
+  GameModeChangedCallback callback_;
 };
 
 }  // namespace game_mode

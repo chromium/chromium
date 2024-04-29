@@ -4,6 +4,8 @@
 
 #include "ash/quick_pair/feature_status_tracker/battery_saver_active_provider.h"
 
+#include "ash/display/refresh_rate_controller.h"
+#include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "ash/test/ash_test_base.h"
 
@@ -12,6 +14,18 @@ namespace quick_pair {
 
 class BatterySaverActiveProviderTest : public AshTestBase {
  public:
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    // This test may delete/recreate PowerStatus, which can cause dangling
+    // pointer in RefreshRateController which observes the power status. Let it
+    // forget the power status so that it doesn't reported as a dangling
+    // pointer.
+    ash::Shell::Get()
+        ->refresh_rate_controller()
+        ->StopObservingPowerStatusForTest();
+  }
+
   // PowerStatus must be initialized before AshTestBase::TearDown() because the
   // latter calls PowerStatus::Shutdown, which crashes if the PowerStatus is not
   // initialized.

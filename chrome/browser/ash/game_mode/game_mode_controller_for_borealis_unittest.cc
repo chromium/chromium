@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
-
+#include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/testing/windows.h"
+#include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
 #include "ui/views/widget/widget.h"
@@ -16,6 +16,7 @@
 namespace game_mode {
 namespace {
 
+using GameMode = ash::ResourcedClient::GameMode;
 using borealis::BorealisFeatures;
 using borealis::BorealisServiceFake;
 using borealis::BorealisWindowManager;
@@ -199,24 +200,33 @@ TEST_F(GameModeControllerForBorealisTest, WindowLosesFocusAndGoesFullscreen) {
 }
 
 TEST_F(GameModeControllerForBorealisTest, TriggersObserver) {
-  MockGameModeObserver mock_game_mode_observer;
-  game_mode_controller_->AddObserver(&mock_game_mode_observer);
+  struct State {
+    GameMode game_mode;
+    raw_ptr<aura::Window> window = nullptr;
+  };
+
+  State state;
+  game_mode_controller_->set_game_mode_changed_callback(
+      base::BindLambdaForTesting(
+          [&](aura::Window* window, ash::ResourcedClient::GameMode mode) {
+            state.window = window;
+            state.game_mode = mode;
+          }));
+
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.guest_os.borealis.foo", false);
-  const ash::WindowState* window_state =
-      ash::WindowState::Get(test_widget->GetNativeWindow());
-  EXPECT_CALL(mock_game_mode_observer,
-              OnSetGameMode(testing::Eq(GameMode::BOREALIS),
-                            testing::Eq(window_state)));
-  test_widget->SetFullscreen(true);
 
-  EXPECT_CALL(
-      mock_game_mode_observer,
-      OnSetGameMode(testing::Eq(GameMode::OFF), testing::Eq(window_state)));
+  test_widget->SetFullscreen(true);
+  EXPECT_EQ(state.game_mode, ash::ResourcedClient::GameMode::BOREALIS);
+  EXPECT_EQ(state.window, test_widget->GetNativeWindow());
+
+  state.window = nullptr;
+
   test_widget->SetFullscreen(false);
 
-  testing::Mock::VerifyAndClear(&mock_game_mode_observer);
-  game_mode_controller_->RemoveObserver(&mock_game_mode_observer);
+  EXPECT_EQ(state.game_mode, ash::ResourcedClient::GameMode::OFF);
+  EXPECT_EQ(state.window, test_widget->GetNativeWindow());
+  state.window = nullptr;
 }
 
 }  // namespace

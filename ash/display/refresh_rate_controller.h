@@ -2,30 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_DISPLAY_REFRESH_RATE_CONTROLLER_H_
-#define CHROMEOS_ASH_COMPONENTS_DISPLAY_REFRESH_RATE_CONTROLLER_H_
+#ifndef ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
+#define ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
 
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/system/power/power_status.h"
 #include "base/scoped_observation.h"
-#include "chromeos/ash/components/game_mode/game_mode_controller.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 
 namespace ash {
 
+
 // RefreshRateController manages features related to display refresh rate, such
-// as the VRR enabled/disabled state and refresh rate throttling. It is
-// responsible for communicating the desired VRR state to the configurator. VRR
-// is meant to be enabled as long as Borealis game mode is active, except when
-// battery saver mode is also active. For high-refresh rate devices, the refresh
-// rate will be throttled while on battery, except when Borealis game mode is
-// active.
-class RefreshRateController
+// as the VRR enabled/disabled state and refresh rate throttling. It is responsible
+// for communicating desired state to the configurator.
+class ASH_EXPORT RefreshRateController
     : public PowerStatus::Observer,
-      public game_mode::GameModeController::Observer,
       public aura::WindowObserver,
       public display::DisplayObserver,
       public display::DisplayConfigurator::Observer,
@@ -34,9 +32,7 @@ class RefreshRateController
   RefreshRateController(
       display::DisplayConfigurator* display_configurator,
       PowerStatus* power_status,
-      game_mode::GameModeController* game_mode_controller,
-      DisplayPerformanceModeController* display_performance_mode_controller,
-      bool force_throttle = false);
+      DisplayPerformanceModeController* display_performance_mode_controller);
 
   RefreshRateController(const RefreshRateController&) = delete;
   RefreshRateController& operator=(const RefreshRateController&) = delete;
@@ -46,9 +42,8 @@ class RefreshRateController
   // PowerStatus::Observer implementation.
   void OnPowerStatusChanged() override;
 
-  // GameModeController::Observer implementation.
-  void OnSetGameMode(ResourcedClient::GameMode game_mode,
-                     WindowState* window_state) override;
+  // Set Game mode on the window.
+  void SetGameMode(aura::Window* window, bool game_mode_on);
 
   // WindowObserver implementation.
   void OnWindowAddedToRootWindow(aura::Window* window) override;
@@ -65,6 +60,8 @@ class RefreshRateController
   void OnDisplayPerformanceModeChanged(
       DisplayPerformanceModeController::ModeState new_state) override;
 
+  void StopObservingPowerStatusForTest();
+
  private:
   void UpdateSeamlessRefreshRates(int64_t display_id);
   void OnSeamlessRefreshRangeReceived(
@@ -79,7 +76,7 @@ class RefreshRateController
 
   // Not owned.
   raw_ptr<display::DisplayConfigurator> display_configurator_;
-  const raw_ptr<PowerStatus> power_status_;
+  raw_ptr<PowerStatus> power_status_;
 
   raw_ptr<DisplayPerformanceModeController>
       display_performance_mode_controller_;
@@ -91,11 +88,8 @@ class RefreshRateController
 
   base::ScopedObservation<ash::PowerStatus, ash::PowerStatus::Observer>
       power_status_observer_{this};
-  base::ScopedObservation<game_mode::GameModeController,
-                          game_mode::GameModeController::Observer>
-      game_mode_observer_{this};
   base::ScopedObservation<aura::Window, aura::WindowObserver>
-      borealis_window_observer_{this};
+      game_window_observer_{this};
   display::ScopedDisplayObserver display_observer_{this};
   base::ScopedObservation<display::DisplayConfigurator,
                           display::DisplayConfigurator::Observer>
@@ -106,4 +100,4 @@ class RefreshRateController
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_DISPLAY_REFRESH_RATE_CONTROLLER_H_
+#endif  // ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_

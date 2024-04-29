@@ -3874,7 +3874,6 @@ static_library("ui") {
       "//chromeos/ash/components/dbus/userdataauth",
       "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
       "//chromeos/ash/components/disks",
-      "//chromeos/ash/components/display",
       "//chromeos/ash/components/drivefs",
       "//chromeos/ash/components/drivefs/mojom:mojom",
       "//chromeos/ash/components/emoji",

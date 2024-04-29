@@ -179,14 +179,14 @@ class KeyboardBrightnessControlDelegate;
 class KeyboardControllerImpl;
 class KeyboardModifierMetricsRecorder;
 class LaserPointerController;
+class LocalAuthenticationRequestController;
 class LocaleUpdateControllerImpl;
 class LockStateController;
-class LogoutConfirmationController;
 class LoginScreenController;
 class LoginUnlockThroughputRecorder;
-class MediaNotificationProvider;
-class TabClusterUIController;
+class LogoutConfirmationController;
 class MediaControllerImpl;
+class MediaNotificationProvider;
 class MessageCenterAshImpl;
 class MessageCenterController;
 class MouseCursorEventFilter;
@@ -200,10 +200,8 @@ class NightLightControllerImpl;
 class OcclusionTrackerPauser;
 class OverviewController;
 class ParentAccessController;
-class LocalAuthenticationRequestController;
 class PartialMagnifierController;
 class PciePeripheralNotificationController;
-class UsbPeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
 class PersistentWindowController;
@@ -221,12 +219,15 @@ class ProjectingObserver;
 class ProjectorControllerImpl;
 class RapidKeySequenceRecorder;
 class RasterScaleController;
-class RgbKeyboardManager;
+class RefreshRateController;
 class ResizeShadowController;
 class ResolutionNotificationController;
+class RgbKeyboardManager;
 class RootWindowController;
 class SavedDeskController;
 class SavedDeskDelegate;
+class TabClusterUIController;
+class UsbPeripheralNotificationController;
 class ScreenLayoutObserver;
 class ScreenOrientationController;
 class ScreenPinningController;
@@ -507,6 +508,10 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
 
   display::DisplayConfigurator* display_configurator();
+
+  RefreshRateController* refresh_rate_controller() {
+    return refresh_rate_controller_.get();
+  }
 
   DisplayColorManager* display_color_manager() {
     return display_color_manager_.get();
@@ -1193,6 +1198,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<DisplayColorManager> display_color_manager_;
   std::unique_ptr<DisplayErrorObserver> display_error_observer_;
+  std::unique_ptr<RefreshRateController> refresh_rate_controller_;
   std::unique_ptr<ProjectingObserver> projecting_observer_;
   std::unique_ptr<HotspotIconAnimation> hotspot_icon_animation_;
   std::unique_ptr<HotspotInfoCache> hotspot_info_cache_;
