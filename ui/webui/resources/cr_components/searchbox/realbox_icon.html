@@ -1,5 +1,7 @@
 <style>
   :host {
+    --cr-realbox-icon-border-radius: 8px;
+    --cr-realbox-icon-size-in-searchbox: 20px;
     align-items: center;
     display: flex;
     flex-shrink: 0;
@@ -7,19 +9,23 @@
     width: 32px;
   }
 
+  :host([in-side-panel_]) {
+    --cr-realbox-icon-size-in-searchbox: 34px;
+  }
+
+  :host([expanded-state-icons-chrome-refresh]:not([in-side-panel_])) {
+    --cr-realbox-icon-border-radius: 4px;
+  }
+
   #container {
     align-items: center;
     aspect-ratio: 1 / 1;
-    border-radius: var(--cr-realbox-icon-border-radius, 8px);
+    border-radius: var(--cr-realbox-icon-border-radius);
     display: flex;
     justify-content: center;
     overflow: hidden;
     position: relative;
     width: 100%;
-  }
-
-  :host([expanded-state-icons-chrome-refresh]) #container {
-    border-radius: var(--cr-realbox-icon-border-radius, 4px);
   }
 
   /* Entities may feature a dominant color background until image loads. */
@@ -101,10 +107,9 @@
     background-size: 24px;
   }
 
-  /* All icons in the searchbox should be 20px large. */
   :host([in-searchbox]) #icon {
-    -webkit-mask-size: 20px;
-    background-size: 20px;
+    -webkit-mask-size: var(--cr-realbox-icon-size-in-searchbox);
+    background-size: var(--cr-realbox-icon-size-in-searchbox);
   }
 
   :host([has-icon-container-background]:not([in-searchbox])) #icon {

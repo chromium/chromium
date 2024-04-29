@@ -134,6 +134,12 @@ export class RealboxIconElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      inSidePanel_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('searchboxInSidePanel'),
+        reflectToAttribute: true,
+      },
     };
   }
 

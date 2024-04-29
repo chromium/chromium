@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lens_untrusted_resources.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
 #include "components/lens/lens_features.h"
@@ -68,7 +69,15 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   // Add required resources for the searchbox.
   SearchboxHandler::SetupWebUIDataSource(html_source,
                                          Profile::FromWebUI(web_ui));
+  html_source->AddBoolean("realboxCr23HoverFillShape", false);
+  html_source->AddString(
+      "realboxDefaultIcon",
+      "//resources/cr_components/searchbox/icons/google_g.svg");
   html_source->AddBoolean("reportMetrics", false);
+  // TODO(b/337657623): Update when strings are finalized.
+  html_source->AddLocalizedString("searchBoxHint",
+                                  IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_SHORT);
+  html_source->AddBoolean("searchboxInSidePanel", true);
 }
 
 void LensUntrustedUI::BindInterface(

@@ -253,6 +253,12 @@ export class RealboxElement extends RealboxElementBase {
         value: () => loadTimeData.getBoolean('realboxIsTall'),
         reflectToAttribute: true,
       },
+
+      inSidePanel_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('searchboxInSidePanel'),
+        reflectToAttribute: true,
+      },
     };
   }
 

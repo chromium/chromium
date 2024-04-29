@@ -6,6 +6,8 @@
     --cr-realbox-width: var(--cr-realbox-min-width);
 
     --cr-realbox-border-radius: calc(0.5 * var(--cr-realbox-height));
+    --cr-realbox-icon-left-position: 12px;
+    --cr-realbox-icon-top-position: 0;
     --cr-realbox-icon-width: 26px;
     --cr-realbox-inner-icon-margin: 8px;
     --cr-realbox-voice-icon-offset: 16px;
@@ -17,7 +19,7 @@
   }
 
   :host([show-thumbnail_]) {
-    --cr-realbox-thumbnail-icon-offset: 24px;
+    --cr-realbox-thumbnail-icon-offset: 28px;
   }
 
   :host([realbox-chrome-refresh-theming][dropdown-is-visible]) {
@@ -44,6 +46,12 @@
 
   :host([is-tall_]) {
     --cr-realbox-height: 48px;
+  }
+
+  :host([in-side-panel_]) {
+    --cr-realbox-height: 52px;
+    --cr-realbox-icon-left-position: 10px;
+    --cr-realbox-icon-top-position: 1px;
   }
 
   /**
@@ -153,9 +161,9 @@
 
   cr-realbox-icon {
     height: 100%;
-    left: 12px;
+    left: var(--cr-realbox-icon-left-position);
     position: absolute;
-    top: 0;
+    top: var(--cr-realbox-icon-top-position);
   }
 
   :host-context([dir='rtl']) cr-realbox-icon {
@@ -192,7 +200,7 @@
     height: 100%;
     position: absolute;
     right: 16px;
-    top: 0;
+    top: var(--cr-realbox-icon-top-position);
     z-index: 100;
   }
 
@@ -284,9 +292,9 @@
 
   #thumbnailContainer {
     position: absolute;
-    top: 0;
+    top: var(--cr-realbox-icon-top-position);
     height: 100%;
-    left: 40px;
+    left: 42px;
     z-index: 101;
     align-content: center;
     outline: none;
