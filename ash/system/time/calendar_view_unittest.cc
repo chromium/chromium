@@ -112,12 +112,12 @@ class CalendarViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    calendar_view_ = nullptr;
+
     widget_.reset();
 
     Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
                                                                nullptr);
-
-    calendar_view_ = nullptr;
 
     AshTestBase::TearDown();
   }
@@ -159,6 +159,10 @@ class CalendarViewTest : public AshTestBase {
     auto calendar_view = std::make_unique<CalendarView>(
         /*use_glanceables_container_style=*/false);
 
+    // This awkward-looking thing is to ensure that calendar_view_ (a raw_ptr)
+    // doesn't outlive the calendar view it points to, which is otherwise
+    // destroyed as part of Widget::SetContentsView().
+    calendar_view_ = nullptr;
     calendar_view_ = widget_->SetContentsView(std::move(calendar_view));
   }
 
@@ -1450,12 +1454,13 @@ class CalendarViewAnimationTest
   }
 
   void TearDown() override {
-    widget_.reset();
-    time_overrides_.reset();
-    scoped_feature_list_.Reset();
     calendar_list_model_ = nullptr;
     calendar_model_ = nullptr;
     calendar_view_ = nullptr;
+
+    widget_.reset();
+    time_overrides_.reset();
+    scoped_feature_list_.Reset();
 
     AshTestBase::TearDown();
   }
@@ -1463,6 +1468,10 @@ class CalendarViewAnimationTest
   bool IsMultiCalendarEnabled() { return GetParam(); }
 
   void CreateCalendarView() {
+    // Don't allow calendar_view_ to temporarily dangle while we're replacing
+    // the Widget's contents view. Otherwise, inside SetContentsView() the old
+    // calendar_view_ will be destroyed and will temporarily dangle.
+    calendar_view_ = nullptr;
     calendar_view_ = widget_->SetContentsView(std::make_unique<CalendarView>(
         /*use_glanceables_container_style=*/false));
   }
