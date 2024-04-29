@@ -1629,8 +1629,6 @@ void LayoutObject::SetIntrinsicLogicalWidthsDirty(
   bitfields_.SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(true);
   bitfields_.SetIndefiniteIntrinsicLogicalWidthsDirty(true);
   bitfields_.SetDefiniteIntrinsicLogicalWidthsDirty(true);
-  bitfields_.SetIsSubgridMinMaxSizesCacheDirty(true);
-
   if (mark_parents == kMarkContainerChain &&
       (IsText() || !StyleRef().HasOutOfFlowPosition()))
     InvalidateContainerIntrinsicLogicalWidths();
@@ -1726,8 +1724,6 @@ inline void LayoutObject::InvalidateContainerIntrinsicLogicalWidths() {
       break;
 
     o->bitfields_.SetIntrinsicLogicalWidthsDirty(true);
-    o->bitfields_.SetIsSubgridMinMaxSizesCacheDirty(true);
-
     // A positioned object has no effect on the min/max width of its containing
     // block ever. We can optimize this case and not go up any further.
     if (o->StyleRef().HasOutOfFlowPosition())
