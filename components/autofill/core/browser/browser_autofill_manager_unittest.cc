@@ -1422,6 +1422,7 @@ TEST_F(BrowserAutofillManagerTest,
            {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
   browser_autofill_manager_->AddSeenForm(form, {NAME_FIRST, NAME_LAST});
 
+  base::HistogramTester histogram_tester;
   // Check that at first both first and last name fields have suggestions.
   ASSERT_FALSE(test_api(*browser_autofill_manager_)
                    .GetProfileSuggestions(form, form.fields[0])
@@ -1434,10 +1435,15 @@ TEST_F(BrowserAutofillManagerTest,
   simulate_user_ignored_suggestions(form, form.fields[0]);
   simulate_user_ignored_suggestions(form, form.fields[0]);
   simulate_user_ignored_suggestions(form, form.fields[0]);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Suggestion.StrikeSuppression.Address", 1, 0);
   // Check that no more suggestions are returned.
   EXPECT_TRUE(test_api(*browser_autofill_manager_)
                   .GetProfileSuggestions(form, form.fields[0])
                   .empty());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Suggestion.StrikeSuppression.Address", 1, 1);
 
   // Ignore suggestions on the second field "strike limit" times.
   simulate_user_ignored_suggestions(form, form.fields[1]);

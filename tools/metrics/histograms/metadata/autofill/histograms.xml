@@ -5061,6 +5061,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.Suggestion.StrikeSuppression.Address" enum="Boolean"
+    expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether address suggestions were suppressed because of a field
+    reaching the strike limit due to the user consistently ignoring suggestions
+    on that field. Emitted only on desktop (where strike suppression exists)
+    every time regular (non-manual fallback) address suggestions are triggered.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SuggestionAccepted.OffTheRecord" units="units"
     expires_after="2024-09-22">
   <owner>arabm@google.com</owner>

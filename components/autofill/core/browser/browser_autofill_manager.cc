@@ -2247,16 +2247,21 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     AutofillSuggestionTriggerSource trigger_source) const {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (trigger_source !=
-          AutofillSuggestionTriggerSource::kManualFallbackAddress &&
-      client()
-          .GetPersonalDataManager()
-          ->address_data_manager()
-          .AreAddressSuggestionsBlocked(
-              CalculateFormSignature(form),
-              CalculateFieldSignatureForField(trigger_field), form.url)) {
-    // If the user already reached the strike limit on this particular field,
-    // address suggestions are suppressed.
-    return {};
+      AutofillSuggestionTriggerSource::kManualFallbackAddress) {
+    bool should_suppress =
+        client()
+            .GetPersonalDataManager()
+            ->address_data_manager()
+            .AreAddressSuggestionsBlocked(
+                CalculateFormSignature(form),
+                CalculateFieldSignatureForField(trigger_field), form.url);
+    base::UmaHistogramBoolean("Autofill.Suggestion.StrikeSuppression.Address",
+                              should_suppress);
+    if (should_suppress) {
+      // If the user already reached the strike limit on this particular field,
+      // address suggestions are suppressed.
+      return {};
+    }
   }
 #endif
   address_form_event_logger_->OnDidPollSuggestions(trigger_field,
