@@ -652,9 +652,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   CustomizeUIAppearance();
 
   [self scheduleStartupCleanupTasks];
-  [MetricsMediator
-      logLaunchMetricsWithStartupInformation:self
-                             connectedScenes:self.appState.connectedScenes];
 
   ios::provider::InstallOverrides();
 
@@ -803,6 +800,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     case InitStageChoiceScreen:
       break;
     case InitStageFinal:
+      // In a multi-window environment we have the correct number of
+      // connectedScenes only at this stage.
+      [MetricsMediator
+          logLaunchMetricsWithStartupInformation:self
+                                 connectedScenes:self.appState.connectedScenes];
       break;
   }
 }
