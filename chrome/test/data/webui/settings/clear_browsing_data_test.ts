@@ -112,7 +112,7 @@ function getClearBrowsingDataPrefs() {
 }
 
 // TODO(crbug.com/40283307): Used by the CbdExperiment test suites below. Remove
-// once crbug.com/1487530 completed.
+// once crbug.com/40283307 completed.
 async function testCbdExperimentDualWritesPref(
     element: SettingsClearBrowsingDataDialogElement, tabIndex: number,
     userSelectedTimeFrame: number, prefName: string, inialPrefValue: number,
@@ -630,6 +630,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!actionButton);
     actionButton.click();
+    await microtasksFinished();
     assertEquals(TimePeriod.LAST_WEEK, element.getPref(prefName).value);
     const args = await testBrowserProxy.whenCalled('clearBrowsingData');
     const timeRange = args[1];
@@ -638,12 +639,18 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
   test('dropdownSelectionPersisted_Basic', function() {
     return assertDropdownSelectionPersisted(
-        /*tabIndex*/ 0, 'browser.clear_data.time_period_basic');
+        /*tabIndex*/ 0,
+        loadTimeData.getBoolean('enableCbdTimeframeRequired') ?
+            'browser.clear_data.time_period_v2_basic' :
+            'browser.clear_data.time_period_basic');
   });
 
   test('dropdownSelectionPersisted_Advanced', function() {
     return assertDropdownSelectionPersisted(
-        /*tabIndex*/ 1, 'browser.clear_data.time_period');
+        /*tabIndex*/ 1,
+        loadTimeData.getBoolean('enableCbdTimeframeRequired') ?
+            'browser.clear_data.time_period_v2' :
+            'browser.clear_data.time_period');
   });
 
   test('tabSelection', async function() {
@@ -651,6 +658,13 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Ensure the test starts with a known pref state and tab selection.
     element.setPrefValue('browser.last_clear_browsing_data_tab', 0);
+    // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
+    // only required during the crbug.com/40283307 experiment. Remove it once
+    // the experiment completed.
+    element.setPrefValue(
+        'browser.clear_data.time_period', TimePeriodExperiment.LAST_DAY);
+    element.setPrefValue(
+        'browser.clear_data.time_period_v2', TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
     assertEquals(
         0, element.getPref('browser.last_clear_browsing_data_tab').value);
@@ -667,7 +681,15 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckbox);
     element.$.cookiesCheckbox.$.checkbox.click();
+    // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
+    // only required during the crbug.com/40283307 experiment. Remove it once
+    // the experiment completed.
+    element.setPrefValue(
+        'browser.clear_data.time_period', TimePeriodExperiment.LAST_DAY);
+    element.setPrefValue(
+        'browser.clear_data.time_period_v2', TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
+
     // Confirming the deletion persists the tab selection to the pref.
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
@@ -692,6 +714,14 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
+    // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
+    // only required during the crbug.com/40283307 experiment. Remove it once
+    // the experiment completed.
+    element.setPrefValue(
+        'browser.clear_data.time_period_basic', TimePeriodExperiment.LAST_DAY);
+    element.setPrefValue(
+        'browser.clear_data.time_period_v2_basic',
+        TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
 
     assertFalse(cancelButton.disabled);
@@ -762,6 +792,14 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
+    // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
+    // only required during the crbug.com/40283307 experiment. Remove it once
+    // the experiment completed.
+    element.setPrefValue(
+        'browser.clear_data.time_period_basic', TimePeriodExperiment.LAST_DAY);
+    element.setPrefValue(
+        'browser.clear_data.time_period_v2_basic',
+        TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
     assertFalse(actionButton.disabled);
 
@@ -816,6 +854,14 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const cookieCheckbox = element.$.cookiesCheckboxBasic;
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
+    // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
+    // only required during the crbug.com/40283307 experiment. Remove it once
+    // the experiment completed.
+    element.setPrefValue(
+        'browser.clear_data.time_period_basic', TimePeriodExperiment.LAST_DAY);
+    element.setPrefValue(
+        'browser.clear_data.time_period_v2_basic',
+        TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
     assertFalse(actionButton.disabled);
 
@@ -867,6 +913,14 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const cookieCheckbox = element.$.cookiesCheckboxBasic;
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
+    // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
+    // only required during the crbug.com/40283307 experiment. Remove it once
+    // the experiment completed.
+    element.setPrefValue(
+        'browser.clear_data.time_period_basic', TimePeriodExperiment.LAST_DAY);
+    element.setPrefValue(
+        'browser.clear_data.time_period_v2_basic',
+        TimePeriodExperiment.LAST_DAY);
     await microtasksFinished();
     assertFalse(actionButton.disabled);
 
