@@ -33,8 +33,11 @@
     Transacting account
   </message>
   <!-- Pix bottom sheet related strings -->
-  <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_TITLE" desc='Title text for the Facilitated Payments prompt.' formatter_data="android_java">
+  <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_TITLE" desc="Title for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected." formatter_data="android_java">
     Pay with Pix without copy and paste
+  </message>
+  <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_DESCRIPTION" desc="Explanation text for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected." formatter_data="android_java">
+    Account info is encrypted and kept private
   </message>
 </if>
 

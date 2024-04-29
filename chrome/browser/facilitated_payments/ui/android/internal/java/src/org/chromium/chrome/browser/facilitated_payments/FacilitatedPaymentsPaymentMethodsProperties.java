@@ -47,7 +47,9 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
                 new ReadableIntPropertyKey("image_drawable_id");
         static final ReadableIntPropertyKey TITLE_ID = new ReadableIntPropertyKey("title_id");
-        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE_ID};
+        static final ReadableIntPropertyKey DESCRIPTION_ID =
+                new ReadableIntPropertyKey("description_id");
+        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE_ID, DESCRIPTION_ID};
 
         private HeaderProperties() {}
     }

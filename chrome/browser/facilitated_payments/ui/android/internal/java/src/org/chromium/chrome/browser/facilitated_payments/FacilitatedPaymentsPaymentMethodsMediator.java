@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
@@ -37,8 +38,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         return new ListItem(
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(TITLE_ID, R.string.pix_payment_methods_bottom_sheet_title)
+                        .with(DESCRIPTION_ID, R.string.pix_payment_methods_bottom_sheet_description)
                         .with(IMAGE_DRAWABLE_ID, R.drawable.pix_gpay_logo)
+                        .with(TITLE_ID, R.string.pix_payment_methods_bottom_sheet_title)
                         .build());
     }
 }

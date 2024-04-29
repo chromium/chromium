@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
@@ -72,6 +73,10 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
         if (propertyKey == TITLE_ID) {
             TextView sheetTitleText = view.findViewById(R.id.sheet_title);
             sheetTitleText.setText(view.getContext().getResources().getString(model.get(TITLE_ID)));
+        } else if (propertyKey == DESCRIPTION_ID) {
+            TextView sheetDescriptionText = view.findViewById(R.id.description_text);
+            sheetDescriptionText.setText(
+                    view.getContext().getResources().getString(model.get(DESCRIPTION_ID)));
         } else if (propertyKey == IMAGE_DRAWABLE_ID) {
             ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
             sheetHeaderImage.setImageDrawable(
