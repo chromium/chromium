@@ -887,6 +887,84 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   }
 }
 
+// Tests that the extensions menu is dynamically updated when there is a
+// navigation while the menu is opened.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, NavigationWhenMainPageIsOpen) {
+  auto extension_A =
+      InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
+  auto extension_B = InstallExtensionWithHostPermissions(
+      "Extension B", {"*://www.other.com/"});
+
+  web_contents_tester()->NavigateAndCommit(GURL("http://www.site.com"));
+
+  // Withhold extension A's host permissions and add a site access
+  // request.
+  WithholdHostPermissions(extension_A.get());
+  AddSiteAccessRequest(*extension_A,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+
+  ShowMenu();
+
+  // Retrieve menu views for testing.
+  ExtensionMenuItemView* extension_A_item = menu_items()[0];
+  ExtensionMenuItemView* extension_b_item = menu_items()[1];
+  ASSERT_EQ(extension_A_item->primary_action_button_for_testing()
+                ->label_text_for_testing(),
+            u"Extension A");
+  ASSERT_EQ(extension_b_item->primary_action_button_for_testing()
+                ->label_text_for_testing(),
+            u"Extension B");
+  views::View* requests_access_container =
+      main_page()->GetRequestsAccessContainerForTesting();
+
+  // Verify subheader text has the current site, request access section shows
+  // extension A request and extension items have the site access text based on
+  // their access.
+  ASSERT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(), u"site.com");
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_A->id()));
+  EXPECT_EQ(extension_A_item->site_permissions_button_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(extension_b_item->site_permissions_button_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+
+  // Navigate to a same-origin site.
+  web_contents_tester()->NavigateAndCommit(GURL(("http://www.site.com/path")));
+  LayoutMenuIfNecessary();
+
+  // Verify subheader text has the new site, request access section still shows
+  // the extension A request and extension items have the same site access text.
+  ASSERT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(), u"site.com");
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_A->id()));
+  EXPECT_EQ(extension_A_item->site_permissions_button_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(extension_b_item->site_permissions_button_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+
+  // Navigate to a cross-origin site.
+  web_contents_tester()->NavigateAndCommit(GURL(("http://www.other.com")));
+  LayoutMenuIfNecessary();
+
+  // Verify subheader text has the new site, request access section is not
+  // visible (requests are reset on cross-origin navigations) and extension
+  // items updated their site access text based on their access.
+  ASSERT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(), u"other.com");
+  EXPECT_FALSE(requests_access_container->GetVisible());
+  EXPECT_EQ(extension_A_item->site_permissions_button_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
+  EXPECT_EQ(extension_b_item->site_permissions_button_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
+}
+
 // Verifies the pin button appears on the menu item, in place of context menu
 // button when state is normal, when an extension is pinned.
 TEST_F(ExtensionsMenuMainPageViewUnitTest, PinnedExtensions) {

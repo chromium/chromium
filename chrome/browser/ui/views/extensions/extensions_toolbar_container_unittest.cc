@@ -655,9 +655,37 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
 // site access is granted once we update request access button after an action
 // update.
 
-// TODO(crbug.com/330588494): Add a test that verifies requests are removed for
-// cross-origin navigations once permissions manager notifies the extensions
-// toolbar requests were cleared after a cross-origin navigation.
+// Tests that requests are reset on cross-origin navigations.
+TEST_F(ExtensionsToolbarContainerUnitTest,
+       RequestAccessButtonVisibility_NavigationBetweenPages) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  NavigateAndCommit(GURL("http://www.a.com"));
+  AddSiteAccessRequest(*extension,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Navigate to a same-origin site and verify request access button has
+  // extension.
+  NavigateAndCommit(GURL("http://www.a.com/path"));
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Navigate to a cross-origin site and verify request access button is hidden.
+  NavigateAndCommit(GURL("http://www.b.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Navigate to the original site and verify request access button is hidden,
+  // since requests are reset on cross-origin navigations.
+  NavigateAndCommit(GURL("http://www.a.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
 
 // Test that request access button is visible based on the user site setting
 // selected.

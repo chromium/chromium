@@ -104,6 +104,9 @@ class ExtensionsMenuMainPageView : public views::View {
   // if existent.
   void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
 
+  // Clears the entries in the `request_access_section_`, if existent.
+  void ClearExtensionsRequestingAccess();
+
   // Accessors used by tests:
   // Returns the currently-showing menu items.
   const std::u16string& GetSubheaderSubtitleTextForTesting() const;

@@ -204,7 +204,12 @@ void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
     const extensions::ExtensionId& extension_id) {
   UpdateRequestAccessButton();
 }
+
 void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
     const extensions::ExtensionId& extension_id) {
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarContainerViewController::OnSiteAccessRequestsCleared() {
   UpdateRequestAccessButton();
 }

@@ -136,6 +136,10 @@ class PermissionsManager : public KeyedService {
     // web contents.
     virtual void OnSiteAccessRequestRemoved(const ExtensionId& extension_id) {}
 
+    // Called when site access requests where cleared for the current
+    // web contents.
+    virtual void OnSiteAccessRequestsCleared() {}
+
     // Called when `extension_id` has dismissed site access requests in
     // `origin`.
     virtual void OnSiteAccessRequestDismissedByUser(
@@ -373,6 +377,9 @@ class PermissionsManager : public KeyedService {
 
   // Notifies `observers_` that user permissions have changed.
   void NotifyUserPermissionSettingsChanged();
+
+  // Notifies `observers_` that site access requests were cleared.
+  void NotifySiteAccessRequestsCleared();
 
   base::ObserverList<Observer>::Unchecked observers_;
 

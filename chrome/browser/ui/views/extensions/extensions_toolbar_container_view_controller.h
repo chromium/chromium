@@ -73,6 +73,7 @@ class ExtensionsToolbarContainerViewController final
       const extensions::ExtensionId& extension_id) override;
   void OnSiteAccessRequestRemoved(
       const extensions::ExtensionId& extension_id) override;
+  void OnSiteAccessRequestsCleared() override;
   void OnSiteAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id,
       const url::Origin& origin) override;

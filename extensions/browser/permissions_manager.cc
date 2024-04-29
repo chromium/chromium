@@ -1008,6 +1008,12 @@ void PermissionsManager::NotifyUserPermissionSettingsChanged() {
   }
 }
 
+void PermissionsManager::NotifySiteAccessRequestsCleared() {
+  for (auto& observer : observers_) {
+    observer.OnSiteAccessRequestsCleared();
+  }
+}
+
 void PermissionsManager::NotifyShowAccessRequestsInToolbarChanged(
     const extensions::ExtensionId& extension_id,
     bool can_show_requests) {

@@ -1248,17 +1248,10 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that when the user clicks on the request access button and immediately
 // navigates to a different site, the confirmation text is collapsed and the
 // button displays the extensions requesting access to the new site (if any).
-// TODO(crbug.com/40918196): Flaky on mac and win.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation \
-  DISABLED_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation
-#else
-#define MAYBE_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation \
-  ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation
-#endif
+// TODO(crbug.com/40918196): Flaky due to button's confirmation text animation.
 IN_PROC_BROWSER_TEST_F(
     ExtensionsToolbarContainerFeatureUITest,
-    MAYBE_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation) {
+    DISABLED_ClickingRequestAccessButton_ConfirmationCollapsedOnNavigation) {
   auto extension = InstallExtensionWithHostPermissions(
       "Extension", "<all_urls>", "document_idle");
   extensions::ScriptingPermissionsModifier(profile(), extension)
@@ -1281,17 +1274,17 @@ IN_PROC_BROWSER_TEST_F(
   // Click the button to grant one-time access on example.com. Verify
   // confirmation message appears on the request access button.
   ClickButton(request_access_button());
+  WaitForAnimation();
   EXPECT_TRUE(request_access_button()->GetVisible());
   EXPECT_EQ(request_access_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
 
-  // TODO(crbug.com/330588494): While the confirmation message is still visible,
-  // navigate to a site where the extension has withheld access. Verify the
-  // confirmation is not longer shown, and the button is not visible because
-  // there are no site access requests added. We can add this once permissions
-  // manager notifies the extensions toolbar requests were cleared after a
-  // cross-origin navigation.
+  // While the confirmation message is still visible, navigate to a site where
+  // the extension has withheld access. Verify the button is not visible because
+  // there are no site access requests added and confirmation is gone.
+  NavigateToUrl(embedded_test_server()->GetURL("other.com", "/title1.html"));
+  EXPECT_FALSE(request_access_button()->GetVisible());
 }
 
 // Tests that the container has its visible children in the correct order when

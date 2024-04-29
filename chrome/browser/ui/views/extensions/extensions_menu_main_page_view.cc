@@ -133,6 +133,9 @@ class MessageSection : public views::BoxLayoutView {
   // `kUserCustomizedAccess`.
   void RemoveExtension(const extensions::ExtensionId& id);
 
+  // Removes all extension entries.
+  void ClearExtensions();
+
   ExtensionsMenuMainPageView::MessageSectionState state() const {
     return state_;
   }
@@ -154,9 +157,6 @@ class MessageSection : public views::BoxLayoutView {
   static constexpr int kExtensionItemsContainerIndex = 1;
   static constexpr int kExtensionItemIconIndex = 0;
   static constexpr int kExtensionItemLabelIndex = 1;
-
-  // Removes all extension entries.
-  void ClearExtensions();
 
   // Updates the visibility of the view based on `state_` and
   // `extension_entries_`.
@@ -487,6 +487,9 @@ void MessageSection::ClearExtensions() {
   requests_access_container_->children()[kExtensionItemsContainerIndex]
       ->RemoveAllChildViews();
   extension_entries_.clear();
+
+  requests_access_container_->SetVisible(false);
+  UpdateVisibility();
 }
 
 void MessageSection::UpdateVisibility() {
@@ -777,6 +780,11 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
 void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
     const extensions::ExtensionId& id) {
   message_section_->RemoveExtension(id);
+  SizeToPreferredSize();
+}
+
+void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
+  message_section_->ClearExtensions();
   SizeToPreferredSize();
 }
 
