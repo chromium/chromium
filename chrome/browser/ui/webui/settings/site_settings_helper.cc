@@ -45,6 +45,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -336,7 +337,7 @@ SiteSettingSource CalculateSiteSettingSource(
 
 bool IsFromWebUIAllowlistSource(const ContentSettingPatternSource& pattern) {
   return HostContentSettingsMap::GetProviderTypeFromSource(pattern.source) ==
-         HostContentSettingsMap::WEBUI_ALLOWLIST_PROVIDER;
+         content_settings::ProviderType::kWebuiAllowlistProvider;
 }
 
 // If the given |pattern| represents an individual origin, Isolated Web App, or
@@ -1009,8 +1010,8 @@ void GetExceptionsForContentType(ContentSettingsType type,
 
   // Keep the exceptions sorted by provider so they will be displayed in
   // precedence order.
-  std::vector<base::Value::Dict>
-      all_provider_exceptions[HostContentSettingsMap::NUM_PROVIDER_TYPES];
+  std::map<content_settings::ProviderType, std::vector<base::Value::Dict>>
+      all_provider_exceptions;
 
   for (const auto& [primary_pattern_and_source, one_settings] :
        all_patterns_settings) {
@@ -1056,7 +1057,7 @@ void GetExceptionsForContentType(ContentSettingsType type,
   }
 
   for (auto& one_provider_exceptions : all_provider_exceptions) {
-    for (auto& exception : one_provider_exceptions) {
+    for (auto& exception : one_provider_exceptions.second) {
       exceptions->Append(std::move(exception));
     }
   }
@@ -1256,8 +1257,8 @@ base::Value::Dict CreateChooserExceptionObject(
   exception.Set(kChooserType, chooser_type);
 
   // Order the sites by the provider precedence order.
-  std::vector<base::Value::Dict>
-      all_provider_sites[HostContentSettingsMap::NUM_PROVIDER_TYPES];
+  std::map<content_settings::ProviderType, std::vector<base::Value::Dict>>
+      all_provider_sites;
   for (const auto& details : chooser_exception_details) {
     const GURL& origin = std::get<0>(details);
     const std::string& source = std::get<1>(details);
@@ -1282,7 +1283,7 @@ base::Value::Dict CreateChooserExceptionObject(
 
   base::Value::List sites;
   for (auto& one_provider_sites : all_provider_sites) {
-    for (auto& site : one_provider_sites) {
+    for (auto& site : one_provider_sites.second) {
       sites.Append(std::move(site));
     }
   }

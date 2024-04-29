@@ -193,7 +193,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
           supervised_user_settings);
 
   ios::HostContentSettingsMapFactory::GetForBrowserState(this)
-      ->RegisterProvider(HostContentSettingsMap::SUPERVISED_PROVIDER,
+      ->RegisterProvider(content_settings::ProviderType::kSupervisedProvider,
                          std::move(supervised_provider));
 
   base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);

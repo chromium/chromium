@@ -364,10 +364,10 @@ class PrivacySandboxServiceTest : public testing::Test {
     auto* managed_provider_raw = managed_provider.get();
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(user_provider),
-        HostContentSettingsMap::PREF_PROVIDER);
+        content_settings::ProviderType::kPrefProvider);
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(managed_provider),
-        HostContentSettingsMap::POLICY_PROVIDER);
+        content_settings::ProviderType::kPolicyProvider);
     auto service_wrapper = TestPrivacySandboxService(privacy_sandbox_service());
 
     privacy_sandbox_test_util::RunTestCase(

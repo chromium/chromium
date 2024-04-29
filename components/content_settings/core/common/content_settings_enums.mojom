@@ -57,3 +57,20 @@ enum SessionModel {
   // tab from the origin is closed.
   ONE_TIME,
 };
+
+// Identifies the content settings provider of a content setting.
+ enum ProviderType {
+    kWebuiAllowlistProvider = 0,
+    kPolicyProvider,
+    kSupervisedProvider,
+    kCustomExtensionProvider,
+    kInstalledWebappProvider,
+    kNotificationAndroidProvider,
+    kOneTimePermissionProvider,
+    kPrefProvider,
+    kDefaultProvider,
+
+    // The following providers are for tests only.
+    kProviderForTests,
+    kOtherProviderForTests,
+  };

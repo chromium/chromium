@@ -114,7 +114,8 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());
     content_settings::TestUtils::OverrideProvider(
-        map, std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);
+        map, std::move(provider),
+        content_settings::ProviderType::kSupervisedProvider);
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;

@@ -98,6 +98,8 @@ struct RendererContentSettingRules {
 
 namespace content_settings {
 
+using ProviderType = mojom::ProviderType;
+
 // Enum containing the various source for content settings. Settings can be
 // set by policy, extension, the user or by the custodian of a supervised user.
 // Certain (internal) origins are allowlisted. For these origins the source is

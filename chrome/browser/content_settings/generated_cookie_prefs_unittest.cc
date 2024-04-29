@@ -259,32 +259,31 @@ void SetupManagedTestConditions(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
       base::Value(test_case.default_content_setting), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      PartitionKey::GetDefaultForTesting());
 
   if (test_case.default_content_setting != CONTENT_SETTING_DEFAULT) {
-    auto mock_provider = std::make_unique<content_settings::MockProvider>();
+    auto mock_provider = std::make_unique<MockProvider>();
     mock_provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         ContentSettingsType::COOKIES,
         base::Value(test_case.default_content_setting), /*constraints=*/{},
-        content_settings::PartitionKey::GetDefaultForTesting());
-    HostContentSettingsMap::ProviderType provider_type;
+        PartitionKey::GetDefaultForTesting());
+    ProviderType provider_type;
     switch (test_case.default_content_setting_source) {
       case SettingSource::kPolicy:
-        provider_type = HostContentSettingsMap::POLICY_PROVIDER;
+        provider_type = ProviderType::kPolicyProvider;
         break;
       case SettingSource::kExtension:
-        provider_type = HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER;
+        provider_type = ProviderType::kCustomExtensionProvider;
         break;
       case SettingSource::kSupervised:
-        provider_type = HostContentSettingsMap::SUPERVISED_PROVIDER;
+        provider_type = ProviderType::kSupervisedProvider;
         break;
       case SettingSource::kNone:
       default:
-        provider_type = HostContentSettingsMap::DEFAULT_PROVIDER;
+        provider_type = ProviderType::kDefaultProvider;
     }
-    content_settings::TestUtils::OverrideProvider(map, std::move(mock_provider),
-                                                  provider_type);
+    TestUtils::OverrideProvider(map, std::move(mock_provider), provider_type);
   }
   if (test_case.block_third_party != settings_private::PrefSetting::kNotSet) {
     CookieControlsMode cookie_controls_mode = CookieControlsMode::kOff;
@@ -400,8 +399,8 @@ TEST_F(GeneratedCookiePrefsTest, PrimarySettingPref) {
       ContentSettingsType::COOKIES,
       base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(provider),
+                                                ProviderType::kPolicyProvider);
   ValidatePrimarySettingPrefValue(map, prefs(), pref.get(),
                                   CookiePrimarySetting::BLOCK_THIRD_PARTY,
                                   ContentSetting::CONTENT_SETTING_ALLOW,
@@ -499,8 +498,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
       base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   content_settings::TestUtils::OverrideProvider(
-      map, std::move(provider),
-      HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
+      map, std::move(provider), ProviderType::kCustomExtensionProvider);
   pref_object = pref->GetPrefObject();
   EXPECT_EQ(pref_object->controlled_by, settings_api::ControlledBy::kExtension);
   EXPECT_EQ(pref_object->enforcement, settings_api::Enforcement::kEnforced);
@@ -512,7 +510,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
       base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   content_settings::TestUtils::OverrideProvider(
-      map, std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);
+      map, std::move(provider), ProviderType::kSupervisedProvider);
   pref_object = pref->GetPrefObject();
   EXPECT_EQ(pref_object->controlled_by,
             settings_api::ControlledBy::kChildRestriction);
@@ -524,8 +522,8 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
       ContentSettingsType::COOKIES,
       base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(provider),
+                                                ProviderType::kPolicyProvider);
   pref_object = pref->GetPrefObject();
   EXPECT_EQ(pref_object->controlled_by,
             settings_api::ControlledBy::kDevicePolicy);
@@ -609,8 +607,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   content_settings::TestUtils::OverrideProvider(
-      map, std::move(provider),
-      HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
+      map, std::move(provider), ProviderType::kCustomExtensionProvider);
   std::optional<extensions::api::settings_private::PrefObject> pref_object =
       pref->GetPrefObject();
   EXPECT_EQ(pref_object->controlled_by, settings_api::ControlledBy::kExtension);
@@ -623,7 +620,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   content_settings::TestUtils::OverrideProvider(
-      map, std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);
+      map, std::move(provider), ProviderType::kSupervisedProvider);
   pref_object = pref->GetPrefObject();
   EXPECT_EQ(pref_object->controlled_by,
             settings_api::ControlledBy::kChildRestriction);
@@ -635,8 +632,8 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
       /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(provider),
+                                                ProviderType::kPolicyProvider);
   pref_object = pref->GetPrefObject();
   EXPECT_EQ(pref_object->controlled_by,
             settings_api::ControlledBy::kDevicePolicy);

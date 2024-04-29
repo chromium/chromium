@@ -60,7 +60,7 @@ class TestUtils {
   static void OverrideProvider(
       HostContentSettingsMap* map,
       std::unique_ptr<content_settings::ObservableProvider> provider,
-      HostContentSettingsMap::ProviderType type);
+      content_settings::ProviderType type);
 };
 
 }  // namespace content_settings

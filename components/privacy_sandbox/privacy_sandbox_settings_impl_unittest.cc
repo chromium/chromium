@@ -826,10 +826,10 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
 
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(user_provider),
-        HostContentSettingsMap::PREF_PROVIDER);
+        content_settings::ProviderType::kPrefProvider);
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(managed_provider),
-        HostContentSettingsMap::POLICY_PROVIDER);
+        content_settings::ProviderType::kPolicyProvider);
 
     privacy_sandbox_test_util::RunTestCase(
         task_environment(), prefs(), host_content_settings_map(),

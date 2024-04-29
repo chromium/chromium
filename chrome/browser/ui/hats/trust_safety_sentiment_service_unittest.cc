@@ -751,7 +751,7 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
       content_settings::PartitionKey::GetDefaultForTesting());
   content_settings::TestUtils::OverrideProvider(
       content_settings, std::move(managed_provider),
-      HostContentSettingsMap::POLICY_PROVIDER);
+      content_settings::ProviderType::kPolicyProvider);
   EXPECT_CALL(*mock_hats_service(),
               LaunchSurvey(kHatsSurveyTriggerTrustSafetyPrivacySettings, _, _,
                            expected_psd, _));

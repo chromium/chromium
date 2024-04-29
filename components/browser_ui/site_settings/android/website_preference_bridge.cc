@@ -162,7 +162,7 @@ void GetOrigins(JNIEnv* env,
       continue;
     if (managedOnly &&
         HostContentSettingsMap::GetProviderTypeFromSource(settings_it.source) !=
-            HostContentSettingsMap::ProviderType::POLICY_PROVIDER) {
+            content_settings::ProviderType::kPolicyProvider) {
       continue;
     }
     const std::string origin = settings_it.primary_pattern.ToString();
@@ -306,9 +306,9 @@ bool IsContentSettingManaged(
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
   content_settings->GetDefaultContentSetting(content_settings_type, &source);
-  HostContentSettingsMap::ProviderType provider =
+  content_settings::ProviderType provider =
       content_settings->GetProviderTypeFromSource(source);
-  return provider == HostContentSettingsMap::POLICY_PROVIDER;
+  return provider == content_settings::ProviderType::kPolicyProvider;
 }
 
 bool IsContentSettingManagedByCustodian(
@@ -318,9 +318,9 @@ bool IsContentSettingManagedByCustodian(
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
   content_settings->GetDefaultContentSetting(content_settings_type, &source);
-  HostContentSettingsMap::ProviderType provider =
+  content_settings::ProviderType provider =
       content_settings->GetProviderTypeFromSource(source);
-  return provider == HostContentSettingsMap::SUPERVISED_PROVIDER;
+  return provider == content_settings::ProviderType::kSupervisedProvider;
 }
 
 bool IsContentSettingUserModifiable(
@@ -330,9 +330,9 @@ bool IsContentSettingUserModifiable(
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
   content_settings->GetDefaultContentSetting(content_settings_type, &source);
-  HostContentSettingsMap::ProviderType provider =
+  content_settings::ProviderType provider =
       content_settings->GetProviderTypeFromSource(source);
-  return provider >= HostContentSettingsMap::PREF_PROVIDER;
+  return provider >= content_settings::ProviderType::kPrefProvider;
 }
 
 }  // anonymous namespace

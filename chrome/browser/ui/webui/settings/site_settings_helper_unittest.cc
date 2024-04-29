@@ -68,6 +68,7 @@ namespace site_settings {
 namespace {
 
 using PermissionStatus = blink::mojom::PermissionStatus;
+using ProviderType = content_settings::ProviderType;
 
 constexpr ContentSettingsType kContentType = ContentSettingsType::GEOLOCATION;
 constexpr ContentSettingsType kContentTypeCookies =
@@ -265,8 +266,8 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFiltersIncognitoPolicyExceptions) {
       base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   policy_provider->set_read_only(true);
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
+                                                ProviderType::kPolicyProvider);
 
   // Check that the exception does not get filtered.
   base::Value::List exceptions;
@@ -290,7 +291,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFiltersIncognitoPolicyExceptions) {
   incognito_policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       incognito_map, std::move(incognito_policy_provider),
-      HostContentSettingsMap::POLICY_PROVIDER);
+      ProviderType::kPolicyProvider);
 
   // Check that the exception gets filtered.
   base::Value::List incognito_exceptions;
@@ -488,8 +489,8 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
       base::Value(CONTENT_SETTING_BLOCK), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   policy_provider->set_read_only(true);
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
+                                                ProviderType::kPolicyProvider);
 
   // Add user preferences.
   std::string http_star = "http://*";
@@ -509,7 +510,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
-      HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
+      ProviderType::kCustomExtensionProvider);
 
   exceptions.clear();
   GetExceptionsForContentType(kContentType, &profile,
@@ -587,7 +588,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
-      HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
+      ProviderType::kCustomExtensionProvider);
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kExtension), source);
@@ -601,8 +602,8 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
       base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   policy_provider->set_read_only(true);
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
+                                                ProviderType::kPolicyProvider);
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPolicy), source);
@@ -764,8 +765,8 @@ TEST_F(
       base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   policy_provider->set_read_only(true);
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
+                                                ProviderType::kPolicyProvider);
 
   // Check that Tracking Protection list has two exceptions.
   base::Value::List tp_exceptions;
@@ -1108,8 +1109,8 @@ TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
       base::Value(CONTENT_SETTING_ALLOW), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
   policy_provider->set_read_only(true);
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(policy_provider),
+                                                ProviderType::kPolicyProvider);
 
   // Automatic Fullscreen is visible for origins with non-default values.
   content_setting =

@@ -77,26 +77,7 @@ class PrefRegistrySyncable;
 class HostContentSettingsMap : public content_settings::Observer,
                                public RefcountedKeyedService {
  public:
-  enum ProviderType {
-    // EXTENSION names is a layering violation when this class will move to
-    // components.
-    // TODO(mukai): find the solution.
-    WEBUI_ALLOWLIST_PROVIDER = 0,
-    POLICY_PROVIDER,
-    SUPERVISED_PROVIDER,
-    CUSTOM_EXTENSION_PROVIDER,
-    INSTALLED_WEBAPP_PROVIDER,
-    NOTIFICATION_ANDROID_PROVIDER,
-    ONE_TIME_PERMISSION_PROVIDER,
-    PREF_PROVIDER,
-    DEFAULT_PROVIDER,
-
-    // The following providers are for tests only.
-    PROVIDER_FOR_TESTS,
-    OTHER_PROVIDER_FOR_TESTS,
-
-    NUM_PROVIDER_TYPES
-  };
+  using ProviderType = content_settings::ProviderType;
 
   // This should be called on the UI thread, otherwise |thread_checker_| handles
   // CalledOnValidThread() wrongly. |is_off_the_record| indicates incognito

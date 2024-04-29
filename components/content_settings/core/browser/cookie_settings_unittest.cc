@@ -51,6 +51,8 @@
 #endif
 
 namespace {
+using ProviderType = content_settings::ProviderType;
+
 const bool kSupports3pcBlocking = {
 #if BUILDFLAG(IS_IOS)
     false
@@ -1940,9 +1942,9 @@ TEST_P(CookieSettingsTest, LegacyCookieAccessBlockAll) {
 TEST_P(CookieSettingsTest, LegacyCookieAccessAllowDomainPattern) {
   // Override the policy provider for this test, since the legacy cookie access
   // setting can only be set by policy.
-  TestUtils::OverrideProvider(
-      settings_map_.get(), std::make_unique<MockProvider>(),
-      HostContentSettingsMap::ProviderType::POLICY_PROVIDER);
+  TestUtils::OverrideProvider(settings_map_.get(),
+                              std::make_unique<MockProvider>(),
+                              ProviderType::kPolicyProvider);
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromString(kDomain),
       ContentSettingsPattern::Wildcard(),
@@ -1967,9 +1969,9 @@ TEST_P(CookieSettingsTest, LegacyCookieAccessAllowDomainPattern) {
 TEST_P(CookieSettingsTest, LegacyCookieAccessAllowDomainWildcardPattern) {
   // Override the policy provider for this test, since the legacy cookie access
   // setting can only be set by policy.
-  TestUtils::OverrideProvider(
-      settings_map_.get(), std::make_unique<MockProvider>(),
-      HostContentSettingsMap::ProviderType::POLICY_PROVIDER);
+  TestUtils::OverrideProvider(settings_map_.get(),
+                              std::make_unique<MockProvider>(),
+                              ProviderType::kPolicyProvider);
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromString(kDomainWildcardPattern),
       ContentSettingsPattern::Wildcard(),

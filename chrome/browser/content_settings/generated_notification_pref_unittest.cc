@@ -178,23 +178,23 @@ void SetupManagedTestConditions(
       ContentSettingsType::NOTIFICATIONS,
       base::Value(test_case.default_content_setting), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
-  HostContentSettingsMap::ProviderType provider_type;
+  ProviderType provider_type;
   switch (test_case.default_content_setting_source) {
     case SettingSource::kPolicy:
-      provider_type = HostContentSettingsMap::POLICY_PROVIDER;
+      provider_type = ProviderType::kPolicyProvider;
       break;
     case SettingSource::kExtension:
-      provider_type = HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER;
+      provider_type = ProviderType::kCustomExtensionProvider;
       break;
     case SettingSource::kSupervised:
-      provider_type = HostContentSettingsMap::SUPERVISED_PROVIDER;
+      provider_type = ProviderType::kSupervisedProvider;
       break;
     case SettingSource::kUser:
     case SettingSource::kNone:
     case SettingSource::kAllowList:
     case SettingSource::kTpcdGrant:
     case SettingSource::kInstalledWebApp:
-      provider_type = HostContentSettingsMap::DEFAULT_PROVIDER;
+      provider_type = content_settings::ProviderType::kDefaultProvider;
   }
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 provider_type);
@@ -319,8 +319,8 @@ TEST_F(GeneratedNotificationPrefTest, UpdatePreferenceInvalidAction) {
       base::Value(ContentSetting::CONTENT_SETTING_ASK), /*constraints=*/{},
       content_settings::PartitionKey::GetDefaultForTesting());
 
-  content_settings::TestUtils::OverrideProvider(
-      map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
+  content_settings::TestUtils::OverrideProvider(map, std::move(provider),
+                                                ProviderType::kPolicyProvider);
 
   // Confirm that notification content setting isn't modified when it's
   // enforced.

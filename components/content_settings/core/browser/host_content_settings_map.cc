@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -46,6 +47,7 @@
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -69,45 +71,53 @@ typedef std::vector<content_settings::Rule> Rules;
 
 typedef std::pair<std::string, std::string> StringPair;
 
+using ProviderType = content_settings::ProviderType;
+
 struct ProviderNamesSourceMapEntry {
   const char* provider_name;
   content_settings::SettingSource provider_source;
 };
 
-const HostContentSettingsMap::ProviderType kFirstProvider =
-    HostContentSettingsMap::WEBUI_ALLOWLIST_PROVIDER;
-const HostContentSettingsMap::ProviderType kFirstUserModifiableProvider =
-    HostContentSettingsMap::NOTIFICATION_ANDROID_PROVIDER;
+const ProviderType kFirstProvider = ProviderType::kWebuiAllowlistProvider;
+const ProviderType kFirstUserModifiableProvider =
+    ProviderType::kNotificationAndroidProvider;
 
-constexpr ProviderNamesSourceMapEntry kProviderNamesSourceMap[] = {
-    {"webui_allowlist", SettingSource::kAllowList},
-    {"policy", SettingSource::kPolicy},
-    {"supervised_user", SettingSource::kSupervised},
-    {"extension", SettingSource::kExtension},
-    {"installed_webapp_provider", SettingSource::kInstalledWebApp},
-    {"notification_android", SettingSource::kUser},
-    {"one_time", SettingSource::kUser},
-    {"preference", SettingSource::kUser},
-    {"default", SettingSource::kUser},
-    {"tests", SettingSource::kUser},
-    {"tests_other", SettingSource::kUser},
-};
+constexpr auto kProviderNamesSourceMap =
+    base::MakeFixedFlatMap<ProviderType, ProviderNamesSourceMapEntry>({
+        {ProviderType::kWebuiAllowlistProvider,
+         {"webui_allowlist", SettingSource::kAllowList}},
+        {ProviderType::kPolicyProvider, {"policy", SettingSource::kPolicy}},
+        {ProviderType::kSupervisedProvider,
+         {"supervised_user", SettingSource::kSupervised}},
+        {ProviderType::kCustomExtensionProvider,
+         {"extension", SettingSource::kExtension}},
+        {ProviderType::kInstalledWebappProvider,
+         {"installed_webapp_provider", SettingSource::kInstalledWebApp}},
+        {ProviderType::kNotificationAndroidProvider,
+         {"notification_android", SettingSource::kUser}},
+        {ProviderType::kOneTimePermissionProvider,
+         {"one_time", SettingSource::kUser}},
+        {ProviderType::kPrefProvider, {"preference", SettingSource::kUser}},
+        {ProviderType::kDefaultProvider, {"default", SettingSource::kUser}},
+        {ProviderType::kProviderForTests, {"tests", SettingSource::kUser}},
+        {ProviderType::kOtherProviderForTests,
+         {"tests_other", SettingSource::kUser}},
+    });
 
-static_assert(
-    std::size(kProviderNamesSourceMap) ==
-        HostContentSettingsMap::NUM_PROVIDER_TYPES,
-    "kProviderNamesSourceMap should have NUM_PROVIDER_TYPES elements");
+static_assert(std::size(kProviderNamesSourceMap) ==
+                  static_cast<int>(ProviderType::kMaxValue) + 1,
+              "kProviderNamesSourceMap should have kNumProviderTypes elements");
 
-// Ensure that kFirstUserModifiableProvider is actually the highest precedence
-// user modifiable provider.
+// Ensure that kFirstUserModifiableProvider is actually the highest
+// precedence user modifiable provider.
 constexpr bool FirstUserModifiableProviderIsHighestPrecedence() {
-  for (size_t i = 0; i < kFirstUserModifiableProvider; ++i) {
-    if (kProviderNamesSourceMap[i].provider_source == SettingSource::kUser) {
+  auto it = kProviderNamesSourceMap.begin();
+  for (; it->first != kFirstUserModifiableProvider; ++it) {
+    if (it->second.provider_source == SettingSource::kUser) {
       return false;
     }
   }
-  return kProviderNamesSourceMap[kFirstUserModifiableProvider]
-             .provider_source == SettingSource::kUser;
+  return it->second.provider_source == SettingSource::kUser;
 }
 static_assert(FirstUserModifiableProviderIsHighestPrecedence(),
               "kFirstUserModifiableProvider is not the highest precedence user "
@@ -299,20 +309,23 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
   auto policy_provider_ptr =
       std::make_unique<content_settings::PolicyProvider>(prefs_);
   auto* policy_provider = policy_provider_ptr.get();
-  content_settings_providers_[POLICY_PROVIDER] = std::move(policy_provider_ptr);
+  content_settings_providers_[ProviderType::kPolicyProvider] =
+      std::move(policy_provider_ptr);
   policy_provider->AddObserver(this);
 
   auto pref_provider_ptr = std::make_unique<content_settings::PrefProvider>(
       prefs_, is_off_the_record_, store_last_modified_, restore_session);
   pref_provider_ = pref_provider_ptr.get();
-  content_settings_providers_[PREF_PROVIDER] = std::move(pref_provider_ptr);
+  content_settings_providers_[ProviderType::kPrefProvider] =
+      std::move(pref_provider_ptr);
   user_modifiable_providers_.push_back(pref_provider_.get());
   pref_provider_->AddObserver(this);
 
   auto default_provider = std::make_unique<content_settings::DefaultProvider>(
       prefs_, is_off_the_record_, should_record_metrics);
   default_provider->AddObserver(this);
-  content_settings_providers_[DEFAULT_PROVIDER] = std::move(default_provider);
+  content_settings_providers_[ProviderType::kDefaultProvider] =
+      std::move(default_provider);
 
   MigrateSettingsPrecedingPermissionDelegationActivation();
   if (should_record_metrics) {
@@ -397,8 +410,9 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
   // Iterate through the list of providers and return the first non-NULL value
   // that matches |primary_url| and |secondary_url|.
   for (const auto& provider_pair : content_settings_providers_) {
-    if (provider_pair.first == PREF_PROVIDER)
+    if (provider_pair.first == ProviderType::kPrefProvider) {
       continue;
+    }
     ContentSetting default_setting = GetDefaultContentSettingFromProvider(
         content_type, provider_pair.second.get());
     if (is_off_the_record_) {
@@ -419,11 +433,11 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
 ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
     ContentSettingsType content_type,
     std::string* provider_id) const {
-  ProviderType provider_type = NUM_PROVIDER_TYPES;
+  ProviderType provider_type = ProviderType::kMaxValue;
   ContentSetting content_setting =
       GetDefaultContentSettingInternal(content_type, &provider_type);
   if (content_setting != CONTENT_SETTING_DEFAULT && provider_id)
-    *provider_id = kProviderNamesSourceMap[provider_type].provider_name;
+    *provider_id = kProviderNamesSourceMap.at(provider_type).provider_name;
   return content_setting;
 }
 
@@ -989,10 +1003,10 @@ void HostContentSettingsMap::AddSettingsForOneType(
         continue;
       }
     }
-    settings->emplace_back(rule->primary_pattern, rule->secondary_pattern,
-                           std::move(value),
-                           kProviderNamesSourceMap[provider_type].provider_name,
-                           incognito, rule->metadata);
+    settings->emplace_back(
+        rule->primary_pattern, rule->secondary_pattern, std::move(value),
+        kProviderNamesSourceMap.at(provider_type).provider_name, incognito,
+        rule->metadata);
   }
 }
 
@@ -1038,24 +1052,26 @@ base::Value HostContentSettingsMap::GetWebsiteSetting(
 }
 
 // static
-HostContentSettingsMap::ProviderType
-HostContentSettingsMap::GetProviderTypeFromSource(const std::string& source) {
-  for (size_t i = 0; i < std::size(kProviderNamesSourceMap); ++i) {
-    if (source == kProviderNamesSourceMap[i].provider_name)
-      return static_cast<ProviderType>(i);
+ProviderType HostContentSettingsMap::GetProviderTypeFromSource(
+    const std::string& source) {
+  for (const auto& entry : kProviderNamesSourceMap) {
+    if (source == entry.second.provider_name) {
+      return entry.first;
+    }
   }
 
   NOTREACHED();
-  return DEFAULT_PROVIDER;
+  return ProviderType::kDefaultProvider;
 }
 
 // static
 content_settings::SettingSource
 HostContentSettingsMap::GetSettingSourceFromProviderName(
     const std::string& provider_name) {
-  for (const auto& provider_name_source : kProviderNamesSourceMap) {
-    if (provider_name == provider_name_source.provider_name)
-      return provider_name_source.provider_source;
+  for (const auto& entry : kProviderNamesSourceMap) {
+    if (provider_name == entry.second.provider_name) {
+      return entry.second.provider_source;
+    }
   }
   NOTREACHED();
   return SettingSource::kNone;
@@ -1087,7 +1103,7 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
         clock_);
     if (!value.is_none()) {
       if (info)
-        info->source = kProviderNamesSourceMap[it->first].provider_source;
+        info->source = kProviderNamesSourceMap.at(it->first).provider_source;
       return value;
     }
   }

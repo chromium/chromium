@@ -66,7 +66,7 @@ base::Value TestUtils::GetContentSettingValueAndPatterns(
 void TestUtils::OverrideProvider(
     HostContentSettingsMap* map,
     std::unique_ptr<content_settings::ObservableProvider> provider,
-    HostContentSettingsMap::ProviderType type) {
+    content_settings::ProviderType type) {
   if (map->content_settings_providers_[type]) {
     map->content_settings_providers_[type]->ShutdownOnUIThread();
   }

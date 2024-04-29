@@ -78,10 +78,10 @@ class PrivacySandboxTestUtilTest : public testing::Test {
 
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(user_provider),
-        HostContentSettingsMap::DEFAULT_PROVIDER);
+        content_settings::ProviderType::kDefaultProvider);
     content_settings::TestUtils::OverrideProvider(
         host_content_settings_map(), std::move(managed_provider),
-        HostContentSettingsMap::POLICY_PROVIDER);
+        content_settings::ProviderType::kPolicyProvider);
   }
 
  protected:

@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/content_settings/core/common/content_settings.h"
 
 namespace {
 
@@ -148,36 +150,35 @@ constexpr int kkHistogramValueMax =
         ->second;
 
 std::string GetProviderNameForHistograms(
-    HostContentSettingsMap::ProviderType provider_type) {
+    content_settings::ProviderType provider_type) {
+  using ProviderType = content_settings::ProviderType;
+
   switch (provider_type) {
     // Update the `ContentAllProviderTypes` variants in
     // https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/metadata/content/histograms.xml
     // when new providers are added.
-    case HostContentSettingsMap::WEBUI_ALLOWLIST_PROVIDER:
+    case ProviderType::kWebuiAllowlistProvider:
       return "WebuiAllowlistProvider";
-    case HostContentSettingsMap::POLICY_PROVIDER:
+    case ProviderType::kPolicyProvider:
       return "PolicyProvider";
-    case HostContentSettingsMap::SUPERVISED_PROVIDER:
+    case ProviderType::kSupervisedProvider:
       return "SupervisedProvider";
-    case HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER:
+    case ProviderType::kCustomExtensionProvider:
       return "CustomExtensionProvider";
-    case HostContentSettingsMap::INSTALLED_WEBAPP_PROVIDER:
+    case ProviderType::kInstalledWebappProvider:
       return "InstalledWebappProvider";
-    case HostContentSettingsMap::NOTIFICATION_ANDROID_PROVIDER:
+    case ProviderType::kNotificationAndroidProvider:
       return "NotificationAndroidProvider";
-    case HostContentSettingsMap::ONE_TIME_PERMISSION_PROVIDER:
+    case ProviderType::kOneTimePermissionProvider:
       return "OneTimePermissionProvider";
-    case HostContentSettingsMap::PREF_PROVIDER:
+    case ProviderType::kPrefProvider:
       return "PrefProvider";
-    case HostContentSettingsMap::DEFAULT_PROVIDER:
+    case ProviderType::kDefaultProvider:
       return "DefaultProvider";
-    case HostContentSettingsMap::PROVIDER_FOR_TESTS:
+    case ProviderType::kProviderForTests:
       return "ProviderForTests";
-    case HostContentSettingsMap::OTHER_PROVIDER_FOR_TESTS:
+    case ProviderType::kOtherProviderForTests:
       return "OtherProviderForTests";
-    case HostContentSettingsMap::NUM_PROVIDER_TYPES:
-      NOTREACHED();
-      return "Unknown";
   }
 }
 
@@ -209,7 +210,7 @@ int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting) {
   return -1;
 }
 
-void RecordActiveExpiryEvent(HostContentSettingsMap::ProviderType provider_type,
+void RecordActiveExpiryEvent(content_settings::ProviderType provider_type,
                              ContentSettingsType content_setting_type) {
   content_settings_uma_util::RecordContentSettingsHistogram(
       base::StrCat({"ContentSettings.ActiveExpiry.",

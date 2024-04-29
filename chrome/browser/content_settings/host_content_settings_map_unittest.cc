@@ -1876,7 +1876,7 @@ void ReloadProviders(PrefService* pref_service,
       pref_service, false, true, false);
   content_settings::TestUtils::OverrideProvider(
       host_content_settings_map, std::move(pref_provider),
-      HostContentSettingsMap::PREF_PROVIDER);
+      content_settings::ProviderType::kPrefProvider);
 }
 
 TEST_P(IndexedHostContentSettingsMapTest, GetPatternsFromScopingType) {

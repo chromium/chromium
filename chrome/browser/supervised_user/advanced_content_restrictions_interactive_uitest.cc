@@ -96,10 +96,11 @@ class SupervisedUserFamilyLinkCookiesSwitchUiTest
 
           map->GetDefaultContentSetting(ContentSettingsType::COOKIES,
                                         &content_setting_provider);
-          HostContentSettingsMap::ProviderType provider_type =
+          content_settings::ProviderType provider_type =
               map->GetProviderTypeFromSource(content_setting_provider);
 
-          return provider_type == HostContentSettingsMap::SUPERVISED_PROVIDER
+          return provider_type ==
+                         content_settings::ProviderType::kSupervisedProvider
                      ? CookiesContentSettingsProviderSupervision::kSupervised
                      : CookiesContentSettingsProviderSupervision::
                            kNonSupervised;
