@@ -664,6 +664,7 @@ public class HubLayoutUnitTest {
             @HubLayoutAnimationType int expectedAnimationType) {
         assertFalse(mHubLayout.isRunningAnimations());
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+        assertFalse(mHubLayout.forceHideBrowserControlsAndroidView());
 
         startShowing(fromLayout, animate);
 
@@ -683,6 +684,7 @@ public class HubLayoutUnitTest {
         assertFalse(mHubLayout.isRunningAnimations());
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
         verify(mHubLayout).doneShowing();
+        assertTrue(mHubLayout.forceHideBrowserControlsAndroidView());
         assertEquals(1, mActionTester.getActionCount("MobileToolbarShowStackView"));
         verify(mTab).hide(eq(TabHidingType.TAB_SWITCHER_SHOWN));
         if (fromLayout == LayoutType.START_SURFACE) {
@@ -704,6 +706,7 @@ public class HubLayoutUnitTest {
             assertFalse(mHubLayout.isRunningAnimations());
             assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
             startHiding(nextLayout, nextTabId);
+            assertFalse(mHubLayout.forceHideBrowserControlsAndroidView());
         }
 
         assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
@@ -719,6 +722,7 @@ public class HubLayoutUnitTest {
         verify(mHubController, times(1)).onHubLayoutDoneHiding();
         assertEquals(0, mFrameLayout.getChildCount());
         verify(mHubLayout).doneHiding();
+        assertFalse(mHubLayout.forceHideBrowserControlsAndroidView());
         assertEquals(1, mActionTester.getActionCount("MobileExitStackView"));
 
         if (nextLayout == LayoutType.START_SURFACE) {
