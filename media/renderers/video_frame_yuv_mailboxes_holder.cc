@@ -336,15 +336,10 @@ void VideoFrameYUVMailboxesHolder::ImportTextures(bool for_surface) {
   for (size_t plane = 0; plane < num_planes_; ++plane) {
     textures_[plane].texture.fID =
         ri->CreateAndConsumeForGpuRaster(holders_[plane].mailbox);
-    if (holders_[plane].mailbox.IsSharedImage()) {
-      textures_[plane].is_shared_image = true;
-      ri->BeginSharedImageAccessDirectCHROMIUM(
-          textures_[plane].texture.fID,
-          for_surface ? GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM
-                      : GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-    } else {
-      textures_[plane].is_shared_image = false;
-    }
+    ri->BeginSharedImageAccessDirectCHROMIUM(
+        textures_[plane].texture.fID,
+        for_surface ? GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM
+                    : GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
     int num_channels = yuva_info_.numChannelsInPlane(plane);
     textures_[plane].texture.fTarget = holders_[plane].texture_target;
@@ -365,8 +360,7 @@ void VideoFrameYUVMailboxesHolder::ReleaseTextures() {
     if (!tex_info.texture.fID)
       continue;
 
-    if (tex_info.is_shared_image)
-      ri->EndSharedImageAccessDirectCHROMIUM(tex_info.texture.fID);
+    ri->EndSharedImageAccessDirectCHROMIUM(tex_info.texture.fID);
     ri->DeleteGpuRasterTexture(tex_info.texture.fID);
 
     tex_info.texture.fID = 0;

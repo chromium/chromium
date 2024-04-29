@@ -97,14 +97,9 @@ class ScopedSharedImageAccess {
   ScopedSharedImageAccess(
       gpu::gles2::GLES2Interface* gl,
       GLuint texture,
-      const gpu::Mailbox& mailbox,
       GLenum access = GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM)
-      : gl(gl),
-        ri(nullptr),
-        texture(texture),
-        is_shared_image(mailbox.IsSharedImage()) {
-    if (is_shared_image)
-      gl->BeginSharedImageAccessDirectCHROMIUM(texture, access);
+      : gl(gl), ri(nullptr), texture(texture) {
+    gl->BeginSharedImageAccessDirectCHROMIUM(texture, access);
   }
 
   // TODO(crbug.com/40106960): Remove this ctor once we're no longer relying on
@@ -113,22 +108,16 @@ class ScopedSharedImageAccess {
   ScopedSharedImageAccess(
       gpu::raster::RasterInterface* ri,
       GLuint texture,
-      const gpu::Mailbox& mailbox,
       GLenum access = GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM)
-      : gl(nullptr),
-        ri(ri),
-        texture(texture),
-        is_shared_image(mailbox.IsSharedImage()) {
-    if (is_shared_image)
-      ri->BeginSharedImageAccessDirectCHROMIUM(texture, access);
+      : gl(nullptr), ri(ri), texture(texture) {
+    ri->BeginSharedImageAccessDirectCHROMIUM(texture, access);
   }
 
   ~ScopedSharedImageAccess() {
-    if (is_shared_image) {
-      if (gl)
-        gl->EndSharedImageAccessDirectCHROMIUM(texture);
-      else
-        ri->EndSharedImageAccessDirectCHROMIUM(texture);
+    if (gl) {
+      gl->EndSharedImageAccessDirectCHROMIUM(texture);
+    } else {
+      ri->EndSharedImageAccessDirectCHROMIUM(texture);
     }
   }
 
@@ -136,7 +125,6 @@ class ScopedSharedImageAccess {
   raw_ptr<gpu::gles2::GLES2Interface> gl;
   raw_ptr<gpu::raster::RasterInterface> ri;
   GLuint texture;
-  bool is_shared_image;
 };
 
 const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
@@ -214,7 +202,7 @@ void CopyMailboxToTexture(gpu::gles2::GLES2Interface* gl,
   GLuint source_texture =
       gl->CreateAndTexStorage2DSharedImageCHROMIUM(source_mailbox.name);
   {
-    ScopedSharedImageAccess access(gl, source_texture, source_mailbox);
+    ScopedSharedImageAccess access(gl, source_texture);
     // The video is stored in a unmultiplied format, so premultiply if
     // necessary. Application itself needs to take care of setting the right
     // |flip_y| value down to get the expected result. "flip_y == true" means to
@@ -2024,8 +2012,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     if (!gpu_rasterization) {
       cache_->source_texture = ri->CreateAndConsumeForGpuRaster(mailbox);
 
-      auto access = std::make_unique<ScopedSharedImageAccess>(
-          ri, cache_->source_texture, mailbox);
+      auto access =
+          std::make_unique<ScopedSharedImageAccess>(ri, cache_->source_texture);
       auto source_image = WrapGLTexture(
           wraps_video_frame_texture
               ? video_frame->mailbox_holder(0).texture_target

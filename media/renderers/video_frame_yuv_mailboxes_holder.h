@@ -87,7 +87,6 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
   // Populated by ImportTextures.
   struct YUVPlaneTextureInfo {
     GrGLTextureInfo texture = {0, 0};
-    bool is_shared_image = false;
   };
   std::array<YUVPlaneTextureInfo, kMaxPlanes> textures_;
 };
