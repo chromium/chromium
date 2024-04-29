@@ -64,7 +64,10 @@ UIImage* DefaultFavicon() {
   UILabel* _titleLabel;
   GradientView* _titleGradientView;
   UIImageView* _faviconView;
+
+  // Group stroke views and constraints.
   TabStripGroupStrokeView* _groupStrokeView;
+  NSLayoutConstraint* _groupStrokeViewWidthConstraint;
 
   // Decoration views, visible when the cell is selected.
   UIView* _leftTailView;
@@ -370,6 +373,20 @@ UIImage* DefaultFavicon() {
   [self updateAccessibilityValue];
 }
 
+- (void)setIntersectsLeftEdge:(BOOL)intersectsLeftEdge {
+  if (super.intersectsLeftEdge != intersectsLeftEdge) {
+    super.intersectsLeftEdge = intersectsLeftEdge;
+    [self updateGroupStroke];
+  }
+}
+
+- (void)setIntersectsRightEdge:(BOOL)intersectsRightEdge {
+  if (super.intersectsRightEdge != intersectsRightEdge) {
+    super.intersectsRightEdge = intersectsRightEdge;
+    [self updateGroupStroke];
+  }
+}
+
 #pragma mark - UICollectionViewCell
 
 - (void)applyLayoutAttributes:
@@ -583,16 +600,18 @@ UIImage* DefaultFavicon() {
   }
   _groupStrokeView.hidden = NO;
 
+  const CGFloat lineWidth =
+      TabStripCollectionViewConstants.groupStrokeLineWidth;
   if (self.selected) {
     _groupStrokeViewBottomConstraint.active = NO;
     _groupStrokeViewBottomSelectedConstraint.active = YES;
+    _groupStrokeViewWidthConstraint.constant = -2 * kCornerSize;
   } else {
     _groupStrokeViewBottomSelectedConstraint.active = NO;
     _groupStrokeViewBottomConstraint.active = YES;
+    _groupStrokeViewWidthConstraint.constant = -2 * lineWidth;
   }
 
-  const CGFloat lineWidth =
-      TabStripCollectionViewConstants.groupStrokeLineWidth;
   UIBezierPath* path = [UIBezierPath bezierPath];
   CGPoint leftPoint = CGPointZero;
   [path moveToPoint:leftPoint];
@@ -612,26 +631,51 @@ UIImage* DefaultFavicon() {
                 startAngle:0
                   endAngle:M_PI_2
                  clockwise:YES];
-  } else {
-    leftPoint.x -= kCornerSize;
+    leftPoint.y += kCornerSize - lineWidth / 2;
+    leftPoint.x -= lineWidth;
     [path addLineToPoint:leftPoint];
   }
-  [_groupStrokeView setLeadingPath:path.CGPath];
+
+  UIBezierPath* leftPath = [path copy];
+  if (!self.selected) {
+    leftPoint.x -= lineWidth;
+    if (!self.intersectsRightEdge) {
+      leftPoint.x -= TabStripTabItemConstants.horizontalSpacing;
+      leftPoint.x -= lineWidth;
+    }
+    [leftPath addLineToPoint:leftPoint];
+  }
+  if (self.intersectsLeftEdge) {
+    leftPoint.x -= TabStripCollectionViewConstants.groupStrokeExtension;
+    [leftPath addLineToPoint:leftPoint];
+  }
+  leftPoint.y += lineWidth / 2;
+  [leftPath addArcWithCenter:leftPoint
+                      radius:lineWidth / 2
+                  startAngle:M_PI + M_PI_2
+                    endAngle:M_PI
+                   clockwise:NO];
+  [_groupStrokeView setLeadingPath:leftPath.CGPath];
 
   // The right path starts like the left path, but flipped horizontally.
   [path applyTransform:CGAffineTransformMakeScale(-1, 1)];
   CGPoint rightPoint = path.currentPoint;
-  if (self.isLastTabInGroup) {
+  if (!self.isLastTabInGroup && !self.selected) {
+    rightPoint.x += lineWidth;
+    rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
+    rightPoint.x += lineWidth;
+    [path addLineToPoint:rightPoint];
+  }
+  if (self.intersectsRightEdge) {
+    rightPoint.x += TabStripCollectionViewConstants.groupStrokeExtension;
+    [path addLineToPoint:rightPoint];
+  }
     rightPoint.y += lineWidth / 2;
     [path addArcWithCenter:rightPoint
                     radius:lineWidth / 2
                 startAngle:M_PI + M_PI_2
                   endAngle:0
                  clockwise:YES];
-  } else {
-    rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
-    [path addLineToPoint:rightPoint];
-  }
   [_groupStrokeView setTrailingPath:path.CGPath];
 }
 
@@ -818,9 +862,10 @@ UIImage* DefaultFavicon() {
   _groupStrokeViewBottomConstraint.active = YES;
   _groupStrokeViewBottomSelectedConstraint =
       [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.topAnchor];
-  AddSameConstraintsToSidesWithInsets(
-      _groupStrokeView, self, LayoutSides::kLeading | LayoutSides::kTrailing,
-      NSDirectionalEdgeInsetsMake(0, kCornerSize, 0, kCornerSize));
+  _groupStrokeViewWidthConstraint =
+      [_groupStrokeView.widthAnchor constraintEqualToAnchor:self.widthAnchor];
+  _groupStrokeViewWidthConstraint.active = YES;
+  AddSameCenterXConstraint(_groupStrokeView, self);
 }
 
 // Selector registered to the close button.

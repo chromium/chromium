@@ -16,6 +16,14 @@
 // Preview parameters of the cell when dragged.
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 
+// Whether the cell intersects the left edge of the collection view. Default
+// value is NO.
+@property(nonatomic, assign) BOOL intersectsLeftEdge;
+
+// Whether the cell intersects the right edge of the collection view. Default
+// value is NO.
+@property(nonatomic, assign) BOOL intersectsRightEdge;
+
 // Sets the color of this cell's group stroke.
 // Subclasses should override this method. Default implementation is no-op.
 - (void)setGroupStrokeColor:(UIColor*)groupStrokeColor

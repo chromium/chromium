@@ -17,6 +17,7 @@ constexpr CGFloat kTitleContainerVerticalPadding = 4;
 constexpr CGFloat kTitleContainerCenterYOffset = -2;
 constexpr CGFloat kGroupStrokeViewMinimumWidth = 14;
 constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
+constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 
 }  // namespace
 
@@ -110,6 +111,20 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
   }
 }
 
+- (void)setIntersectsLeftEdge:(BOOL)intersectsLeftEdge {
+  if (super.intersectsLeftEdge != intersectsLeftEdge) {
+    super.intersectsLeftEdge = intersectsLeftEdge;
+    [self updateTransitionState];
+  }
+}
+
+- (void)setIntersectsRightEdge:(BOOL)intersectsRightEdge {
+  if (super.intersectsRightEdge != intersectsRightEdge) {
+    super.intersectsRightEdge = intersectsRightEdge;
+    [self updateTransitionState];
+  }
+}
+
 #pragma mark - View creation helpers
 
 // Returns a new title label.
@@ -170,17 +185,13 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
           constraintLessThanOrEqualToAnchor:_titleContainer.widthAnchor
                                    constant:
                                        -2 *
-                                       TabStripGroupItemConstants
-                                           .titleContainerHorizontalPadding];
+                                           TabStripGroupItemConstants
+                                               .titleContainerHorizontalPadding -
+                                       kGroupStrokeViewMinimumWidth];
   groupStrokeViewTitleContainerConstraint.priority =
       UILayoutPriorityRequired - 2;
-  NSLayoutConstraint* groupStrokeViewConstantConstraint =
-      [_groupStrokeView.widthAnchor
-          constraintGreaterThanOrEqualToConstant:kGroupStrokeViewMinimumWidth];
-  groupStrokeViewConstantConstraint.priority = UILayoutPriorityRequired - 1;
   [NSLayoutConstraint activateConstraints:@[
     groupStrokeViewTitleLabelConstraint,
-    groupStrokeViewConstantConstraint,
     groupStrokeViewTitleContainerConstraint,
     [_groupStrokeView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
     [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
@@ -201,6 +212,8 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
   UIBezierPath* leftPath = [UIBezierPath bezierPath];
   CGPoint leftPoint = CGPointZero;
   [leftPath moveToPoint:leftPoint];
+  leftPoint.x -= kGroupStrokeViewMinimumWidth / 2;
+  [leftPath addLineToPoint:leftPoint];
   leftPoint.y += lineWidth / 2;
   [leftPath addArcWithCenter:leftPoint
                       radius:lineWidth / 2
@@ -213,23 +226,23 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
   UIBezierPath* rightPath = [UIBezierPath bezierPath];
   CGPoint rightPoint = CGPointZero;
   [rightPath moveToPoint:rightPoint];
-  if (self.collapsed) {
-    // If the group is collapsed, then the right end of the stroke should just
-    // be a quarter circle.
-    rightPoint.y += lineWidth / 2;
-    [rightPath addArcWithCenter:rightPoint
-                         radius:lineWidth / 2
-                     startAngle:M_PI + M_PI_2
-                       endAngle:0
-                      clockwise:YES];
-  } else {
+  rightPoint.x += kGroupStrokeViewMinimumWidth / 2;
+  [rightPath addLineToPoint:rightPoint];
+  if (!self.collapsed) {
     // If the group is not collapse, the right end of the stroke should extend
     // to reach the left end of the next tab.
-    rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalPadding;
     rightPoint.x += TabStripGroupItemConstants.titleContainerHorizontalMargin;
     rightPoint.x += TabStripTabItemConstants.horizontalSpacing;
+    rightPoint.x += lineWidth;
+    rightPoint.x += TabStripCollectionViewConstants.groupStrokeExtension;
     [rightPath addLineToPoint:rightPoint];
   }
+  rightPoint.y += lineWidth / 2;
+  [rightPath addArcWithCenter:rightPoint
+                       radius:lineWidth / 2
+                   startAngle:M_PI + M_PI_2
+                     endAngle:0
+                    clockwise:YES];
   [_groupStrokeView setTrailingPath:rightPath.CGPath];
 }
 
@@ -253,6 +266,19 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
   _titleLabel.alpha = factor;
   _titleContainerHeightConstraint.constant =
       (1 - factor) * minTitleContainerHeight + factor * maxTitleContainerHeight;
+
+  // At the end of the group shrinking animation (factor is 0), if the group
+  // intersects with the leading or trailing edge, then animate the title
+  // container alpha to 0.
+  CGFloat titleContainerAlpha = 1;
+  if (factor == 0 && (self.intersectsLeftEdge || self.intersectsRightEdge)) {
+    titleContainerAlpha = 0;
+  }
+  UIView* titleContainer = _titleContainer;
+  [UIView animateWithDuration:kTitleContainerFadeAnimationSeconds
+                   animations:^{
+                     titleContainer.alpha = titleContainerAlpha;
+                   }];
 }
 
 @end

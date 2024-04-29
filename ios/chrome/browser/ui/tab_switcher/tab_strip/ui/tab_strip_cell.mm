@@ -18,6 +18,8 @@
   [super prepareForReuse];
   self.title = nil;
   [self setGroupStrokeColor:nil];
+  self.intersectsLeftEdge = NO;
+  self.intersectsRightEdge = NO;
 }
 
 @end

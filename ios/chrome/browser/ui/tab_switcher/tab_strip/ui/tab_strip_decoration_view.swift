@@ -52,8 +52,12 @@ class TabStripDecorationView: UIView {
       /// `solidBackgroundView` constraints.
       solidBackgroundView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
       solidBackgroundView.trailingAnchor.constraint(equalTo: regularSeparator.leadingAnchor),
-      solidBackgroundView.topAnchor.constraint(equalTo: regularSeparator.topAnchor),
-      solidBackgroundView.bottomAnchor.constraint(equalTo: regularSeparator.bottomAnchor),
+      solidBackgroundView.topAnchor.constraint(
+        equalTo: regularSeparator.topAnchor,
+        constant: -TabStripConstants.StaticSeparator.solidBackgroundVerticalPadding),
+      solidBackgroundView.bottomAnchor.constraint(
+        equalTo: regularSeparator.bottomAnchor,
+        constant: +TabStripConstants.StaticSeparator.solidBackgroundVerticalPadding),
     ])
 
   }

@@ -253,6 +253,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
       return layoutAttributes
     }
 
+    var intersectsLeftEdge = false
+    var intersectsRightEdge = false
+
     /// Recalculate the cell width and origin when it intersects with the left
     /// collection view's bounds. The cell should collapse within the collection
     /// view's bounds until its width reaches 0. Its `separatorHeight` is also
@@ -269,6 +272,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
       // If intersects with the left bounds.
       if frame.minX < leftBounds {
         cell.leadingSeparatorHidden = false
+        intersectsLeftEdge = true
 
         // Update the frame origin and width.
         frame.origin.x = max(leftBounds, frame.origin.x)
@@ -302,6 +306,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
       // If intersects with the right bounds.
       else if frame.maxX > rightBounds {
         cell.trailingSeparatorHidden = false
+        intersectsRightEdge = true
 
         // Update the frame origin and width.
         frame.origin.x = min(rightBounds, frame.origin.x)
@@ -338,6 +343,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     // Update separators height once the computation is done.
     cell.setSeparatorsHeight(separatorHeight)
+    cell.intersectsLeftEdge = intersectsLeftEdge
+    cell.intersectsRightEdge = intersectsRightEdge
 
     layoutAttributes.frame = frame
     return layoutAttributes
@@ -355,6 +362,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
       return layoutAttributes
     }
 
+    guard let groupCell = groupCell else { return layoutAttributes }
+
     let contentOffset = collectionView.contentOffset
     var frame = layoutAttributes.frame
     let collectionViewWidth = collectionView.bounds.size.width
@@ -363,19 +372,18 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let rightBounds: CGFloat = collectionViewWidth + contentOffset.x - sectionInset.right
     let isScrollable: Bool = collectionView.contentSize.width > collectionView.frame.width
 
+    var intersectsLeftEdge = false
+    var intersectsRightEdge = false
+
     /// Recalculate the cell width and origin when it intersects with the left
     /// collection view's bounds. The cell should collapse within the collection
     /// view's bounds until its width reaches 0.
     if isScrollable && (frame.minX < leftBounds || frame.maxX > rightBounds) {
       let minCellWidth = TabStripConstants.GroupItem.minCellWidth
 
-      // If the cell is out of bounds, make it invisible.
-      if frame.maxX < leftBounds || frame.minX > rightBounds {
-        layoutAttributes.alpha = 0
-      }
-
       // If intersects with the left bounds.
-      else if frame.minX < leftBounds {
+      if frame.minX < leftBounds {
+        intersectsLeftEdge = true
         // Update the frame origin and width.
         frame.origin.x = max(leftBounds, frame.origin.x)
         let offsetLeft: CGFloat = abs(frame.origin.x - layoutAttributes.frame.origin.x)
@@ -386,32 +394,28 @@ class TabStripLayout: UICollectionViewFlowLayout {
         /// `collapseThreshold`.
         if frame.size.width <= minCellWidth {
           // Move the cell to the left until it reaches its final position.
-          frame.origin.x = max(
-            frame.origin.x - minCellWidth + frame.size.width,
-            leftBounds - minCellWidth)
-
-          // Update its alpha value.
-          layoutAttributes.alpha = frame.size.width / minCellWidth
+          frame.origin.x = frame.origin.x - minCellWidth + frame.size.width
           frame.size.width = minCellWidth
         }
       }
 
       // If intersects with the right bounds.
       else if frame.maxX > rightBounds {
+        intersectsRightEdge = true
         // Update the frame origin and width.
-        frame.origin.x = min(rightBounds, frame.origin.x)
         frame.size.width = min(rightBounds - frame.origin.x, frame.size.width)
 
         /// Start animating the cell out of the collection view  if the new
         ///  width `frame.size.width` is less than or equal to
         ///  `collapseThreshold`.
         if frame.size.width <= minCellWidth {
-          // Update its alpha value.
-          layoutAttributes.alpha = frame.size.width / minCellWidth
           frame.size.width = minCellWidth
         }
       }
     }
+
+    groupCell.intersectsLeftEdge = intersectsLeftEdge
+    groupCell.intersectsRightEdge = intersectsRightEdge
 
     layoutAttributes.frame = frame
     return layoutAttributes
@@ -510,6 +514,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
       cellAnimated = !animationKeys.isEmpty || cellAnimatediOS16
     }
 
+    var intersectsLeftEdge = false
+    var intersectsRightEdge = false
+
     // Update cell separators.
     cell?.leadingSeparatorHidden = true
     cell?.trailingSeparatorHidden = true
@@ -559,7 +566,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
     if (minOringin - staticSeparatorHorizontalInset) >= origin.x {
       hideLeadingStaticSeparator = !isScrollable || cellAnimated
     }
-    origin.x = max(origin.x, minOringin)
+    if origin.x < minOringin {
+      origin.x = minOringin
+      intersectsLeftEdge = true
+    }
 
     // Check the right side.
     let maxOrigin =
@@ -573,7 +583,13 @@ class TabStripLayout: UICollectionViewFlowLayout {
     if (maxOrigin + staticSeparatorHorizontalInset) <= origin.x {
       hideTrailingStaticSeparator = !isScrollable || cellAnimated
     }
-    origin.x = min(origin.x, maxOrigin)
+    if origin.x > maxOrigin {
+      origin.x = maxOrigin
+      intersectsRightEdge = true
+    }
+
+    cell?.intersectsLeftEdge = intersectsLeftEdge
+    cell?.intersectsRightEdge = intersectsRightEdge
 
     leadingStaticSeparator?.isHidden = hideLeadingStaticSeparator
     trailingStaticSeparator?.isHidden = hideTrailingStaticSeparator
@@ -644,7 +660,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let distance =
       offset + TabStripConstants.AnimatedSeparator.collapseHorizontalInset - tabCellSize.width
     if distance > 0 {
-      alpha = 1 / distance
+      alpha = max(0, 1 - distance / TabStripConstants.TabItem.maximumVisibleDistance)
     }
 
     return alpha

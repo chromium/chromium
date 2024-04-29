@@ -10,6 +10,7 @@ import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
   public static let tabStripTabCellPrefixIdentifier = TabStripConstants.CollectionView
     .tabStripTabCellPrefixIdentifier
   public static let groupStrokeLineWidth = TabStripConstants.CollectionView.groupStrokeLineWidth
+  public static let groupStrokeExtension = TabStripConstants.CollectionView.groupStrokeExtension
 }
 
 /// Bridge to access `TabStripConstants.TabItem` from Objective-C code.
