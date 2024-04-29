@@ -1180,6 +1180,9 @@ class CORE_EXPORT Node : public EventTarget {
 
   ShadowRoot* GetSlotAssignmentRoot() const;
 
+  // EventTarget ends with a single 32-bit member, so put one 32-bit member
+  // first to avoid padding on 64-bit.
+  uint32_t node_flags_;
   // Both parent and tree_scope are hot accessed members. Keep them uncompressed
   // for performance reasons.
   subtle::UncompressedMember<Node> parent_or_shadow_host_node_;
@@ -1190,7 +1193,6 @@ class CORE_EXPORT Node : public EventTarget {
   Member<Node> next_;
   Member<LayoutObject> layout_object_;
   Member<NodeRareData> data_;
-  uint32_t node_flags_;
 };
 
 inline void Node::SetParentOrShadowHostNode(ContainerNode* parent) {

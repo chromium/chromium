@@ -160,13 +160,29 @@ namespace blink {
 
 using ReattachHookScope = LayoutShiftTracker::ReattachHookScope;
 
+// We want to keep Node small.  This struct + assert calls our attention to a
+// change that might be undesirable, so that we make sure to consider whether
+// it's worthwhile.
 struct SameSizeAsNode : EventTarget {
+  uint32_t node_flags_;
+  subtle::UncompressedMember<int> uncompressed[2];
+  Member<void*> members[4];
+};
+
+ASSERT_SIZE(Node, SameSizeAsNode);
+
+// Right now we have the member variables of Node ordered so as to
+// reduce padding.  If the object layout of its base class changes, this
+// ordering might stop being optimal.  This struct + assert are intended
+// to catch if that happens, so that we can reorder the members again.
+struct NotSmallerThanNode : EventTarget {
   subtle::UncompressedMember<int> uncompressed[2];
   Member<void*> members[4];
   uint32_t node_flags_;
 };
 
-ASSERT_SIZE(Node, SameSizeAsNode);
+static_assert(sizeof(Node) <= sizeof(NotSmallerThanNode),
+              "members of node should be reordered for better packing");
 
 #if DUMP_NODE_STATISTICS
 using WeakNodeSet = HeapHashSet<WeakMember<Node>>;
@@ -306,13 +322,13 @@ void Node::DumpStatistics() {
 #endif
 
 Node::Node(TreeScope* tree_scope, ConstructionType type)
-    : parent_or_shadow_host_node_(nullptr),
+    : node_flags_(type),
+      parent_or_shadow_host_node_(nullptr),
       tree_scope_(tree_scope),
       previous_(nullptr),
       next_(nullptr),
       layout_object_(nullptr),
-      data_(nullptr),
-      node_flags_(type) {
+      data_(nullptr) {
   DCHECK(tree_scope_ || type == kCreateDocument || type == kCreateShadowRoot);
 #if DUMP_NODE_STATISTICS
   LiveNodeSet().insert(this);
