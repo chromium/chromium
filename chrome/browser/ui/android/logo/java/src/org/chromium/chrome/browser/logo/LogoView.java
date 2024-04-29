@@ -21,9 +21,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
+
 import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.LoadingView.Observer;
@@ -62,6 +65,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private float mTransitionAmount;
 
     private ClickHandler mClickHandler;
+    private Callback<LogoBridge.Logo> mOnLogoAvailableCallback;
 
     private final FloatProperty<LogoView> mTransitionProperty =
             new FloatProperty<LogoView>("") {
@@ -129,7 +133,12 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mClickHandler = clickHandler;
     }
 
-    /** Jumps to the end of the logo cross-fading animation, if any.*/
+    /** Sets the onLogoAvailableCallback to notify when the new logo has faded in. */
+    void setLogoAvailableCallback(Callback<Logo> onLogoAvailableCallback) {
+        mOnLogoAvailableCallback = onLogoAvailableCallback;
+    }
+
+    /** Jumps to the end of the logo cross-fading animation, if any. */
     void endFadeAnimation() {
         if (mFadeAnimation != null) {
             mFadeAnimation.end();
@@ -181,10 +190,14 @@ public class LogoView extends FrameLayout implements OnClickListener {
      */
     void updateLogo(Logo logo) {
         if (logo == null) {
-            if (maybeShowDefaultLogo()) return;
+            if (!maybeShowDefaultLogo()) {
+                mLogo = null;
+                invalidate();
+            }
 
-            mLogo = null;
-            invalidate();
+            if (mOnLogoAvailableCallback != null) {
+                mOnLogoAvailableCallback.onResult(logo);
+            }
             return;
         }
 
@@ -193,8 +206,16 @@ public class LogoView extends FrameLayout implements OnClickListener {
                         ? null
                         : getResources()
                                 .getString(R.string.accessibility_google_doodle, logo.altText);
+        Runnable onAnimationFinished = null;
+        if (mOnLogoAvailableCallback != null) {
+            onAnimationFinished = mOnLogoAvailableCallback.bind(logo);
+        }
         updateLogoImpl(
-                logo.image, contentDescription, /* isDefaultLogo= */ false, isLogoClickable(logo));
+                logo.image,
+                contentDescription,
+                /* isDefaultLogo= */ false,
+                isLogoClickable(logo),
+                onAnimationFinished);
     }
 
     void setAnimationEnabled(boolean animationEnabled) {
@@ -209,7 +230,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
             Bitmap logo,
             final String contentDescription,
             boolean isDefaultLogo,
-            boolean isClickable) {
+            boolean isClickable,
+            @Nullable Runnable onAnimationFinished) {
         assert logo != null;
 
         if (mFadeAnimation != null) mFadeAnimation.end();
@@ -246,6 +268,9 @@ public class LogoView extends FrameLayout implements OnClickListener {
                         setContentDescription(contentDescription);
                         setClickable(isClickable);
                         setFocusable(isClickable || !TextUtils.isEmpty(contentDescription));
+                        if (!isDefaultLogo && onAnimationFinished != null) {
+                            onAnimationFinished.run();
+                        }
                     }
 
                     @Override
@@ -268,7 +293,11 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private boolean maybeShowDefaultLogo() {
         if (mDefaultGoogleLogo != null) {
             updateLogoImpl(
-                    mDefaultGoogleLogo, null, /* isDefaultLogo= */ true, /* isClickable= */ false);
+                    mDefaultGoogleLogo,
+                    /* contentDescription= */ null,
+                    /* isDefaultLogo= */ true,
+                    /* isClickable= */ false,
+                    /* onAnimationFinished= */ null);
             return true;
         }
         return false;

@@ -75,7 +75,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     private LogoBridge mLogoBridge;
     private ImageFetcher mImageFetcher;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
-    private final Callback<LogoBridge.Logo> mOnLogoAvailableRunnable;
     private boolean mHasLogoLoadedForCurrentSearchEngine;
     private final boolean mShouldFetchDoodle;
     private boolean mIsParentSurfaceShown; // This value should always be true when this class
@@ -119,16 +118,16 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         mLogoModel = logoModel;
         mLogoClickedCallback = logoClickedCallback;
         mShouldFetchDoodle = shouldFetchDoodle;
-        mOnLogoAvailableRunnable = onLogoAvailableCallback;
         mIsParentSurfaceShown = isParentSurfaceShown;
         mVisibilityObserver = visibilityObserver;
         mVisibilityObservers.addObserver(mVisibilityObserver);
         mDefaultGoogleLogo = defaultGoogleLogo;
+        mLogoModel.set(LogoProperties.LOGO_AVAILABLE_CALLBACK, onLogoAvailableCallback);
     }
 
     /**
-     * Initialize the mediator with the components that had native initialization dependencies,
-     * i.e. Profile..
+     * Initialize the mediator with the components that had native initialization dependencies, i.e.
+     * Profile..
      */
     void initWithNative() {
         if (mProfile != null) return;
@@ -264,10 +263,6 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                                 LogoProperties.LOGO_CLICK_HANDLER,
                                 LogoMediator.this::onLogoClicked);
                         mLogoModel.set(LogoProperties.LOGO, logo);
-
-                        if (mOnLogoAvailableRunnable != null) {
-                            mOnLogoAvailableRunnable.onResult(logo);
-                        }
                     }
                 });
     }

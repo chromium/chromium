@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -56,7 +55,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
@@ -190,7 +188,6 @@ public class NewTabPage
     private final boolean mIsSurfacePolishEnabled;
     private final boolean mIsSurfacePolishOmniboxColorEnabled;
     private final boolean mIsSurfacePolishLessBrandSpaceEnabled;
-    private final boolean mIsLogoPolishEnabled;
     private final boolean mIsInNightMode;
     @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
 
@@ -312,8 +309,8 @@ public class NewTabPage
     }
 
     /**
-     * Extends {@link TileGroupDelegateImpl} to add metrics logging that is specific to
-     * {@link NewTabPage}.
+     * Extends {@link TileGroupDelegateImpl} to add metrics logging that is specific to {@link
+     * NewTabPage}.
      */
     private class NewTabPageTileGroupDelegate extends TileGroupDelegateImpl {
         private NewTabPageTileGroupDelegate(
@@ -437,7 +434,6 @@ public class NewTabPage
         mIsSurfacePolishLessBrandSpaceEnabled =
                 mIsSurfacePolishEnabled
                         && StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue();
-        mIsLogoPolishEnabled = StartSurfaceConfiguration.isLogoPolishEnabled();
         if (mIsSurfacePolishEnabled) {
             mBackgroundColor =
                     ChromeColors.getSurfaceColor(
@@ -570,7 +566,6 @@ public class NewTabPage
                 mIsSurfacePolishEnabled,
                 mIsSurfacePolishOmniboxColorEnabled,
                 mIsSurfacePolishLessBrandSpaceEnabled,
-                mIsLogoPolishEnabled,
                 mIsTablet,
                 mTabStripHeightSupplier);
 
@@ -581,6 +576,7 @@ public class NewTabPage
 
     /**
      * Create and initialize the main view contained in this NewTabPage.
+     *
      * @param activity The activity used to initialize the view.
      * @param windowAndroid Provides the current active tab.
      * @param snackbarManager {@link SnackbarManager} object.
@@ -719,17 +715,13 @@ public class NewTabPage
             layoutParams.bottomMargin = bottomMargin;
             view.setLayoutParams(layoutParams);
         }
-
-        // Apply the height of the top toolbar as the margin to the top of the N logo.
-        mNewTabPageLayout.setSearchProviderTopMargin(getLogoMargin(true));
-        mNewTabPageLayout.setSearchProviderBottomMargin(getLogoMargin(false));
     }
 
     // TODO(sinansahin): This is the same as {@link ToolbarManager#getToolbarExtraYOffset}. So, we
     // should look into sharing the logic.
     /**
      * @return The height that is included in the top controls but not in the toolbar or the tab
-     *         strip.
+     *     strip.
      */
     private int getToolbarExtraYOffset() {
         return mBrowserControlsStateProvider.getTopControlsHeight()
@@ -737,7 +729,9 @@ public class NewTabPage
                 - mTabStripHeightSupplier.get();
     }
 
-    /** @return The view container for the new tab layout. */
+    /**
+     * @return The view container for the new tab layout.
+     */
     @VisibleForTesting
     public NewTabPageLayout getNewTabPageLayout() {
         return mNewTabPageLayout;
@@ -1140,63 +1134,6 @@ public class NewTabPage
 
     TabObserver getTabObserverForTesting() {
         return mTabObserver;
-    }
-
-    /**
-     * @param isTopMargin True to return the top margin; False to return bottom margin.
-     * @return The top margin or bottom margin of the logo.
-     */
-    // TODO(https://crbug.com/1329288): Remove this method when the Feed position experiment is
-    // cleaned up.
-    private int getLogoMargin(boolean isTopMargin) {
-        if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
-
-        return isTopMargin ? getLogoTopMargin() : getLogoBottomMargin();
-    }
-
-    private int getLogoTopMargin() {
-        Resources resources = mNewTabPageLayout.getResources();
-
-        if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
-            return LogoUtils.getTopMarginForLogoPolish(resources);
-        }
-
-        if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
-            if (mIsSurfacePolishLessBrandSpaceEnabled && !mIsTablet) {
-                return LogoUtils.getTopMarginPolishedSmall(resources);
-
-            } else {
-                return LogoUtils.getTopMarginPolished(resources);
-            }
-        }
-
-        if (mIsTablet && mSearchProviderHasLogo) {
-            return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_top_margin_tablet);
-        }
-
-        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
-    }
-
-    private int getLogoBottomMargin() {
-        Resources resources = mNewTabPageLayout.getResources();
-
-        if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
-            return LogoUtils.getBottomMarginForLogoPolish(resources);
-        }
-
-        if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
-            if (mIsSurfacePolishLessBrandSpaceEnabled && !mIsTablet) {
-                return LogoUtils.getBottomMarginPolishedSmall(resources);
-            } else {
-                return LogoUtils.getBottomMarginPolished(resources);
-            }
-        }
-
-        if (mIsTablet && mSearchProviderHasLogo) {
-            return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
-        }
-
-        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
     }
 
     private void mayCreateSearchResumptionModule(Profile profile) {

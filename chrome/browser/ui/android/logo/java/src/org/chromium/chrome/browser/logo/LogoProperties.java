@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -40,6 +42,8 @@ interface LogoProperties {
     WritableObjectPropertyKey<Boolean> SHOW_LOADING_VIEW =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     WritableObjectPropertyKey<BaseGifImage> ANIMATED_LOGO = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Callback<Logo>> LOGO_AVAILABLE_CALLBACK =
+            new WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -54,6 +58,7 @@ interface LogoProperties {
                 LOGO,
                 DEFAULT_GOOGLE_LOGO,
                 SHOW_LOADING_VIEW,
-                ANIMATED_LOGO
+                ANIMATED_LOGO,
+                LOGO_AVAILABLE_CALLBACK
             };
 }

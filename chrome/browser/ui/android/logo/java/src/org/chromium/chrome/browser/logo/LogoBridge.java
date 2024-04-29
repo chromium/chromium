@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.logo;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -30,7 +32,8 @@ public class LogoBridge {
          */
         public final String animatedLogoUrl;
 
-        Logo(Bitmap image, String onClickUrl, String altText, String animatedLogoUrl) {
+        @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+        public Logo(Bitmap image, String onClickUrl, String altText, String animatedLogoUrl) {
             this.image = image;
             this.onClickUrl = onClickUrl;
             this.altText = altText;
