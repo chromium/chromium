@@ -9,6 +9,8 @@
 # Ash-side change (c47cd4a) which landed in M124. When that milestone is
 # released to stable (scheduled for 2024-04-30), we can re-enable these for
 # version skew testing.
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindow/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindow/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/1
@@ -21,7 +23,6 @@
 # by an Ash-side change (1e3315b) which landed in M123. When that milestone is
 # released to stable (scheduled for 2024-04-02) we can re-enable these for
 # version skew testing.
--TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderExpandsGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderExpandsGroup/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDoesntStartFromClick/0
