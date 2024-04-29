@@ -838,7 +838,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   if (google_play_services_package == "//third_party/android_deps") {
     android_aar_prebuilt("google_play_services_base_java") {
-      aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-18.1.0.aar"
+      aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-18.0.1.aar"
       info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
       enable_bytecode_checks = false
       deps = [
@@ -987,23 +987,6 @@ if (!limit_android_deps) {
       enable_bytecode_checks = false
       deps =
           [ "$google_play_services_package:google_play_services_basement_java" ]
-    }
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  if (google_play_services_package == "//third_party/android_deps") {
-    android_aar_prebuilt("google_play_services_tflite_java_java") {
-      aar_path = "libs/com_google_android_gms_play_services_tflite_java/play-services-tflite-java-16.0.1.aar"
-      info_path = "libs/com_google_android_gms_play_services_tflite_java/com_google_android_gms_play_services_tflite_java.info"
-      enable_bytecode_checks = false
-      deps = [
-        ":org_tensorflow_tensorflow_lite_api_java",
-        "$google_play_services_package:google_play_services_base_java",
-        "$google_play_services_package:google_play_services_basement_java",
-        "$google_play_services_package:google_play_services_tasks_java",
-        "$google_play_services_package:google_play_services_tflite_impl_java",
-      ]
-      extract_native_libraries = true
     }
   }
 
@@ -1530,14 +1513,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_test_monitor_java",
     ]
     is_robolectric = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("org_tensorflow_tensorflow_lite_api_java") {
-    aar_path =
-        "libs/org_tensorflow_tensorflow_lite_api/tensorflow-lite-api-2.10.0.aar"
-    info_path = "libs/org_tensorflow_tensorflow_lite_api/org_tensorflow_tensorflow_lite_api.info"
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2103,27 +2078,6 @@ if (!limit_android_deps) {
       deps = [
         "$google_play_services_package:google_play_services_basement_java",
         "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
-      ]
-    }
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  if (google_play_services_package == "//third_party/android_deps") {
-    android_aar_prebuilt("google_play_services_tflite_impl_java") {
-      aar_path = "libs/com_google_android_gms_play_services_tflite_impl/play-services-tflite-impl-16.0.1.aar"
-      info_path = "libs/com_google_android_gms_play_services_tflite_impl/com_google_android_gms_play_services_tflite_impl.info"
-      enable_bytecode_checks = false
-
-      # To remove visibility constraint, add this dependency to
-      # //third_party/android_deps/build.gradle.
-      visibility = [
-        ":*",
-        "//third_party/androidx:*",
-      ]
-      deps = [
-        "$google_play_services_package:google_play_services_base_java",
-        "$google_play_services_package:google_play_services_basement_java",
-        "$google_play_services_package:google_play_services_tasks_java",
       ]
     }
   }
