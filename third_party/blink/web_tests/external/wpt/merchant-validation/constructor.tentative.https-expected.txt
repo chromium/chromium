@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] MerchantValidationEvent can be constructed in secure-context.
+  MerchantValidationEvent is not defined
+[FAIL] MerchantValidationEvent can be constructed with an EventInitDict, even if not trusted.
+  MerchantValidationEvent is not defined
+[FAIL] MerchantValidationEvent can be dispatched, even if not trusted.
+  MerchantValidationEvent is not defined
+[FAIL] Must have a validationURL IDL attribute, which is initialized with to the validationURL dictionary value.
+  MerchantValidationEvent is not defined
+[FAIL] Must throw TypeError if initialized with an invalid URL.
+  assert_throws_js: function "() => {\n    new MerchantValidationEvent("test", { validationURL });\n  }" threw object "ReferenceError: MerchantValidationEvent is not defined" ("ReferenceError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Relative validationURLs use the document as the base.
+  MerchantValidationEvent is not defined
+[FAIL] Relative validationURLs use the document.baseURI as the base.
+  MerchantValidationEvent is not defined
+[FAIL] Must have a methodName IDL attribute, which is initialized with to the methodName dictionary value.
+  MerchantValidationEvent is not defined
+[FAIL] When no methodName is passed, methodName attribute defaults to the empty string
+  MerchantValidationEvent is not defined
+[FAIL] MerchantValidationEvent can be constructed with valid PMIs
+  MerchantValidationEvent is not defined
+[FAIL] MerchantValidationEvent can't be constructed with invalid PMIs
+  assert_throws_js: expected to throw when constructed with invalid PMI: 'secure-💳' function "() => {\n        const event = new MerchantValidationEvent("test", { methodName });\n      }" threw object "ReferenceError: MerchantValidationEvent is not defined" ("ReferenceError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
+Harness: the test ran to completion.
+

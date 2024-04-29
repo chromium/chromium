@@ -546,8 +546,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/payments/google_play_billing_method_data.idl",
   "//third_party/blink/renderer/modules/payments/html_iframe_element_payments.idl",
   "//third_party/blink/renderer/modules/payments/image_object.idl",
-  "//third_party/blink/renderer/modules/payments/merchant_validation_event.idl",
-  "//third_party/blink/renderer/modules/payments/merchant_validation_event_init.idl",
   "//third_party/blink/renderer/modules/payments/payer_errors.idl",
   "//third_party/blink/renderer/modules/payments/payment_address.idl",
   "//third_party/blink/renderer/modules/payments/payment_app_service_worker_global_scope.idl",

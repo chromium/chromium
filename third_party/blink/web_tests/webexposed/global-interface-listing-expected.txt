@@ -6456,12 +6456,6 @@ interface MediaStreamTrackVideoStats
     getter totalFrames
     method constructor
     method toJSON
-interface MerchantValidationEvent : Event
-    attribute @@toStringTag
-    getter methodName
-    getter validationURL
-    method complete
-    method constructor
 interface Mesh2DIndexBuffer
     attribute @@toStringTag
     method constructor

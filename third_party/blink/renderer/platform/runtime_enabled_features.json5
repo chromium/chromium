@@ -2913,10 +2913,6 @@
       base_feature: "none",
     },
     {
-      name: "PaymentRequestMerchantValidationEvent",
-      status: "experimental",
-    },
-    {
       name: "PercentBasedScrolling",
       base_feature: "none",
       public: true,
