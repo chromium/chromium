@@ -14032,7 +14032,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <if expr="is_chromeos">
         <message name="IDS_GEOLOCATION_TURNED_OFF_IN_OS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level.">
-          Location is turned off in OS Preferences
+          Location access is turned off in ChromeOS Settings
         </message>
       </if>
       <if expr="is_macosx">
