@@ -581,6 +581,7 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     }
 
     if (!external_image) {
+      LOG(ERROR) << "Failed to create external image.";
       return nullptr;
     }
   }
@@ -1008,6 +1009,10 @@ D3DImageBacking::ProduceSkiaGraphite(
   auto dawn_representation =
       ProduceDawn(manager, tracker, device.Get(),
                   adapter_properties.backendType, {}, context_state);
+  if (!dawn_representation) {
+    LOG(ERROR) << "Could not create Dawn Representation";
+    return nullptr;
+  }
   const bool is_yuv_plane = NumPlanes(d3d11_texture_desc_.Format) > 1;
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
