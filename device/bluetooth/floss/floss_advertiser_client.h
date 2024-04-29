@@ -30,8 +30,25 @@ enum class OwnAddressType {
   kRandom = 2,
 };
 
-// Represents parameters of an advertising set.
+// Represents the parameters of an advertising set. Supports Floss API version
+// 0.4.0 or earlier.
+struct AdvertisingSetParametersOld {
+  bool connectable;
+  bool scannable;
+  bool is_legacy;
+  bool is_anonymous;
+  bool include_tx_power;
+  LePhy primary_phy;
+  LePhy secondary_phy;
+  int32_t interval;        // Advertising interval in 0.625 ms unit.
+  int32_t tx_power_level;  // Transmission power of advertising in dBm.
+  OwnAddressType own_address_type;
+};
+
+// Represents the parameters of an advertising set. Supports Floss API versions
+// greater than 0.4.0.
 struct AdvertisingSetParameters {
+  LeDiscoverableMode discoverable;
   bool connectable;
   bool scannable;
   bool is_legacy;

@@ -8,6 +8,7 @@
 
 namespace floss {
 namespace {
+constexpr char kDiscoverable[] = "discoverable";
 constexpr char kConnectable[] = "connectable";
 constexpr char kScannable[] = "scannable";
 constexpr char kIsLegacy[] = "is_legacy";
@@ -36,11 +37,34 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 }
 
 template <>
+void FlossDBusClient::WriteDBusParam(
+    dbus::MessageWriter* writer,
+    const AdvertisingSetParametersOld& params) {
+  dbus::MessageWriter array(nullptr);
+
+  writer->OpenArray("{sv}", &array);
+
+  WriteDictEntry(&array, kConnectable, params.connectable);
+  WriteDictEntry(&array, kScannable, params.scannable);
+  WriteDictEntry(&array, kIsLegacy, params.is_legacy);
+  WriteDictEntry(&array, kIsAnonymous, params.is_anonymous);
+  WriteDictEntry(&array, kIncludeTxPower, params.include_tx_power);
+  WriteDictEntry(&array, kPrimaryPhy, params.primary_phy);
+  WriteDictEntry(&array, kSecondaryPhy, params.secondary_phy);
+  WriteDictEntry(&array, kInterval, params.interval);
+  WriteDictEntry(&array, kTxPowerLevel, params.tx_power_level);
+  WriteDictEntry(&array, kOwnAddressType, params.own_address_type);
+  writer->CloseContainer(&array);
+}
+
+template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const AdvertisingSetParameters& params) {
   dbus::MessageWriter array(nullptr);
 
   writer->OpenArray("{sv}", &array);
+
+  WriteDictEntry(&array, kDiscoverable, params.discoverable);
   WriteDictEntry(&array, kConnectable, params.connectable);
   WriteDictEntry(&array, kScannable, params.scannable);
   WriteDictEntry(&array, kIsLegacy, params.is_legacy);
@@ -97,6 +121,12 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 template <>
 const DBusTypeInfo& GetDBusTypeInfo(const OwnAddressType*) {
   static DBusTypeInfo info{"i", "OwnAddressType"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo(const AdvertisingSetParametersOld*) {
+  static DBusTypeInfo info{"a{sv}", "AdvertisingSetParametersOld"};
   return info;
 }
 
@@ -243,14 +273,32 @@ void FlossAdvertiserClient::StartAdvertisingSet(
     const int32_t max_ext_adv_events,
     StartSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  CallAdvertisingMethod(
-      base::BindOnce(
-          &FlossAdvertiserClient::CompleteStartAdvertisingSetCallback,
-          weak_ptr_factory_.GetWeakPtr(), std::move(success_callback),
-          std::move(error_callback)),
-      advertiser::kStartAdvertisingSet, params, adv_data, scan_rsp,
-      periodic_params, periodic_data, duration, max_ext_adv_events,
-      callback_id_);
+  if (version_ >= base::Version("0.5")) {
+    CallAdvertisingMethod(
+        base::BindOnce(
+            &FlossAdvertiserClient::CompleteStartAdvertisingSetCallback,
+            weak_ptr_factory_.GetWeakPtr(), std::move(success_callback),
+            std::move(error_callback)),
+        advertiser::kStartAdvertisingSet, params, adv_data, scan_rsp,
+        periodic_params, periodic_data, duration, max_ext_adv_events,
+        callback_id_);
+  } else {
+    AdvertisingSetParametersOld params_old = {
+        params.connectable,      params.scannable,        params.is_legacy,
+        params.is_anonymous,     params.include_tx_power, params.primary_phy,
+        params.secondary_phy,    params.interval,         params.tx_power_level,
+        params.own_address_type,
+    };
+
+    CallAdvertisingMethod(
+        base::BindOnce(
+            &FlossAdvertiserClient::CompleteStartAdvertisingSetCallback,
+            weak_ptr_factory_.GetWeakPtr(), std::move(success_callback),
+            std::move(error_callback)),
+        advertiser::kStartAdvertisingSet, params_old, adv_data, scan_rsp,
+        periodic_params, periodic_data, duration, max_ext_adv_events,
+        callback_id_);
+  }
 }
 
 void FlossAdvertiserClient::StopAdvertisingSet(

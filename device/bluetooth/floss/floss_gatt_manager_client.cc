@@ -48,6 +48,31 @@ void HandleResponse(const char* method, DBusResult<Void> result) {
 // Template specializations for dbus parsing
 
 template <>
+bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
+                                    LeDiscoverableMode* mode) {
+  uint32_t value;
+  if (FlossDBusClient::ReadDBusParam(reader, &value)) {
+    *mode = static_cast<LeDiscoverableMode>(value);
+    return true;
+  }
+
+  return false;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo(const LeDiscoverableMode*) {
+  static DBusTypeInfo info{"u", "LeDiscoverableMode"};
+  return info;
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const LeDiscoverableMode& mode) {
+  uint32_t value = static_cast<uint32_t>(mode);
+  WriteDBusParam(writer, value);
+}
+
+template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader, LePhy* phy) {
   uint32_t value;
   if (FlossDBusClient::ReadDBusParam(reader, &value)) {

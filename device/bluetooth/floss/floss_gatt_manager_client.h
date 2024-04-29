@@ -35,6 +35,13 @@ enum class DEVICE_BLUETOOTH_EXPORT WriteType {
   kWritePrepare,
 };
 
+enum class DEVICE_BLUETOOTH_EXPORT LeDiscoverableMode {
+  kInvalid = 0,
+  kNonDiscoverable = 1,
+  kLimitedDiscoverable = 2,
+  kGeneralDiscoverable = 3,
+};
+
 enum class DEVICE_BLUETOOTH_EXPORT LePhy {
   kInvalid = 0,
   kPhy1m = 1,

@@ -8,7 +8,7 @@ namespace floss::version {
 
 // Supported version range of the Floss API exported by Floss daemon.
 constexpr char kMinimumSupportedFlossVerStr[] = "0.0";
-constexpr char kMaximumSupportedFlossVerStr[] = "0.4";
+constexpr char kMaximumSupportedFlossVerStr[] = "0.5";
 
 base::Version IntoVersion(uint32_t version) {
   return base::Version({GetMajorVersion(version), GetMinorVersion(version)});

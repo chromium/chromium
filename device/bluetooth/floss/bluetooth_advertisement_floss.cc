@@ -39,6 +39,7 @@ BluetoothAdvertisementFloss::BluetoothAdvertisementFloss(
     const uint16_t interval_ms,
     scoped_refptr<BluetoothAdapterFloss> adapter) {
   // Initializing advertising set parameters.
+  params_.discoverable = LeDiscoverableMode::kGeneralDiscoverable;
   params_.connectable =
       (data->type() ==
        device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_PERIPHERAL);
