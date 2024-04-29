@@ -813,7 +813,7 @@
         </message>
 
         <!-- Scanning App -->
-        <message name="IDS_SCANNING_APP_TITLE" desc="The title of the scanning app.">
+        <message name="IDS_SCANNING_APP_TITLE" desc="The title of the scanning app." meaning="The application for scanning documents and photos using a physical printer/scanner.">
           Scan
         </message>
         <message name="IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL" desc="The label for the dropdown that displays connected scanners.">
