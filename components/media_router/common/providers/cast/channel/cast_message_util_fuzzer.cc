@@ -30,8 +30,10 @@ base::Value MakeValue(const JunkValue::Field& field) {
     return std::isfinite(field.float_value()) ? base::Value(field.float_value())
                                               : base::Value();
   }
-  CHECK(field.has_bool_value());
-  return base::Value(field.bool_value());
+  if (field.has_bool_value()) {
+    return base::Value(field.bool_value());
+  }
+  return base::Value();
 }
 
 base::Value::Dict MakeDict(const JunkValue& junk) {
