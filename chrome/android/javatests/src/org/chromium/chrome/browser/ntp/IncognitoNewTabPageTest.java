@@ -54,10 +54,7 @@ import java.util.Locale;
 /** Integration tests for IncognitoNewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({
-    ChromeFeatureList.INCOGNITO_NTP_REVAMP,
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD
-})
+@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNewTabPageTest {
     @ClassRule

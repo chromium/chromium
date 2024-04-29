@@ -25,7 +25,4 @@ found in the LICENSE file.
     <integer name="download_infobar_bar_start_offset">800</integer>
     <integer name="download_infobar_bar_fill_in_delay">400</integer>
     <integer name="download_infobar_bar_fill_out_delay">200</integer>
-
-    <!-- Revamped Incognito NTP -->
-    <integer name="descriptions_weight">1</integer>
 </resources>

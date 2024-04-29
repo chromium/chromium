@@ -188,24 +188,6 @@ found in the LICENSE file.
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
 
-    <!-- Revamped Incognito NTP -->
-    <dimen name="incognito_ntp_portrait_small_or_big_threshold">320dp</dimen>
-    <dimen name="incognito_ntp_portrait_horizontal_small_padding">16dp</dimen>
-    <dimen name="incognito_ntp_portrait_horizontal_big_padding">32dp</dimen>
-    <dimen name="incognito_ntp_portrait_vertical_padding">48dp</dimen>
-    <dimen name="incognito_ntp_landscape_small_or_big_threshold">320dp</dimen>
-    <dimen name="incognito_ntp_landscape_horizontal_padding">24dp</dimen>
-    <dimen name="incognito_ntp_landscape_vertical_small_padding">24dp</dimen>
-    <dimen name="incognito_ntp_landscape_vertical_big_padding">32dp</dimen>
-    <dimen name="incognito_ntp_icon_size">72dp</dimen>
-    <dimen name="incognito_ntp_space_between_icon_and_title">16dp</dimen>
-    <dimen name="incognito_ntp_wide_layout_threshold">720dp</dimen>
-    <dimen name="incognito_ntp_content_max_width">704dp</dimen>
-    <dimen name="incognito_ntp_does_and_doesnt_top_spacing">32dp</dimen>
-    <dimen name="incognito_ntp_descriptions_horizontal_spacing">32dp</dimen>
-    <dimen name="incognito_ntp_space_between_header_and_description">8dp</dimen>
-    <dimen name="incognito_ntp_learn_more_vertical_spacing">22dp</dimen>
-
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">8dp</dimen>
     <dimen name="recent_tabs_group_view_vertical_padding">8dp</dimen>

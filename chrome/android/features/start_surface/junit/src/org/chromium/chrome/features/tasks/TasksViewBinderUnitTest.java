@@ -241,10 +241,7 @@ public class TasksViewBinderUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-        ChromeFeatureList.INCOGNITO_NTP_REVAMP
-    })
+    @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
     public void testSetIncognitoDescriptionVisibilityAndClickListener() {
         when(mPrefService.getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)).thenReturn(false);
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
@@ -270,7 +267,6 @@ public class TasksViewBinderUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
     public void testSetIncognitoDescriptionVisibilityAndClickListenerTrackingProtection() {
         when(mPrefService.getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)).thenReturn(true);
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));

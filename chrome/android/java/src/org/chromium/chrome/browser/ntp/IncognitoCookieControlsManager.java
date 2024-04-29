@@ -11,7 +11,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge.CookieControlsServiceObserver;
@@ -102,10 +101,7 @@ public class IncognitoCookieControlsManager
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        boolean isCookieToggle =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
-                        ? buttonView.getId() == R.id.revamped_cookie_controls_card_toggle
-                        : buttonView.getId() == R.id.cookie_controls_card_toggle;
+        boolean isCookieToggle = buttonView.getId() == R.id.cookie_controls_card_toggle;
         if (isChecked != mChecked && isCookieToggle) {
             mServiceBridge.handleCookieControlsToggleChanged(isChecked);
         }

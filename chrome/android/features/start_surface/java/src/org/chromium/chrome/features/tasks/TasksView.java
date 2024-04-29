@@ -221,14 +221,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
 
         ViewStub incognitoDescriptionViewStub =
                 (ViewStub) findViewById(R.id.task_view_incognito_layout_stub);
-        boolean isIncognitoNtpRevampEnabled = ChromeFeatureList.sIncognitoNtpRevamp.isEnabled();
-        if (isIncognitoNtpRevampEnabled) {
-            incognitoDescriptionViewStub.setLayoutResource(
-                    R.layout.revamped_incognito_description_layout);
-        } else {
-            incognitoDescriptionViewStub.setLayoutResource(R.layout.incognito_description_layout);
-        }
-
+        incognitoDescriptionViewStub.setLayoutResource(R.layout.incognito_description_layout);
         mIncognitoDescriptionView =
                 (IncognitoDescriptionView) incognitoDescriptionViewStub.inflate();
 
@@ -236,15 +229,9 @@ public class TasksView extends CoordinatorLayoutForPointer {
         ViewStub cardStub = findViewById(R.id.cookie_card_stub);
         if (cardStub == null) return;
         if (shouldShowTrackingProtectionNtp()) {
-            cardStub.setLayoutResource(
-                    isIncognitoNtpRevampEnabled
-                            ? R.layout.revamped_incognito_tracking_protection_card
-                            : R.layout.incognito_tracking_protection_card);
+            cardStub.setLayoutResource(R.layout.incognito_tracking_protection_card);
         } else {
-            cardStub.setLayoutResource(
-                    isIncognitoNtpRevampEnabled
-                            ? R.layout.revamped_incognito_cookie_controls_card
-                            : R.layout.incognito_cookie_controls_card);
+            cardStub.setLayoutResource(R.layout.incognito_cookie_controls_card);
         }
         cardStub.inflate();
         mIncognitoDescriptionView.formatTrackingProtectionText(getContext(), this);

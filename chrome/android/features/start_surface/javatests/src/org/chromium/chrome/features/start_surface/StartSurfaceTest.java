@@ -310,11 +310,7 @@ public class StartSurfaceTest {
             StartSurfaceTestUtils.waitForTabSwitcherVisible(
                     mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         } else {
-            int container_id =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
-                            ? R.id.revamped_incognito_ntp_container
-                            : R.id.new_tab_incognito_container;
-            onViewWaiting(withId(container_id)).check(matches(isDisplayed()));
+            onViewWaiting(withId(R.id.new_tab_incognito_container)).check(matches(isDisplayed()));
         }
     }
 
@@ -700,11 +696,7 @@ public class StartSurfaceTest {
         // Simulates pressing the home button. Incognito tab should stay and homepage shouldn't
         // show.
         onView(withId(R.id.home_button)).perform(click());
-        int container_id =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
-                        ? R.id.revamped_incognito_ntp_container
-                        : R.id.new_tab_incognito_container;
-        onViewWaiting(withId(container_id)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.new_tab_incognito_container)).check(matches(isDisplayed()));
         assertFalse(
                 cta.getLayoutManager()
                         .isLayoutVisible(StartSurfaceTestUtils.getStartSurfaceLayoutType()));

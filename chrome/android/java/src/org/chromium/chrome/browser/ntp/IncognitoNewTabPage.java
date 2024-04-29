@@ -104,11 +104,6 @@ public class IncognitoNewTabPage extends BasicNativePage
                     }
 
                     @Override
-                    public boolean shouldShowRevampedIncognitoNtp() {
-                        return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP);
-                    }
-
-                    @Override
                     public boolean shouldShowTrackingProtectionNtp() {
                         return UserPrefs.get(mProfile)
                                         .getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
