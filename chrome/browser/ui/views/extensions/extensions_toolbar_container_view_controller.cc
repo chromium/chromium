@@ -202,11 +202,21 @@ void ExtensionsToolbarContainerViewController::
 
 void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
     const extensions::ExtensionId& extension_id) {
+  // Note: Technically, we only need to update the request access button iff the
+  // extension added a request for the current web contents (based on tabId).
+  // Since we re-compute which extensions are shown in the request access button
+  // every time we update it, we can just call for an update here. Consider
+  // updating the request access button dynamically.
   UpdateRequestAccessButton();
 }
 
 void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
     const extensions::ExtensionId& extension_id) {
+  // Note: Technically, we only need to update the request access button iff the
+  // extension removed a request for the current web contents (based on tabId).
+  // Since we re-compute which extensions are shown in the request access button
+  // every time we update it, we can just call for an update here. Consider
+  // updating the request access button dynamically.
   UpdateRequestAccessButton();
 }
 
