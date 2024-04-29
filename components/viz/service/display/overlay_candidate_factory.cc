@@ -199,21 +199,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
       break;
   }
 
-  candidate.has_mask_filter =
-      !quad->shared_quad_state->mask_filter_info.IsEmpty();
-
-  // Conditionally set the rounded corners once the candidate's |display_rect|
-  // is known.
-  // TODO(crbug.com/40274803): Consider moving this code to
-  // FromDrawQuadResource() that covers all of delegated compositing.
-  if (context_.disable_wire_size_optimization ||
-      ShouldApplyRoundedCorner(candidate, quad)) {
-    if (!context_.supports_mask_filter) {
-      return CandidateStatus::kFailMaskFilterNotSupported;
-    }
-    candidate.rounded_corners = sqs->mask_filter_info.rounded_corner_bounds();
-  }
-
   return status;
 }
 
@@ -453,6 +438,18 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
         return status;
       }
     }
+  }
+
+  candidate.has_mask_filter = !sqs->mask_filter_info.IsEmpty();
+
+  // Conditionally set the rounded corners once the candidate's |display_rect|
+  // is known.
+  if (context_.disable_wire_size_optimization ||
+      ShouldApplyRoundedCorner(candidate, quad)) {
+    if (!context_.supports_mask_filter) {
+      return CandidateStatus::kFailMaskFilterNotSupported;
+    }
+    candidate.rounded_corners = sqs->mask_filter_info.rounded_corner_bounds();
   }
 
   return CandidateStatus::kSuccess;
