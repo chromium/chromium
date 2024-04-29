@@ -52,7 +52,8 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
   void OnWidgetClosing(views::Widget* widget) override;
 
   // views::BubbleDialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
   gfx::Rect GetBubbleBounds() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(

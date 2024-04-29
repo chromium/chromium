@@ -104,9 +104,11 @@ void WebUIBubbleDialogView::OnWidgetClosing(views::Widget* widget) {
   ClearContentsWrapper();
 }
 
-gfx::Size WebUIBubbleDialogView::CalculatePreferredSize() const {
+gfx::Size WebUIBubbleDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Constrain the size to popup min/max.
-  gfx::Size preferred_size = BubbleDialogDelegateView::CalculatePreferredSize();
+  gfx::Size preferred_size =
+      BubbleDialogDelegateView::CalculatePreferredSize(available_size);
   preferred_size.SetToMax(kMinSize);
   preferred_size.SetToMin(GetWidget()->GetWorkAreaBoundsInScreen().size());
   return preferred_size;
