@@ -92,12 +92,12 @@ bool isLauncherFuzzyMatchForOmniboxEnabled() {
 // Only enable image search for ICA supported devices.
 bool IsLauncherImageSearchEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch) &&
-         base::FeatureList::IsEnabled(kLauncherImageSearch) &&
-         base::FeatureList::IsEnabled(kICASupportedByHardware);
+         base::FeatureList::IsEnabled(kLauncherImageSearch);
 }
 
 bool IsLauncherImageSearchIcaEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherImageSearchIca);
+  return base::FeatureList::IsEnabled(kLauncherImageSearchIca) &&
+         base::FeatureList::IsEnabled(kICASupportedByHardware);
 }
 
 bool IsLauncherImageSearchOcrEnabled() {
