@@ -89,13 +89,14 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTestBase,
   EXPECT_TRUE(WeakPtrEq(signin_kcer, expected_kcer));
 }
 
-// TODO: crbug.com/336581365 - Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTestBase,
-                       DISABLED_LockScreenProfileGetsCorrectTokens) {
-  ash::ScreenLockerTester locker;
-  locker.Lock();
-  // Showing the reauth dialog will create the lock screen profile.
-  ash::LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+                       LockScreenProfileGetsCorrectTokens) {
+  // Using the correct path should be enough to simulate the lock screen
+  // profile.
+  std::unique_ptr<TestingProfile> lockscreen_profile =
+      TestingProfile::Builder()
+          .SetPath(ash::ProfileHelper::GetLockScreenProfileDir())
+          .Build();
 
   base::WeakPtr<Kcer> expected_kcer;
   if (ash::switches::IsSigninFrameClientCertsEnabled()) {
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryNoNssTestBase,
   }
 
   base::WeakPtr<Kcer> lockscreen_kcer =
-      KcerFactory::GetKcer(ash::ProfileHelper::GetLockScreenProfile());
+      KcerFactory::GetKcer(lockscreen_profile.get());
   EXPECT_TRUE(WeakPtrEq(lockscreen_kcer, expected_kcer));
 }
 
