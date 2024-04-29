@@ -190,7 +190,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (NSRange)selectedNSRange {
-  DCHECK([self isFirstResponder]);
   UITextPosition* beginning = [self beginningOfDocument];
   UITextRange* selectedRange = [self selectedTextRange];
   NSInteger start = [self offsetFromPosition:beginning
