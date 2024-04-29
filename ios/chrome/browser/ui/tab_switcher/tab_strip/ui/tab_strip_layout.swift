@@ -705,6 +705,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
       ]).width ?? 0
     width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalMargin
     width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalPadding
+    width = min(width, TabStripConstants.GroupItem.maxCellWidth)
     return CGSize(width: width, height: TabStripConstants.GroupItem.height)
   }
 

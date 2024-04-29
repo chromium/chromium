@@ -37,8 +37,10 @@ public struct TabStripConstants {
     public static let titleContainerHorizontalPadding: CGFloat = 10
     public static let titleContainerHorizontalMargin: CGFloat = 4
     public static let fontSize: CGFloat = TabItem.fontSize
+    public static let maxTitleWidth: CGFloat = 150
     public static let minCellWidth =
       titleContainerHorizontalPadding * 2 + titleContainerHorizontalMargin * 2
+    public static let maxCellWidth = maxTitleWidth + minCellWidth
   }
 
   /// New tab button constants.

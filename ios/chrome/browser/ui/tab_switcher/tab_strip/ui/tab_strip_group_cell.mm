@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_cell.h"
 
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_stroke_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -20,7 +21,7 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
 }  // namespace
 
 @implementation TabStripGroupCell {
-  UILabel* _titleLabel;
+  FadeTruncatingLabel* _titleLabel;
   UIView* _titleContainer;
   TabStripGroupStrokeView* _groupStrokeView;
   NSLayoutConstraint* _titleContainerHeightConstraint;
@@ -112,14 +113,14 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
 #pragma mark - View creation helpers
 
 // Returns a new title label.
-- (UILabel*)createTitleLabel {
-  UILabel* titleLabel = [[UILabel alloc] init];
+- (FadeTruncatingLabel*)createTitleLabel {
+  FadeTruncatingLabel* titleLabel = [[FadeTruncatingLabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.font = [UIFont systemFontOfSize:TabStripTabItemConstants.fontSize
                                       weight:UIFontWeightMedium];
   titleLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
   [titleLabel
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
+      setContentCompressionResistancePriority:UILayoutPriorityRequired - 1
                                       forAxis:UILayoutConstraintAxisHorizontal];
   return titleLabel;
 }
@@ -152,13 +153,18 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
                      constant:kTitleContainerCenterYOffset]
       .active = YES;
   AddSameCenterConstraints(_titleLabel, _titleContainer);
+  NSLayoutConstraint* titleLabelMaxWidthConstraint = [_titleLabel.widthAnchor
+      constraintLessThanOrEqualToConstant:TabStripGroupItemConstants
+                                              .maxTitleWidth];
+  titleLabelMaxWidthConstraint.priority = UILayoutPriorityRequired;
+  titleLabelMaxWidthConstraint.active = YES;
   _titleContainerHeightConstraint =
       [_titleContainer.heightAnchor constraintEqualToConstant:0];
   _titleContainerHeightConstraint.active = YES;
   NSLayoutConstraint* groupStrokeViewTitleLabelConstraint =
       [_groupStrokeView.widthAnchor
           constraintEqualToAnchor:_titleLabel.widthAnchor];
-  groupStrokeViewTitleLabelConstraint.priority = UILayoutPriorityRequired - 2;
+  groupStrokeViewTitleLabelConstraint.priority = UILayoutPriorityRequired - 3;
   NSLayoutConstraint* groupStrokeViewTitleContainerConstraint =
       [_groupStrokeView.widthAnchor
           constraintLessThanOrEqualToAnchor:_titleContainer.widthAnchor
@@ -167,11 +173,11 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
                                        TabStripGroupItemConstants
                                            .titleContainerHorizontalPadding];
   groupStrokeViewTitleContainerConstraint.priority =
-      UILayoutPriorityRequired - 1;
+      UILayoutPriorityRequired - 2;
   NSLayoutConstraint* groupStrokeViewConstantConstraint =
       [_groupStrokeView.widthAnchor
           constraintGreaterThanOrEqualToConstant:kGroupStrokeViewMinimumWidth];
-  groupStrokeViewConstantConstraint.priority = UILayoutPriorityRequired;
+  groupStrokeViewConstantConstraint.priority = UILayoutPriorityRequired - 1;
   [NSLayoutConstraint activateConstraints:@[
     groupStrokeViewTitleLabelConstraint,
     groupStrokeViewConstantConstraint,

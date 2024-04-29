@@ -53,6 +53,7 @@ source_set("ui") {
     ":swift_constants_for_objective_c",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
