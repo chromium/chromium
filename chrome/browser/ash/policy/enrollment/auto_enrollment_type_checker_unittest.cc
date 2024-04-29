@@ -63,7 +63,7 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
         ash::system::kFirmwareTypeValueNonchrome);
   }
 
-  void SetUpFlexDeviceWithCommandLineSwitchToAlways() {
+  void SetUpFlexDeviceWithFREOnFlexEnabled() {
     flex_test_helper_.SetUpFlexDevice();
     flex_test_helper_.EnableFREOnFlex();
   }
@@ -358,7 +358,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredOnFlexEnabledByCommandLineSwitch) {
-  SetUpFlexDeviceWithCommandLineSwitchToAlways();
+  SetUpFlexDeviceWithFREOnFlexEnabled();
 
   EXPECT_TRUE(AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
@@ -368,7 +368,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredOnFlexOverridenByFREEnabledCommandLineSwitchSetToNever) {
-  SetUpFlexDeviceWithCommandLineSwitchToAlways();
+  SetUpFlexDeviceWithFREOnFlexEnabled();
   command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollment,
       AutoEnrollmentTypeChecker::kForcedReEnrollmentNever);
@@ -688,7 +688,7 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
     } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
       flex_test_helper_.SetUpFlexDevice();
     } else if (device_os_ == DeviceOs::FlexWithFRE) {
-      SetUpFlexDeviceWithCommandLineSwitchToAlways();
+      SetUpFlexDeviceWithFREOnFlexEnabled();
     }
     AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
         kill_switch_enabled_);
