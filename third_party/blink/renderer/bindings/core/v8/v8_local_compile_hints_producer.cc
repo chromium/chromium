@@ -56,12 +56,6 @@ void V8LocalCompileHintsProducer::GenerateData(bool final_data) {
   for (wtf_size_t i = 0; i < cache_handlers_.size(); ++i) {
     CachedMetadataHandler* cache_handler = cache_handlers_.at(i);
 
-    v8::Local<v8::Script> script = v8_scripts_[i].Get(isolate);
-    std::vector<int> compile_hints = script->GetProducedCompileHints();
-    if (compile_hints.size() == 0) {
-      continue;
-    }
-
     if (V8CodeCache::HasCodeCache(cache_handler,
                                   CachedMetadataHandler::kAllowUnchecked)) {
       // We're trying to set compile hints even though the code cache exists
@@ -78,6 +72,9 @@ void V8LocalCompileHintsProducer::GenerateData(bool final_data) {
         final_data
             ? V8CodeCache::SetMetadataType::kLocalCompileHintsAtInteractive
             : V8CodeCache::SetMetadataType::kLocalCompileHintsAtFMP);
+
+    v8::Local<v8::Script> script = v8_scripts_[i].Get(isolate);
+    std::vector<int> compile_hints = script->GetProducedCompileHints();
 
     uint64_t timestamp = V8CodeCache::GetTimestamp();
     std::unique_ptr<v8::ScriptCompiler::CachedData> data(
