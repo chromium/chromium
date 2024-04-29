@@ -797,12 +797,11 @@ void OnResourceExhausted() {
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 void AddFeatureFlagsToCommandLine() {
   CHECK(!base::FeatureList::GetInstance());
   base::ScopedAddFeatureFlags flags(base::CommandLine::ForCurrentProcess());
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   const auto& init_params = *chromeos::BrowserParamsProxy::Get();
   if (init_params.IsVariableRefreshRateAlwaysOn()) {
     flags.EnableIfNotSet(features::kEnableVariableRefreshRateAlwaysOn);
@@ -811,16 +810,8 @@ void AddFeatureFlagsToCommandLine() {
   if (init_params.IsPdfOcrEnabled()) {
     flags.EnableIfNotSet(features::kPdfOcr);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  // Disable currently unsupported web features per platform properties.
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_color_picker_dialog) {
-    flags.DisableIfNotSet(features::kEyeDropper);
-  }
 }
-#endif  // BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool IsCanaryDev() {
   const auto channel = chrome::GetChannel();
@@ -956,16 +947,9 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   chrome::SetLacrosDefaultPathsFromInitParams(init_params.DefaultPaths().get());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_OZONE)
-  // Initialize Ozone platform and add required feature flags as per platform's
-  // properties. Must be added before feature list is created otherwise the
-  // added flag won't be picked up.
-#if BUILDFLAG(IS_LINUX)
-  ui::SetOzonePlatformForLinuxIfNeeded(*base::CommandLine::ForCurrentProcess());
-#endif
-  ui::OzonePlatform::PreEarlyInitialization();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   AddFeatureFlagsToCommandLine();
-#endif  // BUILDFLAG(IS_OZONE)
+#endif
 
   // The DBus initialization above is needed for FeatureList creation here;
   // features are needed for Mojo initialization; and Mojo initialization is
@@ -974,6 +958,23 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
       chrome_content_browser_client_->startup_data()
           ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
+
+#if BUILDFLAG(IS_OZONE)
+  // Initialize Ozone platform and add required feature flags as per platform's
+  // properties.
+#if BUILDFLAG(IS_LINUX)
+  ui::SetOzonePlatformForLinuxIfNeeded(*base::CommandLine::ForCurrentProcess());
+#endif
+  ui::OzonePlatform::PreEarlyInitialization();
+
+  // Disable currently unsupported web features per platform properties.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_color_picker_dialog) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        features::kEyeDropperNotSupported);
+  }
+#endif  // BUILDFLAG(IS_OZONE)
 
   content::InitializeMojoCore();
 
