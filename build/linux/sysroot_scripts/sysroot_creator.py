@@ -54,7 +54,6 @@ TRIPLES = {
     "i386": "i386-linux-gnu",
     "armhf": "arm-linux-gnueabihf",
     "arm64": "aarch64-linux-gnu",
-    "armel": "arm-linux-gnueabi",
     "mipsel": "mipsel-linux-gnu",
     "mips64el": "mips64el-linux-gnuabi64",
 }
@@ -579,14 +578,6 @@ DEBIAN_PACKAGES_ARCH = {
         "libubsan1",
         "valgrind",
     ],
-    "armel": [
-        "libasan6",
-        "libdrm-exynos1",
-        "libdrm-freedreno1",
-        "libdrm-omap1",
-        "libdrm-tegra0",
-        "libubsan1",
-    ],
     "mipsel": [],
     "mips64el": [
         "valgrind",
@@ -799,8 +790,16 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     )
 
     # Do not use pthread_cond_clockwait as it was introduced in glibc 2.30.
-    cppconfig_h = os.path.join(install_root, "usr", "include", TRIPLES[arch],
-                               "c++", "10", "bits", "c++config.h")
+    cppconfig_h = os.path.join(
+        install_root,
+        "usr",
+        "include",
+        TRIPLES[arch],
+        "c++",
+        "10",
+        "bits",
+        "c++config.h",
+    )
     replace_in_file(cppconfig_h,
                     r"(#define\s+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT)",
                     r"// \1")
@@ -828,7 +827,7 @@ def hacks_and_patches(install_root: str, script_dir: str, arch: str) -> None:
     # GTK4 is provided by bookworm (12), but pango is provided by bullseye
     # (11).  Fix the GTK4 pkgconfig file to relax the pango version
     # requirement.
-    gtk4_pc = os.path.join(pkgconfig_dir, 'gtk4.pc')
+    gtk4_pc = os.path.join(pkgconfig_dir, "gtk4.pc")
     replace_in_file(gtk4_pc, r"pango [>=0-9. ]*", "pango")
     replace_in_file(gtk4_pc, r"pangocairo [>=0-9. ]*", "pangocairo")
 
@@ -928,7 +927,8 @@ def cleanup_jail_symlinks(install_root: str) -> None:
                     # Compute the relative path from the symlink to the target.
                     relative_path = os.path.relpath(
                         os.path.join(install_root, target_path.strip("/")),
-                        os.path.dirname(full_path))
+                        os.path.dirname(full_path),
+                    )
                     # Verify that the target exists inside the install_root.
                     joined_path = os.path.join(os.path.dirname(full_path),
                                                relative_path)
@@ -983,7 +983,7 @@ def build_sysroot(arch: str) -> None:
     create_tarball(install_root, arch)
 
 
-def upload_sysroot(arch: str) -> None:
+def upload_sysroot(arch: str) -> str:
     tarball_path = os.path.join(BUILD_DIR,
                                 f"{DISTRO}_{RELEASE}_{arch}_sysroot.tar.xz")
     command = [
@@ -992,7 +992,7 @@ def upload_sysroot(arch: str) -> None:
         "chrome-linux-sysroot",
         tarball_path,
     ]
-    subprocess.run(command, check=True)
+    return subprocess.check_output(command).decode("utf-8")
 
 
 def verify_package_listing(file_path: str, output_file: str,
