@@ -165,6 +165,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "payments/save_card_and_vcn_success_confirmation.icon",
     "payments/save_card_and_vcn_success_confirmation_dark.icon",
     "performance.icon",
+    "person.icon",
     "person_filled_padded_large.icon",
     "person_filled_padded_small.icon",
     "photo_camera.icon",

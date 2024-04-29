@@ -744,24 +744,23 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   accounts_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   bool is_multi_idp = idp_display_data_list.size() > 1u;
+  // Add returning accounts first and then other accounts.
+  AddAccounts(idp_display_data_list, accounts_content,
+              content::IdentityRequestAccount::LoginState::kSignIn);
+  AddAccounts(idp_display_data_list, accounts_content,
+              content::IdentityRequestAccount::LoginState::kSignUp);
   size_t num_rows = 0;
-  // Add account rows.
   bool has_mismatches = false;
   for (const auto& idp_display_data : idp_display_data_list) {
-    for (const auto& account : idp_display_data.accounts) {
-      accounts_content->AddChildView(
-          CreateAccountRow(account, idp_display_data, /*should_hover=*/true,
-                           /*should_include_idp=*/is_multi_idp));
+    num_rows += idp_display_data.accounts.size();
+    if (idp_display_data.has_login_status_mismatch) {
+      has_mismatches = true;
     }
     const content::IdentityProviderMetadata& idp_metadata =
         idp_display_data.idp_metadata;
     if (idp_metadata.supports_add_account) {
       accounts_content->AddChildView(std::make_unique<views::Separator>());
       accounts_content->AddChildView(CreateUseOtherAccountButton(idp_metadata));
-    }
-    num_rows += idp_display_data.accounts.size();
-    if (idp_display_data.has_login_status_mismatch) {
-      has_mismatches = true;
     }
   }
 
@@ -771,12 +770,15 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   // this is an estimate if there are multiple IDPs, as IDP rows are not the
   // same height. That said, calling GetPreferredSize() is expensive so we are
   // ok with this estimate. And in this case, we prefer to use 3.5 as there will
-  // be at least one IDP row at the beginning.
-  float num_visible_rows = is_multi_idp ? 3.5f : 2.5f;
-  const int per_account_size =
-      accounts_content->GetPreferredSize().height() / num_rows;
-  account_scroll_view->ClipHeightTo(
-      0, static_cast<int>(per_account_size * num_visible_rows));
+  // be at least one IDP row at the beginning. Note that `num_rows` can be 0 if
+  // everything is an IDP mismatch.
+  if (num_rows > 0) {
+    float num_visible_rows = is_multi_idp ? 3.5f : 2.5f;
+    const int per_account_size =
+        accounts_content->GetPreferredSize().height() / num_rows;
+    account_scroll_view->ClipHeightTo(
+        0, static_cast<int>(per_account_size * num_visible_rows));
+  }
   if (!has_mismatches) {
     return account_scroll_view;
   }
@@ -787,8 +789,10 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  container->AddChildView(std::move(account_scroll_view));
-  container->AddChildView(std::make_unique<views::Separator>());
+  if (num_rows > 0) {
+    container->AddChildView(std::move(account_scroll_view));
+    container->AddChildView(std::make_unique<views::Separator>());
+  }
 
   auto mismatch_scroll_view = std::make_unique<views::ScrollView>();
   mismatch_scroll_view->SetHorizontalScrollBarMode(
@@ -816,6 +820,22 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
       0, static_cast<int>(per_mismatch_size * 2.5f));
   container->AddChildView(std::move(mismatch_scroll_view));
   return container;
+}
+
+void AccountSelectionBubbleView::AddAccounts(
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+    views::View* accounts_content,
+    content::IdentityRequestAccount::LoginState login_state) {
+  bool is_multi_idp = idp_display_data_list.size() > 1u;
+  for (const auto& idp_display_data : idp_display_data_list) {
+    for (const auto& account : idp_display_data.accounts) {
+      if (account.login_state == login_state) {
+        accounts_content->AddChildView(
+            CreateAccountRow(account, idp_display_data, /*should_hover=*/true,
+                             /*should_include_idp=*/is_multi_idp));
+      }
+    }
+  }
 }
 
 std::unique_ptr<views::View>
@@ -947,7 +967,7 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
   // still taking the same amount of space.
   auto icon_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kPersonFilledPaddedSmallIcon, ui::kColorMenuIcon, kMultiIdpIconSize));
+          kPersonIcon, ui::kColorMenuIcon, kMultiIdpIconSize));
   auto button = std::make_unique<HoverButton>(
       base::BindOnce(&AccountSelectionViewBase::Observer::OnChooseAnAccount,
                      base::Unretained(observer_)),
@@ -956,9 +976,8 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
       l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT_BUTTON),
       /*subtitle=*/BuildStringFromIDPs(mismatch_idps, non_mismatch_idps),
       /*secondary_view=*/
-      std::make_unique<views::ImageView>(
-          ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
-                                         ui::kColorMenuIcon, kArrowIconSize)));
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kKeyboardArrowRightIcon, ui::kColorMenuIcon, kMultiIdpIconSize)));
   button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
                                views::style::STYLE_SECONDARY);
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(

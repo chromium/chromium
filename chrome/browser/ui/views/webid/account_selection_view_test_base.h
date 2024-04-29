@@ -14,6 +14,7 @@
 const std::u16string kTopFrameETLDPlusOne = u"top-frame-example.com";
 const std::u16string kIframeETLDPlusOne = u"iframe-example.com";
 const std::u16string kIdpETLDPlusOne = u"idp-example.com";
+const std::u16string kSecondIdpETLDPlusOne = u"idp2.com";
 const std::u16string kTitleSignIn =
     u"Sign in to top-frame-example.com with idp-example.com";
 const std::u16string kTitleSignInWithoutIdp =
