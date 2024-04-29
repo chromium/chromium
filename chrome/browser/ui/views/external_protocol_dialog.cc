@@ -137,9 +137,12 @@ ExternalProtocolDialog::ExternalProtocolDialog(
 
 ExternalProtocolDialog::~ExternalProtocolDialog() = default;
 
-gfx::Size ExternalProtocolDialog::CalculatePreferredSize() const {
+gfx::Size ExternalProtocolDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   constexpr int kDialogContentWidth = 400;
-  return gfx::Size(kDialogContentWidth, GetHeightForWidth(kDialogContentWidth));
+  return gfx::Size(kDialogContentWidth,
+                   GetLayoutManager()->GetPreferredHeightForWidth(
+                       this, kDialogContentWidth));
 }
 
 bool ExternalProtocolDialog::ShouldShowCloseButton() const {

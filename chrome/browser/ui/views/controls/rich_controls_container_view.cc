@@ -120,11 +120,6 @@ gfx::Size RichControlsContainerView::FlexRule(
   return CalculatePreferredSize(maximum_size);
 }
 
-// TODO(crbug.com/40232718): Remove this once we eliminate GetPreferredSize().
-gfx::Size RichControlsContainerView::CalculatePreferredSize() const {
-  return CalculatePreferredSize({});
-}
-
 gfx::Size RichControlsContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   if (available_size.width().is_bounded()) {

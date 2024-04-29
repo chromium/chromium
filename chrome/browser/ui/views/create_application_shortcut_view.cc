@@ -161,7 +161,8 @@ void CreateChromeApplicationShortcutView::InitControls() {
     quick_launch_check_box_ = AddChildView(std::move(pin_to_taskbar_checkbox));
 }
 
-gfx::Size CreateChromeApplicationShortcutView::CalculatePreferredSize() const {
+gfx::Size CreateChromeApplicationShortcutView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   static const int kDialogWidth = 360;
   int height = GetLayoutManager()->GetPreferredHeightForWidth(this,
       kDialogWidth);

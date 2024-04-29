@@ -73,8 +73,9 @@ class IconWrapper : public views::View {
   }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
-    const int icon_height = icon_->GetPreferredSize().height();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    const int icon_height = icon_->GetPreferredSize(available_size).height();
     const int icon_label_spacing =
         ChromeLayoutProvider::Get()->GetDistanceMetric(
             views::DISTANCE_RELATED_LABEL_HORIZONTAL);

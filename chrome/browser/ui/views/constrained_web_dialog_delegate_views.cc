@@ -86,7 +86,8 @@ class ConstrainedDialogWebView : public views::WebView,
 
   // views::WebView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
@@ -461,14 +462,16 @@ bool ConstrainedDialogWebView::AcceleratorPressed(
   return true;
 }
 
-gfx::Size ConstrainedDialogWebView::CalculatePreferredSize() const {
-  if (impl_->closed_via_webui())
+gfx::Size ConstrainedDialogWebView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (impl_->closed_via_webui()) {
     return gfx::Size();
+  }
 
   // If auto-resizing is enabled and the dialog has been auto-resized,
   // View::GetPreferredSize() won't try to calculate the size again, since a
   // preferred size has been set explicitly from the renderer.
-  gfx::Size size = WebView::CalculatePreferredSize();
+  gfx::Size size = WebView::CalculatePreferredSize(available_size);
   GetWebDialogDelegate()->GetDialogSize(&size);
   return size;
 }

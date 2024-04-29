@@ -259,7 +259,8 @@ bool EnterpriseStartupDialogView::ShouldShowWindowTitle() const {
   return false;
 }
 
-gfx::Size EnterpriseStartupDialogView::CalculatePreferredSize() const {
+gfx::Size EnterpriseStartupDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kDialogContentWidth, kDialogContentHeight);
 }
 

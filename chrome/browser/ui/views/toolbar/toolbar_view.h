@@ -196,7 +196,8 @@ class ToolbarView : public views::AccessiblePaneView,
                                   ui::Accelerator* accelerator) const override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   void Layout(PassKey) override;
   void OnThemeChanged() override;

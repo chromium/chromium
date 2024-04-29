@@ -609,7 +609,8 @@ class AppMenu::CutCopyPasteView : public AppMenuView {
   CutCopyPasteView& operator=(const CutCopyPasteView&) = delete;
 
   // Overridden from View.
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // Returned height doesn't matter as MenuItemView forces everything to the
     // height of the menuitemview.
     return {
@@ -754,7 +755,8 @@ class AppMenu::ZoomView : public AppMenuView {
   ~ZoomView() override = default;
 
   // Overridden from View.
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // The increment/decrement button are forced to the same width.
     int button_width = std::max(increment_button_->GetPreferredSize().width(),
                                 decrement_button_->GetPreferredSize().width());

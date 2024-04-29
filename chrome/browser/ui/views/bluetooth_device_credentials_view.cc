@@ -152,7 +152,8 @@ views::View* BluetoothDeviceCredentialsView::GetInitiallyFocusedView() {
   return passkey_text_;
 }
 
-gfx::Size BluetoothDeviceCredentialsView::CalculatePreferredSize() const {
+gfx::Size BluetoothDeviceCredentialsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   constexpr int kDialogWidth = 360;
   int height =
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDialogWidth);

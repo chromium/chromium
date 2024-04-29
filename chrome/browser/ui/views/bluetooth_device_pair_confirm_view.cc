@@ -141,7 +141,8 @@ void BluetoothDevicePairConfirmView::InitControls(
   contents_wrapper_ = AddChildView(std::move(contents_wrapper));
 }
 
-gfx::Size BluetoothDevicePairConfirmView::CalculatePreferredSize() const {
+gfx::Size BluetoothDevicePairConfirmView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   constexpr int kDialogWidth = 440;
   int height =
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDialogWidth);

@@ -733,7 +733,8 @@ bool ToolbarView::GetAcceleratorForCommandId(
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarView, views::View overrides:
 
-gfx::Size ToolbarView::CalculatePreferredSize() const {
+gfx::Size ToolbarView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size size;
   switch (display_mode_) {
     case DisplayMode::CUSTOM_TAB:

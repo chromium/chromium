@@ -365,8 +365,9 @@ bool FindBarView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
-gfx::Size FindBarView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
+gfx::Size FindBarView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = views::View::CalculatePreferredSize(available_size);
   // Ignore the preferred size for the match count label, and just let it take
   // up part of the space for the input textfield. This prevents the overall
   // width from changing every time the match count text changes.

@@ -170,7 +170,8 @@ void TaskManagerView::MaybeHighlightActiveTask() {
   }
 }
 
-gfx::Size TaskManagerView::CalculatePreferredSize() const {
+gfx::Size TaskManagerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // The TaskManagerView's preferred size is used to size the hosting Widget
   // when the Widget does not have `initial_restored_bounds_` set. The minimum
   // width below ensures that there is sufficient space for the task manager's

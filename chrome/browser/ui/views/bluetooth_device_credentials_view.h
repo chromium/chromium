@@ -33,7 +33,8 @@ class BluetoothDeviceCredentialsView : public views::DialogDelegateView,
   void InitControls(const std::u16string& device_identifier);
 
   // View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // DialogDelegateView:
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
