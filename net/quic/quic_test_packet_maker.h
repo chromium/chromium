@@ -503,16 +503,16 @@ class QuicTestPacketMaker {
 // This implements a "builder" pattern, and method calls can be chained:
 //
 //   auto packet = maker.Packet(num)
-//     ->AddFooFrame(..)
-//     ->AddBarFrame(..)
-//     ->Build();
+//     .AddFooFrame(..)
+//     .AddBarFrame(..)
+//     .Build();
 //
 //  Methods may also be called individually:
 //
-//  auto* builder = maker.Packet(num);
-//  builder->AddFooFrame(..);
-//  builder->AddBarFrame(..);
-//  auto packet = builder->Build();
+//  auto& builder = maker.Packet(num);
+//  builder.AddFooFrame(..);
+//  builder.AddBarFrame(..);
+//  auto packet = builder.Build();
 class QuicTestPacketBuilder {
  public:
   QuicTestPacketBuilder(uint64_t packet_number,
