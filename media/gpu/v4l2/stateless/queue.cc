@@ -133,8 +133,8 @@ std::optional<uint32_t> BaseQueue::GetFreeBufferIndex() {
   uint32_t index = *it;
   free_buffer_indices_.erase(index);
 
-  DVLOGF(5) << free_buffer_indices_.size() << " buffers available for "
-            << Description();
+  DVLOGF(5) << "Now " << free_buffer_indices_.size()
+            << " buffers available for " << Description();
 
   return index;
 }
@@ -427,22 +427,6 @@ bool OutputQueue::PrepareBuffers(size_t num_buffers) {
     frames_.push_back(std::move(frame));
   }
 
-  // Queue all buffers after allocation in anticipation of being used.
-  for (auto index = free_buffer_indices_.begin();
-       index != free_buffer_indices_.end();) {
-    if (!device_->QueueBuffer(buffers_[*index], base::ScopedFD(-1))) {
-      LOG(ERROR) << "Failed to queue buffer # " << *index;
-      return false;
-    }
-
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        kTracingCategory, kV4L2OutputQueue,
-        TRACE_ID_LOCAL(buffers_[*index].GetIndex()), kDecodedBufferIndex,
-        buffers_[*index].GetIndex());
-
-    free_buffer_indices_.erase(index++);
-  }
-
   return true;
 }
 
@@ -501,32 +485,44 @@ scoped_refptr<FrameResource> OutputQueue::GetFrame(uint64_t frame_id) {
   return nullptr;
 }
 
-bool OutputQueue::QueueBufferByFrameID(uint64_t frame_id) {
-  DVLOGF(4) << "frame id : " << frame_id;
-
-  auto it = decoded_and_dequeued_frames_.find(frame_id);
-  if (it != decoded_and_dequeued_frames_.end()) {
-    const uint32_t buffer_index = it->second;
-    decoded_and_dequeued_frames_.erase(it);
-
-    DVLOGF(4) << "buffer " << buffer_index << " returned";
-
-    Buffer& buffer = buffers_[buffer_index];
-
-    if (!device_->QueueBuffer(buffer, base::ScopedFD(-1))) {
-      NOTREACHED() << "Failed to queue buffer.";
-      return false;
-    }
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kV4L2OutputQueue,
-                                      TRACE_ID_LOCAL(buffer.GetIndex()),
-                                      kDecodedBufferIndex, buffer.GetIndex());
-
-    return true;
+bool OutputQueue::QueueBuffer() {
+  auto buffer_index = GetFreeBufferIndex();
+  if (!buffer_index) {
+    return false;
   }
 
-  LOG(ERROR) << "Unable to queue frame id (" << frame_id
-             << ") because no corresponding buffer could be found.";
-  return false;
+  const uint32_t index = buffer_index.value();
+
+  if (!device_->QueueBuffer(buffers_[index], base::ScopedFD(-1))) {
+    return false;
+  }
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kV4L2OutputQueue,
+                                    TRACE_ID_LOCAL(index), kDecodedBufferIndex,
+                                    index);
+
+  DVLOGF(4) << "Queued buffer : " << index;
+
+  return true;
+}
+
+void OutputQueue::ReturnBuffer(uint64_t frame_id) {
+  DVLOGF(4) << "Returning frame id : " << frame_id;
+
+  auto it = decoded_and_dequeued_frames_.find(frame_id);
+  if (it == decoded_and_dequeued_frames_.end()) {
+    NOTREACHED() << "Decoded buffer with frame id (" << frame_id
+                 << ") not previously dequeued.";
+  }
+
+  const uint32_t buffer_index = it->second;
+  DVLOGF(4) << "Buffer (" << buffer_index << ") returned.";
+  decoded_and_dequeued_frames_.erase(it);
+
+  if (!free_buffer_indices_.insert(buffer_index).second) {
+    NOTREACHED() << "There is no way that a reclaimed buffer is already "
+                    "present in the list";
+  }
 }
 
 std::string OutputQueue::Description() {

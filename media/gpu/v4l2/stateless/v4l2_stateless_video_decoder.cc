@@ -362,6 +362,11 @@ V4L2StatelessVideoDecoder::CreateSurface() {
     return nullptr;
   }
 
+  if (output_queue_ && output_queue_->FreeBufferCount() == 0) {
+    DVLOGF(2) << "No free |output_queue_| buffers.";
+    return nullptr;
+  }
+
   const uint64_t frame_id =
       frame_id_generator_.GenerateNextId().GetUnsafeValue();
 
@@ -369,15 +374,14 @@ V4L2StatelessVideoDecoder::CreateSurface() {
   // through the queue and make sure all are processed.
   last_frame_id_generated_ = frame_id;
 
-  // This callback is used to enqueue the buffer. It is called by the
-  // |StatelessDecodeSurface| when it is no longer referenced and therefore
-  // usable for other frames.
-  auto enqueue_cb = base::BindPostTaskToCurrentDefault(base::BindOnce(
-      &V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID,
-      weak_ptr_factory_for_events_.GetWeakPtr(), frame_id));
+  // It is called by the |StatelessDecodeSurface| when the surface is no longer
+  // referenced and therefore usable for other frames.
+  auto return_buffer_cb = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&V4L2StatelessVideoDecoder::ReturnDecodedOutputBuffer,
+                     weak_ptr_factory_for_events_.GetWeakPtr(), frame_id));
 
-  return base::MakeRefCounted<StatelessDecodeSurface>(frame_id,
-                                                      std::move(enqueue_cb));
+  return base::MakeRefCounted<StatelessDecodeSurface>(
+      frame_id, std::move(return_buffer_cb));
 }
 
 bool V4L2StatelessVideoDecoder::SubmitFrame(
@@ -430,6 +434,11 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
   }
 
   base::ScopedFD request_fd = device_->CreateRequestFD();
+
+  if (!output_queue_->QueueBuffer()) {
+    LogError(media_log_, "Unable to queue an output buffer.");
+    return false;
+  }
 
   if (input_queue_->SubmitCompressedFrameData(
           data, size, dec_surface->FrameID(), request_fd)) {
@@ -682,8 +691,7 @@ void V4L2StatelessVideoDecoder::DequeueBuffers(bool success) {
                      weak_ptr_factory_for_events_.GetWeakPtr()));
 }
 
-void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
-    uint64_t frame_id) {
+void V4L2StatelessVideoDecoder::ReturnDecodedOutputBuffer(uint64_t frame_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4) << "frame id: " << frame_id;
   // The surface needs to be created for |SubmitFrame| to be called. But
@@ -691,8 +699,13 @@ void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
   // not be created, this function will still get called on the destruction of
   // the surface.
   if (output_queue_) {
-    output_queue_->QueueBufferByFrameID(frame_id);
+    output_queue_->ReturnBuffer(frame_id);
   }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue,
+                     weak_ptr_factory_for_events_.GetWeakPtr()));
 
   if (flush_cb_ && (last_frame_id_generated_ == last_frame_id_dequeued_)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
