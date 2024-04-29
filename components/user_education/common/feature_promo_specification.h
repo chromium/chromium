@@ -315,8 +315,6 @@ class FeaturePromoSpecification {
 
   // Set the promo subtype. Setting the subtype to most values other than
   // `kNormal` requires being on an allowlist.
-  //
-  // For rotating promos, use CreateForRotatingPromo() instead.
   FeaturePromoSpecification& SetPromoSubtype(PromoSubtype promo_subtype);
 
   // Set the anchor element filter.
@@ -333,6 +331,8 @@ class FeaturePromoSpecification {
 
   // Get the anchor element based on `anchor_element_id`,
   // `anchor_element_filter`, and `context`.
+  //
+  // For rotating promos, call this method on the specific sub-promo.
   ui::TrackedElement* GetAnchorElement(ui::ElementContext context) const;
 
   const base::Feature* feature() const { return feature_; }
@@ -411,6 +411,12 @@ class FeaturePromoSpecification {
     promo_subtype_ = promo_subtype;
     return *this;
   }
+
+  // Force the type of promo to rotating and set the given `rotating_promos`,
+  // bypassing permission checks and safeguards.
+  static FeaturePromoSpecification CreateRotatingPromoForTesting(
+      const base::Feature& feature,
+      RotatingPromos rotating_promos);
 
  private:
   static constexpr HelpBubbleArrow kDefaultBubbleArrow =

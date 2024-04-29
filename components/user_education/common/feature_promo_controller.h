@@ -420,12 +420,22 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Performs common logic for determining if a feature promo for `iph_feature`
   // could be shown right now.
   //
-  // The optional parameters `spec`, `lifecycle`, and `anchor_element` will be
-  // populated on success, if specified.
+  // The optional parameters `display_spec`, `primary_spec`, `lifecycle`, and
+  // `anchor_element` will be populated on success, if specified:
+  //  - `primary_spec` - the specification of the promo that has been requested
+  //    to be shown; for rotating promos, this is different from the
+  //    `display_spec`.
+  //  - `display_spec` - the specification of the actual promo to be shown; for
+  //    non-rotating promos, this is the same as `primary_spec`.
+  //  - `lifecycle` - an object representing the lifecycle of the promo; used to
+  //    determine whether the promo can show and record pref and histogram data
+  //    when it does.
+  //  - `anchor_element` - the UI element the promo should attach to.
   FeaturePromoResult CanShowPromoCommon(
       const FeaturePromoParams& params,
       bool for_demo,
-      const FeaturePromoSpecification** spec = nullptr,
+      const FeaturePromoSpecification** primary_spec = nullptr,
+      const FeaturePromoSpecification** display_spec = nullptr,
       std::unique_ptr<FeaturePromoLifecycle>* lifecycle = nullptr,
       ui::TrackedElement** anchor_element = nullptr) const;
 

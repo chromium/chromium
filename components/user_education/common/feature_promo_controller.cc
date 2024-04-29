@@ -161,15 +161,17 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
     FeaturePromoParams params,
     bool for_demo) {
   // Perform common checks.
-  const FeaturePromoSpecification* spec = nullptr;
+  const FeaturePromoSpecification* primary_spec = nullptr;
+  const FeaturePromoSpecification* display_spec = nullptr;
   std::unique_ptr<FeaturePromoLifecycle> lifecycle = nullptr;
   ui::TrackedElement* anchor_element = nullptr;
-  auto result =
-      CanShowPromoCommon(params, for_demo, &spec, &lifecycle, &anchor_element);
+  auto result = CanShowPromoCommon(params, for_demo, &primary_spec,
+                                   &display_spec, &lifecycle, &anchor_element);
   if (!result) {
     return result;
   }
-  CHECK(spec);
+  CHECK(primary_spec);
+  CHECK(display_spec);
   CHECK(lifecycle);
   CHECK(anchor_element);
 
@@ -203,7 +205,7 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
 
   // Construct the parameters for the promotion.
   ShowPromoBubbleParams show_params;
-  show_params.spec = spec;
+  show_params.spec = display_spec;
   show_params.anchor_element = anchor_element;
   show_params.screen_reader_prompt_available = screen_reader_available;
   show_params.body_format = std::move(params.body_params);
@@ -221,7 +223,7 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
   }
 
   // Update the most recent promo info.
-  last_promo_info_ = session_policy_->SpecificationToPromoInfo(*spec);
+  last_promo_info_ = session_policy_->SpecificationToPromoInfo(*primary_spec);
   session_policy_->NotifyPromoShown(last_promo_info_);
 
   bubble_closed_callback_ = std::move(params.close_callback);
@@ -251,9 +253,10 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
     EndPromo(*current, FeaturePromoClosedReason::kOverrideForPrecedence);
   }
 
-  // Snooze and tutorial are not supported for critical promos.
-  DCHECK_NE(FeaturePromoSpecification::PromoType::kSnooze, spec.promo_type());
-  DCHECK_NE(FeaturePromoSpecification::PromoType::kTutorial, spec.promo_type());
+  // Snooze, tutorial, and rotating are not supported for critical promos.
+  CHECK_NE(FeaturePromoSpecification::PromoType::kSnooze, spec.promo_type());
+  CHECK_NE(FeaturePromoSpecification::PromoType::kTutorial, spec.promo_type());
+  CHECK_NE(FeaturePromoSpecification::PromoType::kRotating, spec.promo_type());
 
   ShowPromoBubbleParams show_params;
   show_params.spec = &spec;
@@ -603,7 +606,8 @@ void FeaturePromoControllerCommon::FailQueuedPromos() {
 FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     const FeaturePromoParams& params,
     bool for_demo,
-    const FeaturePromoSpecification** spec_out,
+    const FeaturePromoSpecification** primary_spec_out,
+    const FeaturePromoSpecification** display_spec_out,
     std::unique_ptr<FeaturePromoLifecycle>* lifecycle_out,
     ui::TrackedElement** anchor_element_out) const {
   // Ensure that this promo isn't already queued for startup.
@@ -621,12 +625,6 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     return FeaturePromoResult::kError;
   }
 
-  // TODO(dfried): support rotating promos.
-  if (spec->promo_type() == FeaturePromoSpecification::PromoType::kRotating) {
-    NOTIMPLEMENTED();
-    return FeaturePromoResult::kError;
-  }
-
   // When not bypassing the normal gating systems, don't try to show promos for
   // disabled features. This prevents us from calling into the Feature
   // Engagement tracker more times than necessary, emitting unnecessary logging
@@ -638,11 +636,10 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
 
   // Check the lifecycle, but only if not in demo mode. This is especially
   // important for snoozeable, app, and legal notice promos.
-  std::unique_ptr<FeaturePromoLifecycle> lifecycle;
+  auto lifecycle = std::make_unique<FeaturePromoLifecycle>(
+      storage_service_, params.key, &*params.feature, spec->promo_type(),
+      spec->promo_subtype(), spec->rotating_promos().size());
   if (!for_demo && !in_iph_demo_mode_) {
-    lifecycle = std::make_unique<FeaturePromoLifecycle>(
-        storage_service_, params.key, &*params.feature, spec->promo_type(),
-        spec->promo_subtype(), 0);
     if (const auto result = lifecycle->CanShow(); !result) {
       return result;
     }
@@ -671,9 +668,24 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     return FeaturePromoResult::kBlockedByPromo;
   }
 
+  // For rotating promos, cycle forward to the next valid index.
+  auto* anchor_spec = spec;
+  if (spec->promo_type() == FeaturePromoSpecification::PromoType::kRotating) {
+    const int current_index = lifecycle->GetPromoIndex();
+    int index = current_index;
+    while (!spec->rotating_promos()[index].has_value()) {
+      index = (index + 1) % spec->rotating_promos().size();
+      CHECK_NE(index, current_index)
+          << "Wrapped around while looking for a valid rotating promo; this "
+             "should have been caught during promo registration.";
+    }
+    lifecycle->SetPromoIndex(index);
+    anchor_spec = &*spec->rotating_promos().at(index);
+  }
+
   // Fetch the anchor element. For now, assume all elements are Views.
   ui::TrackedElement* const anchor_element =
-      spec->GetAnchorElement(GetAnchorContext());
+      anchor_spec->GetAnchorElement(GetAnchorContext());
   if (!anchor_element) {
     return FeaturePromoResult::kBlockedByUi;
   }
@@ -685,20 +697,16 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
 
   // Output the lifecycle if it was requested.
   if (lifecycle_out) {
-    if (!lifecycle) {
-      // If in demo mode but the caller has asked for a lifecycle anyway, then
-      // provide one.
-      lifecycle = std::make_unique<FeaturePromoLifecycle>(
-          storage_service_, params.key, &*params.feature, spec->promo_type(),
-          spec->promo_subtype(), 0);
-    }
     *lifecycle_out = std::move(lifecycle);
   }
 
   // If the caller has asked for the specification or anchor element, then
   // provide them.
-  if (spec_out) {
-    *spec_out = spec;
+  if (primary_spec_out) {
+    *primary_spec_out = spec;
+  }
+  if (display_spec_out) {
+    *display_spec_out = anchor_spec;
   }
   if (anchor_element_out) {
     *anchor_element_out = anchor_element;

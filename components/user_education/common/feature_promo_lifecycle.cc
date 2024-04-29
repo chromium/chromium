@@ -151,6 +151,12 @@ int FeaturePromoLifecycle::GetPromoIndex() const {
   return *promo_index_;
 }
 
+void FeaturePromoLifecycle::SetPromoIndex(int new_index) {
+  CHECK_EQ(PromoType::kRotating, promo_type_);
+  CHECK_LT(new_index, num_rotating_entries_);
+  promo_index_ = new_index;
+}
+
 void FeaturePromoLifecycle::OnPromoShown(
     std::unique_ptr<HelpBubble> help_bubble,
     feature_engagement::Tracker* tracker) {

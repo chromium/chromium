@@ -56,6 +56,7 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -104,6 +105,7 @@ constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 }  // namespace
 
+using user_education::FeaturePromoClosedReason;
 using user_education::FeaturePromoController;
 using user_education::FeaturePromoData;
 using user_education::FeaturePromoHandle;
@@ -1419,6 +1421,23 @@ class BrowserFeaturePromoControllerViewsTest
         },
         expected, desc.str());
   }
+
+  auto ClosePromo() {
+    return Steps(
+        PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
+        WaitForHide(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+            true));
+  }
+
+  auto AbortPromo() {
+    return Steps(
+        WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+                 [](views::View* bubble) { bubble->GetWidget()->Close(); }),
+        WaitForHide(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+        FlushEvents());
+  }
 };
 
 TEST_F(BrowserFeaturePromoControllerViewsTest,
@@ -1533,6 +1552,268 @@ TEST_F(BrowserFeaturePromoControllerViewsTest, TitleTextSubstitution_Plural) {
           user_education::HelpBubbleView::kTitleTextIdForTesting,
           &views::Label::GetText,
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 3)));
+}
+
+namespace {
+
+BASE_FEATURE(kRotatingPromoIPHFeature,
+             "TEST_RotatingPromoIPHFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}
+
+class BrowserFeaturePromoControllerRotatingPromoTest
+    : public BrowserFeaturePromoControllerViewsTest {
+ public:
+  BrowserFeaturePromoControllerRotatingPromoTest() = default;
+  ~BrowserFeaturePromoControllerRotatingPromoTest() override = default;
+
+  template <typename... Args>
+  void RegisterRotatingPromo(Args&&... args) {
+    registry()->clear_features_for_testing();
+    FeaturePromoSpecification::RotatingPromos promos;
+    (promos.emplace_back(std::forward<Args>(args)), ...);
+    registry()->RegisterFeature(
+        FeaturePromoSpecification::CreateRotatingPromoForTesting(
+            kRotatingPromoIPHFeature, std::move(promos)));
+  }
+
+  auto VerifyPromoData(
+      int show_count,
+      int snooze_count,
+      std::optional<FeaturePromoClosedReason> last_closed_reason) {
+    auto result =
+        Steps(WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting),
+              FlushEvents(),
+              CheckResult([this]() { return GetData().show_count; }, show_count,
+                          "Check show count."),
+              CheckResult([this]() { return GetData().snooze_count; },
+                          snooze_count, "Check snooze count."));
+    if (last_closed_reason) {
+      result.emplace_back(
+          CheckResult([this]() { return GetData().last_dismissed_by; },
+                      *last_closed_reason, "Check close reason."));
+    }
+    return result;
+  }
+
+  auto VerifyHasHelpBubble(ui::ElementIdentifier id) {
+    return CheckView(id, [](views::View* view) {
+      return view->GetProperty(user_education::kHasInProductHelpPromoKey);
+    });
+  }
+
+ private:
+  FeaturePromoData GetData() {
+    auto result = storage_service()->ReadPromoData(kRotatingPromoIPHFeature);
+    CHECK(result.has_value());
+    return *result;
+  }
+};
+
+TEST_F(BrowserFeaturePromoControllerRotatingPromoTest, OnePromo) {
+  RegisterRotatingPromo(FeaturePromoSpecification::CreateForSnoozePromo(
+      kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+      IDS_CHROME_TIP));
+
+  // Show the rotating promo twice, closing it different ways. The same text
+  // should re-show each time.
+  RunTestSequence(MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+                  ClosePromo(),
+                  VerifyPromoData(1, 0, FeaturePromoClosedReason::kCancel),
+                  MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+                  PressButton(HelpBubbleView::kDefaultButtonIdForTesting),
+                  VerifyPromoData(2, 0, FeaturePromoClosedReason::kDismiss));
+}
+
+TEST_F(BrowserFeaturePromoControllerRotatingPromoTest, TwoPromosRotating) {
+  int call_count = 0;
+  RegisterRotatingPromo(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+          IDS_CHROME_TIP),
+      FeaturePromoSpecification::CreateForCustomAction(
+          kRotatingPromoIPHFeature, kTopContainerElementId, IDS_OK,
+          IDS_CHROME_TIP,
+          base::BindLambdaForTesting(
+              [&call_count](ui::ElementContext, FeaturePromoHandle) {
+                ++call_count;
+              })));
+
+  // Show the rotating promo three times, verifying that it wraps around to the,
+  // first promo after the second.
+  RunTestSequence(
+      MaybeShowPromo({kRotatingPromoIPHFeature}),
+      CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+      VerifyHasHelpBubble(kToolbarAppMenuButtonElementId), ClosePromo(),
+      MaybeShowPromo({kRotatingPromoIPHFeature}),
+      CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_OK)),
+      VerifyHasHelpBubble(kTopContainerElementId),
+      PressButton(HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
+      CheckResult([&call_count]() { return call_count; }, 1),
+      MaybeShowPromo({kRotatingPromoIPHFeature}),
+      CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+      VerifyHasHelpBubble(kToolbarAppMenuButtonElementId),
+      PressButton(HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
+      CheckResult([&call_count]() { return call_count; }, 1));
+}
+
+TEST_F(BrowserFeaturePromoControllerRotatingPromoTest, SnoozeButtonRepeats) {
+  int call_count = 0;
+  RegisterRotatingPromo(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+          IDS_CHROME_TIP),
+      FeaturePromoSpecification::CreateForCustomAction(
+          kRotatingPromoIPHFeature, kTopContainerElementId, IDS_OK,
+          IDS_CHROME_TIP,
+          base::BindLambdaForTesting(
+              [&call_count](ui::ElementContext, FeaturePromoHandle) {
+                ++call_count;
+              })));
+
+  // Show the rotating promo three times, snoozing the first time. Verify that
+  // snoozing re-shows the same promo.
+  RunTestSequence(
+      MaybeShowPromo({kRotatingPromoIPHFeature}),
+      CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+      VerifyHasHelpBubble(kToolbarAppMenuButtonElementId),
+      PressButton(HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
+      VerifyPromoData(1, 1, std::nullopt),
+      MaybeShowPromo({kRotatingPromoIPHFeature}),
+      CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+      VerifyHasHelpBubble(kToolbarAppMenuButtonElementId), ClosePromo(),
+      VerifyPromoData(2, 1, FeaturePromoClosedReason::kCancel),
+      MaybeShowPromo({kRotatingPromoIPHFeature}),
+      CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                        &views::Label::GetText,
+                        l10n_util::GetStringUTF16(IDS_OK)),
+      VerifyHasHelpBubble(kTopContainerElementId),
+      PressButton(HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
+      CheckResult([&call_count]() { return call_count; }, 1));
+}
+
+TEST_F(BrowserFeaturePromoControllerRotatingPromoTest, RotatesPastGaps) {
+  RegisterRotatingPromo(
+      std::nullopt,
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+          IDS_CHROME_TIP, IDS_OK, FeaturePromoSpecification::AcceleratorInfo()),
+      std::nullopt,
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId, IDS_OK,
+          IDS_CHROME_TIP, FeaturePromoSpecification::AcceleratorInfo()),
+      std::nullopt, std::nullopt);
+
+  // Show the rotating promo three times, verifying that it skips gaps.
+  RunTestSequence(MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+                  ClosePromo(), MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_OK)),
+                  ClosePromo(), MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+                  ClosePromo());
+}
+
+TEST_F(BrowserFeaturePromoControllerRotatingPromoTest,
+       ContinuesWithNewRotatingPromo) {
+  RegisterRotatingPromo(
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+          IDS_CHROME_TIP, IDS_OK, FeaturePromoSpecification::AcceleratorInfo()),
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId, IDS_OK,
+          IDS_CHROME_TIP, FeaturePromoSpecification::AcceleratorInfo()));
+
+  // Show the two existing promos, putting the promo at the end of the list.
+  RunTestSequence(MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+                  ClosePromo(), MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_OK)),
+                  ClosePromo());
+
+  // Re-register with an additional promo.
+  RegisterRotatingPromo(
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+          IDS_CHROME_TIP, IDS_OK, FeaturePromoSpecification::AcceleratorInfo()),
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId, IDS_OK,
+          IDS_CHROME_TIP, FeaturePromoSpecification::AcceleratorInfo()),
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId, IDS_CANCEL,
+          IDS_CHROME_TIP, FeaturePromoSpecification::AcceleratorInfo()));
+
+  // Show one more promo; it should be the new one.
+  RunTestSequence(MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_CANCEL)),
+                  ClosePromo());
+}
+
+TEST_F(BrowserFeaturePromoControllerRotatingPromoTest,
+       ContinuesAfterPromoRemoved) {
+  RegisterRotatingPromo(
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+          IDS_CHROME_TIP, IDS_OK, FeaturePromoSpecification::AcceleratorInfo()),
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId, IDS_OK,
+          IDS_CHROME_TIP, FeaturePromoSpecification::AcceleratorInfo()),
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId, IDS_CANCEL,
+          IDS_CHROME_TIP, FeaturePromoSpecification::AcceleratorInfo()));
+
+  // Show the first promo, putting the promo at the second index.
+  RunTestSequence(MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_CHROME_TIP)),
+                  ClosePromo());
+
+  // Re-register with the second promo removed.
+  RegisterRotatingPromo(
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId,
+          IDS_CHROME_TIP, IDS_OK, FeaturePromoSpecification::AcceleratorInfo()),
+      std::nullopt,
+      FeaturePromoSpecification::CreateForToastPromo(
+          kRotatingPromoIPHFeature, kToolbarAppMenuButtonElementId, IDS_CANCEL,
+          IDS_CHROME_TIP, FeaturePromoSpecification::AcceleratorInfo()));
+
+  // Show one more promo; it should be the third.
+  RunTestSequence(MaybeShowPromo({kRotatingPromoIPHFeature}),
+                  CheckViewProperty(HelpBubbleView::kBodyTextIdForTesting,
+                                    &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(IDS_CANCEL)),
+                  ClosePromo());
 }
 
 namespace {
@@ -1703,23 +1984,6 @@ class BrowserFeaturePromoControllerPriorityTest
         [this]() { return controller()->GetCurrentPromoFeature(); }, feature,
         base::StringPrintf("ExpectShowingPromo %s",
                            feature ? feature->name : "[none]"));
-  }
-
-  auto ClosePromo() {
-    return Steps(
-        PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
-        WaitForHide(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
-            true));
-  }
-
-  auto AbortPromo() {
-    return Steps(
-        WithView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
-                 [](views::View* bubble) { bubble->GetWidget()->Close(); }),
-        WaitForHide(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-        FlushEvents());
   }
 
   auto ResetSessionData(base::TimeDelta since_session_start,

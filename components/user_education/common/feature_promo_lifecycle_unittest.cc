@@ -307,7 +307,7 @@ TEST_F(FeaturePromoLifecycleTest, ClosePromoBubbleAndContinue_kKeyedNotice) {
   EXPECT_EQ(1, promo_data->show_count);
 }
 
-TEST_F(FeaturePromoLifecycleTest, RotatingPromoIndex) {
+TEST_F(FeaturePromoLifecycleTest, RotatingPromoGetIndex) {
   set_promo_type(PromoType::kRotating);
 
   // The tracker will be dismissed every time the promo is ended.
@@ -342,6 +342,23 @@ TEST_F(FeaturePromoLifecycleTest, RotatingPromoIndex) {
   lifecycle->OnPromoEnded(CloseReason::kDismiss, false);
   promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
   EXPECT_EQ(1, promo_data->promo_index);
+}
+
+TEST_F(FeaturePromoLifecycleTest, RotatingPromoSetIndex) {
+  set_promo_type(PromoType::kRotating);
+
+  // The tracker will be dismissed every time the promo is ended.
+  EXPECT_CALL(tracker_, Dismissed).Times(1);
+
+  // Load the lifecycle but skip to promo at index 2.
+  auto lifecycle = CreateLifecycle(kTestIPHFeature);
+  EXPECT_EQ(0, lifecycle->GetPromoIndex());
+  lifecycle->SetPromoIndex(2);
+  EXPECT_EQ(2, lifecycle->GetPromoIndex());
+  lifecycle->OnPromoShown(CreateHelpBubble(), &tracker_);
+  lifecycle->OnPromoEnded(CloseReason::kDismiss, false);
+  auto promo_data = storage_service_.ReadPromoData(kTestIPHFeature);
+  EXPECT_EQ(3, promo_data->promo_index);
 }
 
 template <typename... Args>

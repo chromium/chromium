@@ -296,11 +296,13 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForRotatingPromo(
     const base::Feature& feature,
     RotatingPromos rotating_promos) {
   CHECK(IsAllowedRotatingPromo(feature));
+  CHECK_GT(rotating_promos.size(), 0U);
   FeaturePromoSpecification spec;
   spec.feature_ = &feature;
   spec.promo_type_ = PromoType::kRotating;
 
   // Check the rotating promos to ensure they're all normal promos.
+  bool found_rotating_promo = false;
   for (const auto& promo : rotating_promos) {
     if (promo) {
       CHECK_EQ(PromoSubtype::kNormal, promo->promo_subtype())
@@ -310,8 +312,10 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForRotatingPromo(
           << "Rotating promo cannot contain promo of type Legacy";
       CHECK_NE(PromoType::kUnspecified, promo->promo_type())
           << "Rotating promo cannot contain promo of type Unspecified";
+      found_rotating_promo = true;
     }
   }
+  CHECK(found_rotating_promo);
   spec.rotating_promos_ = std::move(rotating_promos);
 
   return spec;
@@ -431,6 +435,9 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetHighlightedMenuItem(
 
 ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
     ui::ElementContext context) const {
+  // Should not be called directly on a rotating promo.
+  CHECK_NE(PromoType::kRotating, promo_type_);
+
   auto* const element_tracker = ui::ElementTracker::GetElementTracker();
   if (anchor_element_filter_) {
     return anchor_element_filter_.Run(
@@ -444,6 +451,18 @@ ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
                : element_tracker->GetFirstMatchingElement(anchor_element_id_,
                                                           context);
   }
+}
+
+// static
+FeaturePromoSpecification
+FeaturePromoSpecification::CreateRotatingPromoForTesting(
+    const base::Feature& feature,
+    RotatingPromos rotating_promos) {
+  FeaturePromoSpecification spec;
+  spec.feature_ = &feature;
+  spec.promo_type_ = PromoType::kRotating;
+  spec.rotating_promos_ = std::move(rotating_promos);
+  return spec;
 }
 
 std::ostream& operator<<(std::ostream& oss,

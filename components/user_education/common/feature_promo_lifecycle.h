@@ -57,6 +57,17 @@ class FeaturePromoLifecycle {
   // the current value exceeds the number of entries it will wrap around to 0.
   int GetPromoIndex() const;
 
+  // Allows the current promo index to be set (rotating promos only). This is
+  // useful if a previously-available promo has been removed, leaving a gap in
+  // the rotation at the current index.
+  //
+  // For example, say the promos are {P1, null, P2, P3}. Then if GetPromoIndex()
+  // returns 1, the calling code may see the null value and increment the index
+  // to 2. Setting it back on the lifecycle ensures that the correct next index
+  // is stored on completion, so that P3 is shown next time rather than showing
+  // P2 again.
+  void SetPromoIndex(int new_index);
+
   // Notifies that the promo was shown. `tracker` will be used to release the
   // feature when the promo ends.
   void OnPromoShown(std::unique_ptr<HelpBubble> help_bubble,
