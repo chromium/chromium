@@ -2366,6 +2366,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(
     auto result = mojom::PrintWithParamsResultData::New();
     result->params = std::move(page_params);
     result->accessibility_tree = std::move(accessibility_tree);
+    result->generate_document_outline = print_params.generate_document_outline;
     std::move(print_with_params_callback_)
         .Run(mojom::PrintWithParamsResult::NewData(std::move(result)));
     Reset();

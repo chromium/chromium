@@ -432,6 +432,31 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfAsStream) {
   EXPECT_EQ(GetPixelRGB(bitmap_width() / 2, bitmap_height() / 2), 0xff0000u);
 }
 
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, HasDocumentOutline) {
+  NavigateToURLBlockUntilNavigationsComplete(
+      "/print_to_pdf/structured_doc.html");
+
+  Attach();
+
+  base::Value::Dict params;
+  // generating a document outline at the moment requires a tagged pdf
+  params.Set("generateTaggedPDF", true);
+  params.Set("generateDocumentOutline", true);
+  params.Set("printBackground", true);
+  params.Set("paperWidth", kPaperWidth);
+  params.Set("paperHeight", kPaperHeight);
+  params.Set("marginTop", 0);
+  params.Set("marginLeft", 0);
+  params.Set("marginBottom", 0);
+  params.Set("marginRight", 0);
+  params.Set("transferMode", "ReturnAsStream");
+
+  PrintToPdfAsStream(std::move(params));
+
+  std::optional<bool> has_outline = chrome_pdf::PDFDocHasOutline(pdf_span_);
+  EXPECT_THAT(has_outline, testing::Optional(true));
+}
+
 IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, Title) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 

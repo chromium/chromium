@@ -270,6 +270,7 @@ void PrintCompositeClient::CompositeDocument(
     content::RenderFrameHost* render_frame_host,
     const mojom::DidPrintContentParams& content,
     const ui::AXTreeUpdate& accessibility_tree,
+    mojom::GenerateDocumentOutline generate_document_outline,
     mojom::PrintCompositor::DocumentType document_type,
     mojom::PrintCompositor::CompositeDocumentCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -278,6 +279,7 @@ void PrintCompositeClient::CompositeDocument(
   auto* compositor =
       CreateCompositeRequest(document_cookie, render_frame_host, document_type);
   compositor->SetAccessibilityTree(accessibility_tree);
+  compositor->SetGenerateDocumentOutline(generate_document_outline);
 
   for (auto& requested : requested_subframes_) {
     if (!IsDocumentCookieValid(requested->document_cookie_))

@@ -92,6 +92,8 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       override;
   void SetWebContentsURL(const GURL& url) override;
   void SetUserAgent(const std::string& user_agent) override;
+  void SetGenerateDocumentOutline(
+      mojom::GenerateDocumentOutline generate_document_outline) override;
   void SetTitle(const std::string& title) override;
 
  protected:
@@ -268,6 +270,10 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   // If present, the accessibility tree for the document needed to
   // export a tagged (accessible) PDF.
   ui::AXTreeUpdate accessibility_tree_;
+
+  // How (or if) to generate a document outline.
+  mojom::GenerateDocumentOutline generate_document_outline_ =
+      mojom::GenerateDocumentOutline::kNone;
 
   // The title of the document.
   std::string title_;

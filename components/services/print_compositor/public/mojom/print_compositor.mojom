@@ -5,6 +5,7 @@
 module printing.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "printing/mojom/print.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "url/mojom/url.mojom";
@@ -100,6 +101,9 @@ interface PrintCompositor {
 
   // Sets the user-agent string for the document.
   SetUserAgent(string user_agent);
+
+  // Sets how to generate the document outline.
+  SetGenerateDocumentOutline(GenerateDocumentOutline generate_document_outline);
 
   // Sets the title of the document.
   SetTitle(string title);

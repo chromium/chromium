@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace printing {
@@ -85,6 +86,7 @@ class PrintCompositeClient
       content::RenderFrameHost* render_frame_host,
       const mojom::DidPrintContentParams& content,
       const ui::AXTreeUpdate& accessibility_tree,
+      mojom::GenerateDocumentOutline generate_document_outline,
       mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::CompositeDocumentCallback callback);
 

@@ -227,10 +227,9 @@ void PrintCompositorImpl::FinishDocumentComposition(
   docinfo_->callback = std::move(callback);
 
   if (!docinfo_->doc) {
-    docinfo_->doc =
-        MakeDocument(creator_, title_, &accessibility_tree_,
-                     mojom::GenerateDocumentOutline::kNone,
-                     docinfo_->document_type, docinfo_->compositor_stream);
+    docinfo_->doc = MakeDocument(
+        creator_, title_, &accessibility_tree_, generate_document_outline_,
+        docinfo_->document_type, docinfo_->compositor_stream);
   }
 
   HandleDocumentCompletionRequest();
@@ -398,9 +397,9 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
   // document composition is not in effect, i.e. when handling
   // CompositeDocumentToPdf() call.
   SkDynamicMemoryWStream wstream;
-  sk_sp<SkDocument> doc = MakeDocument(
-      creator_, title_, docinfo_ ? nullptr : &accessibility_tree_,
-      mojom::GenerateDocumentOutline::kNone, document_type, wstream);
+  sk_sp<SkDocument> doc =
+      MakeDocument(creator_, title_, docinfo_ ? nullptr : &accessibility_tree_,
+                   generate_document_outline_, document_type, wstream);
 
   for (const auto& page : pages) {
     TRACE_EVENT0("print", "PrintCompositorImpl::CompositePages draw page");
@@ -410,10 +409,9 @@ mojom::PrintCompositor::Status PrintCompositorImpl::CompositePages(
     if (docinfo_) {
       // Create full document if needed.
       if (!docinfo_->doc) {
-        docinfo_->doc =
-            MakeDocument(creator_, title_, &accessibility_tree_,
-                         mojom::GenerateDocumentOutline::kNone,
-                         docinfo_->document_type, docinfo_->compositor_stream);
+        docinfo_->doc = MakeDocument(
+            creator_, title_, &accessibility_tree_, generate_document_outline_,
+            docinfo_->document_type, docinfo_->compositor_stream);
       }
 
       // Collect this page into full document.
@@ -536,6 +534,11 @@ PrintCompositorImpl::RequestInfo::RequestInfo(
       callback(std::move(callback)) {}
 
 PrintCompositorImpl::RequestInfo::~RequestInfo() = default;
+
+void PrintCompositorImpl::SetGenerateDocumentOutline(
+    mojom::GenerateDocumentOutline generate_document_outline) {
+  generate_document_outline_ = generate_document_outline;
+}
 
 void PrintCompositorImpl::SetTitle(const std::string& title) {
   title_ = title;

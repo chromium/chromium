@@ -284,6 +284,7 @@ interface PrintPreviewUI {
 struct PrintWithParamsResultData {
   DidPrintDocumentParams params;
   ax.mojom.AXTreeUpdate accessibility_tree;
+  GenerateDocumentOutline generate_document_outline = kNone;
 };
 
 enum PrintFailureReason {

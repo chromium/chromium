@@ -629,7 +629,8 @@ void PrintViewManagerBase::DidPrintDocument(
     auto* client = PrintCompositeClient::FromWebContents(web_contents());
     client->CompositeDocument(
         params->document_cookie, GetCurrentTargetFrame(), content,
-        ui::AXTreeUpdate(), GetCompositorDocumentType(),
+        ui::AXTreeUpdate(), mojom::GenerateDocumentOutline::kNone,
+        GetCompositorDocumentType(),
         base::BindOnce(&PrintViewManagerBase::OnComposeDocumentDone,
                        weak_ptr_factory_.GetWeakPtr(), params->document_cookie,
                        params->page_size, params->content_area,
