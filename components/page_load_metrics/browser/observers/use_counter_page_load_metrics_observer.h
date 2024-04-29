@@ -21,9 +21,7 @@
 
 class UseCounterMetricsRecorder {
  public:
-  // If `is_in_fenced_frames_page` is true, uses prefix
-  // "Blink.UseCounter.FencedFrames.". Otherwise, uses
-  // "Blink.UseCounter.".
+  // If `is_in_fenced_frames_page` is true, only use counter UKMs are recorded.
   explicit UseCounterMetricsRecorder(bool is_in_fenced_frames_page);
 
   UseCounterMetricsRecorder(const UseCounterMetricsRecorder&) = delete;
@@ -69,19 +67,21 @@ class UseCounterMetricsRecorder {
   static const UkmFeatureList& GetAllowedWebDevMetricsUkmFeatures();
 
   // To keep tracks of which features have been measured.
+  // `uma_features_` and `uma_main_frame_features_` are also used for UKMs.
   AtMostOnceEnumUmaDeferrer<blink::mojom::WebFeature> uma_features_;
   AtMostOnceEnumUmaDeferrer<blink::mojom::WebFeature> uma_main_frame_features_;
-  AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId> uma_css_properties_;
-  AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>
+  std::unique_ptr<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>
+      uma_css_properties_;
+  std::unique_ptr<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>
       uma_animated_css_properties_;
-
-  AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>
+  std::unique_ptr<
+      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_violation_enforce_;
-
-  AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>
+  std::unique_ptr<
+      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_allow2_;
-
-  AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>
+  std::unique_ptr<
+      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_header2_;
 
   // To keep tracks of which features have been measured.

@@ -22,54 +22,30 @@
 namespace {
 
 const char kTestUrl[] = "https://www.google.com";
-const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
 using WebFeature = blink::mojom::WebFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
 using FeatureType = blink::mojom::UseCounterFeatureType;
 
 const char* GetUseCounterHistogramName(
     blink::mojom::UseCounterFeatureType feature_type,
-    bool is_in_main_frame = false,
-    bool is_in_fenced_frames = false) {
-  if (is_in_fenced_frames) {
-    if (is_in_main_frame) {
-      CHECK_EQ(FeatureType::kWebFeature, feature_type);
-      return "Blink.UseCounter.FencedFrames.MainFrame.Features";
-    }
-    switch (feature_type) {
-      case FeatureType::kWebFeature:
-        return "Blink.UseCounter.FencedFrames.Features";
-      case FeatureType::kCssProperty:
-        return "Blink.UseCounter.FencedFrames.CSSProperties";
-      case FeatureType::kAnimatedCssProperty:
-        return "Blink.UseCounter.FencedFrames.AnimatedCSSProperties";
-      case FeatureType::kPermissionsPolicyViolationEnforce:
-        return "Blink.UseCounter.FencedFrames.PermissionsPolicy.Violation."
-               "Enforce";
-      case FeatureType::kPermissionsPolicyHeader:
-        return "Blink.UseCounter.FencedFrames.PermissionsPolicy.Header2";
-      case FeatureType::kPermissionsPolicyIframeAttribute:
-        return "Blink.UseCounter.FencedFrames.PermissionsPolicy.Allow2";
-    }
-  } else {
-    if (is_in_main_frame) {
-      CHECK_EQ(FeatureType::kWebFeature, feature_type);
-      return "Blink.UseCounter.MainFrame.Features";
-    }
-    switch (feature_type) {
-      case FeatureType::kWebFeature:
-        return "Blink.UseCounter.Features";
-      case FeatureType::kCssProperty:
-        return "Blink.UseCounter.CSSProperties";
-      case FeatureType::kAnimatedCssProperty:
-        return "Blink.UseCounter.AnimatedCSSProperties";
-      case FeatureType::kPermissionsPolicyViolationEnforce:
-        return "Blink.UseCounter.PermissionsPolicy.Violation.Enforce";
-      case FeatureType::kPermissionsPolicyHeader:
-        return "Blink.UseCounter.PermissionsPolicy.Header2";
-      case FeatureType::kPermissionsPolicyIframeAttribute:
-        return "Blink.UseCounter.PermissionsPolicy.Allow2";
-    }
+    bool is_in_main_frame = false) {
+  if (is_in_main_frame) {
+    CHECK_EQ(FeatureType::kWebFeature, feature_type);
+    return "Blink.UseCounter.MainFrame.Features";
+  }
+  switch (feature_type) {
+    case FeatureType::kWebFeature:
+      return "Blink.UseCounter.Features";
+    case FeatureType::kCssProperty:
+      return "Blink.UseCounter.CSSProperties";
+    case FeatureType::kAnimatedCssProperty:
+      return "Blink.UseCounter.AnimatedCSSProperties";
+    case FeatureType::kPermissionsPolicyViolationEnforce:
+      return "Blink.UseCounter.PermissionsPolicy.Violation.Enforce";
+    case FeatureType::kPermissionsPolicyHeader:
+      return "Blink.UseCounter.PermissionsPolicy.Header2";
+    case FeatureType::kPermissionsPolicyIframeAttribute:
+      return "Blink.UseCounter.PermissionsPolicy.Allow2";
   }
 }
 
@@ -79,50 +55,32 @@ const char* GetUseCounterHistogramName(
 // to get a valid RenderFrameHost*.
 class UseCounterMetricsRecorderTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  protected:
-  bool WithFencedFrames() const { return std::get<0>(GetParam()); }
-
-  bool WithPrerendering() const { return std::get<1>(GetParam()); }
+  bool WithPrerendering() const { return GetParam(); }
 
   void ExpectBucketCount(const blink::UseCounterFeature& feature,
                          size_t count) {
     if (feature.type() == blink::mojom::UseCounterFeatureType::kWebFeature) {
       tester()->histogram_tester().ExpectBucketCount(
-          GetUseCounterHistogramName(FeatureType::kWebFeature, true,
-                                     WithFencedFrames()),
+          GetUseCounterHistogramName(FeatureType::kWebFeature, true),
           static_cast<base::Histogram::Sample>(feature.value()), count);
     }
 
     tester()->histogram_tester().ExpectBucketCount(
-        GetUseCounterHistogramName(feature.type(), false, WithFencedFrames()),
+        GetUseCounterHistogramName(feature.type(), false),
         static_cast<base::Histogram::Sample>(feature.value()), count);
   }
 
   void HistogramBasicTest(
       const std::vector<blink::UseCounterFeature>& first_features,
       const std::vector<blink::UseCounterFeature>& second_features = {}) {
-    UseCounterMetricsRecorder recorder(WithFencedFrames());
+    UseCounterMetricsRecorder recorder(/*is_in_fenced_frames_page=*/false);
     ukm::SourceId ukm_source_id = ukm::AssignNewSourceId();
 
     // Get a valid RenderFrameHost*.
     NavigateAndCommit(GURL(kTestUrl));
-    content::RenderFrameHost* rfh = nullptr;
-    if (WithFencedFrames()) {
-      content::RenderFrameHost* fenced_frame_root =
-          content::RenderFrameHostTester::For(
-              web_contents()->GetPrimaryMainFrame())
-              ->AppendFencedFrame();
-      ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
-
-      auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-          GURL(kFencedFramesUrl), fenced_frame_root);
-      ASSERT_NE(nullptr, simulator);
-      simulator->Commit();
-      rfh = simulator->GetFinalRenderFrameHost();
-    } else {
-      rfh = main_rfh();
-    }
+    content::RenderFrameHost* rfh = main_rfh();
 
     // Simulates initial events.
     recorder.RecordOrDeferMainFrameWebFeature(rfh, WebFeature::kPageVisits);
@@ -167,26 +125,23 @@ class UseCounterMetricsRecorderTest
 
     // Verify that kPageVisits is observed on commit.
     tester()->histogram_tester().ExpectBucketCount(
-        GetUseCounterHistogramName(FeatureType::kWebFeature, false,
-                                   WithFencedFrames()),
+        GetUseCounterHistogramName(FeatureType::kWebFeature, false),
         static_cast<base::Histogram::Sample>(WebFeature::kPageVisits), 1);
     tester()->histogram_tester().ExpectBucketCount(
-        GetUseCounterHistogramName(FeatureType::kWebFeature, true,
-                                   WithFencedFrames()),
+        GetUseCounterHistogramName(FeatureType::kWebFeature, true),
         static_cast<base::Histogram::Sample>(WebFeature::kPageVisits), 1);
 
     // Verify that page visit is recorded for CSS histograms.
     tester()->histogram_tester().ExpectBucketCount(
-        GetUseCounterHistogramName(FeatureType::kCssProperty, false,
-                                   WithFencedFrames()),
+        GetUseCounterHistogramName(FeatureType::kCssProperty, false),
         blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
     tester()->histogram_tester().ExpectBucketCount(
-        GetUseCounterHistogramName(FeatureType::kAnimatedCssProperty, false,
-                                   WithFencedFrames()),
+        GetUseCounterHistogramName(FeatureType::kAnimatedCssProperty, false),
         blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 
-    for (const auto& feature : first_features)
+    for (const auto& feature : first_features) {
       ExpectBucketCount(feature, 1ul);
+    }
 
     // Simulates OnFeaturesUsageObserved.
     for (const auto& feature : second_features) {
@@ -197,16 +152,16 @@ class UseCounterMetricsRecorderTest
       recorder.RecordOrDeferUseCounterFeature(rfh, feature);
     }
 
-    for (const auto& feature : first_features)
+    for (const auto& feature : first_features) {
       ExpectBucketCount(feature, 1ul);
-    for (const auto& feature : second_features)
+    }
+    for (const auto& feature : second_features) {
       ExpectBucketCount(feature, 1ul);
+    }
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         UseCounterMetricsRecorderTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, UseCounterMetricsRecorderTest, testing::Bool());
 
 TEST_P(UseCounterMetricsRecorderTest, CountOneFeature) {
   HistogramBasicTest({{blink::mojom::UseCounterFeatureType::kWebFeature, 0}});
@@ -253,14 +208,9 @@ TEST_P(UseCounterMetricsRecorderTest, CountDuplicatedFeatures) {
 }
 
 class UseCounterPageLoadMetricsObserverTest
-    : public page_load_metrics::PageLoadMetricsObserverContentTestHarness,
-      public testing::WithParamInterface<bool> {
+    : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
  public:
-  UseCounterPageLoadMetricsObserverTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
-  }
-
+  UseCounterPageLoadMetricsObserverTest() = default;
   UseCounterPageLoadMetricsObserverTest(
       const UseCounterPageLoadMetricsObserverTest&) = delete;
   UseCounterPageLoadMetricsObserverTest& operator=(
@@ -283,19 +233,6 @@ class UseCounterPageLoadMetricsObserverTest
       const std::vector<blink::UseCounterFeature>& first_features,
       const std::vector<blink::UseCounterFeature>& second_features = {}) {
     NavigateAndCommit(GURL(kTestUrl));
-
-    if (WithFencedFrames()) {
-      content::RenderFrameHost* fenced_frame_root =
-          content::RenderFrameHostTester::For(
-              web_contents()->GetPrimaryMainFrame())
-              ->AppendFencedFrame();
-      ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
-
-      auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-          GURL(kFencedFramesUrl), fenced_frame_root);
-      ASSERT_NE(nullptr, simulator);
-      simulator->Commit();
-    }
 
     tester()->SimulateFeaturesUpdate(first_features);
     // Verify that kPageVisits is observed on commit.
@@ -329,21 +266,15 @@ class UseCounterPageLoadMetricsObserverTest
     tracker->AddObserver(std::make_unique<UseCounterPageLoadMetricsObserver>());
   }
 
-  bool WithFencedFrames() { return GetParam(); }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         UseCounterPageLoadMetricsObserverTest,
-                         testing::Bool());
-
-TEST_P(UseCounterPageLoadMetricsObserverTest, CountOneFeature) {
+TEST_F(UseCounterPageLoadMetricsObserverTest, CountOneFeature) {
   HistogramBasicTest({{blink::mojom::UseCounterFeatureType::kWebFeature, 0}});
 }
 
-TEST_P(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
+TEST_F(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
   HistogramBasicTest(
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
@@ -359,7 +290,7 @@ TEST_P(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
       });
 }
 
-TEST_P(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
+TEST_F(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
   HistogramBasicTest(
       {
           {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
