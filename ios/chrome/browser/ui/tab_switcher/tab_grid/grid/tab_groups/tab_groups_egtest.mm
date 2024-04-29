@@ -26,8 +26,11 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridEditAddToButton;
+using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridNewTabButton;
+using chrome_test_util::TabGridSelectTabsMenuButton;
 using testing::NavigationBarBackButton;
 
 namespace {
@@ -170,10 +173,17 @@ id<GREYMatcher> CreateTabGroupCancelButtonMatcher() {
 }
 
 // Matcher for tab group grid cell for the given `group_name`.
-id<GREYMatcher> TabGroupGridCellMatcherMatcher(NSString* group_name) {
+id<GREYMatcher> TabGroupGridCellMatcher(NSString* group_name) {
   return grey_allOf(grey_accessibilityLabel(group_name),
                     grey_kindOfClassName(@"GroupGridCell"),
                     grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> AddTabToNewGroupButton() {
+  return grey_allOf(
+      ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
+          IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1)),
+      grey_sufficientlyVisible(), nil);
 }
 
 // Opens the tab group creation view using the long press context menu for the
@@ -264,8 +274,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
       waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
 
   // Open the group.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(kGroupName)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroupName)]
       performAction:grey_tap()];
 
   // Open the tab.
@@ -289,8 +298,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(kGroupName)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroupName)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -391,8 +399,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
   RenameGroupAtIndex(0, kGroupName);
 
   // Check the group's new name.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(kGroupName)]
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroupName)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -402,22 +409,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
 
-  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
-      assertWithMatcher:grey_notNil()];
-
   CreateDefaultFirstGroupFromTabCellAtIndex(0);
-
-  // `Tab 1` tab cell no longer present in the grid.
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
-      assertWithMatcher:grey_nil()];
-
-  // The created group is now in the grid.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_notNil()];
 
   UngroupGroupAtIndex(0);
 
@@ -428,7 +420,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
 
   // The created group is no longer in the grid.
   [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(
+      selectElementWithMatcher:TabGroupGridCellMatcher(
                                    l10n_util::GetPluralNSStringF(
                                        IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
       assertWithMatcher:grey_nil()];
@@ -440,22 +432,7 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
 
-  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
-      assertWithMatcher:grey_notNil()];
-
   CreateDefaultFirstGroupFromTabCellAtIndex(0);
-
-  // `Tab 1` tab cell no longer present in the grid.
-  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
-      assertWithMatcher:grey_nil()];
-
-  // The created group is now in the grid.
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(
-                                   l10n_util::GetPluralNSStringF(
-                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
-      assertWithMatcher:grey_notNil()];
 
   DeleteGroupAtIndex(0);
 
@@ -463,10 +440,111 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
       assertWithMatcher:grey_nil()];
   [[EarlGrey
-      selectElementWithMatcher:TabGroupGridCellMatcherMatcher(
+      selectElementWithMatcher:TabGroupGridCellMatcher(
                                    l10n_util::GetPluralNSStringF(
                                        IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests the creation of a new group in selection mode.
+- (void)testGroupCreationInSelectionMode {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Enter the selection mode.
+  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
+
+  // Select the cell with the title `kTab1Title`.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Add the tab to a new group.
+  [[EarlGrey selectElementWithMatcher:TabGridEditAddToButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:AddTabToNewGroupButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:CreateGroupButtonInGroupCreation()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:GroupCreationViewMatcher()];
+
+  // `Tab 1` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  // The group with title `1 Tab` is present in the grid.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests the adding a tab to a group in selection mode.
+- (void)testAddingTabToGroupInSelectionMode {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Create a tab cell with `Tab 2` as its title.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Enter the selection mode.
+  [[EarlGrey selectElementWithMatcher:TabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
+
+  // Select the cell with the title `kTab2Title`.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
+      performAction:grey_tap()];
+
+  // Add the selected tab to the group with title `1 Tab`.
+  [[EarlGrey selectElementWithMatcher:TabGridEditAddToButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP,
+                                       1))] performAction:grey_tap()];
+  NSString* title =
+      l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   ContextMenuItemWithAccessibilityLabel(title),
+                                   grey_not(grey_accessibilityTrait(
+                                       UIAccessibilityTraitNotEnabled)),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // `Tab 2` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_nil()];
+
+  // The group with title `1 Tab` is no longer present in the grid.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 1))]
+      assertWithMatcher:grey_nil()];
+
+  // The group with title `2 Tabs` is present in the grid.
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupGridCellMatcher(
+                                   l10n_util::GetPluralNSStringF(
+                                       IDS_IOS_TAB_GROUP_TABS_NUMBER, 2))]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
