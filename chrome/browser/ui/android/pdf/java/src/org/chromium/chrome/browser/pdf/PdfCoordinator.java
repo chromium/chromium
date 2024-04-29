@@ -82,6 +82,10 @@ public class PdfCoordinator {
 
     boolean findInPage() {
         // TODO: Invoke PdfDocument.setIsSearchVisible.
+        // if (mPdfDocument != null) {
+        //     mPdfDocument.setIsSearchVisible(true);
+        //     return true;
+        // }
         return false;
     }
 

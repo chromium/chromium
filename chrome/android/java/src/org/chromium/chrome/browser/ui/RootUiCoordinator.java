@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceIn
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -154,6 +155,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.wallet.BoardingPassController;
@@ -1148,11 +1150,18 @@ public class RootUiCoordinator
             mAppMenuCoordinator.showAppMenuForKeyboardEvent();
             return true;
         } else if (id == R.id.find_in_page_id) {
+            Tab tab = mActivityTabProvider.get();
+            // PDF pages require Android pdf viewer API to "find in page".
+            if (tab != null && tab.isNativePage() && tab.getNativePage().isPdf()) {
+                NativePage pdfPage = tab.getNativePage();
+                assert pdfPage instanceof PdfPage;
+                return ((PdfPage) pdfPage).findInPage();
+            }
+
             if (mFindToolbarManager == null) return false;
 
             mFindToolbarManager.showToolbar();
 
-            Tab tab = mActivityTabProvider.get();
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuFindInPage");
                 new UkmRecorder.Bridge()
