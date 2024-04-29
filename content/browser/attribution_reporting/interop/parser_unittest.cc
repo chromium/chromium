@@ -761,8 +761,7 @@ TEST(AttributionInteropParserTest, ParseOutput) {
       {
           "top_level_errors",
           R"json({"foo": []})json",
-          ErrorIs(AllOf(HasSubstr(R"(["reports"]: must be present)"),
-                        HasSubstr(R"(["foo"]: unknown field)"))),
+          ErrorIs(HasSubstr(R"(["reports"]: must be present)")),
       },
       {
           "second_level_errors",
@@ -772,8 +771,7 @@ TEST(AttributionInteropParserTest, ParseOutput) {
           ErrorIs(AllOf(
               HasSubstr(R"(["reports"][0]["report_time"]: must be an integer)"),
               HasSubstr(R"(["reports"][0]["report_url"]: must be a valid URL)"),
-              HasSubstr(R"(["reports"][0]["payload"]: required)"),
-              HasSubstr(R"(["reports"][0]["foo"]: unknown field)"))),
+              HasSubstr(R"(["reports"][0]["payload"]: required)"))),
       },
       {
           "unsorted_reports",

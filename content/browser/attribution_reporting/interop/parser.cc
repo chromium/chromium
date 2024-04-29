@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/privacy_math.h"
@@ -155,15 +154,11 @@ class AttributionInteropParser {
     AttributionInteropOutput output;
 
     {
-      std::optional<base::Value> reports = dict.Extract(kReportsKey);
       auto context = PushContext(kReportsKey);
-      ParseListOfDicts(base::OptionalToPtr(reports),
-                       [&](base::Value::Dict report) {
-                         ParseReport(std::move(report), output.reports);
-                       });
+      ParseListOfDicts(dict.Find(kReportsKey), [&](base::Value::Dict report) {
+        ParseReport(std::move(report), output.reports);
+      });
     }
-
-    CheckUnknown(dict);
 
     if (has_error_) {
       return base::unexpected(error_stream_.str());
@@ -415,11 +410,9 @@ class AttributionInteropParser {
                   /*previous_time=*/reports.empty() ? base::Time::Min()
                                                     : reports.back().time,
                   /*strictly_greater=*/false);
-    dict.Remove(kReportTimeKey);
 
-    if (std::optional<base::Value> url = dict.Extract(kReportUrlKey);
-        const std::string* str = url ? url->GetIfString() : nullptr) {
-      report.url = GURL(*str);
+    if (const std::string* url = dict.FindString(kReportUrlKey)) {
+      report.url = GURL(*url);
     }
     if (!report.url.is_valid()) {
       auto context = PushContext(kReportUrlKey);
@@ -433,17 +426,8 @@ class AttributionInteropParser {
       *Error() << "required";
     }
 
-    CheckUnknown(dict);
-
     if (!has_error_) {
       reports.push_back(std::move(report));
-    }
-  }
-
-  void CheckUnknown(const base::Value::Dict& dict) {
-    for (auto [key, value] : dict) {
-      auto context = PushContext(key);
-      *Error() << "unknown field";
     }
   }
 
