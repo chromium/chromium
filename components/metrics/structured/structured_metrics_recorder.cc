@@ -214,8 +214,7 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
                        *event_validator);
 
   // Sequence-related metadata.
-  if (project_validator->event_type() == StructuredEventProto::SEQUENCE &&
-      base::FeatureList::IsEnabled(kEventSequenceLogging)) {
+  if (project_validator->event_type() == StructuredEventProto::SEQUENCE) {
     AddSequenceMetadata(&event_proto, event, *project_validator, *key_data);
   }
 

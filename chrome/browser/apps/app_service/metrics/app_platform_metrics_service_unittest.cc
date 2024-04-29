@@ -2950,7 +2950,7 @@ class AppDiscoveryMetricsTest : public AppPlatformMetricsServiceTest {
 
     std::vector<base::test::FeatureRef> enabled{
         metrics::structured::kAppDiscoveryLogging,
-        metrics::structured::kEventSequenceLogging};
+    };
     std::vector<base::test::FeatureRef> disabled;
     if (IsLacrosEnabled()) {
       base::Extend(enabled, ash::standalone_browser::GetFeatureRefs());

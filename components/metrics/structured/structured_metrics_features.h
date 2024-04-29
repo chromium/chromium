@@ -19,11 +19,6 @@ BASE_DECLARE_FEATURE(kStructuredMetrics);
 
 namespace metrics::structured {
 
-// Controls whether event sequence logging is enabled or not.
-BASE_DECLARE_FEATURE(kEventSequenceLogging);
-
-BASE_DECLARE_FEATURE(kBluetoothSessionizedMetrics);
-
 // Controls whether fast pair logging is enabled or not.
 BASE_DECLARE_FEATURE(kFastPairMetrics);
 

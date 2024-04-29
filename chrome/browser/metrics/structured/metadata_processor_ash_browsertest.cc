@@ -229,8 +229,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
 
   void SetUp() override {
     // These tests are only applicable if structured metrics service is enabled.
-    if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService) ||
-        !base::FeatureList::IsEnabled(kEventSequenceLogging)) {
+    if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
       GTEST_SKIP() << "Skipping test: Structured Metrics Service and CrOS "
                       "Events must be enabled";
     }
