@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_CRYPTOHOME_RECOVERY_SETUP_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_CRYPTOHOME_RECOVERY_SETUP_SCREEN_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/ash/auth/cryptohome_pin_engine.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
-#include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
-#include "components/account_id/account_id.h"
+#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-shared.h"
 
 namespace ash {
 

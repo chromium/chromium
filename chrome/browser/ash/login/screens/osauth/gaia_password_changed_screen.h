@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_GAIA_PASSWORD_CHANGED_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_GAIA_PASSWORD_CHANGED_SCREEN_H_
 
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
-#include "components/account_id/account_id.h"
 
 namespace ash {
 

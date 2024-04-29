@@ -4,16 +4,18 @@
 
 #include "chrome/browser/ash/login/screens/osauth/factor_setup_success_screen.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
-#include "base/logging.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"

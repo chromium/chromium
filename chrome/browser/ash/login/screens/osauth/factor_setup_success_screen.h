@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_FACTOR_SETUP_SUCCESS_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_FACTOR_SETUP_SUCCESS_SCREEN_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
