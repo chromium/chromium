@@ -55,6 +55,7 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   out->is_handling_interaction = data.is_handling_interaction();
   out->send_frame_token_to_embedder = data.send_frame_token_to_embedder();
   out->min_page_scale_factor = data.min_page_scale_factor();
+  out->is_software = data.is_software();
   if (data.top_controls_visible_height_set()) {
     out->top_controls_visible_height.emplace(
         data.top_controls_visible_height());

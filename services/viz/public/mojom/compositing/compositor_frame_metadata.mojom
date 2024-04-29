@@ -85,4 +85,8 @@ struct CompositorFrameMetadata {
   // screenshot against the previous surface.
   blink.mojom.SameDocNavigationScreenshotDestinationToken?
     screenshot_destination;
+
+  // When set, this frame contains software resources. See
+  // TransferableResource::is_software for details.
+  bool is_software;
 };

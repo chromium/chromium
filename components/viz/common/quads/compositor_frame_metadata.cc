@@ -46,7 +46,8 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       display_transform_hint(other.display_transform_hint),
       transition_directives(other.transition_directives),
       has_shared_element_resources(other.has_shared_element_resources),
-      screenshot_destination(other.screenshot_destination) {
+      screenshot_destination(other.screenshot_destination),
+      is_software(other.is_software) {
   if (other.delegated_ink_metadata) {
     delegated_ink_metadata = std::make_unique<gfx::DelegatedInkMetadata>(
         *other.delegated_ink_metadata.get());

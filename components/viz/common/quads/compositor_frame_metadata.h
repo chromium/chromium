@@ -207,6 +207,10 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   std::optional<blink::SameDocNavigationScreenshotDestinationToken>
       screenshot_destination;
 
+  // When set, this frame contains software resources. See
+  // TransferableResource::is_software for details.
+  bool is_software = false;
+
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);
   CompositorFrameMetadata operator=(const CompositorFrameMetadata&) = delete;

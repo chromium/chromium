@@ -164,6 +164,10 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.screenshot_destination;
   }
 
+  static bool is_software(const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_software;
+  }
+
   static bool Read(viz::mojom::CompositorFrameMetadataDataView data,
                    viz::CompositorFrameMetadata* out);
 };

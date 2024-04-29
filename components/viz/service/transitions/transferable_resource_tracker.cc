@@ -84,7 +84,8 @@ TransferableResourceTracker::ImportResource(
 
     // Remove the bitmap from shared bitmap manager when no longer in use.
     release_callback = base::BindOnce(
-        [](SharedBitmapManager* manager, const TransferableResource& resource) {
+        [](SharedBitmapManager* manager, const TransferableResource& resource,
+           const gpu::SyncToken& sync_token) {
           const SharedBitmapId& id = resource.mailbox_holder.mailbox;
           manager->ChildDeletedSharedBitmap(id);
         },
@@ -102,9 +103,9 @@ TransferableResourceTracker::ImportResource(
     // Run the SingleReleaseCallback when no longer in use.
     if (output_copy.release_callback) {
       release_callback = base::BindOnce(
-          [](ReleaseCallback callback, const TransferableResource& resource) {
-            std::move(callback).Run(resource.mailbox_holder.sync_token,
-                                    /*is_lost=*/false);
+          [](ReleaseCallback callback, const TransferableResource& resource,
+             const gpu::SyncToken& sync_token) {
+            std::move(callback).Run(sync_token, /*is_lost=*/false);
           },
           std::move(output_copy.release_callback));
     }
@@ -124,8 +125,9 @@ TransferableResourceTracker::ImportResource(
 
 void TransferableResourceTracker::ReturnFrame(const ResourceFrame& frame) {
   for (const auto& shared : frame.shared) {
-    if (shared.has_value())
-      UnrefResource(shared->resource.id, /*count=*/1);
+    if (shared.has_value()) {
+      UnrefResource(shared->resource.id, /*count=*/1, gpu::SyncToken());
+    }
   }
 }
 
@@ -134,8 +136,21 @@ void TransferableResourceTracker::RefResource(ResourceId id) {
   id_tracker_.RefId(id, /*count=*/1);
 }
 
-void TransferableResourceTracker::UnrefResource(ResourceId id, int count) {
+void TransferableResourceTracker::UnrefResource(
+    ResourceId id,
+    int count,
+    const gpu::SyncToken& sync_token) {
   DCHECK(base::Contains(managed_resources_, id));
+
+  // Always update the release sync token, even if we're still keeping the
+  // resource. This way, if we first return it from the display compositor and
+  // then release it from surface animation manager, we will still have the
+  // right sync token.
+  if (sync_token.HasData()) {
+    auto it = managed_resources_.find(id);
+    CHECK(it != managed_resources_.end());
+    it->second.release_sync_token = sync_token;
+  }
 
   if (id_tracker_.UnrefId(id, count)) {
     managed_resources_.erase(id);
@@ -153,8 +168,9 @@ TransferableResourceTracker::TransferableResourceHolder::
 
 TransferableResourceTracker::TransferableResourceHolder::
     ~TransferableResourceHolder() {
-  if (release_callback)
-    std::move(release_callback).Run(resource);
+  if (release_callback) {
+    std::move(release_callback).Run(resource, release_sync_token);
+  }
 }
 
 TransferableResourceTracker::TransferableResourceHolder&
