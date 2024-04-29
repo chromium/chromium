@@ -48,9 +48,9 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {
  public:
-  bool HasElements() const { return !elements.empty(); }
-  const ViewTransitionToken& GetTransitionId() const {
-    return transition_token;
+  bool IsValid() const {
+    return next_element_resource_id !=
+           viz::ViewTransitionElementResourceId::kInvalidLocalId;
   }
 
  private:
@@ -69,7 +69,8 @@ struct BLINK_COMMON_EXPORT ViewTransitionState {
   ViewTransitionToken transition_token;
   gfx::Size snapshot_root_size_at_capture;
   float device_pixel_ratio = 1.f;
-  uint32_t next_element_resource_id = 0;
+  uint32_t next_element_resource_id =
+      viz::ViewTransitionElementResourceId::kInvalidLocalId;
 };
 
 }  // namespace blink

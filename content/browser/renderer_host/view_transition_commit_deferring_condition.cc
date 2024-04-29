@@ -159,7 +159,7 @@ void ViewTransitionCommitDeferringCondition::OnSnapshotAckFromRenderer(
     return;
   }
 
-  if (view_transition_state.HasElements()) {
+  if (view_transition_state.IsValid()) {
     NavigationRequest::From(&GetNavigationHandle())
         ->SetViewTransitionState(std::move(resources_),
                                  std::move(view_transition_state));

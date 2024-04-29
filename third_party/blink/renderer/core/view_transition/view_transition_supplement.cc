@@ -240,11 +240,16 @@ void ViewTransitionSupplement::StartTransition(
     const blink::ViewTransitionToken& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
+  // TODO(khushalsagar): Per spec, we should be checking the opt-in at this
+  // point. See step 2 in
+  // https://drafts.csswg.org/css-view-transitions-2/#setup-outbound-transition.
+
   if (transition_) {
     // We should skip a transition if one exists, regardless of how it was
     // created, since navigation transition takes precedence.
     transition_->SkipTransition();
   }
+
   DCHECK(!transition_)
       << "SkipTransition() should finish existing |transition_|";
   transition_ = ViewTransition::CreateForSnapshotForNavigation(
