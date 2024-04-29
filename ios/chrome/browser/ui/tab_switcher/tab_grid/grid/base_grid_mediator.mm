@@ -1163,6 +1163,10 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
         static_cast<TabGroupInfo*>(dragItem.localObject);
     // TODO(crbug.com/333502177) : Fix this when implementing multi profiles.
     if (self.browserState->IsOffTheRecord() == tabGroupInfo.incognito) {
+      if (self.currentMode == TabGridModeGroup) {
+        // Can't drop a group in a group.
+        return UIDropOperationForbidden;
+      }
       return UIDropOperationMove;
     }
     // Tabs of different profiles (regular/incognito) cannot be dropped.

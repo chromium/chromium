@@ -58,6 +58,7 @@
     [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:tabGroup->GetColor()];
 
+    [self switchToMode:TabGridModeGroup];
     [self populateConsumerItems];
   }
   return self;
