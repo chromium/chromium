@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -239,8 +240,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
                                               future.GetCallback()));
   EXPECT_EQ(future.Get(), base::File::FILE_OK);
 
-  // Oldest file (i.e. `random-path1`) should be marked for removal now and thus
-  // `StartWriteBytes` should return false.
+  // Oldest file (i.e. `random-path1`) should be marked for eviction now and
+  // thus `StartWriteBytes` should return false.
   OpenedCloudFile file1(base::FilePath("random-path1"),
                         OpenFileMode::OPEN_FILE_MODE_READ,
                         /*version_tag=*/"versionA", kDefaultChunkSize);
@@ -515,6 +516,46 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
+       EvictItemsEvictsFilesMarkedForEviction) {
+  // Inserts file into cache with size `kDefaultChunkSize`.
+  int64_t random_path1_size = kDefaultChunkSize;
+  base::FilePath random_path1("random-path1");
+  WriteFileToCache(random_path1, "versionA", random_path1_size);
+
+  // Mark file for eviction.
+  content_cache_->MarkItemForEviction(random_path1);
+
+  // The items marked for eviction should not be readable again (despite being
+  // in the cache).
+  OpenedCloudFile file(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
+                       "versionA", kDefaultChunkSize);
+  EXPECT_FALSE(content_cache_->StartReadBytes(file, /*buffer=*/nullptr,
+                                              /*offset=*/0, kDefaultChunkSize,
+                                              base::DoNothing()));
+
+  // Ensure the `EvictItems` returns the correct values.
+  TestFuture<EvictedItemStats> evict_items_future;
+  content_cache_->EvictItems(evict_items_future.GetCallback());
+  EXPECT_THAT(
+      evict_items_future.Get(),
+      AllOf(Field(&EvictedItemStats::num_items, 1),
+            Field(&EvictedItemStats::bytes_evicted, random_path1_size)));
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       MarkNonExistentFileForEvictionDoesNothing) {
+  // Mark non-existent file for eviction.
+  content_cache_->MarkItemForEviction(base::FilePath("random-path1"));
+
+  // Ensure the `EvictItems` does nothing.
+  TestFuture<EvictedItemStats> evict_items_future;
+  content_cache_->EvictItems(evict_items_future.GetCallback());
+  EXPECT_THAT(evict_items_future.Get(),
+              AllOf(Field(&EvictedItemStats::num_items, 0),
+                    Field(&EvictedItemStats::bytes_evicted, 0)));
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
        SetMaxCacheItemsShouldEvictOldestFilesOnResize) {
   content_cache_->SetMaxCacheItems(3);
 
@@ -534,18 +575,19 @@ TEST_F(FileSystemProviderContentCacheImplTest,
                    random_path3_size);
 
   // Resize the cache to only have 1 spot, the `random-path1` and `random-path2`
-  // entries (least-recently used) should be evicted.
+  // entries (least-recently used) should be evicted since there are no files
+  // already marked for eviction.
   content_cache_->SetMaxCacheItems(1);
 
   // The items marked for eviction should not be readable again (despite being
   // in the cache).
   OpenedCloudFile file1(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
-                        "versionA", kDefaultChunkSize);
+                        "versionA", random_path1_size);
   EXPECT_FALSE(content_cache_->StartReadBytes(file1, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
   OpenedCloudFile file2(random_path2, OpenFileMode::OPEN_FILE_MODE_READ,
-                        "versionA", kDefaultChunkSize);
+                        "versionA", random_path2_size);
   EXPECT_FALSE(content_cache_->StartReadBytes(file2, /*buffer=*/nullptr,
                                               /*offset=*/0, kDefaultChunkSize,
                                               base::DoNothing()));
@@ -559,15 +601,65 @@ TEST_F(FileSystemProviderContentCacheImplTest,
                           random_path1_size + random_path2_size)));
 }
 
+TEST_F(
+    FileSystemProviderContentCacheImplTest,
+    SetMaxCacheItemsShouldEvictFilesMarkedForEvictionBeforeOldestFilesOnResize) {
+  content_cache_->SetMaxCacheItems(3);
+
+  // Inserts file into cache with size `kDefaultChunkSize`. 2 spaces left.
+  int64_t random_path1_size = kDefaultChunkSize;
+  base::FilePath random_path1("random-path1");
+  WriteFileToCache(random_path1, "versionA", random_path1_size);
+  // Inserts another file into cache that is `kDefaultChunkSize` * 2. 1 space
+  // left.
+  int64_t random_path2_size = kDefaultChunkSize * 2;
+  base::FilePath random_path2("random-path2");
+  WriteFileToCache(random_path2, "versionA", random_path2_size);
+  // Inserts another file into cache that is `kDefaultChunkSize` * 4. 0 spaces
+  // left.
+  int64_t random_path3_size = kDefaultChunkSize * 4;
+  base::FilePath random_path3("random-path3");
+  WriteFileToCache(random_path3, "versionA", random_path3_size);
+
+  // Mark most-recently-used file for eviction.
+  content_cache_->MarkItemForEviction(random_path3);
+
+  // Resize the cache to only have 1 spot, the `random-path3` entry
+  // is already marked for eviction so only one more file (`random-path1` the
+  // least-recently used) is marked for eviction.
+  content_cache_->SetMaxCacheItems(1);
+
+  // The items marked for eviction should not be readable again (despite being
+  // in the cache).
+  OpenedCloudFile file1(random_path1, OpenFileMode::OPEN_FILE_MODE_READ,
+                        "versionA", random_path1_size);
+  EXPECT_FALSE(content_cache_->StartReadBytes(file1, /*buffer=*/nullptr,
+                                              /*offset=*/0, kDefaultChunkSize,
+                                              base::DoNothing()));
+  OpenedCloudFile file3(random_path3, OpenFileMode::OPEN_FILE_MODE_READ,
+                        "versionA", random_path3_size);
+  EXPECT_FALSE(content_cache_->StartReadBytes(file3, /*buffer=*/nullptr,
+                                              /*offset=*/0, kDefaultChunkSize,
+                                              base::DoNothing()));
+
+  // Ensure the `EvictItems` returns the correct values.
+  TestFuture<EvictedItemStats> evict_items_future;
+  content_cache_->EvictItems(evict_items_future.GetCallback());
+  EXPECT_THAT(evict_items_future.Get(),
+              AllOf(Field(&EvictedItemStats::num_items, 2),
+                    Field(&EvictedItemStats::bytes_evicted,
+                          random_path1_size + random_path3_size)));
+}
+
 TEST_F(FileSystemProviderContentCacheImplTest,
        EvictItemsCanBeCalledMultipleTimesAndWithNoItems) {
   // Add 2 items to the cache then resize the cache to only allow 1 item (this
-  // marks /a.txt for removal).
+  // marks /a.txt for eviction).
   WriteFileToCache(base::FilePath("/a.txt"), "versionA", kDefaultChunkSize);
   WriteFileToCache(base::FilePath("/b.txt"), "versionB", kDefaultChunkSize);
   content_cache_->SetMaxCacheItems(1);
 
-  // Run EvictItems twice, the first invocation will yield on the first removal
+  // Run EvictItems twice, the first invocation will yield on the first eviction
   // of the item from the file system which will allow the second EvictItems to
   // be ran before the first one has completed.
   TestFuture<EvictedItemStats> first_evict_items_future;

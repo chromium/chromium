@@ -132,6 +132,19 @@ void ContentCacheImpl::SetMaxCacheItems(size_t max_cache_items) {
   MarkItemsForEviction();
 }
 
+void ContentCacheImpl::MarkItemForEviction(const base::FilePath& file_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  ContentLRUCache::iterator it = lru_cache_.Get(file_path);
+  if (it == lru_cache_.end()) {
+    VLOG(1) << "Item is not in the cache";
+    return;
+  }
+
+  CacheFileContext& ctx = it->second;
+  MarkContextForEviction(file_path, ctx);
+}
+
 void ContentCacheImpl::EvictItems(EvictedItemStatsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -142,7 +155,7 @@ void ContentCacheImpl::EvictItems(EvictedItemStatsCallback callback) {
   }
 
   EvictedItemStats evicted_items;
-  if (cache_items_to_evict_ == 0) {
+  if (cache_items_marked_for_eviction_ == 0) {
     on_evicted_callbacks_.Notify(evicted_items);
     return;
   }
@@ -210,8 +223,8 @@ void ContentCacheImpl::OnItemRemovedFromDisk(
     // Automatically increments `it`.
     lru_cache_.Erase(it);
     evicted_items.num_items++;
-    DCHECK_GT(cache_items_to_evict_, 0u);
-    cache_items_to_evict_--;
+    DCHECK_GT(cache_items_marked_for_eviction_, 0u);
+    cache_items_marked_for_eviction_--;
   } else {
     it++;
     LOG(ERROR) << "Failed to remove " << it->second.id << " from disk";
@@ -223,13 +236,26 @@ void ContentCacheImpl::OnItemRemovedFromDisk(
   EvictItemsMarkedForEviction(it, item_ids, evicted_items);
 }
 
+void ContentCacheImpl::MarkContextForEviction(const base::FilePath& path,
+                                              CacheFileContext& ctx) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ctx.marked_for_eviction) {
+    VLOG(2) << "Marking '" << path.value() << "' for eviction";
+    ctx.marked_for_eviction = true;
+    cache_items_marked_for_eviction_++;
+  } else {
+    VLOG(2) << "Item '" << path.value() << "' already marked for eviction";
+  }
+}
+
 void ContentCacheImpl::MarkItemsForEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The cache size should not include the items that are expected to be evicted
   // as these will get evicted on the next eviction cycle.
   size_t cache_items_without_marked_for_eviction =
-      lru_cache_.size() - cache_items_to_evict_;
+      lru_cache_.size() - cache_items_marked_for_eviction_;
   if (cache_items_without_marked_for_eviction <= max_cache_items_) {
     VLOG(2) << "No items to evict: {cache_items_without_marked_for_eviction = "
             << cache_items_without_marked_for_eviction
@@ -237,23 +263,18 @@ void ContentCacheImpl::MarkItemsForEviction() {
     return;
   }
 
-  // Number of items to evict (including items already marked for eviction).
   size_t items_to_evict = lru_cache_.size() - max_cache_items_;
-  VLOG(2) << items_to_evict << " items to be marked for removal, including "
-          << cache_items_to_evict_ << " already marked";
+  VLOG(2) << items_to_evict << " items to be marked for eviction, including "
+          << cache_items_marked_for_eviction_ << " already marked";
 
+  // Mark items for eviction starting from the least-recently-used until the
+  // total number of items marked for eviction brings the size of the cache
+  // (without these items) to below the `max_cache_items_`.
   ContentLRUCache::reverse_iterator it = lru_cache_.rbegin();
-  while (items_to_evict > 0) {
+  while (cache_items_marked_for_eviction_ < items_to_evict) {
     CacheFileContext& ctx = it->second;
     const base::FilePath& path = it->first;
-    if (!ctx.marked_for_eviction) {
-      VLOG(2) << "Marking '" << path.value() << "' for eviction";
-      ctx.marked_for_eviction = true;
-      cache_items_to_evict_++;
-    } else {
-      VLOG(2) << "Item '" << path.value() << "' already marked for eviction";
-    }
-    items_to_evict--;
+    MarkContextForEviction(path, ctx);
     it++;
   }
 }

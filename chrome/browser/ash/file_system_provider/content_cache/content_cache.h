@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_CACHE_H_
 
 #include "base/files/file_error_or.h"
+#include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
@@ -71,6 +72,10 @@ class ContentCache {
   // Returns the file paths of the cached files on disk, in their most recently
   // used order.
   virtual std::vector<base::FilePath> GetCachedFilePaths() = 0;
+
+  // Mark the item with path `file_path` for eviction, if it exists. It will be
+  // evicted when `EvictItems()` is called.
+  virtual void MarkItemForEviction(const base::FilePath& file_path) = 0;
 
   // Evict items which have their `marked_for_removal` bool set to true. If an
   // eviction is already in progress, the callback will be queued to be called

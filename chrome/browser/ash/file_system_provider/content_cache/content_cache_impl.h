@@ -55,6 +55,8 @@ class ContentCacheImpl : public ContentCache {
 
   std::vector<base::FilePath> GetCachedFilePaths() override;
 
+  void MarkItemForEviction(const base::FilePath& file_path) override;
+
   void EvictItems(EvictedItemStatsCallback callback) override;
 
  private:
@@ -97,16 +99,21 @@ class ContentCacheImpl : public ContentCache {
   void OnStaleItemsPruned(base::OnceClosure callback,
                           std::vector<bool> prune_success);
 
+  void MarkContextForEviction(const base::FilePath& path,
+                              CacheFileContext& ctx);
+
   // The cache has maximum bounds on the number of items available. In the event
-  // this boundary is exceeded, items that are least-recently used should be
-  // evicted first.
+  // this boundary is exceeded, excess items should be marked for eviction.
+  // There may already be items marked for eviction. The remaining items to be
+  // marked for eviction will be the least-recently used items.
   // TODO(b/330602540): Update the logic to also evict items when the maximum
   // size threshold has been reached.
   void MarkItemsForEviction();
 
-  // Removes items individually from on disk then bulk removes these items from
-  // the database. The `item_ids` contains a list of IDs to be removed from the
-  // database once all items have been removed off the disk.
+  // Removes items marked for eviction individually from on disk then bulk
+  // removes these items from the database. The `item_ids` contains a list of
+  // IDs to be removed from the database once all items have been removed off
+  // the disk.
   void EvictItemsMarkedForEviction(ContentLRUCache::reverse_iterator it,
                                    std::vector<int64_t>& item_ids,
                                    EvictedItemStats& evicted_items);
@@ -131,7 +138,8 @@ class ContentCacheImpl : public ContentCache {
   BoundContextDatabase context_db_;
 
   size_t max_cache_items_;
-  size_t cache_items_to_evict_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  size_t cache_items_marked_for_eviction_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   base::OnceCallbackList<void(EvictedItemStats)> on_evicted_callbacks_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
