@@ -859,7 +859,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
         // handlers as potential soft navigation tasks.
         soft_navigation_scope = heuristics->CreateEventScope(
             SoftNavigationHeuristics::EventScope::Type::kNavigate,
-            /*is_new_interaction=*/true);
+            /*is_new_interaction=*/true, script_state);
       }
     }
   }

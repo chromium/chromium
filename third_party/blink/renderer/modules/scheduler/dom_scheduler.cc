@@ -190,7 +190,8 @@ void DOMScheduler::setTaskId(ScriptState* script_state,
     return;
   }
   auto* task_info = MakeGarbageCollected<TaskAttributionInfoImpl>(
-      scheduler::TaskAttributionId(task_id));
+      scheduler::TaskAttributionId(task_id),
+      /*soft_navigation_context=*/nullptr);
   ScriptWrappableTaskState::SetCurrent(script_state, task_info);
 }
 

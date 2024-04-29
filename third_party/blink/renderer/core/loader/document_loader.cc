@@ -1031,16 +1031,18 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   SoftNavigationHeuristics* heuristics = nullptr;
   if (frame_->IsMainFrame() &&
       base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
-    CHECK(frame_->DomWindow());
-    heuristics = SoftNavigationHeuristics::From(*frame_->DomWindow());
-    if (is_browser_initiated && heuristics) {
-      // For browser-initiated navigations, we never started the soft
-      // navigation (as this is the first we hear of it in the renderer). We
-      // need to do that now.
-      soft_navigation_event_scope = heuristics->CreateEventScope(
-          SoftNavigationHeuristics::EventScope::Type::kNavigate,
-          /*is_new_interaction=*/true);
-      heuristics->SameDocumentNavigationStarted();
+    if (auto* script_state = ToScriptStateForMainWorld(frame_->DomWindow())) {
+      CHECK(frame_->DomWindow());
+      heuristics = SoftNavigationHeuristics::From(*frame_->DomWindow());
+      if (is_browser_initiated && heuristics) {
+        // For browser-initiated navigations, we never started the soft
+        // navigation (as this is the first we hear of it in the renderer). We
+        // need to do that now.
+        soft_navigation_event_scope = heuristics->CreateEventScope(
+            SoftNavigationHeuristics::EventScope::Type::kNavigate,
+            /*is_new_interaction=*/true, script_state);
+        heuristics->SameDocumentNavigationStarted();
+      }
     }
   }
 

@@ -233,11 +233,13 @@ DispatchEventResult EventDispatcher::Dispatch() {
               SoftNavigationHeuristics::From(*window)) {
         bool is_new_interaction =
             is_click || (event_->type() == event_type_names::kKeydown);
-        soft_navigation_scope = heuristics->CreateEventScope(
-            is_unfocused_keyboard_event
-                ? SoftNavigationHeuristics::EventScope::Type::kKeyboard
-                : SoftNavigationHeuristics::EventScope::Type::kClick,
-            is_new_interaction);
+        if (auto* script_state = ToScriptStateForMainWorld(window)) {
+          soft_navigation_scope = heuristics->CreateEventScope(
+              is_unfocused_keyboard_event
+                  ? SoftNavigationHeuristics::EventScope::Type::kKeyboard
+                  : SoftNavigationHeuristics::EventScope::Type::kClick,
+              is_new_interaction, script_state);
+        }
       }
     }
     // A genuine mouse click cannot be triggered by script so we don't expect
