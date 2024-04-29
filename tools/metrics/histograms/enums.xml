@@ -10952,10 +10952,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4444" label="DisableThirdPartyStoragePartitioning"/>
   <int value="4445" label="ServiceWorkerFetchHandlerAddedAfterInitialization"/>
   <int value="4446" label="ObsoleteCreateImageBitmapImageOrientationNone"/>
-  <int value="4447" label="WindowManagementPermissionDescriptorUsed"/>
-  <int value="4448" label="WindowPlacementPermissionDescriptorUsed"/>
-  <int value="4449" label="WindowManagementPermissionPolicyParsed"/>
-  <int value="4450" label="WindowPlacementPermissionPolicyParsed"/>
+  <int value="4447" label="OBSOLETE_kWindowManagementPermissionDescriptorUsed"/>
+  <int value="4448" label="OBSOLETE_kWindowPlacementPermissionDescriptorUsed"/>
+  <int value="4449" label="OBSOLETE_kWindowManagementPermissionPolicyParsed"/>
+  <int value="4450" label="OBSOLETE_kWindowPlacementPermissionPolicyParsed"/>
   <int value="4451" label="ContentDispositionInSvgUse"/>
   <int value="4452" label="SameDocumentCrossOriginInitiator"/>
   <int value="4453"

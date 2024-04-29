@@ -210,7 +210,7 @@ enum ContentSettingsType {
   // Content setting for Screen Enumeration and Screen Detail functionality.
   // Permits access to detailed multi-screen information, like size and
   // position. Permits placing fullscreen and windowed content on specific
-  // screens. See also: https://w3c.github.io/window-placement
+  // screens. See also: https://w3c.github.io/window-management
   WINDOW_MANAGEMENT,
 
   // Stores whether to allow insecure websites to make private network requests.

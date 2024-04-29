@@ -112,13 +112,6 @@ BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// When enabled "window-placement" may be used as an alias for
-// "window-management". Additionally, reverse mappings (i.e. enum to string)
-// will default to the legacy strings ("window-placement").
-BASE_FEATURE(kWindowPlacementPermissionAlias,
-             "WindowPlacementPermissionAlias",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, blocks condition to exclude auto granted permissions for
 // storage access exceptions. This will allow RWS permission grants to be
 // visible in the Embedded content settings page.

@@ -4511,12 +4511,6 @@
       name: "WindowPlacementFullscreenOnScreensChange",
       status: "experimental",
     },
-    // Allows use of `window-placement` as an alias for `window-management`
-    // permission. See crbug.com/1328581
-    {
-      name: "WindowPlacementPermissionAlias",
-      status: "experimental",
-    },
     {
       // Allows browser-providers writing suggestions to be turned on/off
       // through the attribute.

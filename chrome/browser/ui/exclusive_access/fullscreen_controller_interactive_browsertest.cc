@@ -1656,7 +1656,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 #endif
 // Test requesting fullscreen on a specific screen and opening a cross-screen
 // popup window from one gesture. Check the expected window activation pattern.
-// https://w3c.github.io/window-placement/#usage-overview-initiate-multi-screen-experiences
+// https://w3c.github.io/window-management/#usage-overview-initiate-multi-screen-experiences
 IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenCompanionWindow) {
   content::WebContents* tab = SetUpWindowManagementTab();

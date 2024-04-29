@@ -192,26 +192,17 @@ void ParsingContext::ReportFeatureUsage(
 std::optional<mojom::blink::PermissionsPolicyFeature>
 ParsingContext::ParseFeatureName(const String& feature_name) {
   DCHECK(!feature_name.empty());
-  if (feature_name == "window-management") {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWindowManagementPermissionPolicyParsed);
-  }
-  const String& effective_feature_name =
-      (feature_name == "window-placement" &&
-       RuntimeEnabledFeatures::WindowPlacementPermissionAliasEnabled())
-          ? "window-management"
-          : feature_name;
-  if (!feature_names_.Contains(effective_feature_name)) {
-    logger_.Warn("Unrecognized feature: '" + effective_feature_name + "'.");
+  if (!feature_names_.Contains(feature_name)) {
+    logger_.Warn("Unrecognized feature: '" + feature_name + "'.");
     return std::nullopt;
   }
-  if (DisabledByOriginTrial(effective_feature_name, execution_context_)) {
+  if (DisabledByOriginTrial(feature_name, execution_context_)) {
     logger_.Warn("Origin trial controlled feature not enabled: '" +
-                 effective_feature_name + "'.");
+                 feature_name + "'.");
     return std::nullopt;
   }
   mojom::blink::PermissionsPolicyFeature feature =
-      feature_names_.at(effective_feature_name);
+      feature_names_.at(feature_name);
 
   if (feature == mojom::blink::PermissionsPolicyFeature::kUnload) {
     UseCounter::Count(execution_context_, WebFeature::kPermissionsPolicyUnload);
@@ -368,13 +359,6 @@ std::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
     parsed_feature.reporting_endpoint = std::nullopt;
   } else {
     parsed_feature.reporting_endpoint = declaration_node.endpoint.Ascii();
-  }
-
-  // "window-placement" permission policy is deprecated, so add the deprecation
-  // feature to the policy declaration.
-  if (declaration_node.feature_name == "window-placement") {
-    parsed_feature.deprecated_feature =
-        WebFeature::kWindowPlacementPermissionPolicyParsed;
   }
 
   return parsed_feature;

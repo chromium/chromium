@@ -462,12 +462,7 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kWindowManagement:
-      if (base::FeatureList::IsEnabled(
-              features::kWindowPlacementPermissionAlias)) {
-        return "window_placement";
-      } else {
-        return "window_management";
-      }
+      return "window_management";
 #endif
     case permissions::RequestType::kIdentityProvider:
       return "identity_provider";

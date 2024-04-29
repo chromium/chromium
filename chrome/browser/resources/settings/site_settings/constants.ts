@@ -54,7 +54,7 @@ export enum ContentSettingsTypes {
   TRACKING_PROTECTION = 'tracking-protection',
   USB_DEVICES = 'usb-devices',
   VR = 'vr',
-  WINDOW_MANAGEMENT = 'window-placement',
+  WINDOW_MANAGEMENT = 'window-management',
   ZOOM_LEVELS = 'zoom-levels',
   WEB_PRINTING = 'web-printing',
 

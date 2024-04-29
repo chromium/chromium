@@ -173,10 +173,6 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::NFC;
   } else if (name == "window-management") {
     *permission_type = PermissionType::WINDOW_MANAGEMENT;
-  } else if (name == "window-placement" &&
-             base::FeatureList::IsEnabled(
-                 blink::features::kWindowPlacementPermissionAlias)) {
-    *permission_type = PermissionType::WINDOW_MANAGEMENT;
   } else if (name == "local-fonts") {
     *permission_type = PermissionType::LOCAL_FONTS;
   } else if (name == "display-capture") {
