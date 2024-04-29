@@ -43,7 +43,7 @@ void MaybeTapAllowNotifications() {
   XCUIApplication* springboardApplication = [[XCUIApplication alloc]
       initWithBundleIdentifier:@"com.apple.springboard"];
   auto button = springboardApplication.buttons[@"Allow"];
-  if ([button waitForExistenceWithTimeout:1.5]) {
+  if ([button waitForExistenceWithTimeout:1]) {
     [button tap];
     [ChromeEarlGreyUI waitForAppToIdle];
   }
@@ -104,6 +104,8 @@ void MaybeDismissNotification() {
   [ChromeEarlGrey clearDefaultBrowserPromoData];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kIosCredentialProviderPromoLastActionTaken];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kIosDefaultBrowserPromoLastAction];
   [NewTabPageAppInterface resetSetUpListPrefs];
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
@@ -154,7 +156,6 @@ void MaybeDismissNotification() {
 #pragma mark - Tests
 
 // Tests the SetUpList long press menu item to toggle Tips Notifications.
-// TODO:(crbug.com/334134064) Fix and reenable test.
 - (void)testToggleTipsNotificationsMenuItem {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
