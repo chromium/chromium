@@ -65,6 +65,8 @@ using base::UserMetricsAction;
 
 - (void)confirmationAlertPrimaryAction {
   [self.mediator didTapPrimaryActionButton];
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kActionButton);
   base::UmaHistogramEnumeration(
       "IOS.DefaultBrowserVideoPromo.Fullscreen",
       IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
@@ -74,6 +76,7 @@ using base::UserMetricsAction;
 }
 
 - (void)confirmationAlertSecondaryAction {
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
   base::UmaHistogramEnumeration(
       "IOS.DefaultBrowserVideoPromo.Fullscreen",
       IOSDefaultBrowserVideoPromoAction::kSecondaryActionTapped);
@@ -83,6 +86,8 @@ using base::UserMetricsAction;
 }
 
 - (void)confirmationAlertTertiaryAction {
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kRemindMeLater);
   base::UmaHistogramEnumeration(
       "IOS.DefaultBrowserVideoPromo.Fullscreen",
       IOSDefaultBrowserVideoPromoAction::kTertiaryActionTapped);
@@ -107,6 +112,7 @@ using base::UserMetricsAction;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
   base::UmaHistogramEnumeration("IOS.DefaultBrowserVideoPromo.Fullscreen",
                                 IOSDefaultBrowserVideoPromoAction::kSwipeDown);
   RecordAction(

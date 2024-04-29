@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/default_browser/model/utils.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/apple/foundation_util.h"
 #import "base/command_line.h"
 #import "base/ios/ios_util.h"
@@ -16,13 +18,13 @@
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-
-#import <UIKit/UIKit.h>
 
 // Key in NSUserDefaults containing an NSDictionary used to store all the
 // information.
@@ -1084,4 +1086,20 @@ BOOL IsPromoImpressionsMigrationDone() {
   NSNumber* number =
       GetObjectFromStorageForKey<NSNumber>(kPromoImpressionsMigrationDone);
   return number.boolValue;
+}
+
+void RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction action) {
+  GetApplicationContext()->GetLocalState()->SetInteger(
+      prefs::kIosDefaultBrowserPromoLastAction, static_cast<int>(action));
+}
+
+std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction() {
+  const PrefService::Preference* last_action =
+      GetApplicationContext()->GetLocalState()->FindPreference(
+          prefs::kIosDefaultBrowserPromoLastAction);
+  if (last_action->IsDefaultValue()) {
+    return std::nullopt;
+  }
+  int last_action_int = last_action->GetValue()->GetInt();
+  return static_cast<IOSDefaultBrowserPromoAction>(last_action_int);
 }

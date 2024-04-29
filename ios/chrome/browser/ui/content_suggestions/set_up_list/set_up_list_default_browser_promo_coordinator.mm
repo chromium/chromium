@@ -76,6 +76,8 @@ using base::UserMetricsAction;
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kActionButton);
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Accepted"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
             IOSDefaultBrowserPromoAction::kActionButton];
@@ -87,6 +89,7 @@ using base::UserMetricsAction;
 }
 
 - (void)didTapSecondaryActionButton {
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
             IOSDefaultBrowserPromoAction::kCancel];
@@ -98,6 +101,7 @@ using base::UserMetricsAction;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
             IOSDefaultBrowserPromoAction::kCancel];

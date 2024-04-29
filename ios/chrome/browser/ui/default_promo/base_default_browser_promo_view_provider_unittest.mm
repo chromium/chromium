@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/ui/default_promo/all_tabs_default_browser_promo_view_provider.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -26,6 +27,7 @@ class BaseDefaultBrowserPromoViewProviderTest : public PlatformTest {
     ClearDefaultBrowserPromoData();
   }
 
+  IOSChromeScopedTestingLocalState local_state_;
   AllTabsDefaultBrowserPromoViewProvider* all_tabs_view_provider_;
 };
 

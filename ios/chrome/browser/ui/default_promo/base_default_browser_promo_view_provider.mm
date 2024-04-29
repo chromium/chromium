@@ -68,6 +68,8 @@ using l10n_util::GetNSString;
 
 // The "Primary Action" was touched.
 - (void)standardPromoPrimaryAction {
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kActionButton);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));
   LogDefaultBrowserPromoHistogramForAction(
@@ -81,6 +83,7 @@ using l10n_util::GetNSString;
 
 // The "Secondary Action" was touched.
 - (void)standardPromoSecondaryAction {
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Cancel"));
   LogDefaultBrowserPromoHistogramForAction(
@@ -101,6 +104,7 @@ using l10n_util::GetNSString;
 
 // Gesture-based actions.
 - (void)standardPromoDismissSwipe {
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
   LogDefaultBrowserPromoHistogramForAction(

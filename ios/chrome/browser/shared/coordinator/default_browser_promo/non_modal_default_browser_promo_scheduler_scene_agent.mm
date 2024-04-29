@@ -106,6 +106,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 - (void)logPromoAction:(PromoReason)currentPromoReason
         promoShownTime:(base::TimeTicks)promoShownTime {
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kActionButton);
   LogNonModalPromoAction(NonModalPromoAction::kAccepted,
                          MetricTypeForPromoReason(currentPromoReason),
                          _userInteractionWithNonModalPromoCount);
@@ -121,6 +123,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(PromoReason reason) {
 
 - (void)logPromoUserDismiss:(PromoReason)currentPromoReason
              promoShownTime:(base::TimeTicks)promoShownTime {
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
   LogNonModalPromoAction(NonModalPromoAction::kDismiss,
                          MetricTypeForPromoReason(currentPromoReason),
                          _userInteractionWithNonModalPromoCount);

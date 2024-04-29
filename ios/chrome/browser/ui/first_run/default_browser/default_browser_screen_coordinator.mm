@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -68,6 +69,8 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kActionButton);
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithSettings);
@@ -79,6 +82,10 @@
 }
 
 - (void)didTapSecondaryActionButton {
+  // Using `kDismiss` here instead of `kCancel` because there is no other way
+  // for the user to dismiss this view as part of the FRE. `kDismiss` will not
+  // cause the SetUpList Default Browser item to be marked complete.
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithoutSettings);

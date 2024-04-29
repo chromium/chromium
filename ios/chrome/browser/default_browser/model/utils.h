@@ -379,4 +379,12 @@ void LogPromoImpressionsMigrationDone();
 // Returns whether promo impressions migratin is done.
 BOOL IsPromoImpressionsMigrationDone();
 
+// Records the last action the user took when a Default Browser Promo was
+// presented.
+void RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction action);
+
+// Returns the last action, if any, that the user took when a Default Browser
+// Promo was presented.
+std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction();
+
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_
