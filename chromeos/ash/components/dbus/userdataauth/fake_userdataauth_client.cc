@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/recoverable_key_store.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -1551,17 +1552,6 @@ void FakeUserDataAuthClient::GetAuthFactorExtendedInfo(
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 }
 
-void FakeUserDataAuthClient::GetRecoveryRequest(
-    const ::user_data_auth::GetRecoveryRequestRequest& request,
-    GetRecoveryRequestCallback callback) {
-  ::user_data_auth::GetRecoveryRequestReply reply;
-  SetErrorWrapperToReply(reply,
-                         cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                             CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET));
-  reply.set_recovery_request("fake-recovery-request");
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-}
-
 void FakeUserDataAuthClient::GetAuthSessionStatus(
     const ::user_data_auth::GetAuthSessionStatusRequest& request,
     GetAuthSessionStatusCallback callback) {
@@ -1600,15 +1590,27 @@ void FakeUserDataAuthClient::PrepareAuthFactor(
     return;
   }
 
-  CHECK_EQ(request.auth_factor_type(),
-           user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT)
-      << "Only Legacy FP is supported in FakeUDAC";
-  CHECK(!fingerprint_observers_.empty())
-      << "Add relevant observer before calling PrepareAuthFactor";
+  switch (request.auth_factor_type()) {
+    case user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY:
+      SetErrorWrapperToReply(
+          reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                     CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET));
+      reply.mutable_prepare_output()
+          ->mutable_cryptohome_recovery_output()
+          ->set_recovery_request("fake-recovery-request");
+      break;
+    case user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT:
+      CHECK(!fingerprint_observers_.empty())
+          << "Add relevant observer before calling PrepareAuthFactor";
 
-  CHECK(!auth_session->second.is_listening_for_fingerprint_events)
-      << "Duplicate call to PrepareAuthFactor";
-  auth_session->second.is_listening_for_fingerprint_events = true;
+      CHECK(!auth_session->second.is_listening_for_fingerprint_events)
+          << "Duplicate call to PrepareAuthFactor";
+      auth_session->second.is_listening_for_fingerprint_events = true;
+      break;
+    default:
+      LOG(FATAL) << "Only Recovery and Legacy FP support PrepareAuthFactor in "
+                    "FakeUDAC";
+  }
 }
 
 void FakeUserDataAuthClient::TerminateAuthFactor(

@@ -215,7 +215,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   void OnGetRecoveryRequest(
       RecoveryRequestCallback callback,
       std::unique_ptr<UserContext> context,
-      std::optional<user_data_auth::GetRecoveryRequestReply> reply);
+      std::optional<user_data_auth::PrepareAuthFactorReply> reply);
 
   void OnExtendAuthSession(
       base::Time request_start,

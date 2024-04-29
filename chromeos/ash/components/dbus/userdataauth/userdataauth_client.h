@@ -99,8 +99,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using GetAuthFactorExtendedInfoCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::GetAuthFactorExtendedInfoReply>;
 
-  using GetRecoveryRequestCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::GetRecoveryRequestReply>;
   // Asynchronous (biometric) AuthFactors API.
   using PrepareAuthFactorCallback =
       chromeos::DBusMethodCallback<::user_data_auth::PrepareAuthFactorReply>;
@@ -314,12 +312,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void GetAuthFactorExtendedInfo(
       const ::user_data_auth::GetAuthFactorExtendedInfoRequest& request,
       GetAuthFactorExtendedInfoCallback callback) = 0;
-
-  // This is called when a user authenticates with recovery to obtain the
-  // request to be sent to the recovery service.
-  virtual void GetRecoveryRequest(
-      const ::user_data_auth::GetRecoveryRequestRequest& request,
-      GetRecoveryRequestCallback callback) = 0;
 
   // This is called when a user wants to get an AuthSession status.
   virtual void GetAuthSessionStatus(

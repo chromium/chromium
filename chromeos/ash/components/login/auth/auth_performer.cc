@@ -197,8 +197,9 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   DCHECK(context->GetChallengeResponseKeys().empty());
-  if (context->GetAuthSessionId().empty())
+  if (context->GetAuthSessionId().empty()) {
     NOTREACHED() << "Auth session should exist";
+  }
 
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     DCHECK(!context->IsUsingPin());
@@ -284,8 +285,9 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   DCHECK(!context->GetChallengeResponseKeys().empty());
-  if (context->GetAuthSessionId().empty())
+  if (context->GetAuthSessionId().empty()) {
     NOTREACHED() << "Auth session should exist";
+  }
   LOGIN_LOG(EVENT) << "Authenticating using challenge-response";
 
   user_data_auth::AuthenticateAuthFactorRequest request;
@@ -316,8 +318,9 @@ void AuthPerformer::AuthenticateWithPassword(
     AuthOperationCallback callback) {
   DCHECK(!password.empty()) << "Caller should check for empty password";
   DCHECK(!key_label.empty()) << "Caller should provide correct label";
-  if (context->GetAuthSessionId().empty())
+  if (context->GetAuthSessionId().empty()) {
     NOTREACHED() << "Auth session should exist";
+  }
 
   const SessionAuthFactors& auth_factors = context->GetAuthFactorsData();
   if (auth_factors.FindPasswordFactor(cryptohome::KeyLabel{key_label}) ==
@@ -355,8 +358,9 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
                                         AuthOperationCallback callback) {
   DCHECK(!pin.empty()) << "Caller should check for empty PIN";
   DCHECK(!pin_salt.empty()) << "Client code should provide correct salt";
-  if (context->GetAuthSessionId().empty())
+  if (context->GetAuthSessionId().empty()) {
     NOTREACHED() << "Auth session should exist";
+  }
 
   // Use Key until proper migration to AuthFactors API.
   Key key(pin);
@@ -418,8 +422,9 @@ void AuthPerformer::AuthenticateWithFingerprint(
 
 void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                                         AuthOperationCallback callback) {
-  if (context->GetAuthSessionId().empty())
+  if (context->GetAuthSessionId().empty()) {
     NOTREACHED() << "Auth session should exist";
+  }
 
   LOGIN_LOG(EVENT) << "Authenticating as Kiosk";
 
@@ -448,8 +453,9 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
 
 void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                                          AuthSessionStatusCallback callback) {
-  if (context->GetAuthSessionId().empty())
+  if (context->GetAuthSessionId().empty()) {
     NOTREACHED() << "Auth session should exist";
+  }
 
   LOGIN_LOG(EVENT) << "Requesting authsession status";
   user_data_auth::GetAuthSessionStatusRequest request;
@@ -493,9 +499,12 @@ void AuthPerformer::GetRecoveryRequest(
 
   LOGIN_LOG(EVENT) << "Obtaining RecoveryRequest";
 
-  user_data_auth::GetRecoveryRequestRequest request;
+  user_data_auth::PrepareAuthFactorRequest request;
 
   request.set_auth_session_id(context->GetAuthSessionId());
+  request.set_auth_factor_type(
+      user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
+  request.set_purpose(user_data_auth::PURPOSE_AUTHENTICATE_AUTH_FACTOR);
 
   const std::string& gaia_id = context->GetGaiaID();
   CHECK(!gaia_id.empty()) << "Recovery is only supported for gaia users";
@@ -503,15 +512,17 @@ void AuthPerformer::GetRecoveryRequest(
   const std::string& reauth_proof_token = context->GetReauthProofToken();
   CHECK(!reauth_proof_token.empty()) << "Reauth proof token must be set";
 
-  request.set_requestor_user_id_type(
-      user_data_auth::GetRecoveryRequestRequest::GAIA_ID);
-  request.set_requestor_user_id(gaia_id);
-  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
-  request.set_gaia_access_token(access_token);
-  request.set_gaia_reauth_proof_token(reauth_proof_token);
-  request.set_epoch_response(epoch->data(), epoch->size());
+  auto* recovery_input =
+      request.mutable_prepare_input()->mutable_cryptohome_recovery_input();
+  recovery_input->set_requestor_user_id_type(
+      user_data_auth::CryptohomeRecoveryPrepareInput::GAIA_ID);
+  recovery_input->set_requestor_user_id(gaia_id);
+  recovery_input->set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
+  recovery_input->set_gaia_access_token(access_token);
+  recovery_input->set_gaia_reauth_proof_token(reauth_proof_token);
+  recovery_input->set_epoch_response(epoch->data(), epoch->size());
 
-  client_->GetRecoveryRequest(
+  client_->PrepareAuthFactor(
       std::move(request),
       base::BindOnce(&AuthPerformer::OnGetRecoveryRequest,
                      weak_factory_.GetWeakPtr(), std::move(callback),
@@ -717,7 +728,7 @@ void AuthPerformer::OnExtendAuthSession(
 void AuthPerformer::OnGetRecoveryRequest(
     RecoveryRequestCallback callback,
     std::unique_ptr<UserContext> context,
-    std::optional<user_data_auth::GetRecoveryRequestReply> reply) {
+    std::optional<user_data_auth::PrepareAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
 
   if (cryptohome::HasError(error)) {
@@ -728,9 +739,11 @@ void AuthPerformer::OnGetRecoveryRequest(
     return;
   }
 
-  CHECK(!reply->recovery_request().empty());
-  std::move(callback).Run(RecoveryRequest(reply->recovery_request()),
-                          std::move(context), std::nullopt);
+  const std::string& recovery_request =
+      reply->prepare_output().cryptohome_recovery_output().recovery_request();
+  CHECK(!recovery_request.empty());
+  std::move(callback).Run(RecoveryRequest(recovery_request), std::move(context),
+                          std::nullopt);
 }
 
 }  // namespace ash
