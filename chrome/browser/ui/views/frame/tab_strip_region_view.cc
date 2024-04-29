@@ -64,7 +64,8 @@ class FrameGrabHandle : public views::View {
   METADATA_HEADER(FrameGrabHandle, views::View)
 
  public:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // Reserve some space for the frame to be grabbed by, even if the tabstrip
     // is full.
     // TODO(tbergquist): Define this relative to the NTB insets again.

@@ -43,7 +43,8 @@ class TestView : public views::View {
   TestView& operator=(const TestView&) = delete;
   ~TestView() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return harness_->GetPreferredSizeForContents();
   }
 

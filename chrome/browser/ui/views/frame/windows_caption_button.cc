@@ -50,7 +50,8 @@ WindowsCaptionButton::CreateIconPainter() {
   return std::make_unique<Windows10IconPainter>();
 }
 
-gfx::Size WindowsCaptionButton::CalculatePreferredSize() const {
+gfx::Size WindowsCaptionButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int width =
       WindowFrameUtil::kWindowsCaptionButtonWidth + GetBetweenButtonSpacing();
 

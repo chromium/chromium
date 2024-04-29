@@ -36,7 +36,8 @@ class ContentShadow : public views::View {
 
  protected:
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 };
 
@@ -45,7 +46,8 @@ ContentShadow::ContentShadow() {
   layer()->SetFillsBoundsOpaquely(false);
 }
 
-gfx::Size ContentShadow::CalculatePreferredSize() const {
+gfx::Size ContentShadow::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(0, views::BubbleBorder::GetBorderAndShadowInsets().height());
 }
 
@@ -115,7 +117,8 @@ void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
 }
 
-gfx::Size InfoBarContainerView::CalculatePreferredSize() const {
+gfx::Size InfoBarContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const auto enlarge_size = [this](const gfx::Size& size, const View* child) {
     const gfx::Size child_size = child->GetPreferredSize();
     int add_separator_height =

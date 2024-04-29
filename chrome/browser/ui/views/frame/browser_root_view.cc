@@ -401,7 +401,8 @@ void BrowserRootView::OnMouseExited(const ui::MouseEvent& event) {
   RootView::OnMouseExited(event);
 }
 
-gfx::Size BrowserRootView::CalculatePreferredSize() const {
+gfx::Size BrowserRootView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return browser_view_->GetRestoredBounds().size();
 }
 

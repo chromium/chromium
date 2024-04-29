@@ -174,7 +174,8 @@ void InfoBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                 "Alt+Shift+A");
 }
 
-gfx::Size InfoBarView::CalculatePreferredSize() const {
+gfx::Size InfoBarView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int width = 0;
 
   const int spacing = GetElementSpacing();
