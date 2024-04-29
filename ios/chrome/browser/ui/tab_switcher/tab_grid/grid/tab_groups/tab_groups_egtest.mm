@@ -103,6 +103,12 @@ id<GREYMatcher> TabCellMatcherAtIndex(unsigned int index) {
                     grey_sufficientlyVisible(), nil);
 }
 
+// Returns the matcher for the overflow menu button.
+id<GREYMatcher> TabGroupOverflowMenuButtonMatcher() {
+  return grey_allOf(grey_accessibilityID(kTabGroupOverflowMenuButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
 // Creates a group with default title from a tab cell at index `tab_cell_index`
 // when no group is in the grid.
 void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
@@ -545,6 +551,34 @@ void DeleteGroupAtIndex(int group_cell_index) {
                                    l10n_util::GetPluralNSStringF(
                                        IDS_IOS_TAB_GROUP_TABS_NUMBER, 2))]
       assertWithMatcher:grey_notNil()];
+}
+
+// Checks that all the options are displayed in the group's overflow menu.
+- (void)testAppropriateOverflowMenuInGroupView {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  OpenTabGroupAtIndex(0);
+
+  // Display the tab group overflow menu.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Check the different buttons.
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
+                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
+                                          IDS_IOS_CONTENT_CONTEXT_UNGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
+                                          IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
