@@ -46,7 +46,8 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
       ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetStoreFactory(),
-      ::GetChannel());
+      ::GetChannel(),
+      /*sdk_delegate=*/nullptr);
 }
 
 }  // namespace

@@ -8,12 +8,18 @@ namespace data_sharing {
 
 GroupMember::GroupMember() = default;
 
+GroupMember::GroupMember(const GroupMember&) = default;
+GroupMember& GroupMember::operator=(const GroupMember&) = default;
+
 GroupMember::GroupMember(GroupMember&&) = default;
 GroupMember& GroupMember::operator=(GroupMember&&) = default;
 
 GroupMember::~GroupMember() = default;
 
 GroupData::GroupData() = default;
+
+GroupData::GroupData(const GroupData&) = default;
+GroupData& GroupData::operator=(const GroupData&) = default;
 
 GroupData::GroupData(GroupData&&) = default;
 GroupData& GroupData::operator=(GroupData&&) = default;

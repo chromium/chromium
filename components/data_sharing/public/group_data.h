@@ -16,8 +16,8 @@ enum class MemberRole { kUnknown, kOwner, kMember, kInvitee };
 struct GroupMember {
   GroupMember();
 
-  GroupMember(const GroupMember&) = delete;
-  GroupMember& operator=(const GroupMember&) = delete;
+  GroupMember(const GroupMember&);
+  GroupMember& operator=(const GroupMember&);
 
   GroupMember(GroupMember&&);
   GroupMember& operator=(GroupMember&&);
@@ -34,8 +34,8 @@ struct GroupMember {
 struct GroupData {
   GroupData();
 
-  GroupData(const GroupData&) = delete;
-  GroupData& operator=(const GroupData&) = delete;
+  GroupData(const GroupData&);
+  GroupData& operator=(const GroupData&);
 
   GroupData(GroupData&&);
   GroupData& operator=(GroupData&&);

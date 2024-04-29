@@ -57,7 +57,8 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
           ->GetURLLoaderFactoryForBrowserProcess(),
       IdentityManagerFactory::GetForProfile(profile),
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
-      chrome::GetChannel());
+      chrome::GetChannel(),
+      /*sdk_delegate=*/nullptr);
 }
 
 }  // namespace data_sharing
