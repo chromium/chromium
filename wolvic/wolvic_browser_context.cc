@@ -243,12 +243,7 @@ SSLHostStateDelegate* WolvicBrowserContext::GetSSLHostStateDelegate() {
 
 PermissionControllerDelegate*
 WolvicBrowserContext::GetPermissionControllerDelegate() {
-  if (!permission_manager_) {
-    permission_manager_ =
-        std::make_unique<wolvic::WolvicPermissionManager>(this);
-  }
-
-  return permission_manager_.get();
+  return wolvic::WolvicPermissionManager::GetInstance(off_the_record_);
 }
 
 ClientHintsControllerDelegate*

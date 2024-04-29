@@ -39,10 +39,9 @@ struct InProgressRequest {
 
 class WolvicPermissionManager : public content::PermissionControllerDelegate {
  public:
-  explicit WolvicPermissionManager(content::BrowserContext* browser_context);
   ~WolvicPermissionManager() override;
 
-  static WolvicPermissionManager* GetInstance(bool is_off_the_record);
+  static WolvicPermissionManager* GetInstance(bool off_the_record);
 
   // PermissionControllerDelegate overrides:
   void RequestPermissions(
@@ -112,13 +111,14 @@ class WolvicPermissionManager : public content::PermissionControllerDelegate {
                                const absl::optional<std::string>& audio_id);
 
  private:
+  explicit WolvicPermissionManager(bool off_the_record);
   void CompleteRequest(InProgressRequest* in_progress_request);
   void RequestContentPermissions(JNIEnv* env,
                                  InProgressRequest* in_progress_request);
   void RequestAndroidPermissions(JNIEnv* env,
                                  InProgressRequest* in_progress_request);
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  bool off_the_record_;
 
   InProgressRequest* FindInProgressRequest(
       const content::PermissionRequestDescription& description);

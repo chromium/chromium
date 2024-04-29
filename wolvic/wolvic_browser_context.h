@@ -102,7 +102,6 @@ class WolvicBrowserContext : public BrowserContext,
   }
 
  protected:
-  std::unique_ptr<PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<BackgroundSyncController> background_sync_controller_;
   std::unique_ptr<ContentIndexProvider> content_index_provider_;
   std::unique_ptr<ReduceAcceptLanguageControllerDelegate>

@@ -16,7 +16,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/notreached.h"
 #include "components/permissions/permission_util.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "content/public/browser/media_stream_request.h"
@@ -267,16 +266,6 @@ const blink::MediaStreamDevice* GetDeviceByIdOrFirstAvailable(
 wolvic::WolvicPermissionManager* g_instance = nullptr;
 wolvic::WolvicPermissionManager* g_off_the_record_instance = nullptr;
 
-WolvicPermissionManager* GetPermissionManager() {
-  DCHECK(g_instance);
-  return g_instance;
-}
-
-WolvicPermissionManager* GetOffTheRecordPermissionManager() {
-  DCHECK(g_off_the_record_instance);
-  return g_off_the_record_instance;
-}
-
 std::vector<content::PermissionStatus> CombineStatuses(
     const std::vector<content::PermissionStatus>& content_statuses,
     const std::vector<content::PermissionStatus>& android_statuses) {
@@ -310,23 +299,21 @@ InProgressRequest::InProgressRequest(
 InProgressRequest::~InProgressRequest() = default;
 
 WolvicPermissionManager::WolvicPermissionManager(
-    content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {
-  if (browser_context_->IsOffTheRecord()) {
-    DCHECK(!g_off_the_record_instance);
-    g_off_the_record_instance = this;
-  } else {
-    DCHECK(!g_instance);
-    g_instance = this;
-  }
-}
+    bool off_the_record)
+    : off_the_record_(off_the_record) {}
 
 WolvicPermissionManager::~WolvicPermissionManager() = default;
 
 WolvicPermissionManager* WolvicPermissionManager::GetInstance(
-    bool is_off_the_record) {
-  return is_off_the_record ? GetOffTheRecordPermissionManager()
-                           : GetPermissionManager();
+    bool off_the_record) {
+  if (off_the_record) {
+      if (!g_off_the_record_instance)
+	g_off_the_record_instance = new WolvicPermissionManager(true);
+      return g_off_the_record_instance;
+  }
+  if (!g_instance)
+    g_instance = new WolvicPermissionManager(false);
+  return g_instance;
 }
 
 void WolvicPermissionManager::RequestPermissions(
@@ -512,7 +499,7 @@ void WolvicPermissionManager::OnMediaContentPermissionResult(
       env, in_progress_request->media_request.value().security_origin.spec());
   Java_PermissionManagerBridge_onMediaPermissionRequest(
       env, video_sources, audio_sources, url,
-      browser_context_->IsOffTheRecord(),
+      off_the_record_,
       reinterpret_cast<jlong>(in_progress_request));
 }
 
@@ -605,7 +592,7 @@ void WolvicPermissionManager::RequestContentPermissions(
           env, std::span(permissions.begin(), permissions.end())));
   Java_PermissionManagerBridge_onContentPermissionRequest(
       env, permissions_java_array, url_java_string,
-      browser_context_->IsOffTheRecord(),
+      off_the_record_,
       reinterpret_cast<jlong>(in_progress_request));
 }
 
@@ -621,7 +608,7 @@ void WolvicPermissionManager::RequestAndroidPermissions(
                              android_permissions.end())));
 
   Java_PermissionManagerBridge_onAndroidPermissionRequest(
-      env, java_android_permissions, browser_context_->IsOffTheRecord(),
+      env, java_android_permissions, off_the_record_,
       reinterpret_cast<jlong>(in_progress_request));
 }
 
