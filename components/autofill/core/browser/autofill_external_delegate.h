@@ -15,9 +15,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -35,7 +35,7 @@ enum class CreditCardFetchResult;
 
 // Delegate for in-browser Autocomplete and Autofill display and selection.
 class AutofillExternalDelegate : public AutofillPopupDelegate,
-                                 public PersonalDataManagerObserver {
+                                 public AddressDataManager::Observer {
  public:
   class ScopedAutofillPopupShortcutForTesting;
 
@@ -117,8 +117,8 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // used to help record the metrics of when a new popup is shown.
   void DidEndTextFieldEditing();
 
-  // PersonalDataManagerObserver:
-  void OnPersonalDataChanged() override;
+  // AddressDataManager::Observer:
+  void OnAddressDataChanged() override;
 
   const FormData& query_form() const { return query_form_; }
 
@@ -274,11 +274,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // The current data list values.
   std::vector<SelectOption> datalist_;
 
-  // Autofill profile update and deletion are async operations. PDM observer is
+  // Autofill profile update and deletion are async operations. ADM observer is
   // used to detect when these operations finish. These operations can happen at
   // the same time.
-  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
-      pdm_observation_{this};
+  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+      adm_observation_{this};
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
 };

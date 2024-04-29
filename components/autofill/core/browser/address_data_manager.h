@@ -97,8 +97,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   AddressDataManager(const AddressDataManager&) = delete;
   AddressDataManager& operator=(const AddressDataManager&) = delete;
 
-  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
-  void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
+  virtual void AddObserver(Observer* obs);
+  virtual void RemoveObserver(Observer* obs);
 
   // Adds a callback which will be triggered on the next address data change,
   // at the same time `Observer::OnAddressDataChanged()` of `observers_` is

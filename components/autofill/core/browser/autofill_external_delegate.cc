@@ -806,12 +806,13 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
   if (decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) {
     autofill_metrics::LogEditAddressProfileDialogClosed(
         /*user_saved_changes=*/true);
-    PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-    if (!pdm_observation_.IsObserving()) {
-      pdm_observation_.Observe(pdm);
+    AddressDataManager& adm =
+        manager_->client().GetPersonalDataManager()->address_data_manager();
+    if (!adm_observation_.IsObserving()) {
+      adm_observation_.Observe(&adm);
     }
     CHECK(edited_profile.has_value());
-    pdm->UpdateProfile(edited_profile.value());
+    adm.UpdateProfile(edited_profile.value());
     return;
   }
   autofill_metrics::LogEditAddressProfileDialogClosed(
@@ -825,19 +826,20 @@ void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
   autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
       user_accepted_delete);
   if (user_accepted_delete) {
-    PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-    if (!pdm_observation_.IsObserving()) {
-      pdm_observation_.Observe(pdm);
+    AddressDataManager& adm =
+        manager_->client().GetPersonalDataManager()->address_data_manager();
+    if (!adm_observation_.IsObserving()) {
+      adm_observation_.Observe(&adm);
     }
-    pdm->RemoveByGUID(guid);
+    adm.RemoveProfile(guid);
     return;
   }
   manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
                                                       GetReopenTriggerSource());
 }
 
-void AutofillExternalDelegate::OnPersonalDataChanged() {
-  pdm_observation_.Reset();
+void AutofillExternalDelegate::OnAddressDataChanged() {
+  adm_observation_.Reset();
   manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
                                                       GetReopenTriggerSource());
 }

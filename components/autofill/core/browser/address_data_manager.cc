@@ -112,6 +112,14 @@ AddressDataManager::~AddressDataManager() {
   CancelAllPendingQueries();
 }
 
+void AddressDataManager::AddObserver(AddressDataManager::Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void AddressDataManager::RemoveObserver(AddressDataManager::Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
 void AddressDataManager::AddChangeCallback(base::OnceClosure callback) {
   change_callbacks_.push_back(std::move(callback));
 }

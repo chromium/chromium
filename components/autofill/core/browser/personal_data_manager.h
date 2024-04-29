@@ -143,8 +143,8 @@ class PersonalDataManager : public KeyedService,
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
-  virtual void AddObserver(PersonalDataManagerObserver* observer);
-  virtual void RemoveObserver(PersonalDataManagerObserver* observer);
+  void AddObserver(PersonalDataManagerObserver* observer);
+  void RemoveObserver(PersonalDataManagerObserver* observer);
 
   // Depending on what the `guid` identifies, removes either an AutofillProfile,
   // a credit card or an IBAN.
