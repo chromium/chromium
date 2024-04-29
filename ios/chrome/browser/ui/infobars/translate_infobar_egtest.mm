@@ -43,6 +43,12 @@ using chrome_test_util::WebStateScrollViewMatcher;
 
 namespace {
 
+// Infobar requires language detection to happen and may take a little longer
+// than kWaitForUIElementTimeout on laggy devices (like test bots).
+// Set a longer timeout.
+constexpr base::TimeDelta kWaitForUIElement3xTimeout =
+    3 * kWaitForUIElementTimeout;
+
 // Paragraph height height for test pages. This must be large enough to trigger
 // the fullscreen mode.
 const int kParagraphHeightEM = 200;
@@ -661,8 +667,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Test that the Show Original banner dismisses with a longer delay since it is
 // a high priority banner.
-// TODO(crbug.com/331774758): Test flaky.
-- (void)DISABLED_testInfobarAcceptedBannerDismissWithHighPriorityDelay {
+- (void)testInfobarAcceptedBannerDismissWithHighPriorityDelay {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -754,8 +759,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the target language can be changed. TODO(crbug.com/40670920):
 // implement test for changing source language.
-// TODO(crbug.com/334867767) Fix and reenable tests.
-- (void)DISABLED_testInfobarChangeTargetLanguage {
+- (void)testInfobarChangeTargetLanguage {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -805,7 +809,7 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that the "Always Translate" options can be toggled and the prefs are
 // updated accordingly.
 // TODO(crbug.com/334867767) Fix and reenable tests.
-- (void)DISABLED_testInfobarAlwaysTranslate {
+- (void)testInfobarAlwaysTranslate {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1106,7 +1110,7 @@ void TestResponseProvider::GetLanguageResponse(
 #pragma mark - Utility methods
 
 - (BOOL)isBeforeTranslateBannerVisible {
-  BOOL bannerShown = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+  BOOL bannerShown = WaitUntilConditionOrTimeout(kWaitForUIElement3xTimeout, ^{
     NSError* error = nil;
     [[EarlGrey
         selectElementWithMatcher:
@@ -1123,7 +1127,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 - (BOOL)isAfterTranslateBannerVisible {
   BOOL showOriginalBannerShown =
-      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+      WaitUntilConditionOrTimeout(kWaitForUIElement3xTimeout, ^{
         NSError* error = nil;
         [[EarlGrey
             selectElementWithMatcher:
@@ -1151,7 +1155,7 @@ void TestResponseProvider::GetLanguageResponse(
 // Returns whether a language has been detected on the current page. Returns
 // false if a timeout was detected while waiting for language detection.
 - (BOOL)waitForLanguageDetection {
-  bool detected = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+  bool detected = WaitUntilConditionOrTimeout(kWaitForUIElement3xTimeout, ^{
     return [TranslateAppInterface isLanguageDetected];
   });
   return detected;
