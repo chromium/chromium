@@ -32,7 +32,6 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_boolean_parameters.h"
