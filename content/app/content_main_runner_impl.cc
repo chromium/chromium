@@ -224,21 +224,15 @@ namespace {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA) && BUILDFLAG(IS_ANDROID)
 #if defined __LP64__
 #define kV8SnapshotDataDescriptor kV8Snapshot64DataDescriptor
-#define kV8ContextSnapshotDataDescriptor kV8ContextSnapshot64DataDescriptor
 #else
 #define kV8SnapshotDataDescriptor kV8Snapshot32DataDescriptor
-#define kV8ContextSnapshotDataDescriptor kV8ContextSnapshot32DataDescriptor
 #endif
 #endif
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
 gin::V8SnapshotFileType GetSnapshotType(const base::CommandLine& command_line) {
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
-  if (command_line.HasSwitch(switches::kUseContextSnapshotSwitch))
-    return gin::V8SnapshotFileType::kWithAdditionalContext;
-  return gin::V8SnapshotFileType::kDefault;
-#elif BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   return gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
   return gin::V8SnapshotFileType::kDefault;
@@ -247,12 +241,13 @@ gin::V8SnapshotFileType GetSnapshotType(const base::CommandLine& command_line) {
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 std::string GetSnapshotDataDescriptor(const base::CommandLine& command_line) {
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
-  if (command_line.HasSwitch(switches::kUseContextSnapshotSwitch))
-    return kV8ContextSnapshotDataDescriptor;
-  return kV8SnapshotDataDescriptor;
-#elif BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
+#if BUILDFLAG(IS_ANDROID)
+  // On android, the renderer loads the context snapshot directly.
+  return std::string();
+#else
   return kV8ContextSnapshotDataDescriptor;
+#endif
 #else
   return kV8SnapshotDataDescriptor;
 #endif

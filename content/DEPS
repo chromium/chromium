@@ -133,8 +133,4 @@ specific_include_rules = {
     "+content/shell/browser",
     "+content/shell/common",
   ],
-  "content_(features|switches).h": [
-    # content -> tools dependency is disallowed, except buildflags for switches.
-    "+tools/v8_context_snapshot/buildflags.h",
-  ],
 }

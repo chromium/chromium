@@ -1732,7 +1732,7 @@ bool RenderProcessHostImpl::Init() {
 
     auto file_data = std::make_unique<ChildProcessLauncherFileData>();
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-    file_data->files_to_preload = GetV8SnapshotFilesToPreload(*cmd_line);
+    file_data->files_to_preload = GetV8SnapshotFilesToPreload();
 #endif
 
     // Spawn the child process asynchronously to avoid blocking the UI thread.

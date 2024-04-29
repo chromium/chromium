@@ -89,7 +89,6 @@ source_set("static_switches") {
   deps = [
     "//build:chromeos_buildflags",
     "//media:media_buildflags",
-    "//tools/v8_context_snapshot:buildflags",
   ]
 }
 
@@ -108,7 +107,6 @@ source_set("switches") {
   deps = [
     "//build:chromeos_buildflags",
     "//media:media_buildflags",
-    "//tools/v8_context_snapshot:buildflags",
   ]
 
   configs += [ "//content:content_implementation" ]
@@ -257,7 +255,6 @@ source_set("common_sources") {
     "//services/service_manager/public/mojom",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/mojom:mojom_platform_headers",
-    "//tools/v8_context_snapshot:buildflags",
     "//ui/accessibility",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/gfx/geometry",

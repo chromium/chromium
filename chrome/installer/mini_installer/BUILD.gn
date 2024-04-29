@@ -232,8 +232,7 @@ action("mini_installer_archive") {
     if (use_v8_context_snapshot) {
       inputs += [ "$root_out_dir/$v8_context_snapshot_filename" ]
       deps += [ "//tools/v8_context_snapshot" ]
-    }
-    if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+    } else {
       inputs += [ "$root_out_dir/snapshot_blob.bin" ]
       args += [ "--include_snapshotblob=1" ]
     }

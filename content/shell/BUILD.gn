@@ -811,8 +811,7 @@ if (is_apple) {
       if (use_v8_context_snapshot) {
         sources += [ "$root_out_dir/$v8_context_snapshot_filename" ]
         public_deps += [ "//tools/v8_context_snapshot" ]
-      }
-      if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+      } else {
         sources += [ "$root_out_dir/snapshot_blob.bin" ]
       }
     }

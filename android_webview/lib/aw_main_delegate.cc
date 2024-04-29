@@ -160,26 +160,18 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
       cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
-#if !BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT) || BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
+#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
+    const gin::V8SnapshotFileType file_type =
+        gin::V8SnapshotFileType::kWithAdditionalContext;
+#else
+    const gin::V8SnapshotFileType file_type = gin::V8SnapshotFileType::kDefault;
+#endif
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot32DataDescriptor,
-        gin::V8Initializer::GetSnapshotFilePath(
-            true, gin::V8SnapshotFileType::kDefault));
+        gin::V8Initializer::GetSnapshotFilePath(true, file_type));
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot64DataDescriptor,
-        gin::V8Initializer::GetSnapshotFilePath(
-            false, gin::V8SnapshotFileType::kDefault));
-#endif
-#if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
-    base::android::RegisterApkAssetWithFileDescriptorStore(
-        content::kV8ContextSnapshot32DataDescriptor,
-        gin::V8Initializer::GetSnapshotFilePath(
-            true, gin::V8SnapshotFileType::kWithAdditionalContext));
-    base::android::RegisterApkAssetWithFileDescriptorStore(
-        content::kV8ContextSnapshot64DataDescriptor,
-        gin::V8Initializer::GetSnapshotFilePath(
-            false, gin::V8SnapshotFileType::kWithAdditionalContext));
-#endif
+        gin::V8Initializer::GetSnapshotFilePath(false, file_type));
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
   }
 
