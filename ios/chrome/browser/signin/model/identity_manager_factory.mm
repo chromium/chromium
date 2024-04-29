@@ -94,6 +94,7 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
   params.account_tracker_service = std::make_unique<AccountTrackerService>();
   params.account_tracker_service->Initialize(params.pref_service,
                                              params.profile_path);
+  params.require_sync_consent_for_scope_verification = false;
 
   std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate =
       std::make_unique<ProfileOAuth2TokenServiceIOSDelegate>(

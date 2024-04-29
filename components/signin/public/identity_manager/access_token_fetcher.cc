@@ -9,10 +9,8 @@
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_constants.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -26,7 +24,8 @@ AccessTokenFetcher::AccessTokenFetcher(
     PrimaryAccountManager* primary_account_manager,
     const ScopeSet& scopes,
     TokenCallback callback,
-    Mode mode)
+    Mode mode,
+    bool require_sync_consent_for_scope_verification)
     : AccessTokenFetcher(account_id,
                          oauth_consumer_name,
                          token_service,
@@ -34,7 +33,8 @@ AccessTokenFetcher::AccessTokenFetcher(
                          /*url_loader_factory=*/nullptr,
                          scopes,
                          std::move(callback),
-                         mode) {}
+                         mode,
+                         require_sync_consent_for_scope_verification) {}
 
 AccessTokenFetcher::AccessTokenFetcher(
     const CoreAccountId& account_id,
@@ -44,7 +44,8 @@ AccessTokenFetcher::AccessTokenFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const ScopeSet& scopes,
     TokenCallback callback,
-    Mode mode)
+    Mode mode,
+    bool require_sync_consent_for_scope_verification)
     : OAuth2AccessTokenManager::Consumer(oauth_consumer_name),
       account_id_(account_id),
       token_service_(token_service),
@@ -52,7 +53,9 @@ AccessTokenFetcher::AccessTokenFetcher(
       url_loader_factory_(std::move(url_loader_factory)),
       scopes_(scopes),
       callback_(std::move(callback)),
-      mode_(mode) {
+      mode_(mode),
+      require_sync_consent_for_scope_verification_(
+          require_sync_consent_for_scope_verification) {
   if (mode_ == Mode::kImmediate || IsRefreshTokenAvailable()) {
     StartAccessTokenRequest();
     return;
@@ -65,14 +68,6 @@ AccessTokenFetcher::AccessTokenFetcher(
 }
 
 AccessTokenFetcher::~AccessTokenFetcher() {}
-
-bool AccessTokenFetcher::HasFullAccessToAllScopes() {
-  ConsentLevel required_consent_level =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? ConsentLevel::kSignin
-          : ConsentLevel::kSync;
-  return primary_account_manager_->HasPrimaryAccount(required_consent_level);
-}
 
 void AccessTokenFetcher::VerifyScopeAccess() {
   if (account_id_.empty()) {
@@ -99,9 +94,13 @@ void AccessTokenFetcher::VerifyScopeAccess() {
         scope.c_str());
   }
 
-  // The sign in status of the user grants access to any access token.
-  if (!HasFullAccessToAllScopes()) {
-    // Limited access to unconsented OAuth2 scopes.
+  // Bypass scope checking if there's a primary account with the sync consent.
+  // If `require_sync_consent_for_scope_verification_` is false - just having a
+  // primary account is enough to bypass the verification.
+  ConsentLevel consent_level = require_sync_consent_for_scope_verification_
+                                   ? ConsentLevel::kSync
+                                   : ConsentLevel::kSignin;
+  if (!primary_account_manager_->HasPrimaryAccount(consent_level)) {
     for (const std::string& scope : scopes_) {
       CHECK(GetUnconsentedOAuth2Scopes().count(scope)) << base::StringPrintf(
           "Consumer '%s' is requesting scope '%s' that requires user consent. "

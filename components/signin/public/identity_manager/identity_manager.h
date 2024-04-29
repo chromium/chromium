@@ -366,6 +366,9 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
     AccountConsistencyMethod account_consistency =
         AccountConsistencyMethod::kDisabled;
+    // TODO(crbug.com/325904258): Reconsider whether completely disabling the
+    // scope checking is the right approach in the long run.
+    bool require_sync_consent_for_scope_verification = true;
     raw_ptr<SigninClient> signin_client = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
     raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
@@ -696,6 +699,10 @@ class IdentityManager : public KeyedService,
 
   AccountConsistencyMethod account_consistency_ =
       AccountConsistencyMethod::kDisabled;
+
+  // TODO(crbug.com/40067025): Remove this field once
+  // kReplaceSyncPromosWithSignInPromos launches.
+  const bool require_sync_consent_for_scope_verification_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Java-side IdentityManager object.

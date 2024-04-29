@@ -170,7 +170,8 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
                      PrimaryAccountManager* primary_account_manager,
                      const ScopeSet& scopes,
                      TokenCallback callback,
-                     Mode mode);
+                     Mode mode,
+                     bool require_sync_consent_for_scope_verification);
 
   // Instantiates a fetcher and immediately starts the process of obtaining an
   // OAuth2 access token for |account_id| and |scopes|, allowing clients to pass
@@ -185,7 +186,8 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const ScopeSet& scopes,
       TokenCallback callback,
-      Mode mode);
+      Mode mode,
+      bool require_sync_consent_for_scope_verification);
 
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
   AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
@@ -200,7 +202,6 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   // Verifies that the client has the appropriate level of user consent for all
   // of the requested scopes.
   void VerifyScopeAccess();
-  bool HasFullAccessToAllScopes();
 
   void StartAccessTokenRequest();
 
@@ -234,6 +235,10 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   // contract.
   TokenCallback callback_;
   const Mode mode_;
+
+  // TODO(crbug.com/40067025): Remove this field once
+  // kReplaceSyncPromosWithSignInPromos launches.
+  const bool require_sync_consent_for_scope_verification_;
 
   base::ScopedObservation<ProfileOAuth2TokenService,
                           ProfileOAuth2TokenServiceObserver>

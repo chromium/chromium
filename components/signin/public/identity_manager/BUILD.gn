@@ -66,7 +66,6 @@ source_set("identity_manager") {
     "//components/prefs",
     "//components/signin/internal/identity_manager",
     "//components/signin/public/webdata",
-    "//components/sync/base:features",
     "//services/network/public/cpp",
   ]
 
@@ -129,7 +128,6 @@ source_set("unit_tests") {
     "//components/signin/public/base",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",
-    "//components/sync/base:features",
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//services/network:test_support",

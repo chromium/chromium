@@ -124,7 +124,9 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
           std::move(parameters.accounts_cookie_mutator),
           std::move(parameters.device_accounts_synchronizer))),
       diagnostics_provider_(std::move(parameters.diagnostics_provider)),
-      account_consistency_(parameters.account_consistency) {
+      account_consistency_(parameters.account_consistency),
+      require_sync_consent_for_scope_verification_(
+          parameters.require_sync_consent_for_scope_verification) {
   DCHECK(account_fetcher_service_);
   DCHECK(diagnostics_provider_);
   DCHECK(signin_client_);
@@ -238,7 +240,8 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
     AccessTokenFetcher::Mode mode) {
   return std::make_unique<AccessTokenFetcher>(
       account_id, oauth_consumer_name, token_service_.get(),
-      primary_account_manager_.get(), scopes, std::move(callback), mode);
+      primary_account_manager_.get(), scopes, std::move(callback), mode,
+      require_sync_consent_for_scope_verification_);
 }
 
 std::unique_ptr<AccessTokenFetcher>
@@ -252,7 +255,7 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
   return std::make_unique<AccessTokenFetcher>(
       account_id, oauth_consumer_name, token_service_.get(),
       primary_account_manager_.get(), url_loader_factory, scopes,
-      std::move(callback), mode);
+      std::move(callback), mode, require_sync_consent_for_scope_verification_);
 }
 
 void IdentityManager::RemoveAccessTokenFromCache(

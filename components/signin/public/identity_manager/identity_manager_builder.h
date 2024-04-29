@@ -94,6 +94,8 @@ struct IdentityManagerBuildParams {
   std::unique_ptr<DeviceAccountsProvider> device_accounts_provider;
 #endif
 
+  bool require_sync_consent_for_scope_verification = true;
+
 #if BUILDFLAG(IS_WIN)
   base::RepeatingCallback<bool()> reauth_callback;
 #endif
