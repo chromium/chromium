@@ -846,6 +846,31 @@ void SystemTrayClientImpl::ShowRemapKeysSubpage(int device_id) {
   }));
 }
 
+void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
+  DCHECK(ash::features::IsFocusModeEnabled());
+  base::RecordAction(base::UserMetricsAction("ShowYouTubeMusicPremiumPage"));
+
+  const GURL official_url(chrome::kYoutubeMusicPremiumURL);
+
+  // Check YouTube Music web app installation.
+  if (!IsAppInstalled(web_app::kYoutubeMusicAppId)) {
+    OpenInBrowser(official_url);
+    return;
+  }
+
+  // Need this in order to launch the web app.
+  apps::AppServiceProxyAsh* proxy = GetActiveUserAppServiceProxyAsh();
+  if (!proxy) {
+    LOG(ERROR) << " failed to get active user AppServiceProxyAsh";
+    OpenInBrowser(official_url);
+    return;
+  }
+
+  // Launch web app.
+  proxy->LaunchAppWithUrl(web_app::kYoutubeMusicAppId, ui::EF_NONE,
+                          official_url, apps::LaunchSource::kFromFocusMode);
+}
+
 void SystemTrayClientImpl::ShowEolInfoPage() {
   const bool use_offer_url = ash::features::kEolIncentiveParam.Get() !=
                                  ash::features::EolIncentiveParam::kNoOffer &&

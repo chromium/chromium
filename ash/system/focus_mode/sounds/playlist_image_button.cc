@@ -32,9 +32,7 @@ std::unique_ptr<lottie::Animation> GetEqualizerAnimation() {
 
 }  // namespace
 
-PlaylistImageButton::PlaylistImageButton(const gfx::ImageSkia& image,
-                                         PressedCallback callback)
-    : views::Button(std::move(callback)) {
+PlaylistImageButton::PlaylistImageButton() {
   // We want to show the stop icon or the equalizer animation for the mouse
   // moving inside of or outside of this view when the playlist is playing.
   // Thus, to let `OnMouseEntered` and `OnMouseExited` be triggered for the
@@ -43,8 +41,11 @@ PlaylistImageButton::PlaylistImageButton(const gfx::ImageSkia& image,
   gfx::Size preferred_size(kSinglePlaylistViewWidth, kSinglePlaylistViewWidth);
   SetPreferredSize(preferred_size);
 
+  // Disable the button until we populate it with the correct playlist
+  // information.
+  SetEnabled(false);
+
   image_view_ = AddChildView(std::make_unique<views::ImageView>());
-  image_view_->SetImage(image);
   image_view_->SetImageSize(preferred_size);
 
   media_action_icon_ = AddChildView(std::make_unique<views::ImageView>());
@@ -114,6 +115,13 @@ void PlaylistImageButton::SetIsPlaying(bool is_playing) {
       is_playing_ ? kFocusModeStopCircleIcon : kFocusModePlayCircleIcon,
       SK_ColorWHITE, kIconSize));
   UpdateVisibility();
+}
+
+void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image,
+                                         PressedCallback callback) {
+  SetEnabled(true);
+  image_view_->SetImage(image);
+  SetCallback(std::move(callback));
 }
 
 void PlaylistImageButton::OnSetTooltipText(const std::u16string& tooltip_text) {

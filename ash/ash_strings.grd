@@ -812,6 +812,12 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON" translateable="false" desc="The text on the label slider button used for showing personalized YouTube music playlists to help users relax and focus.">
         YouTube Music
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_NON_PREMIUM_LABEL" translateable="false" desc="The text on the label used for showing a text to mention the user without a premium account for YouTube Music.">
+        For personalized playlists and more focus music, try YouTube Music Premium
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_LEARN_MORE_BUTTON" translateable="false" desc="The text on the learn more button.">
+        Learn more
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB" translateable="false" desc="The label text shown on the left side of do not disturb button in Focus mode settings panel.">
         Do not disturb while in Focus
       </message>

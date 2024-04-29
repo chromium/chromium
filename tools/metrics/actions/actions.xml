@@ -34501,6 +34501,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ShowYouTubeMusicPremiumPage">
+  <owner>hongyulong@google.com</owner>
+  <owner>richui@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <description>
+    Recorded when a user clicks the Learn More button on the focus mode panel
+    and navigates to the page which shows the user with different premium plans.
+  </description>
+</action>
+
 <action name="Shutdown">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

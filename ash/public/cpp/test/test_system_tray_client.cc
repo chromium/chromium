@@ -206,4 +206,8 @@ void TestSystemTrayClient::ShowRemapKeysSubpage(int device_id) {
   ++show_remap_keys_subpage_count_;
 }
 
+void TestSystemTrayClient::ShowYouTubeMusicPremiumPage() {
+  ++show_youtube_music_premium_page_count_;
+}
+
 }  // namespace ash

@@ -26,7 +26,7 @@ class ASH_EXPORT PlaylistImageButton : public views::Button,
   METADATA_HEADER(PlaylistImageButton, views::Button)
 
  public:
-  PlaylistImageButton(const gfx::ImageSkia& image, PressedCallback callback);
+  PlaylistImageButton();
   PlaylistImageButton(const PlaylistImageButton&) = delete;
   PlaylistImageButton& operator=(const PlaylistImageButton&) = delete;
   ~PlaylistImageButton() override;
@@ -42,6 +42,10 @@ class ASH_EXPORT PlaylistImageButton : public views::Button,
   // Called when the playback state of the media is changed to the play/stop
   // state.
   void SetIsPlaying(bool is_playing);
+
+  // Replaces the `image_view_` with a new image and the press callback for a
+  // new playlist.
+  void UpdateContents(const gfx::ImageSkia& image, PressedCallback callback);
 
  private:
   // views::Button:
