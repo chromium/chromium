@@ -57,7 +57,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -778,8 +777,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
-        // Keep same logic as the default scrim implementation
-        hideScrim();
         mExpandedSheetHelper.onSheetCollapsed();
     }
 
@@ -811,13 +808,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         if (0 <= ratioOfCompletionFromPeekToExpanded
                 && ratioOfCompletionFromPeekToExpanded <= 1.f) {
             setCornerRadiusPx((int) (ratioOfCompletionFromPeekToExpanded * mMaxCornerRadiusPx));
-        }
-
-        // show scrim only when bottom sheet is greater than peek state
-        if (ratioOfCompletionFromPeekToExpanded > 0.f) {
-            showScrim();
-        } else {
-            hideScrim();
         }
     }
 
@@ -869,21 +859,6 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         }
         if (mPageInsightsDataLoader != null) {
             mPageInsightsDataLoader.cancelCallback();
-        }
-        hideScrim();
-    }
-
-    private void showScrim() {
-        ScrimCoordinator coordinator = mSheetController.getScrimCoordinator();
-        if (coordinator != null && !coordinator.isShowingScrim()) {
-            coordinator.showScrim(mSheetController.createScrimParams());
-        }
-    }
-
-    private void hideScrim() {
-        ScrimCoordinator coordinator = mSheetController.getScrimCoordinator();
-        if (coordinator != null && coordinator.isShowingScrim()) {
-            coordinator.hideScrim(/* animate= */ true);
         }
     }
 

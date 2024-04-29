@@ -177,7 +177,8 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
 
     @Override
     public boolean hasCustomScrimLifecycle() {
-        return true;
+        // We use the standard scrim that open when going beyond the peeking state.
+        return false;
     }
 
     @Override
