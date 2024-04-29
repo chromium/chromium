@@ -504,5 +504,6 @@ blink_mac_builder(
             "minimal_symbols",
         ],
     ),
+    cpu = cpu.ARM64,
     contact_team_email = "chrome-blink-engprod@google.com",
 )
