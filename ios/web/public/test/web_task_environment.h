@@ -53,6 +53,10 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
   enum class IOThreadType {
     FAKE_THREAD,
     REAL_THREAD,
+
+    // If used, the IO thread is backed by a real thread but is not started
+    // automatically. Instead, user must call StartIOThread() to start it.
+    REAL_THREAD_DELAYED,
     DEFAULT = FAKE_THREAD,
   };
 
@@ -82,6 +86,10 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
 
   ~WebTaskEnvironment() override;
 
+  // Starts the IO thread. This method must only be called if IOThreadType was
+  // initialized with REAL_THREAD_DELAYED during construction.
+  void StartIOThread();
+
  private:
   // The template constructor has to be in the header but it delegates to this
   // constructor to initialize all other members out-of-line.
@@ -90,7 +98,8 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
                      IOThreadType io_thread_type,
                      base::trait_helpers::NotATraitTag tag);
 
-  void Init();
+  // Starts the IO thread.
+  void StartIOThreadInternal();
 
   const IOThreadType io_thread_type_;
   std::unique_ptr<TestWebThread> ui_thread_;
