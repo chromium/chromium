@@ -422,6 +422,10 @@
 	path = third_party/material_design_icons/src
 	url = https://chromium.googlesource.com/external/github.com/google/material-design-icons
 	gclient-condition = checkout_ios
+[submodule "third_party/microsoft_dxheaders/src"]
+	path = third_party/microsoft_dxheaders/src
+	url = https://chromium.googlesource.com/external/github.com/microsoft/DirectX-Headers
+	gclient-condition = checkout_win
 [submodule "third_party/minigbm/src"]
 	path = third_party/minigbm/src
 	url = https://chromium.googlesource.com/chromiumos/platform/minigbm

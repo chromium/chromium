@@ -1688,6 +1688,11 @@ deps = {
       'condition': 'checkout_ios',
   },
 
+  'src/third_party/microsoft_dxheaders/src': {
+    'url': Var('chromium_git') + '/external/github.com/microsoft/DirectX-Headers.git' + '@' + 'aafb798404373bec7875e6a36a8d9635642587c1',
+    'condition': 'checkout_win',
+  },
+
   'src/third_party/mig/bin': {
       'packages': [
           {

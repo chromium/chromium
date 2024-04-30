@@ -100,6 +100,7 @@
 /llvm-build-tools
 /cronet_android_mainline_clang/linux-amd64
 /mesa/src
+/microsoft_dxheaders/src
 /mingw-w64
 /mkl
 /mocha
