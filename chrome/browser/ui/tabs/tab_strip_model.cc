@@ -1056,6 +1056,14 @@ const ui::ListSelectionModel& TabStripModel::selection_model() const {
   return selection_model_;
 }
 
+bool TabStripModel::CanShowModalUI() const {
+  return !showing_modal_ui_;
+}
+
+std::unique_ptr<ScopedTabStripModalUI> TabStripModel::ShowModalUI() {
+  return std::make_unique<ScopedTabStripModalUIImpl>(this);
+}
+
 void TabStripModel::AddWebContents(
     std::unique_ptr<WebContents> contents,
     int index,
@@ -3245,4 +3253,15 @@ std::optional<int> TabStripModel::DetermineNewSelectedIndex(
     return removing_index - 1;
 
   return removing_index;
+}
+
+TabStripModel::ScopedTabStripModalUIImpl::ScopedTabStripModalUIImpl(
+    TabStripModel* model)
+    : model_(model) {
+  CHECK(!model_->showing_modal_ui_);
+  model_->showing_modal_ui_ = true;
+}
+
+TabStripModel::ScopedTabStripModalUIImpl::~ScopedTabStripModalUIImpl() {
+  model_->showing_modal_ui_ = false;
 }

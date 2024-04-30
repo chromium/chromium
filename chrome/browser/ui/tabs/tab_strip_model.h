@@ -102,6 +102,15 @@ struct DetachedWebContents {
   std::optional<SessionID> id;
 };
 
+// A feature which wants to show tabstrip-modal UI should call
+// TabStripController::ShowModalUI and keep alive the instance of
+// ScopedTabStripModalUI for the duration of the tabstrip-modal UI.
+class ScopedTabStripModalUI {
+ public:
+  ScopedTabStripModalUI() = default;
+  virtual ~ScopedTabStripModalUI() = default;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // TabStripModel
@@ -432,6 +441,13 @@ class TabStripModel : public TabGroupController {
 
   const ui::ListSelectionModel& selection_model() const;
 
+  // Features that want to show tabstrip-modal UI are mutually exclusive.
+  // Before showing a modal UI first check `CanShowModalUI`. Then call
+  // ShowModalUI() and keep `ScopedTabStripModal` alive to prevent other
+  // features from showing tabstrip-modal UI.
+  bool CanShowModalUI() const;
+  std::unique_ptr<ScopedTabStripModalUI> ShowModalUI();
+
   // Command level API /////////////////////////////////////////////////////////
 
   // Adds a WebContents at the best position in the TabStripModel given
@@ -648,6 +664,17 @@ class TabStripModel : public TabGroupController {
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
 
   struct DetachNotifications;
+
+  // Tracks whether a tabstrip-modal UI is showing.
+  class ScopedTabStripModalUIImpl : public ScopedTabStripModalUI {
+   public:
+    explicit ScopedTabStripModalUIImpl(TabStripModel* model);
+    ~ScopedTabStripModalUIImpl() override;
+
+   private:
+    // Owns this.
+    raw_ptr<TabStripModel> model_;
+  };
 
   // Perform tasks associated with changes to the model. Change the Active Index
   // and notify observers.
@@ -931,6 +958,9 @@ class TabStripModel : public TabGroupController {
   bool reentrancy_guard_ = false;
 
   TabStripScrubbingMetrics scrubbing_metrics_;
+
+  // Tracks whether a modal UI is showing.
+  bool showing_modal_ui_ = false;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
 };

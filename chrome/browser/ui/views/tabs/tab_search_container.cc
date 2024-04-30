@@ -53,10 +53,12 @@ Edge GetFlatEdge(bool is_search_button, bool before_tab_strip) {
 }  // namespace
 
 TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
+                                       TabStripModel* tab_strip_model,
                                        bool before_tab_strip,
                                        View* locked_expansion_view)
     : AnimationDelegateViews(this),
-      locked_expansion_view_(locked_expansion_view) {
+      locked_expansion_view_(locked_expansion_view),
+      tab_strip_model_(tab_strip_model) {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
                                                     gfx::Insets()),
@@ -187,6 +189,13 @@ void TabSearchContainer::ExecuteShowTabOrganization() {
     return;
   }
 
+  // If the tab strip already has a modal UI showing, exit early.
+  if (!tab_strip_model_->CanShowModalUI()) {
+    return;
+  }
+
+  scoped_tab_strip_modal_ui_ = tab_strip_model_->ShowModalUI();
+
   expansion_animation_.SetSlideDuration(
       GetAnimationDuration(kExpansionInDuration));
 
@@ -231,11 +240,18 @@ void TabSearchContainer::MouseMovedOutOfHost() {
 }
 
 void TabSearchContainer::AnimationCanceled(const gfx::Animation* animation) {
-  ApplyAnimationValue(animation);
+  AnimationEnded(animation);
 }
 
 void TabSearchContainer::AnimationEnded(const gfx::Animation* animation) {
   ApplyAnimationValue(animation);
+  // If the button went from shown -> hidden, unblock the tab strip from
+  // showing other modal UIs. Compare to 0.5 to distinguish between show/hide
+  // while avoiding potentially inexact float comparison to 0.0.
+  if (animation == &expansion_animation_ &&
+      animation->GetCurrentValue() < 0.5 && scoped_tab_strip_modal_ui_) {
+    scoped_tab_strip_modal_ui_.reset();
+  }
 }
 
 void TabSearchContainer::AnimationProgressed(const gfx::Animation* animation) {

@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -43,16 +44,22 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
 
     tab_strip_controller_ =
         std::make_unique<FakeBaseTabStripControllerWithProfile>();
+    tab_strip_model_ = std::make_unique<TabStripModel>(
+        &tab_strip_model_delegate_, tab_strip_controller_->GetProfile());
     locked_expansion_view_ = std::make_unique<views::View>();
     container_before_tab_strip_ = std::make_unique<TabSearchContainer>(
-        tab_strip_controller_.get(), true, locked_expansion_view_.get());
+        tab_strip_controller_.get(), tab_strip_model_.get(), true,
+        locked_expansion_view_.get());
     container_after_tab_strip_ = std::make_unique<TabSearchContainer>(
-        tab_strip_controller_.get(), false, locked_expansion_view_.get());
+        tab_strip_controller_.get(), tab_strip_model_.get(), false,
+        locked_expansion_view_.get());
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  TestTabStripModelDelegate tab_strip_model_delegate_;
   std::unique_ptr<views::View> locked_expansion_view_;
   std::unique_ptr<TabSearchContainer> container_before_tab_strip_;
   std::unique_ptr<TabSearchContainer> container_after_tab_strip_;

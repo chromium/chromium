@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,17 +16,23 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
+    tab_strip_model_ =
+        std::make_unique<TabStripModel>(&tab_strip_model_delegate_, &profile_);
     locked_expansion_view_ = std::make_unique<views::View>();
     button_ = std::make_unique<ProductSpecificationsButton>(
-        tab_strip_controller_.get(), true, locked_expansion_view_.get());
+        tab_strip_controller_.get(), tab_strip_model_.get(), true,
+        locked_expansion_view_.get());
   }
 
   void SetWidthFactor(float factor) { button_->SetWidthFactor(factor); }
 
  protected:
-  std::unique_ptr<ProductSpecificationsButton> button_;
   std::unique_ptr<TabStripController> tab_strip_controller_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  TestingProfile profile_;
+  TestTabStripModelDelegate tab_strip_model_delegate_;
   std::unique_ptr<views::View> locked_expansion_view_;
+  std::unique_ptr<ProductSpecificationsButton> button_;
 };
 
 TEST_F(ProductSpecificationsButtonTest, AppliesWidthFactor) {

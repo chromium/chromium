@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -35,6 +36,7 @@ class TabSearchContainer : public views::View,
 
  public:
   TabSearchContainer(TabStripController* tab_strip_controller,
+                     TabStripModel* tab_strip_model,
                      bool before_tab_strip,
                      View* locked_expansion_view);
   TabSearchContainer(const TabSearchContainer&) = delete;
@@ -91,6 +93,7 @@ class TabSearchContainer : public views::View,
   raw_ptr<TabOrganizationService, DanglingUntriaged> tab_organization_service_ =
       nullptr;
   raw_ptr<const Browser> browser_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 
   // Animations controlling showing and hiding of tab_organization_button_.
   gfx::SlideAnimation expansion_animation_{this};
@@ -112,6 +115,9 @@ class TabSearchContainer : public views::View,
 
   base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
       tab_organization_observation_{this};
+
+  // Prevents other features from showing tabstrip-modal UI.
+  std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_CONTAINER_H_

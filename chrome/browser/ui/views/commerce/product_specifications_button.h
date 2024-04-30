@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRODUCT_SPECIFICATIONS_BUTTON_H_
 
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -23,6 +24,7 @@ class ProductSpecificationsButton : public TabStripControlButton,
 
  public:
   ProductSpecificationsButton(TabStripController* tab_strip_controller,
+                              TabStripModel* tab_strip_model,
                               bool before_tab_strip,
                               View* locked_expansion_view);
   ProductSpecificationsButton(const ProductSpecificationsButton&) = delete;
@@ -84,6 +86,8 @@ class ProductSpecificationsButton : public TabStripControlButton,
   // bounds of this View.
   raw_ptr<View, DanglingUntriaged> locked_expansion_view_;
 
+  const raw_ptr<TabStripModel> tab_strip_model_;
+
   // Animations controlling showing and hiding of the button.
   gfx::SlideAnimation expansion_animation_{this};
   gfx::SlideAnimation opacity_animation_{this};
@@ -104,6 +108,9 @@ class ProductSpecificationsButton : public TabStripControlButton,
   // Preferred width multiplier, between 0-1. Used to animate button size.
   float width_factor_ = 0;
   raw_ptr<views::LabelButton> close_button_;
+
+  // Prevents other features from showing tabstrip-modal UI.
+  std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRODUCT_SPECIFICATIONS_BUTTON_H_

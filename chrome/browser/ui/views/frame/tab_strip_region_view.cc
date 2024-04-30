@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -105,7 +106,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   std::unique_ptr<TabSearchContainer> tab_search_container;
   if (browser && browser->is_type_normal()) {
     tab_search_container = std::make_unique<TabSearchContainer>(
-        tab_strip_->controller(), render_tab_search_before_tab_strip_, this);
+        tab_strip_->controller(), browser->tab_strip_model(),
+        render_tab_search_before_tab_strip_, this);
     tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                       views::LayoutAlignment::kCenter);
   }
@@ -116,8 +118,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     product_specifications_button =
         std::make_unique<ProductSpecificationsButton>(
-            tab_strip_->controller(), render_tab_search_before_tab_strip_,
-            this);
+            tab_strip_->controller(), browser->tab_strip_model(),
+            render_tab_search_before_tab_strip_, this);
     product_specifications_button->SetProperty(views::kCrossAxisAlignmentKey,
                                                views::LayoutAlignment::kCenter);
   }

@@ -41,6 +41,7 @@ constexpr base::TimeDelta kShowDuration = base::Seconds(20);
 
 ProductSpecificationsButton::ProductSpecificationsButton(
     TabStripController* tab_strip_controller,
+    TabStripModel* tab_strip_model,
     bool before_tab_strip,
     View* locked_expansion_view)
     : TabStripControlButton(
@@ -50,7 +51,8 @@ ProductSpecificationsButton::ProductSpecificationsButton(
           l10n_util::GetStringUTF16(
               IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT),
           Edge::kNone),
-      locked_expansion_view_(locked_expansion_view) {
+      locked_expansion_view_(locked_expansion_view),
+      tab_strip_model_(tab_strip_model) {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
                                                     gfx::Insets()),
@@ -120,12 +122,19 @@ void ProductSpecificationsButton::MouseMovedOutOfHost() {
 
 void ProductSpecificationsButton::AnimationCanceled(
     const gfx::Animation* animation) {
-  ApplyAnimationValue(animation);
+  AnimationEnded(animation);
 }
 
 void ProductSpecificationsButton::AnimationEnded(
     const gfx::Animation* animation) {
   ApplyAnimationValue(animation);
+  // If the button went from shown -> hidden, unblock the tab strip from
+  // showing other modal UIs. Compare to 0.5 to distinguish between show/hide
+  // while avoiding potentially inexact float comparison to 0.0.
+  if (animation == &expansion_animation_ &&
+      animation->GetCurrentValue() < 0.5 && scoped_tab_strip_modal_ui_) {
+    scoped_tab_strip_modal_ui_.reset();
+  }
 }
 
 void ProductSpecificationsButton::AnimationProgressed(
@@ -171,6 +180,13 @@ void ProductSpecificationsButton::ApplyAnimationValue(
 }
 
 void ProductSpecificationsButton::ExecuteShow() {
+  // If the tab strip already has a modal UI showing, exit early.
+  if (!tab_strip_model_->CanShowModalUI()) {
+    return;
+  }
+
+  scoped_tab_strip_modal_ui_ = tab_strip_model_->ShowModalUI();
+
   expansion_animation_.SetSlideDuration(
       GetAnimationDuration(kExpansionInDuration));
   opacity_animation_.SetSlideDuration(GetAnimationDuration(kOpacityInDuration));

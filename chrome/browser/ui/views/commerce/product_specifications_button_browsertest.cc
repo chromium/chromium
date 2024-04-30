@@ -143,3 +143,46 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                   ->expansion_animation_for_testing()
                   ->IsClosing());
 }
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       DoesntShowIfTabStripModalUIExists) {
+  ASSERT_FALSE(product_specifications_button()
+                   ->expansion_animation_for_testing()
+                   ->IsShowing());
+
+  std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui =
+      browser()->tab_strip_model()->ShowModalUI();
+  product_specifications_button()->Show();
+
+  EXPECT_FALSE(product_specifications_button()
+                   ->expansion_animation_for_testing()
+                   ->IsShowing());
+
+  scoped_tab_strip_modal_ui.reset();
+  product_specifications_button()->Show();
+
+  EXPECT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       BlocksTabStripModalUIWhileShown) {
+  ASSERT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
+
+  product_specifications_button()->Show();
+
+  EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
+
+  product_specifications_button()->expansion_animation_for_testing()->Reset(1);
+
+  EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
+
+  product_specifications_button()->Hide();
+
+  EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
+
+  product_specifications_button()->expansion_animation_for_testing()->Reset(0);
+
+  EXPECT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
+}
