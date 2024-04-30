@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
@@ -39,12 +40,12 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         mTabGroupModelFilter = (TabGroupModelFilter) tabModelFilter;
         mHistoricalTabSaver = historicalTabSaver;
 
-        tabModelFilter.getTabModel().addObserver(this);
+        tabModelFilter.addObserver(this);
     }
 
     /** Removes observers. */
     public void destroy() {
-        mTabGroupModelFilter.getTabModel().removeObserver(this);
+        mTabGroupModelFilter.removeObserver(this);
     }
 
     @Override
@@ -67,6 +68,11 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         List<HistoricalEntry> entries = new ArrayList<>();
 
         for (Tab tab : tabs) {
+            // Ignore tab groups that are being hidden. They will be accessible from the tab group
+            // pane instead.
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (mTabGroupModelFilter.isTabGroupHiding(tabGroupId)) continue;
+
             // {@link TabGroupModelFilter} removes tabs from its data model as soon as they are
             // pending closure so it cannot be directly relied upon for group structure. Instead
             // rely on the underlying root ID in the tab's persisted data which is used to restore
@@ -87,7 +93,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             List<Tab> groupTabs = new ArrayList<Tab>();
             groupTabs.add(tab);
             HistoricalEntry historicalGroup =
-                    new HistoricalEntry(rootId, tab.getTabGroupId(), title, color, groupTabs);
+                    new HistoricalEntry(rootId, tabGroupId, title, color, groupTabs);
             entries.add(historicalGroup);
             idToGroup.put(rootId, historicalGroup);
         }

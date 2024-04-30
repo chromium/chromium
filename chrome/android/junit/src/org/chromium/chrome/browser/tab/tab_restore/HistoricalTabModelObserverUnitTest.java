@@ -76,13 +76,14 @@ public class HistoricalTabModelObserverUnitTest {
 
     @Before
     public void setUp() {
+        when(mTabGroupModelFilter.isTabGroupHiding(any())).thenReturn(false);
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(-1);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
 
         mObserver = new HistoricalTabModelObserver(mTabGroupModelFilter, mHistoricalTabSaver);
-        verify(mTabModel).addObserver(mObserver);
+        verify(mTabGroupModelFilter).addObserver(mObserver);
 
         mContext = spy(ContextUtils.getApplicationContext());
         when(mContext.getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE))
@@ -95,7 +96,7 @@ public class HistoricalTabModelObserverUnitTest {
     @After
     public void tearDown() {
         mObserver.destroy();
-        verify(mTabModel).removeObserver(mObserver);
+        verify(mTabGroupModelFilter).removeObserver(mObserver);
     }
 
     @Test
@@ -310,6 +311,27 @@ public class HistoricalTabModelObserverUnitTest {
         assertEquals(1, tab1.getTabs().size());
         assertEquals(tabGroupId, tab1.getTabGroupId());
         assertEquals(mockTab1, tab1.getTabs().get(0));
+    }
+
+    @Test
+    public void testTabGroupHiding() {
+        MockTab mockTab0 = createMockTab(0);
+
+        final String title = "foo";
+        @TabGroupColorId int color = TabGroupColorId.GREY;
+        Token tabGroupId = new Token(3L, 4L);
+        createGroup(tabGroupId, title, color, new MockTab[] {mockTab0});
+        when(mTabGroupModelFilter.isTabGroupHiding(tabGroupId)).thenReturn(true);
+
+        MockTab[] tabList = new MockTab[] {mockTab0};
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+
+        // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single tab
+        // entry.
+        ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
+        List<HistoricalEntry> entries = arg.getValue();
+        assertEquals(0, entries.size());
     }
 
     @Test

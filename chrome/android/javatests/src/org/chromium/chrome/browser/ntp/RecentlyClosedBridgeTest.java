@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.mockito.Mockito.when;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -14,6 +16,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -24,6 +29,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -38,6 +44,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
@@ -45,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /** Tests for {@link RecentlyClosedBridge} including native TabRestoreService. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -68,14 +77,20 @@ public class RecentlyClosedBridgeTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private ChromeTabbedActivity mActivity;
     private TabModelSelector mTabModelSelector;
     private TabGroupModelFilter mTabGroupModelFilter;
     private TabModel mTabModel;
     private RecentlyClosedBridge mRecentlyClosedBridge;
+    @Mock private SyncService mSyncService;
 
     @Before
     public void setUp() {
+        when(mSyncService.getActiveDataTypes()).thenReturn(Set.of(ModelType.SAVED_TAB_GROUP));
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+
         sActivityTestRule.waitForActivityNativeInitializationComplete();
 
         // Disable snackbars from the {@link UndoBarController} which can break this test.
@@ -1007,6 +1022,64 @@ public class RecentlyClosedBridgeTest {
                             "Bar", TabGroupTitleUtils.getTabGroupTitle(tabs.get(1).getId()));
                     Assert.assertTrue(mTabGroupModelFilter.isTabInTabGroup(tabs.get(1)));
                 });
+    }
+
+    /** Tests a hiding tab group is not saved when undoable. */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testNoRecentlyClosedEntry_ForHidingTabGroup_Undoable() {
+        if (mTabGroupModelFilter == null) return;
+
+        final String[] urls = new String[] {getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
+
+        final String[] titles = new String[1];
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    titles[0] = tabA.getTitle();
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            Arrays.asList(new Tab[] {tabA}),
+                            /* canUndo= */ true,
+                            /* hideTabGroups= */ true);
+                    mTabModel.commitTabClosure(tabA.getId());
+                });
+
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        final int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
+        Assert.assertEquals(1, tabCount);
+        Assert.assertEquals(0, recentEntries.size());
+    }
+
+    /** Tests a hiding tab group is not saved when not undoable. */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testNoRecentlyClosedEntry_ForHidingTabGroup_NotUndoable() {
+        if (mTabGroupModelFilter == null) return;
+
+        final String[] urls = new String[] {getUrl(TEST_PAGE_A)};
+        final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
+
+        final String[] titles = new String[1];
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
+                    titles[0] = tabA.getTitle();
+                    mTabGroupModelFilter.closeMultipleTabs(
+                            Arrays.asList(new Tab[] {tabA}),
+                            /* canUndo= */ false,
+                            /* hideTabGroups= */ true);
+                    mTabModel.commitTabClosure(tabA.getId());
+                });
+
+        final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
+        final int tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);
+        Assert.assertEquals(1, tabCount);
+        Assert.assertEquals(0, recentEntries.size());
     }
 
     /**
