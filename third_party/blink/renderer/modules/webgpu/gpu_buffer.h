@@ -22,7 +22,7 @@ class GPUMappedDOMArrayBuffer;
 struct BoxedMappableWGPUBufferHandles;
 class ScriptState;
 
-class GPUBuffer : public DawnObject<WGPUBuffer> {
+class GPUBuffer : public DawnObject<wgpu::Buffer> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,7 +31,7 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
                            ExceptionState& exception_state);
   GPUBuffer(GPUDevice* device,
             uint64_t size,
-            WGPUBuffer buffer,
+            wgpu::Buffer buffer,
             const String& label);
   ~GPUBuffer() override;
 
@@ -86,7 +86,7 @@ class GPUBuffer : public DawnObject<WGPUBuffer> {
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetProcs().bufferSetLabel(GetHandle(), utf8_label.c_str());
+    GetHandle().SetLabel(utf8_label.c_str());
   }
 
   uint64_t size_;

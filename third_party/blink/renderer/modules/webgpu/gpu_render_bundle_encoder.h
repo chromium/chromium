@@ -18,7 +18,7 @@ class GPURenderBundle;
 class GPURenderBundleDescriptor;
 class GPURenderBundleEncoderDescriptor;
 
-class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
+class GPURenderBundleEncoder : public DawnObject<wgpu::RenderBundleEncoder>,
                                public GPUProgrammablePassEncoder {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -27,18 +27,19 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
       GPUDevice* device,
       const GPURenderBundleEncoderDescriptor* webgpu_desc,
       ExceptionState& exception_state);
-  explicit GPURenderBundleEncoder(GPUDevice* device,
-                                  WGPURenderBundleEncoder render_bundle_encoder,
-                                  const String& label);
+  explicit GPURenderBundleEncoder(
+      GPUDevice* device,
+      wgpu::RenderBundleEncoder render_bundle_encoder,
+      const String& label);
 
   GPURenderBundleEncoder(const GPURenderBundleEncoder&) = delete;
   GPURenderBundleEncoder& operator=(const GPURenderBundleEncoder&) = delete;
 
   // gpu_render_bundle_encoder.idl
-  void setBindGroup(uint32_t index, DawnObject<WGPUBindGroup>* bindGroup) {
-    WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
-    GetProcs().renderBundleEncoderSetBindGroup(GetHandle(), index, bgImpl, 0,
-                                               nullptr);
+  void setBindGroup(uint32_t index, DawnObject<wgpu::BindGroup>* bindGroup) {
+    GetHandle().SetBindGroup(
+        index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr), 0,
+        nullptr);
   }
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,
@@ -51,81 +52,72 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
                     ExceptionState& exception_state);
   void pushDebugGroup(String groupLabel) {
     std::string label = groupLabel.Utf8();
-    GetProcs().renderBundleEncoderPushDebugGroup(GetHandle(), label.c_str());
+    GetHandle().PushDebugGroup(label.c_str());
   }
-  void popDebugGroup() {
-    GetProcs().renderBundleEncoderPopDebugGroup(GetHandle());
-  }
+  void popDebugGroup() { GetHandle().PopDebugGroup(); }
   void insertDebugMarker(String markerLabel) {
     std::string label = markerLabel.Utf8();
-    GetProcs().renderBundleEncoderInsertDebugMarker(GetHandle(), label.c_str());
+    GetHandle().InsertDebugMarker(label.c_str());
   }
-  void setPipeline(const DawnObject<WGPURenderPipeline>* pipeline) {
-    GetProcs().renderBundleEncoderSetPipeline(GetHandle(),
-                                              pipeline->GetHandle());
+  void setPipeline(const DawnObject<wgpu::RenderPipeline>* pipeline) {
+    GetHandle().SetPipeline(pipeline->GetHandle());
   }
 
-  void setIndexBuffer(const DawnObject<WGPUBuffer>* buffer,
+  void setIndexBuffer(const DawnObject<wgpu::Buffer>* buffer,
                       const V8GPUIndexFormat& format,
                       uint64_t offset) {
-    GetProcs().renderBundleEncoderSetIndexBuffer(
-        GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset,
-        WGPU_WHOLE_SIZE);
+    GetHandle().SetIndexBuffer(buffer->GetHandle(), AsDawnEnum(format), offset);
   }
-  void setIndexBuffer(const DawnObject<WGPUBuffer>* buffer,
+  void setIndexBuffer(const DawnObject<wgpu::Buffer>* buffer,
                       const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size) {
-    GetProcs().renderBundleEncoderSetIndexBuffer(
-        GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset, size);
+    GetHandle().SetIndexBuffer(buffer->GetHandle(), AsDawnEnum(format), offset,
+                               size);
   }
   void setVertexBuffer(uint32_t slot,
-                       const DawnObject<WGPUBuffer>* buffer,
+                       const DawnObject<wgpu::Buffer>* buffer,
                        uint64_t offset) {
-    WGPUBufferImpl* bufferImpl = buffer ? buffer->GetHandle() : nullptr;
-    GetProcs().renderBundleEncoderSetVertexBuffer(GetHandle(), slot, bufferImpl,
-                                                  offset, WGPU_WHOLE_SIZE);
+    GetHandle().SetVertexBuffer(
+        slot, buffer ? buffer->GetHandle() : wgpu::Buffer(nullptr), offset);
   }
   void setVertexBuffer(uint32_t slot,
-                       const DawnObject<WGPUBuffer>* buffer,
+                       const DawnObject<wgpu::Buffer>* buffer,
                        uint64_t offset,
                        uint64_t size) {
-    WGPUBufferImpl* bufferImpl = buffer ? buffer->GetHandle() : nullptr;
-    GetProcs().renderBundleEncoderSetVertexBuffer(GetHandle(), slot, bufferImpl,
-                                                  offset, size);
+    GetHandle().SetVertexBuffer(
+        slot, buffer ? buffer->GetHandle() : wgpu::Buffer(nullptr), offset,
+        size);
   }
   void draw(uint32_t vertexCount,
             uint32_t instanceCount,
             uint32_t firstVertex,
             uint32_t firstInstance) {
-    GetProcs().renderBundleEncoderDraw(GetHandle(), vertexCount, instanceCount,
-                                       firstVertex, firstInstance);
+    GetHandle().Draw(vertexCount, instanceCount, firstVertex, firstInstance);
   }
   void drawIndexed(uint32_t indexCount,
                    uint32_t instanceCount,
                    uint32_t firstIndex,
                    int32_t baseVertex,
                    uint32_t firstInstance) {
-    GetProcs().renderBundleEncoderDrawIndexed(GetHandle(), indexCount,
-                                              instanceCount, firstIndex,
-                                              baseVertex, firstInstance);
+    GetHandle().DrawIndexed(indexCount, instanceCount, firstIndex, baseVertex,
+                            firstInstance);
   }
-  void drawIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
+  void drawIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
                     uint64_t indirectOffset) {
-    GetProcs().renderBundleEncoderDrawIndirect(
-        GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
+    GetHandle().DrawIndirect(indirectBuffer->GetHandle(), indirectOffset);
   }
-  void drawIndexedIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
+  void drawIndexedIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
                            uint64_t indirectOffset) {
-    GetProcs().renderBundleEncoderDrawIndexedIndirect(
-        GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
+    GetHandle().DrawIndexedIndirect(indirectBuffer->GetHandle(),
+                                    indirectOffset);
   }
 
   GPURenderBundle* finish(const GPURenderBundleDescriptor* webgpu_desc);
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetProcs().renderBundleEncoderSetLabel(GetHandle(), utf8_label.c_str());
+    GetHandle().SetLabel(utf8_label.c_str());
   }
 };
 

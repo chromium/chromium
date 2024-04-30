@@ -69,7 +69,7 @@ enum class GPUSingletonWarning {
 
 class GPUDevice final : public EventTarget,
                         public ExecutionContextClient,
-                        public DawnObject<WGPUDevice> {
+                        public DawnObject<wgpu::Device> {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(GPUDevice, Dispose);
 
@@ -77,7 +77,7 @@ class GPUDevice final : public EventTarget,
   explicit GPUDevice(ExecutionContext* execution_context,
                      scoped_refptr<DawnControlClientHolder> dawn_control_client,
                      GPUAdapter* adapter,
-                     WGPUDevice dawn_device,
+                     wgpu::Device dawn_device,
                      const GPUDeviceDescriptor* descriptor,
                      GPUDeviceLostInfo* lost_info = nullptr);
 
@@ -151,7 +151,7 @@ class GPUDevice final : public EventTarget,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  void InjectError(WGPUErrorType type, const char* message);
+  void InjectError(wgpu::ErrorType type, const char* message);
   void AddConsoleWarning(const String& message);
   void AddConsoleWarning(const char* message);
   void AddSingletonWarning(GPUSingletonWarning type);
@@ -202,7 +202,7 @@ class GPUDevice final : public EventTarget,
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetProcs().deviceSetLabel(GetHandle(), utf8_label.c_str());
+    GetHandle().SetLabel(utf8_label.c_str());
   }
 
   Member<GPUAdapter> adapter_;

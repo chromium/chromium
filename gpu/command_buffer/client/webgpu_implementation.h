@@ -39,8 +39,6 @@ class DawnWireServices : public APIChannel {
                    MappedMemoryManager* mapped_memory,
                    std::unique_ptr<TransferBuffer> transfer_buffer);
 
-  const DawnProcTable& GetProcs() const override;
-
   WGPUInstance GetWGPUInstance() const override;
 
   dawn::wire::WireClient* wire_client();

@@ -8,18 +8,13 @@ namespace blink {
 
 WebGPUTextureAlphaClearer::WebGPUTextureAlphaClearer(
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
-    WGPUDevice device,
-    WGPUTextureFormat format)
+    const wgpu::Device& device,
+    wgpu::TextureFormat format)
     : dawn_control_client_(std::move(dawn_control_client)),
       device_(device),
       format_(format) {
-  const auto& procs = dawn_control_client_->GetProcs();
-
-  procs.deviceReference(device_);
-
-  WGPUShaderModuleWGSLDescriptor wgsl_desc = {
-      .chain = {.sType = WGPUSType_ShaderModuleWGSLDescriptor},
-      .code = R"(
+  wgpu::ShaderModuleWGSLDescriptor wgsl_desc = {};
+  wgsl_desc.code = R"(
     // Internal shader used to clear the alpha channel of a texture.
     @vertex fn vert_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {
         var pos = array<vec2<f32>, 3>(
@@ -32,96 +27,77 @@ WebGPUTextureAlphaClearer::WebGPUTextureAlphaClearer(
     @fragment fn frag_main() -> @location(0) vec4<f32> {
         return vec4<f32>(1.0);
     }
-    )",
-  };
-  WGPUShaderModuleDescriptor shader_module_desc = {.nextInChain =
-                                                       &wgsl_desc.chain};
-  WGPUShaderModule shader_module =
-      procs.deviceCreateShaderModule(device_, &shader_module_desc);
+    )";
+  wgpu::ShaderModuleDescriptor shader_module_desc = {.nextInChain = &wgsl_desc};
+  wgpu::ShaderModule shader_module =
+      device_.CreateShaderModule(&shader_module_desc);
 
-  WGPUColorTargetState color_target = {
+  wgpu::ColorTargetState color_target = {
       .format = format,
-      .writeMask = WGPUColorWriteMask_Alpha,
+      .writeMask = wgpu::ColorWriteMask::Alpha,
   };
-  WGPUFragmentState fragment = {
+  wgpu::FragmentState fragment = {
       .module = shader_module,
       .targetCount = 1,
       .targets = &color_target,
   };
-  WGPURenderPipelineDescriptor pipeline_desc = {
+  wgpu::RenderPipelineDescriptor pipeline_desc = {
       .vertex = {.module = shader_module},
-      .primitive = {.topology = WGPUPrimitiveTopology_TriangleList},
+      .primitive = {.topology = wgpu::PrimitiveTopology::TriangleList},
       .multisample = {.count = 1, .mask = 0xFFFFFFFF},
       .fragment = &fragment,
   };
-  alpha_to_one_pipeline_ =
-      procs.deviceCreateRenderPipeline(device_, &pipeline_desc);
-  procs.shaderModuleRelease(shader_module);
+  alpha_to_one_pipeline_ = device_.CreateRenderPipeline(&pipeline_desc);
 }
 
-WebGPUTextureAlphaClearer::~WebGPUTextureAlphaClearer() {
-  const auto& procs = dawn_control_client_->GetProcs();
-  procs.renderPipelineRelease(alpha_to_one_pipeline_);
-  procs.deviceRelease(device_);
+WebGPUTextureAlphaClearer::~WebGPUTextureAlphaClearer() = default;
+
+bool WebGPUTextureAlphaClearer::IsCompatible(const wgpu::Device& device,
+                                             wgpu::TextureFormat format) const {
+  return device_.Get() == device.Get() && format_ == format;
 }
 
-bool WebGPUTextureAlphaClearer::IsCompatible(WGPUDevice device,
-                                             WGPUTextureFormat format) const {
-  return device_ == device && format_ == format;
-}
-
-void WebGPUTextureAlphaClearer::ClearAlpha(WGPUTexture texture) {
-  const auto& procs = dawn_control_client_->GetProcs();
-
+void WebGPUTextureAlphaClearer::ClearAlpha(const wgpu::Texture& texture) {
   // Push an error scope to capture errors here.
-  procs.devicePushErrorScope(device_, WGPUErrorFilter_Validation);
-  WGPUTextureView attachment_view = procs.textureCreateView(texture, nullptr);
+  device_.PushErrorScope(wgpu::ErrorFilter::Validation);
+  wgpu::TextureView attachment_view = texture.CreateView();
 
-  WGPUDawnEncoderInternalUsageDescriptor internal_usage_desc = {
-      .chain = {.sType = WGPUSType_DawnEncoderInternalUsageDescriptor},
-      .useInternalUsages = true,
-  };
-  WGPUCommandEncoderDescriptor command_encoder_desc = {
-      .nextInChain = &internal_usage_desc.chain,
-  };
-  WGPUCommandEncoder command_encoder =
-      procs.deviceCreateCommandEncoder(device_, &command_encoder_desc);
+  wgpu::DawnEncoderInternalUsageDescriptor internal_usage_desc = {};
+  internal_usage_desc.useInternalUsages = true;
 
-  WGPURenderPassColorAttachment color_attachment = {
+  wgpu::CommandEncoderDescriptor command_encoder_desc = {
+      .nextInChain = &internal_usage_desc,
+  };
+  wgpu::CommandEncoder command_encoder =
+      device_.CreateCommandEncoder(&command_encoder_desc);
+
+  wgpu::RenderPassColorAttachment color_attachment = {
       .view = attachment_view,
       // The depthSlice must be initialized with the 'undefined' value for 2d
       // color attachments.
-      .depthSlice = WGPU_DEPTH_SLICE_UNDEFINED,
-      .loadOp = WGPULoadOp_Load,
-      .storeOp = WGPUStoreOp_Store,
+      .depthSlice = wgpu::kDepthSliceUndefined,
+      .loadOp = wgpu::LoadOp::Load,
+      .storeOp = wgpu::StoreOp::Store,
   };
-  WGPURenderPassDescriptor render_pass_desc = {
+  wgpu::RenderPassDescriptor render_pass_desc = {
       .colorAttachmentCount = 1,
       .colorAttachments = &color_attachment,
   };
-  WGPURenderPassEncoder pass =
-      procs.commandEncoderBeginRenderPass(command_encoder, &render_pass_desc);
+  wgpu::RenderPassEncoder pass =
+      command_encoder.BeginRenderPass(&render_pass_desc);
   DCHECK(alpha_to_one_pipeline_);
-  procs.renderPassEncoderSetPipeline(pass, alpha_to_one_pipeline_);
-  procs.renderPassEncoderDraw(pass, 3, 1, 0, 0);
-  procs.renderPassEncoderEnd(pass);
+  pass.SetPipeline(alpha_to_one_pipeline_);
+  pass.Draw(3, 1, 0, 0);
+  pass.End();
 
-  WGPUCommandBuffer command_buffer =
-      procs.commandEncoderFinish(command_encoder, nullptr);
+  wgpu::CommandBuffer command_buffer = command_encoder.Finish();
 
-  WGPUQueue queue = procs.deviceGetQueue(device_);
-  procs.queueSubmit(queue, 1, &command_buffer);
-
-  procs.renderPassEncoderRelease(pass);
-  procs.commandEncoderRelease(command_encoder);
-  procs.commandBufferRelease(command_buffer);
-  procs.textureViewRelease(attachment_view);
+  device_.GetQueue().Submit(1, &command_buffer);
 
   // Pop the error scope and swallow errors. There are errors
   // when the configured canvas produces an error GPUTexture. Errors from
   // the alpha clear should be hidden from the application.
-  procs.devicePopErrorScope(
-      device_,
+  device_.PopErrorScope(
       [](WGPUErrorType type, const char* message, void*) {
         // There may be other error types like DeviceLost or Unknown if
         // the device is destroyed before we receive a response from the

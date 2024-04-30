@@ -26,16 +26,16 @@
 
 namespace blink {
 namespace {
-WGPUExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
+wgpu::ExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
   switch (rotation) {
     case media::VIDEO_ROTATION_0:
-      return WGPUExternalTextureRotation_Rotate0Degrees;
+      return wgpu::ExternalTextureRotation::Rotate0Degrees;
     case media::VIDEO_ROTATION_90:
-      return WGPUExternalTextureRotation_Rotate90Degrees;
+      return wgpu::ExternalTextureRotation::Rotate90Degrees;
     case media::VIDEO_ROTATION_180:
-      return WGPUExternalTextureRotation_Rotate180Degrees;
+      return wgpu::ExternalTextureRotation::Rotate180Degrees;
     case media::VIDEO_ROTATION_270:
-      return WGPUExternalTextureRotation_Rotate270Degrees;
+      return wgpu::ExternalTextureRotation::Rotate270Degrees;
   }
   NOTREACHED();
 }
@@ -218,7 +218,7 @@ ExternalTexture CreateExternalTexture(
   bool device_support_zero_copy =
       device->adapter()->SupportsMultiPlanarFormats();
 
-  WGPUExternalTextureDescriptor external_texture_desc = {};
+  wgpu::ExternalTextureDescriptor external_texture_desc = {};
 
   // Set ExternalTexture visibleSize and visibleOrigin. 0-copy path
   // uses this metadata.
@@ -254,23 +254,20 @@ ExternalTexture CreateExternalTexture(
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromVideoFrame(
             device->GetDawnControlClient(), device->GetHandle(),
-            WGPUTextureUsage::WGPUTextureUsage_TextureBinding,
-            media_video_frame);
+            wgpu::TextureUsage::TextureBinding, media_video_frame);
     if (!mailbox_texture) {
       return {};
     }
 
-    WGPUTextureViewDescriptor view_desc = {
-        .format = WGPUTextureFormat_R8Unorm,
-        .mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED,
-        .arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED,
-        .aspect = WGPUTextureAspect_Plane0Only};
-    WGPUTextureView plane0 = device->GetProcs().textureCreateView(
-        mailbox_texture->GetTexture(), &view_desc);
-    view_desc.format = WGPUTextureFormat_RG8Unorm;
-    view_desc.aspect = WGPUTextureAspect_Plane1Only;
-    WGPUTextureView plane1 = device->GetProcs().textureCreateView(
-        mailbox_texture->GetTexture(), &view_desc);
+    wgpu::TextureViewDescriptor view_desc = {
+        .format = wgpu::TextureFormat::R8Unorm,
+        .aspect = wgpu::TextureAspect::Plane0Only};
+    wgpu::TextureView plane0 =
+        mailbox_texture->GetTexture().CreateView(&view_desc);
+    view_desc.format = wgpu::TextureFormat::RG8Unorm;
+    view_desc.aspect = wgpu::TextureAspect::Plane1Only;
+    wgpu::TextureView plane1 =
+        mailbox_texture->GetTexture().CreateView(&view_desc);
 
     // Set Planes for ExternalTexture
     external_texture_desc.plane0 = plane0;
@@ -296,14 +293,7 @@ ExternalTexture CreateExternalTexture(
         color_space_conversion_constants.dst_transfer_constants.data();
 
     external_texture.wgpu_external_texture =
-        device->GetProcs().deviceCreateExternalTexture(device->GetHandle(),
-                                                       &external_texture_desc);
-
-    // The texture view will be referenced during external texture creation, so
-    // by calling release here we ensure this texture view will be destructed
-    // when the external texture is destructed.
-    device->GetProcs().textureViewRelease(plane0);
-    device->GetProcs().textureViewRelease(plane1);
+        device->GetHandle().CreateExternalTexture(&external_texture_desc);
 
     external_texture.mailbox_texture = std::move(mailbox_texture);
     external_texture.is_zero_copy = true;
@@ -401,17 +391,15 @@ ExternalTexture CreateExternalTexture(
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
-          WGPUTextureUsage::WGPUTextureUsage_TextureBinding,
+          wgpu::TextureUsage::TextureBinding,
           std::move(recyclable_canvas_resource));
   if (!mailbox_texture) {
     return {};
   }
 
-  WGPUTextureViewDescriptor view_desc = {};
-  view_desc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
-  view_desc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
-  WGPUTextureView plane0 = device->GetProcs().textureCreateView(
-      mailbox_texture->GetTexture(), &view_desc);
+  wgpu::TextureViewDescriptor view_desc = {};
+  wgpu::TextureView plane0 =
+      mailbox_texture->GetTexture().CreateView(&view_desc);
 
   // Set plane for ExternalTexture
   external_texture_desc.plane0 = plane0;
@@ -432,13 +420,7 @@ ExternalTexture CreateExternalTexture(
       color_space_conversion_constants.dst_transfer_constants.data();
 
   external_texture.wgpu_external_texture =
-      device->GetProcs().deviceCreateExternalTexture(device->GetHandle(),
-                                                     &external_texture_desc);
-
-  // The texture view will be referenced during external texture creation, so by
-  // calling release here we ensure this texture view will be destructed when
-  // the external texture is destructed.
-  device->GetProcs().textureViewRelease(plane0);
+      device->GetHandle().CreateExternalTexture(&external_texture_desc);
   external_texture.mailbox_texture = std::move(mailbox_texture);
 
   return external_texture;

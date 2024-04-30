@@ -16,138 +16,138 @@ struct TexelBlockInfo {
   uint32_t height;
 };
 
-TexelBlockInfo GetTexelBlockInfoForCopy(WGPUTextureFormat format,
-                                        WGPUTextureAspect aspect) {
+TexelBlockInfo GetTexelBlockInfoForCopy(wgpu::TextureFormat format,
+                                        wgpu::TextureAspect aspect) {
   constexpr TexelBlockInfo kInvalidTexelBlockInfo = {0, 0, 0};
 
   switch (aspect) {
-    case WGPUTextureAspect_All:
+    case wgpu::TextureAspect::All:
       switch (format) {
-        case WGPUTextureFormat_R8Unorm:
-        case WGPUTextureFormat_R8Snorm:
-        case WGPUTextureFormat_R8Uint:
-        case WGPUTextureFormat_R8Sint:
+        case wgpu::TextureFormat::R8Unorm:
+        case wgpu::TextureFormat::R8Snorm:
+        case wgpu::TextureFormat::R8Uint:
+        case wgpu::TextureFormat::R8Sint:
           return {1u, 1u, 1u};
 
-        case WGPUTextureFormat_R16Uint:
-        case WGPUTextureFormat_R16Sint:
-        case WGPUTextureFormat_R16Float:
-        case WGPUTextureFormat_RG8Unorm:
-        case WGPUTextureFormat_RG8Snorm:
-        case WGPUTextureFormat_RG8Uint:
-        case WGPUTextureFormat_RG8Sint:
+        case wgpu::TextureFormat::R16Uint:
+        case wgpu::TextureFormat::R16Sint:
+        case wgpu::TextureFormat::R16Float:
+        case wgpu::TextureFormat::RG8Unorm:
+        case wgpu::TextureFormat::RG8Snorm:
+        case wgpu::TextureFormat::RG8Uint:
+        case wgpu::TextureFormat::RG8Sint:
           return {2u, 1u, 1u};
 
-        case WGPUTextureFormat_R32Float:
-        case WGPUTextureFormat_R32Uint:
-        case WGPUTextureFormat_R32Sint:
-        case WGPUTextureFormat_RG16Uint:
-        case WGPUTextureFormat_RG16Sint:
-        case WGPUTextureFormat_RG16Float:
-        case WGPUTextureFormat_RGBA8Unorm:
-        case WGPUTextureFormat_RGBA8UnormSrgb:
-        case WGPUTextureFormat_RGBA8Snorm:
-        case WGPUTextureFormat_RGBA8Uint:
-        case WGPUTextureFormat_RGBA8Sint:
-        case WGPUTextureFormat_BGRA8Unorm:
-        case WGPUTextureFormat_BGRA8UnormSrgb:
-        case WGPUTextureFormat_RGB10A2Uint:
-        case WGPUTextureFormat_RGB10A2Unorm:
-        case WGPUTextureFormat_RG11B10Ufloat:
-        case WGPUTextureFormat_RGB9E5Ufloat:
+        case wgpu::TextureFormat::R32Float:
+        case wgpu::TextureFormat::R32Uint:
+        case wgpu::TextureFormat::R32Sint:
+        case wgpu::TextureFormat::RG16Uint:
+        case wgpu::TextureFormat::RG16Sint:
+        case wgpu::TextureFormat::RG16Float:
+        case wgpu::TextureFormat::RGBA8Unorm:
+        case wgpu::TextureFormat::RGBA8UnormSrgb:
+        case wgpu::TextureFormat::RGBA8Snorm:
+        case wgpu::TextureFormat::RGBA8Uint:
+        case wgpu::TextureFormat::RGBA8Sint:
+        case wgpu::TextureFormat::BGRA8Unorm:
+        case wgpu::TextureFormat::BGRA8UnormSrgb:
+        case wgpu::TextureFormat::RGB10A2Uint:
+        case wgpu::TextureFormat::RGB10A2Unorm:
+        case wgpu::TextureFormat::RG11B10Ufloat:
+        case wgpu::TextureFormat::RGB9E5Ufloat:
           return {4u, 1u, 1u};
 
-        case WGPUTextureFormat_RG32Float:
-        case WGPUTextureFormat_RG32Uint:
-        case WGPUTextureFormat_RG32Sint:
-        case WGPUTextureFormat_RGBA16Uint:
-        case WGPUTextureFormat_RGBA16Sint:
-        case WGPUTextureFormat_RGBA16Float:
+        case wgpu::TextureFormat::RG32Float:
+        case wgpu::TextureFormat::RG32Uint:
+        case wgpu::TextureFormat::RG32Sint:
+        case wgpu::TextureFormat::RGBA16Uint:
+        case wgpu::TextureFormat::RGBA16Sint:
+        case wgpu::TextureFormat::RGBA16Float:
           return {8u, 1u, 1u};
 
-        case WGPUTextureFormat_RGBA32Float:
-        case WGPUTextureFormat_RGBA32Uint:
-        case WGPUTextureFormat_RGBA32Sint:
+        case wgpu::TextureFormat::RGBA32Float:
+        case wgpu::TextureFormat::RGBA32Uint:
+        case wgpu::TextureFormat::RGBA32Sint:
           return {16u, 1u, 1u};
 
-        case WGPUTextureFormat_Depth16Unorm:
+        case wgpu::TextureFormat::Depth16Unorm:
           return {2u, 1u, 1u};
-        case WGPUTextureFormat_Stencil8:
+        case wgpu::TextureFormat::Stencil8:
           return {1u, 1u, 1u};
 
-        case WGPUTextureFormat_BC1RGBAUnorm:
-        case WGPUTextureFormat_BC1RGBAUnormSrgb:
-        case WGPUTextureFormat_BC4RUnorm:
-        case WGPUTextureFormat_BC4RSnorm:
+        case wgpu::TextureFormat::BC1RGBAUnorm:
+        case wgpu::TextureFormat::BC1RGBAUnormSrgb:
+        case wgpu::TextureFormat::BC4RUnorm:
+        case wgpu::TextureFormat::BC4RSnorm:
           return {8u, 4u, 4u};
 
-        case WGPUTextureFormat_BC2RGBAUnorm:
-        case WGPUTextureFormat_BC2RGBAUnormSrgb:
-        case WGPUTextureFormat_BC3RGBAUnorm:
-        case WGPUTextureFormat_BC3RGBAUnormSrgb:
-        case WGPUTextureFormat_BC5RGUnorm:
-        case WGPUTextureFormat_BC5RGSnorm:
-        case WGPUTextureFormat_BC6HRGBUfloat:
-        case WGPUTextureFormat_BC6HRGBFloat:
-        case WGPUTextureFormat_BC7RGBAUnorm:
-        case WGPUTextureFormat_BC7RGBAUnormSrgb:
+        case wgpu::TextureFormat::BC2RGBAUnorm:
+        case wgpu::TextureFormat::BC2RGBAUnormSrgb:
+        case wgpu::TextureFormat::BC3RGBAUnorm:
+        case wgpu::TextureFormat::BC3RGBAUnormSrgb:
+        case wgpu::TextureFormat::BC5RGUnorm:
+        case wgpu::TextureFormat::BC5RGSnorm:
+        case wgpu::TextureFormat::BC6HRGBUfloat:
+        case wgpu::TextureFormat::BC6HRGBFloat:
+        case wgpu::TextureFormat::BC7RGBAUnorm:
+        case wgpu::TextureFormat::BC7RGBAUnormSrgb:
           return {16u, 4u, 4u};
 
-        case WGPUTextureFormat_ETC2RGB8Unorm:
-        case WGPUTextureFormat_ETC2RGB8UnormSrgb:
-        case WGPUTextureFormat_ETC2RGB8A1Unorm:
-        case WGPUTextureFormat_ETC2RGB8A1UnormSrgb:
-        case WGPUTextureFormat_EACR11Unorm:
-        case WGPUTextureFormat_EACR11Snorm:
+        case wgpu::TextureFormat::ETC2RGB8Unorm:
+        case wgpu::TextureFormat::ETC2RGB8UnormSrgb:
+        case wgpu::TextureFormat::ETC2RGB8A1Unorm:
+        case wgpu::TextureFormat::ETC2RGB8A1UnormSrgb:
+        case wgpu::TextureFormat::EACR11Unorm:
+        case wgpu::TextureFormat::EACR11Snorm:
           return {8u, 4u, 4u};
 
-        case WGPUTextureFormat_ETC2RGBA8Unorm:
-        case WGPUTextureFormat_ETC2RGBA8UnormSrgb:
-        case WGPUTextureFormat_EACRG11Unorm:
-        case WGPUTextureFormat_EACRG11Snorm:
+        case wgpu::TextureFormat::ETC2RGBA8Unorm:
+        case wgpu::TextureFormat::ETC2RGBA8UnormSrgb:
+        case wgpu::TextureFormat::EACRG11Unorm:
+        case wgpu::TextureFormat::EACRG11Snorm:
           return {16u, 4u, 4u};
 
-        case WGPUTextureFormat_ASTC4x4Unorm:
-        case WGPUTextureFormat_ASTC4x4UnormSrgb:
+        case wgpu::TextureFormat::ASTC4x4Unorm:
+        case wgpu::TextureFormat::ASTC4x4UnormSrgb:
           return {16u, 4u, 4u};
-        case WGPUTextureFormat_ASTC5x4Unorm:
-        case WGPUTextureFormat_ASTC5x4UnormSrgb:
+        case wgpu::TextureFormat::ASTC5x4Unorm:
+        case wgpu::TextureFormat::ASTC5x4UnormSrgb:
           return {16u, 5u, 4u};
-        case WGPUTextureFormat_ASTC5x5Unorm:
-        case WGPUTextureFormat_ASTC5x5UnormSrgb:
+        case wgpu::TextureFormat::ASTC5x5Unorm:
+        case wgpu::TextureFormat::ASTC5x5UnormSrgb:
           return {16u, 5u, 5u};
-        case WGPUTextureFormat_ASTC6x5Unorm:
-        case WGPUTextureFormat_ASTC6x5UnormSrgb:
+        case wgpu::TextureFormat::ASTC6x5Unorm:
+        case wgpu::TextureFormat::ASTC6x5UnormSrgb:
           return {16u, 6u, 5u};
-        case WGPUTextureFormat_ASTC6x6Unorm:
-        case WGPUTextureFormat_ASTC6x6UnormSrgb:
+        case wgpu::TextureFormat::ASTC6x6Unorm:
+        case wgpu::TextureFormat::ASTC6x6UnormSrgb:
           return {16u, 6u, 6u};
-        case WGPUTextureFormat_ASTC8x5Unorm:
-        case WGPUTextureFormat_ASTC8x5UnormSrgb:
+        case wgpu::TextureFormat::ASTC8x5Unorm:
+        case wgpu::TextureFormat::ASTC8x5UnormSrgb:
           return {16u, 8u, 5u};
-        case WGPUTextureFormat_ASTC8x6Unorm:
-        case WGPUTextureFormat_ASTC8x6UnormSrgb:
+        case wgpu::TextureFormat::ASTC8x6Unorm:
+        case wgpu::TextureFormat::ASTC8x6UnormSrgb:
           return {16u, 8u, 6u};
-        case WGPUTextureFormat_ASTC8x8Unorm:
-        case WGPUTextureFormat_ASTC8x8UnormSrgb:
+        case wgpu::TextureFormat::ASTC8x8Unorm:
+        case wgpu::TextureFormat::ASTC8x8UnormSrgb:
           return {16u, 8u, 8u};
-        case WGPUTextureFormat_ASTC10x5Unorm:
-        case WGPUTextureFormat_ASTC10x5UnormSrgb:
+        case wgpu::TextureFormat::ASTC10x5Unorm:
+        case wgpu::TextureFormat::ASTC10x5UnormSrgb:
           return {16u, 10u, 5u};
-        case WGPUTextureFormat_ASTC10x6Unorm:
-        case WGPUTextureFormat_ASTC10x6UnormSrgb:
+        case wgpu::TextureFormat::ASTC10x6Unorm:
+        case wgpu::TextureFormat::ASTC10x6UnormSrgb:
           return {16u, 10u, 6u};
-        case WGPUTextureFormat_ASTC10x8Unorm:
-        case WGPUTextureFormat_ASTC10x8UnormSrgb:
+        case wgpu::TextureFormat::ASTC10x8Unorm:
+        case wgpu::TextureFormat::ASTC10x8UnormSrgb:
           return {16u, 10u, 8u};
-        case WGPUTextureFormat_ASTC10x10Unorm:
-        case WGPUTextureFormat_ASTC10x10UnormSrgb:
+        case wgpu::TextureFormat::ASTC10x10Unorm:
+        case wgpu::TextureFormat::ASTC10x10UnormSrgb:
           return {16u, 10u, 10u};
-        case WGPUTextureFormat_ASTC12x10Unorm:
-        case WGPUTextureFormat_ASTC12x10UnormSrgb:
+        case wgpu::TextureFormat::ASTC12x10Unorm:
+        case wgpu::TextureFormat::ASTC12x10UnormSrgb:
           return {16u, 12u, 10u};
-        case WGPUTextureFormat_ASTC12x12Unorm:
-        case WGPUTextureFormat_ASTC12x12UnormSrgb:
+        case wgpu::TextureFormat::ASTC12x12Unorm:
+        case wgpu::TextureFormat::ASTC12x12UnormSrgb:
           return {16u, 12u, 12u};
 
         default:
@@ -158,23 +158,23 @@ TexelBlockInfo GetTexelBlockInfoForCopy(WGPUTextureFormat format,
     // https://gpuweb.github.io/gpuweb/#depth-formats so we only list
     // combinations of format and aspects that can be copied to with a
     // WriteTexture.
-    case WGPUTextureAspect_DepthOnly:
+    case wgpu::TextureAspect::DepthOnly:
       switch (format) {
-        case WGPUTextureFormat_Depth16Unorm:
-          return GetTexelBlockInfoForCopy(format, WGPUTextureAspect_All);
+        case wgpu::TextureFormat::Depth16Unorm:
+          return GetTexelBlockInfoForCopy(format, wgpu::TextureAspect::All);
 
         default:
           return kInvalidTexelBlockInfo;
       }
 
-    case WGPUTextureAspect_StencilOnly:
+    case wgpu::TextureAspect::StencilOnly:
       switch (format) {
-        case WGPUTextureFormat_Depth24PlusStencil8:
-        case WGPUTextureFormat_Depth32FloatStencil8:
+        case wgpu::TextureFormat::Depth24PlusStencil8:
+        case wgpu::TextureFormat::Depth32FloatStencil8:
           return {1u, 1u, 1u};
 
-        case WGPUTextureFormat_Stencil8:
-          return GetTexelBlockInfoForCopy(format, WGPUTextureAspect_All);
+        case wgpu::TextureFormat::Stencil8:
+          return GetTexelBlockInfoForCopy(format, wgpu::TextureAspect::All);
 
         default:
           return kInvalidTexelBlockInfo;
@@ -188,10 +188,10 @@ TexelBlockInfo GetTexelBlockInfoForCopy(WGPUTextureFormat format,
 
 }  // anonymous namespace
 
-size_t EstimateWriteTextureBytesUpperBound(WGPUTextureDataLayout layout,
-                                           WGPUExtent3D extent,
-                                           WGPUTextureFormat format,
-                                           WGPUTextureAspect aspect) {
+size_t EstimateWriteTextureBytesUpperBound(wgpu::TextureDataLayout layout,
+                                           wgpu::Extent3D extent,
+                                           wgpu::TextureFormat format,
+                                           wgpu::TextureAspect aspect) {
   // Check for empty copies because of depth first so we can early out. Note
   // that we can't early out because of height or width being 0 because padding
   // images still need to be accounted for.
@@ -214,7 +214,7 @@ size_t EstimateWriteTextureBytesUpperBound(WGPUTextureDataLayout layout,
 
   // Use checked numerics even though the GPU process will guard against OOB
   // because otherwise UBSan will complain about overflows. Note that if
-  // bytesPerRow or rowsPerImage are WGPU_COPY_STRIDE_UNDEFINED and used, the
+  // bytesPerRow or rowsPerImage are wgpu::kCopyStrideUndefined and used, the
   // GPU process will also create a validation error because it means that they
   // are used when copySize.height/depthOrArrayLayers > 1.
   base::CheckedNumeric<size_t> requiredBytesInCopy = 0;

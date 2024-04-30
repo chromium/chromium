@@ -24,12 +24,12 @@ class GPUSupportedFeatures;
 class GPUSupportedLimits;
 class GPUMemoryHeapInfo;
 
-class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
+class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   GPUAdapter(GPU* gpu,
-             WGPUAdapter handle,
+             wgpu::Adapter handle,
              scoped_refptr<DawnControlClientHolder> dawn_control_client);
 
   GPUAdapter(const GPUAdapter&) = delete;
@@ -41,7 +41,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
   GPUSupportedFeatures* features() const;
   GPUSupportedLimits* limits() const { return limits_.Get(); }
   bool isFallbackAdapter() const;
-  WGPUBackendType backendType() const;
+  wgpu::BackendType backendType() const;
   bool SupportsMultiPlanarFormats() const;
   bool isCompatibilityMode() const;
 
@@ -71,8 +71,8 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
 
   Member<GPU> gpu_;
   bool is_fallback_adapter_;
-  WGPUBackendType backend_type_;
-  WGPUAdapterType adapter_type_;
+  wgpu::BackendType backend_type_;
+  wgpu::AdapterType adapter_type_;
   bool is_consumed_ = false;
   bool is_compatibility_mode_;
   Member<GPUSupportedLimits> limits_;

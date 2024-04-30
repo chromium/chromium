@@ -6,10 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DAWN_CONTROL_CLIENT_HOLDER_H_
 
 #include <dawn/dawn_proc_table.h>
-#include <dawn/webgpu.h>
+
 #include <vector>
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -51,8 +52,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   // the WebGPU interface.
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
-  const DawnProcTable& GetProcs() const { return procs_; }
-  WGPUInstance GetWGPUInstance() const;
+  wgpu::Instance GetWGPUInstance() const;
   void MarkContextLost();
   bool IsContextLost() const;
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
@@ -71,7 +71,6 @@ class PLATFORM_EXPORT DawnControlClientHolder
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<gpu::webgpu::APIChannel> api_channel_;
-  DawnProcTable procs_;
   WebGPURecyclableResourceCache recyclable_resource_cache_;
 
   base::WeakPtrFactory<DawnControlClientHolder> weak_ptr_factory_{this};
@@ -80,9 +79,9 @@ class PLATFORM_EXPORT DawnControlClientHolder
 // Slightly hacky way to get the wgslLanguageFeatures without accessing the
 // DawnControlClient because it is initialized asynchronously on workers.
 // TODO(crbug.com/1246805): Remove this hack when the DawnControlClient can be
-// initialized synchronously on workers and query from its WGPUInstance
+// initialized synchronously on workers and query from its wgpu::Instance
 // instead.
-PLATFORM_EXPORT std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures();
+PLATFORM_EXPORT std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures();
 
 }  // namespace blink
 

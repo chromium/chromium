@@ -49,9 +49,6 @@ class WebGPUInterfaceStub : public WebGPUInterface {
 // this file instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/webgpu_interface_stub_autogen.h"
 
- protected:
-  DawnProcTable* procs();
-
  private:
   scoped_refptr<APIChannel> api_channel_;
 };
