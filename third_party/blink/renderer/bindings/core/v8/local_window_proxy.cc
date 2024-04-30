@@ -462,6 +462,8 @@ void LocalWindowProxy::UpdateDocumentForMainWorld() {
   UpdateSecurityOrigin(GetFrame()->DomWindow()->GetSecurityOrigin());
 }
 
+namespace {
+
 // GetNamedProperty(), Getter(), NamedItemAdded(), and NamedItemRemoved()
 // optimize property access performance for Document.
 //
@@ -474,11 +476,10 @@ void LocalWindowProxy::UpdateDocumentForMainWorld() {
 //
 // See crbug.com/614559 for how this affected benchmarks.
 
-static v8::Local<v8::Value> GetNamedProperty(
-    HTMLDocument* html_document,
-    const AtomicString& key,
-    v8::Local<v8::Object> creation_context,
-    v8::Isolate* isolate) {
+v8::Local<v8::Value> GetNamedProperty(HTMLDocument* html_document,
+                                      const AtomicString& key,
+                                      v8::Local<v8::Object> creation_context,
+                                      v8::Isolate* isolate) {
   if (!html_document->HasNamedItem(key))
     return v8::Local<v8::Value>();
 
@@ -501,8 +502,8 @@ static v8::Local<v8::Value> GetNamedProperty(
                                                   creation_context);
 }
 
-static void Getter(v8::Local<v8::Name> property,
-                   const v8::PropertyCallbackInfo<v8::Value>& info) {
+void Getter(v8::Local<v8::Name> property,
+            const v8::PropertyCallbackInfo<v8::Value>& info) {
   if (!property->IsString())
     return;
   // FIXME: Consider passing StringImpl directly.
@@ -537,6 +538,15 @@ static void Getter(v8::Local<v8::Name> property,
   }
 }
 
+void EmptySetter(v8::Local<v8::Name> name,
+                 v8::Local<v8::Value> value,
+                 const v8::PropertyCallbackInfo<void>& info) {
+  // Empty setter is required to keep the native data property in "accessor"
+  // state even in case the value is updated by user code.
+}
+
+}  // namespace
+
 void LocalWindowProxy::NamedItemAdded(HTMLDocument* document,
                                       const AtomicString& name) {
   DCHECK(world_->IsMainWorld());
@@ -554,12 +564,13 @@ void LocalWindowProxy::NamedItemAdded(HTMLDocument* document,
   v8::Local<v8::Object> document_wrapper =
       world_->DomDataStore().Get(GetIsolate(), document).ToLocalChecked();
   // When a non-configurable own property (e.g. unforgeable attribute) already
-  // exists, `SetAccessor` fails and throws. Ignore the exception because own
-  // properties have priority over named properties.
+  // exists, `SetNativeDataProperty` fails and throws. Ignore the exception
+  // because own properties have priority over named properties.
   // https://webidl.spec.whatwg.org/#dfn-named-property-visibility
   v8::TryCatch try_block(GetIsolate());
-  std::ignore = document_wrapper->SetAccessor(
-      GetIsolate()->GetCurrentContext(), V8String(GetIsolate(), name), Getter);
+  std::ignore = document_wrapper->SetNativeDataProperty(
+      GetIsolate()->GetCurrentContext(), V8String(GetIsolate(), name), Getter,
+      EmptySetter);
 }
 
 void LocalWindowProxy::NamedItemRemoved(HTMLDocument* document,
