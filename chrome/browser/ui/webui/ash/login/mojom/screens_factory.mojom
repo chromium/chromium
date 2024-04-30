@@ -22,16 +22,22 @@ interface ScreensFactory {
 
   // Creates a GaiaInfoPageHandler and connects it up to the GaiaInfoPage.
   CreateGaiaInfoScreenHandler(
-        pending_remote<ash.screens_common.mojom.GaiaInfoPage> page,
-        pending_receiver<ash.screens_common.mojom.GaiaInfoPageHandler> handler);
+      pending_remote<ash.screens_common.mojom.GaiaInfoPage> page,
+      pending_receiver<ash.screens_common.mojom.GaiaInfoPageHandler> handler);
 
   // ash.screens_oobe.mojom
+
+  // Creates a ConsumerUpdatePageHandler and connects it up to the
+  // ConsumerUpdatePage.
+  CreateConsumerUpdatePageHandler(
+      pending_remote<ash.screens_oobe.mojom.ConsumerUpdatePage> page,
+      pending_receiver<ash.screens_oobe.mojom.ConsumerUpdatePageHandler> handler);
 
   // Creates a PackagedLicensePageHandler and
   // connects it up to the PackagedLicensePage.
   CreatePackagedLicensePageHandler(
-        pending_receiver<ash.screens_oobe.mojom.PackagedLicensePageHandler>
-            handler);
+      pending_receiver<ash.screens_oobe.mojom.PackagedLicensePageHandler>
+          handler);
 
   // ash.screens_login.mojom
 
@@ -39,15 +45,15 @@ interface ScreensFactory {
   // it up to the LacrosDataBackwardMigrationPage.
   CreateLacrosDataBackwardMigrationScreenHandler(
       pending_remote<ash.screens_login.mojom.LacrosDataBackwardMigrationPage>
-            page,
+          page,
       pending_receiver<ash.screens_login.mojom.LacrosDataBackwardMigrationPageHandler>
-            handler);
+          handler);
 
   // ash.screens_osauth.mojom
 
   // Creates a LocalDataLossWarningPageHandler and
   // connects it up to the LocalDataLossWarningPage.
   CreateLocalDataLossWarningPageHandler(
-    pending_receiver<ash.screens_osauth.mojom.LocalDataLossWarningPageHandler>
-        handler);
+      pending_receiver<ash.screens_osauth.mojom.LocalDataLossWarningPageHandler>
+          handler);
 };

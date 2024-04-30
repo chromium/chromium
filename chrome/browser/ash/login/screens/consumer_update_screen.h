@@ -18,7 +18,9 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
@@ -27,9 +29,13 @@ class ConsumerUpdateScreenView;
 class ErrorScreensHistogramHelper;
 
 // Controller for the Consumer update screen.
-class ConsumerUpdateScreen : public BaseScreen,
-                             public VersionUpdater::Delegate,
-                             public chromeos::PowerManagerClient::Observer {
+class ConsumerUpdateScreen
+    : public BaseScreen,
+      public VersionUpdater::Delegate,
+      public chromeos::PowerManagerClient::Observer,
+      public screens_oobe::mojom::ConsumerUpdatePageHandler,
+      public OobeMojoBinder<screens_oobe::mojom::ConsumerUpdatePageHandler,
+                            screens_oobe::mojom::ConsumerUpdatePage> {
  public:
   using TView = ConsumerUpdateScreenView;
 
@@ -125,16 +131,20 @@ class ConsumerUpdateScreen : public BaseScreen,
     return &wait_reboot_timer_;
   }
 
- protected:
+ private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
 
   void ExitUpdate(VersionUpdater::Result result);
 
- private:
+  // screens_oobe::mojom::ConsumerUpdatePageHandler:
+  void OnDeclineCellularClicked() override;
+  void OnAcceptCellularClicked() override;
+  void OnSkipClicked() override;
+  void OnBackClicked() override;
+
   void HideErrorMessage();
 
   // Notification of a change in the accessibility settings.

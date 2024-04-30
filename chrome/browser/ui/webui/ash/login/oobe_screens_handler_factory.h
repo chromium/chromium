@@ -44,6 +44,11 @@ class OobeScreensHandlerFactory
       mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
           receiver) override;
 
+  void CreateConsumerUpdatePageHandler(
+      mojo::PendingRemote<screens_oobe::mojom::ConsumerUpdatePage> page,
+      mojo::PendingReceiver<screens_oobe::mojom::ConsumerUpdatePageHandler>
+          handler) override;
+
   void CreatePackagedLicensePageHandler(
       mojo::PendingReceiver<screens_oobe::mojom::PackagedLicensePageHandler>
           receiver) override;

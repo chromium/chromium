@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,12 +43,6 @@
 namespace ash {
 
 namespace {
-constexpr const char kUserActionAcceptUpdateOverCellular[] =
-    "consumer-update-accept-cellular";
-constexpr const char kUserActionRejectUpdateOverCellular[] =
-    "consumer-update-reject-cellular";
-constexpr const char kUserActionSkipUpdate[] = "skip-consumer-update";
-constexpr const char kUserActionBackButton[] = "back";
 
 // Time in seconds after which we initiate reboot.
 constexpr const base::TimeDelta kWaitBeforeRebootTime = base::Seconds(2);
@@ -116,6 +111,7 @@ ConsumerUpdateScreen::ConsumerUpdateScreen(
     const ScreenExitCallback& exit_callback)
     : BaseScreen(ConsumerUpdateScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
@@ -176,9 +172,10 @@ void ConsumerUpdateScreen::ShowImpl() {
   }
 
   if (version_updater_->update_info().requires_permission_for_cellular &&
-      view_) {
-    view_->SetUpdateState(
-        ConsumerUpdateScreenView::UIState::kCellularPermission);
+      GetRemote()->is_bound()) {
+    (*GetRemote())
+        ->SetScreenStep(screens_oobe::mojom::ConsumerUpdatePage::
+                            ConsumerUpdateStep::kCellularPermission);
   }
 
   screen_shown_time_ = base::TimeTicks::Now();
@@ -201,40 +198,14 @@ void ConsumerUpdateScreen::DelaySkipButton() {
 }
 
 void ConsumerUpdateScreen::SetSkipButton() {
-  if (view_ && !is_mandatory_update_.has_value()) {
+  if (!is_mandatory_update_.has_value()) {
     base::TimeDelta time_left = version_updater_->update_info().total_time_left;
     is_mandatory_update_ = time_left < maximum_time_force_update_;
     base::UmaHistogramBoolean("OOBE.ConsumerUpdateScreen.IsMandatory",
                               is_mandatory_update_.value());
-    view_->SetIsUpdateMandatory(is_mandatory_update_.value());
-  }
-}
-
-void ConsumerUpdateScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionAcceptUpdateOverCellular) {
-    version_updater_->SetUpdateOverCellularOneTimePermission();
-  } else if (action_id == kUserActionRejectUpdateOverCellular) {
-    version_updater_->RejectUpdateOverCellular();
-    RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
-        OobeConsumerUpdateScreenSkippedReason::kDeclineCellular);
-    version_updater_->StopObserving();
-    exit_callback_.Run(Result::DECLINE_CELLULAR);
-  } else if (action_id == kUserActionSkipUpdate) {
-    RecordIsOptionalUpdateSkipped(/*skipped=*/true);
-    version_updater_->StopObserving();
-    if (did_prepare_quick_start_for_update_) {
-      WizardController::default_controller()
-          ->quick_start_controller()
-          ->ResumeSessionAfterCancelledUpdate();
+    if (GetRemote()->is_bound()) {
+      (*GetRemote())->ShowSkipButton();
     }
-    exit_callback_.Run(Result::SKIPPED);
-  } else if (action_id == kUserActionBackButton) {
-    version_updater_->RejectUpdateOverCellular();
-    version_updater_->StopObserving();
-    exit_callback_.Run(Result::BACK);
-  } else {
-    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -272,12 +243,42 @@ void ConsumerUpdateScreen::ExitUpdate(VersionUpdater::Result result) {
   version_updater_->StartExitUpdate(result);
 }
 
+void ConsumerUpdateScreen::OnDeclineCellularClicked() {
+  version_updater_->RejectUpdateOverCellular();
+  RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
+      OobeConsumerUpdateScreenSkippedReason::kDeclineCellular);
+  version_updater_->StopObserving();
+  exit_callback_.Run(Result::DECLINE_CELLULAR);
+}
+
+void ConsumerUpdateScreen::OnAcceptCellularClicked() {
+  version_updater_->SetUpdateOverCellularOneTimePermission();
+}
+
+void ConsumerUpdateScreen::OnSkipClicked() {
+  RecordIsOptionalUpdateSkipped(/*skipped=*/true);
+  version_updater_->StopObserving();
+  if (did_prepare_quick_start_for_update_) {
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->ResumeSessionAfterCancelledUpdate();
+  }
+  exit_callback_.Run(Result::SKIPPED);
+}
+
+void ConsumerUpdateScreen::OnBackClicked() {
+  version_updater_->RejectUpdateOverCellular();
+  version_updater_->StopObserving();
+  exit_callback_.Run(Result::BACK);
+}
+
 void ConsumerUpdateScreen::OnWaitForRebootTimeElapsed() {
   LOG(ERROR) << "Unable to reboot - asking user for a manual reboot.";
-  if (!view_) {
-    return;
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())
+        ->SetScreenStep(screens_oobe::mojom::ConsumerUpdatePage::
+                            ConsumerUpdateStep::kManualReboot);
   }
-  view_->SetUpdateState(ConsumerUpdateScreenView::UIState::kManualReboot);
 }
 
 void ConsumerUpdateScreen::PrepareForUpdateCheck() {
@@ -332,49 +333,50 @@ void ConsumerUpdateScreen::PowerChanged(
 }
 
 void ConsumerUpdateScreen::ShowRebootInProgress() {
-  if (view_) {
-    view_->SetUpdateState(
-        ConsumerUpdateScreenView::UIState::kRestartInProgress);
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())
+        ->SetScreenStep(screens_oobe::mojom::ConsumerUpdatePage::
+                            ConsumerUpdateStep::kRestartInProgress);
   }
 }
 
 void ConsumerUpdateScreen::SetUpdateStatusMessage(int percent,
                                                   base::TimeDelta time_left) {
-  if (!view_) {
-    return;
-  }
-  std::u16string time_left_message;
+  std::string time_left_message;
   if (time_left.InMinutes() == 0) {
-    time_left_message = l10n_util::GetStringFUTF16(
+    time_left_message = l10n_util::GetStringFUTF8(
         IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT,
         l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS,
                                          time_left.InSeconds()));
   } else {
-    time_left_message = l10n_util::GetStringFUTF16(
+    time_left_message = l10n_util::GetStringFUTF8(
         IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT,
         l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_MINS,
                                          time_left.InMinutes()));
   }
-  view_->SetUpdateStatus(
-      percent,
-      l10n_util::GetStringFUTF16(IDS_UPDATE_STATUS_SUBTITLE_PERCENT,
-                                 base::FormatPercent(percent)),
-      time_left_message);
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())
+        ->SetUpdateStatusMessage(
+            percent,
+            l10n_util::GetStringFUTF8(IDS_UPDATE_STATUS_SUBTITLE_PERCENT,
+                                      base::FormatPercent(percent)),
+            time_left_message);
+  }
 }
 
 void ConsumerUpdateScreen::UpdateBatteryWarningVisibility() {
-  if (!view_) {
-    return;
-  }
   const std::optional<power_manager::PowerSupplyProperties>& proto =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value()) {
     return;
   }
-  view_->ShowLowBatteryWarningMessage(
-      proto->battery_state() ==
-          power_manager::PowerSupplyProperties_BatteryState_DISCHARGING &&
-      proto->battery_percent() < kInsufficientBatteryPercent);
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())
+        ->SetLowBatteryWarningVisible(
+            proto->battery_state() ==
+                power_manager::PowerSupplyProperties_BatteryState_DISCHARGING &&
+            proto->battery_percent() < kInsufficientBatteryPercent);
+  }
 }
 
 void ConsumerUpdateScreen::HideErrorMessage() {
@@ -391,9 +393,10 @@ void ConsumerUpdateScreen::OnAccessibilityStatusChanged(
     return;
   }
   // AccessibilityManager::Get() can be nullptr in unittests.
-  if (view_ && AccessibilityManager::Get()) {
-    view_->SetAutoTransition(
-        !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  if (GetRemote()->is_bound() && AccessibilityManager::Get()) {
+    (*GetRemote())
+        ->SetAutoTransition(
+            !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   }
 }
 
@@ -404,13 +407,15 @@ void ConsumerUpdateScreen::OnErrorScreenHidden() {
 
 void ConsumerUpdateScreen::UpdateInfoChanged(
     const VersionUpdater::UpdateInfo& update_info) {
-  if (!view_ || is_hidden()) {
+  if (is_hidden()) {
     return;
   }
+
   const update_engine::StatusResult& status = update_info.status;
-  if (update_info.requires_permission_for_cellular) {
-    view_->SetUpdateState(
-        ConsumerUpdateScreenView::UIState::kCellularPermission);
+  if (update_info.requires_permission_for_cellular && GetRemote()->is_bound()) {
+    (*GetRemote())
+        ->SetScreenStep(screens_oobe::mojom::ConsumerUpdatePage::
+                            ConsumerUpdateStep::kCellularPermission);
     return;
   }
 
@@ -426,7 +431,11 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
         ->quick_start_controller()
         ->PrepareForUpdate(/*is_forced=*/false);
     did_prepare_quick_start_for_update_ = true;
-    view_->SetUpdateState(ConsumerUpdateScreenView::UIState::kUpdateInProgress);
+    if (GetRemote()->is_bound()) {
+      (*GetRemote())
+          ->SetScreenStep(screens_oobe::mojom::ConsumerUpdatePage::
+                              ConsumerUpdateStep::kUpdateInProgress);
+    }
     // Set consumer update complete for next reboot.
     g_browser_process->local_state()->SetBoolean(
         prefs::kOobeConsumerUpdateCompleted, true);
@@ -438,8 +447,11 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
 
   switch (status.current_operation()) {
     case update_engine::Operation::CHECKING_FOR_UPDATE:
-      view_->SetUpdateState(
-          ConsumerUpdateScreenView::UIState::kCheckingForUpdate);
+      if (GetRemote()->is_bound()) {
+        (*GetRemote())
+            ->SetScreenStep(screens_oobe::mojom::ConsumerUpdatePage::
+                                ConsumerUpdateStep::kCheckingForUpdate);
+      }
       break;
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
     case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
@@ -448,8 +460,11 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
     case update_engine::Operation::UPDATED_BUT_DEFERRED:
       break;
     case update_engine::Operation::UPDATE_AVAILABLE:
-      view_->SetUpdateState(
-          ConsumerUpdateScreenView::UIState::kCheckingForUpdate);
+      if (GetRemote()->is_bound()) {
+        (*GetRemote())
+            ->SetScreenStep(screens_oobe::mojom::ConsumerUpdatePage::
+                                ConsumerUpdateStep::kCheckingForUpdate);
+      }
       update_available = true;
       RecordOobeConsumerUpdateAvailableHistogram();
       break;
@@ -464,8 +479,11 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
       [[fallthrough]];
     case update_engine::Operation::VERIFYING:
     case update_engine::Operation::FINALIZING:
-      view_->SetUpdateState(
-          ConsumerUpdateScreenView::UIState::kUpdateInProgress);
+      if (GetRemote()->is_bound()) {
+        (*GetRemote())
+            ->SetScreenStep(screens_oobe::mojom::ConsumerUpdatePage::
+                                ConsumerUpdateStep::kUpdateInProgress);
+      }
       DelaySkipButton();
       SetUpdateStatusMessage(update_info.better_update_progress,
                              update_info.total_time_left);

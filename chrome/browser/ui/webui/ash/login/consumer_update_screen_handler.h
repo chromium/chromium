@@ -12,35 +12,16 @@
 
 namespace ash {
 
-class ConsumerUpdateScreen;
-
 // Interface for dependency injection between ConsumerUpdateScreen and its
 // WebUI representation.
 class ConsumerUpdateScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"consumer-update",
                                                        "ConsumerUpdateScreen"};
-
-  enum class UIState {
-    kCheckingForUpdate = 0,
-    kUpdateInProgress = 1,
-    kRestartInProgress = 2,
-    kManualReboot = 3,
-    kCellularPermission = 4,
-  };
-
   virtual ~ConsumerUpdateScreenView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  virtual void SetUpdateState(UIState value) = 0;
-  virtual void SetUpdateStatus(int percent,
-                               const std::u16string& percent_message,
-                               const std::u16string& timeleft_message) = 0;
-  virtual void ShowLowBatteryWarningMessage(bool value) = 0;
-  virtual void SetAutoTransition(bool value) = 0;
-  virtual void SetIsUpdateMandatory(bool value) = 0;
   virtual base::WeakPtr<ConsumerUpdateScreenView> AsWeakPtr() = 0;
 };
 
@@ -50,27 +31,17 @@ class ConsumerUpdateScreenHandler final : public BaseScreenHandler,
   using TView = ConsumerUpdateScreenView;
 
   ConsumerUpdateScreenHandler();
-
   ConsumerUpdateScreenHandler(const ConsumerUpdateScreenHandler&) = delete;
   ConsumerUpdateScreenHandler& operator=(const ConsumerUpdateScreenHandler&) =
       delete;
-
   ~ConsumerUpdateScreenHandler() override;
 
   // ConsumerUpdateScreenView:
   void Show() override;
-
-  void SetUpdateState(ConsumerUpdateScreenView::UIState value) override;
-  void SetUpdateStatus(int percent,
-                       const std::u16string& percent_message,
-                       const std::u16string& timeleft_message) override;
-  void ShowLowBatteryWarningMessage(bool value) override;
-  void SetAutoTransition(bool value) override;
-  void SetIsUpdateMandatory(bool value) override;
+  base::WeakPtr<ConsumerUpdateScreenView> AsWeakPtr() override;
 
   void OnAccessibilityStatusChanged(
       const AccessibilityStatusEventDetails& details);
-  base::WeakPtr<ConsumerUpdateScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
