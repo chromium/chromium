@@ -60,6 +60,8 @@ class SupervisedUserExtensionsDelegateImpl
   void UpdateManagementPolicyRegistration() override;
   bool CanInstallExtensions() const override;
   void AddExtensionApproval(const extensions::Extension& extension) override;
+  void MaybeRecordPermissionsIncreaseMetrics(
+      const extensions::Extension& extension) override;
   void RemoveExtensionApproval(const extensions::Extension& extension) override;
   void RecordExtensionEnablementUmaMetrics(bool enabled) const override;
 

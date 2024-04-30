@@ -70,6 +70,11 @@ class SupervisedUserExtensionsDelegate {
   // Updates the set of approved extensions to add approval for `extension`.
   virtual void AddExtensionApproval(const extensions::Extension& extension) = 0;
 
+  // Checks if the given `extension` escalated permissions and records the
+  // corresponding metrics.
+  virtual void MaybeRecordPermissionsIncreaseMetrics(
+      const extensions::Extension& extension) = 0;
+
   // Updates the set of approved extensions to remove approval for `extension`.
   virtual void RemoveExtensionApproval(
       const extensions::Extension& extension) = 0;

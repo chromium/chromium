@@ -116,6 +116,11 @@ void SupervisedUserExtensionsDelegateImpl::AddExtensionApproval(
   extensions_manager_.AddExtensionApproval(extension);
 }
 
+void SupervisedUserExtensionsDelegateImpl::MaybeRecordPermissionsIncreaseMetrics(
+    const extensions::Extension& extension) {
+  extensions_manager_.MaybeRecordPermissionsIncreaseMetrics(extension);
+}
+
 void SupervisedUserExtensionsDelegateImpl::RemoveExtensionApproval(
     const extensions::Extension& extension) {
   extensions_manager_.RemoveExtensionApproval(extension);

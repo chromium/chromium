@@ -121,8 +121,15 @@ void SupervisedUserExtensionsManager::AddExtensionApproval(
   if (!base::Contains(approved_extensions_set_, extension.id())) {
     UpdateApprovedExtension(extension.id(), extension.VersionString(),
                             ApprovedExtensionChange::kAdd);
-  } else if (extension_prefs_->DidExtensionEscalatePermissions(
-                 extension.id())) {
+  }
+}
+
+void SupervisedUserExtensionsManager::MaybeRecordPermissionsIncreaseMetrics(
+    const extensions::Extension& extension) {
+  if (!is_active_policy_for_supervised_users_) {
+    return;
+  }
+  if (extension_prefs_->DidExtensionEscalatePermissions(extension.id())) {
     SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
         SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
             kPermissionsIncreaseGranted);

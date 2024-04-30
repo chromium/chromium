@@ -44,6 +44,10 @@ class SupervisedUserExtensionsManager : public ExtensionRegistryObserver,
   // Updates the set of approved extensions to add approval for `extension`.
   void AddExtensionApproval(const Extension& extension);
 
+  // Checks if the extension escalated permissions during an upgrade
+  // and records the corresponding metrics.
+  void MaybeRecordPermissionsIncreaseMetrics(const extensions::Extension& extension);
+
   // Updates the set of approved extensions to remove approval for `extension`.
   void RemoveExtensionApproval(const Extension& extension);
 

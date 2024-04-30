@@ -245,6 +245,7 @@ void ExtensionEnableFlow::EnableExtension() {
                 ->GetSupervisedUserExtensionsDelegate();
     CHECK(supervised_user_extensions_delegate);
     supervised_user_extensions_delegate->AddExtensionApproval(*extension);
+    supervised_user_extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
     supervised_user_extensions_delegate->RecordExtensionEnablementUmaMetrics(
         /*enabled=*/true);
   }

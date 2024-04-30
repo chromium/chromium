@@ -559,6 +559,9 @@ void ChromeManagementAPIDelegate::EnableExtension(
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(context)->GetExtensionById(
           extension_id, extensions::ExtensionRegistry::EVERYTHING);
+  // The extension must exist as this method is invoked on enabling an extension
+  // from the extensions management page (see `ManagementSetEnabledFunction`).
+  CHECK(extension);
 
   // We add approval for the extension here under the assumption that prior
   // to this point, the supervised child user has already been prompted
@@ -567,6 +570,7 @@ void ChromeManagementAPIDelegate::EnableExtension(
       GetSupervisedUserExtensionsDelegateFromContext(context);
 
   extensions_delegate->AddExtensionApproval(*extension);
+  extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
   extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/true);
 
   // If the extension was disabled for a permissions increase, the Management
