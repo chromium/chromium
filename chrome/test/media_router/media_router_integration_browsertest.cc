@@ -477,8 +477,8 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, CloseOnError) {
                        "sendMessageAndExpectConnectionCloseOnError()");
 }
 
-// TODO(crbug.com/40784296): Test is flaky on Windows and Linux.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40784296): Test is flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage

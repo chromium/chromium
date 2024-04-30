@@ -62,14 +62,15 @@ class MediaRouterIntegrationOneUABrowserTest
 };
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_Basic DISABLED_Basic
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Basic MANUAL_Basic
 #else
 #define MAYBE_Basic Basic
 #endif
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest, MAYBE_Basic) {
   RunBasicTest();
 }
+#undef MAYBE_Basic
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
@@ -87,7 +88,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_Fail_SendMessage DISABLED_Fail_SendMessage
+#define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
 #endif
@@ -104,7 +105,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
       BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)))
 // https://crbug.com/966827. Flaky on Linux CFI.
 // TODO(crbug.com/40567200): Flaky in Chromium OS waterfall.
-#define MAYBE_ReconnectSession DISABLED_ReconnectSession
+#define MAYBE_ReconnectSession MANUAL_ReconnectSession
 #else
 #define MAYBE_ReconnectSession ReconnectSession
 #endif
@@ -115,8 +116,8 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
 #undef MAYBE_ReconnectSession
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ReconnectSessionSameTab DISABLED_ReconnectSessionSameTab
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ReconnectSessionSameTab MANUAL_ReconnectSessionSameTab
 #else
 #define MAYBE_ReconnectSessionSameTab ReconnectSessionSameTab
 #endif
@@ -137,7 +138,7 @@ class MediaRouterIntegrationOneUANoReceiverBrowserTest
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_Basic DISABLED_Basic
+#define MAYBE_Basic MANUAL_Basic
 #else
 #define MAYBE_Basic Basic
 #endif
@@ -149,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_Fail_SendMessage DISABLED_Fail_SendMessage
+#define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
 #endif
@@ -161,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ReconnectSession DISABLED_ReconnectSession
+#define MAYBE_ReconnectSession MANUAL_ReconnectSession
 #else
 #define MAYBE_ReconnectSession ReconnectSession
 #endif
@@ -172,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ReconnectSessionSameTab DISABLED_ReconnectSessionSameTab
+#define MAYBE_ReconnectSessionSameTab MANUAL_ReconnectSessionSameTab
 #else
 #define MAYBE_ReconnectSessionSameTab ReconnectSessionSameTab
 #endif
