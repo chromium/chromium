@@ -179,14 +179,20 @@ class ResourceAttrCPUMonitorTest
       MeasurementAlgorithm expected_algorithm =
           MeasurementAlgorithm::kDirectMeasurement) const {
     base::TimeDelta expected_cpu = expected_delta;
+    base::TimeDelta expected_background_cpu = expected_background_delta;
     base::TimeTicks expected_start_time;
     const auto last_it = last_measurements_.find(context);
     if (last_it != last_measurements_.end()) {
       expected_cpu += last_it->second.cpu_time_result->cumulative_cpu;
+      expected_background_cpu +=
+          last_it->second.cpu_time_result->cumulative_background_cpu;
       expected_start_time = last_it->second.cpu_time_result->start_time;
     }
     return QueryResultsMatch<CPUTimeResult>(AllOf(
         Field("cumulative_cpu", &CPUTimeResult::cumulative_cpu, expected_cpu),
+        Field("cumulative_background_cpu",
+              &CPUTimeResult::cumulative_background_cpu,
+              expected_background_cpu),
         // `start_time` should not change. If this was the first measurement,
         // allow any non-null `start_time`. Note Conditional() doesn't
         // short-circuit, so the first branch will always be evaluated and can't
@@ -1738,8 +1744,7 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
 
   {
     constexpr base::TimeDelta process_delta = kTimeBetweenMeasurements * 0.6;
-    constexpr base::TimeDelta process_background_delta =
-        process_delta * 0.6 / 3;
+    constexpr base::TimeDelta process_background_delta = process_delta / 3;
     constexpr base::TimeDelta other_process_delta =
         kTimeBetweenMeasurements * 0.5;
     constexpr base::TimeDelta other_process_background_delta =
