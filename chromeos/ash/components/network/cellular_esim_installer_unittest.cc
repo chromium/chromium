@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
@@ -87,11 +86,6 @@ base::Value::Dict GetPolicyShillProperties() {
 
 class CellularESimInstallerTest : public testing::Test {
  protected:
-  CellularESimInstallerTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSmdsSupport},
-        /*disabled_features=*/{});
-  }
   ~CellularESimInstallerTest() override = default;
 
   // testing::Test:
@@ -321,7 +315,6 @@ class CellularESimInstallerTest : public testing::Test {
 
  private:
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

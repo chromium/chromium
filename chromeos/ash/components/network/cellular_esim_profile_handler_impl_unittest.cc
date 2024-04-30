@@ -80,12 +80,8 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
       const CellularESimProfileHandlerImplTest&) = delete;
 
  protected:
-  explicit CellularESimProfileHandlerImplTest(
-      const std::vector<base::test::FeatureRef>& enabled_features,
-      const std::vector<base::test::FeatureRef>& disabled_features)
-      : helper_(/*use_default_devices_and_services=*/false) {
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  explicit CellularESimProfileHandlerImplTest()
+      : helper_(/*use_default_devices_and_services=*/false) {}
   ~CellularESimProfileHandlerImplTest() override = default;
 
   // testing::Test:
@@ -292,7 +288,6 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -306,59 +301,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   std::unique_ptr<CellularESimProfileHandlerImpl> handler_;
 };
 
-class CellularESimProfileHandlerImplTest_SmdsSupportDisabled
-    : public CellularESimProfileHandlerImplTest {
- public:
-  CellularESimProfileHandlerImplTest_SmdsSupportDisabled(
-      const CellularESimProfileHandlerImplTest_SmdsSupportDisabled&) = delete;
-  CellularESimProfileHandlerImplTest_SmdsSupportDisabled& operator=(
-      const CellularESimProfileHandlerImplTest_SmdsSupportDisabled&) = delete;
-
- protected:
-  CellularESimProfileHandlerImplTest_SmdsSupportDisabled()
-      : CellularESimProfileHandlerImplTest(
-            /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
-  ~CellularESimProfileHandlerImplTest_SmdsSupportDisabled() override = default;
-};
-
-class CellularESimProfileHandlerImplTest_SmdsSupportEnabled
-    : public CellularESimProfileHandlerImplTest {
- public:
-  CellularESimProfileHandlerImplTest_SmdsSupportEnabled(
-      const CellularESimProfileHandlerImplTest_SmdsSupportEnabled&) = delete;
-  CellularESimProfileHandlerImplTest_SmdsSupportEnabled& operator=(
-      const CellularESimProfileHandlerImplTest_SmdsSupportEnabled&) = delete;
-
- protected:
-  CellularESimProfileHandlerImplTest_SmdsSupportEnabled()
-      : CellularESimProfileHandlerImplTest(
-            /*enabled_features=*/{ash::features::kSmdsSupport},
-            /*disabled_features=*/{}) {}
-  ~CellularESimProfileHandlerImplTest_SmdsSupportEnabled() override = default;
-};
-
-class CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled
-    : public CellularESimProfileHandlerImplTest {
- public:
-  CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled(
-      const CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled&) =
-      delete;
-  CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled& operator=(
-      const CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled&) =
-      delete;
-
- protected:
-  CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled()
-      : CellularESimProfileHandlerImplTest(
-            /*enabled_features=*/{ash::features::kSmdsSupport,
-                                  ash::features::kUseStorkSmdsServerAddress},
-            /*disabled_features=*/{}) {}
-  ~CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled() override =
-      default;
-};
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled, NoEuicc) {
+TEST_F(CellularESimProfileHandlerImplTest, NoEuicc) {
   AddCellularDevice();
   // No EUICCs exist, so no profiles should exist.
   Init();
@@ -375,8 +318,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled, NoEuicc) {
   EXPECT_EQ(0u, NumObserverEvents());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       EuiccWithNoProfiles) {
+TEST_F(CellularESimProfileHandlerImplTest, EuiccWithNoProfiles) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
 
@@ -395,370 +337,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
   EXPECT_EQ(0u, NumObserverEvents());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       EuiccWithProfiles) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-
-  // Add two normal (i.e., kOperational) profiles.
-  dbus::ObjectPath path1 = AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kPending,
-      /*activation_code=*/"code1");
-  dbus::ObjectPath path2 = AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kActive,
-      /*activation_code=*/"code2");
-
-  // Add one kTesting and one kProvisioning profile. These profiles should not
-  // be ignored if they are returned from Hermes.
-  AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kInactive,
-      /*activation_code=*/"code3", hermes::profile::ProfileClass::kTesting);
-  AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kInactive,
-      /*activation_code=*/"code4",
-      hermes::profile::ProfileClass::kProvisioning);
-
-  // Prefs not yet set.
-  Init();
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  // Set prefs; the profiles added should be available.
-  SetDevicePrefs();
-  EXPECT_EQ(1u, NumObserverEvents());
-
-  std::vector<CellularESimProfile> profiles = GetESimProfiles();
-  EXPECT_EQ(4u, profiles.size());
-  EXPECT_EQ(CellularESimProfile::State::kPending, profiles[0].state());
-  EXPECT_EQ("code1", profiles[0].activation_code());
-  EXPECT_EQ(CellularESimProfile::State::kActive, profiles[1].state());
-  EXPECT_EQ("code2", profiles[1].activation_code());
-  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[2].state());
-  EXPECT_EQ("code3", profiles[2].activation_code());
-  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[3].state());
-  EXPECT_EQ("code4", profiles[3].activation_code());
-
-  // Update profile properties; GetESimProfiles() should return the new values.
-  HermesProfileClient::Properties* profile_properties1 =
-      HermesProfileClient::Get()->GetProperties(dbus::ObjectPath(path1));
-  profile_properties1->state().ReplaceValue(hermes::profile::kInactive);
-  HermesProfileClient::Properties* profile_properties2 =
-      HermesProfileClient::Get()->GetProperties(dbus::ObjectPath(path2));
-  profile_properties2->state().ReplaceValue(hermes::profile::kPending);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u, NumObserverEvents());
-
-  profiles = GetESimProfiles();
-  EXPECT_EQ(4u, profiles.size());
-  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[0].state());
-  EXPECT_EQ(CellularESimProfile::State::kPending, profiles[1].state());
-  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[2].state());
-  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[3].state());
-
-  // Unset prefs; no profiles should exist.
-  SetDevicePrefs(/*set_to_null=*/true);
-  EXPECT_TRUE(GetESimProfiles().empty());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled, Persistent) {
-  AddCellularDevice();
-  Init();
-  SetDevicePrefs();
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  // Add a EUICC and profile; should be available.
-  AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*euicc_num=*/1, hermes::profile::State::kInactive,
-             /*activation_code=*/"code1");
-  EXPECT_EQ(1u, GetESimProfiles().size());
-  EXPECT_EQ(1u, NumObserverEvents());
-
-  // Delete the old handler and create a new one; the new one will end up using
-  // the same PrefService as the old one.
-  Init();
-
-  // Remove EUICC; this simulates a temporary state at startup when Hermes would
-  // not yet have provided EUICC information.
-  HermesEuiccClient::Get()->GetTestInterface()->ClearEuicc(
-      dbus::ObjectPath(CreateTestEuiccPath(/*euicc_num=*/1)));
-
-  // Set prefs; the handler should read from the old prefs and should still have
-  // a profile available.
-  SetDevicePrefs();
-  EXPECT_EQ(1u, GetESimProfiles().size());
-
-  // Now, refresh the list.
-  base::RunLoop run_loop;
-  RefreshProfileList(
-      /*euicc_num=*/1,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-            EXPECT_TRUE(inhibit_lock);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
-
-  // Because the list was refreshed, we now expect GetESimProfiles() to return
-  // an empty list.
-  EXPECT_TRUE(GetESimProfiles().empty());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       RefreshProfileList_AcquireLockInterally) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-
-  Init();
-  SetDevicePrefs();
-
-  base::RunLoop run_loop;
-  RefreshProfileList(
-      /*euicc_num=*/1,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-            EXPECT_TRUE(inhibit_lock);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       RefreshProfileList_ProvideAlreadyAcquiredLock) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-
-  Init();
-  SetDevicePrefs();
-
-  std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock =
-      InhibitCellularScanning();
-
-  base::RunLoop run_loop;
-  RefreshProfileList(
-      /*euicc_num=*/1,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-            EXPECT_TRUE(inhibit_lock);
-            run_loop.Quit();
-          }),
-      std::move(inhibit_lock));
-  run_loop.Run();
-  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       RefreshProfileList_Failure) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-
-  Init();
-  SetDevicePrefs();
-
-  QueueEuiccErrorStatus();
-
-  base::RunLoop run_loop;
-  RefreshProfileList(
-      /*euicc_num=*/1,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-            // Failures are indicated via a null return value.
-            EXPECT_FALSE(inhibit_lock);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       RefreshProfileList_MultipleSimultaneousRequests) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-
-  Init();
-  SetDevicePrefs();
-
-  base::RunLoop run_loop1;
-  RefreshProfileList(
-      /*euicc_num=*/1,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-            EXPECT_TRUE(inhibit_lock);
-            run_loop1.Quit();
-          }));
-
-  base::RunLoop run_loop2;
-  RefreshProfileList(
-      /*euicc_num=*/1,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-            EXPECT_TRUE(inhibit_lock);
-            run_loop2.Quit();
-          }));
-
-  run_loop1.Run();
-  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
-  run_loop2.Run();
-  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       RefreshesAutomaticallyWhenNotSeenBefore) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
-
-  Init();
-  base::Value::List euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_TRUE(euicc_paths_from_prefs.empty());
-
-  // Set device prefs; a new auto-refresh should have started but not yet
-  // completed.
-  SetDevicePrefs();
-  euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_TRUE(euicc_paths_from_prefs.empty());
-  EXPECT_FALSE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
-
-  FastForwardProfileRefreshDelay();
-  base::RunLoop().RunUntilIdle();
-  euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_EQ(1u, euicc_paths_from_prefs.size());
-  EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
-            euicc_paths_from_prefs[0].GetString());
-  EXPECT_TRUE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
-  EXPECT_TRUE(GetLastRefreshProfilesRestoreSlotArg());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       IgnoresESimProfilesWithNoIccid) {
-  const char kTestIccid[] = "1245671234567";
-  AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
-  Init();
-  SetDevicePrefs();
-
-  // Verify that no profiles are added if there are some profiles that have
-  // not received iccid updates yet.
-  dbus::ObjectPath profile_path1 = AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kInactive,
-      /*activation_code=*/std::string(),
-      hermes::profile::ProfileClass::kOperational,
-      /*blank_iccid=*/true);
-  dbus::ObjectPath profile_path2 = AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kInactive,
-      /*activation_code=*/std::string(),
-      hermes::profile::ProfileClass::kOperational,
-      /*blank_iccid=*/false);
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  // Verify that profile object is created after iccid property is set.
-  HermesProfileClient::Properties* properties1 =
-      HermesProfileClient::Get()->GetProperties(profile_path1);
-  properties1->iccid().ReplaceValue(kTestIccid);
-  base::RunLoop().RunUntilIdle();
-
-  std::vector<CellularESimProfile> esim_profiles = GetESimProfiles();
-  EXPECT_EQ(2u, esim_profiles.size());
-  EXPECT_EQ(kTestIccid, esim_profiles[0].iccid());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       SkipsAutomaticRefreshIfNoCellularDevice) {
-  Init();
-  AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
-  SetDevicePrefs();
-
-  // Verify that no EUICCs exist in pref.
-  base::Value::List euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_TRUE(euicc_paths_from_prefs.empty());
-
-  // Verify that EUICCs are refreshed after the cellular device is added.
-  AddCellularDevice();
-  FastForwardProfileRefreshDelay();
-  euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_EQ(1u, euicc_paths_from_prefs.size());
-  EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
-            euicc_paths_from_prefs[0].GetString());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
-       DisableActiveESimProfile) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-  Init();
-  SetDevicePrefs();
-
-  // Add one active profile and another inactive profiles.
-  AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kActive,
-      /*activation_code=*/std::string());
-  AddProfile(
-      /*euicc_num=*/1, hermes::profile::State::kInactive,
-      /*activation_code=*/std::string());
-  std::vector<CellularESimProfile> profiles = GetESimProfiles();
-  EXPECT_EQ(2u, profiles.size());
-  EXPECT_EQ(CellularESimProfile::State::kActive, profiles[0].state());
-  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[1].state());
-  DisableActiveESimProfile();
-
-  // Now, refresh the list.
-  base::RunLoop run_loop;
-  RefreshProfileList(
-      /*euicc_num=*/1,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-            EXPECT_TRUE(inhibit_lock);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-  EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
-
-  profiles = GetESimProfiles();
-  EXPECT_EQ(2u, profiles.size());
-  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[0].state());
-  EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[1].state());
-  histogram_tester()->ExpectBucketCount(kDisableProfileResultHistogram,
-                                        HermesResponseStatus::kSuccess,
-                                        /*expected_count=*/1);
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled, NoEuicc) {
-  AddCellularDevice();
-  // No EUICCs exist, so no profiles should exist.
-  Init();
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  // Set prefs; no profiles should exist.
-  SetDevicePrefs();
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  // Unset prefs; no profiles should exist.
-  SetDevicePrefs(/*set_to_null=*/true);
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  EXPECT_EQ(0u, NumObserverEvents());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
-       EuiccWithNoProfiles) {
-  AddCellularDevice();
-  AddEuicc(/*euicc_num=*/1);
-
-  // No profiles were added to the EUICC.
-  Init();
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  // Set prefs; no profiles should exist.
-  SetDevicePrefs();
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  // Unset prefs; no profiles should exist.
-  SetDevicePrefs(/*set_to_null=*/true);
-  EXPECT_TRUE(GetESimProfiles().empty());
-
-  EXPECT_EQ(0u, NumObserverEvents());
-}
-
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
-       EuiccWithProfiles) {
+TEST_F(CellularESimProfileHandlerImplTest, EuiccWithProfiles) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
 
@@ -829,7 +408,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_EQ(2u, NumObserverEvents());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled, Persistent) {
+TEST_F(CellularESimProfileHandlerImplTest, Persistent) {
   AddCellularDevice();
   Init();
   SetDevicePrefs();
@@ -873,7 +452,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled, Persistent) {
   EXPECT_TRUE(GetESimProfiles().empty());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+TEST_F(CellularESimProfileHandlerImplTest,
        RefreshProfileList_AcquireLockInterally) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
@@ -893,7 +472,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+TEST_F(CellularESimProfileHandlerImplTest,
        RefreshProfileList_ProvideAlreadyAcquiredLock) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
@@ -917,8 +496,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
-       RefreshProfileList_Failure) {
+TEST_F(CellularESimProfileHandlerImplTest, RefreshProfileList_Failure) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
 
@@ -940,7 +518,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+TEST_F(CellularESimProfileHandlerImplTest,
        RefreshProfileList_MultipleSimultaneousRequests) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
@@ -972,7 +550,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_FALSE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+TEST_F(CellularESimProfileHandlerImplTest,
        RefreshesAutomaticallyWhenNotSeenBefore) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
@@ -998,8 +576,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_TRUE(GetLastRefreshProfilesRestoreSlotArg());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
-       IgnoresESimProfilesWithNoIccid) {
+TEST_F(CellularESimProfileHandlerImplTest, IgnoresESimProfilesWithNoIccid) {
   const char kTestIccid[] = "1245671234567";
   AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
   Init();
@@ -1030,7 +607,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_EQ(kTestIccid, esim_profiles[0].iccid());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+TEST_F(CellularESimProfileHandlerImplTest,
        SkipsAutomaticRefreshIfNoCellularDevice) {
   Init();
   AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
@@ -1049,8 +626,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
             euicc_paths_from_prefs[0].GetString());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
-       DisableActiveESimProfile) {
+TEST_F(CellularESimProfileHandlerImplTest, DisableActiveESimProfile) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   Init();
@@ -1089,8 +665,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
                                         /*expected_count=*/1);
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
-       RequestAvailableProfiles) {
+TEST_F(CellularESimProfileHandlerImplTest, RequestAvailableProfiles) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   Init();
@@ -1165,7 +740,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
                 CellularNetworkMetricsLogger::kSmdsScanProfileCount));
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+TEST_F(CellularESimProfileHandlerImplTest,
        RequestAvailableProfiles_SuccessfulDespiteHermesErrors) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
@@ -1226,7 +801,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_EQ(0u, profile_list->size());
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+TEST_F(CellularESimProfileHandlerImplTest,
        RequestAvailableProfiles_WaitForProfileProperties) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
@@ -1318,7 +893,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
                 CellularNetworkMetricsLogger::kSmdsScanProfileCount));
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+TEST_F(CellularESimProfileHandlerImplTest,
        RequestAvailableProfiles_FailToInhibit) {
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
@@ -1406,8 +981,10 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
           CellularNetworkMetricsLogger::kSmdsScanProfileCount));
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled,
-       RequestAvailableProfiles_Stork) {
+TEST_F(CellularESimProfileHandlerImplTest,
+       RequestAvailableProfiles_StorkEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kUseStorkSmdsServerAddress);
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   Init();
@@ -1461,8 +1038,10 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled,
                 CellularNetworkMetricsLogger::kSmdsScanProfileCount));
 }
 
-TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled,
-       RequestAvailableProfiles_SuccessfulDespiteHermesErrors) {
+TEST_F(CellularESimProfileHandlerImplTest,
+       RequestAvailableProfiles_SuccessfulDespiteHermesErrors_StorkEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kUseStorkSmdsServerAddress);
   AddCellularDevice();
   AddEuicc(/*euicc_num=*/1);
   Init();

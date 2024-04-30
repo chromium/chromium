@@ -6,9 +6,7 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -45,11 +43,7 @@ class FakeObserver : public ManagedCellularPrefHandler::Observer {
 
 class ManagedCellularPrefHandlerTest : public testing::Test {
  protected:
-  ManagedCellularPrefHandlerTest(
-      const std::vector<base::test::FeatureRef>& enabled_features,
-      const std::vector<base::test::FeatureRef>& disabled_features) {
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  ManagedCellularPrefHandlerTest() = default;
   ~ManagedCellularPrefHandlerTest() override = default;
 
   // testing::Test:
@@ -133,7 +127,6 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
   TestingPrefServiceSimple device_prefs_;
   FakeObserver observer_;
@@ -141,99 +134,7 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
   std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
 };
 
-class ManagedCellularPrefHandlerTestSmdsSupportDisabled
-    : public ManagedCellularPrefHandlerTest {
- public:
-  ManagedCellularPrefHandlerTestSmdsSupportDisabled(
-      const ManagedCellularPrefHandlerTestSmdsSupportDisabled&) = delete;
-  ManagedCellularPrefHandlerTestSmdsSupportDisabled& operator=(
-      const ManagedCellularPrefHandlerTestSmdsSupportDisabled&) = delete;
-
- protected:
-  ManagedCellularPrefHandlerTestSmdsSupportDisabled()
-      : ManagedCellularPrefHandlerTest(
-            /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
-  ~ManagedCellularPrefHandlerTestSmdsSupportDisabled() override = default;
-};
-
-class ManagedCellularPrefHandlerTestSmdsSupportEnabled
-    : public ManagedCellularPrefHandlerTest {
- public:
-  ManagedCellularPrefHandlerTestSmdsSupportEnabled(
-      const ManagedCellularPrefHandlerTestSmdsSupportEnabled&) = delete;
-  ManagedCellularPrefHandlerTestSmdsSupportEnabled& operator=(
-      const ManagedCellularPrefHandlerTestSmdsSupportEnabled&) = delete;
-
- protected:
-  ManagedCellularPrefHandlerTestSmdsSupportEnabled()
-      : ManagedCellularPrefHandlerTest(
-            /*enabled_features=*/{ash::features::kSmdsSupport},
-            /*disabled_features=*/{}) {}
-  ~ManagedCellularPrefHandlerTestSmdsSupportEnabled() override = default;
-};
-
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled,
-       AddRemoveIccidSmdpPair) {
-  Init();
-  SetDevicePrefs();
-
-  // Add a pair of ICCID - SMDP address pair to pref and verify that the correct
-  // value can be retrieved.
-  AddIccidSmdpPair(kIccid0, kActivationCode0);
-  EXPECT_EQ(1, NumObserverEvents());
-  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid0);
-  EXPECT_TRUE(smdp_address);
-  EXPECT_EQ(kActivationCode0, *smdp_address);
-  EXPECT_FALSE(GetSmdpAddressFromIccid(kIccid1));
-  RemovePairForIccid(kIccid0);
-  EXPECT_EQ(2, NumObserverEvents());
-  smdp_address = GetSmdpAddressFromIccid(kIccid0);
-  EXPECT_FALSE(smdp_address);
-}
-
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled, AddApnMigratedIccid) {
-  Init();
-  SetDevicePrefs();
-
-  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
-
-  // Add APN migrated ICCIDs to pref and verify that the prefs store these
-  // values.
-  AddApnMigratedIccid(kIccid0);
-  EXPECT_EQ(0, NumObserverEvents());
-  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
-  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid1));
-
-  AddApnMigratedIccid(kIccid1);
-  EXPECT_EQ(0, NumObserverEvents());
-  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid0));
-  EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
-}
-
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled, NoDevicePrefSet) {
-  Init();
-  SetDevicePrefs(/*set_to_null=*/true);
-
-  // Verify that when there's no device prefs, no SMDP address can be
-  // retrieved.
-  const std::string* smdp_address = GetSmdpAddressFromIccid(kIccid0);
-  EXPECT_FALSE(smdp_address);
-  AddIccidSmdpPair(kIccid0, kActivationCode0);
-  EXPECT_EQ(0, NumObserverEvents());
-  smdp_address = GetSmdpAddressFromIccid(kIccid0);
-  EXPECT_FALSE(smdp_address);
-
-  // Verify that when there's no device prefs, no APN migrated ICCIDs can be
-  // retrieved.
-  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
-  AddApnMigratedIccid(kIccid0);
-  EXPECT_EQ(0, NumObserverEvents());
-  EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
-}
-
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled,
-       AddAndRemoveESimMetadata) {
+TEST_F(ManagedCellularPrefHandlerTest, AddAndRemoveESimMetadata) {
   Init();
   SetDevicePrefs();
 
@@ -283,7 +184,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled,
   EXPECT_EQ(4, NumObserverEvents());
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled, AddApnMigratedIccid) {
+TEST_F(ManagedCellularPrefHandlerTest, AddApnMigratedIccid) {
   Init();
   SetDevicePrefs();
 
@@ -302,7 +203,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled, AddApnMigratedIccid) {
   EXPECT_TRUE(ContainsApnMigratedIccid(kIccid1));
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled, NoDevicePrefSet) {
+TEST_F(ManagedCellularPrefHandlerTest, NoDevicePrefSet) {
   Init();
   SetDevicePrefs(/*set_to_null=*/true);
 
@@ -331,21 +232,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled, NoDevicePrefSet) {
   EXPECT_FALSE(ContainsApnMigratedIccid(kIccid0));
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportDisabled,
-       IccidSmdpPairMigration_DisablingClearsPrefs) {
-  Init();
-
-  // Set the pref to some arbitrary value since we just want to confirm it will
-  // be cleared when the feature flag is disabled.
-  device_prefs()->Set(prefs::kManagedCellularESimMetadata,
-                      base::Value(base::Value::Dict()));
-  EXPECT_TRUE(device_prefs()->HasPrefPath(prefs::kManagedCellularESimMetadata));
-  SetDevicePrefs();
-  EXPECT_FALSE(
-      device_prefs()->HasPrefPath(prefs::kManagedCellularESimMetadata));
-}
-
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled,
+TEST_F(ManagedCellularPrefHandlerTest,
        IccidSmdpPairMigration_MigrationHappensOnce) {
   Init();
 
@@ -370,8 +257,7 @@ TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled,
   EXPECT_EQ(new_prefs, migrated_prefs);
 }
 
-TEST_F(ManagedCellularPrefHandlerTestSmdsSupportEnabled,
-       IccidSmdpPairMigration_Migration) {
+TEST_F(ManagedCellularPrefHandlerTest, IccidSmdpPairMigration_Migration) {
   Init();
 
   auto generate_esim_metadata = [](const std::string& smdp_activation_code) {

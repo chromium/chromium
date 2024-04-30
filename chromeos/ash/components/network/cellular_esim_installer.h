@@ -91,8 +91,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
 
  private:
   friend class CellularESimInstallerTest;
-  friend class CellularESimInstallerLegacyTest;
-  friend class CellularPolicyHandlerLegacyTest;
   friend class CellularPolicyHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileInvalidActivationCode);
@@ -104,18 +102,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileViaQrCodeSuccess);
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
-                           InstallProfileAlreadyConnected);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileInvalidActivationCode);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileConnectFailure);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileSuccess);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileAutoConnect);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileViaQrCodeSuccess);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
                            InstallProfileAlreadyConnected);
 
   // These values are persisted to logs. Entries should not be renumbered and

@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -28,9 +27,6 @@
 namespace ash::cellular_setup {
 
 namespace {
-
-const char kInstallViaQrCodeHistogram[] =
-    "Network.Cellular.ESim.InstallViaQrCode.Result";
 
 using InstallResultPair = std::pair<mojom::ProfileInstallResult,
                                     mojo::PendingRemote<mojom::ESimProfile>>;
@@ -69,10 +65,7 @@ mojom::ESimOperationResult RefreshInstalledProfiles(
 
 class EuiccTest : public ESimTestBase {
  public:
-  EuiccTest(const std::vector<base::test::FeatureRef>& enabled_features,
-            const std::vector<base::test::FeatureRef>& disabled_features) {
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  EuiccTest() = default;
   EuiccTest(const EuiccTest&) = delete;
   EuiccTest& operator=(const EuiccTest&) = delete;
 
@@ -146,39 +139,9 @@ class EuiccTest : public ESimTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-class EuiccTest_SmdsSupportDisabled : public EuiccTest {
- public:
-  EuiccTest_SmdsSupportDisabled(const EuiccTest_SmdsSupportDisabled&) = delete;
-  EuiccTest_SmdsSupportDisabled& operator=(
-      const EuiccTest_SmdsSupportDisabled&) = delete;
-
- protected:
-  EuiccTest_SmdsSupportDisabled()
-      : EuiccTest(
-            /*enabled_features=*/{},
-            /*disabled_features=*/{ash::features::kSmdsSupport}) {}
-  ~EuiccTest_SmdsSupportDisabled() override = default;
-};
-
-class EuiccTest_SmdsSupportEnabled : public EuiccTest {
- public:
-  EuiccTest_SmdsSupportEnabled(const EuiccTest_SmdsSupportEnabled&) = delete;
-  EuiccTest_SmdsSupportEnabled& operator=(const EuiccTest_SmdsSupportEnabled&) =
-      delete;
-
- protected:
-  EuiccTest_SmdsSupportEnabled()
-      : EuiccTest(
-            /*enabled_features=*/{ash::features::kSmdsSupport},
-            /*disabled_features=*/{}) {}
-  ~EuiccTest_SmdsSupportEnabled() override = default;
-};
-
-TEST_F(EuiccTest_SmdsSupportDisabled, GetProperties) {
+TEST_F(EuiccTest, GetProperties) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
   mojom::EuiccPropertiesPtr properties = GetEuiccProperties(euicc);
@@ -186,7 +149,7 @@ TEST_F(EuiccTest_SmdsSupportDisabled, GetProperties) {
   EXPECT_EQ(true, properties->is_active);
 }
 
-TEST_F(EuiccTest_SmdsSupportDisabled, GetProfileList) {
+TEST_F(EuiccTest, GetProfileList) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
   std::vector<mojo::PendingRemote<mojom::ESimProfile>> esim_profile_list =
@@ -209,191 +172,7 @@ TEST_F(EuiccTest_SmdsSupportDisabled, GetProfileList) {
   EXPECT_EQ(2u, esim_profile_list.size());
 }
 
-TEST_F(EuiccTest_SmdsSupportDisabled, InstallProfileFromActivationCode) {
-  base::HistogramTester histogram_tester;
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  // Verify that the callback is not completed if update profile list
-  // notification is not fired and save the callback until an update profile
-  // list gets called.
-  cellular_esim_profile_handler()->SetEnableNotifyProfileListUpdate(false);
-  InstallResultPair result_pair = InstallProfileFromActivationCode(
-      euicc, euicc_test->GenerateFakeActivationCode(),
-      /*confirmation_code=*/std::string(),
-      /*install_method=*/mojom::ProfileInstallMethod::kViaQrCodeAfterSmds,
-      /*wait_for_create=*/true,
-      /*wait_for_connect=*/false, /*fail_connect=*/false);
-  EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
-  EXPECT_TRUE(result_pair.second.is_valid());
-  histogram_tester.ExpectBucketCount(kInstallViaQrCodeHistogram,
-                                     HermesResponseStatus::kSuccess,
-                                     /*expected_count=*/1);
-
-  // Verify that install succeeds when valid activation code is passed.
-  result_pair = InstallProfileFromActivationCode(
-      euicc, euicc_test->GenerateFakeActivationCode(),
-      /*confirmation_code=*/std::string(),
-      /*install_method=*/mojom::ProfileInstallMethod::kViaQrCodeAfterSmds,
-      /*wait_for_create=*/false,
-      /*wait_for_connect=*/false, /*fail_connect=*/false);
-  EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
-  EXPECT_TRUE(result_pair.second.is_valid());
-  histogram_tester.ExpectBucketCount(kInstallViaQrCodeHistogram,
-                                     HermesResponseStatus::kSuccess,
-                                     /*expected_count=*/2);
-}
-
-TEST_F(EuiccTest_SmdsSupportDisabled, InstallProfileAlreadyConnected) {
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-
-  HermesProfileClient::Get()->GetTestInterface()->SetEnableProfileBehavior(
-      HermesProfileClient::TestInterface::EnableProfileBehavior::
-          kConnectableAndConnected);
-
-  InstallResultPair result_pair = InstallProfileFromActivationCode(
-      euicc,
-      HermesEuiccClient::Get()
-          ->GetTestInterface()
-          ->GenerateFakeActivationCode(),
-      /*confirmation_code=*/std::string(),
-      /*install_method=*/mojom::ProfileInstallMethod::kViaQrCodeAfterSmds,
-      /*wait_for_create=*/false,
-      /*wait_for_connect=*/false, /*fail_connect=*/false);
-  EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
-}
-
-TEST_F(EuiccTest_SmdsSupportDisabled, InstallPendingProfileFromActivationCode) {
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  // Verify that installing a pending profile with its activation code returns
-  // proper status code and profile object.
-  dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "",
-      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-          kAddProfileWithService);
-  base::RunLoop().RunUntilIdle();
-  HermesProfileClient::Properties* dbus_properties =
-      HermesProfileClient::Get()->GetProperties(profile_path);
-
-  // Adding a pending profile causes a list change.
-  EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
-
-  InstallResultPair result_pair = InstallProfileFromActivationCode(
-      euicc, dbus_properties->activation_code().value(),
-      /*confirmation_code=*/std::string(),
-      /*install_method=*/mojom::ProfileInstallMethod::kViaQrCodeAfterSmds,
-      /*wait_for_create=*/false,
-      /*wait_for_connect=*/true, /*fail_connect=*/false);
-  EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
-  ASSERT_TRUE(result_pair.second.is_valid());
-
-  mojo::Remote<mojom::ESimProfile> esim_profile(std::move(result_pair.second));
-  mojom::ESimProfilePropertiesPtr mojo_properties =
-      GetESimProfileProperties(esim_profile);
-  EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
-
-  // Installing a profile causes a list change.
-  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
-}
-
-TEST_F(EuiccTest_SmdsSupportDisabled, RequestPendingProfiles) {
-  static const char kOperationResultMetric[] =
-      "Network.Cellular.ESim.RequestPendingProfiles.OperationResult";
-  base::HistogramTester histogram_tester;
-
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  // Verify that pending profile request errors are return properly.
-  euicc_test->QueueHermesErrorStatus(HermesResponseStatus::kErrorNoResponse);
-  EXPECT_EQ(mojom::ESimOperationResult::kFailure,
-            RequestPendingProfiles(euicc));
-  histogram_tester.ExpectBucketCount(
-      kOperationResultMetric,
-      Euicc::RequestPendingProfilesResult::kInhibitFailed,
-      /*expected_count=*/1);
-  EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
-
-  constexpr base::TimeDelta kHermesInteractiveDelay = base::Milliseconds(3000);
-  HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
-      kHermesInteractiveDelay);
-
-  // Verify that successful request returns correct status code.
-  EXPECT_EQ(mojom::ESimOperationResult::kSuccess,
-            RequestPendingProfiles(euicc));
-
-  // Before requesting pending profiles, we request installed profiles, so we
-  // expect that there will be 2 delays (one for installed, one for pending).
-  histogram_tester.ExpectTimeBucketCount(
-      "Network.Cellular.ESim.ProfileDiscovery.Latency",
-      2 * kHermesInteractiveDelay, 1);
-  histogram_tester.ExpectTotalCount(
-      "Network.Cellular.ESim.ProfileDiscovery.Latency", 1);
-  histogram_tester.ExpectBucketCount(
-      kOperationResultMetric, Euicc::RequestPendingProfilesResult::kSuccess,
-      /*expected_count=*/0);
-}
-
-TEST_F(EuiccTest_SmdsSupportDisabled, GetEidQRCode) {
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-
-  mojom::QRCodePtr qr_code_result;
-  base::RunLoop run_loop;
-  euicc->GetEidQRCode(base::BindOnce(
-      [](mojom::QRCodePtr* out, base::OnceClosure quit_closure,
-         mojom::QRCodePtr properties) {
-        *out = std::move(properties);
-        std::move(quit_closure).Run();
-      },
-      &qr_code_result, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ASSERT_FALSE(qr_code_result.is_null());
-  EXPECT_LT(0, qr_code_result->size);
-}
-
-TEST_F(EuiccTest_SmdsSupportEnabled, GetProperties) {
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-  mojom::EuiccPropertiesPtr properties = GetEuiccProperties(euicc);
-  EXPECT_EQ(ESimTestBase::kTestEid, properties->eid);
-  EXPECT_EQ(true, properties->is_active);
-}
-
-TEST_F(EuiccTest_SmdsSupportEnabled, GetProfileList) {
-  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
-  ASSERT_TRUE(euicc.is_bound());
-  std::vector<mojo::PendingRemote<mojom::ESimProfile>> esim_profile_list =
-      GetProfileList(euicc);
-  EXPECT_EQ(0u, esim_profile_list.size());
-
-  HermesEuiccClient::TestInterface* euicc_test =
-      HermesEuiccClient::Get()->GetTestInterface();
-  dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kActive, "",
-      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-          kAddProfileWithService);
-  dbus::ObjectPath pending_profile_path = euicc_test->AddFakeCarrierProfile(
-      dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "",
-      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
-          kAddProfileWithService);
-  base::RunLoop().RunUntilIdle();
-
-  esim_profile_list = GetProfileList(euicc);
-  EXPECT_EQ(2u, esim_profile_list.size());
-}
-
-TEST_F(EuiccTest_SmdsSupportEnabled, InstallProfileFromActivationCode) {
+TEST_F(EuiccTest, InstallProfileFromActivationCode) {
   base::HistogramTester histogram_tester;
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
@@ -468,7 +247,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, InstallProfileFromActivationCode) {
   }
 }
 
-TEST_F(EuiccTest_SmdsSupportEnabled, InstallProfileAlreadyConnected) {
+TEST_F(EuiccTest, InstallProfileAlreadyConnected) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
@@ -488,7 +267,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, InstallProfileAlreadyConnected) {
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
 }
 
-TEST_F(EuiccTest_SmdsSupportEnabled, InstallPendingProfileFromActivationCode) {
+TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
@@ -525,7 +304,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, InstallPendingProfileFromActivationCode) {
   EXPECT_EQ(3u, observer()->profile_list_change_calls().size());
 }
 
-TEST_F(EuiccTest_SmdsSupportEnabled, RequestPendingProfiles) {
+TEST_F(EuiccTest, RequestPendingProfiles) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
@@ -546,7 +325,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestPendingProfiles) {
             RequestPendingProfiles(euicc));
 }
 
-TEST_F(EuiccTest_SmdsSupportEnabled, GetEidQRCode) {
+TEST_F(EuiccTest, GetEidQRCode) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
@@ -565,7 +344,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, GetEidQRCode) {
   EXPECT_LT(0, qr_code_result->size);
 }
 
-TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles) {
+TEST_F(EuiccTest, RequestAvailableProfiles) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
@@ -602,7 +381,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles) {
   }
 }
 
-TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles_FailToInhibit) {
+TEST_F(EuiccTest, RequestAvailableProfiles_FailToInhibit) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
@@ -662,7 +441,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, RequestAvailableProfiles_FailToInhibit) {
   }
 }
 
-TEST_F(EuiccTest_SmdsSupportEnabled, RefreshInstalledProfiles) {
+TEST_F(EuiccTest, RefreshInstalledProfiles) {
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 

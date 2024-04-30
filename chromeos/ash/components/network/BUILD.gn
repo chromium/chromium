@@ -328,7 +328,6 @@ source_set("unit_tests") {
   sources = [
     "auto_connect_handler_unittest.cc",
     "cellular_connection_handler_unittest.cc",
-    "cellular_esim_installer_legacy_unittest.cc",
     "cellular_esim_installer_unittest.cc",
     "cellular_esim_profile_handler_impl_unittest.cc",
     "cellular_esim_profile_unittest.cc",
@@ -336,7 +335,6 @@ source_set("unit_tests") {
     "cellular_esim_uninstall_handler_unittest.cc",
     "cellular_inhibitor_unittest.cc",
     "cellular_metrics_logger_unittest.cc",
-    "cellular_policy_handler_legacy_unittest.cc",
     "cellular_policy_handler_unittest.cc",
     "cellular_utils_unittest.cc",
     "certificate_helper_unittest.cc",

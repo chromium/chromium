@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
@@ -154,8 +153,7 @@ class CellularMetricsLoggerTest : public ::testing::Test {
     if (check_esim_feature_eligible) {
       histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 0);
     }
-    if (ash::features::IsSmdsSupportEnabled() &&
-        check_enterprise_esim_feature_eligible &&
+    if (check_enterprise_esim_feature_eligible &&
         InstallAttributes::IsInitialized() &&
         InstallAttributes::Get()->IsEnterpriseManaged()) {
       histogram_tester_->ExpectTotalCount(kEnterpriseESimFeatureUsageMetric, 0);
@@ -169,8 +167,7 @@ class CellularMetricsLoggerTest : public ::testing::Test {
               feature_usage::FeatureUsageMetrics::Event::kEligible),
           1);
     }
-    if (ash::features::IsSmdsSupportEnabled() &&
-        check_enterprise_esim_feature_eligible &&
+    if (check_enterprise_esim_feature_eligible &&
         InstallAttributes::IsInitialized() &&
         InstallAttributes::Get()->IsEnterpriseManaged()) {
       histogram_tester_->ExpectBucketCount(
@@ -350,8 +347,6 @@ class CellularMetricsLoggerTest : public ::testing::Test {
 };
 
 TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles) {
-  base::test::ScopedFeatureList feature_list;
-
   // Chrome caches eSIM profile information from Hermes so that this information
   // is available even when Hermes is not. Simulate the situation where Chrome
   // has eSIM information cached in prefs and Hermes being unavailable and
@@ -1370,8 +1365,6 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_NotEnrolled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   TestingPrefServiceSimple device_prefs;
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
@@ -1389,8 +1382,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_NotEligible) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1409,8 +1400,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_EligibleViaEuicc) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1439,8 +1428,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_Accessible) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1480,8 +1467,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_EnabledViaService) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
@@ -1502,8 +1487,6 @@ TEST_F(CellularMetricsLoggerTest,
 
 TEST_F(CellularMetricsLoggerTest,
        EnterpriseESimFeatureUsageMetrics_EnabledAndUsage) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kSmdsSupport);
 
   MarkEnterpriseEnrolled();
 
