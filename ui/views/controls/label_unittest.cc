@@ -692,6 +692,7 @@ TEST_F(LabelTest, Accessibility) {
   // screen reader announcements.
   label()->SetAccessibleName(accessible_name);
 
+  node_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(accessible_name,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
@@ -701,6 +702,7 @@ TEST_F(LabelTest, Accessibility) {
   // Changing the displayed text will not impact the non-empty accessible name.
   label()->SetText(u"Different displayed Text.");
 
+  node_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(accessible_name,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
@@ -711,6 +713,7 @@ TEST_F(LabelTest, Accessibility) {
   // verbalizing the displayed text.
   label()->SetAccessibleName(u"");
 
+  node_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(label()->GetText(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
@@ -718,6 +721,7 @@ TEST_F(LabelTest, Accessibility) {
   // If the displayed text is the source of the accessible name, and that text
   // is cleared, the accessible name should also be cleared.
   label()->SetText(u"");
+  node_data = ui::AXNodeData();
   label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(label()->GetText(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));

@@ -4115,7 +4115,7 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));
   EXPECT_EQ(test_tooltip_text, textfield_->GetAccessibleName());
   ui::AXNodeData data;
-  textfield_->GetAccessibleNodeData(&data);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   const std::string& name =
       data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
@@ -4142,7 +4142,7 @@ TEST_F(TextfieldTest, AccessibleNameFromLabel) {
   label.GetViewAccessibility().GetAccessibleNodeData(&label_data);
 
   ui::AXNodeData textfield_data;
-  textfield_->GetAccessibleNodeData(&textfield_data);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&textfield_data);
   EXPECT_EQ(
       textfield_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       label_text);
@@ -4546,7 +4546,7 @@ TEST_F(TextfieldTest, AccessiblePasswordTest) {
   textfield_->SetText(u"password");
 
   ui::AXNodeData node_data_regular;
-  textfield_->GetAccessibleNodeData(&node_data_regular);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&node_data_regular);
   EXPECT_EQ(ax::mojom::Role::kTextField, node_data_regular.role);
   EXPECT_EQ(u"password", node_data_regular.GetString16Attribute(
                              ax::mojom::StringAttribute::kValue));
@@ -4554,7 +4554,8 @@ TEST_F(TextfieldTest, AccessiblePasswordTest) {
 
   textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   ui::AXNodeData node_data_protected;
-  textfield_->GetAccessibleNodeData(&node_data_protected);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data_protected);
   EXPECT_EQ(ax::mojom::Role::kTextField, node_data_protected.role);
   EXPECT_EQ(u"••••••••", node_data_protected.GetString16Attribute(
                              ax::mojom::StringAttribute::kValue));
@@ -4565,14 +4566,14 @@ TEST_F(TextfieldTest, AccessibleRole) {
   InitTextfield();
 
   ui::AXNodeData data;
-  textfield_->GetAccessibleNodeData(&data);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kTextField);
   EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kTextField);
 
   textfield_->SetAccessibleRole(ax::mojom::Role::kSearchBox);
 
   data = ui::AXNodeData();
-  textfield_->GetAccessibleNodeData(&data);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSearchBox);
   EXPECT_EQ(textfield_->GetAccessibleRole(), ax::mojom::Role::kSearchBox);
 }

@@ -725,6 +725,7 @@ TEST_F(ViewTest, AdjustAccessibleNameStringWithRoleAlreadySet) {
 
 TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
   TestView label;
+  label.SetAccessibleRole(ax::mojom::Role::kStaticText);
   label.SetAccessibleName(u"Label's Name");
 
   TestView v;
