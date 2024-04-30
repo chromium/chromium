@@ -3,7 +3,6 @@
    "Name": "ARC VPN",
    "Type": "vpn",
    "Provider.Type": "arcvpn",
-   "ArcVpn.TunnelChrome": "true",
    "StaticIPConfig": {
       "Address": "192.168.10.6",
       "Prefixlen": 24,

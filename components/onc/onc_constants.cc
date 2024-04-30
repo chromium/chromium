@@ -500,6 +500,8 @@ const char kProviderName[] = "ProviderName";
 }  // third_party_vpn
 
 namespace arc_vpn {
+// Deprecated. Property left here for ONC backward compatibility. See
+// b/185202698 for details.
 const char kTunnelChrome[] = "TunnelChrome";
 }  // namespace arc_vpn
 

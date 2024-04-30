@@ -181,6 +181,8 @@ const OncFieldSignature third_party_vpn_fields[] = {
 
 const OncFieldSignature arc_vpn_fields[] = {
     {::onc::kRecommended, &kRecommendedSignature},
+    // Deprecated. Keeping the signature for ONC backward compatibility. See
+    // b/185202698 for details.
     {::onc::arc_vpn::kTunnelChrome, &kStringSignature},
     {nullptr}};
 

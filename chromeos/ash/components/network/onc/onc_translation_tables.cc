@@ -142,9 +142,7 @@ const FieldTranslationEntry wireguard_peer_fields[] = {
      shill::kWireGuardPeerPersistentKeepalive},
     {nullptr}};
 
-const FieldTranslationEntry arc_vpn_fields[] = {
-    {::onc::arc_vpn::kTunnelChrome, shill::kArcVpnTunnelChromeProperty},
-    {nullptr}};
+const FieldTranslationEntry arc_vpn_fields[] = {{nullptr}};
 
 const FieldTranslationEntry verify_x509_fields[] = {
     {::onc::verify_x509::kName, shill::kOpenVPNVerifyX509NameProperty},

@@ -1080,10 +1080,7 @@ bool Validator::ValidateThirdPartyVPN(base::Value::Dict* result) {
 }
 
 bool Validator::ValidateARCVPN(base::Value::Dict* result) {
-  const bool all_required_exist =
-      RequireField(*result, ::onc::arc_vpn::kTunnelChrome);
-
-  return !error_on_missing_field_ || all_required_exist;
+  return true;
 }
 
 bool Validator::ValidateVerifyX509(base::Value::Dict* result) {

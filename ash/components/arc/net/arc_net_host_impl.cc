@@ -783,8 +783,6 @@ base::Value::Dict ArcNetHostImpl::TranslateVpnConfigurationToOnc(
 
   // ARCVPN dictionary
   base::Value::Dict arcvpn_dict;
-  arcvpn_dict.Set(onc::arc_vpn::kTunnelChrome,
-                  cfg.tunnel_chrome_traffic ? "true" : "false");
   vpn_dict.Set(onc::vpn::kArcVpn, std::move(arcvpn_dict));
 
   top_dict.Set(onc::network_config::kVPN, std::move(vpn_dict));
