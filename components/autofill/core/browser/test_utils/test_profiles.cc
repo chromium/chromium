@@ -46,8 +46,8 @@ void SetProfileObservedTestValues(AutofillProfile* profile,
   SetProfileTestValues(profile, observed_test_data, finalize);
 }
 
-AutofillProfile StandardProfile() {
-  AutofillProfile profile(AddressCountryCode("US"));
+AutofillProfile StandardProfile(AddressCountryCode country_code) {
+  AutofillProfile profile(country_code);
   const std::vector<ProfileTestData> observed_profile_test_data = {
       {NAME_FULL, "Pablo Diego de la Ruiz y Picasso",
        VerificationStatus::kUserVerified},

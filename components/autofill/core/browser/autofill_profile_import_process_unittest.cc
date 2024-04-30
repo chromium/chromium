@@ -209,12 +209,14 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile) {
 // duplicate profile import.
 // Regression test for crbug.com/1376937.
 TEST_F(AutofillProfileImportProcessTest, IncorrectlyComplementedCountry) {
-  AutofillProfile profile = test::StandardProfile();
-  EXPECT_EQ(u"US", profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  AutofillProfile profile = test::StandardProfile(AddressCountryCode("ES"));
+  EXPECT_EQ(u"ES", profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
   personal_data_manager_.AddProfile(profile);
 
-  // Suppose the country was incorrectly complemented to "DE".
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  // Suppose the country was incorrectly complemented to "ZA". Note that the
+  // selected country must share the same address model with the existing
+  // profile to be considered mergeable.
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"ZA");
 
   // Test that the import is correctly classified as a duplicate.
   ProfileImportProcess import_data(

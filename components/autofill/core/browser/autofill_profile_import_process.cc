@@ -29,7 +29,8 @@ using UserDecision = AutofillClient::AddressPromptUserDecision;
 // country of `profile` was guessed incorrectly. It does so by checking whether
 // any of the `existing_profiles` becomes mergeable after removing the country
 // of `profile`.
-// Comparisons are done using `comparator`.
+// Comparisons are done using `comparator`. Note that for two countries to be
+// mergeable, they must share the same address model.
 bool ShouldCountryApproximationBeRemoved(
     const AutofillProfile& profile,
     const std::vector<AutofillProfile*>& existing_profiles,
