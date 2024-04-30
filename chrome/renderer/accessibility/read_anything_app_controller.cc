@@ -711,6 +711,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
+      .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
       .SetProperty("isAutoVoiceSwitchingEnabled",
                    &ReadAnythingAppController::IsAutoVoiceSwitchingEnabled)
       .SetProperty(
@@ -1163,6 +1164,14 @@ bool ReadAnythingAppController::IsWebUIToolbarEnabled() const {
 
 bool ReadAnythingAppController::IsReadAloudEnabled() const {
   return features::IsReadAnythingReadAloudEnabled();
+}
+
+bool ReadAnythingAppController::IsChromeOsAsh() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else
+  return false;
+#endif
 }
 
 bool ReadAnythingAppController::IsAutoVoiceSwitchingEnabled() const {

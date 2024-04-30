@@ -907,6 +907,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         availableVoices =
             availableVoices.filter(({localService}) => localService);
       }
+      // Filter out Android voices on ChromeOS. Android Speech Recognition
+      // voices are technically network voices, but for some reason, some
+      // voices are marked as localService voices, so filtering localService
+      // doesn't filter them out. Since they can cause unexpected behavior
+      // in Read Aloud, go ahead and filter them out. To avoid causing any
+      // unexpected behavior outside of ChromeOS, just filter them on ChromeOS.
+      if (chrome.readingMode.isChromeOsAsh) {
+        availableVoices = availableVoices.filter(
+            ({name}) => !name.toLowerCase().includes('android'));
+      }
       this.availableVoices = availableVoices;
       this.availableLangs = [...new Set(availableVoices.map(({lang}) => lang))];
 
