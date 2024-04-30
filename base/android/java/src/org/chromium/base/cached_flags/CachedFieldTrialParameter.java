@@ -14,6 +14,7 @@ import org.chromium.build.annotations.CheckDiscard;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,12 +48,23 @@ public abstract class CachedFieldTrialParameter {
     private final String mFeatureName;
     private final String mParameterName;
     private final @FieldTrialParameterType int mType;
+    private static HashMap<String, CachedFieldTrialParameter> sParamsCreatedForTesting =
+            new HashMap<>();
 
     CachedFieldTrialParameter(
             FeatureMap featureMap,
             String featureName,
             String parameterName,
             @FieldTrialParameterType int type) {
+        if (BuildConfig.IS_FOR_TEST) {
+            String combinedName = featureName + ":" + parameterName;
+            CachedFieldTrialParameter previous = sParamsCreatedForTesting.put(combinedName, this);
+            assert previous == null
+                    : String.format(
+                            "Feature '%s' has a duplicate parameter: '%s'",
+                            featureName, parameterName);
+        }
+
         mFeatureMap = featureMap;
         mFeatureName = featureName;
         // parameterName does not apply to ALL (because it includes all parameters).
