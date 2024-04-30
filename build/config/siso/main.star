@@ -259,6 +259,15 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/content/browser/browser/storage_partition_impl.o",
         "./obj/third_party/blink/renderer/core/core/local_frame_view.o",
         "./obj/third_party/blink/renderer/core/core_hot/document.o",
+        # Fallback happens with the following args.gn
+        # (android-build-perf-developer)
+        # is_component_build = true
+        # is_debug = true
+        # symbol_level = 2
+        # target_cpu = "arm64"
+        # target_os = "android"
+        # use_siso = true
+        "./obj/third_party/sentencepiece/sentencepiece/unicode_script.o",
     ]
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
