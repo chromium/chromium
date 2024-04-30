@@ -598,6 +598,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
             ->GetActiveWebContents()
             ->GetPrimaryMainFrame());
     model_->relying_party_id = "example.com";
+    model_->account_name = "example@gmail.com";
     controller_ =
         std::make_unique<AuthenticatorRequestDialogController>(model_.get());
 
@@ -630,6 +631,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
         device::AuthenticatorType::kPhone, "example.com", {4},
         device::PublicKeyCredentialUserEntity({2}, "elisa.beckett@ink-42.com",
                                               "Elisa Beckett"));
+    model_->user_entity = local_cred1.user;
 
     // Configure a phone from sync.
     std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
@@ -727,7 +729,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
     } else if (name == "touchid") {
-      model_->user_entity = local_cred1.user;
       transport_availability.request_type =
           device::FidoRequestType::kMakeCredential;
       transport_availability.make_credential_attachment =

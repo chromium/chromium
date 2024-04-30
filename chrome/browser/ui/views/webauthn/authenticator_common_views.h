@@ -29,7 +29,7 @@ std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
 // +---------------------+
 // | <icon>      label   |
 // +---------------------+
-std::unique_ptr<views::View> CreateIconWithLabelRow(
+std::unique_ptr<views::View> CreatePasskeyIconWithLabelRow(
     const gfx::VectorIcon& icon,
     const std::u16string& label);
 

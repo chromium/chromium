@@ -1927,13 +1927,14 @@ AuthenticatorTrustThisComputerAssertionSheetModel::
 
 std::u16string AuthenticatorTrustThisComputerAssertionSheetModel::GetStepTitle()
     const {
-  return u"To use this passkey, verify it's you (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(
+      IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_ASSERTION_TITLE);
 }
 
 std::u16string
 AuthenticatorTrustThisComputerAssertionSheetModel::GetStepDescription() const {
-  return u"You'll only have to do this once. You can use all of your passkey "
-         u"saved to Google Password Manager on this device. (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(
+      IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_ASSERTION_DESC);
 }
 
 bool AuthenticatorTrustThisComputerAssertionSheetModel::IsCancelButtonVisible()
@@ -1944,7 +1945,7 @@ bool AuthenticatorTrustThisComputerAssertionSheetModel::IsCancelButtonVisible()
 std::u16string
 AuthenticatorTrustThisComputerAssertionSheetModel::GetCancelButtonLabel()
     const {
-  return u"Not now (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
 }
 
 void AuthenticatorTrustThisComputerAssertionSheetModel::OnCancel() {
@@ -1964,7 +1965,7 @@ bool AuthenticatorTrustThisComputerAssertionSheetModel::IsAcceptButtonVisible()
 std::u16string
 AuthenticatorTrustThisComputerAssertionSheetModel::GetAcceptButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_NEXT);
 }
 
 void AuthenticatorTrustThisComputerAssertionSheetModel::OnAccept() {
@@ -1986,13 +1987,15 @@ AuthenticatorCreateGpmPasskeySheetModel::
     ~AuthenticatorCreateGpmPasskeySheetModel() = default;
 
 std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetStepTitle() const {
-  return u"Create a passkey for example.com (UNTRANSLATED)";
+  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE,
+                                    GetRelyingPartyIdString(dialog_model()));
 }
 
 std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetStepDescription()
     const {
-  return u"You can use this passkey on any device. It will be saved to Google "
-         u"Password Manager for username@gmail.com. (UNTRANSLATED)";
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_GPM_CREATE_PASSKEY_DESC,
+      base::UTF8ToUTF16(dialog_model()->account_name));
 }
 
 bool AuthenticatorCreateGpmPasskeySheetModel::IsCancelButtonVisible() const {
@@ -2006,7 +2009,7 @@ std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetCancelButtonLabel()
 
 std::u16string
 AuthenticatorCreateGpmPasskeySheetModel::GetOtherMechanismButtonLabel() const {
-  return u"Save another way (UT)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_SAVE_ANOTHER_WAY);
 }
 
 void AuthenticatorCreateGpmPasskeySheetModel::OnCancel() {
@@ -2023,7 +2026,7 @@ bool AuthenticatorCreateGpmPasskeySheetModel::IsAcceptButtonVisible() const {
 
 std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetAcceptButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CREATE);
 }
 
 void AuthenticatorCreateGpmPasskeySheetModel::OnAccept() {
@@ -2044,13 +2047,14 @@ AuthenticatorGpmOnboardingSheetModel::~AuthenticatorGpmOnboardingSheetModel() =
     default;
 
 std::u16string AuthenticatorGpmOnboardingSheetModel::GetStepTitle() const {
-  return u"Start saving passkeys to Google Password Manager (UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_START_SAVING_TITLE);
 }
 
 std::u16string AuthenticatorGpmOnboardingSheetModel::GetStepDescription()
     const {
-  return u"This passkey will be saved to Google Password Manager for "
-         u"username@gmail.com. Learn more about passkeys. (UNTRANSLATED)";
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_GPM_START_SAVING_DESC,
+      base::UTF8ToUTF16(dialog_model()->account_name));
 }
 
 bool AuthenticatorGpmOnboardingSheetModel::IsCancelButtonVisible() const {
@@ -2064,7 +2068,7 @@ std::u16string AuthenticatorGpmOnboardingSheetModel::GetCancelButtonLabel()
 
 std::u16string
 AuthenticatorGpmOnboardingSheetModel::GetOtherMechanismButtonLabel() const {
-  return u"Save another way (UT)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_SAVE_ANOTHER_WAY);
 }
 
 void AuthenticatorGpmOnboardingSheetModel::OnCancel() {
@@ -2081,7 +2085,7 @@ bool AuthenticatorGpmOnboardingSheetModel::IsAcceptButtonVisible() const {
 
 std::u16string AuthenticatorGpmOnboardingSheetModel::GetAcceptButtonLabel()
     const {
-  return u"Get started (UT)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CREATE_PASSKEY);
 }
 
 void AuthenticatorGpmOnboardingSheetModel::OnAccept() {
@@ -2104,14 +2108,15 @@ AuthenticatorTrustThisComputerCreationSheetModel::
 
 std::u16string AuthenticatorTrustThisComputerCreationSheetModel::GetStepTitle()
     const {
-  return u"To save this passkey to Google Password Manager, verify it's you "
-         u"(UNTRANSLATED)";
+  return l10n_util::GetStringUTF16(
+      IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_CREATION_TITLE);
 }
 
 std::u16string
 AuthenticatorTrustThisComputerCreationSheetModel::GetStepDescription() const {
-  return u"You'll only have to do this once. Your passkey will be saved to "
-         u"Google Password Manager for username@gmail.com. (UNTRANSLATED)";
+  return l10n_util::GetStringFUTF16(
+      IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_CREATION_DESC,
+      base::UTF8ToUTF16(dialog_model()->account_name));
 }
 
 bool AuthenticatorTrustThisComputerCreationSheetModel::IsCancelButtonVisible()
@@ -2146,7 +2151,7 @@ AuthenticatorTrustThisComputerCreationSheetModel::GetAcceptButtonLabel() const {
 std::u16string
 AuthenticatorTrustThisComputerCreationSheetModel::GetOtherMechanismButtonLabel()
     const {
-  return u"Save another way (UT)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_SAVE_ANOTHER_WAY);
 }
 
 void AuthenticatorTrustThisComputerCreationSheetModel::OnAccept() {

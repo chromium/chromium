@@ -223,7 +223,7 @@ class AuthenticatorRequestBubbleDelegate
               .Build());
     }
     if (step_ == AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved) {
-      AddChildView(CreateIconWithLabelRow(
+      AddChildView(CreatePasskeyIconWithLabelRow(
           vector_icons::kPasskeyIcon,
           base::UTF8ToUTF16(model_->user_entity.name.value_or(""))));
     }

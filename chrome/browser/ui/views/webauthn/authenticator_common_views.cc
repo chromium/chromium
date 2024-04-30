@@ -18,7 +18,8 @@
 
 namespace {
 constexpr int kGapSize = 8;
-constexpr int kIconSize = 20;
+constexpr int kSmallIconSize = 20;
+constexpr int kMediumIconSize = 26;
 constexpr int kHorizontalInset = 8;
 constexpr int kHorizontalSpacing = 16;
 }  // namespace
@@ -31,7 +32,7 @@ std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
   container->SetBetweenChildSpacing(kHorizontalSpacing);
   container->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kPasskeyIcon, ui::kColorIcon, kIconSize)));
+          vector_icons::kPasskeyIcon, ui::kColorIcon, kMediumIconSize)));
 
   auto username_column = std::make_unique<views::BoxLayoutView>();
   username_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
@@ -50,7 +51,7 @@ std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
   return std::move(container);
 }
 
-std::unique_ptr<views::View> CreateIconWithLabelRow(
+std::unique_ptr<views::View> CreatePasskeyIconWithLabelRow(
     const gfx::VectorIcon& icon,
     const std::u16string& label) {
   auto row = std::make_unique<views::BoxLayoutView>();
@@ -58,7 +59,7 @@ std::unique_ptr<views::View> CreateIconWithLabelRow(
   row->SetBetweenChildSpacing(kGapSize);
 
   row->AddChildView(std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconSize)));
+      ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kSmallIconSize)));
   row->AddChildView(std::make_unique<views::Label>(
       label, views::style::CONTEXT_DIALOG_BODY_TEXT));
   return row;

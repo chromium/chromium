@@ -838,7 +838,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   if (is_enclave_authenticator_available && !IsVirtualEnvironmentEnabled()) {
     auto* const identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    const auto consent = signin::ConsentLevel::kSignin;
+    if (identity_manager->HasPrimaryAccount(consent)) {
+      dialog_model_->account_name =
+          identity_manager->GetPrimaryAccountInfo(consent).email;
       enclave_controller_ = std::make_unique<GPMEnclaveController>(
           GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
           user_verification_requirement);

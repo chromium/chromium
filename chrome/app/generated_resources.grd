@@ -16016,6 +16016,53 @@ Please help our engineers fix this problem. Tell us what happened right before y
         From "<ph name="PHONE_NAME">$1<ex>Pixel 7</ex></ph>"
       </message>
 
+      <!-- WebAuthn GPM desktop passkeys -->
+      <message name="IDS_WEBAUTHN_CREATE" desc="Text link that appears on a button to create a passkey.">
+        Create
+      </message>
+      <message name="IDS_WEBAUTHN_CREATE_PASSKEY" desc="Text link that appears on a button to create a passkey. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        Create passkey
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. 'To sign in to' means to sign in to the site or app they are creating a passkey for. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        Create a passkey to sign in to <ph name="APP_NAME">$1<ex>example.com</ex></ph>?
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_CREATE_PASSKEY_DESC" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. The first sentence means they can sign in to the site faster on any device. The second sentence tells users that the passkey will be saved to Google Password Manager for the Google email address they are using. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        You can use this passkey to sign in faster across your devices. It will be saved to Google Password Manager for <ph name="ACCOUNT_NAME">$1<ex>example@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_WEBAUTHN_SAVE_ANOTHER_WAY" desc="Text link that appears on a button to save the passkey another way. For example, in their iCloud Keychain account or by using Windows Hello.">
+        Save another way
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_START_SAVING_TITLE" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website for the first time. It means the user can start saving passkeys with Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        Start saving passkeys with Google Password Manager
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_START_SAVING_DESC" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means that the passkey will be saved to Google Password Manager for the Google email address they are using. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        This passkey will be saved to Google Password Manager for <ph name="ACCOUNT_NAME">$1<ex>example@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_AVAILABLE_ACROSS_DEVICES" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means passkeys are available on all of the user’s devices.">
+        Available across your devices
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_FASTER_SIGN_IN" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means passkeys are a faster and encrypted way to sign in.">
+        Faster, encrypted sign-in
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_SAFER" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means passkeys are safer to use than a password.">
+        Safer than a password
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_CREATION_TITLE" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means that before the user can create the passkey, they need to verify their identity by, e.g., entering their Google Password Manager PIN or the lockscreen of a phone they own. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        To create this passkey with Google Password Manager, verify it's you
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_CREATION_DESC" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means that the passkey will be saved to Google Password Manager for the Google email address they are using. The second sentence means they only have to verify their identity once by, e.g., entering their Google Password Manager PIN or the lockscreen of a phone they own. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        Your passkey will be saved to Google Password Manager for <ph name="ACCOUNT_NAME">$1<ex>example@gmail.com</ex></ph>. You’ll only have to do this once.
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_ASSERTION_TITLE" desc="This string appears in a dialog users see after they use a sign-in method called a passkey. It means that before the user can create the passkey, they need to verify their identity. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        To use your passkeys on this device, verify it's you
+      </message>
+      <message name="IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_ASSERTION_DESC" desc="This string appears in a dialog users see after they use a sign-in method called a passkey. It means that the user can allow this device to access all of their passkeys saved in Google Password Manager on this device. The second sentence means they only have to verify their identity once. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
+        You can use all of your passkeys saved to Google Password Manager on this device. You'll only have to do this once.
+      </message>
+      <message name="IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE" desc="Text link that appears on a button that allows the user to sign in using a different device.">
+        Use a different device
+      </message>
+
       <!-- Side Search -->
       <message name="IDS_ACCNAME_SIDE_SEARCH_TOOL" desc="The accessible name for the side search tool.">
         Side Search

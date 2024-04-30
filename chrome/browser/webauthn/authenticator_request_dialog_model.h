@@ -50,7 +50,7 @@ class RenderFrameHost;
 namespace device {
 class AuthenticatorGetAssertionResponse;
 class DiscoverableCredentialMetadata;
-}
+}  // namespace device
 
 namespace gfx {
 struct VectorIcon;
@@ -496,6 +496,9 @@ struct AuthenticatorRequestDialogModel {
   // a notification.
   std::optional<std::string> selected_phone_name;
 
+  // The name of the current GPM account, or else empty. E.g.
+  // "example@gmail.com".
+  std::string account_name;
   // Records the error during GPM pin entry / creation, if any.
   GpmPinError gpm_pin_error = GpmPinError::kNone;
 
