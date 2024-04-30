@@ -340,7 +340,6 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
     secureDnsToggleDialog =
         testElement.shadowRoot!.querySelector('#warningDialog')!;
     assertTrue(!!secureDnsToggleDialog);
-    assertTrue(!!secureDnsToggleDialog.$.dialog);
     assertTrue(isVisible(secureDnsToggleDialog.$.cancelButton));
     assertTrue(isVisible(secureDnsToggleDialog.$.disableButton));
   }

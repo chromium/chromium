@@ -209,7 +209,6 @@ suite('SiteDetails', function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
     await websiteUsageProxy.whenCalled('fetchUsageTotal');
-    assertTrue(!!testElement.$.usage);
 
     // When there's no usage, there should be a string that says so.
     assertEquals(

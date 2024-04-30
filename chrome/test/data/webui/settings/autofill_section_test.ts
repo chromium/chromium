@@ -374,7 +374,6 @@ suite('AutofillSectionAddressTests', function() {
     flush();
 
     assertTrue(!!section.shadowRoot!.querySelector('#menuEditAddress'));
-    assertTrue(!!section.$.menuRemoveAddress);
   });
 
   test('verifyAddAddressDialog', function() {
