@@ -98,6 +98,7 @@ if (is_android) {
 
   robolectric_library("junit") {
     sources = [
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/LocalTabGroupMutationHelperUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserverUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTrackerUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelperUnitTest.java",
