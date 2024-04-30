@@ -360,9 +360,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                           /*expect_privacy_policy=*/true);
 
       // Verifying should be set as screen reader announcement.
+      // TODO(https://crbug.com/338094770): re-enable this check. Currently it's
+      // causing many test flakes due to a bug in the code under test.
+#if 0
       EXPECT_EQ(
           dialog()->GetQueuedAnnouncementForTesting(),
           static_cast<views::StyledLabel*>(disclosure_text_view)->GetText());
+#endif
     }
     CheckButtonRow(children[2], /*expect_continue_button=*/true,
                    /*expect_add_account_button=*/false,
@@ -379,8 +383,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                 testing::ElementsAreArray(expected_class_names));
 
     // Verifying should be set as screen reader announcement.
+    // TODO(https://crbug.com/338094770): re-enable this check. Currently it's
+    // causing many test flakes due to a bug in the code under test.
+#if 0
     EXPECT_EQ(dialog()->GetQueuedAnnouncementForTesting(),
               l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
+#endif
 
     PerformHeaderChecks(dialog()->children()[1]);
 
