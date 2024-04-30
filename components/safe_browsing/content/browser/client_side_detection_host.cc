@@ -620,6 +620,9 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   std::string request_type_name = GetRequestTypeName(request_type);
 
   UmaHistogramMediumTimes(
+      "SBClientPhishing.PhishingDetectionDuration",
+      base::TimeTicks::Now() - phishing_detection_start_time_);
+  UmaHistogramMediumTimes(
       "SBClientPhishing.PhishingDetectionDuration." + request_type_name,
       base::TimeTicks::Now() - phishing_detection_start_time_);
   base::UmaHistogramEnumeration("SBClientPhishing.PhishingDetectorResult",

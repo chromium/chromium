@@ -745,7 +745,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.PhishingDetectionDuration.{RequestType}"
+<histogram name="SBClientPhishing.PhishingDetectionDuration{RequestType}"
     units="ms" expires_after="2024-09-22">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -754,30 +754,18 @@ chromium-metrics-reviews@google.com.
     by {RequestType} to finish.
   </summary>
   <token key="RequestType">
-    <variant name="ForceRequest" summary="Force request"/>
-    <variant name="KeyboardLockRequested" summary="Keyboard lock requested"/>
-    <variant name="NotificationPermissionPrompt"
+    <variant name="" summary="all request types"/>
+    <variant name=".ForceRequest" summary="Force request"/>
+    <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
+    <variant name=".NotificationPermissionPrompt"
         summary="Notification permission prompt"/>
-    <variant name="PointerLockRequested" summary="Pointer lock requested"/>
-    <variant name="TriggerModel" summary="Trigger model"/>
-    <variant name="Unknown" summary="Unknown"/>
+    <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
+    <variant name=".TriggerModel" summary="Trigger model"/>
+    <variant name=".Unknown" summary="Unknown"/>
   </token>
 </histogram>
 
-<histogram name="SBClientPhishing.PhishingDetectorResult"
-    enum="ClientSidePhishingResult" expires_after="2024-09-01">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The result enum received from the renderer-side classifier. This is recorded
-    after every renderer classification (roughly every page load not on the
-    allowlist).
-
-    This metric is used to populate a dashboard on go/crsb-site.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.PhishingDetectorResult.{RequestType}"
+<histogram name="SBClientPhishing.PhishingDetectorResult{RequestType}"
     enum="ClientSidePhishingResult" expires_after="2025-02-14">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -790,13 +778,14 @@ chromium-metrics-reviews@google.com.
     This metric is used to populate a dashboard on go/crsb-site.
   </summary>
   <token key="RequestType">
-    <variant name="ForceRequest" summary="Force request"/>
-    <variant name="KeyboardLockRequested" summary="Keyboard lock requested"/>
-    <variant name="NotificationPermissionPrompt"
+    <variant name="" summary="all request types"/>
+    <variant name=".ForceRequest" summary="Force request"/>
+    <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
+    <variant name=".NotificationPermissionPrompt"
         summary="Notification permission prompt"/>
-    <variant name="PointerLockRequested" summary="Pointer lock requested"/>
-    <variant name="TriggerModel" summary="Trigger model"/>
-    <variant name="Unknown" summary="Unknown"/>
+    <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
+    <variant name=".TriggerModel" summary="Trigger model"/>
+    <variant name=".Unknown" summary="Unknown"/>
   </token>
 </histogram>
 
