@@ -37,7 +37,6 @@ constexpr CGFloat kHeaderImageBackgroundTopMarginPercentage = 0.1;
 constexpr CGFloat kHeaderImageBackgroundBottomMargin = 34;
 constexpr CGFloat kTitleHorizontalMargin = 18;
 constexpr CGFloat kTitleNoHeaderTopMargin = 56;
-constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kExtraTallBannerMultiplier = 0.5;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
@@ -462,10 +461,10 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                        constant:-kPromoStyleDefaultMargin],
     [_actionButtonsStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:view.bottomAnchor
-                                 constant:-kActionsBottomMargin * 2],
+                                 constant:-kActionsBottomMarginWithoutSafeArea],
     [_actionButtonsStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
-                                 constant:-kActionsBottomMargin],
+                                 constant:-kActionsBottomMarginWithSafeArea],
   ];
   [NSLayoutConstraint activateConstraints:_buttonsVerticalAnchorConstraints];
 
@@ -1204,7 +1203,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
                                       : -kPromoStyleDefaultMargin],
       [_actionButtonsStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                   constant:-kActionsBottomMargin],
+                                   constant:-kActionsBottomMarginWithSafeArea],
       [_actionButtonsStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                                 .bottomAnchor],

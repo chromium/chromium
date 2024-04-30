@@ -39,5 +39,9 @@ extern NSString* const kPromoStyleScrollViewAccessibilityIdentifier;
 
 // Default margin for the promo view controller.
 extern const CGFloat kPromoStyleDefaultMargin;
+// Margin below action buttons in the FRE, when the screen has a safe area.
+extern const CGFloat kActionsBottomMarginWithSafeArea;
+// Margin below action buttons in the FRE, when the screen has no a safe area.
+extern const CGFloat kActionsBottomMarginWithoutSafeArea;
 
 #endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_CONSTANTS_H_

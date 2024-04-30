@@ -28,3 +28,6 @@ NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
     @"PromoStyleScrollViewAccessibilityIdentifier";
 
 const CGFloat kPromoStyleDefaultMargin = 16.;
+const CGFloat kActionsBottomMarginWithSafeArea = 10.;
+const CGFloat kActionsBottomMarginWithoutSafeArea =
+    kActionsBottomMarginWithSafeArea * 2;

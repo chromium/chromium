@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/snippet_search_engine_button.h"
 #import "ios/chrome/browser/ui/search_engine_choice/snippet_search_engine_element.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -45,14 +46,6 @@ constexpr CGFloat kSubtitleSearchEngineStackMargin = 20.;
 // both containers have the same size. Having the same size is required to have
 // a smooth transition from inline to floating SetAsDefault button.
 constexpr CGFloat kSetAsDefaultButtonTopMargin = 16.;
-// Margin below the floating "Set as Default" button on tablets. On phones there
-// is no margin.
-// This margin needs to be used for inline and floating buttons, to make sure
-// both containers have the same size. Having the same size is required to have
-// a smooth transition from inline to floating SetAsDefault button.
-constexpr CGFloat kSetAsDefaultButtonBottomMarginTablets = 16.;
-// Margin below the pill button on tablets. On phones there is no margin.
-constexpr CGFloat kMorePillButtonBottomMarginTablets = 34.;
 // Corner radius for the "More" pill button.
 constexpr CGFloat kMorePillButtonCornerRadius = 25.;
 // Horizontal padding for the "More" pill button.
@@ -252,7 +245,7 @@ UIButton* CreateMorePillButton() {
   _scrollView.accessibilityIdentifier = kSearchEngineChoiceScrollViewIdentifier;
   _scrollView.delegate = self;
   _scrollView.contentInsetAdjustmentBehavior =
-      UIScrollViewContentInsetAdjustmentAlways;
+      UIScrollViewContentInsetAdjustmentNever;
   [_scrollView addSubview:scrollContentView];
 
   // Add logo image.
@@ -385,11 +378,17 @@ UIButton* CreateMorePillButton() {
   // Create a layout guide to constrain the width of the content, while still
   // allowing the scroll view to take the full screen width.
   UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
+  // This is the layout guide to compute the bottom margin of the "Set as
+  // Default" button.
+  UILayoutGuide* buttonBottomMargin = [[UILayoutGuide alloc] init];
+  [view addLayoutGuide:buttonBottomMargin];
+  // This layout guide is to map `buttonBottomMargin` height into the inline
+  // "Set as Default" button container.
+  UILayoutGuide* inlineContainerButtonBottomMargin =
+      [[UILayoutGuide alloc] init];
+  [_inlineSetAsDefaultButtonContainer
+      addLayoutGuide:inlineContainerButtonBottomMargin];
 
-  const BOOL tabletFactor =
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-  const CGFloat setAsDefaultButtonBottomMargin =
-      tabletFactor ? kSetAsDefaultButtonBottomMarginTablets : 0.;
   [NSLayoutConstraint activateConstraints:@[
     // Scroll view constraints. It needs to be the full size of the view,
     // so the content is visible in the safe area too.
@@ -412,8 +411,9 @@ UIButton* CreateMorePillButton() {
         constraintEqualToAnchor:widthLayoutGuide.widthAnchor],
 
     // Logo constraints.
-    [logoImageView.topAnchor constraintEqualToAnchor:scrollContentView.topAnchor
-                                            constant:kLogoTopMargin],
+    [logoImageView.topAnchor
+        constraintEqualToAnchor:scrollContentView.safeAreaLayoutGuide.topAnchor
+                       constant:kLogoTopMargin],
     [logoImageView.heightAnchor constraintEqualToConstant:kLogoSize],
     [logoImageView.centerXAnchor
         constraintEqualToAnchor:scrollContentView.centerXAnchor],
@@ -444,6 +444,15 @@ UIButton* CreateMorePillButton() {
     [_searchEngineStackView.trailingAnchor
         constraintEqualToAnchor:scrollContentView.trailingAnchor],
 
+    // Button bottom margin constraints.
+    [buttonBottomMargin.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+    [buttonBottomMargin.topAnchor
+        constraintLessThanOrEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
+                                 constant:-kActionsBottomMarginWithSafeArea],
+    [buttonBottomMargin.topAnchor
+        constraintLessThanOrEqualToAnchor:view.bottomAnchor
+                                 constant:-kActionsBottomMarginWithoutSafeArea],
+
     // _inlineSetAsDefaultButtonContainer constraints.
     [_inlineSetAsDefaultButtonContainer.topAnchor
         constraintGreaterThanOrEqualToAnchor:_searchEngineStackView
@@ -455,13 +464,22 @@ UIButton* CreateMorePillButton() {
     [_inlineSetAsDefaultButtonContainer.bottomAnchor
         constraintEqualToAnchor:scrollContentView.bottomAnchor],
 
+    // inlineContainerButtonBottomMargin constraints.
+    [inlineContainerButtonBottomMargin.bottomAnchor
+        constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer
+                                    .bottomAnchor],
+    [inlineContainerButtonBottomMargin.heightAnchor
+        constraintEqualToAnchor:buttonBottomMargin.heightAnchor],
+
     // _inlineSetAsDefaultButton constraints.
     [_inlineSetAsDefaultButton.topAnchor
         constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer.topAnchor
                        constant:kSetAsDefaultButtonTopMargin],
     [_inlineSetAsDefaultButton.bottomAnchor
-        constraintEqualToAnchor:_inlineSetAsDefaultButtonContainer.bottomAnchor
-                       constant:-setAsDefaultButtonBottomMargin],
+        constraintEqualToAnchor:inlineContainerButtonBottomMargin.topAnchor],
+    [_inlineSetAsDefaultButton.bottomAnchor
+        constraintLessThanOrEqualToAnchor:_inlineSetAsDefaultButtonContainer
+                                              .bottomAnchor],
     [_inlineSetAsDefaultButton.widthAnchor
         constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
     [_inlineSetAsDefaultButton.centerXAnchor
@@ -469,10 +487,7 @@ UIButton* CreateMorePillButton() {
 
     // More pill button constraints.
     [_morePillButton.bottomAnchor
-        constraintEqualToAnchor:view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-(tabletFactor
-                                      ? kMorePillButtonBottomMarginTablets
-                                      : 0.)],
+        constraintEqualToAnchor:buttonBottomMargin.topAnchor],
     [_morePillButton.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
 
     // _floatingSetAsDefaultButtonContainer constraints.
@@ -502,9 +517,7 @@ UIButton* CreateMorePillButton() {
         constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer.topAnchor
                        constant:kSetAsDefaultButtonTopMargin],
     [_floatingSetAsDefaultButton.bottomAnchor
-        constraintEqualToAnchor:_floatingSetAsDefaultButtonContainer
-                                    .safeAreaLayoutGuide.bottomAnchor
-                       constant:-setAsDefaultButtonBottomMargin],
+        constraintEqualToAnchor:buttonBottomMargin.topAnchor],
     [_floatingSetAsDefaultButton.widthAnchor
         constraintEqualToAnchor:_searchEngineStackView.widthAnchor],
     [_floatingSetAsDefaultButton.centerXAnchor

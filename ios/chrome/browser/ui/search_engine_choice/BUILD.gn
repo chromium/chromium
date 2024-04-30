@@ -40,6 +40,7 @@ source_set("search_engine_choice") {
     "//ios/chrome/browser/ui/search_engine_choice/resources",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more",
     "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:image_util",
