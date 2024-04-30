@@ -344,7 +344,7 @@ void PredictionManager::FetchModels() {
   proto::ModelInfo base_model_info;
   // There should only be one supported model engine version at a time.
   base_model_info.add_supported_model_engine_versions(
-      proto::MODEL_ENGINE_VERSION_TFLITE_2_16);
+      proto::MODEL_ENGINE_VERSION_TFLITE_2_16_1);
   // This histogram is used for integration tests. Do not remove.
   // Update this to be 10000 if/when we exceed 100 model engine versions.
   LOCAL_HISTOGRAM_COUNTS_100(

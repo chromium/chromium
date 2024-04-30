@@ -34,7 +34,8 @@ namespace history_embeddings {
 class HistoryEmbeddingsServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kHistoryEmbeddings);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kHistoryEmbeddings, {{"UseMlEmbedder", "false"}});
 
     OSCryptMocker::SetUp();
 
@@ -107,7 +108,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
 
 TEST_F(HistoryEmbeddingsServiceTest, ConstructsAndInvalidatesWeakPtr) {
   auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_service_.get(), page_content_annotations_service_.get());
+      history_service_.get(), page_content_annotations_service_.get(),
+      optimization_guide_model_provider_.get(), /*service_controller=*/nullptr);
   auto weak_ptr = service->AsWeakPtr();
   EXPECT_TRUE(weak_ptr);
   service.reset();
@@ -126,13 +128,15 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
   add_page("http://test3.com");
 
   auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_service_.get(), page_content_annotations_service_.get());
+      history_service_.get(), page_content_annotations_service_.get(),
+      /*model_provider=*/nullptr, /*service_controller=*/nullptr);
 
   // Add a fake set of passages for all visits.
   UrlPassages url_passages(/*url_id=*/1, /*visit_id=*/1, base::Time::Now());
   std::vector<std::string> passages = {"test passage 1", "test passage 2"};
   std::vector<Embedding> passages_embeddings = {
-      Embedding({1.0f, 2.0f, 3.0f, 4.0f}), Embedding({1.0f, 2.0f, 3.0f, 4.0f})};
+      Embedding(std::vector<float>(768, 1.0f)),
+      Embedding(std::vector<float>(768, 1.0f))};
   service->OnPassagesEmbeddingsComputed(url_passages, passages,
                                         passages_embeddings);
   url_passages.url_id = 2;
@@ -165,7 +169,8 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
 TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
   base::HistogramTester histogram_tester;
   auto service = std::make_unique<HistoryEmbeddingsService>(
-      history_service_.get(), page_content_annotations_service_.get());
+      history_service_.get(), page_content_annotations_service_.get(),
+      /*model_provider=*/nullptr, /*service_controller=*/nullptr);
 
   base::test::TestFuture<SearchResult> future;
   OverrideVisibilityScoresForTesting({{"", 0.99}});

@@ -28,9 +28,9 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     // The feature must be enabled first or else the service isn't initialized
     // properly.
-    feature_list_.InitWithFeatures(
-        {kHistoryEmbeddings,
-         page_content_annotations::features::kPageContentAnnotations},
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kHistoryEmbeddings, {{"UseMlEmbedder", "false"}}},
+         {page_content_annotations::features::kPageContentAnnotations, {{}}}},
         /*disabled_features=*/{});
 
     InProcessBrowserTest::SetUp();

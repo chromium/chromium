@@ -260,6 +260,9 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_14_1 = 14;
   // A model using only operations that are supported by 2.16.0.
   MODEL_ENGINE_VERSION_TFLITE_2_16 = 15;
+  // A model using only operations that are supported by 2.16.0. This raises the
+  // max_version for FULLY_CONNECTED to version 12.
+  MODEL_ENGINE_VERSION_TFLITE_2_16_1 = 16;
 }
 
 // The set of parameters that the server can use to vary the served model for

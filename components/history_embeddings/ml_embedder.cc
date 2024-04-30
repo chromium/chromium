@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/history_embeddings/ml_embedder.h"
+
+#include "base/task/sequenced_task_runner.h"
+#include "components/history_embeddings/passage_embeddings_service_controller.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+
+namespace history_embeddings {
+
+MlEmbedder::MlEmbedder(
+    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    scoped_refptr<PassageEmbeddingsServiceController> service_controller)
+    : model_provider_(model_provider), service_controller_(service_controller) {
+  if (model_provider_) {
+    model_provider_->AddObserverForOptimizationTargetModel(
+        optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
+        /*model_metadata=*/std::nullopt, this);
+  }
+}
+
+MlEmbedder::~MlEmbedder() {
+  if (model_provider_) {
+    model_provider_->RemoveObserverForOptimizationTargetModel(
+        optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER, this);
+  }
+}
+
+void MlEmbedder::ComputePassagesEmbeddings(
+    std::vector<std::string> passages,
+    ComputePassagesEmbeddingsCallback callback) {
+  service_controller_->GetEmbeddings(std::move(passages), std::move(callback));
+}
+
+void MlEmbedder::OnModelUpdated(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+  if (optimization_target !=
+      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER) {
+    return;
+  }
+
+  if (service_controller_) {
+    service_controller_->MaybeUpdateModelPaths(model_info);
+  }
+}
+
+}  // namespace history_embeddings

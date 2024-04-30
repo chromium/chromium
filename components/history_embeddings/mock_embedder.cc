@@ -12,7 +12,7 @@ namespace history_embeddings {
 namespace {
 
 Embedding ComputeEmbeddingForPassage(const std::string& passage) {
-  Embedding embedding({1.0f, 2.0f, 3.0f, 4.0f});
+  Embedding embedding(std::vector<float>(768, 1.0f));
   embedding.Normalize();
   return embedding;
 }

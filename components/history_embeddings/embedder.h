@@ -14,9 +14,11 @@ namespace history_embeddings {
 
 class Embedding;
 
+// TODO(b/332394465): switch to a different signature to include an error
+// state.
 using ComputePassagesEmbeddingsCallback =
     base::OnceCallback<void(std::vector<std::string> passages,
-                            std::vector<Embedding>)>;
+                            std::vector<Embedding> embeddings)>;
 
 // Base class that hides implementation details for how text is embedded.
 class Embedder {

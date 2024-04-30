@@ -13,6 +13,8 @@ namespace {
 // Number for threads to use for TFLite execution. -1 lets TFLite use the
 // default number of threads.
 constexpr int kNumThreads = -1;
+// TODO(b/337924566): switch to model metadata instead of relying on constant.
+constexpr size_t kEmbeddingsInputWindowSize = 256;
 }  // namespace
 
 namespace passage_embeddings {
@@ -106,19 +108,20 @@ void PassageEmbedder::GenerateEmbeddings(
   std::vector<mojom::PassageEmbeddingsResultPtr> results;
   for (const std::string& input : inputs) {
     if (!sp_processor_ || !sp_processor_->status().ok()) {
-      std::move(callback).Run(std::vector<mojom::PassageEmbeddingsResultPtr>());
+      std::move(callback).Run({});
       return;
     }
     std::vector<int> tokenized;
     auto status = sp_processor_->Encode(input, &tokenized);
     if (!status.ok()) {
-      std::move(callback).Run(std::vector<mojom::PassageEmbeddingsResultPtr>());
+      std::move(callback).Run({});
       return;
     }
+    tokenized.resize(kEmbeddingsInputWindowSize);
 
     std::optional<std::vector<float>> embeddings = Execute(tokenized);
     if (embeddings == std::nullopt) {
-      std::move(callback).Run(std::vector<mojom::PassageEmbeddingsResultPtr>());
+      std::move(callback).Run({});
       return;
     }
 

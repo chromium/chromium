@@ -7,6 +7,7 @@ include_rules = [
   "+content/public/browser",
   "+mojo/public/cpp/bindings",
   "+services/service_manager/public/cpp",
+  "+services/passage_embeddings",
   "+sql",
   "+third_party/blink/public",
   "+third_party/zlib",

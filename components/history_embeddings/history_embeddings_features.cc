@@ -38,7 +38,7 @@ const base::FeatureParam<double> kContentVisibilityThreshold(
 
 const base::FeatureParam<bool> kUseMlEmbedder(&kHistoryEmbeddings,
                                               "UseMlEmbedder",
-                                              false);
+                                              true);
 
 const base::FeatureParam<bool> kOmniboxUnscoped(&kHistoryEmbeddings,
                                                 "OmniboxUnscoped",

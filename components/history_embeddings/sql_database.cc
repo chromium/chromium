@@ -18,11 +18,11 @@ namespace history_embeddings {
 constexpr int kLowestSupportedDatabaseVersion = 1;
 constexpr int kCurrentDatabaseVersion = 1;
 
-// TODO(orinj): Use model metadata when available.
+// TODO(b/337924566): Use model metadata when available.
 // Dimensions can't change without also changing model version since a model
 // works with a fixed number of dimensions.
-constexpr int kModelVersion = 0;
-constexpr int kModelDimensions = 4;
+constexpr int kModelVersion = 1;
+constexpr int kModelDimensions = 768;
 
 namespace {
 

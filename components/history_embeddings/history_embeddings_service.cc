@@ -19,6 +19,7 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/ml_embedder.h"
 #include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
@@ -93,7 +94,10 @@ void FinishSearchResultWithHistory(
 HistoryEmbeddingsService::HistoryEmbeddingsService(
     history::HistoryService* history_service,
     page_content_annotations::PageContentAnnotationsService*
-        page_content_annotations_service)
+        page_content_annotations_service,
+    optimization_guide::OptimizationGuideModelProvider*
+        optimization_guide_model_provider,
+    scoped_refptr<PassageEmbeddingsServiceController> service_controller)
     : history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       query_id_(0u),
@@ -116,8 +120,14 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
         base::DoNothing());
   }
 
-  // TODO: b/333094780 - Swap this to the model-backed embedder once ready.
-  embedder_ = std::make_unique<MockEmbedder>();
+  // TODO(b/333094780): switch to using the null-ness of
+  // model_provider/service_controller as the condition here.
+  if (kUseMlEmbedder.Get()) {
+    embedder_ = std::make_unique<MlEmbedder>(optimization_guide_model_provider,
+                                             service_controller);
+  } else {
+    embedder_ = std::make_unique<MockEmbedder>();
+  }
 
   storage_ = base::SequenceBound<Storage>(
       base::ThreadPool::CreateSequencedTaskRunner(

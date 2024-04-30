@@ -5,11 +5,26 @@
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history_embeddings/chrome_passage_embeddings_service_controller.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+
+namespace {
+
+scoped_refptr<history_embeddings::PassageEmbeddingsServiceController>
+GetPassageEmbeddingsServiceController() {
+  scoped_refptr<history_embeddings::PassageEmbeddingsServiceController>
+      service_controller =
+          history_embeddings::ChromePassageEmbeddingsServiceController::Get();
+  return service_controller;
+}
+
+}  // namespace
 
 // static
 history_embeddings::HistoryEmbeddingsService*
@@ -30,6 +45,7 @@ HistoryEmbeddingsServiceFactory::HistoryEmbeddingsServiceFactory()
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(PageContentAnnotationsServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 HistoryEmbeddingsServiceFactory::~HistoryEmbeddingsServiceFactory() = default;
@@ -45,10 +61,11 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   auto* page_content_annotations_service =
       PageContentAnnotationsServiceFactory::GetForProfile(profile);
-  if (!page_content_annotations_service) {
-    return nullptr;
-  }
+  auto* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 
   return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
-      history_service, page_content_annotations_service);
+      history_service, page_content_annotations_service,
+      optimization_guide_keyed_service,
+      GetPassageEmbeddingsServiceController());
 }

@@ -16,7 +16,7 @@ namespace history_embeddings {
 namespace {
 
 Embedding FakeEmbedding() {
-  Embedding embedding({1.0f, 2.0f, 3.0f, 4.0f});
+  Embedding embedding(std::vector<float>(768, 1.0f));
   embedding.Normalize();
   return embedding;
 }
@@ -45,7 +45,7 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       ASSERT_TRUE(sql_database->InsertOrReplacePassages(url_passages_1));
 
       UrlEmbeddings embeddings_1(1, 10, base::Time::Now());
-      embeddings_1.embeddings.push_back(Embedding({1.0f, 2.0f, 3.0f, 4.0f}));
+      embeddings_1.embeddings.emplace_back(std::vector<float>(768, 1.0f));
       ASSERT_TRUE(sql_database->AddUrlEmbeddings(embeddings_1));
     }
 
@@ -56,7 +56,7 @@ class HistoryEmbeddingsSqlDatabaseTest : public testing::Test {
       ASSERT_TRUE(sql_database->InsertOrReplacePassages(url_passages_2));
 
       UrlEmbeddings embeddings_2(2, 11, base::Time::Now());
-      embeddings_2.embeddings.push_back(Embedding({1.0f, 2.0f, 3.0f, 4.0f}));
+      embeddings_2.embeddings.emplace_back(std::vector<float>(768, 1.0f));
       ASSERT_TRUE(sql_database->AddUrlEmbeddings(embeddings_2));
     }
 

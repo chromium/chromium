@@ -9,6 +9,8 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +20,7 @@
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 
@@ -29,8 +32,11 @@ std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
   CHECK(history_service);
   auto* page_content_annotations_service =
       PageContentAnnotationsServiceFactory::GetForProfile(profile);
+  auto* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
-      history_service, page_content_annotations_service);
+      history_service, page_content_annotations_service,
+      optimization_guide_keyed_service, nullptr);
 }
 
 std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(
@@ -38,18 +44,29 @@ std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(
   auto* profile = Profile::FromBrowserContext(browser_context);
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
+  auto* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return page_content_annotations::TestPageContentAnnotationsService::Create(
-      nullptr, history_service);
+      optimization_guide_keyed_service, history_service);
+}
+
+std::unique_ptr<KeyedService> BuildTestOptimizationGuideKeyedService(
+    content::BrowserContext* browser_context) {
+  return std::make_unique<
+      testing::NiceMock<MockOptimizationGuideKeyedService>>();
 }
 
 class HistoryEmbeddingsHandlerTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(history_embeddings::kHistoryEmbeddings);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        history_embeddings::kHistoryEmbeddings, {{"UseMlEmbedder", "false"}});
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+
+    MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
 
     profile_ = profile_manager_->CreateTestingProfile(
         "History Embeddings Test User",
@@ -60,6 +77,8 @@ class HistoryEmbeddingsHandlerTest : public testing::Test {
              base::BindRepeating(&BuildTestHistoryEmbeddingsService)},
             {PageContentAnnotationsServiceFactory::GetInstance(),
              base::BindRepeating(&BuildTestPageContentAnnotationsService)},
+            {OptimizationGuideKeyedServiceFactory::GetInstance(),
+             base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
         });
 
     handler_ = std::make_unique<HistoryEmbeddingsHandler>(

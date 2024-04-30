@@ -22,10 +22,15 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history_embeddings/passage_embeddings_service_controller.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/render_frame_host.h"
+
+namespace optimization_guide {
+class OptimizationGuideModelProvider;
+}  // namespace optimization_guide
 
 namespace page_content_annotations {
 class BatchAnnotationResult;
@@ -56,7 +61,9 @@ class HistoryEmbeddingsService : public KeyedService,
   HistoryEmbeddingsService(
       history::HistoryService* history_service,
       page_content_annotations::PageContentAnnotationsService*
-          page_content_annotations_service);
+          page_content_annotations_service,
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      scoped_refptr<PassageEmbeddingsServiceController> service_controller);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;
