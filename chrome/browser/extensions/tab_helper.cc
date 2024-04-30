@@ -212,17 +212,6 @@ bool TabHelper::IsReloadRequired() {
   return reload_required_;
 }
 
-bool TabHelper::HasExtensionDismissedRequests(const ExtensionId& extension_id) {
-  return dismissed_extensions_.contains(extension_id);
-}
-
-void TabHelper::DismissExtensionRequests(const ExtensionId& extension_id) {
-  dismissed_extensions_.insert(extension_id);
-  PermissionsManager::Get(profile_)->NotifySiteAccessRequestDismissedByUser(
-      extension_id,
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-}
-
 void TabHelper::OnWatchedPageChanged(
     const std::vector<std::string>& css_selectors) {
   InvokeForContentRulesRegistries(
@@ -293,15 +282,6 @@ void TabHelper::DidFinishNavigation(
   // Reset the `reload_required_` data member, since a page navigation acts as a
   // page refresh.
   reload_required_ = false;
-
-  // Only clear the dismissed extensions for cross-origin navigations.
-  if (!navigation_handle->IsSameOrigin()) {
-    ClearDismissedExtensions();
-  }
-}
-
-void TabHelper::ClearDismissedExtensions() {
-  dismissed_extensions_.clear();
 }
 
 void TabHelper::DidCloneToNewWebContents(WebContents* old_web_contents,
@@ -321,7 +301,6 @@ void TabHelper::WebContentsDestroyed() {
   });
 
   reload_required_ = false;
-  ClearDismissedExtensions();
 }
 
 const Extension* TabHelper::GetExtension(const ExtensionId& extension_app_id) {

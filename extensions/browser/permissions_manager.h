@@ -292,8 +292,15 @@ class PermissionsManager : public KeyedService {
   // Removes site access request for `extension` in `tab_id`, if existent.
   void RemoveSiteAccessRequest(int tab_id, const ExtensionId& extension);
 
-  // Returns whether `tab_id` has a site access request for `extension_id`.
-  bool HasSiteAccessRequest(int tab_id, const ExtensionId& extension_id);
+  // Dismisses site access request for `extension` in `tab_id`. Request must be
+  // existent for user to be able to dismiss it.
+  void UserDismissedSiteAccessRequest(content::WebContents* web_contents,
+                                      int tab_id,
+                                      const ExtensionId& extension_id);
+
+  // Returns whether `tab_id` has an active site access request for
+  // `extension_id`.
+  bool HasActiveSiteAccessRequest(int tab_id, const ExtensionId& extension_id);
 
   // Adds `extension_id` to the `extensions_with_previous_broad_access` set.
   void AddExtensionToPreviousBroadSiteAccessSet(
@@ -324,12 +331,6 @@ class PermissionsManager : public KeyedService {
   void NotifyShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests);
-
-  // Notifies `observers_` that site access request for `extension_id` on
-  // `origin` was dismissed by the user.
-  void NotifySiteAccessRequestDismissedByUser(
-      const extensions::ExtensionId& extension_id,
-      const url::Origin& origin);
 
   // Adds or removes observers.
   void AddObserver(Observer* observer);

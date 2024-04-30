@@ -50,8 +50,16 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
   // request was removed.
   bool RemoveRequestIfGrantedAccess(const Extension& extension);
 
-  // Returns whether `extension_id` has a site access request.
-  bool HasRequest(const ExtensionId& extension_id);
+  // Adds `extension_id` to the set of extension with site access requests that
+  // have been dismissed by the user. Request must be existent in
+  // `requesting_extensions_` for user to be able to dismiss it.
+  // An extension's request cannot be undismissed by the user. Requests will be
+  // reset on cross-origin navigation, along with their dismissals if existent.
+  void UserDismissedRequest(const ExtensionId& extension_id);
+
+  // Returns whether `extension_id` has a site access request that has not been
+  // dismissed by the user.
+  bool HasActiveRequest(const ExtensionId& extension_id);
 
   // Returns whether helper has any site access requests.
   bool HasRequests();
@@ -76,7 +84,9 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
   // Extensions that have a site access request for this tab's origin.
   std::set<ExtensionId> requesting_extensions_;
 
-  // TODO(crbug.com/330588494): Moves dismissed extensions from TabHelper.
+  // Extensions that have a site access request for this tab's origin which was
+  // dismissed by the user.
+  std::set<ExtensionId> extensions_with_requests_dismissed_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>

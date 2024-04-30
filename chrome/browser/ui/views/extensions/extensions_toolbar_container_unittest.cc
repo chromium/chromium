@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -853,18 +853,21 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 2));
 
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+
   // Dismiss extension A's requests. Verify only extension B is visible in the
   // button.
-  extensions::TabHelper* tab_helper = extensions::TabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  tab_helper->DismissExtensionRequests(extension_a->id());
+  permissions_manager->UserDismissedSiteAccessRequest(web_contents, tab_id,
+                                                      extension_a->id());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_EQ(
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
 
   // Dismiss extension B's requests. Verify button is not visible anymore.
-  tab_helper->DismissExtensionRequests(extension_b->id());
+  permissions_manager->UserDismissedSiteAccessRequest(web_contents, tab_id,
+                                                      extension_b->id());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 

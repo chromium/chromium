@@ -153,31 +153,54 @@ TEST_F(SiteAccessRequestsHelperUnittest, AddAndRemoveRequests) {
   content::WebContents* web_contents = AddTab(GURL("http://www.example.com/"));
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
-  // Add site access request for extension A. Verify only extension A has a
-  // request.
+  // Add site access request for extension A. Verify only extension A has an
+  // active request.
   permissions_manager()->AddSiteAccessRequest(web_contents, tab_id,
                                               *extension_A);
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_B->id()));
 
-  // Add site access request for extension B. Verify both extensions have a
-  // request.
+  // Add site access request for extension B. Verify both extensions have active
+  // requests.
   permissions_manager()->AddSiteAccessRequest(web_contents, tab_id,
                                               *extension_B);
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_B->id()));
 
-  // Remove site access request for extension A. Verify only extension B has a
-  // request.
+  // Remove site access request for extension A. Verify only extension B has an
+  // active request.
   permissions_manager()->RemoveSiteAccessRequest(tab_id, extension_A->id());
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_B->id()));
+}
+
+// Tests that site access requests dismissed by the user are not active
+// requests.
+TEST_F(SiteAccessRequestsHelperUnittest, UserDismissedRequest) {
+  auto extension =
+      InstallExtensionAndWithholdHostPermissions("Extension", "<all_urls>");
+
+  content::WebContents* web_contents = AddTab(GURL("http://www.example.com/"));
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add site access request for extension A. Verify extension has an active
+  // request.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension);
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+
+  // Dismiss site access request for extension. Verify request is not an active
+  // request.
+  permissions_manager()->UserDismissedSiteAccessRequest(web_contents, tab_id,
+                                                        extension->id());
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 }
 
 // Tests request is removed on cross-origin navigations.
@@ -194,18 +217,18 @@ TEST_F(SiteAccessRequestsHelperUnittest,
 
   // Add site access request for extension.
   permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension);
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 
   // Same-origin navigation should retain request.
   web_contents_tester->NavigateAndCommit(GURL("http://www.same-origin.com/b"));
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 
   // Cross-origin navigation should remove request.
   web_contents_tester->NavigateAndCommit(GURL("http://www.cross-origin.com/c"));
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 }
 
 // Test request is removed when extension is granted "always on this site" site
@@ -221,8 +244,8 @@ TEST_F(SiteAccessRequestsHelperUnittest,
 
   // Add site access request for extension.
   permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension);
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 
   // Grant "always on this site" access to the extension.
   PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
@@ -232,8 +255,8 @@ TEST_F(SiteAccessRequestsHelperUnittest,
   waiter.WaitForExtensionPermissionsUpdate();
 
   // Request should be removed since extension has granted site access.
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 }
 
 // Test request is removed when extension is granted one-time site access.
@@ -247,8 +270,8 @@ TEST_F(SiteAccessRequestsHelperUnittest,
 
   // Add site access request for extension.
   permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension);
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 
   // Grant tab permission to extension.
   ActiveTabPermissionGranter* active_tab_permission_granter =
@@ -259,8 +282,8 @@ TEST_F(SiteAccessRequestsHelperUnittest,
   active_tab_permission_granter->GrantIfRequested(extension.get());
 
   // Request should be removed since extension has granted site access.
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
 }
 
 // Test request is removed when extension is unloaded.
@@ -280,36 +303,36 @@ TEST_F(SiteAccessRequestsHelperUnittest,
                                               *extension_A);
   permissions_manager()->AddSiteAccessRequest(web_contents, tab_id,
                                               *extension_B);
-  ASSERT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
-  ASSERT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+  ASSERT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  ASSERT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_B->id()));
 
   // Uninstall extension A. Verify only extension B should have a site access
   // request.
   service()->UninstallExtension(
       extension_A->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
-  EXPECT_TRUE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_B->id()));
 
   // Disable extension B. Verify no extension should have a site access request.
   service()->DisableExtension(extension_B->id(),
                               extensions::disable_reason::DISABLE_USER_ACTION);
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_B->id()));
 
   // Enable extension B. Verify no extension has a site access request. Request
   // is not persisted when extension is re-enabled, the extension needs to add
   // the request again.
   service()->EnableExtension(extension_B->id());
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
-  EXPECT_FALSE(
-      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_B->id()));
 }
 
 }  // namespace extensions

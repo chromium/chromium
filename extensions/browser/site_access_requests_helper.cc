@@ -63,8 +63,16 @@ bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
   return RemoveRequest(extension.id());
 }
 
-bool SiteAccessRequestsHelper::HasRequest(const ExtensionId& extension_id) {
-  return requesting_extensions_.contains(extension_id);
+void SiteAccessRequestsHelper::UserDismissedRequest(
+    const ExtensionId& extension_id) {
+  CHECK(requesting_extensions_.contains(extension_id));
+  extensions_with_requests_dismissed_.insert(extension_id);
+}
+
+bool SiteAccessRequestsHelper::HasActiveRequest(
+    const ExtensionId& extension_id) {
+  return requesting_extensions_.contains(extension_id) &&
+         !extensions_with_requests_dismissed_.contains(extension_id);
 }
 
 bool SiteAccessRequestsHelper::HasRequests() {
@@ -98,8 +106,7 @@ void SiteAccessRequestsHelper::DidFinishNavigation(
   }
 
   requesting_extensions_.clear();
-  // TODO(crbug.com/330588494): Clear dismissed requests once they are moved to
-  // SiteAccessRequestsHelper.
+  extensions_with_requests_dismissed_.clear();
 
   permissions_manager_->NotifySiteAccessRequestsCleared(tab_id_);
   permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);
@@ -111,8 +118,7 @@ void SiteAccessRequestsHelper::WebContentsDestroyed() {
   web_contents_ = nullptr;
 
   requesting_extensions_.clear();
-  // TODO(crbug.com/330588494): Clear dismissed requests once they are moved to
-  // SiteAccessRequestsHelper.
+  extensions_with_requests_dismissed_.clear();
 
   permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);
   // IMPORTANT: This object is now deleted and is unsafe to use.

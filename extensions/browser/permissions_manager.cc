@@ -818,10 +818,26 @@ void PermissionsManager::RemoveSiteAccessRequest(
   }
 }
 
-bool PermissionsManager::HasSiteAccessRequest(int tab_id,
-                                              const ExtensionId& extension_id) {
+void PermissionsManager::UserDismissedSiteAccessRequest(
+    content::WebContents* web_contents,
+    int tab_id,
+    const ExtensionId& extension_id) {
   SiteAccessRequestsHelper* helper = GetSiteAccessRequestsHelperFor(tab_id);
-  return helper && helper->HasRequest(extension_id);
+  CHECK(helper);
+  helper->UserDismissedRequest(extension_id);
+
+  for (Observer& observer : observers_) {
+    observer.OnSiteAccessRequestDismissedByUser(
+        extension_id,
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  }
+}
+
+bool PermissionsManager::HasActiveSiteAccessRequest(
+    int tab_id,
+    const ExtensionId& extension_id) {
+  SiteAccessRequestsHelper* helper = GetSiteAccessRequestsHelperFor(tab_id);
+  return helper && helper->HasActiveRequest(extension_id);
 }
 
 void PermissionsManager::AddExtensionToPreviousBroadSiteAccessSet(
@@ -876,14 +892,6 @@ void PermissionsManager::NotifyActiveTabPermisssionGranted(
 
   for (Observer& observer : observers_) {
     observer.OnActiveTabPermissionGranted(extension);
-  }
-}
-
-void PermissionsManager::NotifySiteAccessRequestDismissedByUser(
-    const extensions::ExtensionId& extension_id,
-    const url::Origin& origin) {
-  for (Observer& observer : observers_) {
-    observer.OnSiteAccessRequestDismissedByUser(extension_id, origin);
   }
 }
 

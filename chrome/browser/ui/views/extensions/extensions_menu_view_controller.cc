@@ -499,11 +499,12 @@ void ExtensionsMenuViewController::OnAllowExtensionClicked(
 
 void ExtensionsMenuViewController::OnDismissExtensionClicked(
     const extensions::ExtensionId& extension_id) {
-  extensions::TabHelper* tab_helper =
-      extensions::TabHelper::FromWebContents(GetActiveWebContents());
-  if (tab_helper) {
-    tab_helper->DismissExtensionRequests(extension_id);
-  }
+  auto* permissions_manager = PermissionsManager::Get(browser_->profile());
+  CHECK(permissions_manager);
+  content::WebContents* web_contents = GetActiveWebContents();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  permissions_manager->UserDismissedSiteAccessRequest(web_contents, tab_id,
+                                                      extension_id);
 
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionRequestDismissedFromMenu"));
@@ -631,16 +632,8 @@ void ExtensionsMenuViewController::UpdateMainPage(
         SortExtensionsByName(*toolbar_model_);
 
     for (const auto& extension_id : extension_ids) {
-      bool has_request =
-          permissions_manager->HasSiteAccessRequest(tab_id, extension_id);
-      bool dismissed_requests =
-          extensions::TabHelper::FromWebContents(web_contents)
-              ->HasExtensionDismissedRequests(extension_id);
-
-      // TODO(crbug.com/330588494): Move dismissed requests to permissions
-      // manager, and then have a `HasActiveRequest()` that returns if a request
-      // exists and hasn't been dismissed.
-      if (has_request && !dismissed_requests) {
+      if (permissions_manager->HasActiveSiteAccessRequest(tab_id,
+                                                          extension_id)) {
         AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
                                              web_contents);
         ++index;
