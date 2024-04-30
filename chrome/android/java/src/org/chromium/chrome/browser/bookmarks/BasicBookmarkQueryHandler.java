@@ -110,10 +110,6 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
         final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
         for (BookmarkId bookmarkId : bookmarkIds) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
-            if (BookmarkId.SHOPPING_FOLDER.equals(parentId)
-                    && !isBookmarkMetaSubscribed(powerBookmarkMeta)) {
-                continue;
-            }
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
             BookmarkListEntry bookmarkListEntry =
                     BookmarkListEntry.createBookmarkEntry(

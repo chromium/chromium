@@ -27,9 +27,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -54,7 +56,10 @@ import org.chromium.ui.base.TestActivity;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-@Features.EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+@EnableFeatures({
+    SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS
+})
 public class BookmarkManagerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -131,11 +136,7 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
         assertNotNull(mCoordinator.buildLegacyPromoView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));
-        assertNotNull(mCoordinator.buildAndInitBookmarkFolderView(parent));
-        assertNotNull(mCoordinator.buildAndInitBookmarkItemRow(parent));
-        assertNotNull(mCoordinator.buildAndInitShoppingItemView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildShoppingFilterView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
         assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
         assertNotNull(mCoordinator.buildSearchBoxRow(parent));

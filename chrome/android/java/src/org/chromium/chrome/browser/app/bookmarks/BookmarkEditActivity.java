@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -167,16 +166,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mFolderPickerRowContainer = findViewById(R.id.folder_row_container);
 
         updateViewContent(false);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == MOVE_REQUEST_CODE && resultCode == RESULT_OK) {
-            mInFolderSelect = false;
-            mBookmarkId = BookmarkFolderSelectActivity.parseMoveIntentResult(data);
-            updateViewContent(true);
-        }
     }
 
     /**

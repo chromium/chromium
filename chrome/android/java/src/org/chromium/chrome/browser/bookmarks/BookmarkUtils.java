@@ -36,9 +36,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
+import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -493,7 +492,7 @@ public class BookmarkUtils {
             @Override
             public void onAction(Object actionData) {
                 RecordUserAction.record("TabMultiSelectV2.BookmarkTabsSnackbarEditClicked");
-                BookmarkAddEditFolderActivity.startEditFolderActivity(context, folder);
+                BookmarkUtils.startFolderPickerActivity(context, folder);
             }
         };
     }
@@ -679,9 +678,13 @@ public class BookmarkUtils {
         return bookmarkIds;
     }
 
-    /** Starts an {@link BookmarkFolderSelectActivity} for the given {@link BookmarkId}. */
-    public static void startFolderSelectActivity(Context context, BookmarkId bookmarkId) {
-        BookmarkFolderSelectActivity.startFolderSelectActivity(context, bookmarkId);
+    /** Starts an {@link BookmarkFolderPickerActivity} for the given {@link BookmarkId}s. */
+    public static void startFolderPickerActivity(Context context, BookmarkId... bookmarkIds) {
+        Intent intent = new Intent(context, BookmarkFolderPickerActivity.class);
+        intent.putStringArrayListExtra(
+                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
+                BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
+        context.startActivity(intent);
     }
 
     /**
@@ -698,8 +701,7 @@ public class BookmarkUtils {
         ColorStateList tint = getFolderIconTint(context, bookmarkId.getType());
         if (bookmarkId.getType() == BookmarkType.READING_LIST) {
             return UiUtils.getTintedDrawable(context, R.drawable.ic_reading_list_folder_24dp, tint);
-        } else if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                && bookmarkId.getType() == BookmarkType.NORMAL
+        } else if (bookmarkId.getType() == BookmarkType.NORMAL
                 && Objects.equals(bookmarkId, bookmarkModel.getDesktopFolderId())) {
             return UiUtils.getTintedDrawable(context, R.drawable.ic_toolbar_24dp, tint);
         }
@@ -720,8 +722,7 @@ public class BookmarkUtils {
     // TODO(crbug.com/40282037): This function isn't used in the new bookmarks manager, remove it
     // after android-improved-bookmarks is the default.
     public static ColorStateList getFolderIconTint(Context context, @BookmarkType int type) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                && type == BookmarkType.READING_LIST) {
+        if (type == BookmarkType.READING_LIST) {
             return ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(context));
         }
 
@@ -811,34 +812,21 @@ public class BookmarkUtils {
 
     /** Returns the size to use when fetching favicons. */
     public static int getFaviconFetchSize(Resources resources) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return resources.getDimensionPixelSize(R.dimen.tile_view_icon_min_size);
-        }
-        return resources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
+        return resources.getDimensionPixelSize(R.dimen.tile_view_icon_min_size);
     }
 
     /** Returns the size to use when displaying an image. */
     public static int getImageIconSize(
             Resources resources, @BookmarkRowDisplayPref int displayPref) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return displayPref == BookmarkRowDisplayPref.VISUAL
-                    ? resources.getDimensionPixelSize(
-                            R.dimen.improved_bookmark_start_image_size_visual)
-                    : resources.getDimensionPixelSize(
-                            R.dimen.improved_bookmark_start_image_size_compact);
-        }
-
-        return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
-                ? resources.getDimensionPixelSize(R.dimen.list_item_v2_start_icon_width_compact)
-                : resources.getDimensionPixelSize(R.dimen.list_item_start_icon_width);
+        return displayPref == BookmarkRowDisplayPref.VISUAL
+                ? resources.getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_visual)
+                : resources.getDimensionPixelSize(
+                        R.dimen.improved_bookmark_start_image_size_compact);
     }
 
     /** Returns the size to use when displaying the favicon. */
     public static int getFaviconDisplaySize(Resources resources) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return resources.getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
-        }
-        return resources.getDimensionPixelSize(R.dimen.bookmark_favicon_display_size);
+        return resources.getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
     }
 
     /**
@@ -906,14 +894,7 @@ public class BookmarkUtils {
     }
 
     private static int getDisplayTextSize(Resources resources) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return resources.getDimensionPixelSize(R.dimen.improved_bookmark_favicon_text_size);
-        }
-
-        return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
-                ? resources.getDimensionPixelSize(
-                        R.dimen.bookmark_refresh_circular_monogram_text_size)
-                : resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
+        return resources.getDimensionPixelSize(R.dimen.improved_bookmark_favicon_text_size);
     }
 
     private static Locale getLocale(Activity activity) {

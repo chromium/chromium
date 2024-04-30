@@ -31,9 +31,6 @@ class BookmarkToolbarViewBinder {
             bookmarkToolbar.setIsDialogUi(model.get(BookmarkToolbarProperties.IS_DIALOG_UI));
         } else if (key == BookmarkToolbarProperties.DRAG_ENABLED) {
             bookmarkToolbar.setDragEnabled(model.get(BookmarkToolbarProperties.DRAG_ENABLED));
-        } else if (key == BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE) {
-            bookmarkToolbar.setSearchButtonVisible(
-                    model.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         } else if (key == BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE) {
             bookmarkToolbar.setEditButtonVisible(
                     model.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));

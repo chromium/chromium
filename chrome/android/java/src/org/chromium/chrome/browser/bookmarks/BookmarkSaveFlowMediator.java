@@ -473,7 +473,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
 
     private void onFolderSelectClicked(View v) {
         RecordUserAction.record("MobileBookmark.SaveFlow.EditFolder");
-        BookmarkUtils.startFolderSelectActivity(mContext, mBookmarkId);
+        BookmarkUtils.startFolderPickerActivity(mContext, mBookmarkId);
         TrackerFactory.getTrackerForProfile(mProfile)
                 .notifyEvent(EventConstants.SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP);
         mCloseRunnable.run();
