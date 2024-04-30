@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.history;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -20,6 +18,8 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
+import org.chromium.chrome.browser.history.HistoryContentManager.AppInfoCache;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -33,6 +33,7 @@ import java.util.function.BooleanSupplier;
 public class HistoryItemView extends SelectableItemView<HistoryItem> {
     private ImageButton mRemoveButton;
     private VectorDrawableCompat mBlockedVisitDrawable;
+    private AppInfoCache mAppInfoCache;
 
     private final RoundedIconGenerator mIconGenerator;
     private DefaultFaviconHelper mFaviconHelper;
@@ -113,7 +114,8 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         }
     }
 
-    void setShowSourceApp(BooleanSupplier showSourceApp) {
+    void initialize(AppInfoCache appInfoCache, BooleanSupplier showSourceApp) {
+        mAppInfoCache = appInfoCache;
         // ItemView can be reused every time a new query is made. Use a supplier to
         // check the condition that changes dynamically.
         mShowSourceApp = showSourceApp;
@@ -126,25 +128,15 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         String appId = item.getAppId();
         if (appId == null) return domain;
 
-        CharSequence label = getAppLabel(appId);
-        if (label == null) return domain;
+        AppInfo appInfo = mAppInfoCache.get(appId);
+        if (!appInfo.isValid()) return domain;
+        CharSequence label = appInfo.label;
 
         StringBuilder sb = new StringBuilder();
         sb.append(domain);
         sb.append(" - ");
         sb.append(getContext().getResources().getString(R.string.history_app_attribution, label));
         return sb.toString();
-    }
-
-    private CharSequence getAppLabel(String appId) {
-        // TODO: Cache label/icons for here and app filter sheet.
-        var pm = getContext().getPackageManager();
-        try {
-            var appInfo = pm.getApplicationInfo(appId, PackageManager.GET_META_DATA);
-            return pm.getApplicationLabel(appInfo);
-        } catch (NameNotFoundException e) {
-            return null;
-        }
     }
 
     /**

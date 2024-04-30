@@ -58,6 +58,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -123,6 +124,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final List<AppInfo> mAppInfoList = new ArrayList<>();
     private final Supplier<BottomSheetController> mBottomSheetController;
     private final Supplier<Tab> mTabSupplier;
+    private final AppInfoCache mAppInfoCache;
     private HistoryAdapter mHistoryAdapter;
     private RecyclerView mRecyclerView;
     private LargeIconBridge mLargeIconBridge;
@@ -133,7 +135,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private String mAppId;
     private AppFilterCoordinator mAppFilterSheet;
     private AppInfo mCurrentApp;
-    private PackageManager mPackageManager;
 
     /**
      * Creates a new HistoryContentManager.
@@ -189,7 +190,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         || UiUtils.isHardwareKeyboardAttached();
         mAppId = appId;
         mLaunchedForApp = launchedForApp;
-        mPackageManager = mActivity.getPackageManager();
         mSelectionDelegate =
                 selectionDelegate != null
                         ? selectionDelegate
@@ -271,6 +271,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mPrefChangeRegistrar = new PrefChangeRegistrar();
         mPrefChangeRegistrar.addObserver(Pref.ALLOW_DELETING_BROWSER_HISTORY, this);
         mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, this);
+
+        mAppInfoCache = new AppInfoCache(mActivity.getPackageManager());
     }
 
     /** Tell the HistoryContentManager to start loading items. */
@@ -297,18 +299,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      */
     boolean buildAppInfoList(List<String> appIds) {
         mAppInfoList.clear();
-        PackageManager pm = mPackageManager;
         for (String appId : appIds) {
-            try {
-                var icon = pm.getApplicationIcon(appId);
-                var appInfo = pm.getApplicationInfo(appId, PackageManager.GET_META_DATA);
-                var label = pm.getApplicationLabel(appInfo);
-                mAppInfoList.add(new AppInfo(appId, icon, label));
-            } catch (NameNotFoundException e) {
-                // Can happen if the corresponding app was uninstalled, or unavailable for any
-                // reason. Filter it out for now. TODO: Consider keeping it with a default app
-                // icon + label.
-            }
+            AppInfo appInfo = mAppInfoCache.get(appId);
+            // Filter out the app whose info cannot be found. TODO: Consider keeping it with
+            // a default app.
+            if (appInfo.isValid()) mAppInfoList.add(appInfo);
         }
         return hasFilterList();
     }
@@ -688,7 +683,49 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         return viewIntent;
     }
 
-    /** @param provider The {@link HistoryProvider} that is used in place of a real one. */
+    static class AppInfoCache {
+        private static final AppInfo EMPTY_INFO = new AppInfo(null, null, null);
+        private HashMap<String, AppInfo> mAppInfoMap;
+        private PackageManager mPackageManager;
+
+        public AppInfoCache(PackageManager packageManager) {
+            mPackageManager = packageManager;
+        }
+
+        public AppInfo get(String appId) {
+            assert appId != null;
+            if (mAppInfoMap == null) mAppInfoMap = new HashMap<String, AppInfo>();
+            AppInfo appInfo = mAppInfoMap.get(appId);
+            if (appInfo == null) {
+                try {
+                    PackageManager pm = mPackageManager;
+                    var info = pm.getApplicationInfo(appId, PackageManager.GET_META_DATA);
+                    var icon = pm.getApplicationIcon(info);
+                    var label = pm.getApplicationLabel(info);
+                    appInfo = new AppInfo(appId, icon, label);
+                } catch (NameNotFoundException e) {
+                    // Can happen if the corresponding app was uninstalled, or unavailable for any
+                    // reason. Map it with an empty info so it won't be queried again till next
+                    // time history UI is launched.
+                    appInfo = EMPTY_INFO;
+                }
+                mAppInfoMap.put(appId, appInfo);
+            }
+            return appInfo;
+        }
+
+        void setPackageManagerForTesting(PackageManager packageManager) {
+            mPackageManager = packageManager;
+        }
+    }
+
+    AppInfoCache getAppInfoCache() {
+        return mAppInfoCache;
+    }
+
+    /**
+     * @param provider The {@link HistoryProvider} that is used in place of a real one.
+     */
     public static void setProviderForTests(HistoryProvider provider) {
         sProviderForTests = provider;
         ResettersForTesting.register(() -> sProviderForTests = null);
@@ -701,7 +738,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     void setPackageManagerForTesting(PackageManager packageManager) {
-        mPackageManager = packageManager;
+        mAppInfoCache.setPackageManagerForTesting(packageManager); // IN-TEST
     }
 
     void setAppFilterSheetForTesting(AppFilterCoordinator appFilterSheet) {

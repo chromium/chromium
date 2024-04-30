@@ -11,9 +11,13 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -21,7 +25,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
@@ -136,6 +142,7 @@ public class HistoryUITest {
     @Mock private HistoryAdapter mMockAdapter;
     @Mock private PackageManager mPackageManager;
     @Mock private AppFilterCoordinator mAppFilterSheet;
+    @Mock private ApplicationInfo mPackageAppInfo;
 
     public static Matcher<Intent> hasData(GURL uri) {
         return IntentMatchers.hasData(uri.getSpec());
@@ -461,7 +468,7 @@ public class HistoryUITest {
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
     @SmallTest
-    public void testSearch_AppFilterChipEnabledWithNonEmptyAppResult() {
+    public void testSearch_AppFilterChipEnabledWithNonEmptyAppResult() throws Exception {
         Assert.assertTrue(mHistoryProvider.isQueryAppsTriggered());
         mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
         mAdapter.setPrivacyDisclaimer();
@@ -478,8 +485,13 @@ public class HistoryUITest {
         Assert.assertFalse(mAdapter.getAppFilterButtonForTest().isEnabled());
 
         // Verify the button becomes enabled if the app result is non-empty.
-        result.add("org.chromium.chrome.ernie");
-        result.add("org.chromium.chrome.bert");
+        final String app1 = "org.chromium.chrome.Ernie";
+        final String app2 = "org.chromium.chrome.Bert";
+        result.add(app1);
+        result.add(app2);
+        when(mPackageManager.getApplicationInfo(eq(app1), anyInt())).thenReturn(mPackageAppInfo);
+        when(mPackageManager.getApplicationInfo(eq(app2), anyInt()))
+                .thenThrow(NameNotFoundException.class);
         mAdapter.onQueryAppsComplete(result);
         Assert.assertTrue(mAdapter.getAppFilterButtonForTest().isEnabled());
     }
@@ -525,6 +537,40 @@ public class HistoryUITest {
                 "The history was not reverted to full",
                 mContentManager.getAppInfoForTesting(),
                 null);
+    }
+
+    @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Test
+    @SmallTest
+    public void testAppInfoCache() throws Exception {
+        var appInfoCache = mContentManager.getAppInfoCache();
+        appInfoCache.setPackageManagerForTesting(mPackageManager);
+        final String app1 = "org.chromium.chrome.AwesomeApp";
+        when(mPackageManager.getApplicationInfo(eq(app1), anyInt())).thenReturn(mPackageAppInfo);
+
+        AppInfo appInfo1 = appInfoCache.get(app1);
+        verify(mPackageManager).getApplicationInfo(eq(app1), anyInt());
+        clearInvocations(mPackageManager);
+
+        // Get the info for the same app -> verify the cached item is returned, without
+        // calling the system API again.
+        Assert.assertEquals(appInfo1, appInfoCache.get(app1));
+        verify(mPackageManager, never()).getApplicationInfo(eq(app1), anyInt());
+        clearInvocations(mPackageManager);
+
+        // Verify that a call with a non-existent app ID returns null.
+        final String app2 = "org.chromium.chrome.UninstalledApp";
+        when(mPackageManager.getApplicationInfo(eq(app2), anyInt()))
+                .thenThrow(NameNotFoundException.class);
+        AppInfo appInfo2 = appInfoCache.get(app2);
+        Assert.assertFalse("Bad appId should return invalid AppInfo", appInfo2.isValid());
+        clearInvocations(mPackageManager);
+
+        // Verify that a call with the same non-exisitent app ID won't invoke the system API again.
+        appInfo2 = appInfoCache.get(app2);
+        verify(mPackageManager, never()).getApplicationInfo(eq(app2), anyInt());
+        Assert.assertFalse("Bad appID should return invalid AppInfo again", appInfo2.isValid());
     }
 
     @Test

@@ -59,6 +59,11 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
             this.label = label;
         }
 
+        /** Return whether the app info object is valid. */
+        public boolean isValid() {
+            return id != null;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (o == this) return true;
