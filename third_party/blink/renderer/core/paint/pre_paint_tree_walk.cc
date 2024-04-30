@@ -797,17 +797,23 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
     const PrePaintTreeWalkContext& parent_context) {
   DCHECK(fragment.IsFragmentationContextRoot());
 
+  if (fragment.IsPaginatedRoot()) {
+    wtf_size_t fragmentainer_idx = 0;
+    for (PhysicalFragmentLink child : fragment.Children()) {
+      const auto* box_fragment = To<PhysicalBoxFragment>(child.fragment.Get());
+      DCHECK_EQ(box_fragment->GetBoxType(), PhysicalFragment::kPageContainer);
+      WalkPageContainer(child, object, parent_context, fragmentainer_idx);
+      fragmentainer_idx++;
+    }
+    return;
+  }
+
   std::optional<wtf_size_t> inner_fragmentainer_idx;
 
   for (PhysicalFragmentLink child : fragment.Children()) {
     const auto* box_fragment = To<PhysicalBoxFragment>(child.fragment.Get());
     if (UNLIKELY(box_fragment->IsLayoutObjectDestroyedOrMoved()))
       continue;
-
-    if (box_fragment->GetBoxType() == PhysicalFragment::kPageContainer) {
-      WalkPageContainer(child, object, parent_context);
-      continue;
-    }
 
     if (box_fragment->GetLayoutObject()) {
       // OOFs contained by a multicol container will be visited during object
@@ -861,7 +867,8 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
 void PrePaintTreeWalk::WalkPageContainer(
     const PhysicalFragmentLink& page_container_link,
     const LayoutObject& parent_object,
-    const PrePaintTreeWalkContext& parent_context) {
+    const PrePaintTreeWalkContext& parent_context,
+    wtf_size_t fragmentainer_idx) {
   // In paginated layout, each fragmentainer (page area) is wrapped inside a
   // page box and a page border box.
   DCHECK_EQ(page_container_link->GetBoxType(),
@@ -891,7 +898,8 @@ void PrePaintTreeWalk::WalkPageContainer(
       containing_block_context->paint_offset += adjustment;
     }
 
-    WalkFragmentainer(parent_object, page_area, page_area_context);
+    WalkFragmentainer(parent_object, page_area, page_area_context,
+                      fragmentainer_idx);
 
     if (containing_block_context) {
       containing_block_context->paint_offset -= adjustment;
@@ -903,7 +911,7 @@ void PrePaintTreeWalk::WalkFragmentainer(
     const LayoutObject& parent_object,
     const PhysicalFragmentLink& child_link,
     const PrePaintTreeWalkContext& parent_context,
-    wtf_size_t inner_fragmentainer_idx) {
+    wtf_size_t fragmentainer_idx) {
   DCHECK(child_link->IsFragmentainerBox());
   const auto& fragmentainer = To<PhysicalBoxFragment>(*child_link.get());
 
@@ -918,8 +926,7 @@ void PrePaintTreeWalk::WalkFragmentainer(
   // they may serve as containing blocks for OOF descendants.
   fragmentainer_context.current_container.fragment = &fragmentainer;
 
-  fragmentainer_context.current_container.fragmentainer_idx =
-      inner_fragmentainer_idx;
+  fragmentainer_context.current_container.fragmentainer_idx = fragmentainer_idx;
 
   PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
       containing_block_context = nullptr;

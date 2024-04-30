@@ -211,11 +211,12 @@ class CORE_EXPORT PrePaintTreeWalk final {
                                             const PrePaintTreeWalkContext&);
   void WalkPageContainer(const PhysicalFragmentLink& page_container_link,
                          const LayoutObject& parent_object,
-                         const PrePaintTreeWalkContext& parent_context);
+                         const PrePaintTreeWalkContext& parent_context,
+                         wtf_size_t fragmentainer_idx);
   void WalkFragmentainer(const LayoutObject& parent_object,
                          const PhysicalFragmentLink& child_link,
                          const PrePaintTreeWalkContext& parent_context,
-                         wtf_size_t inner_fragmentainer_idx = 0);
+                         wtf_size_t fragmentainer_idx);
 
   void WalkLayoutObjectChildren(const LayoutObject&,
                                 const PhysicalBoxFragment*,
