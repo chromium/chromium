@@ -146,9 +146,10 @@ struct URLResponseHead {
   // worker did not respond to the request or did not call respondWith().
   array<url.mojom.Url> url_list_via_service_worker;
 
-  // Information about ServiceWorker Static Routing API. Only provided if the
-  // service worker static router has been registered and one of its rule
-  // matched to the request.
+  // Information about ServiceWorker Static Routing API. If this field is set
+  // with `matchedSourceType` field, a matching rule is found. If this field is
+  // set without `matchedSource`, no matching rule is found. Otherwise, the API
+  // is not used.
   ServiceWorkerRouterInfo? service_worker_router_info;
 
   // https://fetch.spec.whatwg.org/#concept-response-type

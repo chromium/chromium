@@ -220,8 +220,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // A caller should handle the case.
   bool StartRaceNetworkRequest();
 
-  std::optional<ServiceWorkerRouterEvaluator::Result>
-  MaybeEvaluateRouterConditions() const;
+  std::optional<ServiceWorkerRouterEvaluator::Result> EvaluateRouterConditions()
+      const;
 
   bool MaybeStartAutoPreload();
 

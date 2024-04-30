@@ -2100,12 +2100,20 @@ std::unique_ptr<Network::Response> BuildResponse(
     response->SetCacheStorageCacheName(info.cache_storage_cache_name);
   }
   if (!info.service_worker_router_info.is_null()) {
-    response->SetServiceWorkerRouterInfo(
-        protocol::Network::ServiceWorkerRouterInfo::Create()
-            .SetRuleIdMatched(info.service_worker_router_info->rule_id_matched)
-            .SetMatchedSourceType(BuildServiceWorkerRouterSourceType(
-                info.service_worker_router_info->matched_source_type))
-            .Build());
+    auto service_worker_router_info =
+        protocol::Network::ServiceWorkerRouterInfo::Create().Build();
+    if (info.service_worker_router_info->rule_id_matched) {
+      service_worker_router_info->SetRuleIdMatched(
+          *info.service_worker_router_info->rule_id_matched);
+    }
+
+    if (info.service_worker_router_info->matched_source_type) {
+      service_worker_router_info->SetMatchedSourceType(
+          BuildServiceWorkerRouterSourceType(
+              *info.service_worker_router_info->matched_source_type));
+    }
+
+    response->SetServiceWorkerRouterInfo(std::move(service_worker_router_info));
   }
 
   response->SetProtocol(GetProtocol(url, info));

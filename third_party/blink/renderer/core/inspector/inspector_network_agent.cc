@@ -1086,13 +1086,18 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
     response_object->setCacheStorageCacheName(response.CacheStorageCacheName());
   }
   if (response.GetServiceWorkerRouterInfo()) {
-    response_object->setServiceWorkerRouterInfo(
-        protocol::Network::ServiceWorkerRouterInfo::create()
-            .setRuleIdMatched(
-                response.GetServiceWorkerRouterInfo()->RuleIdMatched())
-            .setMatchedSourceType(BuildServiceWorkerRouterSourceType(
-                response.GetServiceWorkerRouterInfo()->MatchedSourceType()))
-            .build());
+    auto router_info =
+        protocol::Network::ServiceWorkerRouterInfo::create().build();
+    if (response.GetServiceWorkerRouterInfo()->RuleIdMatched()) {
+      router_info->setRuleIdMatched(
+          *response.GetServiceWorkerRouterInfo()->RuleIdMatched());
+    }
+
+    if (response.GetServiceWorkerRouterInfo()->MatchedSourceType()) {
+      router_info->setMatchedSourceType(BuildServiceWorkerRouterSourceType(
+          *response.GetServiceWorkerRouterInfo()->MatchedSourceType()));
+    }
+    response_object->setServiceWorkerRouterInfo(std::move(router_info));
   }
 
   response_object->setFromPrefetchCache(response.WasInPrefetchCache());

@@ -3209,11 +3209,11 @@ void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
 
   // Count the matched route info of static routing API for sub-resources
   // if it exists.
-  if (!router_info) {
+  if (!router_info || !router_info->MatchedSourceType()) {
     return;
   }
 
-  switch (router_info->MatchedSourceType()) {
+  switch (*router_info->MatchedSourceType()) {
     case network::mojom::ServiceWorkerRouterSourceType::kCache:
       metrics.matched_cache_router_source_count++;
       break;

@@ -21,27 +21,31 @@ class PLATFORM_EXPORT ServiceWorkerRouterInfo
 
   network::mojom::blink::ServiceWorkerRouterInfoPtr ToMojo() const;
 
-  void SetRuleIdMatched(std::uint32_t rule_id_matched) {
+  void SetRuleIdMatched(std::optional<std::uint32_t> rule_id_matched) {
     rule_id_matched_ = rule_id_matched;
   }
 
-  const std::uint32_t& RuleIdMatched() const { return rule_id_matched_; }
+  const std::optional<std::uint32_t>& RuleIdMatched() const {
+    return rule_id_matched_;
+  }
 
   void SetMatchedSourceType(
-      const network::mojom::ServiceWorkerRouterSourceType& type) {
+      const std::optional<network::mojom::ServiceWorkerRouterSourceType>&
+          type) {
     matched_source_type_ = type;
   }
 
-  const network::mojom::ServiceWorkerRouterSourceType& MatchedSourceType()
-      const {
+  const std::optional<network::mojom::ServiceWorkerRouterSourceType>&
+  MatchedSourceType() const {
     return matched_source_type_;
   }
 
  private:
   ServiceWorkerRouterInfo();
 
-  std::uint32_t rule_id_matched_;
-  network::mojom::ServiceWorkerRouterSourceType matched_source_type_;
+  std::optional<uint32_t> rule_id_matched_;
+  std::optional<network::mojom::ServiceWorkerRouterSourceType>
+      matched_source_type_;
 };
 }  // namespace blink
 

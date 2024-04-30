@@ -269,6 +269,12 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   // Check if registered static router rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
+
+    // Set router information of matched rule for DevTools.
+    response_head_->service_worker_router_info =
+        network::mojom::ServiceWorkerRouterInfo::New();
+    auto* router_info = response_head_->service_worker_router_info.get();
+
     auto eval_result = active_worker->router_evaluator()->Evaluate(
         resource_request_, active_worker->running_status());
     // ServiceWorkerStaticRouter_Evaluate is counted only here.
@@ -282,15 +288,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       const auto& sources = eval_result->sources;
       auto source_type = sources[0].type;
       set_used_router_source_type(source_type);
-
-      // Set router information of matched rule for DevTools.
-      // TODO(crbug.com/40942806): Prepare the router info in ResponseHead even
-      // when the response is not set by `DidDispatchFetchEvent()`.
-      network::mojom::ServiceWorkerRouterInfoPtr router_info =
-          network::mojom::ServiceWorkerRouterInfo::New();
       router_info->rule_id_matched = eval_result->id;
       router_info->matched_source_type = source_type;
-      response_head_->service_worker_router_info = std::move(router_info);
 
       switch (source_type) {
         case network::mojom::ServiceWorkerRouterSourceType::kNetwork:

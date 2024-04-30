@@ -366,46 +366,51 @@ void ServiceWorkerSubresourceLoader::StartRequest(
 void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
   // Evaluate the registered routing info first, because this result may bypass
   // ServiceWorker start process.
-  const auto eval_result = MaybeEvaluateRouterConditions();
   enum RaceNetworkRequestMode {
     kDefault,
     kForced,
     kSkipped
   } race_network_request_mode = kDefault;
-  if (eval_result) {  // matched the rule.
-    const auto& sources = eval_result->sources;
-    auto source_type = sources[0].type;
-    set_used_router_source_type(source_type);
 
-    auto router_info = network::mojom::ServiceWorkerRouterInfo::New();
-    router_info->rule_id_matched = eval_result->id;
-    router_info->matched_source_type = source_type;
-    response_head_->service_worker_router_info = std::move(router_info);
+  if (controller_connector_->router_evaluator()) {
+    response_head_->service_worker_router_info =
+        network::mojom::ServiceWorkerRouterInfo::New();
+    auto* router_info = response_head_->service_worker_router_info.get();
 
-    switch (source_type) {
-      case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
-        // Network fallback is requested.
-        {
-          auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
-          timing->dispatch_event_time = base::TimeTicks::Now();
-          timing->respond_with_settled_time = base::TimeTicks::Now();
-          OnFallback(std::nullopt, std::move(timing));
-        }
-        return;
-      case network::mojom::ServiceWorkerRouterSourceType::kRace:
-        race_network_request_mode = kForced;
-        break;
-      case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
-        race_network_request_mode = kSkipped;
-        break;
-      case network::mojom::ServiceWorkerRouterSourceType::kCache:
-        controller_connector_->CallCacheStorageMatch(
-            sources[0].cache_source->cache_name,
-            blink::mojom::FetchAPIRequest::From(resource_request_),
-            base::BindOnce(
-                &ServiceWorkerSubresourceLoader::DidCacheStorageMatch,
-                weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
-        return;
+    const auto eval_result = EvaluateRouterConditions();
+    if (eval_result) {  // matched the rule.
+      const auto& sources = eval_result->sources;
+      auto source_type = sources[0].type;
+      set_used_router_source_type(source_type);
+
+      router_info->rule_id_matched = eval_result->id;
+      router_info->matched_source_type = source_type;
+
+      switch (source_type) {
+        case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+          // Network fallback is requested.
+          {
+            auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
+            timing->dispatch_event_time = base::TimeTicks::Now();
+            timing->respond_with_settled_time = base::TimeTicks::Now();
+            OnFallback(std::nullopt, std::move(timing));
+          }
+          return;
+        case network::mojom::ServiceWorkerRouterSourceType::kRace:
+          race_network_request_mode = kForced;
+          break;
+        case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
+          race_network_request_mode = kSkipped;
+          break;
+        case network::mojom::ServiceWorkerRouterSourceType::kCache:
+          controller_connector_->CallCacheStorageMatch(
+              sources[0].cache_source->cache_name,
+              blink::mojom::FetchAPIRequest::From(resource_request_),
+              base::BindOnce(
+                  &ServiceWorkerSubresourceLoader::DidCacheStorageMatch,
+                  weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+          return;
+      }
     }
   }
 
@@ -1291,12 +1296,9 @@ bool ServiceWorkerSubresourceLoader::IsMainResourceLoader() {
 }
 
 std::optional<ServiceWorkerRouterEvaluator::Result>
-ServiceWorkerSubresourceLoader::MaybeEvaluateRouterConditions() const {
+ServiceWorkerSubresourceLoader::EvaluateRouterConditions() const {
   auto* router_evaluator = controller_connector_->router_evaluator();
-  if (!router_evaluator) {
-    return {};
-  }
-  CHECK(router_evaluator->IsValid());
+  CHECK(router_evaluator && router_evaluator->IsValid());
   // Avoid calling GetRecentRunningStatus() if there is no rules that
   // need running status.
   // Getting recent running status sends IPC to the browser process,
