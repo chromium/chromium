@@ -2409,7 +2409,7 @@
       "http/tests/inspector-protocol/service-worker/tentative/static-router",
       "http/tests/serviceworker/static-router/"
     ],
-    "args": ["--enable-features=ServiceWorkerStaticRouter",
+    "args": ["--enable-features=ServiceWorkerStaticRouter,ServiceWorkerStaticRouterNotConditionEnabled",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 14, 2024",
     "owners": ["yyanagisawa@chromium.org", "sisidovski@chromium.org"]
