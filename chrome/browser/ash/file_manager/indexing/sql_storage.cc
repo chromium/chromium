@@ -113,6 +113,11 @@ void SqlStorage::OnErrorCallback(int error, sql::Statement* stmt) {
   }
 }
 
+std::set<int64_t> SqlStorage::GetUrlIdsForTerm(
+    int64_t augmented_term_id) const {
+  return posting_list_table_.GetUrlIdsForTerm(augmented_term_id);
+}
+
 int32_t SqlStorage::AddToPostingList(const Term& term, const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const int64_t augmented_term_id = GetOrCreateAugmentedTermId(term);

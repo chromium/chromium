@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/indexing/term.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -35,6 +36,8 @@ class SqlStorageTest : public testing::Test {
     storage_ = std::make_unique<SqlStorage>(db_file_path(), "test_uma_tag");
     foo_url_ = GURL(
         "filesystem:chrome://file-manager/external/Downloads-u123/foo.txt");
+    bar_url_ = GURL(
+        "filesystem:chrome://file-manager/external/Downloads-u123/bar.png");
     EXPECT_TRUE(
         base::Time::FromUTCExploded(kTestTimeExploded, &foo_modified_time_));
   }
@@ -49,6 +52,7 @@ class SqlStorageTest : public testing::Test {
   Term pinned_;
   Term downloaded_;
   GURL foo_url_;
+  GURL bar_url_;
   base::Time foo_modified_time_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<SqlStorage> storage_;
@@ -203,6 +207,40 @@ TEST_F(SqlStorageTest, DeleteFromPostingList) {
   EXPECT_EQ(1, storage_->DeleteFromPostingList(pinned_, foo_url_));
   // No more deletion after the first one.
   EXPECT_EQ(0, storage_->DeleteFromPostingList(pinned_, foo_url_));
+}
+
+TEST_F(SqlStorageTest, GetUrlIdsForTerm) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  // Setup: prefetch URL IDs.
+  int64_t foo_url_id = storage_->GetOrCreateUrlId(foo_url_);
+  int64_t bar_url_id = storage_->GetOrCreateUrlId(bar_url_);
+
+  // No terms were associated with any files, so the results must be empty.
+  int64_t pinned_term_id = storage_->GetOrCreateAugmentedTermId(pinned_);
+  EXPECT_TRUE(storage_->GetUrlIdsForTerm(pinned_term_id).empty());
+
+  // Associate pinned with foo.
+  EXPECT_EQ(1, storage_->AddToPostingList(pinned_, foo_url_));
+  EXPECT_THAT(storage_->GetUrlIdsForTerm(pinned_term_id),
+              testing::UnorderedElementsAre(foo_url_id));
+
+  // Associate downloaded_ with foo.
+  int64_t downloaded_term_id =
+      storage_->GetOrCreateAugmentedTermId(downloaded_);
+  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_, foo_url_));
+  EXPECT_THAT(storage_->GetUrlIdsForTerm(pinned_term_id),
+              testing::UnorderedElementsAre(foo_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForTerm(downloaded_term_id),
+              testing::UnorderedElementsAre(foo_url_id));
+
+  // Associate downloaded with bar.
+  EXPECT_EQ(1, storage_->AddToPostingList(downloaded_, bar_url_));
+  EXPECT_THAT(storage_->GetUrlIdsForTerm(pinned_term_id),
+              testing::UnorderedElementsAre(foo_url_id));
+  EXPECT_THAT(storage_->GetUrlIdsForTerm(downloaded_term_id),
+              testing::UnorderedElementsAre(foo_url_id, bar_url_id));
 }
 
 }  // namespace

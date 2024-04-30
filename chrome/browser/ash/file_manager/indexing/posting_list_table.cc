@@ -13,6 +13,7 @@ namespace {
 #define POSTING_LIST_TABLE "posting_list_table"
 #define AUGMENTED_TERM_ID "augmented_term_id"
 #define URL_ID "url_id"
+#define POSTING_LIST_INDEX "posting_list_index"
 
 // The statement used to create the posting list table.
 static constexpr char kCreatePostingListTableQuery[] =
@@ -31,7 +32,7 @@ static constexpr char kCreatePostingListTableQuery[] =
 // augmented term.
 static constexpr char kCreatePostingIndexQuery[] =
     // clang-format off
-    "CREATE INDEX posting_list_index ON posting_list_table("
+    "CREATE INDEX " POSTING_LIST_INDEX " ON " POSTING_LIST_TABLE "("
     AUGMENTED_TERM_ID ")";
 // clang-format on
 
@@ -57,6 +58,14 @@ static constexpr char kDeleteAssociationQuery[] =
     // clang-format off
     "DELETE FROM " POSTING_LIST_TABLE " WHERE " AUGMENTED_TERM_ID "=? "
     "AND " URL_ID "=?";
+// clang-format on
+
+// A query that fetches all URL IDs for the given augmented term ID. This
+// query utilizes the posting_list_index.
+static constexpr char kGetUrlIdsForTermQuery[] =
+    // clang-format off
+    "SELECT " URL_ID " FROM " POSTING_LIST_TABLE " INDEXED BY "
+    POSTING_LIST_INDEX " WHERE " AUGMENTED_TERM_ID "=?";
 // clang-format on
 
 }  // namespace
@@ -129,6 +138,20 @@ int32_t PostingListTable::DeleteFromPostingList(int64_t augmented_term_id,
     return 0;
   }
   return db_->GetLastChangeCount();
+}
+
+std::set<int64_t> PostingListTable::GetUrlIdsForTerm(
+    int64_t augmented_term_id) const {
+  sql::Statement get_url_ids(
+      db_->GetCachedStatement(SQL_FROM_HERE, kGetUrlIdsForTermQuery));
+  DCHECK(get_url_ids.is_valid()) << "Invalid select statement: \""
+                                 << get_url_ids.GetSQLStatement() << "\"";
+  get_url_ids.BindInt64(0, augmented_term_id);
+  std::set<int64_t> url_ids;
+  while (get_url_ids.Step()) {
+    url_ids.emplace(get_url_ids.ColumnInt64(0));
+  }
+  return url_ids;
 }
 
 }  // namespace file_manager

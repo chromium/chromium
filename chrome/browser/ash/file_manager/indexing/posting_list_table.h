@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_POSTING_LIST_TABLE_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_POSTING_LIST_TABLE_H_
 
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "sql/database.h"
 
@@ -40,6 +42,10 @@ class PostingListTable {
   // Deletes the given `url_id` to the posting list of the given
   // `augmented_term_id`. Returns true if successful, false otherwise.
   int32_t DeleteFromPostingList(int64_t augmented_term_id, int64_t url_id);
+
+  // For the given term ID it returns all known URL IDs that are associated
+  // with that term.
+  std::set<int64_t> GetUrlIdsForTerm(int64_t augmented_term_id) const;
 
  private:
   raw_ptr<sql::Database> db_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_SQL_STORAGE_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_SQL_STORAGE_H_
 
+#include <set>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -53,6 +54,9 @@ class SqlStorage {
 
   // Closes the database. Returns true if successful.
   bool Close();
+
+  // Returns the set of URL IDs associated with the given augmented term ID.
+  std::set<int64_t> GetUrlIdsForTerm(int64_t augmented_term_id) const;
 
   // Creates an association between `augmented_term_id` and `url_id`. This
   // method is to be used when a file with the given `url_id` is known to

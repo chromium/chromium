@@ -48,6 +48,10 @@ class InmemoryFileIndex : public FileIndex {
   SearchResults Search(const Query& query) override;
 
  private:
+  // For the given `augmented_term_id` this method returns all known URL IDs
+  // that are associated with that term.
+  std::set<int64_t> GetUrlIdsForTerm(int64_t augmented_term_id) const;
+
   // Builds a map from field name to unique term IDs.
   std::set<int64_t> ConvertToTermIds(const std::vector<Term>& terms);
 

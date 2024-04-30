@@ -205,6 +205,15 @@ int64_t InmemoryFileIndex::PutFileInfo(int64_t url_id,
   return url_id;
 }
 
+std::set<int64_t> InmemoryFileIndex::GetUrlIdsForTerm(
+    int64_t augmented_term_id) const {
+  auto term_match = posting_lists_.find(augmented_term_id);
+  if (term_match == posting_lists_.end()) {
+    return {};
+  }
+  return term_match->second;
+}
+
 // Searches the index for file info matching the specified query.
 SearchResults InmemoryFileIndex::Search(const Query& query) {
   const std::vector<Term>& terms = query.terms();
@@ -231,18 +240,17 @@ SearchResults InmemoryFileIndex::Search(const Query& query) {
     } else {
       augmented_term_id = GetAugmentedTermId(term.field(), term_id);
     }
-    auto ith_term_match = posting_lists_.find(augmented_term_id);
-    if (ith_term_match == posting_lists_.end()) {
+    const std::set<int64_t> url_ids = GetUrlIdsForTerm(augmented_term_id);
+    if (url_ids.empty()) {
       return results;
     }
     if (first) {
-      matched_url_ids = ith_term_match->second;
+      matched_url_ids = url_ids;
       first = false;
     } else {
       std::set<int64_t> intersection;
       std::set_intersection(matched_url_ids.begin(), matched_url_ids.end(),
-                            ith_term_match->second.begin(),
-                            ith_term_match->second.end(),
+                            url_ids.begin(), url_ids.end(),
                             std::inserter(intersection, intersection.begin()));
       matched_url_ids = intersection;
     }
