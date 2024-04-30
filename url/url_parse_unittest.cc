@@ -627,6 +627,8 @@ static FileSystemURLParseCase filesystem_cases[] = {
      nullptr, nullptr, -1, "/persistent", "/bar;par/", "query", "ref"},
     {"filesystem:file:///persistent", "file", nullptr, nullptr, nullptr, -1,
      "/persistent", "", nullptr, nullptr},
+    {"filesystem:", nullptr, nullptr, nullptr, nullptr, -1, nullptr, nullptr,
+     nullptr, nullptr},
 };
 
 TEST(URLParser, FileSystemURL) {

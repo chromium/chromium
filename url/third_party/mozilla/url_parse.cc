@@ -513,7 +513,7 @@ Parsed DoParseFileSystemURL(std::basic_string_view<CharT> url) {
     parsed.scheme.begin += begin;
 
     if (parsed.scheme.end() == url_len - 1) {
-      return {};
+      return parsed;
     }
 
     inner_start = parsed.scheme.end() + 1;
