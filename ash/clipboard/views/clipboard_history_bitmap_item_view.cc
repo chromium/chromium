@@ -167,11 +167,8 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
       : container_(container) {
     views::Builder<views::View>(this)
         .SetLayoutManager(std::make_unique<views::FillLayout>())
-        .AddChild(
-            views::Builder<views::ImageView>(BuildImageView())
-                .CopyAddressTo(&image_view_)
-                .SetPreferredSize(gfx::Size(
-                    INT_MAX, ClipboardHistoryViews::kImageViewPreferredHeight)))
+        .AddChild(views::Builder<views::ImageView>(BuildImageView())
+                      .CopyAddressTo(&image_view_))
         .BuildChildren();
 
     if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
@@ -246,6 +243,10 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
         .lineTo(radius, 0.f)
         .close()
         .detach();
+  }
+
+  int GetHeightForWidth(int width) const override {
+    return ClipboardHistoryViews::kImageViewPreferredHeight;
   }
 
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
@@ -327,6 +328,7 @@ ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
     views::MenuItemView* container)
     : ClipboardHistoryItemView(item_id, clipboard_history, container),
       data_format_(GetClipboardHistoryItem()->main_format()) {
+  SetID(clipboard_history_util::kBitmapItemView);
   switch (data_format_) {
     case ui::ClipboardInternalFormat::kHtml:
       SetAccessibleName(
