@@ -132,6 +132,7 @@
 #include "chrome/browser/password_manager/android/password_manager_error_message_helper_bridge_impl.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
+#include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
 #include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
@@ -408,6 +409,16 @@ bool ChromePasswordManagerClient::PromptUserToChooseCredentials(
 void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
     password_manager::ErrorMessageFlowType flow_type,
     password_manager::PasswordStoreBackendErrorType error_type) {
+  bool oldGMSSavingDisabled = error_type ==
+                              password_manager::PasswordStoreBackendErrorType::
+                                  kGMSCoreOutdatedSavingDisabled;
+  bool oldGMSSavingPossible = error_type ==
+                              password_manager::PasswordStoreBackendErrorType::
+                                  kGMSCoreOutdatedSavingPossible;
+  bool noPlayStore = !password_manager_android_util::IsPlayStoreAppPresent();
+  if ((oldGMSSavingDisabled || oldGMSSavingPossible) && noPlayStore) {
+    return;
+  }
   if (!password_manager_error_message_delegate_) {
     password_manager_error_message_delegate_ =
         std::make_unique<PasswordManagerErrorMessageDelegate>(

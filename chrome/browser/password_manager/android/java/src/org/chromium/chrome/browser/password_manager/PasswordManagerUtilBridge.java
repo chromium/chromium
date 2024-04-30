@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import android.content.pm.PackageInfo;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.PackageUtils;
 import org.chromium.components.prefs.PrefService;
 
 /** Wrapper for utilities in password_manager_util. */
@@ -53,6 +56,12 @@ public class PasswordManagerUtilBridge {
     @CalledByNative
     public static boolean isInternalBackendPresent() {
         return PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
+    }
+
+    @CalledByNative
+    public static boolean isPlayStoreAppPresent() {
+        PackageInfo packageInfo = PackageUtils.getPackageInfo("com.android.vending", 0);
+        return packageInfo != null;
     }
 
     /**
