@@ -1,3 +1,0 @@
-HTTP/1.1 301 Moved Permanently
-Location: /cacheable.js
-Cache-Control: max-age=10000

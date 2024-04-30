@@ -41,8 +41,6 @@ bundle_data("tests_bundle_data") {
   visibility = [ ":run_all_unittests" ]
   testonly = true
   sources = [
-    "//services/test/data/cacheable.js",
-    "//services/test/data/cacheable.js.mock-http-headers",
     "//services/test/data/content-sniffer-test0.html",
     "//services/test/data/content-sniffer-test0.html.mock-http-headers",
     "//services/test/data/content-sniffer-test1.html",
@@ -59,10 +57,6 @@ bundle_data("tests_bundle_data") {
     "//services/test/data/nocache.html.mock-http-headers",
     "//services/test/data/nosniff-test.html",
     "//services/test/data/nosniff-test.html.mock-http-headers",
-    "//services/test/data/pervasive.js",
-    "//services/test/data/pervasive.js.mock-http-headers",
-    "//services/test/data/redirect301-to-cacheable",
-    "//services/test/data/redirect301-to-cacheable.mock-http-headers",
     "//services/test/data/redirect307-to-echo",
     "//services/test/data/redirect307-to-echo.mock-http-headers",
     "//services/test/data/simple_page.html",

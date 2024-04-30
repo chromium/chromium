@@ -320,11 +320,6 @@ BASE_FEATURE(kOmitCorsClientCert,
              "OmitCorsClientCert",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow pervasive payloads to use a single-keyed cache.
-BASE_FEATURE(kCacheTransparency,
-             "CacheTransparency",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Load Pervasive Payloads List for Cache Transparency.
 BASE_FEATURE(kPervasivePayloadsList,
              "PervasivePayloadsList",
