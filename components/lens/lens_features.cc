@@ -70,10 +70,10 @@ const base::FeatureParam<int> kLensOverlayHorizontalTextMargin{
 
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
-    "https://lens.google.com/lensonelrpui/crupload"};
+    "https://lensfrontend-pa.googleapis.com/v1/crupload"};
 
 constexpr base::FeatureParam<bool> kUseOauthForLensOverlayRequests{
-    &kLensOverlay, "use-oauth-for-requests", false};
+    &kLensOverlay, "use-oauth-for-requests", true};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
