@@ -274,26 +274,6 @@ TEST_F(HotspotEnabledStateNotifierTest, DisabledBySystem) {
             hotspotStateObserver()->last_disable_reason());
 
   SetHotspotStateInShill(shill::kTetheringStateActive);
-
-  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
-                  shill::kTetheringIdleReasonUserExit);
-  network_state_test_helper_.manager_test()->SetManagerProperty(
-      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hotspot_config::mojom::DisableReason::kUserInitiated,
-            hotspotStateObserver()->last_disable_reason());
-
-  SetHotspotStateInShill(shill::kTetheringStateActive);
-
-  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
-                  shill::kTetheringIdleReasonClientStop);
-  network_state_test_helper_.manager_test()->SetManagerProperty(
-      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(hotspot_config::mojom::DisableReason::kUserInitiated,
-            hotspotStateObserver()->last_disable_reason());
-
-  SetHotspotStateInShill(shill::kTetheringStateActive);
   status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
                   shill::kTetheringIdleReasonUpstreamNoInternet);
   network_state_test_helper_.manager_test()->SetManagerProperty(

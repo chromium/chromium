@@ -41,6 +41,13 @@ void HotspotEnabledStateNotifier::OnHotspotStatusChanged() {
     return;
   }
 
+  if (disable_reason.value() ==
+      hotspot_config::mojom::DisableReason::kUserInitiated) {
+    NET_LOG(EVENT) << "Skipping recording user initiated disable events "
+                      "reported from platform";
+    return;
+  }
+
   for (auto& observer : observers_) {
     observer->OnHotspotTurnedOff(disable_reason.value());
   }
