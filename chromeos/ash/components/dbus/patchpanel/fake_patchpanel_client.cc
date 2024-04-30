@@ -26,8 +26,6 @@ FakePatchPanelClient* FakePatchPanelClient::Get() {
 FakePatchPanelClient::FakePatchPanelClient() {
   DCHECK(!g_instance);
   g_instance = this;
-  notify_android_interactive_state_count_ = 0;
-  notify_android_wifi_multicast_lock_change_count_ = 0;
 }
 
 FakePatchPanelClient::~FakePatchPanelClient() {
@@ -64,7 +62,7 @@ void FakePatchPanelClient::TagSocket(int socket_fd,
                                      std::optional<VpnRoutingPolicy> vpn_policy,
                                      TagSocketCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
+      FROM_HERE, base::BindOnce(std::move(callback), tag_socket_success_));
 }
 
 void FakePatchPanelClient::AddObserver(Observer* observer) {

@@ -319,10 +319,17 @@ TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
   EXPECT_FALSE(result.is_client_ready);
 }
 
-TEST_F(WifiP2PControllerTest, TagSocket) {
+TEST_F(WifiP2PControllerTest, TagSocketSuccess) {
   Init();
 
   EXPECT_TRUE(TagSocket(123, base::ScopedFD()));
+}
+
+TEST_F(WifiP2PControllerTest, TagSocketFailure) {
+  Init();
+  FakePatchPanelClient::Get()->set_tag_socket_success_for_testing(
+      /*success=*/false);
+  EXPECT_FALSE(TagSocket(123, base::ScopedFD()));
 }
 
 }  // namespace ash

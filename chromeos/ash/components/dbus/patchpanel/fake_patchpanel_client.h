@@ -48,6 +48,10 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
   // testing purpose.
   int GetAndroidWifiMulticastLockChangeNotifyCount();
 
+  void set_tag_socket_success_for_testing(bool success) {
+    tag_socket_success_ = success;
+  }
+
  protected:
   friend class PatchPanelClient;
 
@@ -62,9 +66,11 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
   // List of observers.
   base::ObserverList<Observer> observer_list_;
 
-  int notify_android_interactive_state_count_;
+  int notify_android_interactive_state_count_ = 0;
 
-  int notify_android_wifi_multicast_lock_change_count_;
+  int notify_android_wifi_multicast_lock_change_count_ = 0;
+
+  bool tag_socket_success_ = true;
 };
 
 }  // namespace ash

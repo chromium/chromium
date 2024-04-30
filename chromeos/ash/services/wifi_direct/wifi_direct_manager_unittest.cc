@@ -133,6 +133,11 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupSuccess) {
   ExpectConnectionsCount(1);
   EXPECT_EQ(1000u, GetFrequency(wifi_direct_connection));
   EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
+
+  FakePatchPanelClient::Get()->set_tag_socket_success_for_testing(
+      /*success=*/false);
+  EXPECT_FALSE(AssociateSocket(wifi_direct_connection));
+
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
@@ -166,6 +171,11 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
   ExpectConnectionsCount(1);
   EXPECT_EQ(5200u, GetFrequency(wifi_direct_connection));
   EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
+
+  FakePatchPanelClient::Get()->set_tag_socket_success_for_testing(
+      /*success=*/false);
+  EXPECT_FALSE(AssociateSocket(wifi_direct_connection));
+
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
