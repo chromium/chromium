@@ -99955,7 +99955,7 @@
       ]
      ],
      "contain-layout-baseline-005.html": [
-      "0971402e6b9f3afcf3224cd3e95d195606e0c698",
+      "fb706cbf0300eb09dd6daaf3a6e91417e40ad1b8",
       [
        null,
        [
@@ -99993,13 +99993,26 @@
        {}
       ]
      ],
-     "contain-layout-button-001.html": [
-      "b53b28879e2ce884b61f741032afbf486afb3bf5",
+     "contain-layout-button-001.tentative.html": [
+      "f5a664e566f6bc0324d14779f67b15e6d36d1615",
       [
        null,
        [
         [
          "/css/css-contain/reference/contain-layout-button-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "contain-layout-button-002.tentative.html": [
+      "15026d55f8c63712d19d8297c7c63e8543d3bf2f",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/contain-layout-button-002-ref.html",
          "=="
         ]
        ],
@@ -146718,7 +146731,7 @@
         ]
        ],
        "clip-path-animation-fixed-position-rounding-error.html": [
-        "8a02a5b2a6d6635c2b13633ae62e296704c962a6",
+        "02a14ad65fec0b62bf4e01726cc4ef8326b94702",
         [
          null,
          [
@@ -146727,11 +146740,27 @@
            "=="
           ]
          ],
-         {}
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              64
+             ],
+             [
+              0,
+              400
+             ]
+            ]
+           ]
+          ]
+         }
         ]
        ],
        "clip-path-animation-fixed-position.html": [
-        "3ffc2a30a7f3b31ba7c5a8f5f8c0f3d727ffd9f3",
+        "20fc8e52d89cdef2a5ff742314087542b0c4f3f7",
         [
          null,
          [
@@ -146747,11 +146776,11 @@
             [
              [
               0,
-              10
+              60
              ],
              [
               0,
-              150
+              350
              ]
             ]
            ]
@@ -307364,7 +307393,7 @@
        []
       ],
       "contain-layout-baseline-005-ref.html": [
-       "360652c9397ee8b69a4bf07c763148eafcc64be0",
+       "83340137ac6ac90bcab35f1e979bfae5b7ca7465",
        []
       ],
       "contain-layout-breaks-002-ref.html": [
@@ -307372,7 +307401,11 @@
        []
       ],
       "contain-layout-button-001-ref.html": [
-       "da83204dce641b37a820cf47d2201d94a0fd60cb",
+       "c20efbbb39d4cc9181db3a332d4846c214695c65",
+       []
+      ],
+      "contain-layout-button-002-ref.html": [
+       "85b98ee4a66b1a9d66f0910a2e436c1136f7ce86",
        []
       ],
       "contain-layout-cell-001-ref.html": [
@@ -323115,7 +323148,7 @@
         []
        ],
        "clip-path-animation-fixed-position-rounding-error-ref.html": [
-        "a069e4d3ae5bc82ea9547b01e7958b8f7eead645",
+        "e9f54f3ad3dd757070d63ecdc3c3ae4123d213e8",
         []
        ],
        "clip-path-animation-font-size-ref.html": [
@@ -353376,7 +353409,7 @@
        []
       ],
       "fetch-metadata.conf.yml": [
-       "14182bb5d34e2f14474902061cc9430d7ea72e79",
+       "11e6140343638fd47c6fe6795d9e6127ae41cf40",
        []
       ],
       "generate.py": [
@@ -379575,8 +379608,16 @@
      "20ab3ff9ef350d009bea344ccb05a454ecde5c21",
      []
     ],
+    "complete-method.tentative.https-expected.txt": [
+     "d29ce6367d913b7d55514243483f38dc311b9437",
+     []
+    ],
+    "constructor.tentative.https-expected.txt": [
+     "d1b5d306943011c6069f70cbb4bd977339958310",
+     []
+    ],
     "onmerchantvalidation-attribute.https-expected.txt": [
-     "c5ab5244ad3e50c688219f80f47eb1a32d2b29b2",
+     "e009620cb9cb67d75cc65f6e9f7fa2e5a767d4f5",
      []
     ]
    },
@@ -384964,7 +385005,7 @@
    },
    "screen-details": {
     "META.yml": [
-     "abfee89ffbdd29ccd2741bbd3d4a314387025509",
+     "2e3284c67cc049ff02b17b1c2205a0ce729b3528",
      []
     ]
    },
@@ -392985,14 +393026,6 @@
      "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
      []
     ],
-    "idlharness.any-expected.txt": [
-     "debe816bc121eca3599bce65d3c569085919d19e",
-     []
-    ],
-    "idlharness.any.worker-expected.txt": [
-     "debe816bc121eca3599bce65d3c569085919d19e",
-     []
-    ],
     "javascript-urls.window-expected.txt": [
      "90fc17d29d33966ad670b16d257318bc88b6dccf",
      []
@@ -393099,14 +393132,6 @@
     ],
     "url-setters.any_include=mailto-expected.txt": [
      "71ba9762ad73ad4139f3542c53e05cdcb5ceab9f",
-     []
-    ],
-    "url-statics-parse.any-expected.txt": [
-     "53c676d3eac2fdda5d6aacb7e601a5625fad9b63",
-     []
-    ],
-    "url-statics-parse.any.worker-expected.txt": [
-     "53c676d3eac2fdda5d6aacb7e601a5625fad9b63",
      []
     ],
     "urlsearchparams-delete.any-expected.txt": [
@@ -472271,7 +472296,7 @@
        ]
       ],
       "calc-size-parsing.tentative.html": [
-       "afcb200424fb13a75b71ad60dac835d245add719",
+       "422ab3c33ee1bd09fb7c02cf312c76bf4d19d8ba",
        [
         null,
         {}
@@ -473623,7 +473648,7 @@
        ]
       },
       "scroll-top-test-with-zoom.html": [
-       "290fa602af677f6fb394c3b79a9bb25c2158d23d",
+       "9656fe120e8ec39a7570950b4b1ad39d6c2fb16b",
        [
         null,
         {}
@@ -479167,7 +479192,16 @@
       ]
      ],
      "user-invalid.html": [
-      "5f8fa5811aff1b0cf333f5dc5bd173c6507b8810",
+      "c57e764831290886de7651735bda731ed4819e35",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "user-valid-user-invalid-multifield-inputs.tentative.html": [
+      "d6358ea2691173da800ceb275a13406638291741",
       [
        null,
        {
@@ -479176,7 +479210,7 @@
       ]
      ],
      "user-valid.html": [
-      "7a12eb237d34af1645730435f44509a9af882677",
+      "402003ba5e63266071a9c3aa474f017ddb131049",
       [
        null,
        {
@@ -484342,11 +484376,41 @@
          {}
         ]
        ],
+       "css-transition-cross-document.html": [
+        "f3c8fafbfa8c5b002ba309e3333a57536473d266",
+        [
+         null,
+         {}
+        ]
+       ],
+       "css-transition-cross-shadow.html": [
+        "145f40ba50469364ca11ea23963ad97070b4f39a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "css-transition-to-disconnected-document.html": [
+        "537edfe9b617029c7a5780a84fd40078eea0748b",
+        [
+         null,
+         {}
+        ]
+       ],
        "css-transition-trigger.html": [
         "0cb5608a695e000dc54b9fa2f73c49fc16ebcd98",
         [
          null,
          {}
+        ]
+       ],
+       "fullscreen-preserve.html": [
+        "810eeac9af90f80e18ed149e875b3656f81b3a1d",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ]
       }
@@ -484450,6 +484514,17 @@
         {}
        ]
       ],
+      "observable-every.any.js": [
+       "74a344b8f78559ad9d23247a4d2dc87cf095320d",
+       [
+        "dom/observable/tentative/observable-every.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-every.any.worker.html",
+        {}
+       ]
+      ],
       "observable-filter.any.js": [
        "3c1a7d782488c8d7d2cfbfb0da0b26fc41bb70b0",
        [
@@ -484458,6 +484533,17 @@
        ],
        [
         "dom/observable/tentative/observable-filter.any.worker.html",
+        {}
+       ]
+      ],
+      "observable-find.any.js": [
+       "0e09060fc5ac199f976f952b50e048546627b850",
+       [
+        "dom/observable/tentative/observable-find.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-find.any.worker.html",
         {}
        ]
       ],
@@ -484549,6 +484635,17 @@
        "06bf2e26b544184ba0df858fbfb0ff3adf9daa85",
        [
         "dom/observable/tentative/observable-map.window.html",
+        {}
+       ]
+      ],
+      "observable-some.any.js": [
+       "b692610df329c601d38b3407eac1b242b62f9b05",
+       [
+        "dom/observable/tentative/observable-some.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-some.any.worker.html",
         {}
        ]
       ],
@@ -517357,7 +517454,7 @@
        ]
       ],
       "worker-dedicated-constructor.sub.html": [
-       "69ac7682a5c5ffc6699a51b5589a42ac2c08bedd",
+       "65b1837c6363a249bf0f249eed726432cd1bcca6",
        [
         null,
         {}
