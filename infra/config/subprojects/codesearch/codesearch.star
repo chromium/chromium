@@ -115,6 +115,7 @@ try_.builder(
             "ios_disable_code_signing",
         ],
     ),
+    cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     properties = {
@@ -172,7 +173,9 @@ try_.builder(
             "mac",
         ],
     ),
-    os = os.MAC_10_15,
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     properties = {
         "recipe_properties": {
             "build_config": "mac",
