@@ -15,7 +15,6 @@
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace ui {
-
 class AXPlatformTreeManager;
 
 // This class has two distinct event recording code paths. When we are
@@ -30,7 +29,7 @@ class AXPlatformTreeManager;
 class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderAuraLinux
     : public AXEventRecorder {
  public:
-  AXEventRecorderAuraLinux(base::WeakPtr<AXPlatformTreeManager> manager,
+  AXEventRecorderAuraLinux(base::WeakPtr<ui::AXPlatformTreeManager> manager,
                            base::ProcessId pid,
                            const AXTreeSelector& selector);
 
@@ -63,7 +62,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderAuraLinux
 
   raw_ptr<AtspiEventListener> atspi_event_listener_ = nullptr;
 
-  base::WeakPtr<AXPlatformTreeManager> manager_;
+  base::WeakPtr<ui::AXPlatformTreeManager> manager_;
   base::ProcessId pid_;
   AXTreeSelector selector_;
   static AXEventRecorderAuraLinux* instance_;

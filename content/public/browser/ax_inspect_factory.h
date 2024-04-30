@@ -13,12 +13,11 @@
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 
-namespace content {
+namespace ui {
+class AXPlatformTreeManager;
+}
 
-// TODO: we shouldn't leak internal data types outside of the content module,
-// event recorders can use native platform APIs and avoid dealing
-// with BrowserAccessibilityManager, see crbug.com/1133330.
-class BrowserAccessibilityManager;
+namespace content {
 
 // Accessibility tree formatters and event recorders factory.
 class CONTENT_EXPORT AXInspectFactory {
@@ -38,7 +37,7 @@ class CONTENT_EXPORT AXInspectFactory {
   // Creates the appropriate event recorder for the platform we are currently
   // running on.
   static std::unique_ptr<ui::AXEventRecorder> CreatePlatformRecorder(
-      BrowserAccessibilityManager* manager = nullptr,
+      ui::AXPlatformTreeManager* manager = nullptr,
       base::ProcessId pid = 0,
       const ui::AXTreeSelector& selector = {});
 
@@ -53,7 +52,7 @@ class CONTENT_EXPORT AXInspectFactory {
   // Creates an event recorder of a given API type if supported by platform.
   static std::unique_ptr<ui::AXEventRecorder> CreateRecorder(
       ui::AXApiType::Type,
-      BrowserAccessibilityManager* manager = nullptr,
+      ui::AXPlatformTreeManager* manager = nullptr,
       base::ProcessId pid = 0,
       const ui::AXTreeSelector& selector = {});
 

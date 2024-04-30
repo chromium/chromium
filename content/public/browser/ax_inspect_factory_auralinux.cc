@@ -44,7 +44,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     ui::AXApiType::Type type,
-    BrowserAccessibilityManager* manager,
+    ui::AXPlatformTreeManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
   // Developer mode: crash immediately on any accessibility fatal error.
