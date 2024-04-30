@@ -48,6 +48,7 @@ build_webui("build") {
     "check_mark_wrapper.css",
     "hover_button.css",
     "shortcuts.css",
+    "themes.css",
   ]
 
   mojo_files_deps = [

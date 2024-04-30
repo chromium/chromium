@@ -16,7 +16,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createBackgroundImage, createTheme, installMock} from './test_support.js';
 
@@ -57,6 +57,7 @@ suite('ThemesTest', () => {
     }));
     themesElement.selectedCollection = createTestCollection(collectionName);
     await handler.whenCalled('getBackgroundImages');
+    await microtasksFinished();
   }
 
   setup(async () => {
@@ -87,7 +88,8 @@ suite('ThemesTest', () => {
 
     // Check that setBackgroundImage was called on click.
     const theme =
-        themesElement.shadowRoot!.querySelector('.theme')! as HTMLButtonElement;
+        themesElement.shadowRoot!.querySelector<HTMLElement>('.theme');
+    assertTrue(!!theme);
     theme.click();
     assertEquals(1, handler.getCallCount('setBackgroundImage'));
   });
@@ -96,7 +98,7 @@ suite('ThemesTest', () => {
     await setCollection('test1', 3);
 
     let header = themesElement.$.heading;
-    assertEquals(header.textContent, 'test1');
+    assertEquals('test1', header.textContent!.trim());
     let themes = themesElement.shadowRoot!.querySelectorAll('.theme');
     assertEquals(themes.length, 3);
     assertEquals(
@@ -112,7 +114,7 @@ suite('ThemesTest', () => {
     await setCollection('test2', 5);
 
     header = themesElement.$.heading;
-    assertEquals(header.textContent, 'test2');
+    assertEquals('test2', header.textContent!.trim());
     themes = themesElement.shadowRoot!.querySelectorAll('.theme');
     assertEquals(themes.length, 5);
     assertEquals(
@@ -322,7 +324,8 @@ suite('ThemesTest', () => {
     await setCollection('test', 2);
 
     const theme =
-        themesElement.shadowRoot!.querySelector('.theme')! as HTMLButtonElement;
+        themesElement.shadowRoot!.querySelector<HTMLElement>('.theme');
+    assertTrue(!!theme);
     theme.click();
 
     assertEquals(1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
