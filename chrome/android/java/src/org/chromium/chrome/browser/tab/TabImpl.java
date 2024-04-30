@@ -1596,7 +1596,7 @@ class TabImpl implements Tab {
                             .getResources()
                             .getString(R.string.accessibility_content_view));
             mContentView = cv;
-            webContents.initialize(
+            webContents.setDelegates(
                     PRODUCT_VERSION,
                     new TabViewAndroidDelegate(this, cv),
                     cv,
@@ -2062,7 +2062,7 @@ class TabImpl implements Tab {
             // This call is just a workaround, Chrome should clean up the WebContentsObservers
             // itself.
             contentsToDestroy.clearJavaWebContentsObservers();
-            contentsToDestroy.initialize(
+            contentsToDestroy.setDelegates(
                     PRODUCT_VERSION,
                     ViewAndroidDelegate.createBasicDelegate(/* containerView= */ null),
                     /* accessDelegate= */ null,

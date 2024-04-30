@@ -233,7 +233,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public void initialize(
+    public void setDelegates(
             String productVersion,
             ViewAndroidDelegate viewDelegate,
             InternalAccessDelegate accessDelegate,

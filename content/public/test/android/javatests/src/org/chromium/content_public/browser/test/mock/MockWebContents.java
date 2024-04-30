@@ -43,7 +43,7 @@ public class MockWebContents implements WebContents {
     private GURL mLastCommittedUrl;
 
     @Override
-    public void initialize(
+    public void setDelegates(
             String productVersion,
             ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate,

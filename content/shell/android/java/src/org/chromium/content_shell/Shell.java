@@ -313,7 +313,7 @@ public class Shell extends LinearLayout {
         mViewAndroidDelegate = new ShellViewAndroidDelegate(cv);
         assert (mWebContents != webContents);
         if (mWebContents != null) mWebContents.clearNativeReference();
-        webContents.initialize(
+        webContents.setDelegates(
                 "", mViewAndroidDelegate, cv, mWindow, WebContents.createDefaultInternalsHolder());
         mWebContents = webContents;
         SelectionPopupController.fromWebContents(webContents)

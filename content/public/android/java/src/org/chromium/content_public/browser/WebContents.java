@@ -82,7 +82,6 @@ public interface WebContents extends Parcelable {
     }
 
     /**
-     * TODO(ctzsm): Rename this method to setDelegates()
      *
      * Initialize various content objects of {@link WebContents} lifetime.
      *
@@ -96,7 +95,7 @@ public interface WebContents extends Parcelable {
      * @param windowAndroid An instance of the WindowAndroid.
      * @param internalsHolder A holder of objects used internally by WebContents.
      */
-    void initialize(
+    void setDelegates(
             String productVersion,
             ViewAndroidDelegate viewDelegate,
             ViewEventSink.InternalAccessDelegate accessDelegate,

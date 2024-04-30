@@ -1398,7 +1398,7 @@ public class AwContents implements SmartClipProvider {
             WindowAndroid windowAndroid,
             WebContentsInternalsHolder internalsHolder,
             AwSelectionActionMenuDelegate selectionActionMenuDelegate) {
-        webContents.initialize(
+        webContents.setDelegates(
                 PRODUCT_VERSION, viewDelegate, internalDispatcher, windowAndroid, internalsHolder);
         mViewEventSink = ViewEventSink.from(mWebContents);
         mViewEventSink.setHideKeyboardOnBlur(false);

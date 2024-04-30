@@ -394,7 +394,7 @@ public class OverlayPanelContent {
         }
 
         OverlayViewDelegate delegate = new OverlayViewDelegate(cv);
-        mWebContents.initialize(
+        mWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 delegate,
                 cv,

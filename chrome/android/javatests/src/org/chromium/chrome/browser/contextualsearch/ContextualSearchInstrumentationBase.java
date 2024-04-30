@@ -144,7 +144,7 @@ public class ContextualSearchInstrumentationBase {
             ContentView cv =
                     ContentView.createContentView(
                             activity, /* eventOffsetHandler= */ null, webContents);
-            webContents.initialize(
+            webContents.setDelegates(
                     null,
                     ViewAndroidDelegate.createBasicDelegate(cv),
                     null,

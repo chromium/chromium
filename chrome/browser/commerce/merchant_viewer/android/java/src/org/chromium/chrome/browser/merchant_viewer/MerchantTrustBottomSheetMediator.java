@@ -217,7 +217,7 @@ public class MerchantTrustBottomSheetMediator {
         mWebContentView = ContentView.createContentView(mContext, null, mWebContents);
         final ViewAndroidDelegate delegate =
                 ViewAndroidDelegate.createBasicDelegate(mWebContentView);
-        mWebContents.initialize(
+        mWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 delegate,
                 mWebContentView,

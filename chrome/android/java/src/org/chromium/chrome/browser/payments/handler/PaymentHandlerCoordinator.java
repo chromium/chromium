@@ -161,7 +161,7 @@ public class PaymentHandlerCoordinator {
 
     private void initializeWebContents(
             WindowAndroid windowAndroid, ContentView webContentView, GURL url) {
-        mPaymentHandlerWebContents.initialize(
+        mPaymentHandlerWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(webContentView),
                 webContentView,

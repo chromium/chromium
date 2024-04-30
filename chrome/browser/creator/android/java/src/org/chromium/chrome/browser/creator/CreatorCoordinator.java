@@ -603,7 +603,7 @@ public class CreatorCoordinator
                 ContentView.createContentView(
                         mActivity, /* eventOffsetHandler= */ null, mWebContents);
 
-        mWebContents.initialize(
+        mWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(mContentView),
                 mContentView,

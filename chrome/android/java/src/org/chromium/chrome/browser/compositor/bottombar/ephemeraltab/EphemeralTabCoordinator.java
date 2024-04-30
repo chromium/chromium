@@ -233,7 +233,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 ContentView.createContentView(
                         mContext, /* eventOffsetHandler= */ null, mWebContents);
 
-        mWebContents.initialize(
+        mWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(mContentView),
                 mContentView,
