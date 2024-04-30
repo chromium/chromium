@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_transition_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/web/public/web_state_id.h"
@@ -23,6 +24,8 @@
   std::set<web::WebStateID> _identifiers;
   // Tab group to edit.
   const TabGroup* _tabGroup;
+  // Transition delegate for the animation to show/hide.
+  CreateTabGroupTransitionDelegate* _transitionDelegate;
 }
 
 #pragma mark - Public
@@ -80,11 +83,10 @@
   _viewController.mutator = _mediator;
   _viewController.tabGroupsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
-  ;
 
-  // TODO(crbug.com/40942154): Add the create tab group animation.
-  _viewController.modalPresentationStyle =
-      UIModalPresentationOverCurrentContext;
+  _viewController.modalPresentationStyle = UIModalPresentationCustom;
+  _transitionDelegate = [[CreateTabGroupTransitionDelegate alloc] init];
+  _viewController.transitioningDelegate = _transitionDelegate;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
@@ -93,7 +95,6 @@
 - (void)stop {
   _mediator = nil;
 
-  // TODO(crbug.com/40942154): Make the created tab group animation.
   [_viewController.presentingViewController
       dismissViewControllerAnimated:self.animatedDismissal
                          completion:nil];

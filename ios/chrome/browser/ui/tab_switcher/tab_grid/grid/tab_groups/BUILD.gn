@@ -105,6 +105,8 @@ source_set("tab_groups_ui") {
 
 source_set("tab_group_creation_ui") {
   sources = [
+    "create_tab_group_transition_delegate.h",
+    "create_tab_group_transition_delegate.mm",
     "create_tab_group_view_controller.h",
     "create_tab_group_view_controller.mm",
   ]

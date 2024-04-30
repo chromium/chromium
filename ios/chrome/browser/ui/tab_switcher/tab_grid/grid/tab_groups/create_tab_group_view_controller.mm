@@ -32,7 +32,6 @@ namespace {
 const CGFloat kMaxHeight = 600;
 
 // View constants.
-const CGFloat kBackgroundAlpha = 0.6;
 const CGFloat kHorizontalMargin = 32;
 const CGFloat kdotAndFieldContainerMargin = 44;
 const CGFloat kDotTitleSeparationMargin = 12;
@@ -572,8 +571,6 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
 
 // Configures the view and all subviews when there is enough space.
 - (void)createConfigurations {
-  [self setupBackground];
-
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
   UILayoutGuide* snapshotsContainerLayoutGuide = [[UILayoutGuide alloc] init];
   _snapshotsContainer = [self configuredSnapshotsContainer];
@@ -697,23 +694,6 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
     [container.heightAnchor constraintLessThanOrEqualToConstant:kMaxHeight],
     keyboardConstraint,
   ]];
-}
-
-// Configures the view background.
-- (void)setupBackground {
-  if (!UIAccessibilityIsReduceTransparencyEnabled()) {
-    self.view.backgroundColor = [[UIColor colorNamed:kGrey900Color]
-        colorWithAlphaComponent:kBackgroundAlpha];
-    UIBlurEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
-    UIVisualEffectView* blurEffectView =
-        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:blurEffectView];
-    AddSameConstraints(self.view, blurEffectView);
-  } else {
-    self.view.backgroundColor = [UIColor blackColor];
-  }
 }
 
 // Returns the view which contains all the selected tabs' snapshot which will be
