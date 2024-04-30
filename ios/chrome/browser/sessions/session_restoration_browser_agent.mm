@@ -244,6 +244,21 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
                                       selectedIndex:selected_index];
 }
 
+// Creates a WebState with `params` and `session_storage`. Ensures that the
+// WebSessionStateTabHelper is attached to the WebState after its creation.
+// Note: the WebSessionStateTabHelper needs to be created before inserting
+// the WebState into the WebStateList since the insertion can cause the
+// realisation of the WebState and the WebSessionStateTabHelper is needed
+// for the realisation.
+std::unique_ptr<web::WebState> CreateWebState(
+    const web::WebState::CreateParams& params,
+    CRWSessionStorage* session_storage) {
+  auto web_state =
+      web::WebState::CreateWithStorageSession(params, session_storage);
+  WebSessionStateTabHelper::CreateForWebState(web_state.get());
+  return web_state;
+}
+
 }  // namespace
 
 BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
@@ -315,7 +330,7 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
           browser_->GetWebStateList(), FilterInvalidTabs(window),
           enable_pinned_web_states_, enable_tab_groups_,
           base::BindRepeating(
-              &web::WebState::CreateWithStorageSession,
+              &CreateWebState,
               web::WebState::CreateParams(browser_->GetBrowserState())));
 
   for (auto& observer : observers_) {
