@@ -3396,9 +3396,6 @@ extern const char kCampbellGlyphDescription[];
 extern const char kCampbellKeyName[];
 extern const char kCampbellKeyDescription[];
 
-extern const char kCaptureModeAudioMixingName[];
-extern const char kCaptureModeAudioMixingDescription[];
-
 extern const char kCaptureModeEducationName[];
 extern const char kCaptureModeEducationDescription[];
 

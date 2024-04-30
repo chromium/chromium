@@ -111,7 +111,6 @@ extern const base::FeatureParam<BorealisZinkGlDriverParam>
 COMPONENT_EXPORT(ASH_CONSTANTS)
 COMPONENT_EXPORT(ASH_CONSTANTS)
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCampbellGlyph);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeAudioMixing);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeEducation);
 enum class CaptureModeEducationParam {
   kShortcutNudge,
@@ -967,7 +966,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBirchWeatherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothQualityReportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothDisconnectWarningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBrightnessControlInSettingsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeAudioMixingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCaptureModeEducationBypassLimitsEnabled();

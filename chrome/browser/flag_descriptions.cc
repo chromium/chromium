@@ -5829,13 +5829,6 @@ const char kCampbellKeyName[] = "Key to enable glyph for Campbell";
 const char kCampbellKeyDescription[] =
     "Secret key to enable glyph for Campbell";
 
-const char kCaptureModeAudioMixingName[] =
-    "Enable screen capture advanced audio settings";
-const char kCaptureModeAudioMixingDescription[] =
-    "Enables the ability to record the microphone, or system audio each "
-    "separately, or mix them together in a single stream in the screen capture "
-    "tool.";
-
 const char kCaptureModeEducationName[] = "Enable Capture Mode Education";
 const char kCaptureModeEducationDescription[] =
     "Enables the Capture Mode Education nudges and tutorials that inform users "

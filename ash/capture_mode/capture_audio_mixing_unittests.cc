@@ -10,38 +10,29 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
-class CaptureAudioMixingTest : public AshTestBase {
- public:
-  CaptureAudioMixingTest()
-      : scoped_feature_list_(features::kCaptureModeAudioMixing) {}
-  CaptureAudioMixingTest(const CaptureAudioMixingTest&) = delete;
-  CaptureAudioMixingTest& operator=(const CaptureAudioMixingTest&) = delete;
-  ~CaptureAudioMixingTest() override = default;
+namespace {
 
-  CaptureModeController* StartSession() {
-    return StartCaptureSession(CaptureModeSource::kFullscreen,
-                               CaptureModeType::kVideo);
-  }
+CaptureModeController* StartSession() {
+  return StartCaptureSession(CaptureModeSource::kFullscreen,
+                             CaptureModeType::kVideo);
+}
 
-  bool IsAudioOptionChecked(int option_id) const {
-    return CaptureModeSettingsTestApi()
-        .GetAudioInputMenuGroup()
-        ->IsOptionChecked(option_id);
-  }
+bool IsAudioOptionChecked(int option_id) {
+  return CaptureModeSettingsTestApi().GetAudioInputMenuGroup()->IsOptionChecked(
+      option_id);
+}
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+}  // namespace
+
+using CaptureAudioMixingTest = AshTestBase;
 
 TEST_F(CaptureAudioMixingTest, AudioSettingsMenu) {
   auto* controller = StartSession();

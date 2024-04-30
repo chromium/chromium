@@ -139,9 +139,7 @@ TEST_F(GameDashboardCaptureModeTest, GameDashboardBehavior) {
   EXPECT_TRUE(
       active_behavior->SupportsAudioRecordingMode(AudioRecordingMode::kOff));
   EXPECT_TRUE(active_behavior->SupportsAudioRecordingMode(
-      features::IsCaptureModeAudioMixingEnabled()
-          ? AudioRecordingMode::kSystemAndMicrophone
-          : AudioRecordingMode::kMicrophone));
+      AudioRecordingMode::kSystemAndMicrophone));
   EXPECT_TRUE(active_behavior->ShouldCameraSelectionSettingsBeIncluded());
   EXPECT_FALSE(active_behavior->ShouldDemoToolsSettingsBeIncluded());
   EXPECT_TRUE(active_behavior->ShouldSaveToSettingsBeIncluded());
@@ -407,9 +405,7 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeSessionConfigs) {
   EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
   EXPECT_EQ(controller->recording_type(), RecordingType::kWebM);
   EXPECT_EQ(controller->audio_recording_mode(),
-            features::IsCaptureModeAudioMixingEnabled()
-                ? AudioRecordingMode::kSystemAndMicrophone
-                : AudioRecordingMode::kMicrophone);
+            AudioRecordingMode::kSystemAndMicrophone);
   EXPECT_EQ(controller->enable_demo_tools(), false);
 
   // Update the audio recording mode and demo tools configs and stop the
@@ -698,9 +694,7 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeRecordInstantlyTest) {
   auto* controller = StartGameCaptureModeSession();
   EXPECT_FALSE(controller->enable_demo_tools());
   EXPECT_EQ(controller->audio_recording_mode(),
-            features::IsCaptureModeAudioMixingEnabled()
-                ? AudioRecordingMode::kSystemAndMicrophone
-                : AudioRecordingMode::kMicrophone);
+            AudioRecordingMode::kSystemAndMicrophone);
 
   auto* camera_controller = controller->camera_controller();
   ASSERT_TRUE(camera_controller->camera_preview_widget());

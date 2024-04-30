@@ -393,11 +393,6 @@ BASE_FEATURE(kCampbellGlyph,
              "CampbellGlyph",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the capture mode advanced audio settings are enabled.
-BASE_FEATURE(kCaptureModeAudioMixing,
-             "CaptureModeAudioMixing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the nudges/tutorials that inform users of the screen capture keyboard
 // shortcut and feature tile.
 BASE_FEATURE(kCaptureModeEducation,
@@ -3277,10 +3272,6 @@ bool IsBluetoothQualityReportEnabled() {
 
 bool IsBrightnessControlInSettingsEnabled() {
   return base::FeatureList::IsEnabled(kEnableBrightnessControlInSettings);
-}
-
-bool IsCaptureModeAudioMixingEnabled() {
-  return base::FeatureList::IsEnabled(kCaptureModeAudioMixing);
 }
 
 bool IsCaptureModeEducationEnabled() {

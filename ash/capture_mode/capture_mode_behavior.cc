@@ -17,7 +17,6 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/game_capture_bar_view.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -124,11 +123,12 @@ class ProjectorBehavior : public CaptureModeBehavior {
     switch (mode) {
       case AudioRecordingMode::kOff:
       case AudioRecordingMode::kSystem:
+        // Projector does not support turning off audio recording nor recording
+        // the system audio separately without the microphone.
         return false;
       case AudioRecordingMode::kMicrophone:
-        return true;
       case AudioRecordingMode::kSystemAndMicrophone:
-        return features::IsCaptureModeAudioMixingEnabled();
+        return true;
     }
   }
   bool ShouldCreateRecordingOverlayController() const override { return true; }
@@ -177,13 +177,11 @@ class GameDashboardBehavior : public CaptureModeBehavior,
                               public aura::WindowObserver {
  public:
   GameDashboardBehavior()
-      : CaptureModeBehavior({CaptureModeType::kVideo,
-                             CaptureModeSource::kWindow, RecordingType::kWebM,
-                             features::IsCaptureModeAudioMixingEnabled()
-                                 ? AudioRecordingMode::kSystemAndMicrophone
-                                 : AudioRecordingMode::kMicrophone,
-                             /*demo_tools_enabled=*/false},
-                            BehaviorType::kGameDashboard) {}
+      : CaptureModeBehavior(
+            {CaptureModeType::kVideo, CaptureModeSource::kWindow,
+             RecordingType::kWebM, AudioRecordingMode::kSystemAndMicrophone,
+             /*demo_tools_enabled=*/false},
+            BehaviorType::kGameDashboard) {}
 
   GameDashboardBehavior(const GameDashboardBehavior&) = delete;
   GameDashboardBehavior operator=(const GameDashboardBehavior&) = delete;
@@ -347,10 +345,9 @@ bool CaptureModeBehavior::SupportsAudioRecordingMode(
   switch (mode) {
     case AudioRecordingMode::kOff:
     case AudioRecordingMode::kMicrophone:
-      return true;
     case AudioRecordingMode::kSystem:
     case AudioRecordingMode::kSystemAndMicrophone:
-      return features::IsCaptureModeAudioMixingEnabled();
+      return true;
   }
 }
 
