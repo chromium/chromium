@@ -9190,6 +9190,7 @@ test("unit_tests") {
       "../browser/extensions/install_tracker_unittest.cc",
       "../browser/extensions/install_verifier_unittest.cc",
       "../browser/extensions/installed_loader_unittest.cc",
+      "../browser/extensions/manifest_v2_experiment_manager_unittest.cc",
       "../browser/extensions/menu_manager_unittest.cc",
       "../browser/extensions/omaha_attributes_handler_unittest.cc",
       "../browser/extensions/pack_extension_unittest.cc",

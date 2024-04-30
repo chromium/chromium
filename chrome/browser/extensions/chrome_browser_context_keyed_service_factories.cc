@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/browser_context_keyed_service_factories.h"
+#include "chrome/browser/extensions/chrome_browser_context_keyed_service_factories.h"
 
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/plugin_manager.h"
@@ -47,6 +48,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::IncognitoConnectability::EnsureFactoryBuilt();
   extensions::InstallTrackerFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();
+  extensions::ManifestV2ExperimentManager::GetFactory();
   extensions::MenuManagerFactory::GetInstance();
   extensions::PermissionsUpdater::EnsureAssociatedFactoryBuilt();
 #if BUILDFLAG(ENABLE_PLUGINS)

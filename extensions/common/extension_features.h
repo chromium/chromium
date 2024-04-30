@@ -91,6 +91,10 @@ BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
 // Determine if dynamic extension URLs are handled and redirected.
 BASE_DECLARE_FEATURE(kExtensionDynamicURLRedirection);
 
+// Controls displaying a warning that affected MV2 extensions may no longer be
+// supported.
+BASE_DECLARE_FEATURE(kExtensionManifestV2DeprecationWarning);
+
 // Side panel API availability.
 BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);
 
