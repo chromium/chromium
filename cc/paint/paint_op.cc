@@ -477,9 +477,8 @@ void DrawArcOp::Serialize(PaintOpWriter& writer,
                           const SkM44& current_ctm,
                           const SkM44& original_ctm) const {
   writer.Write(*flags_to_serialize, current_ctm);
-  writer.Write(oval);
-  writer.Write(start_angle_degrees);
-  writer.Write(sweep_angle_degrees);
+  writer.WriteSimpleMultiple(arc.fOval, arc.fStartAngle, arc.fSweepAngle,
+                             arc.fType);
 }
 
 void DrawOvalOp::Serialize(PaintOpWriter& writer,
@@ -827,9 +826,10 @@ PaintOp* DrawLineOp::Deserialize(PaintOpReader& reader, void* output) {
 PaintOp* DrawArcOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawArcOp* op = new (output) DrawArcOp;
   reader.Read(&op->flags);
-  reader.Read(&op->oval);
-  reader.Read(&op->start_angle_degrees);
-  reader.Read(&op->sweep_angle_degrees);
+  reader.Read(&op->arc.fOval);
+  reader.Read(&op->arc.fStartAngle);
+  reader.Read(&op->arc.fSweepAngle);
+  reader.Read(&op->arc.fType);
   return op;
 }
 
@@ -1398,10 +1398,8 @@ void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
                                 const PaintFlags* flags,
                                 SkCanvas* canvas,
                                 const PlaybackParams& params) {
-  flags->DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
-    c->drawArc(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
-               false, p);
-  });
+  flags->DrawToSk(
+      canvas, [op](SkCanvas* c, const SkPaint& p) { c->drawArc(op->arc, p); });
 }
 
 void DrawOvalOp::RasterWithFlags(const DrawOvalOp* op,
@@ -1723,9 +1721,7 @@ bool DrawLineOp::EqualsForTesting(const DrawLineOp& other) const {
 
 bool DrawArcOp::EqualsForTesting(const DrawArcOp& other) const {
   return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         oval == other.oval &&
-         start_angle_degrees == other.start_angle_degrees &&
-         sweep_angle_degrees == other.sweep_angle_degrees;
+         arc == other.arc;
 }
 
 bool DrawOvalOp::EqualsForTesting(const DrawOvalOp& other) const {
@@ -1957,7 +1953,7 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
     }
     case PaintOpType::kDrawArc: {
       const auto& arc_op = static_cast<const DrawArcOp&>(op);
-      *rect = arc_op.oval;
+      *rect = arc_op.arc.fOval;
       rect->sort();
       return true;
     }

@@ -140,10 +140,7 @@ class CC_PAINT_EXPORT PaintCanvas {
                         SkScalar x1,
                         SkScalar y1,
                         const PaintFlags& flags) = 0;
-  virtual void drawArc(const SkRect& oval,
-                       SkScalar start_angle_degrees,
-                       SkScalar sweep_angle_degrees,
-                       const PaintFlags& flags) = 0;
+  virtual void drawArc(const SkArc& arc, const PaintFlags& flags) = 0;
   virtual void drawRect(const SkRect& rect, const PaintFlags& flags) = 0;
   virtual void drawIRect(const SkIRect& rect, const PaintFlags& flags) = 0;
   virtual void drawOval(const SkRect& oval, const PaintFlags& flags) = 0;

@@ -131,6 +131,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkMipmapMode* mipmap_mode) {
     ReadEnum<SkMipmapMode, SkMipmapMode::kLast>(mipmap_mode);
   }
+  void Read(SkArc::Type* arc_type) {
+    ReadEnum<SkArc::Type, SkArc::Type::kWedge>(arc_type);
+  }
 
   void Read(bool* data) {
     uint8_t value = 0u;

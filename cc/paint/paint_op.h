@@ -615,14 +615,8 @@ class CC_PAINT_EXPORT DrawArcOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::kDrawArc;
   static constexpr bool kIsDrawOp = true;
-  DrawArcOp(const SkRect& oval,
-            SkScalar start_angle_degrees,
-            SkScalar sweep_angle_degrees,
-            const PaintFlags& flags)
-      : PaintOpWithFlags(kType, flags),
-        oval(oval),
-        start_angle_degrees(start_angle_degrees),
-        sweep_angle_degrees(sweep_angle_degrees) {}
+  DrawArcOp(const SkArc& arc, const PaintFlags& flags)
+      : PaintOpWithFlags(kType, flags), arc(arc) {}
   static void RasterWithFlags(const DrawArcOp* op,
                               const PaintFlags* flags,
                               SkCanvas* canvas,
@@ -631,9 +625,7 @@ class CC_PAINT_EXPORT DrawArcOp final : public PaintOpWithFlags {
   bool EqualsForTesting(const DrawArcOp& other) const;
   HAS_SERIALIZATION_FUNCTIONS();
 
-  SkRect oval;
-  SkScalar start_angle_degrees;
-  SkScalar sweep_angle_degrees;
+  SkArc arc;
 
  private:
   DrawArcOp() : PaintOpWithFlags(kType) {}
