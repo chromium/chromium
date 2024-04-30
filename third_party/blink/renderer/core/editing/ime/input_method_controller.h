@@ -271,6 +271,9 @@ class CORE_EXPORT InputMethodController final
                            InputModeOfFocusedElement);
   FRIEND_TEST_ALL_PREFIXES(InputMethodControllerTest,
                            VirtualKeyboardPolicyOfFocusedElement);
+  FRIEND_TEST_ALL_PREFIXES(
+      InputMethodControllerTest,
+      DeleteSelectionAndBeforeInputEventHandlerChangingStyle);
 };
 
 }  // namespace blink

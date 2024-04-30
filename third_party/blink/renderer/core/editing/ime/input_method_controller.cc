@@ -1356,6 +1356,9 @@ bool InputMethodController::DeleteSelection() {
       return false;
   }
 
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  see http://crbug.com/590369 for more details.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   TypingCommand::DeleteSelection(GetDocument());
 
   // Frame could have been destroyed by the input event.
