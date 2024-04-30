@@ -8,8 +8,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
-import org.chromium.base.MutableFlagWithSafeDefault;
-import org.chromium.base.cached_flags.CachedFlag;
 
 /** Java accessor for state of Omnibox feature flags. */
 @JNINamespace("omnibox::android")
@@ -24,19 +22,9 @@ public class OmniboxFeatureMap extends FeatureMap {
     /**
      * @return the singleton OmniboxFeatureMap.
      */
-    private static OmniboxFeatureMap getInstance() {
+    public static OmniboxFeatureMap getInstance() {
         if (sInstance == null) sInstance = new OmniboxFeatureMap();
         return sInstance;
-    }
-
-    public static CachedFlag newCachedFlag(String featureName, boolean defaultValue) {
-        return new CachedFlag(OmniboxFeatureMap.getInstance(), featureName, defaultValue);
-    }
-
-    public static MutableFlagWithSafeDefault newMutableFlagWithSafeDefault(
-            String featureName, boolean defaultValue) {
-        return OmniboxFeatureMap.getInstance()
-                .mutableFlagWithSafeDefault(featureName, defaultValue);
     }
 
     @Override

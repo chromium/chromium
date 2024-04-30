@@ -9,7 +9,6 @@ import android.content.Context;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
-import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFlag;
@@ -19,6 +18,7 @@ import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatureMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** This is the place where we define these: List of Omnibox features and parameters. */
@@ -30,26 +30,48 @@ public class OmniboxFeatures {
     private static final int LOW_MEMORY_THRESHOLD_KB =
             (int) (1.5 * ConversionUtils.KILOBYTES_PER_GIGABYTE);
 
+    // Maximum number of attempts to retrieve page behind the default match per Omnibox input
+    // session.
+    public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
+
+    // Auto-populated list of Omnibox cached feature flags.
+    // Each flag created via newFlag() will be automatically added to this list.
+    private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
+
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static Boolean sIsLowMemoryDevice;
 
-    public static final MutableFlagWithSafeDefault sOmniboxAnswerActions =
-            OmniboxFeatureMap.newMutableFlagWithSafeDefault(
-                    OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, false);
+    public static final CachedFlag sOmniboxAnswerActions =
+            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, false);
 
     public static final CachedFlag sOmniboxModernizeVisualUpdate =
-            OmniboxFeatureMap.newCachedFlag(
-                    OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, true);
+            newFlag(OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, true);
 
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
 
-    public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
+    /**
+     * Create an instance of a CachedFeatureFlag.
+     *
+     * <p>Newly created flag will be automatically added to list of persisted feature flags.
+     *
+     * @param featureName the name of the feature flag
+     * @param defaultValue the default value to return if the feature state is unknown
+     */
+    private static CachedFlag newFlag(String featureName, boolean defaultValue) {
+        var cachedFlag = new CachedFlag(OmniboxFeatureMap.getInstance(), featureName, defaultValue);
+        sCachedFlags.add(cachedFlag);
+        return cachedFlag;
+    }
 
-    /** Persist cached feature flags. */
+    /**
+     * Persist cached feature flags.
+     *
+     * <p>Persists all flags that were statically instantiated as part of this class.
+     */
     public static void cacheFeatureFlags() {
-        CachedFlagUtils.cacheNativeFlags(List.of(sOmniboxModernizeVisualUpdate));
+        CachedFlagUtils.cacheNativeFlags(sCachedFlags);
     }
 
     /**
