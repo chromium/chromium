@@ -53,18 +53,18 @@ def main():
   if text_diff:
 
     print(f"""
-  Cronet Proguard golden test failed. To generate it:
-  #######################################################
-  #                                                     #
-  #      Run the command below to generate the file     #
-  #                                                     #
-  #######################################################
+Cronet Proguard golden test failed. To generate it:
+#######################################################
+#                                                     #
+#      Run the command below to generate the file     #
+#                                                     #
+#######################################################
 
-  ########### START ###########
-  patch -p1 << 'END_DIFF'
-  {text_diff}
-  END_DIFF
-  ############ END ############
+########### START ###########
+patch -p1 <<'END_DIFF'
+{text_diff}
+END_DIFF
+############ END ############
 
 If you wish to build the action locally in generation mode, See the instructions below:
 #####################################################################
