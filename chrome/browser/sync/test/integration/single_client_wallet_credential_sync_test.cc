@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/notreached.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
@@ -30,6 +31,33 @@ using wallet_helper::GetProfileWebDataService;
 using wallet_helper::kDefaultBillingAddressID;
 
 namespace {
+
+// A helper class that waits for `AUTOFILL_WALLET_CREDENTIAL` to have the
+// expected entries on the FakeServer.
+class ServerCvcChecker : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  explicit ServerCvcChecker(const size_t expected_count);
+  ~ServerCvcChecker() override;
+  ServerCvcChecker(const ServerCvcChecker&) = delete;
+  ServerCvcChecker& operator=(const ServerCvcChecker&) = delete;
+
+  // StatusChangeChecker overrides.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const size_t expected_count_;
+};
+
+ServerCvcChecker::ServerCvcChecker(const size_t expected_count)
+    : expected_count_(expected_count) {}
+
+ServerCvcChecker::~ServerCvcChecker() = default;
+
+bool ServerCvcChecker::IsExitConditionSatisfied(std::ostream* os) {
+  return fake_server()
+             ->GetSyncEntitiesByModelType(syncer::AUTOFILL_WALLET_CREDENTIAL)
+             .size() == expected_count_;
+}
 
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
  public:
@@ -146,6 +174,19 @@ class SingleClientWalletCredentialSyncTest : public SyncTest {
             entity_specifics.mutable_autofill_wallet_credential()
                 ->instrument_id(),
             entity_specifics, /*creation_time=*/0, /*last_modified_time=*/0));
+  }
+
+  void SetWalletCredentialOnFakeServer(const ServerCvc& server_cvc) {
+    sync_pb::EntitySpecifics entity_specifics =
+        CreateSyncWalletCredential(server_cvc).specifics();
+
+    GetFakeServer()->InjectEntity(
+        syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+            /*non_unique_name=*/"credential",
+            entity_specifics.mutable_autofill_wallet_credential()
+                ->instrument_id(),
+            entity_specifics, /*creation_time=*/1000,
+            /*last_modified_time=*/1000));
   }
 
  private:
@@ -575,4 +616,53 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   WaitForNumberOfCards(0, pdm);
 
   EXPECT_EQ(0uL, pdm->payments_data_manager().GetCreditCards().size());
+}
+
+// Verify when the corresponding card of a CVC is deleted from pay.google.com
+// and wallet data sync is triggered, it will delete the orphaned CVC from local
+// DB and Chrome sync server.
+IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+                       ReconcileServerCvcForWalletCards) {
+  // Set a wallet card on the fake server. This card will be synced first to the
+  // client.
+  GetFakeServer()->SetWalletData(
+      {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
+                            kDefaultBillingAddressID, /*nickname=*/"",
+                            /*instrument_id=*/1)});
+  ASSERT_TRUE(SetupSync());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
+  ASSERT_NE(nullptr, pdm);
+  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
+
+  // Add 2 wallet credential entities (CVC) on the fake server. One of them is
+  // linked to the card created above and the other credential has no linkage to
+  // any cards on the client aka orphaned.
+  SetDefaultWalletCredentialOnFakeServer();
+  SetWalletCredentialOnFakeServer(
+      ServerCvc{/*instrument_id=*/9, /*cvc=*/u"720",
+                /*last_updated_timestamp=*/base::Time::UnixEpoch() +
+                    base::Milliseconds(50000)});
+  WaitForCvcOnCard(pdm);
+  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
+
+  // The count for CVCs on the fake server is still 2 as we reconcile the CVC
+  // data on the wallet sync bridge.
+  EXPECT_TRUE(ServerCvcChecker(/*expected_count=*/2ul).Wait());
+
+  // Creating an update for the card to force a sync of the new data and trigger
+  // the reconcile flow on the wallet sync bridge.
+  GetFakeServer()->SetWalletData(
+      {CreateSyncWalletCard(/*name=*/"card-1-updated", /*last_four=*/"0001",
+                            kDefaultBillingAddressID, /*nickname=*/"nickname",
+                            /*instrument_id=*/1),
+       CreateSyncPaymentsCustomerData(
+           /*customer_id=*/"different")});
+
+  // Verify that Chrome sync server has deleted the orphaned CVC by verifying
+  // the count and the CVC value on the card.
+  EXPECT_TRUE(ServerCvcChecker(/*expected_count=*/1ul).Wait());
+  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
 }

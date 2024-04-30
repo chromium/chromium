@@ -135,6 +135,12 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
       const std::vector<std::unique_ptr<CreditCard>>& old_data,
       const std::vector<CreditCard>& new_data);
 
+  // Get the list of CVCs whose corresponding card has been deleted from
+  // pay.google.com. When the list of CVCs is retrieved, they are deleted from
+  // the local db. A deletion flow to the Chrome Sync server will also be
+  // triggered.
+  void ReconcileServerCvcForWalletCards();
+
   // AutofillProfileSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.
   const raw_ptr<AutofillWebDataBackend> web_data_backend_;

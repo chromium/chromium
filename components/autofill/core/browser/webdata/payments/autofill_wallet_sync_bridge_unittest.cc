@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -280,6 +281,7 @@ MATCHER_P2(AddChange, key, data, "") {
 class AutofillWalletSyncBridgeTestBase {
  public:
   AutofillWalletSyncBridgeTestBase() {
+    OSCryptMocker::SetUp();
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -1087,6 +1089,32 @@ TEST_F(AutofillWalletSyncBridgeTest,
   ASSERT_TRUE(table()->GetServerIbans(iban_vector));
   EXPECT_THAT(iban_vector,
               UnorderedElementsAre(testing::Pointee(server_iban2)));
+}
+
+// Test to verify the deletion of the server cvc for the card with the `REMOVE`
+// change tag.
+TEST_F(AutofillWalletSyncBridgeTest, DeletesServerCvcWhenCardIsDeleted) {
+  // Add a masked card and its CVC. Then also add an orphaned CVC.
+  CreditCard credit_card = test::GetMaskedServerCard();
+  const ServerCvc server_cvc =
+      ServerCvc{credit_card.instrument_id(), u"123",
+                base::Time::UnixEpoch() + base::Milliseconds(25000)};
+  const ServerCvc server_cvc_2 =
+      ServerCvc{test::GetMaskedServerCard2().instrument_id(), u"890",
+                base::Time::UnixEpoch() + base::Milliseconds(50000)};
+
+  table()->AddServerCvc(server_cvc);
+  table()->AddServerCvc(server_cvc_2);
+  ASSERT_EQ(table()->GetAllServerCvcs().size(), 2u);
+
+  AutofillWalletSpecifics card_specifics;
+  SetAutofillWalletSpecificsFromServerCard(credit_card, &card_specifics);
+  // Sync the server cards.
+  // This should cause the orphaned CVC to get deleted.
+  StartSyncing({card_specifics});
+
+  ASSERT_EQ(table()->GetAllServerCvcs().size(), 1u);
+  EXPECT_EQ(*(table()->GetAllServerCvcs()[0]), server_cvc);
 }
 
 TEST_F(AutofillWalletSyncBridgeTest, LoadMetadataCalled) {

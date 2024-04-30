@@ -364,8 +364,9 @@ void AutofillWalletSyncBridge::SetSyncData(
                                   customer_data, cloud_token_data,
                                   bank_accounts, card_benefits);
 
-  wallet_data_changed |=
+  bool wallet_card_data_changed =
       SetWalletCards(std::move(wallet_cards), notify_webdata_backend);
+  wallet_data_changed |= wallet_card_data_changed;
   wallet_data_changed |= SetCardBenefits(std::move(card_benefits));
   wallet_data_changed |=
       SetWalletIbans(std::move(wallet_ibans), notify_webdata_backend);
@@ -374,6 +375,9 @@ void AutofillWalletSyncBridge::SetSyncData(
       SetCreditCardCloudTokenData(std::move(cloud_token_data));
   if (AreMaskedBankAccountSupported()) {
     wallet_data_changed |= SetBankAccountsData(std::move(bank_accounts));
+  }
+  if (wallet_card_data_changed) {
+    ReconcileServerCvcForWalletCards();
   }
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
@@ -385,6 +389,18 @@ void AutofillWalletSyncBridge::SetSyncData(
   if (web_data_backend_ && wallet_data_changed)
     web_data_backend_->NotifyOnAutofillChangedBySync(
         syncer::AUTOFILL_WALLET_DATA);
+}
+
+void AutofillWalletSyncBridge::ReconcileServerCvcForWalletCards() {
+  const std::vector<std::unique_ptr<ServerCvc>>& deleted_server_cvc_list =
+      GetAutofillTable()->DeleteOrphanedServerCvcs();
+
+  for (const std::unique_ptr<ServerCvc>& deleted_server_cvc :
+       deleted_server_cvc_list) {
+    web_data_backend_->NotifyOnServerCvcChanged(
+        ServerCvcChange{ServerCvcChange::REMOVE,
+                        deleted_server_cvc->instrument_id, ServerCvc{}});
+  }
 }
 
 bool AutofillWalletSyncBridge::SetWalletCards(

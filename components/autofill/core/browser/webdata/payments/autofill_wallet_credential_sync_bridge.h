@@ -74,7 +74,6 @@ class AutofillWalletCredentialSyncBridge
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
   // AutofillWebDataServiceObserverOnDBSequence.
-  void CreditCardChanged(const CreditCardChange& change) override;
   void ServerCvcChanged(const ServerCvcChange& change) override;
 
  private:

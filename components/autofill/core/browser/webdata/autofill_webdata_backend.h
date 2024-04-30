@@ -60,6 +60,11 @@ class AutofillWebDataBackend {
   // Autofill records of the database by the sync.
   // NOTE: The UI sequence notifications are asynchronous.
   virtual void NotifyOnAutofillChangedBySync(syncer::ModelType model_type) = 0;
+
+  // Notifies listeners on the DB sequence that a server cvc has been
+  // added/removed/updated in the WebDatabase.
+  // NOTE: This method is intended to be called from the DB sequence.
+  virtual void NotifyOnServerCvcChanged(const ServerCvcChange& change) = 0;
 };
 
 } // namespace autofill

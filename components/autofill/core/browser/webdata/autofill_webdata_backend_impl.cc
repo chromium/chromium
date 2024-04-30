@@ -234,6 +234,17 @@ void AutofillWebDataBackendImpl::NotifyOnAutofillChangedBySync(
       base::BindOnce(on_autofill_changed_by_sync_callback_, model_type));
 }
 
+void AutofillWebDataBackendImpl::NotifyOnServerCvcChanged(
+    const ServerCvcChange& change) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+
+  // DB sequence notification.
+  for (AutofillWebDataServiceObserverOnDBSequence& db_observer :
+       db_observer_list_) {
+    db_observer.ServerCvcChanged(change);
+  }
+}
+
 base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!user_data_)
