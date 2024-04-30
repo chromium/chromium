@@ -789,7 +789,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
               GetAppServerWinInstance()->config()->GetUpdaterPersistedData();
           const base::Version version =
               persisted_data->GetProductVersion(app_id);
-          if (!version.IsValid() || version != base::Version(kNullVersion)) {
+          if (version.IsValid() && version != base::Version(kNullVersion)) {
             return;
           }
           persisted_data->RemoveApp(app_id);
