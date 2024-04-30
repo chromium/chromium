@@ -189,6 +189,7 @@ public class HistoryManager
                         bottomSheetController,
                         tabSupplier,
                         () -> mToolbar.hideKeyboard(),
+                        mUmaRecorder,
                         historyProvider,
                         clientPackageName,
                         launchedForApp,

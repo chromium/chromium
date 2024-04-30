@@ -297,8 +297,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     @Override
     public void onQueryAppsComplete(List<String> items) {
+        boolean hasAppToShow = mManager.onQueryAppsComplete(items);
+
         // Querying apps was completed after the search mode is entered. Enable the filter button.
-        boolean hasAppToShow = mManager.buildAppInfoList(items);
         if (hasAppToShow && mIsSearching) mAppFilterChip.setEnabled(true);
     }
 

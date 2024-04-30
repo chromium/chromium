@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.HistoryProvider;
+import org.chromium.chrome.browser.history.HistoryUmaRecorder;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
@@ -95,6 +96,7 @@ public class PageInfoHistoryController
                         /* bottomSheetController= */ null,
                         mTabSupplier,
                         /* hideSoftKeyboard= */ null,
+                        /* umaRecorder= */ new HistoryUmaRecorder(),
                         new BrowsingHistoryBridge(profile),
                         null,
                         /* launchedForApp= */ false,

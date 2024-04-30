@@ -22,4 +22,9 @@ public class AppHistoryUmaRecorder extends HistoryUmaRecorder {
     public void recordClearBrowsingData(boolean isIncognito) {
         // Clear data is disabled for in-app history for now.
     }
+
+    @Override
+    public void recordQueryAppDuration(long timeMs) {
+        // Querying app is not performed for in-app history.
+    }
 }

@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.provider.Browser;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -118,6 +119,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final Profile mProfile;
     private final boolean mIsScrollToLoadDisabled;
     private final boolean mShouldShowClearDataIfAvailable;
+    private final HistoryUmaRecorder mUmaRecorder;
     private final String mHostName;
     private final Runnable mHideSoftKeyboard;
     private final boolean mShowAppFilter;
@@ -135,6 +137,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private String mAppId;
     private AppFilterCoordinator mAppFilterSheet;
     private AppInfo mCurrentApp;
+    private long mAppQueryStartMs;
 
     /**
      * Creates a new HistoryContentManager.
@@ -153,6 +156,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *     unselectable items.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *     separate activity. separate activity.
+     * @param umaRecorder Records UMA user action/histograms.
      * @param historyProvider Provider of methods for querying and managing browsing history.
      * @param appId The ID of the application from which the history activity is launched, passed as
      *     the client package name.
@@ -170,6 +174,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             @Nullable Supplier<BottomSheetController> bottomSheetController,
             @Nullable Supplier<Tab> tabSupplier,
             @Nullable Runnable hideSoftKeyboard,
+            HistoryUmaRecorder umaRecorder,
             HistoryProvider historyProvider,
             String appId,
             boolean launchedForApp,
@@ -185,6 +190,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
         mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
+        mUmaRecorder = umaRecorder;
         mIsScrollToLoadDisabled =
                 ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                         || UiUtils.isHardwareKeyboardAttached();
@@ -287,8 +293,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     void maybeQueryApps() {
         if (!showAppFilter()) return;
 
-        // TODO: Measure the time to get the query result.
+        mAppQueryStartMs = SystemClock.elapsedRealtime();
         mHistoryAdapter.queryApps();
+    }
+
+    boolean onQueryAppsComplete(List<String> items) {
+        mUmaRecorder.recordQueryAppDuration(SystemClock.elapsedRealtime() - mAppQueryStartMs);
+        return buildAppInfoList(items);
     }
 
     /**
@@ -297,7 +308,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param appIds List of app IDs found from the history database.
      * @return {@code true} if we have non-empty list of the apps to show.
      */
-    boolean buildAppInfoList(List<String> appIds) {
+    private boolean buildAppInfoList(List<String> appIds) {
         mAppInfoList.clear();
         for (String appId : appIds) {
             AppInfo appInfo = mAppInfoCache.get(appId);

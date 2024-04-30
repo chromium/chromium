@@ -127,4 +127,13 @@ public class HistoryUmaRecorder {
                 type,
                 BrowserProfileType.MAX_VALUE + 1);
     }
+
+    /**
+     * Recrd the time taken to query app list to the local database.
+     *
+     * @param timeMs Query time.
+     */
+    public void recordQueryAppDuration(long timeMs) {
+        RecordHistogram.recordTimesHistogram("History.QueryAppDuration", timeMs);
+    }
 }
