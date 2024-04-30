@@ -26,6 +26,27 @@ TransferableResource TransferableResource::MakeSoftware(
 }
 
 // static
+TransferableResource TransferableResource::MakeSoftwareSharedBitmap(
+    const SharedBitmapId& id,
+    const gpu::SyncToken& sync_token,
+    const gfx::Size& size,
+    SharedImageFormat format,
+    ResourceSource source) {
+  return MakeSoftware(id, sync_token, size, format, source);
+}
+
+// static
+TransferableResource TransferableResource::MakeSoftwareSharedImage(
+    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image,
+    const gpu::SyncToken& sync_token,
+    const gfx::Size& size,
+    SharedImageFormat format,
+    ResourceSource source) {
+  return MakeSoftware(client_shared_image->mailbox(), sync_token, size, format,
+                      source);
+}
+
+// static
 TransferableResource TransferableResource::MakeGpu(
     const gpu::Mailbox& mailbox,
     uint32_t texture_target,
