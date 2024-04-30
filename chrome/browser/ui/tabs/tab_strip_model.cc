@@ -46,8 +46,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -2388,8 +2386,6 @@ void TabStripModel::MoveWebContentsAtImpl(int index,
                                           bool select_after_move) {
   FixOpeners(index);
 
-  TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
-
   CHECK_LT(index, count());
   CHECK_LT(to_position, count());
 
@@ -2715,34 +2711,6 @@ void TabStripModel::GroupTab(
   }
 
   group_model_->GetTabGroup(group)->AddTab();
-}
-
-void TabStripModel::DisconnectSavedTabGroups(
-    const std::vector<int>& indices) const {
-  tab_groups::SavedTabGroupKeyedService* const keyed_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-  const tab_groups::SavedTabGroupModel* const stg_model =
-      keyed_service->model();
-
-  // Count the tabs in each group in `indices`.
-  std::unordered_map<tab_groups::TabGroupId, size_t, tab_groups::TabGroupIdHash>
-      tabs_per_group;
-  for (const int index : indices) {
-    const std::optional<tab_groups::TabGroupId> group =
-        GetTabGroupForTab(index);
-    if (group.has_value() && stg_model->Contains(group.value())) {
-      tabs_per_group[group.value()]++;
-    }
-  }
-
-  // Disconnect each group fully contained in `indices`.
-  for (const auto& [group, count] : tabs_per_group) {
-    const gfx::Range grouped_tabs =
-        group_model_->GetTabGroup(group)->ListTabs();
-    if (grouped_tabs.length() == count) {
-      keyed_service->DisconnectLocalTabGroup(group);
-    }
-  }
 }
 
 int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
