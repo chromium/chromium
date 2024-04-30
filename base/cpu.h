@@ -74,6 +74,7 @@ class BASE_EXPORT CPU final {
   int type() const { return type_; }
   int extended_model() const { return ext_model_; }
   int extended_family() const { return ext_family_; }
+#if defined(ARCH_CPU_X86_FAMILY)
   bool has_mmx() const { return has_mmx_; }
   bool has_sse() const { return has_sse_; }
   bool has_sse2() const { return has_sse2_; }
@@ -82,7 +83,6 @@ class BASE_EXPORT CPU final {
   bool has_sse41() const { return has_sse41_; }
   bool has_sse42() const { return has_sse42_; }
   bool has_popcnt() const { return has_popcnt_; }
-#if defined(ARCH_CPU_X86_FAMILY)
   bool has_avx() const { return has_avx_; }
   bool has_fma3() const { return has_fma3_; }
   bool has_avx2() const { return has_avx2_; }
@@ -139,6 +139,7 @@ class BASE_EXPORT CPU final {
   uint32_t part_number_ = 0;  // ARM MIDR part number
   uint8_t implementer_ = 0;   // ARM MIDR implementer identifier
 #endif
+#if defined(ARCH_CPU_X86_FAMILY)
   bool has_mmx_ = false;
   bool has_sse_ = false;
   bool has_sse2_ = false;
@@ -147,7 +148,6 @@ class BASE_EXPORT CPU final {
   bool has_sse41_ = false;
   bool has_sse42_ = false;
   bool has_popcnt_ = false;
-#if defined(ARCH_CPU_X86_FAMILY)
   bool has_avx_ = false;
   bool has_fma3_ = false;
   bool has_avx2_ = false;
