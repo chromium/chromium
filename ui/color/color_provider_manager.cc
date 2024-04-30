@@ -109,7 +109,6 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
     if (!initializer_list_->empty())
       initializer_list_->Notify(provider.get(), key);
 
-    provider->GenerateColorMap();
     RecordTimeSpentInitializingColorProvider(timer.Elapsed());
     ++num_providers_initialized_;
 

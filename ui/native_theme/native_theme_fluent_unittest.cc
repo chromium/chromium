@@ -134,7 +134,6 @@ TEST_P(NativeThemeFluentTest, VerifyArrowRectWithArrowIcons) {
 TEST_F(NativeThemeFluentTest, PaintThumbRoundedCorners) {
   cc::RecordPaintCanvas canvas;
   ColorProvider color_provider;
-  color_provider.GenerateColorMap();
   constexpr gfx::Rect kRect(15, 100);
   // `is_web_test` is `false` by default.
   const NativeTheme::ScrollbarThumbExtraParams extra_params;

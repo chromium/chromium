@@ -6302,7 +6302,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
 
 class MockColorProviderSource : public ui::ColorProviderSource {
  public:
-  MockColorProviderSource() { provider_.GenerateColorMap(); }
+  MockColorProviderSource() = default;
   MockColorProviderSource(const MockColorProviderSource&) = delete;
   MockColorProviderSource& operator=(const MockColorProviderSource&) = delete;
   ~MockColorProviderSource() override = default;

@@ -36,7 +36,6 @@ class SysColorMixerTest
 
     AddRefColorMixer(&color_provider_, key);
     AddSysColorMixer(&color_provider_, key);
-    color_provider_.GenerateColorMap();
   }
 
  protected:

@@ -58,7 +58,7 @@ namespace {
 // the UI-less extension background page.
 class NoOpColorProviderSource : public ui::ColorProviderSource {
  public:
-  NoOpColorProviderSource() { color_provider_.GenerateColorMap(); }
+  NoOpColorProviderSource() = default;
   NoOpColorProviderSource(const NoOpColorProviderSource&) = delete;
   NoOpColorProviderSource& operator=(const NoOpColorProviderSource&) = delete;
   ~NoOpColorProviderSource() override = default;

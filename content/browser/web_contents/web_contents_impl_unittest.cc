@@ -337,7 +337,7 @@ class MockPageBroadcast : public TestPageBroadcast {
 
 class TestColorProviderSource : public ui::ColorProviderSource {
  public:
-  TestColorProviderSource() { provider_.GenerateColorMap(); }
+  TestColorProviderSource() = default;
 
   const ui::ColorProvider* GetColorProvider() const override {
     return &provider_;

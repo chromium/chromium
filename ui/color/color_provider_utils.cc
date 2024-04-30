@@ -383,7 +383,6 @@ ColorProvider CreateColorProviderFromRendererColorMap(
 
   for (const auto& table : kRendererColorIdMap)
     mixer[table.color_id] = {renderer_color_map.at(table.renderer_color_id)};
-  color_provider.GenerateColorMap();
 
   return color_provider;
 }
@@ -442,7 +441,6 @@ ColorProvider CreateEmulatedForcedColorsColorProvider(bool dark_mode) {
   mixer[kColorSeparator] = {kColorMidground};
   CompleteDefaultNonWebNativeRendererColorIdsDefinition(mixer);
 
-  color_provider.GenerateColorMap();
   return color_provider;
 }
 
@@ -497,7 +495,6 @@ ColorProvider CreateEmulatedForcedColorsColorProviderForTest() {
   mixer[kColorWebNativeControlSliderHovered] = {SK_ColorCYAN};
   mixer[kColorWebNativeControlSliderPressed] = {SK_ColorCYAN};
 
-  color_provider.GenerateColorMap();
   return color_provider;
 }
 
@@ -671,7 +668,6 @@ ColorProvider COMPONENT_EXPORT(COLOR)
         SkColorSetRGB(0x37, 0x93, 0xFF)};
   }
 
-  color_provider.GenerateColorMap();
   return color_provider;
 }
 

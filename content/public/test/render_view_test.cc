@@ -150,7 +150,7 @@ class FailingURLLoaderFactory : public network::SharedURLLoaderFactory {
 
 class MockColorProviderSource : public ui::ColorProviderSource {
  public:
-  explicit MockColorProviderSource() { provider_.GenerateColorMap(); }
+  explicit MockColorProviderSource() = default;
   MockColorProviderSource(const MockColorProviderSource&) = delete;
   MockColorProviderSource& operator=(const MockColorProviderSource&) = delete;
   ~MockColorProviderSource() override = default;

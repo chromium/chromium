@@ -1763,8 +1763,9 @@ bool NativeThemeBase::IsColorPipelineSupportedForControlColorId(
     ControlColorId color_id) const {
   // Color providers are not yet supported on Android so we need to check that
   // the color_provider is not null here.
-  if (!color_provider || color_provider->IsColorMapEmpty())
+  if (!color_provider || !color_provider->HasMixers()) {
     return false;
+  }
 
   static constexpr auto kControlColorIdsSet =
       base::MakeFixedFlatSet<ControlColorId>({kBorder,

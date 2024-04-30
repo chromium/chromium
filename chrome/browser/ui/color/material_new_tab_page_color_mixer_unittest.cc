@@ -26,7 +26,6 @@ class MaterialNewTabPageColorMixerTest : public testing::Test {
   void AddMaterialColorMixers() {
     AddColorMixers(&color_provider_, color_provider_key_);
     AddChromeColorMixers(&color_provider_, color_provider_key_);
-    color_provider_.GenerateColorMap();
   }
 
  private:

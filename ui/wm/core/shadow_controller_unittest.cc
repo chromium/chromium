@@ -285,7 +285,6 @@ TEST_F(ShadowControllerTest, SetColorsMapToShadow) {
   mixer[ui::kColorShadowValueAmbientShadowElevationTwelve] = {SK_ColorRED};
   mixer[ui::kColorShadowValueKeyShadowElevationTwentyFour] = {SK_ColorGREEN};
   mixer[ui::kColorShadowValueAmbientShadowElevationTwentyFour] = {SK_ColorBLUE};
-  color_provider.GenerateColorMap();
 
   shadow->SetElevationToColorsMap(
       ShadowController::GenerateShadowColorsMap(&color_provider));
