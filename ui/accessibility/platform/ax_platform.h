@@ -34,6 +34,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
     // if `new_mode` contains additions to the mode flags.
     virtual void SetProcessMode(AXMode new_mode) = 0;
 
+    // The global accessibility mode is automatically enabled based on
+    // usage of accessibility APIs. When we detect a significant amount
+    // of user inputs within a certain time period, but no accessibility
+    // API usage, we automatically disable accessibility. This method
+    // should be called when we detect accessibility API usage.
+    virtual void OnAccessibilityApiUsage() = 0;
+
    protected:
     Delegate() = default;
   };
@@ -59,6 +66,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // process-wide accessibility mode.
   void NotifyModeAdded(AXMode mode);
 
+  // Notifies the delegate that an accessibility API has been used.
+  void NotifyAccessibilityApiUsage() { delegate_->OnAccessibilityApiUsage(); }
+
+  // Returns whether caret browsing is enabled. When caret browsing is enabled,
+  // we need to ensure that we keep ATs aware of caret movement.
+  bool IsCaretBrowsingEnabled();
+  void SetCaretBrowsingState(bool enabled);
+
 #if BUILDFLAG(IS_WIN)
   // Enables or disables use of the UI Automation Provider on Windows. If this
   // function is not called, the provider is enabled or disabled on the basis of
@@ -78,6 +93,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 
   // Sets the process-wide accessibility mode.
   void SetMode(AXMode new_mode) { delegate_->SetProcessMode(new_mode); }
+
+  // Keeps track of whether caret browsing is enabled.
+  bool caret_browsing_enabled_ = false;
 
   // The embedder's delegate.
   const raw_ref<Delegate> delegate_;

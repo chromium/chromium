@@ -46,6 +46,14 @@ void AXPlatform::NotifyModeAdded(AXMode mode) {
   }
 }
 
+bool AXPlatform::IsCaretBrowsingEnabled() {
+  return caret_browsing_enabled_;
+}
+
+void AXPlatform::SetCaretBrowsingState(bool enabled) {
+  caret_browsing_enabled_ = enabled;
+}
+
 #if BUILDFLAG(IS_WIN)
 void AXPlatform::SetUiaProviderEnabled(bool is_enabled) {
   CHECK_EQ(uia_provider_enablement_, UiaProviderEnablement::kVariations);

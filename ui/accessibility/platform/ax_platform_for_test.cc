@@ -45,4 +45,6 @@ void AXPlatformForTest::SetProcessMode(AXMode new_mode) {
   }
 }
 
+void AXPlatformForTest::OnAccessibilityApiUsage() {}
+
 }  // namespace ui

@@ -367,14 +367,6 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsForTesting() {
   UpdateHistogramsOnOtherThread();
 }
 
-void BrowserAccessibilityStateImpl::SetCaretBrowsingState(bool enabled) {
-  caret_browsing_enabled_ = enabled;
-}
-
-bool BrowserAccessibilityStateImpl::IsCaretBrowsingEnabled() const {
-  return caret_browsing_enabled_;
-}
-
 void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
     bool allowed) {
   performance_filtering_allowed_ = allowed;
@@ -490,23 +482,6 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   }
 }
 
-void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
-  // See OnUserInputEvent for how this is used to disable accessibility.
-  user_input_event_count_ = 0;
-
-  // See comment above kOnAccessibilityUsageUpdateDelaySecs for why we post a
-  // delayed task.
-  if (!accessibility_update_task_pending_) {
-    accessibility_update_task_pending_ = true;
-    GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask,
-            base::Unretained(this)),
-        base::Seconds(kOnAccessibilityUsageUpdateDelaySecs));
-  }
-}
-
 void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
 
 void BrowserAccessibilityStateImpl::SetAXModeChangeAllowed(bool allowed) {
@@ -581,6 +556,23 @@ void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
   }
 
   process_accessibility_mode_ = CreateScopedModeForProcess(new_mode);
+}
+
+void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
+  // See OnUserInputEvent for how this is used to disable accessibility.
+  user_input_event_count_ = 0;
+
+  // See comment above kOnAccessibilityUsageUpdateDelaySecs for why we post a
+  // delayed task.
+  if (!accessibility_update_task_pending_) {
+    accessibility_update_task_pending_ = true;
+    GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask,
+            base::Unretained(this)),
+        base::Seconds(kOnAccessibilityUsageUpdateDelaySecs));
+  }
 }
 
 std::unique_ptr<ScopedAccessibilityMode>

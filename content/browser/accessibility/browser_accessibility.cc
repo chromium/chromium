@@ -25,6 +25,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/buildflags.h"
@@ -835,8 +836,9 @@ bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
   //
   // TODO(crbug.com/40674120): Caret Browsing should be looking at leaf text
   // nodes so it might not return expected results in this method.
-  if (BrowserAccessibilityStateImpl::GetInstance()->IsCaretBrowsingEnabled())
+  if (ui::AXPlatform::GetInstance().IsCaretBrowsingEnabled()) {
     return true;
+  }
   return node()->HasVisibleCaretOrSelection();
 }
 
@@ -883,9 +885,14 @@ std::string BrowserAccessibility::SubtreeToStringHelper(size_t level) {
   return result;
 }
 
+// TODO(crbug.com/337737555): This extra hop seems redundant, but
+// unintuitively, this is the only override of NotifyAccessibilityApiUsage, so
+// the the other inheritors of AXPlatformNodeDelegate don't actually ever send
+// this notification. But, if this was refactored to be directly called, we end
+// up failing bots due to the fact that this can be called by our own API usage,
+// which is tracked by the linked bug.
 void BrowserAccessibility::NotifyAccessibilityApiUsage() const {
-  content::BrowserAccessibilityStateImpl::GetInstance()
-      ->OnAccessibilityApiUsage();
+  ui::AXPlatform::GetInstance().NotifyAccessibilityApiUsage();
 }
 
 const std::vector<gfx::NativeViewAccessible>

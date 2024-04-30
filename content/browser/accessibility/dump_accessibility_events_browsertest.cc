@@ -31,6 +31,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 #if BUILDFLAG(IS_WIN)
@@ -595,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   GetWebContents()->GetMutableRendererPrefs()->caret_browsing_enabled = true;
   // This notifies accessibility that caret browsing is on so that it sends
   // accessibility events when the caret moves.
-  BrowserAccessibilityStateImpl::GetInstance()->SetCaretBrowsingState(true);
+  ui::AXPlatform::GetInstance().SetCaretBrowsingState(true);
 
   RunEventTest(FILE_PATH_LITERAL("caret-browsing-enabled.html"));
 }

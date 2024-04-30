@@ -114,9 +114,6 @@ class CONTENT_EXPORT BrowserAccessibilityState {
 
   virtual void UpdateHistogramsForTesting() = 0;
 
-  // Update BrowserAccessibilityState with the current status of caret browsing.
-  virtual void SetCaretBrowsingState(bool enabled) = 0;
-
   // Update BrowserAccessibilityState with the current status of performance
   // filtering.
   virtual void SetPerformanceFilteringAllowed(bool allowed) = 0;

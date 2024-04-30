@@ -26,13 +26,13 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/ui_base_features.h"
 
 #if defined(TOOLKIT_VIEWS)
@@ -123,7 +123,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #if !BUILDFLAG(IS_ANDROID)
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
-  content::BrowserAccessibilityState::GetInstance()->SetCaretBrowsingState(
+  ui::AXPlatform::GetInstance().SetCaretBrowsingState(
       prefs->caret_browsing_enabled);
 #endif
 
