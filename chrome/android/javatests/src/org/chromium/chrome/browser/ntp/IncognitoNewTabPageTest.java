@@ -182,9 +182,9 @@ public class IncognitoNewTabPageTest {
         var context = sActivityTestRule.getActivity().getApplicationContext();
         for (String languageTag : ProductConfig.LOCALES) {
             var localeContext = createContextForLocale(context, languageTag);
-            LegacyIncognitoDescriptionView.getSpannedBulletText(
+            IncognitoDescriptionView.getSpannedBulletText(
                     localeContext, R.string.new_tab_otr_not_saved);
-            LegacyIncognitoDescriptionView.getSpannedBulletText(
+            IncognitoDescriptionView.getSpannedBulletText(
                     localeContext, R.string.new_tab_otr_visible);
         }
     }
