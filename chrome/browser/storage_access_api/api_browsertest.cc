@@ -2521,6 +2521,44 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
+                       FedCMGrants_PermissionPolicyHeaderIgnored) {
+  SetBlockThirdPartyCookies(true);
+  GrantFedCMPermission();
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
+
+  constexpr char kPageWithPermissionPolicyHeader[] = "/page_with_header.html";
+  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.path() != kPageWithPermissionPolicyHeader) {
+          return false;
+        }
+
+        CHECK_EQ(params->url_request.url.host_piece(), kHostB);
+        content::URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Permissions-Policy: identity-credentials-get=(self "
+            "\"https://b.com\")\n"
+            "\n",
+            /*body=*/"", params->client.get());
+        return true;
+      }));
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(
+      GURL(base::StrCat({"https://", kHostB, kPageWithPermissionPolicyHeader})),
+      browser());
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  EXPECT_EQ(prompt_factory()->TotalRequestCount(), 1);
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), kNoCookies);
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIAutograntsWithFedCMBrowserTest,
                        FedCMGrantsAllowCookieAccessViaSAA) {
   SetBlockThirdPartyCookies(true);
   GrantFedCMPermission();
