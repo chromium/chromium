@@ -1,0 +1,79 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/signin/cookie_clear_on_exit_migration_notice.h"
+
+#include <functional>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/notreached.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/models/dialog_model_field.h"
+#include "ui/base/models/dialog_model_host.h"
+
+namespace {
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void OpenCookieSettingsAndCloseDialog(Browser& browser,
+                                      ui::DialogModel& model) {
+  chrome::ShowSettingsSubPage(&browser, chrome::kOnDeviceSiteDataSubpage);
+  model.host()->Close();
+}
+#endif
+
+}  // namespace
+
+void ShowCookieClearOnExitMigrationNotice(
+    Browser& browser,
+    base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Split the callback in 3: Ok, Cancel, Close.
+  // Ok: Proceeds with closing the browser,
+  // Cancel: Closes the dialog but keeps the browser open,
+  // Close (e.g. by pressing ESC): same as cancel.
+  auto [ok_callback, temp_callback] =
+      base::SplitOnceCallback(std::move(callback));
+  base::OnceClosure temp_cancel_closure =
+      base::BindOnce(std::move(temp_callback), false);
+  auto [cancel_closure, close_closure] =
+      base::SplitOnceCallback(std::move(temp_cancel_closure));
+
+  // Pressing the "go to settings" link closes the dialog, keeps the browser
+  // open, and navigates to the cookie settings page.
+  ui::DialogModel::Builder dialog_builder;
+  ui::DialogModelLabel::TextReplacement link_replacement =
+      ui::DialogModelLabel::CreateLink(
+          IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT_LINK,
+          base::BindRepeating(&OpenCookieSettingsAndCloseDialog,
+                              std::ref(browser),
+                              std::ref(*dialog_builder.model())));
+  dialog_builder.SetInternalName("CookieClearOnExitMigrationNotice")
+      .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
+          IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT,
+          std::move(link_replacement)))
+      .AddOkButton(
+          base::BindOnce(std::move(ok_callback), true),
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+              IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_CLOSE)))
+      .AddCancelButton(std::move(cancel_closure),
+                       ui::DialogModel::Button::Params().SetLabel(
+                           l10n_util::GetStringUTF16(IDS_CANCEL)))
+      .SetCloseActionCallback(std::move(close_closure));
+
+  chrome::ShowBrowserModal(&browser, dialog_builder.Build());
+#else
+  NOTREACHED_NORETURN();
+#endif
+}

@@ -1077,6 +1077,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_UNSYNCED_BODY" translateable="false"  desc="This is the subtitle of an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chrome. This subtitle is after the 'Some data isn’t saved yet' string. The tone should be cautionary, because we want to explain to the user that their data is not saved to their Google Account. This string provides a path to resolution because it explains how the user can properly save their data before they sign out of Chrome.">
           Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out.
         </message>
+        <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT" desc="Body of a notice displayed when closing the last Chrome window, to inform the user about a change in the way the 'Clear cookie on exit' setting works.">
+          You’ll be signed out of most sites when you close all Chromium windows, except your Google Account if you’re signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK">$1<ex>go to settings</ex></ph>.
+        </message>
       </if>
 
       <if expr="not chromeos_ash and not is_android">

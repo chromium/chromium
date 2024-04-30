@@ -12848,6 +12848,21 @@ This can include information about installed software, files, your browser, and 
         <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_SIGNOUT_BUTTON" translateable="false"  desc="This string is found on a button that lets the user sign out of Chrome when the user taps it. It is on an error message dialog that appears when the user opens the Chrome Profile Menu and chooses 'Sign out of Chrome'. The error message appears when the user has saved some data (like a password or payment method) to Chrome, but Chrome wasn't able to save the data to the user's Google Account due to a sign-in error; but, the data has been saved locally to Chrome. This text is a verb and is short for the longer phrase 'Sign out of Chrome anyway.'">
           Sign out anyway
         </message>
+
+        <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT_LINK" desc="Text of the link to open cookie settings, when closing the last browser window.">
+          go to settings
+        </message>
+
+        <if expr="use_titlecase">
+          <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_CLOSE" desc="Text of the button to confirm browser close after cookie setting change in behavior.">
+            Close Window
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_CLOSE" desc="Text of the button to confirm browser close after cookie setting change in behavior.">
+            Close window
+          </message>
+        </if>
       </if>
 
       <if expr="not chromeos_ash and not is_android">
