@@ -282,8 +282,9 @@ bool FileMetricsProvider::LocateNextFileInDirectory(SourceInfo* source) {
       found_file.info = file_iter.GetInfo();
 
       // Ignore directories.
-      if (found_file.info.IsDirectory())
+      if (found_file.info.IsDirectory()) {
         continue;
+      }
 
       // Ignore temporary files.
       base::FilePath::CharType first_character =
@@ -303,9 +304,7 @@ bool FileMetricsProvider::LocateNextFileInDirectory(SourceInfo* source) {
       total_size_kib += found_file.info.GetSize() >> 10;
       base::Time modified = found_file.info.GetLastModifiedTime();
       if (modified > source->last_seen) {
-        // This file hasn't been read. Remember it (unless from the future).
-        if (modified <= now_time)
-          source->found_files->emplace(modified, std::move(found_file));
+        source->found_files->emplace(modified, std::move(found_file));
         ++file_count;
       } else {
         // This file has been read. Try to delete it. Ignore any errors because
@@ -350,8 +349,9 @@ bool FileMetricsProvider::LocateNextFileInDirectory(SourceInfo* source) {
     }
 
     // Record the result. Success will be recorded by the caller.
-    if (result != ACCESS_RESULT_THIS_PID)
+    if (result != ACCESS_RESULT_THIS_PID) {
       RecordAccessResult(result);
+    }
   }
 
   return have_file;
