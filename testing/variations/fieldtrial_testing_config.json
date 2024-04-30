@@ -3410,21 +3410,6 @@
             ]
         }
     ],
-    "CellularCarrierLock": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CellularCarrierLock"
-                    ]
-                }
-            ]
-        }
-    ],
     "CheckHTMLParserBudgetLessOften": [
         {
             "platforms": [
