@@ -1,0 +1,67 @@
+<style include="cr-shared-style">
+  :host {
+    --cr-url-list-item-padding: 0;
+    --product-selector-width: 250px;
+    text-align: start;
+  }
+
+  cr-action-menu {
+    --cr-action-menu-padding: 0;
+    --cr-menu-border-radius: 10px;
+  }
+
+  cr-expand-button {
+    padding: 6px 16px;
+  }
+
+  .dropdown-item {
+    padding: 0 16px;
+  }
+
+  .dropdown-spacer {
+    height: 10px;
+  }
+
+  .expand-icon {
+    padding: var(--iron-icon-padding);
+  }
+
+  .section-title {
+    line-height: 16px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  #selectionContainer {
+    box-sizing: border-box;
+    overflow: clip;
+    width: var(--product-selector-width);
+  }
+</style>
+
+<cr-lazy-render id="menu">
+  <template>
+    <cr-action-menu on-close="onClose_">
+      <div id="selectionContainer">
+        <template is="dom-if" if="[[openTabs.length]]" restamp>
+          <cr-expand-button expanded="{{openTabsExpanded_}}" no-hover
+              expand-icon="cr:arrow-drop-down" collapse-icon="cr:arrow-drop-up">
+            <div class="section-title">$i18n{openTabsSectionTitle}</div>
+          </cr-expand-button>
+          <iron-collapse opened="[[openTabsExpanded_]]">
+            <template is="dom-repeat" items="[[openTabs]]">
+              <cr-url-list-item class="dropdown-item" size="medium"
+                  url="[[item.url]]" title="[[item.title]]"
+                  description="[[getUrl_(item)]]" no-hover
+                  on-click="onSelect_">
+              </cr-url-list-item>
+            </template>
+            <!-- Add spacer instead of adding margin or padding to the -->
+            <!-- parent for smooth expand/collapse transitions. -->
+            <div class="dropdown-spacer"></div>
+          </iron-collapse>
+        </template>
+      </div>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

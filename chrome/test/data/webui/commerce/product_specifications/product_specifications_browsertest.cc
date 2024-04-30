@@ -33,3 +33,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ProductSelector) {
   RunTest("commerce/product_specifications/product_selector_test.js",
           "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ProductSelectionMenu) {
+  RunTest("commerce/product_specifications/product_selection_menu_test.js",
+          "mocha.run()");
+}

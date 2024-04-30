@@ -1,6 +1,5 @@
 <style include="cr-shared-style">
   :host {
-    --cr-action-menu-padding: 0;
     --cr-url-list-item-padding: 0;
     --iron-icon-gap: 8px;
     --iron-icon-width: 24px;
@@ -11,14 +10,6 @@
     text-align: start;
   }
 
-  cr-action-menu {
-    --cr-menu-border-radius: 10px;
-  }
-
-  cr-expand-button {
-    padding: 6px 16px;
-  }
-
   #currentProduct {
     pointer-events: none;
     width: calc(var(--product-selector-width)
@@ -27,8 +18,7 @@
         - var(--iron-icon-gap));
   }
 
-  #currentProductContainer,
-  #selectionContainer {
+  #currentProductContainer {
     box-sizing: border-box;
     overflow: clip;
     width: var(--product-selector-width);
@@ -60,61 +50,21 @@
     transform: translateX(calc(-1 * var(--product-selector-padding)));
     width: var(--product-selector-width);
   }
-
-  .dropdown-item {
-    padding: 0 16px;
-  }
-
-  .dropdown-spacer {
-    height: 10px;
-  }
-
-  .expand-icon {
-    padding: var(--iron-icon-padding);
-  }
-
-  .section-title {
-    line-height: 16px;
-    font-size: 12px;
-    font-weight: 500;
-  }
 </style>
 
 <div id="currentProductContainer"
-    on-click="onShowMenu_"
+    on-click="showMenu_"
     on-keydown="onCurrentProductContainerKeyDown_"
     tabindex="0">
   <cr-url-list-item id="currentProduct" size="medium"
     url="[[selectedItem.url]]" title="[[selectedItem.title]]"
-    description="[[getAbbreviatedUrl_(selectedItem.url)]]" tabindex="-1">
+    description="[[getUrl_(selectedItem)]]" tabindex="-1">
   </cr-url-list-item>
   <iron-icon icon="cr:expand-more"></iron-icon>
   <div id="hoverLayer"></div>
 </div>
 
-<cr-lazy-render id="productSelectionMenu">
-  <template>
-    <cr-action-menu on-close="onCloseMenu_">
-      <div id="selectionContainer">
-        <template is="dom-if" if="[[openTabs.length]]" restamp>
-          <cr-expand-button expanded="{{openTabsExpanded_}}" no-hover
-              expand-icon="cr:arrow-drop-down" collapse-icon="cr:arrow-drop-up">
-            <div class="section-title">$i18n{openTabsSectionTitle}</div>
-          </cr-expand-button>
-          <iron-collapse opened="[[openTabsExpanded_]]">
-            <template is="dom-repeat" items="[[openTabs]]">
-              <cr-url-list-item class="dropdown-item" size="medium"
-                  url="[[item.url]]" title="[[item.title]]"
-                  description="[[getAbbreviatedUrl_(item.url)]]" no-hover
-                  on-click="onSelect_">
-              </cr-url-list-item>
-            </template>
-            <!-- Add spacer instead of adding margin or padding to the -->
-            <!-- parent for smooth expand/collapse transitions -->
-            <div class="dropdown-spacer"></div>
-          </iron-collapse>
-        </template>
-      </div>
-    </cr-action-menu>
-  </template>
-</cr-lazy-render>
+<product-selection-menu id="productSelectionMenu"
+    selected-url="[[selectedItem.url]]"
+    on-close-menu="onCloseMenu_">
+</product-selection-menu>

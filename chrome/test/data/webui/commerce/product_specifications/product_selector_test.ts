@@ -43,38 +43,13 @@ suite('ProductSelectorTest', () => {
     BrowserProxyImpl.setInstance(shoppingServiceApi);
   });
 
-  test('open tabs shown', async () => {
-    const titleString = 'title';
-    const openTabs = [{
-      title: titleString,
-      url: stringToMojoUrl('http://example.com'),
-    }];
-    const selector = await createSelector();
-
-    shoppingServiceApi.setResultFor(
-        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
-
-    assertEquals(0, shoppingServiceApi.getCallCount('getUrlInfosForOpenTabs'));
-
-    selector.$.currentProductContainer.click();
-
-    await shoppingServiceApi.whenCalled('getUrlInfosForOpenTabs');
-
-    await flushTasks();
-
-    // Ensure the number of list items is equal to the number of open tabs.
-    assertEquals(openTabs.length, selector.openTabs.length);
-
-    assertEquals(titleString, selector.openTabs[0]!.title);
-    assertEquals(openTabs[0]!.url.url, selector.openTabs[0]!.url);
-  });
-
   test('menu shown on enter', async () => {
     initUrlInfos();
     const selector = await createSelector();
     const showingMenuClass = 'showing-menu';
+    const menu = selector.$.productSelectionMenu;
 
-    assertEquals(selector.$.productSelectionMenu.getIfExists(), null);
+    assertEquals(menu.$.menu.getIfExists(), null);
     assertFalse(selector.$.currentProductContainer.classList.contains(
         showingMenuClass));
 
@@ -82,7 +57,7 @@ suite('ProductSelectorTest', () => {
         new KeyboardEvent('keydown', {key: 'Enter'}));
     await flushTasks();
 
-    assertNotEquals(selector.$.productSelectionMenu.getIfExists(), null);
+    assertNotEquals(menu.$.menu.getIfExists(), null);
     assertTrue(selector.$.currentProductContainer.classList.contains(
         showingMenuClass));
   });
@@ -101,74 +76,10 @@ suite('ProductSelectorTest', () => {
     assertTrue(selector.$.currentProductContainer.classList.contains(
         showingMenuClass));
 
-    selector.$.productSelectionMenu.get().close();
-    await eventToPromise('close', selector.$.productSelectionMenu.get());
+    selector.$.productSelectionMenu.close();
+    await eventToPromise('close', selector.$.productSelectionMenu);
 
     assertFalse(selector.$.currentProductContainer.classList.contains(
         showingMenuClass));
-  });
-
-  test('abbreviates URLs', async () => {
-    initUrlInfos();
-    const selector = await createSelector();
-    selector.$.currentProductContainer.click();
-    await flushTasks();
-
-    const menu = selector.$.productSelectionMenu.get();
-    const listElement = menu.querySelector<HTMLElement>('.dropdown-item');
-    assertTrue(!!listElement);
-
-    const tabUrl = listElement.shadowRoot!.querySelector<HTMLElement>(
-        '.description-text');
-    assertTrue(!!tabUrl);
-    assertEquals('example.com', tabUrl.textContent);
-  });
-
-  test('excludes current selection', async () => {
-    const titleString = 'title';
-    const openTabs = [
-      {
-        title: stringToMojoString16(titleString),
-        url: stringToMojoUrl('https://example.com'),
-      },
-      {
-        title: stringToMojoString16(titleString),
-        url: stringToMojoUrl('https://current-selection.com'),
-      },
-    ];
-    shoppingServiceApi.setResultFor(
-        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
-
-    const selector = await createSelector();
-    selector.$.currentProductContainer.click();
-    await flushTasks();
-
-    const menu = selector.$.productSelectionMenu.get();
-    const listElements = menu.querySelectorAll<HTMLElement>('.dropdown-item');
-    assertEquals(1, listElements.length);
-
-    const tabUrl = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
-        '.description-text');
-    assertTrue(!!tabUrl);
-    assertEquals('example.com', tabUrl.textContent);
-  });
-
-  test('fires selector event', async () => {
-    initUrlInfos();
-    const selector = await createSelector();
-    selector.$.currentProductContainer.click();
-    await flushTasks();
-
-    const menu = selector.$.productSelectionMenu.get();
-    assertTrue(menu.open);
-    const listElement = menu.querySelector<HTMLElement>('.dropdown-item');
-    assertTrue(!!listElement);
-    const eventPromise = eventToPromise('selected-url-change', selector);
-    listElement.click();
-    const event = await eventPromise;
-
-    assertTrue(!!event);
-    assertEquals('http://example.com', event.detail.url);
-    assertFalse(menu.open);
   });
 });

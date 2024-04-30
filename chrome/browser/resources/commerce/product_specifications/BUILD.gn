@@ -16,6 +16,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "header.ts",
+    "product_selection_menu.ts",
     "product_selector.ts",
     "table.ts",
   ]
@@ -25,7 +26,10 @@ build_webui("build") {
   ]
   mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/commerce/shopping_service.mojom-webui.ts" ]
 
-  non_web_component_files = [ "router.ts" ]
+  non_web_component_files = [
+    "router.ts",
+    "utils.ts",
+  ]
 
   ts_composite = true
   ts_deps = [

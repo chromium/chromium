@@ -8,8 +8,8 @@ import './product_selector.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {UrlListEntry} from './product_selector.js';
 import {getTemplate} from './table.html.js';
+import type {UrlListEntry} from './utils.js';
 
 /** Describes a row in a ProductSpecs table. */
 export interface TableRow {
