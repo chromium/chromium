@@ -539,8 +539,8 @@ const mojom::Operand& GraphBuilder::GetOperand(uint64_t operand_id) const {
 
 auto GraphBuilder::SerializeUnaryOperation(
     ::tflite::BuiltinOperator code,
-    uint64_t input_operand_id,
-    uint64_t output_operand_id,
+    int32_t input_tensor_index,
+    int32_t output_tensor_index,
     ::tflite::BuiltinOptions builtin_options_type,
     flatbuffers::Offset<void> builtin_options) -> OperatorOffset {
   CHECK_EQ(builtin_options_type == ::tflite::BuiltinOptions_NONE,
@@ -550,10 +550,8 @@ auto GraphBuilder::SerializeUnaryOperation(
   // operand. The type of operation is determined by the index of the operator
   // code.
   const uint32_t operator_code_index = GetOperatorCodeIndex(code);
-  const std::array<int32_t, 1> op_inputs = {
-      operand_to_index_map_.at(input_operand_id)};
-  const std::array<int32_t, 1> op_outputs = {
-      operand_to_index_map_.at(output_operand_id)};
+  const std::array<int32_t, 1> op_inputs = {input_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
   return ::tflite::CreateOperator(builder_, operator_code_index,
                                   builder_.CreateVector<int32_t>(op_inputs),
                                   builder_.CreateVector<int32_t>(op_outputs),
@@ -780,8 +778,9 @@ auto GraphBuilder::SerializeClamp(const mojom::Clamp& clamp)
       break;
   }
 
-  return SerializeUnaryOperation(code, clamp.input_operand_id,
-                                 clamp.output_operand_id);
+  return SerializeUnaryOperation(
+      code, operand_to_index_map_.at(clamp.input_operand_id),
+      operand_to_index_map_.at(clamp.output_operand_id));
 }
 
 auto GraphBuilder::SerializeConcat(const mojom::Concat& concat)
@@ -969,39 +968,43 @@ auto GraphBuilder::SerializeElementWiseBinary(
 
 auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
     -> base::expected<OperatorOffset, std::string> {
+  const int32_t input_tensor_index =
+      operand_to_index_map_.at(op.input_operand_id);
+  const int32_t output_tensor_index =
+      operand_to_index_map_.at(op.output_operand_id);
   switch (op.kind) {
     case mojom::ElementWiseUnary::Kind::kAbs:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_ABS,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kCeil:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_CEIL,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kCos:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_COS,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kExp:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_EXP,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kFloor:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_FLOOR,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kLog:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_LOG,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kNeg:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_NEG,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kSin:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_SIN,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kSqrt:
       return SerializeUnaryOperation(::tflite::BuiltinOperator_SQRT,
-                                     op.input_operand_id, op.output_operand_id);
+                                     input_tensor_index, output_tensor_index);
     case mojom::ElementWiseUnary::Kind::kCast:
       return SerializeCastOperation(
-          operand_to_index_map_.at(op.input_operand_id),
+          input_tensor_index,
           MojoOperandTypeToTFLite(GetOperand(op.input_operand_id).data_type),
-          operand_to_index_map_.at(op.output_operand_id),
+          output_tensor_index,
           MojoOperandTypeToTFLite(GetOperand(op.output_operand_id).data_type));
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       return SerializeLogicalNot(op);
@@ -1012,6 +1015,7 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
       // redirecting output tensor to input.
       return SerializeReshape(op.input_operand_id, op.output_operand_id);
     case mojom::ElementWiseUnary::Kind::kTan:
+      return SerializeTan(op);
     case mojom::ElementWiseUnary::Kind::kErf:
     case mojom::ElementWiseUnary::Kind::kReciprocal:
       return base::unexpected(
@@ -1026,8 +1030,10 @@ auto GraphBuilder::SerializeElu(const mojom::Elu& elu)
     return base::unexpected(
         "Setting a custom alpha is not supported in tflite schema.");
   }
-  return SerializeUnaryOperation(::tflite::BuiltinOperator_ELU,
-                                 elu.input_operand_id, elu.output_operand_id);
+  return SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_ELU,
+      operand_to_index_map_.at(elu.input_operand_id),
+      operand_to_index_map_.at(elu.output_operand_id));
 }
 
 auto GraphBuilder::SerializeGather(const mojom::Gather& gather)
@@ -1144,9 +1150,10 @@ auto GraphBuilder::SerializeGemm(const mojom::Gemm& gemm)
 
 auto GraphBuilder::SerializeHardSwish(const mojom::HardSwish& hard_swish)
     -> OperatorOffset {
-  return SerializeUnaryOperation(::tflite::BuiltinOperator_HARD_SWISH,
-                                 hard_swish.input_operand_id,
-                                 hard_swish.output_operand_id);
+  return SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_HARD_SWISH,
+      operand_to_index_map_.at(hard_swish.input_operand_id),
+      operand_to_index_map_.at(hard_swish.output_operand_id));
 }
 
 auto GraphBuilder::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
@@ -1155,9 +1162,10 @@ auto GraphBuilder::SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu)
       ::tflite::CreateLeakyReluOptions(builder_, leaky_relu.alpha);
 
   return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator_LEAKY_RELU, leaky_relu.input_operand_id,
-      leaky_relu.output_operand_id, ::tflite::BuiltinOptions_LeakyReluOptions,
-      leaky_rely_options.Union());
+      ::tflite::BuiltinOperator_LEAKY_RELU,
+      operand_to_index_map_.at(leaky_relu.input_operand_id),
+      operand_to_index_map_.at(leaky_relu.output_operand_id),
+      ::tflite::BuiltinOptions_LeakyReluOptions, leaky_rely_options.Union());
 }
 
 auto GraphBuilder::SerializeLinear(const mojom::Linear& linear)
@@ -1478,8 +1486,9 @@ auto GraphBuilder::SerializeReduce(const mojom::Reduce& reduce)
 
 auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
   return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator::BuiltinOperator_RELU, relu.input_operand_id,
-      relu.output_operand_id);
+      ::tflite::BuiltinOperator::BuiltinOperator_RELU,
+      operand_to_index_map_.at(relu.input_operand_id),
+      operand_to_index_map_.at(relu.output_operand_id));
 }
 
 auto GraphBuilder::SerializeResample2d(const mojom::Resample2d& resample2d)
@@ -1561,15 +1570,18 @@ auto GraphBuilder::SerializeReshape(uint64_t input_operand_id,
           std::move(signed_output_dimensions)));
 
   return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator_RESHAPE, input_operand_id, output_operand_id,
+      ::tflite::BuiltinOperator_RESHAPE,
+      operand_to_index_map_.at(input_operand_id),
+      operand_to_index_map_.at(output_operand_id),
       ::tflite::BuiltinOptions_ReshapeOptions, reshape_options.Union());
 }
 
 auto GraphBuilder::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
     -> OperatorOffset {
-  return SerializeUnaryOperation(::tflite::BuiltinOperator_LOGISTIC,
-                                 sigmoid.input_operand_id,
-                                 sigmoid.output_operand_id);
+  return SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_LOGISTIC,
+      operand_to_index_map_.at(sigmoid.input_operand_id),
+      operand_to_index_map_.at(sigmoid.output_operand_id));
 }
 
 auto GraphBuilder::SerializeSlice(const mojom::Slice& slice)
@@ -1625,9 +1637,10 @@ auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
       ::tflite::CreateSoftmaxOptions(builder_, /*beta=*/1.0);
 
   return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator_SOFTMAX, softmax.input_operand_id,
-      softmax.output_operand_id, ::tflite::BuiltinOptions_SoftmaxOptions,
-      softmax_options.Union());
+      ::tflite::BuiltinOperator_SOFTMAX,
+      operand_to_index_map_.at(softmax.input_operand_id),
+      operand_to_index_map_.at(softmax.output_operand_id),
+      ::tflite::BuiltinOptions_SoftmaxOptions, softmax_options.Union());
 }
 
 auto GraphBuilder::SerializeSplit(const mojom::Split& split)
@@ -1685,9 +1698,43 @@ auto GraphBuilder::SerializeSplit(const mojom::Split& split)
       ::tflite::BuiltinOptions_SplitVOptions, split_options.Union());
 }
 
+auto GraphBuilder::SerializeTan(const mojom::ElementWiseUnary& tan)
+    -> OperatorOffset {
+  // The tangent operation defines the expression `opposite side / adjacent
+  // side` to a right triangle as the described here
+  // https://www.mathworks.com/help/matlab/ref/tan.html, it can be emulated with
+  // `sin(x)/cos(x)` element-wise.
+  const mojom::Operand& input_operand = GetOperand(tan.input_operand_id);
+  // The input shape has been validated to not overflow before creating tensor.
+  const auto signed_input_dimensions =
+      ToSignedDimensions(input_operand.dimensions);
+  CHECK(signed_input_dimensions.has_value());
+  const ::tflite::TensorType input_tensor_type =
+      MojoOperandTypeToTFLite(input_operand.data_type);
+  const int32_t output_tensor_index_of_sin =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  const int32_t input_tensor_index =
+      operand_to_index_map_.at(tan.input_operand_id);
+  operators_.emplace_back(SerializeUnaryOperation(::tflite::BuiltinOperator_SIN,
+                                                  input_tensor_index,
+                                                  output_tensor_index_of_sin));
+
+  const int32_t output_tensor_index_of_cos =
+      SerializeTemporaryTensor(*signed_input_dimensions, input_tensor_type);
+  operators_.emplace_back(SerializeUnaryOperation(::tflite::BuiltinOperator_COS,
+                                                  input_tensor_index,
+                                                  output_tensor_index_of_cos));
+  return SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_DIV, output_tensor_index_of_sin,
+      output_tensor_index_of_cos,
+      operand_to_index_map_.at(tan.output_operand_id));
+}
+
 auto GraphBuilder::SerializeTanh(const mojom::Tanh& tanh) -> OperatorOffset {
-  return SerializeUnaryOperation(::tflite::BuiltinOperator_TANH,
-                                 tanh.input_operand_id, tanh.output_operand_id);
+  return SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_TANH,
+      operand_to_index_map_.at(tanh.input_operand_id),
+      operand_to_index_map_.at(tanh.output_operand_id));
 }
 
 auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)

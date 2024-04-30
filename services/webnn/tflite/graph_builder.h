@@ -117,8 +117,8 @@ class GraphBuilder final {
   // `builtin_options`, or neither.
   OperatorOffset SerializeUnaryOperation(
       ::tflite::BuiltinOperator code,
-      uint64_t input_operand_id,
-      uint64_t output_operand_id,
+      int32_t input_tensor_index,
+      int32_t output_tensor_index,
       ::tflite::BuiltinOptions builtin_options_type =
           ::tflite::BuiltinOptions_NONE,
       flatbuffers::Offset<void> builtin_options = 0);
@@ -200,6 +200,7 @@ class GraphBuilder final {
   OperatorOffset SerializeSoftmax(const mojom::Softmax& softmax);
   base::expected<OperatorOffset, std::string> SerializeSplit(
       const mojom::Split& split);
+  OperatorOffset SerializeTan(const mojom::ElementWiseUnary& tan);
   OperatorOffset SerializeTanh(const mojom::Tanh& tanh);
   OperatorOffset SerializeTranspose(const mojom::Transpose& transpose);
   OperatorOffset SerializeWhere(const mojom::Where& where);
