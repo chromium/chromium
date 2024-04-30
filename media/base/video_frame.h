@@ -518,6 +518,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns true if the video frame is backed with GpuMemoryBuffer.
   bool HasGpuMemoryBuffer() const;
 
+  // Returns true if the GpuMemoruBuffer backing the video frame is native
+  // buffer and not shared memory buffer. A native GPU memory buffer is a
+  // block of memory that is allocated and managed directly on the GPU's
+  // memory which allows for hardware acceleration.
+  bool HasNativeGpuMemoryBuffer() const;
+
   // Gets the GpuMemoryBuffer backing the VideoFrame.
   gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const;
 

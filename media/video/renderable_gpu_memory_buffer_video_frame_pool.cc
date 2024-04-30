@@ -335,9 +335,7 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
   }
 
   // Only native (non shared memory) GMBs require waiting on GPU fences.
-  const bool has_native_gmb =
-      video_frame->HasGpuMemoryBuffer() &&
-      video_frame->GetGpuMemoryBuffer()->GetType() != gfx::SHARED_MEMORY_BUFFER;
+  const bool has_native_gmb = video_frame->HasNativeGpuMemoryBuffer();
   video_frame->metadata().read_lock_fences_enabled = has_native_gmb;
 
   return video_frame;

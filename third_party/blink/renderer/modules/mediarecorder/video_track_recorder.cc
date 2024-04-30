@@ -703,8 +703,9 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK_EQ(frame->format(), media::VideoPixelFormat::PIXEL_FORMAT_NV12);
 
-  if (frame->GetGpuMemoryBuffer())
+  if (frame->HasGpuMemoryBuffer()) {
     frame = media::ConvertToMemoryMappedFrame(frame);
+  }
   if (!frame)
     return nullptr;
 

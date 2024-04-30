@@ -1314,6 +1314,15 @@ bool VideoFrame::HasGpuMemoryBuffer() const {
                         : !!gpu_memory_buffer_;
 }
 
+bool VideoFrame::HasNativeGpuMemoryBuffer() const {
+  if (wrapped_frame_) {
+    return wrapped_frame_->HasGpuMemoryBuffer();
+  } else if (gpu_memory_buffer_) {
+    return gpu_memory_buffer_->GetType() != gfx::SHARED_MEMORY_BUFFER;
+  }
+  return false;
+}
+
 gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBuffer() const {
   return wrapped_frame_ ? wrapped_frame_->GetGpuMemoryBuffer()
                         : gpu_memory_buffer_.get();
