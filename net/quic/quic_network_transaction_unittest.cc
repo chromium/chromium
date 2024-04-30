@@ -59,6 +59,7 @@
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_session_pool_peer.h"
+#include "net/quic/quic_socket_data_provider.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/client_socket_factory.h"
@@ -6520,68 +6521,77 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
       ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
           {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  MockQuicData mock_quic_data(version_);
+  QuicSocketDataProvider socket_data(version_);
   int packet_num = 1;
-  mock_quic_data.AddWrite(SYNCHRONOUS,
-                          ConstructInitialSettingsPacket(packet_num++));
-
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientPriorityPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
-          DEFAULT_PRIORITY));
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), false,
-          DEFAULT_PRIORITY, ConnectRequestHeaders("mail.example.org:443"),
-          false));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0), false,
-                 GetResponseHeaders("200")));
+  socket_data
+      .AddWrite("initial-settings",
+                ConstructInitialSettingsPacket(packet_num++))
+      .Sync();
+  socket_data
+      .AddWrite("priority",
+                ConstructClientPriorityPacket(
+                    packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                    DEFAULT_PRIORITY))
+      .Sync();
+  socket_data
+      .AddWrite("connect-request",
+                ConstructClientRequestHeadersPacket(
+                    packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                    false, DEFAULT_PRIORITY,
+                    ConnectRequestHeaders("mail.example.org:443"), false))
+      .Sync();
+  socket_data.AddRead("connect-response",
+                      ConstructServerResponseHeadersPacket(
+                          1, GetNthClientInitiatedBidirectionalStreamId(0),
+                          false, GetResponseHeaders("200")));
 
   const char kGetRequest[] =
       "GET / HTTP/1.1\r\n"
       "Host: mail.example.org\r\n"
       "Connection: keep-alive\r\n\r\n";
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientAckAndDataPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), 1, 1,
-          false, ConstructDataFrame(kGetRequest)));
+  socket_data
+      .AddWrite("get-request",
+                ConstructClientAckAndDataPacket(
+                    packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                    1, 1, false, ConstructDataFrame(kGetRequest)))
+      .Sync();
 
   const char kGetResponse[] =
       "HTTP/1.1 200 OK\r\n"
       "Content-Length: 10\r\n\r\n";
   const char kRespData[] = "0123456789";
 
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false,
-                 ConstructDataFrame(kGetResponse)));
+  socket_data.AddRead("get-response",
+                      ConstructServerDataPacket(
+                          2, GetNthClientInitiatedBidirectionalStreamId(0),
+                          false, ConstructDataFrame(kGetResponse)));
 
-  mock_quic_data.AddRead(
-      SYNCHRONOUS, ConstructServerDataPacket(
-                       3, GetNthClientInitiatedBidirectionalStreamId(0), false,
-                       ConstructDataFrame(kRespData)));
-  mock_quic_data.AddWrite(SYNCHRONOUS,
-                          ConstructClientAckPacket(packet_num++, 3, 2));
-  mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
+  socket_data
+      .AddRead("response-data",
+               ConstructServerDataPacket(
+                   3, GetNthClientInitiatedBidirectionalStreamId(0), false,
+                   ConstructDataFrame(kRespData)))
+      .Sync();
 
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientDataPacket(packet_num++, GetQpackDecoderStreamId(), false,
-                                StreamCancellationQpackDecoderInstruction(0)));
+  socket_data
+      .AddWrite("response-ack", ConstructClientAckPacket(packet_num++, 3, 2))
+      .Sync();
 
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRstPacket(packet_num++,
-                               GetNthClientInitiatedBidirectionalStreamId(0),
-                               quic::QUIC_STREAM_CANCELLED));
+  socket_data
+      .AddWrite("qpack-cancel",
+                ConstructClientDataPacket(
+                    packet_num++, GetQpackDecoderStreamId(), false,
+                    StreamCancellationQpackDecoderInstruction(0)))
+      .Sync();
 
-  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
+  socket_data
+      .AddWrite("rst",
+                ConstructClientRstPacket(
+                    packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                    quic::QUIC_STREAM_CANCELLED))
+      .Sync();
 
+  socket_factory_.AddSocketDataProvider(&socket_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
 
   CreateSession();
@@ -6595,9 +6605,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   // proxy socket to disconnect.
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
 
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
-  EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
+  socket_data.RunUntilAllConsumed();
 }
 
 // Performs an HTTP/2 request over QUIC proxy tunnel.
