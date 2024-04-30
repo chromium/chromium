@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/telemetry_extension/common/self_owned_mojo_proxy.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
@@ -56,11 +55,14 @@ class TelemetryEventServiceAsh : public crosapi::mojom::TelemetryEventService {
 
   // Called by a connection when it is reset from either side (crosapi or
   // cros_healthd). Unregisters the connection.
-  void OnConnectionClosed(SelfOwnedMojoProxyInterface* closed_connection);
+  void OnConnectionClosed(
+      base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection);
 
  private:
   // Currently open connections.
-  std::vector<raw_ptr<SelfOwnedMojoProxyInterface>> observers_;
+  std::set<base::WeakPtr<SelfOwnedMojoProxyInterface>,
+           SelfOwnedMojoProxyInterfaceWeakPtrComparator>
+      observers_;
 
   // Support any number of connections.
   mojo::ReceiverSet<crosapi::mojom::TelemetryEventService> receivers_;

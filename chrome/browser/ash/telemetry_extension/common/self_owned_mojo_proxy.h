@@ -12,7 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -50,18 +50,20 @@ template <typename RemoteInterface,
 class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
  public:
   using OnDisconnectCallback =
-      base::OnceCallback<void(SelfOwnedMojoProxyInterface*)>;
+      base::OnceCallback<void(base::WeakPtr<SelfOwnedMojoProxyInterface>)>;
 
   template <typename... ImplArgs>
-  static raw_ptr<SelfOwnedMojoProxyInterface> Create(
+  static base::WeakPtr<SelfOwnedMojoProxyInterface> Create(
       mojo::PendingReceiver<ReceiverInterface> pending_receiver,
       mojo::PendingRemote<RemoteInterface> pending_remote,
       OnDisconnectCallback on_disconnect_callback,
       ImplArgs... impl_args) {
     auto impl =
         std::make_unique<ReceiverImpl>(std::move(pending_remote), impl_args...);
-    return new SelfOwnedMojoProxy(std::move(impl), std::move(pending_receiver),
-                                  std::move(on_disconnect_callback));
+    auto self_owned_mojo_proxy =
+        new SelfOwnedMojoProxy(std::move(impl), std::move(pending_receiver),
+                               std::move(on_disconnect_callback));
+    return self_owned_mojo_proxy->GetWeakPtr();
   }
 
   SelfOwnedMojoProxy(const SelfOwnedMojoProxy&) = delete;
@@ -75,7 +77,7 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
   }
 
  private:
-  friend raw_ptr<SelfOwnedMojoProxy> Create(
+  friend base::WeakPtr<SelfOwnedMojoProxy> Create(
       std::unique_ptr<ReceiverImpl> receiver_impl,
       mojo::PendingReceiver<ReceiverInterface> pending_receiver,
       OnDisconnectCallback on_disconnect_callback);
@@ -118,10 +120,14 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
   }
 
   void NotifyOnDisconnect() {
-    std::move(on_disconnect_).Run(this);
+    std::move(on_disconnect_).Run(GetWeakPtr());
     // SAFETY: We can do this since the only way to create an instance is
     // through the `Create` method that uses `new`.
     delete this;
+  }
+
+  base::WeakPtr<SelfOwnedMojoProxy> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
   // The order matters for destruction.
@@ -130,6 +136,17 @@ class SelfOwnedMojoProxy : public SelfOwnedMojoProxyInterface {
 
   // Called when the connection is reset from either side.
   OnDisconnectCallback on_disconnect_;
+
+  // Must be the last member of the class.
+  base::WeakPtrFactory<SelfOwnedMojoProxy> weak_ptr_factory_{this};
+};
+
+// Comparator for `base::WeakPtr<SelfOwnedMojoProxyInterface>`.
+struct SelfOwnedMojoProxyInterfaceWeakPtrComparator {
+  bool operator()(const base::WeakPtr<SelfOwnedMojoProxyInterface>& a,
+                  const base::WeakPtr<SelfOwnedMojoProxyInterface>& b) const {
+    return a.get() < b.get();
+  }
 };
 
 }  // namespace ash

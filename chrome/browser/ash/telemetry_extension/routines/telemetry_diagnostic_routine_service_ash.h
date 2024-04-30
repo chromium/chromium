@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/telemetry_extension/common/self_owned_mojo_proxy.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -70,10 +70,12 @@ class TelemetryDiagnosticsRoutineServiceAsh
  private:
   // Called when a routine controller or observer connection is closed. This
   // removes the controller / observer from our list.
-  void OnConnectionClosed(SelfOwnedMojoProxyInterface* closed_connection);
+  void OnConnectionClosed(
+      base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection);
 
   // The routine controls and observers created for each running routine.
-  base::flat_set<raw_ptr<SelfOwnedMojoProxyInterface>>
+  std::set<base::WeakPtr<SelfOwnedMojoProxyInterface>,
+           SelfOwnedMojoProxyInterfaceWeakPtrComparator>
       routine_controls_and_observers_;
 
   // Support any number of connections.

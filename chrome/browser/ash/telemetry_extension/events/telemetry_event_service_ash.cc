@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/telemetry_extension/common/telemetry_extension_converters.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_forwarder.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_converters.h"
@@ -76,9 +76,9 @@ void TelemetryEventServiceAsh::AddEventObserver(
       ->AddEventObserver(converters::events::Convert(category),
                          pending_receiver.InitWithNewPipeAndPassRemote());
 
-  observers_.push_back(EventObserverProxy::Create(std::move(pending_receiver),
-                                                  std::move(observer),
-                                                  std::move(cb), category));
+  observers_.insert(EventObserverProxy::Create(std::move(pending_receiver),
+                                               std::move(observer),
+                                               std::move(cb), category));
 }
 
 void TelemetryEventServiceAsh::IsEventSupported(
@@ -98,12 +98,8 @@ void TelemetryEventServiceAsh::IsEventSupported(
 }
 
 void TelemetryEventServiceAsh::OnConnectionClosed(
-    SelfOwnedMojoProxyInterface* closed_connection) {
-  std::erase_if(
-      observers_,
-      [closed_connection](const raw_ptr<SelfOwnedMojoProxyInterface>& ptr) {
-        return ptr.get() == closed_connection;
-      });
+    base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection) {
+  observers_.erase(closed_connection);
 }
 
 }  // namespace ash

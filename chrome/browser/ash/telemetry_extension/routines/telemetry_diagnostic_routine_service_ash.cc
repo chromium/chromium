@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/telemetry_extension/common/self_owned_mojo_proxy.h"
 #include "chrome/browser/ash/telemetry_extension/common/telemetry_extension_converters.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_control.h"
@@ -71,7 +71,9 @@ TelemetryDiagnosticsRoutineServiceAsh::TelemetryDiagnosticsRoutineServiceAsh() =
 TelemetryDiagnosticsRoutineServiceAsh::
     ~TelemetryDiagnosticsRoutineServiceAsh() {
   for (auto&& proxy : routine_controls_and_observers_) {
-    proxy.ExtractAsDangling()->OnServiceDestroyed();
+    if (proxy) {
+      proxy->OnServiceDestroyed();
+    }
   }
   routine_controls_and_observers_.clear();
 }
@@ -141,7 +143,7 @@ void TelemetryDiagnosticsRoutineServiceAsh::IsRoutineArgumentSupported(
 }
 
 void TelemetryDiagnosticsRoutineServiceAsh::OnConnectionClosed(
-    SelfOwnedMojoProxyInterface* closed_connection) {
+    base::WeakPtr<SelfOwnedMojoProxyInterface> closed_connection) {
   routine_controls_and_observers_.erase(closed_connection);
 }
 
