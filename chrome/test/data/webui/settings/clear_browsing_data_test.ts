@@ -619,9 +619,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertEquals(TimePeriod.LAST_DAY, element.getPref(prefName).value);
 
     // Select a datatype for deletion to enable the clear button.
-    assertTrue(!!element.$.cookiesCheckbox);
     element.$.cookiesCheckbox.$.checkbox.click();
-    assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     await microtasksFinished();
     // Confirming the deletion persists the dropdown selection to the pref and
@@ -679,7 +677,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(isChildVisible(element, '#advanced-tab'));
 
     // Select a datatype for deletion to enable the clear button.
-    assertTrue(!!element.$.cookiesCheckbox);
     element.$.cookiesCheckbox.$.checkbox.click();
     // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
     // only required during the crbug.com/40283307 experiment. Remove it once
@@ -712,7 +709,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!spinner);
 
     // Select a datatype for deletion to enable the clear button.
-    assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
     // only required during the crbug.com/40283307 experiment. Remove it once
@@ -765,7 +761,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!actionButton);
-    assertTrue(!!element.$.cookiesCheckboxBasic);
     // Initially the button is disabled because all checkboxes are off.
     assertTrue(actionButton.disabled);
     // The button gets enabled if any checkbox is selected.
@@ -790,7 +785,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(!!actionButton);
 
     // Select a datatype for deletion to enable the clear button.
-    assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
     // TODO(crbug.com/40283307): Selecting a time period to enable deletion is
     // only required during the crbug.com/40283307 experiment. Remove it once
