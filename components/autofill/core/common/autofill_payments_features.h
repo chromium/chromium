@@ -52,6 +52,9 @@ BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardEnrollMetricsLogger);
 BASE_DECLARE_FEATURE(kAutofillEnableVerveCardSupport);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAutofillSkipAndroidBottomSheetForIban);
+#endif
 BASE_DECLARE_FEATURE(kAutofillUpdateChromeSettingsLinkToGPayWeb);
 BASE_DECLARE_FEATURE(kAutofillUpstream);
 

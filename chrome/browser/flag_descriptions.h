@@ -382,6 +382,9 @@ extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 
+extern const char kAutofillSkipAndroidBottomSheetForIbanName[];
+extern const char kAutofillSkipAndroidBottomSheetForIbanDescription[];
+
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
 extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 

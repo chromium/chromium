@@ -22982,6 +22982,7 @@ from previous Chrome versions.
   <int value="762073261" label="HideTabOnTabSwitcher:enabled"/>
   <int value="762324154" label="ZeroSuggestPrefetchingOnWeb:disabled"/>
   <int value="762700519" label="enable-checker-imaging"/>
+  <int value="763629028" label="AutofillSkipAndroidBottomSheetForIban:enabled"/>
   <int value="763667542"
       label="AutofillFillCreditCardAsPerFormatString:enabled"/>
   <int value="763947368" label="HomepageLocationPolicy:disabled"/>
@@ -24424,6 +24425,8 @@ from previous Chrome versions.
   <int value="1411679884"
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:enabled"/>
   <int value="1412874669" label="EnableRestrictedWebApis:enabled"/>
+  <int value="1412998360"
+      label="AutofillSkipAndroidBottomSheetForIban:disabled"/>
   <int value="1413158119" label="WebRtcRemoteEventLog:disabled"/>
   <int value="1413334779" label="WebPaymentsMinimalUI:enabled"/>
   <int value="1413948819" label="NupPrinting:enabled"/>

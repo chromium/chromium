@@ -230,6 +230,14 @@ BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
              "AutofillParseVcnCardOnFileStandaloneCvcFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, IBAN Autofill suggestions are shown via the keyboard accessory
+// instead of the bottom sheet.
+BASE_FEATURE(kAutofillSkipAndroidBottomSheetForIban,
+             "AutofillSkipAndroidBottomSheetForIban",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, GPay-related links direct to the newer GPay Web site instead of
 // the legacy Payments Center.
 BASE_FEATURE(kAutofillUpdateChromeSettingsLinkToGPayWeb,
