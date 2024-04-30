@@ -368,14 +368,7 @@ bool To56(sql::Database& db) {
   return true;
 }
 
-[[nodiscard]] bool MaybeMigrateTo57(AttributionStorageSql& storage,
-                                    sql::Database& db,
-                                    sql::MetaTable& meta_table,
-                                    int old_version) {
-  if (meta_table.GetVersionNumber() != old_version) {
-    return true;
-  }
-
+void DeleteCorruptedReports(AttributionStorageSql& storage) {
   AttributionStorageSql::DeletionCounts counts;
   // Performs its own per item transaction when deleting.
   storage.VerifyReports(&counts);
@@ -383,12 +376,14 @@ bool To56(sql::Database& db) {
                                  counts.sources);
   base::UmaHistogramCounts100000("Conversions.CorruptReportsDeletedOnMigration",
                                  counts.reports);
+}
 
-  sql::Transaction transaction(&db);
-
-  return transaction.Begin() &&                             //
-         SetVersionNumbers(meta_table, old_version + 1) &&  //
-         transaction.Commit();
+// Version bump only, it was initially added to delete corrupted reports.
+// However, given that the corrupted reports logic requires the latest schema,
+// it was instead moved to a standalone operation `DeleteCorruptedReports`
+// performed after all migrations.
+bool To57(sql::Database&) {
+  return true;
 }
 
 // Version bump only: We avoid having to populate the new trigger_data proto
@@ -500,12 +495,14 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 53, &To54) &&  //
             MaybeMigrate(db, meta_table, 54, &To55) &&  //
             MaybeMigrate(db, meta_table, 55, &To56) &&  //
-            MaybeMigrateTo57(storage, db, meta_table, 56) &&
+            MaybeMigrate(db, meta_table, 56, &To57) &&
             MaybeMigrate(db, meta_table, 57, &To58) &&
             MaybeMigrate(db, meta_table, 58, &To59);
   if (!ok) {
     return false;
   }
+
+  DeleteCorruptedReports(storage);
 
   static_assert(AttributionStorageSql::kCurrentVersionNumber == 59,
                 "Add migration(s) above.");
