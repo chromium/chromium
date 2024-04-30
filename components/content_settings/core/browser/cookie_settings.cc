@@ -79,7 +79,7 @@ CookieSettings::CookieSettings(
 }
 
 ContentSetting CookieSettings::GetDefaultCookieSetting(
-    std::string* provider_id) const {
+    content_settings::ProviderType* provider_id) const {
   return host_content_settings_map_->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, provider_id);
 }

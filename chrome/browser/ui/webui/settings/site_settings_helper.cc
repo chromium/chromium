@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -643,6 +644,32 @@ std::string SiteSettingSourceToString(const SiteSettingSource source) {
   return kSiteSettingSourceStringMapping[static_cast<int>(source)].source_str;
 }
 
+SiteSettingSource ProviderTypeToSiteSettingsSource(
+    const content_settings::ProviderType provider_type) {
+  switch (provider_type) {
+    case content_settings::mojom::ProviderType::kWebuiAllowlistProvider:
+      return SiteSettingSource::kAllowlist;
+    case content_settings::mojom::ProviderType::kPolicyProvider:
+    case content_settings::mojom::ProviderType::kSupervisedProvider:
+      return SiteSettingSource::kPolicy;
+    case content_settings::mojom::ProviderType::kCustomExtensionProvider:
+      return SiteSettingSource::kExtension;
+    case content_settings::mojom::ProviderType::kInstalledWebappProvider:
+      return SiteSettingSource::kHostedApp;
+    case content_settings::mojom::ProviderType::kOneTimePermissionProvider:
+    case content_settings::mojom::ProviderType::kPrefProvider:
+      return SiteSettingSource::kPreference;
+    case content_settings::mojom::ProviderType::kDefaultProvider:
+      return SiteSettingSource::kDefault;
+
+    case content_settings::mojom::ProviderType::kNotificationAndroidProvider:
+    case content_settings::mojom::ProviderType::kProviderForTests:
+    case content_settings::mojom::ProviderType::kOtherProviderForTests:
+      NOTREACHED();
+      return SiteSettingSource::kPreference;
+  }
+}
+
 // Add an "Allow"-entry to the list of |exceptions| for a |url_pattern| from
 // the web extent of a hosted |app|.
 void AddExceptionForHostedApp(const std::string& url_pattern,
@@ -1122,14 +1149,16 @@ void GetStorageAccessExceptions(ContentSetting content_setting,
 void GetContentCategorySetting(const HostContentSettingsMap* map,
                                ContentSettingsType content_type,
                                base::Value::Dict* object) {
-  std::string provider;
+  auto provider = content_settings::ProviderType::kDefaultProvider;
   std::string setting = content_settings::ContentSettingToString(
       map->GetDefaultContentSetting(content_type, &provider));
   DCHECK(!setting.empty());
 
   object->Set(kSetting, setting);
-  if (provider != SiteSettingSourceToString(SiteSettingSource::kDefault)) {
-    object->Set(kSource, provider);
+
+  SiteSettingSource source = ProviderTypeToSiteSettingsSource(provider);
+  if (source != SiteSettingSource::kDefault) {
+    object->Set(kSource, SiteSettingSourceToString(source));
   }
 }
 

@@ -110,11 +110,11 @@ bool HasNonDefaultPrivacySetting(Profile* profile) {
 
   for (auto content_setting_type :
        site_settings::GetVisiblePermissionCategories()) {
-    std::string content_setting_provider;
+    content_settings::ProviderType content_setting_provider;
     auto current_value = map->GetDefaultContentSetting(
         content_setting_type, &content_setting_provider);
     auto content_setting_source =
-        HostContentSettingsMap::GetSettingSourceFromProviderName(
+        HostContentSettingsMap::GetSettingSourceFromProviderType(
             content_setting_provider);
 
     const bool user_controlled =

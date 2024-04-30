@@ -89,16 +89,13 @@ class SupervisedUserFamilyLinkCookiesSwitchUiTest
         content_settings_provider_observer,
         // Checks if Cookies content setting is supervised.
         [this]() -> CookiesContentSettingsProviderSupervision {
-          std::string content_setting_provider;
+          content_settings::ProviderType provider_type;
           HostContentSettingsMap* map =
               HostContentSettingsMapFactory::GetForProfile(
                   child().browser()->profile());
 
           map->GetDefaultContentSetting(ContentSettingsType::COOKIES,
-                                        &content_setting_provider);
-          content_settings::ProviderType provider_type =
-              map->GetProviderTypeFromSource(content_setting_provider);
-
+                                        &provider_type);
           return provider_type ==
                          content_settings::ProviderType::kSupervisedProvider
                      ? CookiesContentSettingsProviderSupervision::kSupervised

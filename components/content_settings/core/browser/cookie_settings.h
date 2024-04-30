@@ -96,7 +96,7 @@ class CookieSettings
   //
   // This may be called on any thread.
   ContentSetting GetDefaultCookieSetting(
-      std::string* provider_id = nullptr) const;
+      content_settings::ProviderType* provider_id = nullptr) const;
 
   // Returns all patterns with a non-default cookie setting, mapped to their
   // actual settings, in the precedence order of the setting rules.

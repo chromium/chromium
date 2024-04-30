@@ -114,7 +114,7 @@ class HostContentSettingsMap : public content_settings::Observer,
   // This may be called on any thread.
   ContentSetting GetDefaultContentSetting(
       ContentSettingsType content_type,
-      std::string* provider_id = nullptr) const;
+      ProviderType* provider_id = nullptr) const;
 
   // Returns a single |ContentSetting| which applies to the given URLs.  Note
   // that certain internal schemes are allowlisted. For |CONTENT_TYPE_COOKIES|,
@@ -345,7 +345,12 @@ class HostContentSettingsMap : public content_settings::Observer,
   // to convert backwards.
   static ProviderType GetProviderTypeFromSource(const std::string& source);
 
-  // Returns the SettingSource associated with the given |provider_name| string.
+  // Returns the SettingSource associated with the given ProviderType.
+  static content_settings::SettingSource GetSettingSourceFromProviderType(
+      content_settings::ProviderType provider_type);
+
+  // Returns the SettingSource associated with the given |provider_name|
+  // string.
   static content_settings::SettingSource GetSettingSourceFromProviderName(
       const std::string& provider_name);
 
@@ -365,7 +370,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   // |last_modified| timestamp.
   void SetClockForTesting(base::Clock* clock);
 
-  // Returns the provider that contains content settings from user preferences.
+  // Returns the provider that contains content settings from user
+  // preferences.
   content_settings::PrefProvider* GetPrefProvider() const {
     return pref_provider_;
   }

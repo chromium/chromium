@@ -432,12 +432,12 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
 
 ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
     ContentSettingsType content_type,
-    std::string* provider_id) const {
+    ProviderType* provider_id) const {
   ProviderType provider_type = ProviderType::kMaxValue;
   ContentSetting content_setting =
       GetDefaultContentSettingInternal(content_type, &provider_type);
   if (content_setting != CONTENT_SETTING_DEFAULT && provider_id)
-    *provider_id = kProviderNamesSourceMap.at(provider_type).provider_name;
+    *provider_id = provider_type;
   return content_setting;
 }
 
@@ -1062,6 +1062,18 @@ ProviderType HostContentSettingsMap::GetProviderTypeFromSource(
 
   NOTREACHED();
   return ProviderType::kDefaultProvider;
+}
+
+// static
+content_settings::SettingSource
+HostContentSettingsMap::GetSettingSourceFromProviderType(
+    content_settings::ProviderType provider_type) {
+  auto it = kProviderNamesSourceMap.find(provider_type);
+  if (it != kProviderNamesSourceMap.end()) {
+    return it->second.provider_source;
+  }
+  NOTREACHED();
+  return SettingSource::kNone;
 }
 
 // static

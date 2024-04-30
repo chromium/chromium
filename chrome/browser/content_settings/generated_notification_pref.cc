@@ -20,11 +20,11 @@ namespace {
 
 bool IsDefaultNotificationContentSettingUserControlled(
     HostContentSettingsMap* map) {
-  std::string content_setting_provider;
+  content_settings::ProviderType content_setting_provider;
   map->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                 &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderName(
+      HostContentSettingsMap::GetSettingSourceFromProviderType(
           content_setting_provider);
   return content_setting_source == SettingSource::kUser;
 }
@@ -150,11 +150,11 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
     settings_api::PrefObject& pref_object) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
-  std::string content_setting_provider;
+  content_settings::ProviderType content_setting_provider;
   auto content_setting = map->GetDefaultContentSetting(
       ContentSettingsType::NOTIFICATIONS, &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderName(
+      HostContentSettingsMap::GetSettingSourceFromProviderType(
           content_setting_provider);
   bool content_setting_enforced =
       content_setting_source != content_settings::SettingSource::kUser;

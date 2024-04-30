@@ -22,11 +22,11 @@ namespace content_settings {
 namespace {
 
 bool IsDefaultCookieContentSettingUserControlled(HostContentSettingsMap* map) {
-  std::string content_setting_provider;
+  content_settings::ProviderType content_setting_provider;
   map->GetDefaultContentSetting(ContentSettingsType::COOKIES,
                                 &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderName(
+      HostContentSettingsMap::GetSettingSourceFromProviderType(
           content_setting_provider);
   return content_setting_source == SettingSource::kUser;
 }
@@ -195,11 +195,11 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
     Profile* profile) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  std::string content_setting_provider;
+  content_settings::ProviderType content_setting_provider;
   auto content_setting = map->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderName(
+      HostContentSettingsMap::GetSettingSourceFromProviderType(
           content_setting_provider);
   bool content_setting_enforced =
       content_setting_source != SettingSource::kUser;
@@ -317,7 +317,7 @@ settings_api::PrefObject GeneratedCookieSessionOnlyPref::GetPrefObject() const {
   pref_object.key = pref_name_;
   pref_object.type = settings_api::PrefType::kBoolean;
 
-  std::string content_setting_provider;
+  content_settings::ProviderType content_setting_provider;
   auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, &content_setting_provider);
 
@@ -329,7 +329,7 @@ settings_api::PrefObject GeneratedCookieSessionOnlyPref::GetPrefObject() const {
   // Content settings can be managed via policy, extension or supervision, but
   // cannot be recommended.
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderName(
+      HostContentSettingsMap::GetSettingSourceFromProviderType(
           content_setting_provider);
   if (content_setting_source == SettingSource::kPolicy) {
     pref_object.controlled_by = settings_api::ControlledBy::kDevicePolicy;
@@ -383,7 +383,7 @@ GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
   pref_object.key = pref_name_;
   pref_object.type = settings_api::PrefType::kString;
 
-  std::string content_setting_provider;
+  content_settings::ProviderType content_setting_provider;
   auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, &content_setting_provider);
 
@@ -393,7 +393,7 @@ GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
   // Cookies content setting can be managed via policy, extension or
   // supervision, but cannot be recommended.
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderName(
+      HostContentSettingsMap::GetSettingSourceFromProviderType(
           content_setting_provider);
   if (content_setting_source == SettingSource::kPolicy) {
     pref_object.controlled_by = settings_api::ControlledBy::kDevicePolicy;
