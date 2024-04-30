@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/crash/android/jni_headers/ProcessExitReasonFromSystem_jni.h"
+#include "components/crash/content/browser/jni_headers/ProcessExitReasonFromSystem_jni.h"
 
 namespace crash_reporter {
 

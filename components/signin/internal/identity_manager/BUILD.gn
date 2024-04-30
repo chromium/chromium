@@ -191,10 +191,7 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [ "profile_oauth2_token_service_delegate_android_unittest.cc" ]
 
-    deps += [
-      "//components/signin/public/android:signin_java_test_support",
-      "//components/signin/public/android:test_support_jni_headers",
-    ]
+    deps += [ "//components/signin/public/android:test_support_jni_headers" ]
   }
 
   if (is_chromeos) {

@@ -45,6 +45,8 @@ android_library("java") {
   ]
   deps = [
     ":java_resources",
+    ":pwa_restore_bottom_sheet_mediator_jni_headers_java",
+    ":webapps_jni_headers_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/android/webapk/proto:proto_java",
@@ -62,7 +64,6 @@ android_library("java") {
   ]
   srcjar_deps = [
     ":webapps_java_enums_srcjar",
-    ":webapps_jni_headers",
     "//components/webapps/browser/android/webapk:enums_srcjar",
   ]
 }
@@ -77,9 +78,12 @@ generate_jni("webapps_jni_headers") {
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetController.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetControllerProvider.java",
-    "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetMediator.java",
     "java/src/org/chromium/components/webapps/pwa_universal_install/PwaUniversalInstallBottomSheetCoordinator.java",
   ]
+}
+
+generate_jni("pwa_restore_bottom_sheet_mediator_jni_headers") {
+  sources = [ "java/src/org/chromium/components/webapps/pwa_restore_ui/PwaRestoreBottomSheetMediator.java" ]
 }
 
 java_cpp_enum("webapps_java_enums_srcjar") {

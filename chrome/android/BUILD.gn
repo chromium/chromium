@@ -1288,6 +1288,7 @@ if (current_toolchain == default_toolchain) {
       "//components/webapk/android/libs/client:java",
       "//components/webapk/android/libs/common:java",
       "//components/webapps/browser/android:java",
+      "//components/webapps/browser/android:webapps_jni_headers_java",
       "//content/public/android:content_java",
       "//content/public/common:common_java",
       "//content/public/test/android:content_java_test_support",
