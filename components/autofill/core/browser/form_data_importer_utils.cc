@@ -119,8 +119,8 @@ void MultiStepImportMerger::OnBrowsingHistoryCleared(
     Clear();
 }
 
-void MultiStepImportMerger::OnPersonalDataChanged(
-    PersonalDataManager& personal_data_manager) {
+void MultiStepImportMerger::OnAddressDataChanged(
+    AddressDataManager& address_data_manager) {
   auto it = multistep_candidates_.begin();
   while (it != multistep_candidates_.end()) {
     // `it` might get erased, so `it++` at the end of the loop doesn't suffice.
@@ -128,8 +128,7 @@ void MultiStepImportMerger::OnPersonalDataChanged(
     // Incomplete profiles are not imported yet, so they cannot have changed.
     if (it->is_imported) {
       AutofillProfile* stored_profile =
-          personal_data_manager.address_data_manager().GetProfileByGUID(
-              it->profile.guid());
+          address_data_manager.GetProfileByGUID(it->profile.guid());
       if (!stored_profile) {
         // The profile was deleted, so we shouldn't offer importing it again.
         multistep_candidates_.erase(it, next);

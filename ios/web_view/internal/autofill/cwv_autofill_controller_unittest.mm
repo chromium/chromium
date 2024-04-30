@@ -135,10 +135,10 @@ class CWVAutofillControllerTest : public web::WebTest {
 
   TestingPrefServiceSimple pref_service_;
   web::FakeBrowserState browser_state_;
-  web::FakeWebState web_state_;
   autofill::TestPersonalDataManager personal_data_manager_;
   autofill::TestStrikeDatabase strike_database_;
   syncer::TestSyncService sync_service_;
+  web::FakeWebState web_state_;
   NSString* frame_id_;
   web::FakeWebFramesManager* web_frames_manager_;
   CWVAutofillController* autofill_controller_;

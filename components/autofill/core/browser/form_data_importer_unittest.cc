@@ -575,12 +575,6 @@ class FormDataImporterTest : public testing::Test {
         .set_credit_card_save_manager(std::move(credit_card_save_manager));
   }
 
-  void TearDown() override {
-    if (personal_data_manager_) {
-      personal_data_manager_->Shutdown();
-    }
-  }
-
   FormDataImporter& form_data_importer() {
     return *autofill_client_->GetFormDataImporter();
   }

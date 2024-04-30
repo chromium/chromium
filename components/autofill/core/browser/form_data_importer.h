@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_data_importer_utils.h"
@@ -35,7 +36,7 @@ enum class NonInteractivePaymentMethodType;
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
 // Owned by `ChromeAutofillClient`.
-class FormDataImporter : public PersonalDataManagerObserver,
+class FormDataImporter : public AddressDataManager::Observer,
                          public history::HistoryServiceObserver {
  public:
   // Record type of the credit card extracted from the form, if one exists.
@@ -122,8 +123,8 @@ class FormDataImporter : public PersonalDataManagerObserver,
   // See comment for |fetched_card_instrument_id_|.
   void SetFetchedCardInstrumentId(int64_t instrument_id);
 
-  // PersonalDataManagerObserver
-  void OnPersonalDataChanged() override;
+  // AddressDataManager::Observer
+  void OnAddressDataChanged() override;
 
   // history::HistoryServiceObserver
   void OnHistoryDeletions(history::HistoryService* history_service,

@@ -184,7 +184,7 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {
   if (personal_data_manager_) {
-    personal_data_manager_->AddObserver(this);
+    personal_data_manager_->address_data_manager().AddObserver(this);
   }
   if (history_service) {
     history_service_observation_.Observe(history_service);
@@ -192,8 +192,9 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 }
 
 FormDataImporter::~FormDataImporter() {
-  if (personal_data_manager_)
-    personal_data_manager_->RemoveObserver(this);
+  if (personal_data_manager_) {
+    personal_data_manager_->address_data_manager().RemoveObserver(this);
+  }
 }
 
 FormDataImporter::AddressProfileImportCandidate::
@@ -1194,11 +1195,12 @@ bool FormDataImporter::ShouldOfferCreditCardSave(
   return true;
 }
 
-void FormDataImporter::OnPersonalDataChanged() {
-  // `personal_data_manager_` cannot be null, because the callback cannot be
-  // registered otherwise.
+void FormDataImporter::OnAddressDataChanged() {
+  // `personal_data_manager_` cannot be null: The ADM is owned by the PDM, so
+  // the callback couldn't have been issued without a PDM.
   DCHECK(personal_data_manager_);
-  multistep_importer_.OnPersonalDataChanged(*personal_data_manager_);
+  multistep_importer_.OnAddressDataChanged(
+      personal_data_manager_->address_data_manager());
 }
 
 void FormDataImporter::OnHistoryDeletions(
