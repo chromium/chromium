@@ -138,6 +138,9 @@ public class PageInfoController
     // The controller for the tracking protection section of the page info. Replaces cookies.
     private PageInfoTrackingProtectionController mTrackingProtectionController;
 
+    // The controller for the tracking protection section for the 100% 3PCD launch UI.
+    private PageInfoTrackingProtectionLaunchController mTrackingProtectionLaunchController;
+
     // All subpage controllers.
     private Collection<PageInfoSubpageController> mSubpageControllers;
 
@@ -273,7 +276,12 @@ public class PageInfoController
                         mDelegate,
                         pageInfoHighlight.getHighlightedPermission());
         mSubpageControllers.add(mPermissionsController);
-        if (mDelegate.showTrackingProtectionUI()) {
+        if (mDelegate.showTrackingProtectionLaunchUI()) {
+            mTrackingProtectionLaunchController =
+                    new PageInfoTrackingProtectionLaunchController(
+                            this, mView.getCookiesRowView(), mDelegate);
+            mSubpageControllers.add(mTrackingProtectionLaunchController);
+        } else if (mDelegate.showTrackingProtectionUI()) {
             mTrackingProtectionController =
                     new PageInfoTrackingProtectionController(
                             this, mView.getCookiesRowView(), mDelegate);
@@ -284,9 +292,12 @@ public class PageInfoController
             mSubpageControllers.add(mCookiesController);
         }
 
-        if (source == OpenedFromSource.WEBAPK_SNACKBAR) {
+        if (source == OpenedFromSource.WEBAPK_SNACKBAR
+                && mDelegate.showTrackingProtectionLaunchUI()) {
             mContainer.showPage(
-                    mTrackingProtectionController.createViewForSubpage(mContainer), null, null);
+                    mTrackingProtectionLaunchController.createViewForSubpage(mContainer),
+                    null,
+                    null);
         } else {
             mContainer.showPage(mView, null, null);
         }
@@ -355,6 +366,10 @@ public class PageInfoController
         if (mTrackingProtectionController != null) {
             mTrackingProtectionController.destroy();
             mTrackingProtectionController = null;
+        }
+        if (mTrackingProtectionLaunchController != null) {
+            mTrackingProtectionLaunchController.destroy();
+            mTrackingProtectionLaunchController = null;
         }
         if (mForgetSiteDialog != null) {
             mForgetSiteDialog.dismiss();

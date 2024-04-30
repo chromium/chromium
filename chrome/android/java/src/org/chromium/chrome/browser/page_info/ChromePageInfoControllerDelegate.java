@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
@@ -374,10 +373,12 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
     @Override
     public boolean showTrackingProtectionUI() {
-        return (UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
-                || ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH));
+        return getSiteSettingsDelegate().shouldShowTrackingProtectionUI();
+    }
+
+    @Override
+    public boolean showTrackingProtectionLaunchUI() {
+        return getSiteSettingsDelegate().shouldShowTrackingProtectionLaunchUI();
     }
 
     @Override
