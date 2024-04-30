@@ -370,7 +370,6 @@ class DnsConfigServiceLinux::Watcher : public DnsConfigService::Watcher {
 
  private:
   void OnResolvFilePathWatcherChange(const base::FilePath& path, bool error) {
-    base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.FileChange", true);
     OnConfigChanged(!error);
   }
 
@@ -451,12 +450,8 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
         }
       }
 
-      base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Read",
-                                dns_config_.has_value());
       if (!dns_config_.has_value())
         return;
-      base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Valid",
-                                dns_config_->IsValid());
       base::UmaHistogramBoolean("Net.DNS.DnsConfig.Resolv.Compatible",
                                 !dns_config_->unhandled_options);
 

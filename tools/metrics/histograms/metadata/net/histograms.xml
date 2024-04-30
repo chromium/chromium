@@ -923,7 +923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Resolv.Compatible" enum="BooleanValid"
-    expires_after="2024-05-19">
+    expires_after="2024-08-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -932,38 +932,6 @@ chromium-metrics-reviews@google.com.
     contain any options that Chrome is unable to support using the built-in
     resolver. Reported whenever a resolv.conf file is successfully read by
     Chrome.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.DnsConfig.Resolv.FileChange" enum="BooleanChanged"
-    expires_after="2024-04-28">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Counter enum recorded whenever `net::DnsConfigService` detects a change to
-    the resolv.conf DNS configuration file.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.DnsConfig.Resolv.Read" enum="BooleanReceived"
-    expires_after="2024-04-28">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Whether or not an attempt to read resolv.conf succeeded and produced a
-    `__res_state` struct for Chrome to attempt to use. Reported on all attempts
-    to read the configuration.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.DnsConfig.Resolv.Valid" enum="BooleanValid"
-    expires_after="2024-04-28">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Whether or not the DNS configuration read from a resolv.conf file is
-    considered &quot;valid&quot;, that is that it contains at least one DNS
-    server. Reported whenever a resolv.conf file is successfully read by Chrome.
   </summary>
 </histogram>
 
@@ -978,7 +946,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Windows.Compatibility"
-    enum="DNS.WindowsCompatibility" expires_after="2024-05-19">
+    enum="DNS.WindowsCompatibility" expires_after="2024-08-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -990,7 +958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Windows.ReadSystemSettings{RetryCount}"
-    enum="DNS.WindowsReadSystemSettingsResult" expires_after="2024-05-19">
+    enum="DNS.WindowsReadSystemSettingsResult" expires_after="2024-08-01">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
