@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_args.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,7 +20,9 @@ namespace ash::app_install {
 
 // Handles communication from the chrome://app-install renderer process to
 // the browser process exposing various methods for the JS to invoke.
-class AppInstallPageHandler : public mojom::PageHandler {
+class AppInstallPageHandler : public mojom::PageHandler,
+                              public mojom::AppInfoActions,
+                              public mojom::NoAppErrorActions {
  public:
   // Whether the app install dialog is enabled and should auto accept
   // installation without actual user input.
@@ -29,11 +32,8 @@ class AppInstallPageHandler : public mojom::PageHandler {
   using CloseDialogCallback = base::OnceCallback<void()>;
   explicit AppInstallPageHandler(
       Profile* profile,
-      mojom::DialogArgsPtr args,
-      apps::PackageId package_id,
-      base::OnceCallback<void(bool accepted)> dialog_accepted_callback,
+      AppInstallDialogArgs dialog_args,
       CloseDialogCallback close_dialog_callback,
-      base::OnceClosure try_again_callback,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler);
 
   AppInstallPageHandler(const AppInstallPageHandler&) = delete;
@@ -48,19 +48,22 @@ class AppInstallPageHandler : public mojom::PageHandler {
   // mojom::PageHandler:
   void GetDialogArgs(GetDialogArgsCallback callback) override;
   void CloseDialog() override;
+
+  // mojom::AppInfoActions:
   void InstallApp(InstallAppCallback callback) override;
   void LaunchApp() override;
+
+  // mojom::NoAppErrorActions:
   void TryAgain() override;
 
  private:
   raw_ptr<Profile> profile_;
-  mojom::DialogArgsPtr dialog_args_;
-  apps::PackageId package_id_;
-  base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
+  AppInstallDialogArgs dialog_args_;
   InstallAppCallback install_app_callback_;
   CloseDialogCallback close_dialog_callback_;
-  base::OnceClosure try_again_callback_;
-  mojo::Receiver<mojom::PageHandler> receiver_;
+  mojo::Receiver<mojom::PageHandler> page_handler_receiver_;
+  mojo::Receiver<mojom::AppInfoActions> app_info_actions_receiver_;
+  mojo::Receiver<mojom::NoAppErrorActions> no_app_error_actions_receiver_;
 
   base::WeakPtrFactory<AppInstallPageHandler> weak_ptr_factory_{this};
 };

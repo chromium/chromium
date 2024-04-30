@@ -69,22 +69,8 @@ AppInstallDialogUI::AppInstallDialogUI(content::WebUI* web_ui)
 
 AppInstallDialogUI::~AppInstallDialogUI() = default;
 
-void AppInstallDialogUI::SetDialogArgs(mojom::DialogArgsPtr args) {
-  dialog_args_ = std::move(args);
-}
-
-void AppInstallDialogUI::SetPackageId(apps::PackageId package_id) {
-  package_id_ = std::move(package_id);
-}
-
-void AppInstallDialogUI::SetDialogCallback(
-    base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
-  dialog_accepted_callback_ = std::move(dialog_accepted_callback);
-}
-
-void AppInstallDialogUI::SetTryAgainCallback(
-    base::OnceClosure try_again_callback) {
-  try_again_callback_ = std::move(try_again_callback);
+void AppInstallDialogUI::SetDialogArgs(AppInstallDialogArgs dialog_args) {
+  dialog_args_ = std::move(dialog_args);
 }
 
 void AppInstallDialogUI::SetInstallComplete(
@@ -113,10 +99,9 @@ void AppInstallDialogUI::BindInterface(
 void AppInstallDialogUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<AppInstallPageHandler>(
-      Profile::FromWebUI(web_ui()), std::move(dialog_args_),
-      std::move(package_id_), std::move(dialog_accepted_callback_),
+      Profile::FromWebUI(web_ui()), std::move(dialog_args_).value(),
       base::BindOnce(&AppInstallDialogUI::CloseDialog, base::Unretained(this)),
-      std::move(try_again_callback_), std::move(receiver));
+      std::move(receiver));
 }
 
 void AppInstallDialogUI::CloseDialog() {

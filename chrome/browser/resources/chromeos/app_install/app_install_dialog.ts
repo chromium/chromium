@@ -11,6 +11,7 @@ import {Button} from 'chrome://resources/cros_components/button/button.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import type {DialogArgs} from './app_install.mojom-webui.js';
 import {getTemplate} from './app_install_dialog.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 
@@ -64,6 +65,7 @@ class AppInstallDialogElement extends HTMLElement {
   private proxy = BrowserProxy.getInstance();
   private initialStatePromise: Promise<DialogState>;
   private dialogStateDataMap: Record<DialogState, StateData>;
+  private dialogArgs?: DialogArgs;
 
   constructor() {
     super();
@@ -180,46 +182,48 @@ class AppInstallDialogElement extends HTMLElement {
     cancelButton.addEventListener('click', this.onCancelButtonClick.bind(this));
 
     try {
-      const dialogArgs = await this.proxy.handler.getDialogArgs();
-      if (!dialogArgs.args) {
+      this.dialogArgs = (await this.proxy.handler.getDialogArgs()).dialogArgs;
+
+      if (this.dialogArgs.noAppErrorActions) {
         return DialogState.NO_DATA;
       }
 
+      const appInfo = this.dialogArgs.appInfoArgs!.data;
+
       const nameElement = this.$<HTMLParagraphElement>('#name');
       assert(nameElement);
-      nameElement.textContent = dialogArgs.args.name;
+      nameElement.textContent = appInfo.name;
 
       const urlElement = this.$<HTMLAnchorElement>('#url-link');
       assert(urlElement);
-      urlElement.textContent = new URL(dialogArgs.args.url.url).hostname;
-      urlElement.setAttribute('href', new URL(dialogArgs.args.url.url).origin);
+      urlElement.textContent = new URL(appInfo.url.url).hostname;
+      urlElement.setAttribute('href', new URL(appInfo.url.url).origin);
 
       const iconElement = this.$<HTMLImageElement>('#app-icon');
       assert(iconElement);
-      iconElement.setAttribute('auto-src', dialogArgs.args.iconUrl.url);
+      iconElement.setAttribute('auto-src', appInfo.iconUrl.url);
       iconElement.setAttribute(
           'alt',
           loadTimeData.substituteString(
-              loadTimeData.getString('iconAlt'), dialogArgs.args.name));
+              loadTimeData.getString('iconAlt'), appInfo.name));
 
-      if (dialogArgs.args.description) {
+      if (appInfo.description) {
         this.$<HTMLDivElement>('#description').textContent =
-            dialogArgs.args.description;
+            appInfo.description;
         this.$<HTMLDivElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
       }
 
-      if (dialogArgs.args.screenshots[0]) {
+      if (appInfo.screenshots[0]) {
         this.$<HTMLSpanElement>('#description-and-screenshots').hidden = false;
         this.$<HTMLHRElement>('#divider').hidden = false;
         this.$<HTMLSpanElement>('#screenshot-container').hidden = false;
         this.$<HTMLImageElement>('#screenshot')
-            .setAttribute('auto-src', dialogArgs.args.screenshots[0].url.url);
+            .setAttribute('auto-src', appInfo.screenshots[0].url.url);
       }
 
-      return dialogArgs.args.isAlreadyInstalled ?
-          DialogState.ALREADY_INSTALLED :
-          DialogState.INSTALL;
+      return appInfo.isAlreadyInstalled ? DialogState.ALREADY_INSTALLED :
+                                          DialogState.INSTALL;
     } catch (e) {
       console.error(`Unable to get dialog arguments . Error: ${e}.`);
       return DialogState.NO_DATA;
@@ -252,7 +256,7 @@ class AppInstallDialogElement extends HTMLElement {
     // Keep the installing state shown for at least 2 seconds to give the
     // impression that the PWA is being installed.
     const [{installed: install_result}] = await Promise.all([
-      this.proxy.handler.installApp(),
+      this.dialogArgs!.appInfoArgs!.actions.installApp(),
       new Promise(resolve => setTimeout(resolve, 2000)),
     ]);
 
@@ -261,12 +265,12 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private async onOpenAppButtonClick() {
-    this.proxy.handler.launchApp();
+    this.dialogArgs!.appInfoArgs!.actions.launchApp();
     this.proxy.handler.closeDialog();
   }
 
   private async onTryAgainButtonClick() {
-    this.proxy.handler.tryAgain();
+    this.dialogArgs!.noAppErrorActions!.tryAgain();
     // TODO(b/333460441): Run the retry logic within the same dialog instead of
     // creating a new one.
     this.proxy.handler.closeDialog();

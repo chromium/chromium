@@ -7,6 +7,7 @@
 
 #include "chrome/browser/apps/almanac_api_client/almanac_icon_cache.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_args.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -48,44 +49,45 @@ class AppInstallDialog : public SystemWebDialogDelegate {
   void ShowNoAppError(gfx::NativeWindow parent,
                       base::OnceClosure try_again_callback);
 
-  void OnIconDownloaded(int icon_width,
-                        bool is_icon_maskable,
-                        const gfx::Image& icon);
-  void OnLoadIcon(apps::IconValuePtr icon_value);
-
   // Callers must call one of SetInstallSucceeded or SetInstallFailed once the
   // install has finished, passing in the app_id if the installation succeeded
   // or a callback to retry the install if it failed.
   void SetInstallSucceeded();
   void SetInstallFailed(base::OnceCallback<void(bool accepted)> retry_callback);
 
-  void OnDialogShown(content::WebUI* webui) override;
-
   // There are some cases where we may have created the dialog, but then never
   // shown it. We need to clean up the dialog in that case.
   void CleanUpDialogIfNotShown();
 
+  // SystemWebDialogDelegate:
+  void OnDialogShown(content::WebUI* webui) override;
+  bool ShouldShowCloseButton() const override;
   void GetDialogSize(gfx::Size* size) const override;
 
  private:
   AppInstallDialog();
   ~AppInstallDialog() override;
-  bool ShouldShowCloseButton() const override;
 
-  void RepositionNearTopOf(gfx::NativeWindow parent);
+  void OnIconDownloaded(int icon_width,
+                        bool is_icon_maskable,
+                        const gfx::Image& icon);
+
+  void OnLoadIcon(apps::IconValuePtr icon_value);
+
+  void Show(gfx::NativeWindow parent, AppInstallDialogArgs dialog_args);
 
   base::WeakPtr<AppInstallDialog> GetWeakPtr();
 
+  std::optional<AppInstallDialogArgs> dialog_args_;
+  int dialog_height_ = 0;
+  raw_ptr<AppInstallDialogUI> dialog_ui_ = nullptr;
+
+  // Temporary variables for ShowApp().
   base::WeakPtr<Profile> profile_;
   gfx::NativeWindow parent_;
-  apps::PackageId package_id_;
-  mojom::DialogArgsPtr dialog_args_;
-
   std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
+  AppInfoArgs app_info_args_;
   std::unique_ptr<apps::AlmanacIconCache> icon_cache_;
-  raw_ptr<AppInstallDialogUI> dialog_ui_ = nullptr;
-  base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
-  base::OnceClosure try_again_callback_;
 
   base::WeakPtrFactory<AppInstallDialog> weak_factory_{this};
 };

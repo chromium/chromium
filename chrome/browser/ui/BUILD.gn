@@ -3056,6 +3056,8 @@ static_library("ui") {
       "webui/ash/add_supervision/confirm_signout_dialog.h",
       "webui/ash/app_install/app_install_dialog.cc",
       "webui/ash/app_install/app_install_dialog.h",
+      "webui/ash/app_install/app_install_dialog_args.cc",
+      "webui/ash/app_install/app_install_dialog_args.h",
       "webui/ash/app_install/app_install_page_handler.cc",
       "webui/ash/app_install/app_install_page_handler.h",
       "webui/ash/app_install/app_install_ui.cc",
