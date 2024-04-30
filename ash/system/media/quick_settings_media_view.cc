@@ -125,9 +125,6 @@ QuickSettingsMediaView::QuickSettingsMediaView(
   pagination_controller_ = std::make_unique<PaginationController>(
       &pagination_model_, PaginationController::SCROLL_AXIS_HORIZONTAL,
       base::BindRepeating([](ui::EventType) {}));
-
-  SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION));
 }
 
 QuickSettingsMediaView::~QuickSettingsMediaView() = default;
