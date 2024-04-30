@@ -190,6 +190,22 @@ TEST_F(HotspotNotifierTest, InternalError) {
           HotspotNotifier::kInternalErrorNotificationId));
 }
 
+TEST_F(HotspotNotifierTest, DialogDismissWhenNotAllowed) {
+  UpdateHotspotInfo(hotspot_config::mojom::HotspotState::kDisabled,
+                    hotspot_config::mojom::HotspotAllowStatus::kAllowed);
+  NotifyHotspotTurnedOff(hotspot_config::mojom::DisableReason::kInternalError);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      HotspotNotifier::kInternalErrorNotificationId));
+
+  UpdateHotspotInfo(
+      hotspot_config::mojom::HotspotState::kDisabled,
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData);
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HotspotNotifier::kInternalErrorNotificationId));
+}
+
 TEST_F(HotspotNotifierTest, HotspotTurnedOn) {
   SetHotspotConfig(GenerateTestConfig());
   EnableHotspot();

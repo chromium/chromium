@@ -16,6 +16,11 @@
 
 namespace ash {
 
+using hotspot_config::mojom::DisableReason;
+using hotspot_config::mojom::HotspotAllowStatus;
+using hotspot_config::mojom::HotspotControlResult;
+using hotspot_config::mojom::HotspotState;
+
 // static
 
 const char HotspotNotifier::kAdminRestrictedNotificationId[] =
@@ -53,25 +58,24 @@ HotspotNotifier::~HotspotNotifier() = default;
 
 void HotspotNotifier::OnHotspotTurnedOn() {}
 
-void HotspotNotifier::OnHotspotTurnedOff(
-    hotspot_config::mojom::DisableReason disable_reason) {
+void HotspotNotifier::OnHotspotTurnedOff(DisableReason disable_reason) {
   scoped_refptr<message_center::NotificationDelegate> delegate = nullptr;
   int title_id;
   int message_id;
   const char* notification_id;
   std::vector<message_center::ButtonInfo> notification_actions;
   switch (disable_reason) {
-    case hotspot_config::mojom::DisableReason::kProhibitedByPolicy:
+    case DisableReason::kProhibitedByPolicy:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE;
       notification_id = kAdminRestrictedNotificationId;
       break;
-    case hotspot_config::mojom::DisableReason::kWifiEnabled:
+    case DisableReason::kWifiEnabled:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE;
       notification_id = kWiFiTurnedOnNotificationId;
       break;
-    case hotspot_config::mojom::DisableReason::kAutoDisabled:
+    case DisableReason::kAutoDisabled:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_AUTO_DISABLED_MESSAGE;
       notification_id = kAutoDisabledNotificationId;
@@ -84,24 +88,26 @@ void HotspotNotifier::OnHotspotTurnedOff(
           message_center::ButtonInfo(l10n_util::GetStringUTF16(
               IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
       break;
-    case hotspot_config::mojom::DisableReason::kInternalError:
-    case hotspot_config::mojom::DisableReason::kUpstreamNoInternet:
-    case hotspot_config::mojom::DisableReason::kDownstreamLinkDisconnect:
-    case hotspot_config::mojom::DisableReason::kDownstreamNetworkDisconnect:
-    case hotspot_config::mojom::DisableReason::kStartTimeout:
-    case hotspot_config::mojom::DisableReason::kUpstreamNotAvailable:
-    case hotspot_config::mojom::DisableReason::kUnknownError:
+    case DisableReason::kInternalError:
+    case DisableReason::kUpstreamNoInternet:
+    case DisableReason::kDownstreamLinkDisconnect:
+    case DisableReason::kDownstreamNetworkDisconnect:
+    case DisableReason::kStartTimeout:
+    case DisableReason::kUpstreamNotAvailable:
+    case DisableReason::kUnknownError:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_INTERNAL_ERROR_MESSAGE;
       notification_id = kInternalErrorNotificationId;
-      delegate =
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&HotspotNotifier::EnableHotspotHandler,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  notification_id));
-      notification_actions.push_back(
-          message_center::ButtonInfo(l10n_util::GetStringUTF16(
-              IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
+      if (allow_status_ == HotspotAllowStatus::kAllowed) {
+        delegate = base::MakeRefCounted<
+            message_center::HandleNotificationClickDelegate>(
+            base::BindRepeating(&HotspotNotifier::EnableHotspotHandler,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                notification_id));
+        notification_actions.push_back(
+            message_center::ButtonInfo(l10n_util::GetStringUTF16(
+                IDS_ASH_HOTSPOT_NOTIFICATION_TURN_ON_BUTTON)));
+      }
       break;
     default:
       return;
@@ -131,13 +137,21 @@ void HotspotNotifier::OnGetHotspotInfo(
     hotspot_config::mojom::HotspotInfoPtr hotspot_info) {
   message_center::MessageCenter* message_center =
       message_center::MessageCenter::Get();
-  if (hotspot_info->state == hotspot_config::mojom::HotspotState::kDisabled) {
+  if (hotspot_info->allow_status != HotspotAllowStatus::kAllowed &&
+      allow_status_ == HotspotAllowStatus::kAllowed) {
+    message_center->RemoveNotification(kAutoDisabledNotificationId,
+                                       /*by_user=*/false);
+    message_center->RemoveNotification(kInternalErrorNotificationId,
+                                       /*by_user=*/false);
+  }
+  allow_status_ = hotspot_info->allow_status;
+  if (hotspot_info->state == HotspotState::kDisabled) {
     message_center->RemoveNotification(kHotspotTurnedOnNotificationId,
                                        /*by_user=*/false);
     return;
   }
 
-  if (hotspot_info->state == hotspot_config::mojom::HotspotState::kEnabling) {
+  if (hotspot_info->state == HotspotState::kEnabling) {
     message_center->RemoveNotification(
         HotspotNotifier::kAutoDisabledNotificationId,
         /*by_user=*/false);
@@ -152,7 +166,7 @@ void HotspotNotifier::OnGetHotspotInfo(
         /*by_user=*/false);
   }
 
-  if (hotspot_info->state == hotspot_config::mojom::HotspotState::kEnabled) {
+  if (hotspot_info->state == HotspotState::kEnabled) {
     const std::u16string& title =
         l10n_util::GetStringUTF16(IDS_ASH_HOTSPOT_ON_TITLE);
     const std::u16string& message =
@@ -190,10 +204,9 @@ void HotspotNotifier::DisableHotspotHandler(const char* notification_id,
 
   if (button_index.value() == 0) {
     remote_cros_hotspot_config_->DisableHotspot(
-        base::BindOnce([](hotspot_config::mojom::HotspotControlResult result) {
-          if (result == hotspot_config::mojom::HotspotControlResult::kSuccess ||
-              result == hotspot_config::mojom::HotspotControlResult::
-                            kAlreadyFulfilled) {
+        base::BindOnce([](HotspotControlResult result) {
+          if (result == HotspotControlResult::kSuccess ||
+              result == HotspotControlResult::kAlreadyFulfilled) {
             message_center::MessageCenter* message_center =
                 message_center::MessageCenter::Get();
             message_center->RemoveNotification(kHotspotTurnedOnNotificationId,
@@ -211,10 +224,9 @@ void HotspotNotifier::EnableHotspotHandler(const char* notification_id,
 
   if (button_index.value() == 0) {
     remote_cros_hotspot_config_->EnableHotspot(
-        base::BindOnce([](hotspot_config::mojom::HotspotControlResult result) {
-          if (result == hotspot_config::mojom::HotspotControlResult::kSuccess ||
-              result == hotspot_config::mojom::HotspotControlResult::
-                            kAlreadyFulfilled) {
+        base::BindOnce([](HotspotControlResult result) {
+          if (result == HotspotControlResult::kSuccess ||
+              result == HotspotControlResult::kAlreadyFulfilled) {
             message_center::MessageCenter* message_center =
                 message_center::MessageCenter::Get();
             message_center->RemoveNotification(kAutoDisabledNotificationId,

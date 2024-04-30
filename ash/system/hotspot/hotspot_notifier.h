@@ -85,6 +85,9 @@ class ASH_EXPORT HotspotNotifier
   mojo::Receiver<hotspot_config::mojom::CrosHotspotConfigObserver>
       hotspot_config_observer_receiver_{this};
 
+  hotspot_config::mojom::HotspotAllowStatus allow_status_ =
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoMobileData;
+
   base::WeakPtrFactory<HotspotNotifier> weak_ptr_factory_{this};
 };
 
