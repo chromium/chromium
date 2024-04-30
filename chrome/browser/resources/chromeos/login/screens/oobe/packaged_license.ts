@@ -19,7 +19,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {PackagedLicensePageHandlerRemote} from '../../mojom-webui/screens_oobe.mojom-webui.js';
-import {OobeScreensFacotryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './packaged_license.html.js';
 
@@ -51,7 +51,7 @@ export class PackagedLicenseScreen extends PackagedLicenseScreenBase {
   constructor() {
     super();
     this.handler = new PackagedLicensePageHandlerRemote();
-    OobeScreensFacotryBrowserProxy.getInstance()
+    OobeScreensFactoryBrowserProxy.getInstance()
         .screenFactory.createPackagedLicensePageHandler(
             this.handler.$.bindNewPipeAndPassReceiver());
   }

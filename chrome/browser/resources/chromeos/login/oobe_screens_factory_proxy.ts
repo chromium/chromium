@@ -5,24 +5,24 @@
 import {ScreensFactory, ScreensFactoryRemote} from './mojom-webui/screens_factory.mojom-webui.js';
 
 // Communicates with the OobeScreensHandlerFactory in the browser process.
-class OobeScreensFacotryBrowserProxy {
+class OobeScreensFactoryBrowserProxy {
   screenFactory: ScreensFactoryRemote;
 
   constructor() {
     this.screenFactory = ScreensFactory.getRemote();
   }
 
-  static getInstance(): OobeScreensFacotryBrowserProxy {
-    return instance || (instance = new OobeScreensFacotryBrowserProxy());
+  static getInstance(): OobeScreensFactoryBrowserProxy {
+    return instance || (instance = new OobeScreensFactoryBrowserProxy());
   }
 
-  static setInstance(proxy: OobeScreensFacotryBrowserProxy): void {
+  static setInstance(proxy: OobeScreensFactoryBrowserProxy): void {
     instance = proxy;
   }
 }
 
-let instance: OobeScreensFacotryBrowserProxy|null = null;
+let instance: OobeScreensFactoryBrowserProxy|null = null;
 
 export {
-  OobeScreensFacotryBrowserProxy,
+  OobeScreensFactoryBrowserProxy,
 };

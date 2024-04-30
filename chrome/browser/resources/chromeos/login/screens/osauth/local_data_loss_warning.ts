@@ -20,7 +20,7 @@ import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../com
 import {OobeUiState} from '../../components/display_manager_types.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {LocalDataLossWarningPageHandlerRemote} from '../../mojom-webui/screens_osauth.mojom-webui.js';
-import {OobeScreensFacotryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './local_data_loss_warning.html.js';
 
@@ -85,7 +85,7 @@ export class LocalDataLossWarning extends LocalDataLossWarningBase {
     super();
     this.disabled = false;
     this.handler = new LocalDataLossWarningPageHandlerRemote();
-    OobeScreensFacotryBrowserProxy.getInstance()
+    OobeScreensFactoryBrowserProxy.getInstance()
         .screenFactory.createLocalDataLossWarningPageHandler(
             this.handler.$.bindNewPipeAndPassReceiver());
   }

@@ -23,7 +23,7 @@ import {OobeUiState} from '../../components/display_manager_types.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import type {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import {GaiaInfoPageCallbackRouter, GaiaInfoPageHandler_UserCreationFlowType, GaiaInfoPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
-import {OobeScreensFacotryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './gaia_info.html.js';
 
@@ -85,7 +85,7 @@ export class GaiaInfoScreen extends GaiaInfoScreenElementBase {
     super();
     this.callbackRouter = new GaiaInfoPageCallbackRouter();
     this.handler = new GaiaInfoPageHandlerRemote();
-    OobeScreensFacotryBrowserProxy.getInstance()
+    OobeScreensFactoryBrowserProxy.getInstance()
         .screenFactory.createGaiaInfoScreenHandler(
             this.callbackRouter.$.bindNewPipeAndPassRemote(),
             this.handler.$.bindNewPipeAndPassReceiver());

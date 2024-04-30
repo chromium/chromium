@@ -14,6 +14,7 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
+import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -22,8 +23,7 @@ import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/be
 import {OobeUiState} from '../../components/display_manager_types.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {DrivePinningPageCallbackRouter, DrivePinningPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
-import {OobeScreensFacotryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
-import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './drive_pinning.html.js';
 
@@ -100,7 +100,7 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     super();
     this.callbackRouter = new DrivePinningPageCallbackRouter();
     this.handler = new DrivePinningPageHandlerRemote();
-    OobeScreensFacotryBrowserProxy.getInstance()
+    OobeScreensFactoryBrowserProxy.getInstance()
         .screenFactory.createDrivePinningScreenHandler(
             this.callbackRouter.$.bindNewPipeAndPassRemote(),
             this.handler.$.bindNewPipeAndPassReceiver());
