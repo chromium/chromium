@@ -641,7 +641,9 @@ crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-i
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
 crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Failure ]
 crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb9_e5-rgb-half_float.html [ Failure ]
 crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 ## Mac AMD ##
