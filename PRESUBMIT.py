@@ -1054,6 +1054,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',
         r'services/network/web_transport\.cc',
         r'chrome/browser/ip_protection/.*',
+        r'components/ip_protection/.*',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK,
         # //base/numerics can't use base or absl.
@@ -1074,6 +1075,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
         # Needed to use QUICHE API.
         r'chrome/browser/ip_protection/.*',
+        r'components/ip_protection/.*',
         # Needed to use MediaPipe API.
         r'components/media_effects/.*\.cc',
         # Not an error in third_party folders.
@@ -1115,6 +1117,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [
         # Needed to use QUICHE API.
         r'chrome/browser/ip_protection/.*',
+        r'components/ip_protection/.*',
         r'services/network/web_transport.*',
         # Needed to integrate with //third_party/nearby
         r'components/cross_device/nearby/system_clock.cc',
