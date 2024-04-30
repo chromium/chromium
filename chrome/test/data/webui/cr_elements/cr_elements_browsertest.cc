@@ -141,6 +141,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrViewManager) {
   RunTest("cr_elements/cr_view_manager_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPageSelector) {
+  RunTest("cr_elements/cr_page_selector_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyIndicator) {
   RunTest("cr_elements/cr_policy_indicator_test.js", "mocha.run()");
 }

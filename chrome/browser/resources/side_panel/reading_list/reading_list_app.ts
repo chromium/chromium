@@ -13,7 +13,7 @@ import '../strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import {CrSelectableMixin} from 'chrome://resources/cr_elements/cr_menu_selector/cr_selectable_mixin.js';
+import {CrSelectableMixin} from 'chrome://resources/cr_elements/cr_selectable_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

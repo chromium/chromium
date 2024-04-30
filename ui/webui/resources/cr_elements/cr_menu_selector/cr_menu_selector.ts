@@ -8,7 +8,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './cr_menu_selector.html.js';
-import {CrSelectableMixin} from './cr_selectable_mixin.js';
+import {CrSelectableMixin} from '../cr_selectable_mixin.js';
 
 const CrMenuSelectorBase = CrSelectableMixin(CrLitElement);
 
