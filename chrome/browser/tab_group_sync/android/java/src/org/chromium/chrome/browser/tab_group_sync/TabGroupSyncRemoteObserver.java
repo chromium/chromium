@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -24,6 +26,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     private final LocalTabGroupMutationHelper mLocalTabGroupMutationHelper;
     private final Callback<Boolean> mEnableLocalObserverCallback;
     private final Runnable mOnSyncInitializedCallback;
+    private final PrefService mPrefService;
 
     /**
      * Constructor.
@@ -34,18 +37,21 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
      * @param localTabGroupMutationHelper Helper class for mutation of local tab model and groups.
      * @param enableLocalObserverCallback Callback to enable/disable local observation.
      * @param onSyncInitializedCallback Callback to be notified about sync backend initialization.
+     * @param prefService The {@link PrefService} to check the value of auto-open.
      */
     public TabGroupSyncRemoteObserver(
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupSyncService tabGroupSyncService,
             LocalTabGroupMutationHelper localTabGroupMutationHelper,
             Callback<Boolean> enableLocalObserverCallback,
-            Runnable onSyncInitializedCallback) {
+            Runnable onSyncInitializedCallback,
+            PrefService prefService) {
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupSyncService = tabGroupSyncService;
         mLocalTabGroupMutationHelper = localTabGroupMutationHelper;
         mEnableLocalObserverCallback = enableLocalObserverCallback;
         mOnSyncInitializedCallback = onSyncInitializedCallback;
+        mPrefService = prefService;
 
         // Start observing sync.
         mTabGroupSyncService.addObserver(this);
@@ -65,6 +71,8 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     public void onTabGroupAdded(SavedTabGroup tabGroup) {
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
         assert tabGroup.localId == null;
+        if (!mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)) return;
+
         mEnableLocalObserverCallback.onResult(false);
         mLocalTabGroupMutationHelper.createNewTabGroup(tabGroup);
         mEnableLocalObserverCallback.onResult(true);

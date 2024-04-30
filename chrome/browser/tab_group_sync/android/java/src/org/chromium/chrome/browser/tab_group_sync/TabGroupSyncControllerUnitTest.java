@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class TabGroupSyncControllerUnitTest {
     private @Mock Profile mProfile;
     private MockTabModel mTabModel;
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
+    private @Mock PrefService mPrefService;
     private TabGroupSyncController mController;
 
     private @Captor ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
@@ -65,7 +67,7 @@ public class TabGroupSyncControllerUnitTest {
                 .addObserver(mTabGroupSyncServiceObserverCaptor.capture());
         mController =
                 new TabGroupSyncController(
-                        mTabModelSelector, mTabCreatorManager, mTabGroupSyncService);
+                        mTabModelSelector, mTabCreatorManager, mTabGroupSyncService, mPrefService);
     }
 
     @After

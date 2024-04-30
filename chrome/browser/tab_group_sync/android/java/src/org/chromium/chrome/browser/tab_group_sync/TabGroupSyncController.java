@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
@@ -68,7 +69,8 @@ public final class TabGroupSyncController {
     public TabGroupSyncController(
             TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
-            TabGroupSyncService tabGroupSyncService) {
+            TabGroupSyncService tabGroupSyncService,
+            PrefService prefService) {
         mTabModelSelector = tabModelSelector;
         mTabCreatorManager = tabCreatorManager;
         mTabGroupSyncService = tabGroupSyncService;
@@ -110,7 +112,8 @@ public final class TabGroupSyncController {
                         mTabGroupSyncService,
                         mLocalMutationHelper,
                         enable -> mLocalObserver.enableObservers(enable),
-                        this::onSyncBackendInitialized);
+                        this::onSyncBackendInitialized,
+                        prefService);
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector, selector -> maybeCompleteInitialization());
     }

@@ -183,6 +183,7 @@ import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -966,7 +967,8 @@ public class RootUiCoordinator
                     new TabGroupSyncController(
                             mTabModelSelectorSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
-                            TabGroupSyncServiceFactory.getForProfile(currentlySelectedProfile));
+                            TabGroupSyncServiceFactory.getForProfile(currentlySelectedProfile),
+                            UserPrefs.get(currentlySelectedProfile));
         }
 
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -25,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -57,6 +58,8 @@ public class TabGroupSyncRemoteObserverUnitTest {
     private MockTabModel mTabModel;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private PrefService mPrefService;
+
     private NavigationTracker mNavigationTracker;
     @Mock private LocalTabGroupMutationHelper mLocalMutationHelper;
     private TabGroupSyncRemoteObserver mRemoteObserver;
@@ -78,12 +81,14 @@ public class TabGroupSyncRemoteObserverUnitTest {
                         enable -> {
                             mEnabledLocalObservers = enable;
                         },
-                        () -> {});
+                        () -> {},
+                        mPrefService);
         mEnabledLocalObservers = true;
 
         when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(Tab.INVALID_TAB_ID);
         when(mTabGroupModelFilter.getRootIdFromStableId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
         when(mTabGroupModelFilter.getStableIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
+        when(mPrefService.getBoolean(eq(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS))).thenReturn(true);
     }
 
     @After
@@ -104,6 +109,15 @@ public class TabGroupSyncRemoteObserverUnitTest {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         mRemoteObserver.onTabGroupAdded(savedTabGroup);
         verify(mLocalMutationHelper).createNewTabGroup(any());
+    }
+
+    @Test
+    public void testTabGroupAddedWithAutoOpenOff() {
+        when(mPrefService.getBoolean(eq(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS))).thenReturn(false);
+
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        mRemoteObserver.onTabGroupAdded(savedTabGroup);
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any());
     }
 
     @Test
@@ -133,9 +147,9 @@ public class TabGroupSyncRemoteObserverUnitTest {
 
     @Test
     public void testTabGroupRemovedForDifferentWindow() {
-        mTabModel.addTab(TAB_ID_1);
+        addOneTab();
         mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_2);
-        verify(mTabModel, never()).closeMultipleTabs(anyList(), eq(false));
+        verify(mLocalMutationHelper, never()).closeTabGroup(any());
     }
 
     private class TestTabCreationDelegate implements TabCreationDelegate {
