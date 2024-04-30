@@ -8,15 +8,15 @@
 
 namespace blink {
 
-GPUDeviceLostInfo::GPUDeviceLostInfo(const WGPUDeviceLostReason reason,
+GPUDeviceLostInfo::GPUDeviceLostInfo(const wgpu::DeviceLostReason reason,
                                      const String& message) {
   switch (reason) {
-    case WGPUDeviceLostReason_Undefined:
-    case WGPUDeviceLostReason_InstanceDropped:
-    case WGPUDeviceLostReason_FailedCreation:
+    case wgpu::DeviceLostReason::Undefined:
+    case wgpu::DeviceLostReason::InstanceDropped:
+    case wgpu::DeviceLostReason::FailedCreation:
       reason_ = "unknown";
       break;
-    case WGPUDeviceLostReason_Destroyed:
+    case wgpu::DeviceLostReason::Destroyed:
       reason_ = "destroyed";
       break;
     default:

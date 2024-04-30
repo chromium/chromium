@@ -32,10 +32,6 @@ struct ReservedTexture {
 // APIChannel is a RefCounted class which holds the Dawn wire client.
 class APIChannel : public base::RefCounted<APIChannel> {
  public:
-  // Get the proc table.
-  // As long as a reference to this APIChannel alive, it is valid to
-  // call these procs.
-  virtual const DawnProcTable& GetProcs() const = 0;
   // Get the WGPUInstance.
   virtual WGPUInstance GetWGPUInstance() const = 0;
 

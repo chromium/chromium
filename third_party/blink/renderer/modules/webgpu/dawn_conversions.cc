@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 
-#include <dawn/webgpu.h>
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_extent_3d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
@@ -28,7 +26,7 @@
 namespace blink {
 
 bool ConvertToDawn(const V8GPUColor* in,
-                   WGPUColor* out,
+                   wgpu::Color* out,
                    ExceptionState& exception_state) {
   switch (in->GetContentType()) {
     case V8GPUColor::ContentType::kGPUColorDict: {
@@ -52,7 +50,7 @@ bool ConvertToDawn(const V8GPUColor* in,
 }
 
 bool ConvertToDawn(const V8GPUExtent3D* in,
-                   WGPUExtent3D* out,
+                   wgpu::Extent3D* out,
                    GPUDevice* device,
                    ExceptionState& exception_state) {
   switch (in->GetContentType()) {
@@ -91,7 +89,7 @@ bool ConvertToDawn(const V8GPUExtent3D* in,
 }
 
 bool ConvertToDawn(const V8GPUOrigin3D* in,
-                   WGPUOrigin3D* out,
+                   wgpu::Origin3D* out,
                    ExceptionState& exception_state) {
   switch (in->GetContentType()) {
     case V8GPUOrigin3D::ContentType::kGPUOrigin3DDict: {
@@ -129,7 +127,7 @@ bool ConvertToDawn(const V8GPUOrigin3D* in,
 }
 
 bool ConvertToDawn(const V8GPUOrigin2D* in,
-                   WGPUOrigin2D* out,
+                   wgpu::Origin2D* out,
                    ExceptionState& exception_state) {
   switch (in->GetContentType()) {
     case V8GPUOrigin2D::ContentType::kGPUOrigin2DDict: {
@@ -164,7 +162,7 @@ bool ConvertToDawn(const V8GPUOrigin2D* in,
 }
 
 bool ConvertToDawn(const GPUImageCopyTexture* in,
-                   WGPUImageCopyTexture* out,
+                   wgpu::ImageCopyTexture* out,
                    ExceptionState& exception_state) {
   DCHECK(in);
   DCHECK(in->texture());
@@ -177,31 +175,31 @@ bool ConvertToDawn(const GPUImageCopyTexture* in,
 }
 
 // Dawn represents `undefined` as the special uint32_t value
-// WGPU_COPY_STRIDE_UNDEFINED (0xFFFF'FFFF). Blink must make sure that an
+// wgpu::kCopyStrideUndefined (0xFFFF'FFFF). Blink must make sure that an
 // actual value of 0xFFFF'FFFF coming in from JS is not treated as
-// WGPU_COPY_STRIDE_UNDEFINED, so it injects an error in that case.
+// wgpu::kCopyStrideUndefined, so it injects an error in that case.
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
-                                      WGPUTextureDataLayout* dawn_layout) {
+                                      wgpu::TextureDataLayout* dawn_layout) {
   DCHECK(webgpu_layout);
 
   uint32_t bytesPerRow = 0;
   if (webgpu_layout->hasBytesPerRow()) {
     bytesPerRow = webgpu_layout->bytesPerRow();
-    if (bytesPerRow == WGPU_COPY_STRIDE_UNDEFINED) {
+    if (bytesPerRow == wgpu::kCopyStrideUndefined) {
       return "bytesPerRow must be a multiple of 256";
     }
   } else {
-    bytesPerRow = WGPU_COPY_STRIDE_UNDEFINED;
+    bytesPerRow = wgpu::kCopyStrideUndefined;
   }
 
   uint32_t rowsPerImage = 0;
   if (webgpu_layout->hasRowsPerImage()) {
     rowsPerImage = webgpu_layout->rowsPerImage();
-    if (rowsPerImage == WGPU_COPY_STRIDE_UNDEFINED) {
+    if (rowsPerImage == wgpu::kCopyStrideUndefined) {
       return "rowsPerImage is too large";
     }
   } else {
-    rowsPerImage = WGPU_COPY_STRIDE_UNDEFINED;
+    rowsPerImage = wgpu::kCopyStrideUndefined;
   }
 
   *dawn_layout = {};
@@ -212,28 +210,28 @@ const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
   return nullptr;
 }
 
-WGPUTextureFormat AsDawnType(SkColorType color_type) {
+wgpu::TextureFormat AsDawnType(SkColorType color_type) {
   switch (color_type) {
     case SkColorType::kRGBA_8888_SkColorType:
-      return WGPUTextureFormat_RGBA8Unorm;
+      return wgpu::TextureFormat::RGBA8Unorm;
     case SkColorType::kBGRA_8888_SkColorType:
-      return WGPUTextureFormat_BGRA8Unorm;
+      return wgpu::TextureFormat::BGRA8Unorm;
     case SkColorType::kRGBA_1010102_SkColorType:
-      return WGPUTextureFormat_RGB10A2Unorm;
+      return wgpu::TextureFormat::RGB10A2Unorm;
     case SkColorType::kRGBA_F16_SkColorType:
-      return WGPUTextureFormat_RGBA16Float;
+      return wgpu::TextureFormat::RGBA16Float;
     case SkColorType::kRGBA_F32_SkColorType:
-      return WGPUTextureFormat_RGBA32Float;
+      return wgpu::TextureFormat::RGBA32Float;
     case SkColorType::kR8G8_unorm_SkColorType:
-      return WGPUTextureFormat_RG8Unorm;
+      return wgpu::TextureFormat::RG8Unorm;
     case SkColorType::kR16G16_float_SkColorType:
-      return WGPUTextureFormat_RG16Float;
+      return wgpu::TextureFormat::RG16Float;
     default:
-      return WGPUTextureFormat_Undefined;
+      return wgpu::TextureFormat::Undefined;
   }
 }
 
-WGPUPipelineLayout AsDawnType(
+wgpu::PipelineLayout AsDawnType(
     V8UnionGPUAutoLayoutModeOrGPUPipelineLayout* webgpu_layout) {
   DCHECK(webgpu_layout);
 

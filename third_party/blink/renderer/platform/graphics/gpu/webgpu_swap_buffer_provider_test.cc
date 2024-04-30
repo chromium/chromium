@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
 #include <dawn/dawn_proc.h>
-#include <dawn/webgpu_cpp.h>
 #include <dawn/wire/WireClient.h>
 #include <dawn/wire/WireServer.h>
 
@@ -17,6 +16,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_native_test_support.h"
 
 using testing::_;
@@ -29,11 +29,6 @@ namespace {
 
 class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
  public:
-  MockWebGPUInterface() {
-    *procs() = dawn::wire::client::GetProcs();
-    dawnProcSetProcs(procs());
-  }
-
   MOCK_METHOD(gpu::webgpu::ReservedTexture,
               ReserveTexture,
               (WGPUDevice device, const WGPUTextureDescriptor* optionalDesc));
@@ -112,9 +107,9 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
       const gfx::HDRMetadata& hdr_metadata)
       : WebGPUSwapBufferProvider(client,
                                  dawn_control_client,
-                                 device.Get(),
-                                 static_cast<WGPUTextureUsage>(usage),
-                                 static_cast<WGPUTextureFormat>(format),
+                                 device,
+                                 usage,
+                                 format,
                                  color_space,
                                  hdr_metadata),
         alive_(alive),
@@ -131,8 +126,7 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
     texture_desc_.size.width = size.width();
     texture_desc_.size.height = size.height();
     client_->texture = WebGPUSwapBufferProvider::GetNewTexture(
-        *reinterpret_cast<const WGPUTextureDescriptor*>(&texture_desc_),
-        kOpaque_SkAlphaType);
+        texture_desc_, kOpaque_SkAlphaType);
     return client_->texture;
   }
 
@@ -195,6 +189,12 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
 
     c2s_serializer_.SetHandler(&wire_server_);
     s2c_serializer_.SetHandler(&wire_client_);
+#if !BUILDFLAG(USE_DAWN)
+    // If not USE_DAWN, then Dawn wire is not linked into the Blink code.
+    // Instead the proc table is used. Set the procs to the wire procs to
+    // unittest this platform where Dawn is not enabled by default yet.
+    dawnProcSetProcs(&dawn::wire::client::GetProcs());
+#endif
 
     wgpu::InstanceDescriptor instance_desc = {};
     auto reservation = wire_client_.ReserveInstance(

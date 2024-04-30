@@ -31,10 +31,10 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     }
   }
 
-  std::unique_ptr<WGPUTextureFormat[]> color_formats =
-      AsDawnEnum<WGPUTextureFormat>(webgpu_desc->colorFormats());
+  std::unique_ptr<wgpu::TextureFormat[]> color_formats =
+      AsDawnEnum<wgpu::TextureFormat>(webgpu_desc->colorFormats());
 
-  WGPUTextureFormat depth_stencil_format = WGPUTextureFormat_Undefined;
+  wgpu::TextureFormat depth_stencil_format = wgpu::TextureFormat::Undefined;
   if (webgpu_desc->hasDepthStencilFormat()) {
     if (!device->ValidateTextureFormatUsage(webgpu_desc->depthStencilFormat(),
                                             exception_state)) {
@@ -44,8 +44,7 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     depth_stencil_format = AsDawnEnum(webgpu_desc->depthStencilFormat());
   }
 
-  WGPURenderBundleEncoderDescriptor dawn_desc = {};
-  dawn_desc.nextInChain = nullptr;
+  wgpu::RenderBundleEncoderDescriptor dawn_desc = {};
   dawn_desc.colorFormatCount = color_formats_count;
   dawn_desc.colorFormats = color_formats.get();
   dawn_desc.depthStencilFormat = depth_stencil_format;
@@ -59,28 +58,26 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
 
   GPURenderBundleEncoder* encoder =
       MakeGarbageCollected<GPURenderBundleEncoder>(
-          device,
-          device->GetProcs().deviceCreateRenderBundleEncoder(
-              device->GetHandle(), &dawn_desc),
+          device, device->GetHandle().CreateRenderBundleEncoder(&dawn_desc),
           webgpu_desc->label());
   return encoder;
 }
 
 GPURenderBundleEncoder::GPURenderBundleEncoder(
     GPUDevice* device,
-    WGPURenderBundleEncoder render_bundle_encoder,
+    wgpu::RenderBundleEncoder render_bundle_encoder,
     const String& label)
-    : DawnObject<WGPURenderBundleEncoder>(device,
-                                          render_bundle_encoder,
-                                          label) {}
+    : DawnObject<wgpu::RenderBundleEncoder>(device,
+                                            render_bundle_encoder,
+                                            label) {}
 
 void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
     const Vector<uint32_t>& dynamicOffsets) {
-  WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
-  GetProcs().renderBundleEncoderSetBindGroup(
-      GetHandle(), index, bgImpl, dynamicOffsets.size(), dynamicOffsets.data());
+  GetHandle().SetBindGroup(
+      index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr),
+      dynamicOffsets.size(), dynamicOffsets.data());
 }
 
 void GPURenderBundleEncoder::setBindGroup(
@@ -99,24 +96,21 @@ void GPURenderBundleEncoder::setBindGroup(
   const uint32_t* data =
       dynamic_offsets_data.DataMaybeOnStack() + dynamic_offsets_data_start;
 
-  WGPUBindGroupImpl* bgImpl = bind_group ? bind_group->GetHandle() : nullptr;
-  GetProcs().renderBundleEncoderSetBindGroup(GetHandle(), index, bgImpl,
-                                             dynamic_offsets_data_length, data);
+  GetHandle().SetBindGroup(
+      index, bind_group ? bind_group->GetHandle() : wgpu::BindGroup(nullptr),
+      dynamic_offsets_data_length, data);
 }
 
 GPURenderBundle* GPURenderBundleEncoder::finish(
     const GPURenderBundleDescriptor* webgpu_desc) {
-  WGPURenderBundleDescriptor dawn_desc = {};
-  dawn_desc.nextInChain = nullptr;
+  wgpu::RenderBundleDescriptor dawn_desc = {};
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
-  WGPURenderBundle render_bundle =
-      GetProcs().renderBundleEncoderFinish(GetHandle(), &dawn_desc);
-  return MakeGarbageCollected<GPURenderBundle>(device_, render_bundle,
-                                               webgpu_desc->label());
+  return MakeGarbageCollected<GPURenderBundle>(
+      device_, GetHandle().Finish(&dawn_desc), webgpu_desc->label());
 }
 
 }  // namespace blink

@@ -30,7 +30,7 @@ void GPUProgrammableStageAsWGPUProgrammableStage(
   dawn_programmable_stage->constantKeys =
       std::make_unique<std::string[]>(constants.size());
   dawn_programmable_stage->constants =
-      std::make_unique<WGPUConstantEntry[]>(constants.size());
+      std::make_unique<wgpu::ConstantEntry[]>(constants.size());
   for (wtf_size_t i = 0; i < constants.size(); i++) {
     dawn_programmable_stage->constantKeys[i] =
         UTF8StringFromUSVStringWithNullReplacedByReplacementCodePoint(

@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_CONVERSIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_DAWN_CONVERSIONS_H_
 
-#include <dawn/webgpu.h>
-
 #include <memory>
 
 #include "base/check.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -28,26 +27,30 @@ class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined
 // individually.
-WGPUTextureFormat AsDawnType(SkColorType color_type);
-WGPUPipelineLayout AsDawnType(
+wgpu::TextureFormat AsDawnType(SkColorType color_type);
+wgpu::PipelineLayout AsDawnType(
     V8UnionGPUAutoLayoutModeOrGPUPipelineLayout* webgpu_layout);
 
 // Conversion for convenience types that are dict|sequence<Number> and other
 // types that recursively use them. A return value of false means that the
 // conversion failed and a TypeError was recorded in the ExceptionState.
-bool ConvertToDawn(const V8GPUColor* in, WGPUColor* out, ExceptionState&);
+bool ConvertToDawn(const V8GPUColor* in, wgpu::Color* out, ExceptionState&);
 bool ConvertToDawn(const V8GPUExtent3D* in,
-                   WGPUExtent3D* out,
+                   wgpu::Extent3D* out,
                    GPUDevice* device,
                    ExceptionState&);
-bool ConvertToDawn(const V8GPUOrigin3D* in, WGPUOrigin3D* out, ExceptionState&);
-bool ConvertToDawn(const V8GPUOrigin2D* in, WGPUOrigin2D* out, ExceptionState&);
+bool ConvertToDawn(const V8GPUOrigin3D* in,
+                   wgpu::Origin3D* out,
+                   ExceptionState&);
+bool ConvertToDawn(const V8GPUOrigin2D* in,
+                   wgpu::Origin2D* out,
+                   ExceptionState&);
 bool ConvertToDawn(const GPUImageCopyTexture* in,
-                   WGPUImageCopyTexture* out,
+                   wgpu::ImageCopyTexture* out,
                    ExceptionState&);
 
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
-                                      WGPUTextureDataLayout* layout);
+                                      wgpu::TextureDataLayout* layout);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.

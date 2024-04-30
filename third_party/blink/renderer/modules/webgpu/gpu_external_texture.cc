@@ -174,12 +174,11 @@ void ExternalTextureCache::ReferenceUntilGPUIsFinished(
   // Keep mailbox texture alive until callback returns.
   auto* callback = BindWGPUOnceCallback(
       [](scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
-         WGPUQueueWorkDoneStatus status) {},
+         WGPUQueueWorkDoneStatus) {},
       std::move(mailbox_texture));
 
-  device()->GetProcs().queueOnSubmittedWorkDone(device()->queue()->GetHandle(),
-                                                callback->UnboundCallback(),
-                                                callback->AsUserdata());
+  device()->queue()->GetHandle().OnSubmittedWorkDone(
+      callback->UnboundCallback(), callback->AsUserdata());
 
   // Ensure commands are flushed.
   device()->EnsureFlush(ToEventLoop(execution_context));
@@ -230,7 +229,7 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
 
   GPUExternalTexture* gpu_external_texture =
       MakeGarbageCollected<GPUExternalTexture>(
-          cache, external_texture.wgpu_external_texture,
+          cache, std::move(external_texture.wgpu_external_texture),
           external_texture.mailbox_texture, external_texture.is_zero_copy,
           media_video_frame->metadata().read_lock_fences_enabled,
           media_video_frame_unique_id, webgpu_desc->label());
@@ -263,9 +262,7 @@ GPUExternalTexture* GPUExternalTexture::CreateExpired(
   // Bypass importing video frame into Dawn.
   GPUExternalTexture* external_texture =
       MakeGarbageCollected<GPUExternalTexture>(
-          cache,
-          cache->device()->GetProcs().deviceCreateErrorExternalTexture(
-              cache->device()->GetHandle()),
+          cache, cache->device()->GetHandle().CreateErrorExternalTexture(),
           nullptr /*mailbox_texture*/, false /*is_zero_copy*/,
           false /*read_lock_fences_enabled*/,
           std::nullopt /*media_video_frame_unique_id*/, webgpu_desc->label());
@@ -340,13 +337,15 @@ GPUExternalTexture* GPUExternalTexture::FromVideoFrame(
 
 GPUExternalTexture::GPUExternalTexture(
     ExternalTextureCache* cache,
-    WGPUExternalTexture external_texture,
+    wgpu::ExternalTexture external_texture,
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
     bool is_zero_copy,
     bool read_lock_fences_enabled,
     std::optional<media::VideoFrame::ID> media_video_frame_unique_id,
     const String& label)
-    : DawnObject<WGPUExternalTexture>(cache->device(), external_texture, label),
+    : DawnObject<wgpu::ExternalTexture>(cache->device(),
+                                        external_texture,
+                                        label),
       mailbox_texture_(std::move(mailbox_texture)),
       is_zero_copy_(is_zero_copy),
       read_lock_fences_enabled_(read_lock_fences_enabled),
@@ -368,7 +367,7 @@ void GPUExternalTexture::Refresh() {
     return;
   }
 
-  GetProcs().externalTextureRefresh(GetHandle());
+  GetHandle().Refresh();
   status_ = Status::Active;
 }
 
@@ -377,7 +376,7 @@ void GPUExternalTexture::Expire() {
     return;
   }
 
-  GetProcs().externalTextureExpire(GetHandle());
+  GetHandle().Expire();
   status_ = Status::Expired;
 }
 
@@ -426,7 +425,7 @@ void GPUExternalTexture::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(video_);
   visitor->Trace(cache_);
-  DawnObject<WGPUExternalTexture>::Trace(visitor);
+  DawnObject<wgpu::ExternalTexture>::Trace(visitor);
 }
 
 bool GPUExternalTexture::IsCurrentFrameFromHTMLVideoElementValid() {

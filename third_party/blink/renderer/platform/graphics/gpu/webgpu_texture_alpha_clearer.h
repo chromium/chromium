@@ -18,20 +18,21 @@ class PLATFORM_EXPORT WebGPUTextureAlphaClearer final
  public:
   WebGPUTextureAlphaClearer(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
-      WGPUDevice device,
-      WGPUTextureFormat format);
+      const wgpu::Device& device,
+      wgpu::TextureFormat format);
 
-  bool IsCompatible(WGPUDevice device, WGPUTextureFormat format) const;
-  void ClearAlpha(WGPUTexture texture);
+  bool IsCompatible(const wgpu::Device& device,
+                    wgpu::TextureFormat format) const;
+  void ClearAlpha(const wgpu::Texture& texture);
 
  private:
   friend class WTF::RefCounted<WebGPUTextureAlphaClearer>;
   ~WebGPUTextureAlphaClearer();
 
   const scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  const WGPUDevice device_;
-  const WGPUTextureFormat format_;
-  WGPURenderPipeline alpha_to_one_pipeline_ = nullptr;
+  const wgpu::Device device_;
+  const wgpu::TextureFormat format_;
+  wgpu::RenderPipeline alpha_to_one_pipeline_ = nullptr;
 };
 
 }  // namespace blink

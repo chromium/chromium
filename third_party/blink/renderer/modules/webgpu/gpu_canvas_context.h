@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -114,23 +115,21 @@ class GPUCanvasContext : public CanvasRenderingContext,
  private:
   void DetachSwapBuffers();
   void ReplaceDrawingBuffer(bool destroy_swap_buffers);
-  void InitializeAlphaModePipeline(WGPUTextureFormat format);
+  void InitializeAlphaModePipeline(wgpu::TextureFormat format);
 
   void FinalizeFrame(FlushReason) override;
 
   scoped_refptr<StaticBitmapImage> SnapshotInternal(
-      const WGPUTexture& texture,
+      const wgpu::Texture& texture,
       const gfx::Size& size) const;
 
   bool CopyTextureToResourceProvider(
-      const WGPUTexture& texture,
+      const wgpu::Texture& texture,
       const gfx::Size& size,
       CanvasResourceProvider* resource_provider) const;
 
   void CopyToSwapTexture();
 
-  // Can't use DawnObjectBase, because the device can be reconfigured.
-  const DawnProcTable& GetProcs() const;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
 
@@ -161,12 +160,12 @@ class GPUCanvasContext : public CanvasRenderingContext,
   bool configured_ = false;
   // Matches [[texture_descriptor]] in the WebGPU specification except that it
   // never becomes null.
-  WGPUTextureDescriptor texture_descriptor_;
+  wgpu::TextureDescriptor texture_descriptor_;
   // The texture descriptor for the swap_texture is tracked separately, since
   // it may have different usage in the case that a copy is required.
-  WGPUTextureDescriptor swap_texture_descriptor_;
-  WGPUDawnTextureInternalUsageDescriptor texture_internal_usage_;
-  std::unique_ptr<WGPUTextureFormat[]> view_formats_;
+  wgpu::TextureDescriptor swap_texture_descriptor_;
+  wgpu::DawnTextureInternalUsageDescriptor texture_internal_usage_;
+  std::unique_ptr<wgpu::TextureFormat[]> view_formats_;
 };
 
 }  // namespace blink

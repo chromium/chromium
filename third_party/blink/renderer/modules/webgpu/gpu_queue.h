@@ -28,11 +28,11 @@ class ScriptState;
 class StaticBitmapImage;
 struct ExternalTextureSource;
 
-class GPUQueue : public DawnObject<WGPUQueue> {
+class GPUQueue : public DawnObject<wgpu::Queue> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit GPUQueue(GPUDevice* device, WGPUQueue queue, const String& label);
+  explicit GPUQueue(GPUDevice* device, wgpu::Queue queue, const String& label);
 
   GPUQueue(const GPUQueue&) = delete;
   GPUQueue& operator=(const GPUQueue&) = delete;
@@ -86,17 +86,17 @@ class GPUQueue : public DawnObject<WGPUQueue> {
 
  private:
   void CopyFromVideoElement(const ExternalTextureSource source,
-                            const WGPUExtent2D& video_frame_natural_size,
-                            const WGPUOrigin2D& origin,
-                            const WGPUExtent3D& copy_size,
-                            const WGPUImageCopyTexture& destination,
+                            const wgpu::Extent2D& video_frame_natural_size,
+                            const wgpu::Origin2D& origin,
+                            const wgpu::Extent3D& copy_size,
+                            const wgpu::ImageCopyTexture& destination,
                             bool dst_premultiplied_alpha,
                             PredefinedColorSpace dst_color_space,
                             bool flipY);
   bool CopyFromCanvasSourceImage(StaticBitmapImage* image,
-                                 const WGPUOrigin2D& origin,
-                                 const WGPUExtent3D& copy_size,
-                                 const WGPUImageCopyTexture& destination,
+                                 const wgpu::Origin2D& origin,
+                                 const wgpu::Extent3D& copy_size,
+                                 const wgpu::ImageCopyTexture& destination,
                                  bool dst_premultiplied_alpha,
                                  PredefinedColorSpace dst_color_space,
                                  bool flipY);
@@ -119,7 +119,7 @@ class GPUQueue : public DawnObject<WGPUQueue> {
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetProcs().queueSetLabel(GetHandle(), utf8_label.c_str());
+    GetHandle().SetLabel(utf8_label.c_str());
   }
 };
 

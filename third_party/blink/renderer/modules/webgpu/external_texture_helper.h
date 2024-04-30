@@ -39,7 +39,7 @@ struct ExternalTextureSource {
 };
 
 struct ExternalTexture {
-  WGPUExternalTexture wgpu_external_texture = nullptr;
+  wgpu::ExternalTexture wgpu_external_texture = nullptr;
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture = nullptr;
   bool is_zero_copy = false;
 };

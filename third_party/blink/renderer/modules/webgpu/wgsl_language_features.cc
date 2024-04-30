@@ -9,7 +9,7 @@
 namespace blink {
 
 WGSLLanguageFeatures::WGSLLanguageFeatures(
-    const std::vector<WGPUWGSLFeatureName>& features) {
+    const std::vector<wgpu::WGSLFeatureName>& features) {
   for (const auto& dawn_feature : features) {
     V8WGSLFeatureName v8_feature{
         V8WGSLFeatureName::Enum::kPointerCompositeAccess};

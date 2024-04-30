@@ -50,7 +50,6 @@ DawnControlClientHolder::DawnControlClientHolder(
       api_channel_(context_provider_->ContextProvider()
                        ->WebGPUInterface()
                        ->GetAPIChannel()),
-      procs_(api_channel_->GetProcs()),
       recyclable_resource_cache_(GetContextProviderWeakPtr(), task_runner) {}
 
 DawnControlClientHolder::~DawnControlClientHolder() = default;
@@ -86,8 +85,8 @@ DawnControlClientHolder::GetContextProviderWeakPtr() const {
   return context_provider_->GetWeakPtr();
 }
 
-WGPUInstance DawnControlClientHolder::GetWGPUInstance() const {
-  return api_channel_->GetWGPUInstance();
+wgpu::Instance DawnControlClientHolder::GetWGPUInstance() const {
+  return wgpu::Instance(api_channel_->GetWGPUInstance());
 }
 
 void DawnControlClientHolder::MarkContextLost() {
@@ -137,7 +136,7 @@ void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
       scoped_refptr<DawnControlClientHolder>(this)));
 }
 
-std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
+std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures() {
 #if BUILDFLAG(USE_DAWN)
   // Create a dawn::wire::WireClient on a noop serializer, to get an instance
   // from it.
@@ -155,8 +154,7 @@ std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
   dawn::wire::WireClient client{{.serializer = &noop_serializer}};
 
   // Control which WGSL features are exposed based on flags.
-  WGPUDawnWireWGSLControl wgsl_control = {};
-  wgsl_control.chain.sType = WGPUSType_DawnWireWGSLControl;
+  wgpu::DawnWireWGSLControl wgsl_control = {};
   wgsl_control.enableUnsafe = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableUnsafeWebGPU);
   wgsl_control.enableExperimental =
@@ -179,27 +177,25 @@ std::vector<WGPUWGSLFeatureName> GatherWGSLFeatures() {
       wgsl_unsafe_features.push_back(f.c_str());
     }
   }
-  WGPUDawnWGSLBlocklist wgsl_blocklist = {};
-  wgsl_blocklist.chain.sType = WGPUSType_DawnWGSLBlocklist;
-  wgsl_blocklist.chain.next = &wgsl_control.chain;
+  wgpu::DawnWGSLBlocklist wgsl_blocklist = {};
+  wgsl_blocklist.nextInChain = &wgsl_control;
   wgsl_blocklist.blocklistedFeatureCount = wgsl_unsafe_features.size();
   wgsl_blocklist.blocklistedFeatures = wgsl_unsafe_features.data();
 
   // Create the instance from all the chained structures and gather features
   // from it.
-  WGPUInstanceDescriptor instance_desc = {};
-  instance_desc.nextInChain = &wgsl_blocklist.chain;
-  WGPUInstance instance = client.ReserveInstance(&instance_desc).instance;
+  wgpu::InstanceDescriptor instance_desc = {};
+  instance_desc.nextInChain = &wgsl_blocklist;
+  wgpu::Instance instance = wgpu::Instance::Acquire(
+      client
+          .ReserveInstance(
+              reinterpret_cast<WGPUInstanceDescriptor*>(&instance_desc))
+          .instance);
 
-  const DawnProcTable& procs = dawn::wire::client::GetProcs();
-
-  size_t feature_count =
-      procs.instanceEnumerateWGSLLanguageFeatures(instance, nullptr);
-  std::vector<WGPUWGSLFeatureName> features(feature_count,
-                                            WGPUWGSLFeatureName_Undefined);
-  procs.instanceEnumerateWGSLLanguageFeatures(instance, features.data());
-
-  procs.instanceRelease(instance);
+  size_t feature_count = instance.EnumerateWGSLLanguageFeatures(nullptr);
+  std::vector<wgpu::WGSLFeatureName> features(feature_count,
+                                              wgpu::WGSLFeatureName::Undefined);
+  instance.EnumerateWGSLLanguageFeatures(features.data());
 
   return features;
 #else

@@ -11,7 +11,7 @@ namespace blink {
 
 class GPUPipelineLayoutDescriptor;
 
-class GPUPipelineLayout : public DawnObject<WGPUPipelineLayout> {
+class GPUPipelineLayout : public DawnObject<wgpu::PipelineLayout> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -19,7 +19,7 @@ class GPUPipelineLayout : public DawnObject<WGPUPipelineLayout> {
       GPUDevice* device,
       const GPUPipelineLayoutDescriptor* webgpu_desc);
   explicit GPUPipelineLayout(GPUDevice* device,
-                             WGPUPipelineLayout pipeline_layout,
+                             wgpu::PipelineLayout pipeline_layout,
                              const String& label);
 
   GPUPipelineLayout(const GPUPipelineLayout&) = delete;
@@ -28,7 +28,7 @@ class GPUPipelineLayout : public DawnObject<WGPUPipelineLayout> {
  private:
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetProcs().pipelineLayoutSetLabel(GetHandle(), utf8_label.c_str());
+    GetHandle().SetLabel(utf8_label.c_str());
   }
 };
 

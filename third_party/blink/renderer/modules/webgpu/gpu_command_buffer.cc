@@ -9,8 +9,10 @@
 namespace blink {
 
 GPUCommandBuffer::GPUCommandBuffer(GPUDevice* device,
-                                   WGPUCommandBuffer command_buffer,
+                                   wgpu::CommandBuffer command_buffer,
                                    const String& label)
-    : DawnObject<WGPUCommandBuffer>(device, command_buffer, label) {}
+    : DawnObject<wgpu::CommandBuffer>(device,
+                                      std::move(command_buffer),
+                                      label) {}
 
 }  // namespace blink

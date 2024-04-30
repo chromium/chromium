@@ -27,10 +27,10 @@ struct OwnedVertexState : OwnedProgrammableStage {
   OwnedVertexState& operator=(OwnedVertexState&& desc) = delete;
 
   // Points to OwnedRenderPipelineDescriptor::dawn_desc::vertex as it's a
-  // non-pointer member of WGPURenderPipelineDescriptor
-  raw_ptr<WGPUVertexState> dawn_desc = nullptr;
-  std::unique_ptr<WGPUVertexBufferLayout[]> buffers;
-  std::unique_ptr<std::unique_ptr<WGPUVertexAttribute[]>[]> attributes;
+  // non-pointer member of wgpu::RenderPipelineDescriptor
+  raw_ptr<wgpu::VertexState> dawn_desc = nullptr;
+  std::unique_ptr<wgpu::VertexBufferLayout[]> buffers;
+  std::unique_ptr<std::unique_ptr<wgpu::VertexAttribute[]>[]> attributes;
 };
 
 struct OwnedFragmentState : OwnedProgrammableStage {
@@ -43,9 +43,9 @@ struct OwnedFragmentState : OwnedProgrammableStage {
   OwnedFragmentState& operator=(const OwnedFragmentState& desc) = delete;
   OwnedFragmentState& operator=(OwnedFragmentState&& desc) = delete;
 
-  WGPUFragmentState dawn_desc = {};
-  std::unique_ptr<WGPUColorTargetState[]> targets;
-  Vector<WGPUBlendState> blend_states;
+  wgpu::FragmentState dawn_desc = {};
+  std::unique_ptr<wgpu::ColorTargetState[]> targets;
+  Vector<wgpu::BlendState> blend_states;
 };
 
 struct OwnedPrimitiveState {
@@ -58,8 +58,8 @@ struct OwnedPrimitiveState {
   OwnedPrimitiveState& operator=(const OwnedPrimitiveState& desc) = delete;
   OwnedPrimitiveState& operator=(OwnedPrimitiveState&& desc) = delete;
 
-  WGPUPrimitiveState dawn_desc = {};
-  WGPUPrimitiveDepthClipControl depth_clip_control = {};
+  wgpu::PrimitiveState dawn_desc = {};
+  wgpu::PrimitiveDepthClipControl depth_clip_control;
 };
 
 struct OwnedDepthStencilState {
@@ -73,8 +73,8 @@ struct OwnedDepthStencilState {
       delete;
   OwnedDepthStencilState& operator=(OwnedDepthStencilState&& desc) = delete;
 
-  WGPUDepthStencilState dawn_desc = {};
-  WGPUDepthStencilStateDepthWriteDefinedDawn depth_write_defined = {};
+  wgpu::DepthStencilState dawn_desc = {};
+  wgpu::DepthStencilStateDepthWriteDefinedDawn depth_write_defined;
 };
 
 struct OwnedRenderPipelineDescriptor {
@@ -90,7 +90,7 @@ struct OwnedRenderPipelineDescriptor {
   OwnedRenderPipelineDescriptor& operator=(
       OwnedRenderPipelineDescriptor&& desc) = delete;
 
-  WGPURenderPipelineDescriptor dawn_desc = {};
+  wgpu::RenderPipelineDescriptor dawn_desc = {};
   std::string label;
   OwnedVertexState vertex;
   OwnedPrimitiveState primitive;
@@ -104,7 +104,7 @@ void ConvertToDawnType(v8::Isolate* isolate,
                        OwnedRenderPipelineDescriptor* dawn_desc_info,
                        ExceptionState& exception_state);
 
-class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {
+class GPURenderPipeline : public DawnObject<wgpu::RenderPipeline> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -113,7 +113,7 @@ class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {
       GPUDevice* device,
       const GPURenderPipelineDescriptor* webgpu_desc);
   explicit GPURenderPipeline(GPUDevice* device,
-                             WGPURenderPipeline render_pipeline,
+                             wgpu::RenderPipeline render_pipeline,
                              const String& label);
 
   GPURenderPipeline(const GPURenderPipeline&) = delete;
@@ -124,7 +124,7 @@ class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {
  private:
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetProcs().renderPipelineSetLabel(GetHandle(), utf8_label.c_str());
+    GetHandle().SetLabel(utf8_label.c_str());
   }
 };
 
