@@ -129,3 +129,7 @@ crbug.com/1517744 external/wpt/wai-aria/role/synonym-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/tab-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/table-roles.html [ Pass ]
 crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Pass ]
+
+# Run secure payment confirmation tests on new headless
+external/wpt/secure-payment-confirmation/* [ Pass ]
+crbug.com/336866579 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure ]

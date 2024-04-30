@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Payment credential is created successfully.
-  promise_test: Unhandled rejection with value: object "NotSupportedError: The user agent does not support public key credentials."
-[FAIL] Payment credential allows residentKey to be "preferred".
-  promise_test: Unhandled rejection with value: object "NotSupportedError: The user agent does not support public key credentials."
-Harness: the test ran to completion.
-
