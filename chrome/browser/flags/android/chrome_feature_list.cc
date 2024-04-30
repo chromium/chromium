@@ -308,7 +308,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kOmniboxOnClobberFocusTypeOnContent,
     &omnibox::kGroupingFrameworkForNonZPS,
     &omnibox::kOmniboxShortcutsAndroid,
-    &omnibox::kQueryTilesInZPSOnNTP,
     &omnibox::kSearchReadyOmniboxAllowQueryEdit,
     &omnibox::kSuggestionAnswersColorReverse,
     &omnibox::kUpdatedConnectionSecurityIndicators,

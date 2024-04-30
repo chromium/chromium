@@ -576,6 +576,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       std::vector<const base::Feature*>{{
           &kOmniboxAnswerActions,
           &kOmniboxModernizeVisualUpdate,
+          &kQueryTilesInZPSOnNTP,
       }});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());

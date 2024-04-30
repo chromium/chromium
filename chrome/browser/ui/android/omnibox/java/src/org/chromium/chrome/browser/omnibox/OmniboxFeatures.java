@@ -5,14 +5,17 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
+import android.util.ArraySet;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.FeatureList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.cached_flags.CachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.cached_flags.CachedFlagUtils;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -20,6 +23,7 @@ import org.chromium.components.omnibox.OmniboxFeatureMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** This is the place where we define these: List of Omnibox features and parameters. */
 public class OmniboxFeatures {
@@ -37,6 +41,8 @@ public class OmniboxFeatures {
     // Auto-populated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
+    private static final List<CachedFieldTrialParameter> sCachedParams = new ArrayList<>();
+    private static final Set<String> sCachedParameterNames = new ArraySet<>();
 
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static Boolean sIsLowMemoryDevice;
@@ -48,8 +54,10 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, true);
 
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
+            newBooleanParam(
+                    OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP,
+                    "QueryTilesShowAsCarousel",
+                    false);
 
     /**
      * Create an instance of a CachedFeatureFlag.
@@ -66,12 +74,45 @@ public class OmniboxFeatures {
     }
 
     /**
-     * Persist cached feature flags.
+     * Create an instance of a BooleanCachedFieldTrialParameter.
+     *
+     * <p>Newly created flag will be automatically added to list of persisted feature flags.
+     *
+     * @param featureName the name of the feature flag
+     * @param variationName the name of the associated parameter
+     * @param defaultValue the default value to return if the feature state is unknown
+     */
+    private static BooleanCachedFieldTrialParameter newBooleanParam(
+            String featureName, String variationName, boolean defaultValue) {
+        var param =
+                new BooleanCachedFieldTrialParameter(
+                        OmniboxFeatureMap.getInstance(), featureName, variationName, defaultValue);
+        declareCachedFieldTrialParameter(param);
+        return param;
+    }
+
+    /** Add CachedFieldTrialParameter to a list of params to be preserved. */
+    private static void declareCachedFieldTrialParameter(CachedFieldTrialParameter param) {
+        if (BuildConfig.ENABLE_ASSERTS) {
+            String combinedName = param.getFeatureName() + ":" + param.getParameterName();
+            assert !sCachedParameterNames.contains(combinedName)
+                    : String.format(
+                            "Feature '%s' has a duplicate parameter '%s'",
+                            param.getFeatureName(), param.getParameterName());
+            sCachedParameterNames.add(combinedName);
+        }
+
+        sCachedParams.add(param);
+    }
+
+    /**
+     * Persist cached feature flags and parameters.
      *
      * <p>Persists all flags that were statically instantiated as part of this class.
      */
     public static void cacheFeatureFlags() {
         CachedFlagUtils.cacheNativeFlags(sCachedFlags);
+        CachedFlagUtils.cacheFieldTrialParameters(sCachedParams);
     }
 
     /**

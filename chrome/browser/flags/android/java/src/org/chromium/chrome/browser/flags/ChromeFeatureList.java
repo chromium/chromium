@@ -595,8 +595,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(PRIVACY_GUIDE_ANDROID_3, false);
     public static final CachedFlag sPrivacyGuidePreloadAndroid =
             newCachedFlag(PRIVACY_GUIDE_PRELOAD_ANDROID, false);
-    public static final CachedFlag sQueryTilesInZPSOnNTP =
-            newCachedFlag(QUERY_TILES_IN_ZPS_ON_NTP, false);
     public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
             newCachedFlag(OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
@@ -713,7 +711,6 @@ public abstract class ChromeFeatureList {
                     sPriceChangeModule,
                     sPrivacyGuideAndroid3,
                     sPrivacyGuidePreloadAndroid,
-                    sQueryTilesInZPSOnNTP,
                     sOmniboxMatchToolbarAndStatusBarColor,
                     sOptimizationGuidePushNotifications,
                     sPaintPreviewDemo,
