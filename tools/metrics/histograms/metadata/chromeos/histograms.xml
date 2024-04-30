@@ -794,9 +794,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.CertProvisioning.CsrSignTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
-    units="ms" expires_after="2024-02-01">
+    units="ms" expires_after="2025-04-01">
   <owner>miersh@google.com</owner>
-  <owner>pmarko@chromium.org</owner>
+  <owner>gschwarz@google.com</owner>
   <summary>
     The amount of time it took the {CertProvisioningProtocolVersion} certificate
     provisioning worker with scope {CertProvisioningScope} to sign a CSR.
@@ -809,9 +809,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.CertProvisioning.Event{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
-    enum="CertProvisioningEvent" expires_after="2024-10-06">
+    enum="CertProvisioningEvent" expires_after="2025-04-01">
   <owner>miersh@google.com</owner>
-  <owner>pmarko@chromium.org</owner>
+  <owner>gschwarz@google.com</owner>
   <summary>
     Number of times each event is reached during the
     {CertProvisioningProtocolVersion} certificate provisioning flow with scope
@@ -824,9 +824,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.CertProvisioning.KeypairGenerationTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
-    units="ms" expires_after="2024-02-01">
+    units="ms" expires_after="2025-04-01">
   <owner>miersh@google.com</owner>
-  <owner>pmarko@chromium.org</owner>
+  <owner>gschwarz@google.com</owner>
   <summary>
     The amount of time it took the {CertProvisioningProtocolVersion} certificate
     provisioning worker with scope {CertProvisioningScope} to generate one key
@@ -839,9 +839,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.CertProvisioning.Result{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
-    enum="CertProvisioningWorkerState" expires_after="2024-06-30">
+    enum="CertProvisioningWorkerState" expires_after="2025-04-01">
   <owner>miersh@google.com</owner>
-  <owner>pmarko@chromium.org</owner>
+  <owner>gschwarz@google.com</owner>
   <summary>
     For final states (see the list in cert_provisioning::IsFinalState): number
     of times the {CertProvisioningProtocolVersion} certificate provisioning
@@ -855,9 +855,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.CertProvisioning.VaTime{CertProvisioningProtocolVersion}.{CertProvisioningScope}"
-    units="ms" expires_after="2024-02-01">
+    units="ms" expires_after="2025-04-01">
   <owner>miersh@google.com</owner>
-  <owner>pmarko@chromium.org</owner>
+  <owner>gschwarz@google.com</owner>
   <summary>
     The amount of time it took the {CertProvisioningProtocolVersion} certificate
     provisioning worker with scope {CertProvisioningScope} to build one Verified
