@@ -79,6 +79,7 @@ void LensSearchBubbleController::Close() {
   DCHECK(bubble_view_->GetWidget());
   bubble_view_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kUnspecified);
+  bubble_view_ = nullptr;
 }
 
 LensSearchBubbleController::LensSearchBubbleController(Browser* browser)

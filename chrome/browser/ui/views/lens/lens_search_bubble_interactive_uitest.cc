@@ -38,6 +38,7 @@ class LensSearchBubbleInteractiveUiTest : public InteractiveBrowserTest {
       auto* controller = lens::LensSearchBubbleController::FromBrowser(
                                                browser());
       controller->Close();
+      EXPECT_FALSE(!!GetBubble());
     }));
   }
 
