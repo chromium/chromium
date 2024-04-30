@@ -302,9 +302,7 @@ void CloudPolicyInvalidator::HandleInvalidation(
   }
 
   if (invalidation.version() <= highest_handled_invalidation_version_) {
-    // If this invalidation version was handled already, acknowledge the
-    // invalidation but ignore it otherwise.
-    invalidation.Acknowledge();
+    // If this invalidation version was handled already, ignore it.
     return;
   }
 
@@ -328,13 +326,11 @@ void CloudPolicyInvalidator::HandleInvalidation(
   RecordPolicyInvalidationMetric(scope_, is_expired, is_missing_payload);
 
   if (is_expired) {
-    invalidation.Acknowledge();
     return;
   }
 
   // Update invalidation state.
   invalid_ = true;
-  invalidation_ = std::make_unique<invalidation::Invalidation>(invalidation);
   invalidation_version_ = version;
 
   // In order to prevent the cloud policy server from becoming overwhelmed when
@@ -455,8 +451,6 @@ void CloudPolicyInvalidator::AcknowledgeInvalidation() {
   DCHECK(invalid_);
   invalid_ = false;
   core_->client()->SetInvalidationInfo(0, std::string());
-  invalidation_->Acknowledge();
-  invalidation_.reset();
   // Cancel any scheduled policy refreshes.
   weak_factory_.InvalidateWeakPtrs();
 }

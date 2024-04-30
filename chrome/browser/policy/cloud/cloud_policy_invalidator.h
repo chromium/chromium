@@ -219,9 +219,6 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   // The highest invalidation version that was handled already.
   int64_t highest_handled_invalidation_version_;
 
-  // The most up to date invalidation.
-  std::unique_ptr<invalidation::Invalidation> invalidation_;
-
   // The maximum random delay, in ms, between receiving an invalidation and
   // fetching the new policy.
   int max_fetch_delay_;

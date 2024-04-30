@@ -154,11 +154,6 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   // refresh scheduler.
   bool InvalidationsEnabled();
 
-  // Determines if the invalidation with the given ack handle has been
-  // acknowledged.
-  bool IsInvalidationAcknowledged(
-      const invalidation::Invalidation& invalidation);
-
   // Determines if the invalidator has registered as an observer with the
   // invalidation service.
   bool IsInvalidatorRegistered();
@@ -352,16 +347,6 @@ bool CloudPolicyInvalidatorTestBase::InvalidationsEnabled() {
   return core_.refresh_scheduler()->invalidations_available();
 }
 
-bool CloudPolicyInvalidatorTestBase::IsInvalidationAcknowledged(
-    const invalidation::Invalidation& invalidation) {
-  // The acknowledgement task is run through a WeakHandle that posts back to our
-  // own thread.  We need to run any posted tasks before we can check
-  // acknowledgement status.
-  base::RunLoop().RunUntilIdle();
-
-  return !invalidation_service_.GetFakeAckHandler()->IsUnacked(invalidation);
-}
-
 bool CloudPolicyInvalidatorTestBase::IsInvalidatorRegistered() {
   return invalidation_service_.invalidator_registrar().HasObserver(
       invalidator_.get());
@@ -531,7 +516,6 @@ TEST_F(CloudPolicyInvalidatorTest, ChangeRegistration) {
   EXPECT_TRUE(IsInvalidatorRegistered(kTopicB));
   EXPECT_TRUE(InvalidationsEnabled());
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
 
   // Make sure future invalidations for topic B are processed.
@@ -554,11 +538,9 @@ TEST_F(CloudPolicyInvalidatorTest, UnregisterOnStoreLoaded) {
   // Check unregistration when store is loaded with no invalidation topic id.
   invalidation::Invalidation inv = FireInvalidation(kTopicA, V(2), "test");
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
-  EXPECT_FALSE(IsInvalidationAcknowledged(inv));
   StorePolicy(kNoTopic);
   EXPECT_FALSE(IsInvalidatorRegistered());
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv));
   EXPECT_FALSE(InvalidationsEnabled());
   EXPECT_TRUE(CheckPolicyNotRefreshed());
 
@@ -586,11 +568,9 @@ TEST_F(CloudPolicyInvalidatorTest, HandleInvalidation) {
   // Make sure invalidation data is not removed from the client until the store
   // is loaded.
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
-  EXPECT_FALSE(IsInvalidationAcknowledged(inv));
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv));
   StorePolicy(kTopicA, V(12));
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv));
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
   EXPECT_EQ(V(12), GetHighestHandledInvalidationVersion());
 }
@@ -609,10 +589,6 @@ TEST_F(CloudPolicyInvalidatorTest, HandleMultipleInvalidations) {
       FireInvalidation(kTopicA, V(3), "test3");
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
 
-  // Make sure the replaced invalidations are acknowledged.
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv1));
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv2));
-
   // Make sure the policy is refreshed once.
   EXPECT_TRUE(CheckPolicyRefreshed());
 
@@ -621,15 +597,12 @@ TEST_F(CloudPolicyInvalidatorTest, HandleMultipleInvalidations) {
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
   StorePolicy(kTopicA, V(1));
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
-  EXPECT_FALSE(IsInvalidationAcknowledged(inv3));
   EXPECT_EQ(V(1), GetHighestHandledInvalidationVersion());
   StorePolicy(kTopicA, V(2));
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
-  EXPECT_FALSE(IsInvalidationAcknowledged(inv3));
   EXPECT_EQ(V(2), GetHighestHandledInvalidationVersion());
   StorePolicy(kTopicA, V(3));
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv3));
   EXPECT_EQ(V(3), GetHighestHandledInvalidationVersion());
 }
 
@@ -646,7 +619,6 @@ TEST_F(CloudPolicyInvalidatorTest,
       FireInvalidation(kTopicA, V(1), "test1");
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv1));
   EXPECT_EQ(V(2), GetHighestHandledInvalidationVersion());
 
   // Check that an invalidation whose version matches the highest handled so far
@@ -655,7 +627,6 @@ TEST_F(CloudPolicyInvalidatorTest,
       FireInvalidation(kTopicA, V(2), "test2");
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv2));
   EXPECT_EQ(V(2), GetHighestHandledInvalidationVersion());
 
   // Check that an invalidation whose version is higher than the highest handled
@@ -666,7 +637,6 @@ TEST_F(CloudPolicyInvalidatorTest,
   EXPECT_TRUE(ClientInvalidationInfoMatches(inv3));
   StorePolicy(kTopicA, V(3));
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv3));
   EXPECT_EQ(V(3), GetHighestHandledInvalidationVersion());
 }
 
@@ -683,7 +653,6 @@ TEST_F(CloudPolicyInvalidatorTest, StoreLoadedBeforeRefresh) {
   EXPECT_EQ(0, GetHighestHandledInvalidationVersion());
   StorePolicy(kTopicA, V(3));
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  EXPECT_TRUE(IsInvalidationAcknowledged(inv));
   EXPECT_TRUE(CheckPolicyNotRefreshed());
   EXPECT_EQ(V(3), GetHighestHandledInvalidationVersion());
 }
@@ -970,43 +939,36 @@ TEST_P(CloudPolicyInvalidatorUserTypedTest, ExpiredInvalidations) {
   invalidation::Invalidation inv =
       FireInvalidation(kTopicA, GetVersion(time), "test");
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  ASSERT_TRUE(IsInvalidationAcknowledged(inv));
   ASSERT_TRUE(CheckPolicyNotRefreshed());
 
   inv = FireInvalidation(kTopicA, GetVersion(time), "");  // no payload
-  ASSERT_TRUE(IsInvalidationAcknowledged(inv));
   ASSERT_TRUE(CheckPolicyNotRefreshed());
 
   time += base::Minutes(5) - base::Seconds(1);
   inv = FireInvalidation(kTopicA, GetVersion(time), "test");
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  ASSERT_TRUE(IsInvalidationAcknowledged(inv));
   ASSERT_TRUE(CheckPolicyNotRefreshed());
 
   // Invalidations fired after the last fetch should not be ignored.
   time += base::Seconds(1);
   inv = FireInvalidation(kTopicA, GetVersion(time), "");  // no payload
   EXPECT_TRUE(ClientInvalidationInfoIsUnset());
-  ASSERT_FALSE(IsInvalidationAcknowledged(inv));
   ASSERT_TRUE(CheckPolicyRefreshed(
       base::Minutes(CloudPolicyInvalidator::kMissingPayloadDelay)));
 
   time += base::Minutes(10);
   inv = FireInvalidation(kTopicA, GetVersion(time), "test");
   ASSERT_TRUE(ClientInvalidationInfoMatches(inv));
-  ASSERT_FALSE(IsInvalidationAcknowledged(inv));
   ASSERT_TRUE(CheckPolicyRefreshed());
 
   time += base::Minutes(10);
   inv = FireInvalidation(kTopicA, GetVersion(time), "test");
   ASSERT_TRUE(ClientInvalidationInfoMatches(inv));
-  ASSERT_FALSE(IsInvalidationAcknowledged(inv));
   ASSERT_TRUE(CheckPolicyRefreshed());
 
   time += base::Minutes(10);
   inv = FireInvalidation(kTopicA, GetVersion(time), "test");
   ASSERT_TRUE(ClientInvalidationInfoMatches(inv));
-  ASSERT_FALSE(IsInvalidationAcknowledged(inv));
   ASSERT_TRUE(CheckPolicyRefreshed());
 
   // Verify that received invalidations metrics are correct.
