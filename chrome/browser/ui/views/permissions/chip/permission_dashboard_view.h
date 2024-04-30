@@ -32,7 +32,8 @@ class PermissionDashboardView : public views::View {
   void UpdateDividerViewVisibility();
 
   // views::View.
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   views::View::Views GetChildrenInZOrder() override;
 
  private:

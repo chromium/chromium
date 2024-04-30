@@ -149,7 +149,8 @@ void PermissionDashboardView::UpdateDividerViewVisibility() {
   chip_divider_view_->SetVisible(is_visible);
 }
 
-gfx::Size PermissionDashboardView::CalculatePreferredSize() const {
+gfx::Size PermissionDashboardView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (!secondary_chip_->GetVisible() && !anchored_chip_->GetVisible()) {
     return gfx::Size();
   }
