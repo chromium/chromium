@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -136,11 +135,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     @Override
     protected void onSuggestionClicked(@NonNull AutocompleteMatch suggestion, int position) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Tap");
-        if (OmniboxFeatures.noopEditUrlSuggestionClicks()) {
-            mSuggestionHost.finishInteraction();
-            return;
-        }
-
         super.onSuggestionClicked(suggestion, position);
     }
 

@@ -239,7 +239,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPwaRestoreUiAtStartup,
     &kOmahaMinSdkVersionAndroid,
     &kShortCircuitUnfocusAnimation,
-    &kOmniboxNoopEditUrlSuggestionClicks,
     &kPartnerCustomizationsUma,
     &kQuickDeleteForAndroid,
     &kQuickDeleteAndroidFollowup,
@@ -736,10 +735,6 @@ BASE_FEATURE(kOmahaMinSdkVersionAndroid,
 
 BASE_FEATURE(kShortCircuitUnfocusAnimation,
              "ShortCircuitUnfocusAnimation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOmniboxNoopEditUrlSuggestionClicks,
-             "OmniboxNoopEditUrlSuggestionClicks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOpenDownloadDialog,

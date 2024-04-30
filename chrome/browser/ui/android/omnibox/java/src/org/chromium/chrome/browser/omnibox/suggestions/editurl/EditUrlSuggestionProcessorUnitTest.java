@@ -37,12 +37,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -290,29 +286,12 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS)
     public void suggestionView_clickReloadsPage() {
-        assertFalse(OmniboxFeatures.noopEditUrlSuggestionClicks());
         mProcessor.populateModel(mMatch, mModel, 0);
 
         var monitor = new UserActionTester();
         mModel.get(BaseSuggestionViewProperties.ON_CLICK).run();
         verify(mSuggestionHost).onSuggestionClicked(mMatch, 0, mMatch.getUrl());
-        verifyNoMoreInteractions(mSuggestionHost);
-
-        assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Tap"));
-        assertEquals(1, monitor.getActions().size());
-        monitor.tearDown();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS)
-    public void suggestionView_clickReturnsToPage() {
-        assertTrue(OmniboxFeatures.noopEditUrlSuggestionClicks());
-        mProcessor.populateModel(mMatch, mModel, 0);
-        var monitor = new UserActionTester();
-        mModel.get(BaseSuggestionViewProperties.ON_CLICK).run();
-        verify(mSuggestionHost).finishInteraction();
         verifyNoMoreInteractions(mSuggestionHost);
 
         assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Tap"));

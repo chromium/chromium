@@ -138,14 +138,6 @@ public class OmniboxFeatures {
     }
 
     /**
-     * Returns whether clicking the edit url suggestion / search-ready omnibox should be a no-op.
-     * Currently the default behavior is to refresh the page.
-     */
-    public static boolean noopEditUrlSuggestionClicks() {
-        return ChromeFeatureList.sOmniboxNoopEditUrlSuggestionClicks.isEnabled();
-    }
-
-    /**
      * Returns whether a touch down event on a search suggestion should send a signal to prefetch
      * the corresponding page.
      */
