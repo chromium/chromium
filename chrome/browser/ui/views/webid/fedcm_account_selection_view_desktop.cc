@@ -818,6 +818,7 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
 }
 
 void FedCmAccountSelectionView::CloseModalDialog() {
+  auto show_accounts_callback = std::move(show_accounts_dialog_callback_);
   if (popup_window_) {
     // If the pop-up window is for IDP sign-in (as triggered from the mismatch
     // dialog or the add account button from the account chooser), we do not
@@ -835,12 +836,15 @@ void FedCmAccountSelectionView::CloseModalDialog() {
       popup_window_state_ =
           PopupWindowResult::kAccountsNotReceivedAndPopupClosedByIdp;
     }
-    popup_window_->ClosePopupWindow();
-    popup_window_.reset();
+
+    auto popup_window = std::move(popup_window_);
+    popup_window->ClosePopupWindow();
+    // We suspect that ClosePopupWindow may delete `this` under unknown
+    // circumstances. Do not access member variables after this point.
   }
 
-  if (show_accounts_dialog_callback_) {
-    std::move(show_accounts_dialog_callback_).Run();
+  if (show_accounts_callback) {
+    std::move(show_accounts_callback).Run();
     // `this` might be deleted now, do not access member variables
     // after this point.
   }
