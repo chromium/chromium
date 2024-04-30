@@ -17,6 +17,7 @@ class Rect;
 
 namespace ash {
 
+class ScopedSessionRefresher;
 class ScreenManager;
 
 // OOBE screen to add EDU account as a secondary account when the user is a
@@ -54,6 +55,9 @@ class EduCoexistenceLoginScreen : public BaseScreen,
 
   ScreenExitCallback exit_callback_;
   std::unique_ptr<InlineLoginDialogOnboarding::Delegate> dialog_delegate_;
+
+  // Keeps cryptohome authsession alive.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   base::ScopedObservation<LoginDisplayHost, LoginDisplayHost::Observer>
       observed_login_display_host_{this};
