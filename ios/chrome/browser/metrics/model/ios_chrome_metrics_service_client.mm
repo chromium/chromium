@@ -17,7 +17,6 @@
 #import "base/command_line.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
@@ -114,28 +113,16 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
 
   base::FilePath user_data_dir;
   if (base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir)) {
-    base::FilePath browser_metrics_upload_dir =
-        user_data_dir.AppendASCII(kBrowserMetricsName);
-    if (metrics_reporting_enabled) {
-      metrics::FileMetricsProvider::Params browser_metrics_params(
-          browser_metrics_upload_dir,
-          metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
-          metrics::FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE,
-          kBrowserMetricsName);
-      browser_metrics_params.max_dir_kib = kMaxHistogramStorageKiB;
-      browser_metrics_params.filter = base::BindRepeating(
-          &IOSChromeMetricsServiceClient::FilterBrowserMetricsFiles);
-      file_metrics_provider->RegisterSource(browser_metrics_params);
-    } else {
-      // When metrics reporting is not enabled, any existing files should be
-      // deleted in order to preserve user privacy.
-      base::ThreadPool::PostTask(
-          FROM_HERE,
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-          base::GetDeletePathRecursivelyCallback(
-              std::move(browser_metrics_upload_dir)));
-    }
+    metrics::FileMetricsProvider::Params browser_metrics_params(
+        user_data_dir.AppendASCII(kBrowserMetricsName),
+        metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
+        metrics::FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE,
+        kBrowserMetricsName);
+    browser_metrics_params.max_dir_kib = kMaxHistogramStorageKiB;
+    browser_metrics_params.filter = base::BindRepeating(
+        &IOSChromeMetricsServiceClient::FilterBrowserMetricsFiles);
+    file_metrics_provider->RegisterSource(browser_metrics_params,
+                                          metrics_reporting_enabled);
   }
   return file_metrics_provider;
 }

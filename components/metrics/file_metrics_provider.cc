@@ -191,11 +191,28 @@ FileMetricsProvider::FileMetricsProvider(PrefService* local_state)
 
 FileMetricsProvider::~FileMetricsProvider() = default;
 
-void FileMetricsProvider::RegisterSource(const Params& params) {
+void FileMetricsProvider::RegisterSource(const Params& params,
+                                         bool metrics_reporting_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ensure that kSourceOptions has been filled for this type.
   DCHECK_GT(std::size(kSourceOptions), static_cast<size_t>(params.type));
+
+  if (!metrics_reporting_enabled) {
+    // When metrics reporting is not enabled, existing files should be deleted,
+    // since they won't be getting deleted as part of the upload flow.
+    if (params.type == SOURCE_HISTOGRAMS_ATOMIC_DIR ||
+        params.type == SOURCE_HISTOGRAMS_ATOMIC_FILE) {
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          params.type == SOURCE_HISTOGRAMS_ATOMIC_DIR
+              ? base::GetDeletePathRecursivelyCallback(params.path)
+              : base::GetDeleteFileCallback(params.path));
+    }
+    return;
+  }
 
   std::unique_ptr<SourceInfo> source(new SourceInfo(params));
 

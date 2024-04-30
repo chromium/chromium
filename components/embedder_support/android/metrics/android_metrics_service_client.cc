@@ -13,7 +13,6 @@
 #include "base/barrier_closure.h"
 #include "base/base_paths_android.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
@@ -111,35 +110,6 @@ metrics::FileMetricsProvider::FilterAction FilterBrowserMetricsFiles(
   return metrics::FileMetricsProvider::FILTER_PROCESS_FILE;
 }
 
-// Constructs the name of a persistent metrics file from a directory and metrics
-// name, and either registers that file as associated with a previous run if
-// metrics reporting is enabled, or deletes it if not.
-void RegisterOrRemovePreviousRunMetricsFile(
-    bool metrics_reporting_enabled,
-    const base::FilePath& dir,
-    base::StringPiece metrics_name,
-    metrics::FileMetricsProvider::SourceAssociation association,
-    metrics::FileMetricsProvider* file_metrics_provider) {
-  base::FilePath metrics_file =
-      base::GlobalHistogramAllocator::ConstructFilePath(dir, metrics_name);
-
-  if (metrics_reporting_enabled) {
-    // Enable reading any existing saved metrics.
-    file_metrics_provider->RegisterSource(metrics::FileMetricsProvider::Params(
-        metrics_file,
-        metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE,
-        association, metrics_name));
-  } else {
-    // When metrics reporting is not enabled, any existing file should be
-    // deleted in order to preserve user privacy.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::GetDeleteFileCallback(metrics_file));
-  }
-}
-
 bool IsSamplesCounterEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kPersistentHistogramsFeature, "prev_run_metrics_count_only", false);
@@ -150,56 +120,52 @@ bool IsSamplesCounterEnabled() {
 std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     PrefService* pref_service,
     bool metrics_reporting_enabled) {
+  using metrics::FileMetricsProvider;
+
   // Create an object to monitor files of metrics and include them in reports.
-  std::unique_ptr<metrics::FileMetricsProvider> file_metrics_provider =
-      std::make_unique<metrics::FileMetricsProvider>(pref_service);
+  std::unique_ptr<FileMetricsProvider> file_metrics_provider =
+      std::make_unique<FileMetricsProvider>(pref_service);
 
   base::FilePath user_data_dir;
   base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir);
-  // Register the Crashpad metrics files.
-  // Register the data from the previous run if crashpad_handler didn't exit
-  // cleanly.
-  RegisterOrRemovePreviousRunMetricsFile(
-      metrics_reporting_enabled, user_data_dir, kCrashpadHistogramAllocatorName,
-      metrics::FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE_OR_PREVIOUS_RUN,
-      file_metrics_provider.get());
 
-  base::FilePath browser_metrics_upload_dir =
-      user_data_dir.AppendASCII(kBrowserMetricsName);
-  if (metrics_reporting_enabled) {
-    metrics::FileMetricsProvider::Params browser_metrics_params(
-        browser_metrics_upload_dir,
-        metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
-        IsSamplesCounterEnabled()
-            ? metrics::FileMetricsProvider::
-                  ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER
-            : metrics::FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE,
-        kBrowserMetricsName);
+  FileMetricsProvider::Params browser_metrics_params(
+      user_data_dir.AppendASCII(kBrowserMetricsName),
+      FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
+      IsSamplesCounterEnabled()
+          ? FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER
+          : FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE,
+      kBrowserMetricsName);
+  browser_metrics_params.max_dir_kib = kMaxHistogramStorageKiB;
+  browser_metrics_params.filter =
+      base::BindRepeating(FilterBrowserMetricsFiles);
+  file_metrics_provider->RegisterSource(browser_metrics_params,
+                                        metrics_reporting_enabled);
 
-    browser_metrics_params.max_dir_kib = kMaxHistogramStorageKiB;
-    browser_metrics_params.filter =
-        base::BindRepeating(FilterBrowserMetricsFiles);
-    file_metrics_provider->RegisterSource(browser_metrics_params);
+  // Register the Crashpad metrics files:
+  // 1. Data from the previous run if crashpad_handler didn't exit cleanly.
+  base::FilePath crashpad_metrics_file =
+      base::GlobalHistogramAllocator::ConstructFilePath(
+          user_data_dir, kCrashpadHistogramAllocatorName);
+  file_metrics_provider->RegisterSource(
+      FileMetricsProvider::Params(
+          crashpad_metrics_file,
+          FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE,
+          FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE_OR_PREVIOUS_RUN,
+          kCrashpadHistogramAllocatorName),
+      metrics_reporting_enabled);
 
-    base::FilePath crashpad_active_path =
-        base::GlobalHistogramAllocator::ConstructFilePathForActiveFile(
-            user_data_dir, kCrashpadHistogramAllocatorName);
-    // Register data that will be populated for the current run. "Active"
-    // files need an empty "prefs_key" because they update the file itself.
-    file_metrics_provider->RegisterSource(metrics::FileMetricsProvider::Params(
-        crashpad_active_path,
-        metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ACTIVE_FILE,
-        metrics::FileMetricsProvider::ASSOCIATE_CURRENT_RUN));
-  } else {
-    // When metrics reporting is not enabled, any existing files should be
-    // deleted in order to preserve user privacy.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::GetDeletePathRecursivelyCallback(
-            std::move(browser_metrics_upload_dir)));
-  }
+  // 2. Data from the current run. Note: "Active" files don't set "prefs_key"
+  // because they update the file itself.
+  base::FilePath crashpad_active_path =
+      base::GlobalHistogramAllocator::ConstructFilePathForActiveFile(
+          user_data_dir, kCrashpadHistogramAllocatorName);
+  file_metrics_provider->RegisterSource(
+      FileMetricsProvider::Params(
+          crashpad_active_path,
+          FileMetricsProvider::SOURCE_HISTOGRAMS_ACTIVE_FILE,
+          FileMetricsProvider::ASSOCIATE_CURRENT_RUN),
+      metrics_reporting_enabled);
 
   return file_metrics_provider;
 }
