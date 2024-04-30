@@ -410,8 +410,7 @@ bool AreAccountStorageOptInPromosAllowed() {
   //   sign-in in the future, at which point the above applies. In the meantime,
   //   it's not worth keeping the promos UI. Most users in this group have seen
   //   the promo by now and have accepted *if* they want the feature.
-  return !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-      switches::ExplicitBrowserSigninPhase::kFull);
+  return !switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
 }
 
 // Note: See also password_manager_features_util_common.cc for shared

@@ -921,8 +921,7 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
 
 void ManagePasswordsUIController::SignIn(const AccountInfo& account) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  CHECK(IsExplicitBrowserSigninUIOnDesktopEnabled(
-      switches::ExplicitBrowserSigninPhase::kFull));
+  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 
   const password_manager::PasswordForm pending_password =
       passwords_data_.form_manager()->GetPendingCredentials();

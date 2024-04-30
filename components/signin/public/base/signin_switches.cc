@@ -125,8 +125,7 @@ const base::FeatureParam<bool> kInterceptBubblesDismissibleByAvatarButton{
     /*name=*/"bubble_dismissible_by_avatar_button",
     /*default_value=*/true};
 
-bool IsExplicitBrowserSigninUIOnDesktopEnabled(
-    ExplicitBrowserSigninPhase phase) {
+bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);
 }
 

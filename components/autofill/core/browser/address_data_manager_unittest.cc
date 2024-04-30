@@ -1118,8 +1118,7 @@ TEST_P(AddressDataManagerExplicitSigninTest,
 
   // Account storage is eligible when explicit signin UI is enabled.
   EXPECT_EQ(address_data_manager().IsEligibleForAddressAccountStorage(),
-            ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-                ::switches::ExplicitBrowserSigninPhase::kFull));
+            ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AddressDataManagerExplicitSigninTest);

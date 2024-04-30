@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
         EXPECT_EQ(second_account_id, identity_manager()->GetPrimaryAccountId(
                                          signin::ConsentLevel::kSignin));
 #else
-        // With `switches::ExplicitBrowserSigninPhase::kFull` enabled, the
+        // With `switches::kExplicitBrowserSigninUIOnDesktop` enabled, the
         // primary account isn't set implicitly based on cookies but by explicit
         // user action, therefore it is also not removed when cookies change.
         // The account should remain and Chrome still signed in.

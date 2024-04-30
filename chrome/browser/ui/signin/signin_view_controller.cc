@@ -141,8 +141,7 @@ void HandleSignoutConfirmationChoice(
         browser->signin_view_controller()->ShowGaiaLogoutTab(
             token_signout_source);
       }
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-              switches::ExplicitBrowserSigninPhase::kFull)) {
+      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
         // In Uno, Gaia logout tab invalidating the account will lead to a sign
         // in paused state. Unset the primary account to ensure it is removed
         // from chrome. The `AccountReconcilor` will revoke refresh tokens for
@@ -238,8 +237,6 @@ void SigninViewController::SignoutOrReauthWithPrompt(
   // Fetch the unsynced datatypes, as this is required to decide whether the
   // confirmation prompt is needed.
   if (sync_service &&
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull) &&
       profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
     sync_service->GetTypesWithUnsyncedData(
         syncer::TypesRequiringUnsyncedDataCheckOnSignout(),

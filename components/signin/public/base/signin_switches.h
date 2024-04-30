@@ -106,18 +106,8 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool>
     kInterceptBubblesDismissibleByAvatarButton;
 
-enum class ExplicitBrowserSigninPhase {
-  // Used to enable the changes made for the experimental feature `kUnoDesktop`
-  // and for the full launch feature `kExplicitBrowserSigninUIOnDesktop`.
-  // DEPRECATED -- kExperimental = 0, will be removed.
-  // Used to enable the changes made only for the full launch feature
-  // `kExplicitBrowserSigninUIOnDesktop`.
-  kFull = 1,
-};
-
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-bool IsExplicitBrowserSigninUIOnDesktopEnabled(
-    ExplicitBrowserSigninPhase phase = ExplicitBrowserSigninPhase::kFull);
+bool IsExplicitBrowserSigninUIOnDesktopEnabled();
 
 // Controls the view mode for (history) sync screen.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \

@@ -321,8 +321,7 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
 }
 
 void AvatarToolbarButton::MaybeShowWebSignoutIPH(const std::string& gaia_id) {
-  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-      switches::ExplicitBrowserSigninPhase::kFull));
+  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   browser_->window()->MaybeShowFeaturePromo(user_education::FeaturePromoParams(
       feature_engagement::kIPHSignoutWebInterceptFeature, gaia_id));
 }

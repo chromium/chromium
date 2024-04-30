@@ -10,7 +10,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -81,11 +80,9 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
     case syncer::SyncService::TransportState::DISABLED:
       return false;
     case syncer::SyncService::TransportState::PAUSED:
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-              switches::ExplicitBrowserSigninPhase::kFull) &&
-          // `prefs::kExplicitBrowserSignin` is false for users who signed in
-          // implicitly through the Dice web signin in a previous run.
-          pref_service->GetBoolean(::prefs::kExplicitBrowserSignin)) {
+      // `prefs::kExplicitBrowserSignin` is false for users who signed in
+      // implicitly through the Dice web signin in a previous run.
+      if (pref_service->GetBoolean(::prefs::kExplicitBrowserSignin)) {
         break;
       }
       return false;

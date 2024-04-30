@@ -875,8 +875,7 @@ class StateManager : public StateObserver,
                 avatar_toolbar_button_.get());
       }
 
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-              switches::ExplicitBrowserSigninPhase::kFull)) {
+      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
         states_[ButtonState::kSigninPaused] =
             std::make_unique<SigninPausedStateProvider>(
                 /*state_observer=*/*this, *profile, *avatar_toolbar_button_);
@@ -1420,12 +1419,10 @@ void AvatarToolbarButtonDelegate::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull) &&
+  if (profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin) &&
       account_info == identity_manager_->GetPrimaryAccountInfo(
                           signin::ConsentLevel::kSignin) &&
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-      profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin) &&
       error.state() ==
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS &&
       token_operation_source == signin_metrics::SourceForRefreshTokenOperation::

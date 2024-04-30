@@ -151,19 +151,17 @@ ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
 
   // Check if an account is already signed in to Chrome.
   //
-  // If Uno is disabled, we ignore this condition since the primary account will
-  // be set prior to this call.
-  // This is done for metric purposes, this is safe since the bubble will not be
-  // shown in that case any way.
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull) &&
+  // If explicit browser signin is disabled, we ignore this condition since the
+  // primary account will be set prior to this call. This is done for metric
+  // purposes, this is safe since the bubble will not be shown in that case any
+  // way.
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
       manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return ShouldShowChromeSigninBubbleWithReason::
         kShouldNotShowAlreadySignedIn;
   }
 
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     ChromeSigninUserChoice user_choice =
         DiceWebSigninInterceptor::GetChromeSigninUserChoice(pref_service,
                                                             intercepted_email);
@@ -403,8 +401,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   }
 
   // Showing the Chrome Signin Bubble is part of the Uno Desktop project.
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull) &&
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
       should_show_chrome_signin_bubble ==
           ShouldShowChromeSigninBubbleWithReason::kShouldShow) {
     return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
@@ -699,8 +696,7 @@ bool DiceWebSigninInterceptor::ShouldShowChromeSigninBubble(
   RecordShouldShowChromeSigninBubbleReason(
       state_->should_show_chrome_signin_bubble_.value());
 
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-             switches::ExplicitBrowserSigninPhase::kFull) &&
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
          state_->should_show_chrome_signin_bubble_ ==
              ShouldShowChromeSigninBubbleWithReason::kShouldShow;
 }
@@ -1001,8 +997,7 @@ SigninInterceptionResult
 DiceWebSigninInterceptor::ProcessChromeSigninUserChoice(
     SigninInterceptionResult result,
     const std::string& email) {
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     return result;
   }
 
@@ -1056,8 +1051,7 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
       // declining.
       break;
     case SigninInterceptionResult::kDeclined:
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-              switches::ExplicitBrowserSigninPhase::kFull)) {
+      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
         RecordChromeSigninNumberOfAttemptsBeforeExplicitUserAction(
             account_info.email, processed_result);
       }
@@ -1260,8 +1254,7 @@ void DiceWebSigninInterceptor::
     RecordChromeSigninNumberOfAttemptsBeforeExplicitUserAction(
         const std::string& email,
         SigninInterceptionResult result) {
-  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-      switches::ExplicitBrowserSigninPhase::kFull));
+  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   CHECK(result == SigninInterceptionResult::kAccepted ||
         result == SigninInterceptionResult::kDeclined)
       << "Recording results only for accepting/declining the bubble. "

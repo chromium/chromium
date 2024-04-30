@@ -168,8 +168,7 @@ void ProfileMenuView::BuildMenu() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!(profile->IsGuestSession())) {
     SetProfileManagementHeading(l10n_util::GetStringUTF16(
-        switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kFull)
+        switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
             ? IDS_PROFILE_MENU_PROFILES_LIST_TITLE
             : IDS_PROFILES_LIST_PROFILES_TITLE));
     BuildAvailableProfiles();
@@ -520,8 +519,7 @@ void ProfileMenuView::BuildIdentity() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   profile_name = profile_attributes->GetLocalProfileName();
   if (!web_app::AppBrowserController::IsWebApp(browser()) &&
-      !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+      !switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     edit_button_params = EditButtonParams(
         features::IsChromeRefresh2023() ? &kEditChromeRefreshIcon
                                         : &vector_icons::kEditIcon,
@@ -702,8 +700,7 @@ void ProfileMenuView::BuildSyncInfo() {
   bool show_account_card = false;
 
   if (!account_info.IsEmpty()) {
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kFull) &&
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
             account_info.account_id)) {
       // Sign-in pending state.
@@ -716,21 +713,18 @@ void ProfileMenuView::BuildSyncInfo() {
     } else {
       // Signed-in not-syncing state.
       description = l10n_util::GetStringUTF16(
-          switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-              switches::ExplicitBrowserSigninPhase::kFull)
+          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
               ? IDS_PROFILES_DICE_SYNC_PROMO
               : IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
       button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
-      show_sync_badge = !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull);
+      show_sync_badge = !switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
     }
   } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
              !account_info_for_promos.IsEmpty()) {
     // Web-only signed-in state.
     account_info = account_info_for_promos;
     description = l10n_util::GetStringUTF16(
-        switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kFull)
+        switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
             ? IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION
             : IDS_PROFILES_DICE_SYNC_PROMO);
     button_text = l10n_util::GetStringFUTF16(
@@ -746,8 +740,7 @@ void ProfileMenuView::BuildSyncInfo() {
     NOTREACHED_NORETURN();
 #else
     // Not signed in state.
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kFull)) {
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
       description =
           l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION);
       button_text =
@@ -772,8 +765,7 @@ void ProfileMenuView::BuildSyncInfo() {
 
 void ProfileMenuView::BuildFeatureButtons() {
   Profile* profile = browser()->profile();
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull) &&
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
       !profile->IsGuestSession()) {
     AddFeatureButton(
         l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
@@ -812,8 +804,7 @@ void ProfileMenuView::BuildFeatureButtons() {
                             base::Unretained(this)),
         features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
                                         : vector_icons::kCloseIcon);
-  } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-                 switches::ExplicitBrowserSigninPhase::kFull) &&
+  } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
              window_count > 0) {
     AddFeatureButton(
         l10n_util::GetPluralStringFUTF16(
@@ -915,8 +906,7 @@ void ProfileMenuView::BuildAvailableProfiles() {
     AddAvailableProfile(
         profiles::GetGuestAvatar(),
         l10n_util::GetStringUTF16(
-            switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-                switches::ExplicitBrowserSigninPhase::kFull)
+            switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
                 ? IDS_PROFILE_MENU_OPEN_GUEST_PROFILE
                 : IDS_GUEST_PROFILE_NAME),
         /*is_guest=*/true,
@@ -932,8 +922,7 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
   profiles_selectable = profiles::AreSecondaryProfilesAllowed();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     if (profiles_selectable || profiles::IsProfileCreationAllowed()) {
       AddProfileManagementFeaturesSeparator();
     }

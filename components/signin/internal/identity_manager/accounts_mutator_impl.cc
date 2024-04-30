@@ -123,8 +123,7 @@ void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
                                       const CoreAccountId& account_id) {
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull) &&
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
       primary_account_manager_->GetPrimaryAccountId(
           signin::ConsentLevel::kSignin) == account_id) {
     // Remove to avoid the primary account remaining in the original

@@ -64,8 +64,7 @@ bool ShouldShowPromo(Profile& profile, ConsentLevel promo_type) {
 bool ShouldShowSignInPromo(Profile& profile,
                            SignInAutofillBubblePromoType signin_promo_type) {
   return ShouldShowPromo(profile, ConsentLevel::kSignin) &&
-         switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-             switches::ExplicitBrowserSigninPhase::kFull);
+         switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
 }
 
 }  // namespace signin

@@ -810,8 +810,7 @@ void PeopleHandler::HandleTurnOffSync(bool delete_profile,
           signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
     }
 
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kFull)) {
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
       // In Uno, Gaia logout tab invalidating the account will lead to a sign in
       // paused state. Unset the primary account to ensure it is removed from
       // chrome. The `AccountReconcilor` will revoke refresh tokens for accounts
@@ -1309,8 +1308,7 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
 }
 
 void PeopleHandler::UpdateChromeSigninUserChoiceInfo() {
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     FireWebUIListener("chrome-signin-user-choice-info-change",
                       GetChromeSigninUserChoiceInfo());
   }

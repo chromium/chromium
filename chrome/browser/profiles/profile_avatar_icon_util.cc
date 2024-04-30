@@ -298,8 +298,7 @@ ui::ImageModel GetGuestAvatar(int size) {
   return ui::ImageModel::FromVectorIcon(
       features::IsChromeRefresh2023() ? kUserAccountAvatarRefreshIcon
                                       : kUserAccountAvatarIcon,
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
           ? ui::kColorMenuIcon
           : ui::kColorAvatarIconGuest,
       size);

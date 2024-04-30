@@ -142,8 +142,7 @@ void RecordChromeSigninInterceptResult(base::TimeTicks start_time,
 
 // New changes only in Full design.
 bool ShouldUseFullDesign() {
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-      switches::ExplicitBrowserSigninPhase::kFull);
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
 }
 
 void RecordDismissReason(

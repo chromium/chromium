@@ -65,8 +65,7 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
 bool IsImplicitBrowserSigninOrExplicitDisabled(
     IdentityManager* identity_manager,
     PrefService* prefs) {
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kFull)) {
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     return true;
   }
 

@@ -299,8 +299,7 @@ bool AddressDataManager::IsEligibleForAddressAccountStorage() const {
     return false;
   }
 
-  if (::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          ::switches::ExplicitBrowserSigninPhase::kFull)) {
+  if (::switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     return contact_info_precondition_checker_ &&
            contact_info_precondition_checker_->GetPreconditionState() ==
                syncer::ModelTypeController::PreconditionState::
@@ -604,8 +603,6 @@ bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
                  kPreconditionsMet &&
          base::FeatureList::IsEnabled(
              syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
-         ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-             ::switches::ExplicitBrowserSigninPhase::kFull) &&
          pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 }
 
