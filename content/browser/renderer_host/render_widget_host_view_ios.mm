@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "base/command_line.h"
-#include "base/strings/sys_string_conversions.h"
 #include "build/ios_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
@@ -727,6 +726,47 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
         onUpdateTextInputState:ui::mojom::TextInputState()
                     withBounds:[ui_view_->view_ bounds]];
   }
+}
+
+void RenderWidgetHostViewIOS::OnTextSelectionChanged(
+    TextInputManager* text_input_manager,
+    RenderWidgetHostViewBase* updated_view) {
+  DCHECK_EQ(GetTextInputManager(), text_input_manager);
+  const TextInputManager::TextSelection* selection =
+      text_input_manager->GetTextSelection(updated_view);
+  if (selection && selection->selected_text().length()) {
+    [ui_view_->view_.textInteraction refreshKeyboardUI];
+    [ui_view_->view_.textInteraction textSelectionDisplayInteraction]
+        .activated = YES;
+
+    // This seems like a bug. BETextInput always sets the
+    // textSelectionDisplayInteraction lolipop dot size to 16.5,16.5, expecting
+    // the entire web content to be transformed down for some reason. Instead,
+    // scale it down here with a very naive implementation.
+    UITextSelectionDisplayInteraction* textSelectionDisplayInteraction =
+        ui_view_->view_.textInteraction.textSelectionDisplayInteraction;
+    NSArray<UIView<UITextSelectionHandleView>*>* handleViews =
+        textSelectionDisplayInteraction.handleViews;
+
+    CGFloat shrink = handleViews[0].subviews[0].frame.size.height / 20;
+    shrink = std::max(std::min(shrink, 1.0), 0.65);
+    handleViews[0].subviews[1].layer.transform =
+        CATransform3DMakeScale(shrink, shrink, 1);
+
+    shrink = handleViews[1].subviews[0].frame.size.height / 20;
+    shrink = std::max(std::min(shrink, 1.0), 0.65);
+    handleViews[1].subviews[1].layer.transform =
+        CATransform3DMakeScale(shrink, shrink, 1);
+  } else {
+    [ui_view_->view_.textInteraction textSelectionDisplayInteraction]
+        .activated = NO;
+  }
+}
+void RenderWidgetHostViewIOS::OnSelectionBoundsChanged(
+    TextInputManager* text_input_manager,
+    RenderWidgetHostViewBase* updated_view) {
+  [ui_view_->view_.textInteraction
+          .textSelectionDisplayInteraction setNeedsSelectionUpdate];
 }
 
 ui::Compositor* RenderWidgetHostViewIOS::GetCompositor() {

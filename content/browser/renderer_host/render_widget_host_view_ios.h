@@ -167,6 +167,11 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void OnUpdateTextInputStateCalled(TextInputManager* text_input_manager,
                                     RenderWidgetHostViewBase* updated_view,
                                     bool did_update_state) override;
+  void OnTextSelectionChanged(TextInputManager* text_input_manager,
+                              RenderWidgetHostViewBase* updated_view) override;
+  void OnSelectionBoundsChanged(
+      TextInputManager* text_input_manager,
+      RenderWidgetHostViewBase* updated_view) override;
 
   // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(
