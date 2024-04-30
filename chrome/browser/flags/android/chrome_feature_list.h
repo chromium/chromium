@@ -113,7 +113,6 @@ BASE_DECLARE_FEATURE(kOmniboxNoopEditUrlSuggestionClicks);
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);
-BASE_DECLARE_FEATURE(kPaintPreviewNewColdStartHeuristic);
 BASE_DECLARE_FEATURE(kPreconnectOnTabCreation);
 BASE_DECLARE_FEATURE(kPriceChangeModule);
 BASE_DECLARE_FEATURE(kPwaRestoreUi);

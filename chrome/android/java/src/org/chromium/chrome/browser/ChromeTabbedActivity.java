@@ -2094,10 +2094,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || TextUtils.equals(externalAppId, getPackageName());
     }
 
-    private boolean useNewColdStartHeuristic() {
-        return ChromeFeatureList.sPaintPreviewNewColdStartHeuristic.isEnabled();
-    }
-
     private void maybeLaunchHistory() {
         // Can be launched as (1) a fresh instance of Chrome (2) a new intent on an already running
         // instance of Chrome or (3) a resumption of a previous Chrome journey.
@@ -2161,17 +2157,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         //  To cover more startup cases change the heuristic detecting cold startup that happens
         //  without user interaction.
         if (!LibraryLoader.getInstance().isInitialized()) {
-            if (!useNewColdStartHeuristic()) {
-                StartupPaintPreviewHelper.setShouldShowOnRestore(true);
-            }
             setTrackColdStartupMetrics(true);
         }
 
         // Enable Paint Preview only on a cold start. This way the Paint preview is most useful by
         // being much faster than the real load of the page. Also cold start detection excludes user
         // interactions changing the course of restoring the page.
-        if (useNewColdStartHeuristic()
-                && ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+        if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                 && !SimpleStartupForegroundSessionDetector.isSessionDiscarded()) {
             StartupPaintPreviewHelper.setShouldShowOnRestore(true);
         }
