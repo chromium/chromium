@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
-[NOTRUN] softmax float32 2D constant tensor all positive
-[NOTRUN] softmax float32 2D tensor all positive
-[NOTRUN] softmax float32 2D tensor all negative
-Harness: the test ran to completion.
-
