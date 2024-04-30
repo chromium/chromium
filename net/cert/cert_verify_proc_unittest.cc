@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_net_fetcher.h"
@@ -1485,7 +1486,13 @@ TEST(CertVerifyProcTest, IntranetHostsRejected) {
                               /*ocsp_response=*/std::string(),
                               /*sct_list=*/std::string(), 0, &verify_result,
                               NetLogWithSource());
+  // Intranet certificates from known roots are accepted without error in Cronet
+  // to avoid breaking consumer tests. See b/337196170 (Google-internal).
+#if BUILDFLAG(CRONET_BUILD)
+  EXPECT_THAT(error, IsOk());
+#else
   EXPECT_THAT(error, IsError(ERR_CERT_NON_UNIQUE_NAME));
+#endif  // BUILDFLAG(CRONET_BUILD)
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_NON_UNIQUE_NAME);
 
   // However, if the CA is not well known, these should not be flagged:

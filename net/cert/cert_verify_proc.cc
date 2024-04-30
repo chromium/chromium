@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
 #include "crypto/sha2.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -586,9 +587,14 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   // precedence.
   if (verify_result->is_issued_by_known_root && IsHostnameNonUnique(hostname)) {
     verify_result->cert_status |= CERT_STATUS_NON_UNIQUE_NAME;
+    // On Cronet, CERT_STATUS_NON_UNIQUE_NAME is recorded as a warning but not
+    // treated as an error, because consumers have tests that use certs with
+    // non-unique names. See b/337196170 (Google-internal).
+#if !BUILDFLAG(CRONET_BUILD)
     if (rv == OK) {
       rv = MapCertStatusToNetError(verify_result->cert_status);
     }
+#endif  // !BUILDFLAG(CRONET_BUILD)
   }
 
   // Record a histogram for per-verification usage of root certs.
