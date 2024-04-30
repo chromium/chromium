@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -21,6 +22,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -35,17 +37,16 @@
 namespace payments {
 namespace {
 
-const SkBitmap CreateInstrumentIcon(SkColor color, int width, int height) {
+const SkBitmap CreateIcon(SkColor color, int width, int height) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(color);
   return bitmap;
 }
 
-const SkBitmap CreateMaxSizeInstrumentIcon(SkColor color) {
-  return CreateInstrumentIcon(
-      color, kSecurePaymentConfirmationInstrumentIconMaximumWidthPx,
-      kSecurePaymentConfirmationInstrumentIconHeightPx);
+const SkBitmap CreateMaxSizeIcon(SkColor color) {
+  return CreateIcon(color, kSecurePaymentConfirmationIconMaximumWidthPx,
+                    kSecurePaymentConfirmationIconHeightPx);
 }
 
 }  // namespace
@@ -95,7 +96,7 @@ class SecurePaymentConfirmationDialogViewTest
         IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
     model_.set_instrument_value(u"Mastercard ****4444");
     instrument_icon_ =
-        std::make_unique<SkBitmap>(CreateMaxSizeInstrumentIcon(SK_ColorBLUE));
+        std::make_unique<SkBitmap>(CreateMaxSizeIcon(SK_ColorBLUE));
     model_.set_instrument_icon(instrument_icon_.get());
 
     model_.set_total_label(
@@ -112,6 +113,19 @@ class SecurePaymentConfirmationDialogViewTest
     model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
         IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL));
     model_.set_relying_party_id(u"relyingparty.com");
+
+    // We set the network and issuer data into the model no matter what, so that
+    // we can verify that disabling the runtime flag causes the code to ignore
+    // the set data.
+    model_.set_network_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_NETWORK_LABEL));
+    model_.set_network_value(u"MasterCard");
+    model_.set_network_icon(CreateMaxSizeIcon(SK_ColorGREEN));
+
+    model_.set_issuer_label(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_ISSUER_LABEL));
+    model_.set_issuer_value(u"ScotiaBank");
+    model_.set_issuer_icon(CreateMaxSizeIcon(SK_ColorRED));
   }
 
   void InvokeSecurePaymentConfirmationUI() {
@@ -143,13 +157,27 @@ class SecurePaymentConfirmationDialogViewTest
         ->SetInputProtectorForTesting(std::move(mock_input_protector));
   }
 
+  views::View* GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID view_id) {
+    return test_delegate_->dialog_view()->GetViewByID(
+        static_cast<int>(view_id));
+  }
+
   void ExpectLabelText(
       const std::u16string& text,
       SecurePaymentConfirmationDialogView::DialogViewID view_id) {
-    EXPECT_EQ(text, static_cast<views::Label*>(
-                        test_delegate_->dialog_view()->GetViewByID(
-                            static_cast<int>(view_id)))
-                        ->GetText());
+    EXPECT_EQ(text,
+              static_cast<views::Label*>(GetViewByID(view_id))->GetText());
+  }
+
+  void ExpectIcon(const SkBitmap& expected_icon,
+                  SecurePaymentConfirmationDialogView::DialogViewID view_id) {
+    const SkBitmap& actual_icon =
+        *(static_cast<views::ImageView*>(GetViewByID(view_id))
+              ->GetImage()
+              .bitmap());
+    EXPECT_TRUE(cc::MatchesBitmap(expected_icon, actual_icon,
+                                  cc::ExactPixelComparator()));
   }
 
   void ExpectOptOutText(views::View* view,
@@ -178,14 +206,13 @@ class SecurePaymentConfirmationDialogViewTest
               test_delegate_->dialog_view()->GetDialogButtonLabel(
                   ui::DIALOG_BUTTON_CANCEL));
 
-    EXPECT_TRUE(test_delegate_->dialog_view()->GetViewByID(static_cast<int>(
-        SecurePaymentConfirmationDialogView::DialogViewID::HEADER_ICON)));
+    EXPECT_TRUE(GetViewByID(
+        SecurePaymentConfirmationDialogView::DialogViewID::HEADER_ICON));
 
     EXPECT_EQ(
         model_.progress_bar_visible(),
-        test_delegate_->dialog_view()
-            ->GetViewByID(static_cast<int>(SecurePaymentConfirmationDialogView::
-                                               DialogViewID::PROGRESS_BAR))
+        GetViewByID(
+            SecurePaymentConfirmationDialogView::DialogViewID::PROGRESS_BAR)
             ->GetVisible());
 
     ExpectLabelText(model_.title(),
@@ -209,21 +236,14 @@ class SecurePaymentConfirmationDialogViewTest
     const SkBitmap* expected_icon =
         instrument_icon_->drawsNothing()
             ? gfx::CreateVectorIcon(
-                  kCreditCardIcon,
-                  kSecurePaymentConfirmationInstrumentIconDefaultWidthPx,
+                  kCreditCardIcon, kSecurePaymentConfirmationIconDefaultWidthPx,
                   test_delegate_->dialog_view()->GetColorProvider()->GetColor(
                       ui::kColorDialogForeground))
                   .bitmap()
             : model_.instrument_icon();
-    EXPECT_TRUE(cc::MatchesBitmap(
+    ExpectIcon(
         *expected_icon,
-        *(static_cast<views::ImageView*>(
-              test_delegate_->dialog_view()->GetViewByID(
-                  static_cast<int>(SecurePaymentConfirmationDialogView::
-                                       DialogViewID::INSTRUMENT_ICON)))
-              ->GetImage()
-              .bitmap()),
-        cc::ExactPixelComparator()));
+        SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON);
 
     ExpectLabelText(
         model_.total_label(),
@@ -239,6 +259,27 @@ class SecurePaymentConfirmationDialogViewTest
     EXPECT_EQ(opt_out_view->GetVisible(), model_.opt_out_visible());
     ExpectOptOutText(opt_out_view, model_.relying_party_id(),
                      model_.opt_out_link_label());
+
+    ExpectViewMatchesModelForNetworkAndIssuerRows();
+  }
+
+  virtual void ExpectViewMatchesModelForNetworkAndIssuerRows() {
+    // Without the flag enabled, the network and issuer views should not be
+    // shown even though the data is set into the model. See
+    // SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest for tests
+    // that enable the feature.
+    EXPECT_FALSE(GetViewByID(
+        SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_LABEL));
+    EXPECT_FALSE(GetViewByID(
+        SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_VALUE));
+    EXPECT_FALSE(GetViewByID(
+        SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_ICON));
+    EXPECT_FALSE(GetViewByID(
+        SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_LABEL));
+    EXPECT_FALSE(GetViewByID(
+        SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_VALUE));
+    EXPECT_FALSE(GetViewByID(
+        SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_ICON));
   }
 
   void ClickButton(views::View* button) {
@@ -399,13 +440,13 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
 
   // Change the bitmap pointer
   instrument_icon_ =
-      std::make_unique<SkBitmap>(CreateMaxSizeInstrumentIcon(SK_ColorGREEN));
+      std::make_unique<SkBitmap>(CreateMaxSizeIcon(SK_ColorGREEN));
   model_.set_instrument_icon(instrument_icon_.get());
   test_delegate_->dialog_view()->OnModelUpdated();
   ExpectViewMatchesModel();
 
   // Change the bitmap itself without touching the model's pointer
-  *instrument_icon_ = CreateMaxSizeInstrumentIcon(SK_ColorRED);
+  *instrument_icon_ = CreateMaxSizeIcon(SK_ColorRED);
   test_delegate_->dialog_view()->OnModelUpdated();
   ExpectViewMatchesModel();
 }
@@ -484,19 +525,18 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
                        OversizedInstrumentIcon) {
   CreateModel();
 
-  *instrument_icon_ = CreateInstrumentIcon(
-      SK_ColorRED, kSecurePaymentConfirmationInstrumentIconMaximumWidthPx * 2,
-      kSecurePaymentConfirmationInstrumentIconHeightPx * 2);
+  *instrument_icon_ =
+      CreateIcon(SK_ColorRED, kSecurePaymentConfirmationIconMaximumWidthPx * 2,
+                 kSecurePaymentConfirmationIconHeightPx * 2);
 
   InvokeSecurePaymentConfirmationUI();
   ExpectViewMatchesModel();
 
-  views::ImageView* image_view = static_cast<views::ImageView*>(
-      test_delegate_->dialog_view()->GetViewByID(static_cast<int>(
-          SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON)));
-  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconMaximumWidthPx,
+  views::ImageView* image_view = static_cast<views::ImageView*>(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON));
+  EXPECT_EQ(kSecurePaymentConfirmationIconMaximumWidthPx,
             image_view->GetImageBounds().width());
-  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconHeightPx,
+  EXPECT_EQ(kSecurePaymentConfirmationIconHeightPx,
             image_view->GetImageBounds().height());
 }
 
@@ -505,19 +545,18 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
                        UndersizedInstrumentIcon) {
   CreateModel();
 
-  *instrument_icon_ = CreateInstrumentIcon(
-      SK_ColorRED, kSecurePaymentConfirmationInstrumentIconDefaultWidthPx / 2,
-      kSecurePaymentConfirmationInstrumentIconHeightPx / 2);
+  *instrument_icon_ =
+      CreateIcon(SK_ColorRED, kSecurePaymentConfirmationIconDefaultWidthPx / 2,
+                 kSecurePaymentConfirmationIconHeightPx / 2);
 
   InvokeSecurePaymentConfirmationUI();
   ExpectViewMatchesModel();
 
-  views::ImageView* image_view = static_cast<views::ImageView*>(
-      test_delegate_->dialog_view()->GetViewByID(static_cast<int>(
-          SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON)));
-  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconDefaultWidthPx,
+  views::ImageView* image_view = static_cast<views::ImageView*>(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON));
+  EXPECT_EQ(kSecurePaymentConfirmationIconDefaultWidthPx,
             image_view->GetImageBounds().width());
-  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconHeightPx,
+  EXPECT_EQ(kSecurePaymentConfirmationIconHeightPx,
             image_view->GetImageBounds().height());
 }
 
@@ -526,20 +565,19 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
                        MidsizedInstrumentIcon) {
   CreateModel();
 
-  int width = (kSecurePaymentConfirmationInstrumentIconDefaultWidthPx +
-               kSecurePaymentConfirmationInstrumentIconMaximumWidthPx) /
+  int width = (kSecurePaymentConfirmationIconDefaultWidthPx +
+               kSecurePaymentConfirmationIconMaximumWidthPx) /
               2;
-  *instrument_icon_ = CreateInstrumentIcon(
-      SK_ColorRED, width, kSecurePaymentConfirmationInstrumentIconHeightPx);
+  *instrument_icon_ =
+      CreateIcon(SK_ColorRED, width, kSecurePaymentConfirmationIconHeightPx);
 
   InvokeSecurePaymentConfirmationUI();
   ExpectViewMatchesModel();
 
-  views::ImageView* image_view = static_cast<views::ImageView*>(
-      test_delegate_->dialog_view()->GetViewByID(static_cast<int>(
-          SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON)));
+  views::ImageView* image_view = static_cast<views::ImageView*>(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::INSTRUMENT_ICON));
   EXPECT_EQ(width, image_view->GetImageBounds().width());
-  EXPECT_EQ(kSecurePaymentConfirmationInstrumentIconHeightPx,
+  EXPECT_EQ(kSecurePaymentConfirmationIconHeightPx,
             image_view->GetImageBounds().height());
 }
 
@@ -566,6 +604,78 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   EXPECT_FALSE(cancel_pressed_);
   EXPECT_FALSE(confirm_pressed_);
   EXPECT_TRUE(opt_out_clicked_);
+}
+
+// A variant of SecurePaymentConfirmationDialogViewTest that enables the network
+// and issuer rows feature, and verifies their contents.
+class SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest
+    : public SecurePaymentConfirmationDialogViewTest {
+ public:
+  void ExpectViewMatchesModelForNetworkAndIssuerRows() override {
+    ExpectLabelText(
+        model_.network_label(),
+        SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_LABEL);
+    ExpectLabelText(
+        model_.network_value(),
+        SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_VALUE);
+    ExpectIcon(*model_.network_icon(),
+               SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_ICON);
+
+    ExpectLabelText(
+        model_.issuer_label(),
+        SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_LABEL);
+    ExpectLabelText(
+        model_.issuer_value(),
+        SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_VALUE);
+    ExpectIcon(*model_.issuer_icon(),
+               SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_ICON);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons};
+};
+
+// Variant of the main ViewMatchesModel test, which verifies that the network
+// and issuer rows are shown when the flag is enabled.
+IN_PROC_BROWSER_TEST_F(
+    SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest,
+    ViewMatchesModel) {
+  CreateModel();
+  InvokeSecurePaymentConfirmationUI();
+  ExpectViewMatchesModel();
+}
+
+// Tests that the Network row is not shown if an icon wasn't present.
+IN_PROC_BROWSER_TEST_F(
+    SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest,
+    NetworkRowNotShownIfIconNotPresent) {
+  CreateModel();
+  model_.set_network_icon(SkBitmap());
+  InvokeSecurePaymentConfirmationUI();
+
+  ASSERT_FALSE(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_LABEL));
+  ASSERT_FALSE(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_VALUE));
+  ASSERT_FALSE(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::NETWORK_ICON));
+}
+
+// Tests that the Issuer row is not shown if an icon wasn't present.
+IN_PROC_BROWSER_TEST_F(
+    SecurePaymentConfirmationDialogViewNetworkAndIssuerIconsTest,
+    IssuerRowNotShownIfIconNotPresent) {
+  CreateModel();
+  model_.set_issuer_icon(SkBitmap());
+  InvokeSecurePaymentConfirmationUI();
+
+  ASSERT_FALSE(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_LABEL));
+  ASSERT_FALSE(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_VALUE));
+  ASSERT_FALSE(GetViewByID(
+      SecurePaymentConfirmationDialogView::DialogViewID::ISSUER_ICON));
 }
 
 }  // namespace payments

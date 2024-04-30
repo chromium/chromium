@@ -427,9 +427,8 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
                      weak_ptr_factory_.GetWeakPtr(), std::move(credential),
                      std::move(request)));
 
-  gfx::Size preferred_size(
-      kSecurePaymentConfirmationInstrumentIconMaximumWidthPx,
-      kSecurePaymentConfirmationInstrumentIconHeightPx);
+  gfx::Size preferred_size(kSecurePaymentConfirmationIconMaximumWidthPx,
+                           kSecurePaymentConfirmationIconHeightPx);
 
   for (auto& [type, info] : request_ptr->icon_infos) {
     info.request_id = request_ptr->web_contents()->DownloadImageInFrame(

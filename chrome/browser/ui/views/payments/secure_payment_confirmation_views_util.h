@@ -73,9 +73,9 @@ std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
     const std::u16string& title);
 
-/// Creates the image view for the SPC instrument icon.
-std::unique_ptr<views::ImageView>
-CreateSecurePaymentConfirmationInstrumentIconView(const gfx::ImageSkia& bitmap);
+/// Creates an image view for an icon in the SPC transactions details table.
+std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
+    const gfx::ImageSkia& bitmap);
 
 // Formats the merchant label by combining the name and origin for display.
 std::u16string FormatMerchantLabel(

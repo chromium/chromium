@@ -13,6 +13,7 @@
 #include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/content/secure_payment_confirmation_model.h"
 #include "components/payments/core/sizes.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -185,7 +186,7 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
     if (model_->instrument_icon()->drawsNothing()) {
       image_view->SetImage(ui::ImageModel::FromVectorIcon(
           kCreditCardIcon, ui::kColorDialogForeground,
-          kSecurePaymentConfirmationInstrumentIconDefaultWidthPx));
+          kSecurePaymentConfirmationIconDefaultWidthPx));
     }
   }
 
@@ -278,6 +279,10 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 // | total label         value                |
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+// | network label       [icon] value         |  <-- optional
+// +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+// | issuer label        [icon] value         |  <-- optional
+// +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 std::unique_ptr<views::View>
 SecurePaymentConfirmationDialogView::CreateBodyView() {
   auto body_view = std::make_unique<views::BoxLayoutView>();
@@ -298,14 +303,44 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
       FormatMerchantLabel(model_->merchant_name(), model_->merchant_origin()),
       DialogViewID::MERCHANT_VALUE));
 
+  // When including the Network and Issuer icons, the Total line comes before
+  // the Payment Instrument, versus the current UI where it comes afterwards.
+  std::unique_ptr<views::View> total_line_view =
+      CreateRowView(model_->total_label(), DialogViewID::TOTAL_LABEL,
+                    model_->total_value(), DialogViewID::TOTAL_VALUE);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
+    body_view->AddChildView(std::move(total_line_view));
+  }
+
   body_view->AddChildView(
       CreateRowView(model_->instrument_label(), DialogViewID::INSTRUMENT_LABEL,
                     model_->instrument_value(), DialogViewID::INSTRUMENT_VALUE,
                     model_->instrument_icon(), DialogViewID::INSTRUMENT_ICON));
 
-  body_view->AddChildView(
-      CreateRowView(model_->total_label(), DialogViewID::TOTAL_LABEL,
-                    model_->total_value(), DialogViewID::TOTAL_VALUE));
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
+    body_view->AddChildView(std::move(total_line_view));
+  }
+
+  // Add the Network and Issuer icons, if the flag is enabled and an icon was
+  // specified and successfully downloaded.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
+    if (!model_->network_icon()->drawsNothing()) {
+      body_view->AddChildView(
+          CreateRowView(model_->network_label(), DialogViewID::NETWORK_LABEL,
+                        model_->network_value(), DialogViewID::NETWORK_VALUE,
+                        model_->network_icon(), DialogViewID::NETWORK_ICON));
+    }
+
+    if (!model_->issuer_icon()->drawsNothing()) {
+      body_view->AddChildView(
+          CreateRowView(model_->issuer_label(), DialogViewID::ISSUER_LABEL,
+                        model_->issuer_value(), DialogViewID::ISSUER_VALUE,
+                        model_->issuer_icon(), DialogViewID::ISSUER_ICON));
+    }
+  }
 
   return body_view;
 }
@@ -343,7 +378,7 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
         views::TableLayout::kFixedSize,
         views::TableLayout::ColumnSize::kUsePreferred,
         /*fixed_width=*/0,
-        /*min_width=*/kSecurePaymentConfirmationInstrumentIconDefaultWidthPx);
+        /*min_width=*/kSecurePaymentConfirmationIconDefaultWidthPx);
     layout->AddPaddingColumn(views::TableLayout::kFixedSize,
                              ChromeLayoutProvider::Get()->GetDistanceMetric(
                                  views::DISTANCE_RELATED_LABEL_HORIZONTAL));
@@ -365,26 +400,34 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
   row->AddChildView(std::move(label_text));
 
   if (icon) {
-    instrument_icon_ = model_->instrument_icon();
-    instrument_icon_generation_id_ =
-        model_->instrument_icon()->getGenerationID();
+    gfx::ImageSkia skia_icon;
 
-    std::unique_ptr<views::ImageView> icon_view;
-    // The instrument icon may be empty, if it couldn't be downloaded/decoded
-    // and iconMustBeShown was set to false. In that case, use a default icon.
-    // The actual display color is set based on the theme in OnThemeChanged.
-    if (instrument_icon_->drawsNothing()) {
-      icon_view = CreateSecurePaymentConfirmationInstrumentIconView(
-          gfx::CreateVectorIcon(
-              kCreditCardIcon,
-              kSecurePaymentConfirmationInstrumentIconDefaultWidthPx,
-              gfx::kPlaceholderColor));
+    // TODO(crbug.com/333945861): CreateRowView shouldn't need to know to do
+    // clever things with the instrument icon. The empty icon should be resolved
+    // before calling this method.
+    if (icon_id == DialogViewID::INSTRUMENT_ICON) {
+      instrument_icon_ = model_->instrument_icon();
+      instrument_icon_generation_id_ =
+          model_->instrument_icon()->getGenerationID();
+
+      // The instrument icon may be empty, if it couldn't be downloaded/decoded
+      // and iconMustBeShown was set to false. In that case, use a default icon.
+      // The actual display color is set based on the theme in OnThemeChanged.
+      if (instrument_icon_->drawsNothing()) {
+        skia_icon = gfx::CreateVectorIcon(
+            kCreditCardIcon, kSecurePaymentConfirmationIconDefaultWidthPx,
+            gfx::kPlaceholderColor);
+      } else {
+        skia_icon =
+            gfx::ImageSkia::CreateFrom1xBitmap(*model_->instrument_icon())
+                .DeepCopy();
+      }
     } else {
-      icon_view = CreateSecurePaymentConfirmationInstrumentIconView(
-          gfx::ImageSkia::CreateFrom1xBitmap(*model_->instrument_icon())
-              .DeepCopy());
+      skia_icon = gfx::ImageSkia::CreateFrom1xBitmap(*icon).DeepCopy();
     }
 
+    std::unique_ptr<views::ImageView> icon_view =
+        CreateSecurePaymentConfirmationIconView(std::move(skia_icon));
     icon_view->SetID(static_cast<int>(icon_id));
     row->AddChildView(std::move(icon_view));
   }
