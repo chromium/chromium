@@ -11529,6 +11529,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4958" label="CSSSelectorUserValid"/>
   <int value="4959" label="CSSSelectorUserInvalid"/>
   <int value="4960" label="CrossShadowAtomicMove"/>
+  <int value="4961" label="PrefersReducedMotionMediaFeature"/>
+  <int value="4962" label="PrefersReducedTransparencyMediaFeature"/>
+  <int value="4963" label="PrefersReducedDataMediaFeature"/>
+  <int value="4964" label="ScriptingMediaFeature"/>
+  <int value="4965" label="InvertedColorsMediaFeature"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
