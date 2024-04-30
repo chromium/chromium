@@ -55,8 +55,6 @@ class OpticalCharacterRecognizer
   // Returns true if OCR service is ready.
   bool is_ready() { return ready_ && *ready_; }
 
-  bool StatusAvailableForTesting() { return ready_.has_value(); }
-
   // Performs OCR on the given image and returns the results as a
   // `VisualAnnotation` struct. If the client is not in the browser process, it
   // needs to implement this function in its own process.
