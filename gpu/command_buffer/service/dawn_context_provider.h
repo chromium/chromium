@@ -121,6 +121,8 @@ class GPU_GLES2_EXPORT DawnContextProvider
   bool is_vulkan_swiftshader_adapter_ = false;
   std::unique_ptr<skgpu::graphite::Context> graphite_context_;
 
+  bool registered_memory_dump_provider_ = false;
+
   mutable base::Lock context_lost_lock_;
   std::optional<error::ContextLostReason> context_lost_reason_
       GUARDED_BY(context_lost_lock_);

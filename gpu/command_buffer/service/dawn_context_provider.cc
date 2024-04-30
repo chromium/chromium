@@ -230,6 +230,10 @@ DawnContextProvider::DawnContextProvider() = default;
 
 DawnContextProvider::~DawnContextProvider() {
   if (device_) {
+    if (registered_memory_dump_provider_) {
+      base::trace_event::MemoryDumpManager::GetInstance()
+          ->UnregisterDumpProvider(this);
+    }
     device_.SetUncapturedErrorCallback(nullptr, nullptr);
     device_.SetDeviceLostCallback(nullptr, nullptr);
     device_.SetLoggingCallback(nullptr, nullptr);
@@ -517,6 +521,7 @@ bool DawnContextProvider::Initialize(
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "DawnContextProvider",
         base::SingleThreadTaskRunner::GetCurrentDefault());
+    registered_memory_dump_provider_ = true;
   }
 
   return true;
