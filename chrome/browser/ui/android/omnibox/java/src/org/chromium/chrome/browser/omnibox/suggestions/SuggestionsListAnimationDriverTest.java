@@ -41,6 +41,7 @@ public class SuggestionsListAnimationDriverTest {
     private PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
     @Mock private WindowAndroid mWindowAndroid;
     @Mock InsetObserver mInsetObserver;
+    @Mock Runnable mShowRunnable;
     private float mTranslation;
 
     @Before
@@ -52,16 +53,22 @@ public class SuggestionsListAnimationDriverTest {
                 new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.statusBars(), null, 160);
         mDriver =
                 new SuggestionsListAnimationDriver(
-                        mWindowAndroid, mListModel, () -> mTranslation, VERTICAL_OFFSET);
+                        mWindowAndroid,
+                        mListModel,
+                        () -> mTranslation,
+                        mShowRunnable,
+                        VERTICAL_OFFSET);
     }
 
     @Test
     public void testShowAnimation() {
-        mDriver.onShowAnimationAboutToStart();
+        mDriver.onOmniboxSessionStateChange(true);
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.0f, MathUtils.EPSILON);
         verify(mInsetObserver).addWindowInsetsAnimationListener(mDriver);
+        verify(mShowRunnable, never()).run();
 
         mDriver.onPrepare(mImeAnimation);
+        verify(mShowRunnable).run();
         mImeAnimation.setFraction(0.4f);
         mTranslation = 200.0f;
         mDriver.onProgress(new WindowInsetsCompat.Builder().build(), List.of(mImeAnimation));
@@ -112,10 +119,12 @@ public class SuggestionsListAnimationDriverTest {
 
     @Test
     public void testNonImeAnimation() {
-        mDriver.onShowAnimationAboutToStart();
+        mDriver.onOmniboxSessionStateChange(true);
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.0f, MathUtils.EPSILON);
 
         mDriver.onPrepare(mNonImeAnimation);
+        verify(mShowRunnable, never()).run();
+
         mNonImeAnimation.setFraction(0.2f);
         mDriver.onProgress(new WindowInsetsCompat.Builder().build(), List.of(mNonImeAnimation));
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.0f, MathUtils.EPSILON);

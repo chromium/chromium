@@ -24,7 +24,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.os.Handler;
 import android.util.SparseArray;
 import android.view.View;
@@ -44,7 +43,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -53,7 +51,6 @@ import org.robolectric.shadows.ShadowPausedSystemClock;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -149,6 +146,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock OmniboxSuggestionsDropdownEmbedder mEmbedder;
     private @Mock InsetObserver mInsetObserver;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
+    private @Captor ArgumentCaptor<SuggestionsListAnimationDriver> mDriverCaptor;
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -436,34 +434,15 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
-    public void updateSuggestionsList_triggersAnimation() {
+    public void onOmniboxSessionStateChange_startsAnimationDriver() {
         mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
         mMediator.onNativeInitialized();
 
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
-        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.0f, MathUtils.EPSILON);
-    }
+        mMediator.onOmniboxSessionStateChange(true);
+        verify(mInsetObserver).addWindowInsetsAnimationListener(mDriverCaptor.capture());
 
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
-    public void updateSuggestionsList_doesNotTriggerAnimationWhenSystemAnimationNotRun() {
-        mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
-        mMediator.onNativeInitialized();
-
-        mActivity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
-        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
-
-        mActivity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_NOKEYS;
-        mListModel.set(SuggestionListProperties.VISIBLE, false);
-        Shadows.shadowOf(mActivity).setInMultiWindowMode(true);
-
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
-        assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 1.0f, MathUtils.EPSILON);
+        mMediator.onOmniboxSessionStateChange(false);
+        verify(mInsetObserver).removeWindowInsetsAnimationListener(mDriverCaptor.getValue());
     }
 
     @Test

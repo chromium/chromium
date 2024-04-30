@@ -27,6 +27,7 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
     @NonNull private final PropertyModel mListPropertyModel;
     private WindowInsetsAnimationCompat mAnimation;
     @NonNull private final Supplier<Float> mOmniboxVerticalTranslationSupplier;
+    private Runnable mShowSuggestionsListCallback;
     private final float mAdditionalVerticalOffset;
 
     /**
@@ -36,6 +37,7 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
      * @param listPropertyModel Property model for the suggestions list view being animated.
      * @param omniboxVerticalTranslationSupplier Supplier of the current translation of the omnibox,
      *     used to synchronize the position of the suggestions list to match.
+     * @param showSuggestionsListCallback Callback that shows the suggestions list when invoked.
      * @param additionalVerticalOffset Vertical compensation that should be added to vertical
      *     translation of the suggestions list during animation. The magnitude of the compensation
      *     will scale inversely with animation progress, from 100% at start to 0% at end.
@@ -44,17 +46,22 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
             @NonNull WindowAndroid windowAndroid,
             @NonNull PropertyModel listPropertyModel,
             @NonNull Supplier<Float> omniboxVerticalTranslationSupplier,
+            @NonNull Runnable showSuggestionsListCallback,
             int additionalVerticalOffset) {
         mWindowAndroid = windowAndroid;
         mListPropertyModel = listPropertyModel;
         mOmniboxVerticalTranslationSupplier = omniboxVerticalTranslationSupplier;
+        mShowSuggestionsListCallback = showSuggestionsListCallback;
         mAdditionalVerticalOffset = additionalVerticalOffset;
     }
 
-    void onShowAnimationAboutToStart() {
-        InsetObserver insetObserver = InsetObserverSupplier.getValueOrNullFrom(mWindowAndroid);
-        insetObserver.addWindowInsetsAnimationListener(this);
-        mListPropertyModel.set(SuggestionListProperties.ALPHA, 0.0f);
+    void onOmniboxSessionStateChange(boolean active) {
+        if (active) {
+            InsetObserver insetObserver = InsetObserverSupplier.getValueOrNullFrom(mWindowAndroid);
+            insetObserver.addWindowInsetsAnimationListener(this);
+        } else {
+            removeInsetListener();
+        }
     }
 
     private void removeInsetListener() {
@@ -69,6 +76,8 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
         }
 
         mAnimation = animation;
+        mShowSuggestionsListCallback.run();
+        mListPropertyModel.set(SuggestionListProperties.ALPHA, 0.0f);
     }
 
     @Override
