@@ -172,6 +172,13 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.ZSTD_CONTENT_ENCODING,
                 "Enables zstd content-encoding support in the browser."),
         Flag.baseFeature(
+                NetFeatures.USE_NEW_ALPS_CODEPOINT_QUIC,
+                "Enables using the new ALPS codepoint to negotiate application settings for QUIC."),
+        Flag.baseFeature(
+                NetFeatures.USE_NEW_ALPS_CODEPOINT_HTTP2,
+                "Enables using the new ALPS codepoint to negotiate application settings for"
+                        + " HTTP2."),
+        Flag.baseFeature(
                 BlinkFeatures.SIMPLIFY_LOADING_TRANSPARENT_PLACEHOLDER_IMAGE,
                 "Enables simplifying loading known transparent placeholder images."),
         Flag.baseFeature(
