@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/content_notification/model/content_notification_nau_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
@@ -27,21 +26,13 @@ void ContentNotificationClient::HandleNotificationInteraction(
   ContentNotificationService* contentNotificationService =
       ContentNotificationServiceFactory::GetForBrowserState(
           GetLastUsedBrowserState());
-  ContentNotificationNAUConfiguration* config =
-      [[ContentNotificationNAUConfiguration alloc] init];
-  config.notification = response.notification;
   if ([response.actionIdentifier
           isEqualToString:kContentNotificationFeedbackActionIdentifier]) {
-    config.actionType = ContentNotificationActionType::
-        kContentNotificationActionTypeFeedbackClicked;
     NSDictionary<NSString*, NSString*>* feedbackPayload =
         contentNotificationService->GetFeedbackPayload(payload);
     loadFeedbackWithPayloadAndClientId(feedbackPayload,
                                        PushNotificationClientId::kContent);
-  } else if ([response.actionIdentifier
-                 isEqualToString:UNNotificationDefaultActionIdentifier]) {
-    config.actionType =
-        ContentNotificationActionType::kContentNotificationActionTypeOpened;
+  } else {
     const GURL& url = contentNotificationService->GetDestinationUrl(payload);
     if (url.is_empty()) {
       base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
@@ -51,18 +42,7 @@ void ContentNotificationClient::HandleNotificationInteraction(
     base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
                               true);
     loadUrlInNewTab(url);
-  } else if ([response.actionIdentifier
-                 isEqualToString:UNNotificationDismissActionIdentifier]) {
-    config.actionType =
-        ContentNotificationActionType::kContentNotificationActionTypeDismissed;
   }
-  // TODO(crbug.com/337871560): Three way patch NAU.
-  config.completion(^(BOOL success) {
-    if (!success) {
-      // TODO(crbug.com/337871560): Send metric for sent action.
-      NSLog(@"Error processing NAU");
-    }
-  });
 }
 
 UIBackgroundFetchResult ContentNotificationClient::HandleNotificationReception(
