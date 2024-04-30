@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -40,6 +41,8 @@ constexpr uint64_t kProjectThreeHash = UINT64_C(10860358748803291132);
 constexpr uint64_t kProjectFourHash = UINT64_C(6801665881746546626);
 // The name hash of "CrOSEvents"
 constexpr uint64_t kCrOSEventsProjectHash = UINT64_C(12657197978410187837);
+// The name has for "SequencedTestProject"
+constexpr uint64_t kSequencedTestProjectHash = UINT64_C(7434962983641669694);
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
 constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
@@ -422,34 +425,63 @@ TEST_F(AshStructuredMetricsRecorderTest, EventSequenceLogging) {
   Wait();
 
   const int test_time = 50;
+  const int test_time2 = 60;
   const double test_metric = 1.0;
+  const double test_metric2 = 2.0;
 
   events::v2::cr_os_events::Test1 test_event;
   EXPECT_TRUE(test_event.IsEventSequenceType());
   test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
   test_event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
+
+  events::v2::sequenced_test_project::Test1 test_event2;
+  EXPECT_TRUE(test_event2.IsEventSequenceType());
+  test_event2.SetEventSequenceMetadata(Event::EventSequenceMetadata(2));
+  test_event2.SetRecordedTimeSinceBoot(base::Milliseconds(test_time2));
+
   StructuredMetricsClient::Record(
       std::move(test_event.SetMetric1(test_metric)));
+  StructuredMetricsClient::Record(
+      std::move(test_event2.SetMetric1(test_metric2)));
 
   const auto data = GetEventMetrics();
-  ASSERT_EQ(data.events_size(), 1);
+  ASSERT_EQ(data.events_size(), 2);
+  {
+    const auto& event = data.events(0);
+    EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
 
-  const auto& event = data.events(0);
-  EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
+    // Sequence events should have both a device and user project id.
+    EXPECT_TRUE(event.has_device_project_id());
+    EXPECT_TRUE(event.has_user_project_id());
 
-  // Sequence events should have both a device and user project id.
-  EXPECT_TRUE(event.has_device_project_id());
-  EXPECT_TRUE(event.has_user_project_id());
+    // Verify that event sequence metadata has been serialized correctly.
+    const auto& event_metadata = event.event_sequence_metadata();
+    EXPECT_EQ(event_metadata.reset_counter(), 1);
+    EXPECT_TRUE(event_metadata.has_event_unique_id());
+    EXPECT_EQ(event_metadata.system_uptime(), test_time);
 
-  // Verify that event sequence metadata has been serialized correctly.
-  const auto& event_metadata = event.event_sequence_metadata();
-  EXPECT_EQ(event_metadata.reset_counter(), 1);
-  EXPECT_TRUE(event_metadata.has_event_unique_id());
-  EXPECT_EQ(event_metadata.system_uptime(), test_time);
+    ASSERT_EQ(event.metrics_size(), 1);
+    const auto& metric = event.metrics(0);
+    EXPECT_EQ(metric.value_double(), test_metric);
+  }
+  {
+    const auto& event = data.events(1);
+    EXPECT_EQ(event.project_name_hash(), kSequencedTestProjectHash);
 
-  ASSERT_EQ(event.metrics_size(), 1);
-  const auto& metric = event.metrics(0);
-  EXPECT_EQ(metric.value_double(), 1.0);
+    // Sequence events should have both a device and user project id.
+    EXPECT_TRUE(event.has_device_project_id());
+    EXPECT_TRUE(event.has_user_project_id());
+
+    // Verify that event sequence metadata has been serialized correctly.
+    const auto& event_metadata = event.event_sequence_metadata();
+    EXPECT_EQ(event_metadata.reset_counter(), 2);
+    EXPECT_TRUE(event_metadata.has_event_unique_id());
+    EXPECT_EQ(event_metadata.system_uptime(), test_time2);
+
+    ASSERT_EQ(event.metrics_size(), 1);
+    const auto& metric = event.metrics(0);
+    EXPECT_EQ(metric.value_double(), test_metric2);
+  }
 
   ExpectNoErrors();
 }
