@@ -2553,7 +2553,9 @@ class TabListMediator {
     }
 
     private void onMenuItemClicked(@IdRes int menuId, int tabId) {
-        if (menuId == R.id.close_tab) {
+        // TODO(b/337866283): Update the overflow tab group menu action for delete tab group when
+        // the associated helper is implemented on the TabGroupModelFilter.
+        if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
             closeTabGroup(tabId);
         } else if (menuId == R.id.ungroup_tab) {
             ungroupTabGroup(tabId);

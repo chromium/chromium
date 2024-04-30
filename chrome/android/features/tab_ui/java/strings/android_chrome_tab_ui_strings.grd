@@ -732,6 +732,9 @@
       <message name="IDS_DELETE_TAB_GROUP_ACTION" desc="Button text in a confirmation dialog which will delete a tab group.">
         Delete group
       </message>
+      <message name="IDS_DELETE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to delete a tab group.">
+        Delete
+      </message>
       <message name="IDS_UNGROUP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to ungroup all tabs in a group.">
         Ungroup tab group?
       </message>
@@ -739,6 +742,9 @@
         The tabs will remain open on this device but the group will be deleted from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
       </message>
       <message name="IDS_UNGROUP_TAB_GROUP_ACTION" desc="Button text in a confirmation dialog which will ungroup tabs in a group.">
+        Ungroup
+      </message>
+      <message name="IDS_UNGROUP_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to ungroup a tab group.">
         Ungroup
       </message>
       <message name="IDS_CLOSE_ALL_TABS_AND_GROUPS_DIALOG_MESSAGE" desc="Description of the action of closing all tabs and groups, shown in a confirmation dialog.">
@@ -755,6 +761,12 @@
       </message>
       <message name="IDS_CLOSE_FROM_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to close a tab and group.">
         Close tab and delete group?
+      </message>
+      <message name="IDS_CLOSE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to close a tab group.">
+        Close
+      </message>
+      <message name="IDS_RENAME_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to rename a tab group.">
+        Rename
       </message>
       <message name="IDS_CLOSE_FROM_GROUP_DESCRIPTION" desc="Description of the ation of deleting a tab and a group, shown in a confirmation dialog.">
         This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>

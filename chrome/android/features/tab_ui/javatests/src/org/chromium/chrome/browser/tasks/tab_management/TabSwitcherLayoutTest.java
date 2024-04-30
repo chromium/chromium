@@ -1704,7 +1704,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Click the close action button to close the group
-        String closeButtonText = cta.getString(R.string.close);
+        String closeButtonText = cta.getString(R.string.close_tab_group_menu_item);
         onView(withId(R.id.action_button)).perform(click());
         onView(allOf(withText(closeButtonText), withId(R.id.menu_item_text))).perform(click());
 
@@ -1729,12 +1729,37 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Click the ungroup action button to ungroup the group
-        String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_action);
+        String ungroupButtonText = cta.getString(R.string.ungroup_tab_group_menu_item);
         onView(withId(R.id.action_button)).perform(click());
         onView(allOf(withText(ungroupButtonText), withId(R.id.menu_item_text))).perform(click());
 
         // Verify the tab group was ungrouped.
         verifyTabSwitcherCardCount(cta, 2);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_deleteGroup() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the delete action button to close the group
+        String deleteButtonText = cta.getString(R.string.delete_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify the tab group was closed.
+        verifyTabSwitcherCardCount(cta, 0);
     }
 
     @Test

@@ -9,6 +9,7 @@ found in the LICENSE file.
 <resources>
     <!-- Tab Actions -->
     <item type="id" name="close_tab" />
+    <item type="id" name="delete_tab" />
     <item type="id" name="ungroup_tab" />
     <item type="id" name="edit_group_name" />
     <item type="id" name="edit_group_color" />

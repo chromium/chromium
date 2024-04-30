@@ -58,15 +58,29 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
         ModelList itemList = new ModelList();
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
-                        R.string.close,
+                        R.string.close_tab_group_menu_item,
                         R.id.close_tab,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
-                        R.string.ungroup_tab_group_action,
+                        R.string.rename_tab_group_menu_item,
+                        R.id.edit_group_name,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                        R.string.ungroup_tab_group_menu_item,
                         R.id.ungroup_tab,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                        R.string.delete_tab_group_menu_item,
+                        R.id.delete_tab,
                         R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                         isIncognito,
                         true));
