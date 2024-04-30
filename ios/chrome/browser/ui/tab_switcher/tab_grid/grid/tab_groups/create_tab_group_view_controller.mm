@@ -24,6 +24,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -106,6 +107,9 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
 
   // Scrollview that containts color selection buttons.
   UIView* _colorsScrollView;
+
+  // YES if the visual keyboard is displayed.
+  BOOL _keyboardDisplayed;
 }
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup {
@@ -150,8 +154,13 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   }
   [[NSNotificationCenter defaultCenter]
       addObserver:self
-         selector:@selector(hideSnapshotsIfNeeded)
+         selector:@selector(keyboardDidShow)
              name:UIKeyboardDidShowNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(keyboardDidHide)
+             name:UIKeyboardDidHideNotification
            object:nil];
   // To force display the keyboard when the view is shown.
   [_tabGroupTextField becomeFirstResponder];
@@ -539,11 +548,26 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   BOOL tooSmall = _snapshotsContainer.frame.size.height < 60;
   BOOL isVerticallyCompacted =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-  if (tooSmall || isVerticallyCompacted) {
+  BOOL isIpadConfiguration =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
+      _keyboardDisplayed;
+  if (tooSmall || isVerticallyCompacted || isIpadConfiguration) {
     [_snapshotsContainer setHidden:YES];
   } else {
     [_snapshotsContainer setHidden:NO];
   }
+}
+
+// Called when the virtual keyboard is shown.
+- (void)keyboardDidShow {
+  _keyboardDisplayed = YES;
+  [self hideSnapshotsIfNeeded];
+}
+
+// Called when the virtual keyboard is hidden.
+- (void)keyboardDidHide {
+  _keyboardDisplayed = NO;
+  [self hideSnapshotsIfNeeded];
 }
 
 // Configures the view and all subviews when there is enough space.
