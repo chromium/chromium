@@ -724,11 +724,14 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // If this is a chrome triggered download, return true;
-  if (!item->RequireSafetyChecks())
+  if (!item->RequireSafetyChecks()) {
     return true;
+  }
 
   if (!download_prefs_->safebrowsing_for_trusted_sources_enabled() &&
-      download_prefs_->IsFromTrustedSource(*item)) {
+      download_prefs_->IsFromTrustedSource(*item) &&
+      !safe_browsing::DeepScanningRequest::ShouldUploadBinary(item)
+           .has_value()) {
     return true;
   }
 
