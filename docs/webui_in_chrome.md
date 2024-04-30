@@ -13,7 +13,7 @@
 # Creating WebUI Interfaces
 [TOC]
 
-A WebUI page is made of a Polymer single-page application, which communicates
+A WebUI page is made of a single-page application, which communicates
 with a C++ UI controller, as explained [here](webui_explainer.md).
 
 WebUI pages live in `chrome/browser/resources` and their native counterpart in

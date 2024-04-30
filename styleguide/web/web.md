@@ -130,7 +130,7 @@ amount of addressing (adding an ID just to wire up event handling).
 ```
 
 * Element IDs use `dash-form`
-    * Exception: `camelCase` is allowed in Polymer code for easier
+    * Exception: `camelCase` is allowed in Polymer and Lit code for easier
       `this.$.idName` access.
 
 * Localize all strings using $i18n{}
@@ -491,6 +491,24 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
     For trivial DOM subtrees using the HTML [`hidden` attribute](
     https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden)
     yields better performance, than adding a custom `dom-if` element.
+
+* Do not add new dependencies on `iron-` or `paper-` Polymer elements, styles,
+  and behaviors. These are being removed from Chromium. In many cases, Lit-based
+  equivalents already exist in `ui/webui/resources/cr_elements` (e.g.
+  `cr-collapse` should be used instead of `iron-collapse`). In other cases,
+  there is a native solution which should be used instead of the Polymer
+  solution (e.g. use `window.matchMedia()` instead of `iron-media-query`).
+  Contact the WebUI OWNERS if you are unsure what to use instead of a specific
+  Polymer feature. Exceptions:
+  * Polymer UIs can use Polymer's `iron-iconset-svg` to avoid adding a
+    dependency on Lit, which is required for using `cr-iconset`. Note that
+    Polymer UIs can and should use `cr-icon` instead of `iron-icon`, as
+    `cr-icon` can be used with icons provided in either an `iron-iconset-svg`
+    or a `cr-iconset`.
+  * UIs with a compelling use case (i.e. extremely long list of items) may use
+    `iron-list`, as a native/Lit equivalent has not yet been developed. Do not
+    use `iron-list` for relatively short lists (~20 or fewer items); use
+    `dom-repeat` in Polymer code or `items.map(...)` in Lit HTML.
 
 * Do not add iron-icons dependency to third_party/polymer/.
   * Polymer provides icons via the `iron-icons` library, but importing each of the iconsets means importing hundreds of SVGs, which is unnecessary because Chrome uses only a small subset.
