@@ -113,11 +113,6 @@ public class TabResumptionModuleMediator {
                 mHandler.removeCallbacksAndMessages(null);
                 mHandler = null;
             }
-
-            if (mTabResumptionBridge != null) {
-                mTabResumptionBridge.destroy();
-            }
-
             // Activates if STABLE and FORCED_NULL results isn't seen, and timeout has triggered
             // yet.
             // This includes the case where TENTATIVE tiles are quickly clicked by a user.
@@ -293,10 +288,6 @@ public class TabResumptionModuleMediator {
     protected final ThumbnailProvider mThumbnailProvider;
     protected final Runnable mStatusChangedCallback;
     protected final SuggestionClickCallbacks mSuggestionClickCallbacks;
-
-    // Non-null when Tab resumption V2 is enabled.
-    private @Nullable final TabResumptionBridge mTabResumptionBridge;
-
     private final ShowHideHelper mShowHideHelper;
 
     private Session mSession;
@@ -308,8 +299,7 @@ public class TabResumptionModuleMediator {
             @NonNull UrlImageProvider urlImageProvider,
             @NonNull ThumbnailProvider thumbnailProvider,
             @NonNull Runnable statusChangedCallback,
-            @NonNull SuggestionClickCallbacks suggestionClickCallbacks,
-            @Nullable TabResumptionBridge tabResumptionBridge) {
+            @NonNull SuggestionClickCallbacks suggestionClickCallbacks) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
         mModel = model;
@@ -317,7 +307,6 @@ public class TabResumptionModuleMediator {
         mThumbnailProvider = thumbnailProvider;
         mStatusChangedCallback = statusChangedCallback;
         mSuggestionClickCallbacks = suggestionClickCallbacks;
-        mTabResumptionBridge = tabResumptionBridge;
         mShowHideHelper = new ShowHideHelper();
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
@@ -394,15 +383,6 @@ public class TabResumptionModuleMediator {
 
     /** Computes and sets UI properties and triggers render. */
     private void setPropertiesAndTriggerRender(@Nullable SuggestionBundle bundle) {
-        // TODO(b/337858147): move the call of the #rank() API to a better place.
-        if (mTabResumptionBridge != null) {
-            mTabResumptionBridge.rank(bundle, this::onSuggestionRanked);
-        } else {
-            onSuggestionRanked(bundle);
-        }
-    }
-
-    private void onSuggestionRanked(SuggestionBundle bundle) {
         String title = null;
         boolean isVisible = false;
         if (bundle != null) {

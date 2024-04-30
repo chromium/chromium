@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_resumption/LocalTabTabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/LocalTileView.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/MixedTabResumptionDataProvider.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/SmartTabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionBundle.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionEntry.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionBridge.java",

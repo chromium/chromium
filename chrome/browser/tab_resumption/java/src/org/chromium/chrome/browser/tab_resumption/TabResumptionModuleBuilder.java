@@ -65,15 +65,13 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         UrlImageProvider urlImageProvider = new UrlImageProvider(profile, mContext);
 
         assert mTabContentManagerSupplier.hasValue();
-        boolean isV2Enabled = TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
         TabResumptionModuleCoordinator coordinator =
                 new TabResumptionModuleCoordinator(
                         mContext,
                         moduleDelegate,
                         dataProviderFactory,
                         urlImageProvider,
-                        getThumbnailProvider(mTabContentManagerSupplier.get()),
-                        isV2Enabled ? new TabResumptionBridge(profile) : null);
+                        getThumbnailProvider(mTabContentManagerSupplier.get()));
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
@@ -140,12 +138,19 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
     private TabResumptionDataProvider makeDataProvider(
             Profile profile, @NonNull ModuleDelegate moduleDelegate) {
+        boolean isV2Enabled = TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
+        if (isV2Enabled) {
+            TabResumptionBridge bridge = new TabResumptionBridge(profile);
+            return new SmartTabResumptionDataProvider(bridge);
+        }
+
         LocalTabTabResumptionDataProvider localTabProvider =
                 TabResumptionModuleEnablement.LocalTab.shouldMakeProvider(moduleDelegate)
                         ? new LocalTabTabResumptionDataProvider(moduleDelegate.getTrackingTab())
                         : null;
 
         ForeignSessionTabResumptionDataProvider foreignSessionProvider = null;
+
         if (TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile)) {
             addRefToDataSource();
             foreignSessionProvider =
