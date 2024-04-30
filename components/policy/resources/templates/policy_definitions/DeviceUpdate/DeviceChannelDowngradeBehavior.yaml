@@ -36,3 +36,4 @@ schema:
   type: integer
 tags: []
 type: int-enum
+generate_device_proto: False

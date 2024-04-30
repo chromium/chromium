@@ -30,3 +30,4 @@ supported_on:
 tags:
 - system-security
 type: string
+generate_device_proto: False

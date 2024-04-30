@@ -29,3 +29,4 @@ supported_on:
 - chrome_os:75-122
 tags: []
 type: external
+generate_device_proto: False

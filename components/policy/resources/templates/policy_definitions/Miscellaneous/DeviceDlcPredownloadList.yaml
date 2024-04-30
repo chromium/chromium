@@ -27,3 +27,4 @@ example_value:
 supported_on:
 - chrome_os:125-
 tags: []
+generate_device_proto: False

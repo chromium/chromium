@@ -45,3 +45,4 @@ supported_on:
 - chrome_os:111-
 tags: []
 type: string
+generate_device_proto: False

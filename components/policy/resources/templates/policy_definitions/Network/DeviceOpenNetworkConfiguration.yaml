@@ -21,3 +21,4 @@ tags:
 - full-admin-access
 type: string
 url_schema: https://chromium.googlesource.com/chromium/src/+/HEAD/components/onc/docs/onc_spec.md
+generate_device_proto: False

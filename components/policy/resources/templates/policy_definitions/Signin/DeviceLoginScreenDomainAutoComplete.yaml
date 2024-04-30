@@ -16,3 +16,4 @@ supported_on:
 - chrome_os:44-
 tags: []
 type: string
+generate_device_proto: False

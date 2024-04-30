@@ -36,3 +36,4 @@ schema:
 tags:
 - admin-sharing
 type: string-enum-list
+generate_device_proto: False

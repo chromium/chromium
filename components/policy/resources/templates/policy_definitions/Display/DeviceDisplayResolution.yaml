@@ -45,3 +45,4 @@ supported_on:
 - chrome_os:72-
 tags: []
 type: dict
+generate_device_proto: False

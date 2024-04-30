@@ -18,3 +18,4 @@ schema:
   type: string
 tags: []
 type: string
+generate_device_proto: False

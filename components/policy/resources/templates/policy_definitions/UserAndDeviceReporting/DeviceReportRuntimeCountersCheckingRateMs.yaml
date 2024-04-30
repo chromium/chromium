@@ -22,3 +22,4 @@ supported_on:
 tags:
 - admin-sharing
 type: int
+generate_device_proto: False

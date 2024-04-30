@@ -35,3 +35,4 @@ supported_on:
 tags:
 - system-security
 type: int-enum
+generate_device_proto: False

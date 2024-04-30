@@ -26,3 +26,4 @@ schema:
 tags:
 - admin-sharing
 type: main
+generate_device_proto: False

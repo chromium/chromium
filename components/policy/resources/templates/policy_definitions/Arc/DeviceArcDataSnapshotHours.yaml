@@ -44,3 +44,4 @@ supported_on:
 - chrome_os:88-113
 tags: []
 type: dict
+generate_device_proto: False

@@ -45,3 +45,4 @@ items:
 default: 0
 example_value: 2
 tags: []
+generate_device_proto: False

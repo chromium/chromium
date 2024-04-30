@@ -36,3 +36,4 @@ supported_on:
 - chrome_os:66-114
 tags: []
 type: int-enum
+generate_device_proto: False

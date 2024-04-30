@@ -49,3 +49,4 @@ supported_on:
 tags:
 - google-sharing
 type: int-enum
+generate_device_proto: False

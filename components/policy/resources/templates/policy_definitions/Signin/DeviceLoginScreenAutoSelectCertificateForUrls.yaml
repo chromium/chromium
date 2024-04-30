@@ -56,3 +56,4 @@ validation_schema:
         type: string
     type: object
   type: array
+generate_device_proto: False

@@ -27,3 +27,4 @@ tags:
 - admin-sharing
 - google-sharing
 type: main
+generate_device_proto: False

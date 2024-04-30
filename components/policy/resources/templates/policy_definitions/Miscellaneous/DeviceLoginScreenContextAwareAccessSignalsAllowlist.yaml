@@ -29,3 +29,4 @@ supported_on:
 - chrome_os:108-
 tags: []
 type: list
+generate_device_proto: False

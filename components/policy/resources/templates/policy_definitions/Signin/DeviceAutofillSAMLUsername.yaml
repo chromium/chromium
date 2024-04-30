@@ -24,3 +24,4 @@ tags:
 - website-sharing
 - local-data-access
 type: string
+generate_device_proto: False

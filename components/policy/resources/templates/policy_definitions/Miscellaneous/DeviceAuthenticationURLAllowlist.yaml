@@ -25,3 +25,4 @@ supported_on:
 tags:
 - filtering
 type: list
+generate_device_proto: False

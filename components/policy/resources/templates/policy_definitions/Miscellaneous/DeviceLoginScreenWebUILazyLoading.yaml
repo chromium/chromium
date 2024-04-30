@@ -30,3 +30,4 @@ schema:
   type: boolean
 tags: []
 type: main
+generate_device_proto: False

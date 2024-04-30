@@ -50,3 +50,4 @@ supported_on:
 tags:
 - website-sharing
 type: dict
+generate_device_proto: False
