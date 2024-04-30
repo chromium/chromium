@@ -220,6 +220,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
     &kGridTabSwitcherAndroidAnimations,
+    &kGcmNativeBackgroundTask,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
     &kLensOnQuickActionSearchWidget,
@@ -655,6 +656,13 @@ BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
 // launches as launching AndroidHub simplifies its removal.
 BASE_FEATURE(kGridTabSwitcherAndroidAnimations,
              "GridTabSwitcherAndroidAnimations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(b/41490045): This flag should be cleaned up as soon as there is enough
+// data to prove that this reduces ANRs and doesn't significantly regress
+// notifications.
+BASE_FEATURE(kGcmNativeBackgroundTask,
+             "GcmNativeBackgroundTask",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIncognitoReauthenticationForAndroid,

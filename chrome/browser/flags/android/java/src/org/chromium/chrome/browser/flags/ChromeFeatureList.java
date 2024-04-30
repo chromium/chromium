@@ -307,6 +307,7 @@ public abstract class ChromeFeatureList {
             "FullscreenInsetsApiMigrationOnAutomotive";
     public static final String GRID_TAB_SWITCHER_ANDROID_ANIMATIONS =
             "GridTabSwitcherAndroidAnimations";
+    public static final String GCM_NATIVE_BACKGROUND_TASK = "GcmNativeBackgroundTask";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
     public static final String HISTORY_JOURNEYS = "Journeys";
@@ -574,6 +575,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION, false);
     public static final CachedFlag sFullscreenInsetsApiMigrationOnAutomotive =
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
+    public static final CachedFlag sGcmNativeBackgroundTask =
+            newCachedFlag(GCM_NATIVE_BACKGROUND_TASK, false);
     public static final CachedFlag sGridTabSwitcherAndroidAnimations =
             newCachedFlag(GRID_TAB_SWITCHER_ANDROID_ANIMATIONS, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
@@ -698,6 +701,7 @@ public abstract class ChromeFeatureList {
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
                     sGridTabSwitcherAndroidAnimations,
+                    sGcmNativeBackgroundTask,
                     sIncognitoReauthenticationForAndroid,
                     sLogoPolish,
                     sMagicStackAndroid,

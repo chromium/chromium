@@ -163,17 +163,6 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
         cacheEvent("Android.BackgroundTaskScheduler.TaskStopped", toUmaEnumValueFromTaskId(taskId));
     }
 
-    /** Reports metrics for finishing a task. */
-    public void reportTaskFinished(int taskId, long taskDurationMs) {
-        RecordHistogram.recordCustomTimesHistogram(
-                "Android.BackgroundTaskScheduler.TaskFinished."
-                        + getHistogramPatternForTaskId(taskId),
-                taskDurationMs,
-                1,
-                DateUtils.DAY_IN_MILLIS,
-                50);
-    }
-
     /** Reports metrics for rescheduling a task. */
     public void reportTaskRescheduled() {
         cacheEvent("Android.BackgroundTaskScheduler.TaskRescheduled", 0);
@@ -183,6 +172,17 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
     public void reportNotificationWasSet(int taskId, long taskDurationMs) {
         RecordHistogram.recordCustomTimesHistogram(
                 "Android.BackgroundTaskScheduler.SetNotification."
+                        + getHistogramPatternForTaskId(taskId),
+                taskDurationMs,
+                1,
+                DateUtils.DAY_IN_MILLIS,
+                50);
+    }
+
+    @Override
+    public void reportTaskFinished(int taskId, long taskDurationMs) {
+        RecordHistogram.recordCustomTimesHistogram(
+                "Android.BackgroundTaskScheduler.TaskFinished."
                         + getHistogramPatternForTaskId(taskId),
                 taskDurationMs,
                 1,

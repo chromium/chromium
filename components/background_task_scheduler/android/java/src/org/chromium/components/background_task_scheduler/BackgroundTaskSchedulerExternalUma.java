@@ -58,12 +58,21 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public abstract void reportTaskStartedNative(int taskId);
 
     /**
-     * Reports metrics of how Chrome is launched, either in minimal browser mode or as full
-     * browser, as well as either cold start or warm start.
-     * See {@link org.chromium.content.browser.ServicificationStartupUma} for more details.
+     * Reports metrics of how Chrome is launched, either in minimal browser mode or as full browser,
+     * as well as either cold start or warm start. See {@link
+     * org.chromium.content.browser.ServicificationStartupUma} for more details.
+     *
      * @param startupMode Chrome's startup mode.
      */
     public abstract void reportStartupMode(int startupMode);
+
+    /**
+     * Reports metrics for the time taken for a BackgroundTask.
+     *
+     * @param taskId An id from {@link TaskIds}.
+     * @param taskDurationMs Time taken in milliseconds.
+     */
+    public abstract void reportTaskFinished(int taskId, long taskDurationMs);
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static int toUmaEnumValueFromTaskId(int taskId) {

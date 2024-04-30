@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.services.gcm;
 
 import android.content.Context;
 import android.os.PersistableBundle;
+import android.os.SystemClock;
 
 import androidx.annotation.MainThread;
 
 import org.chromium.base.Log;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
+import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.components.gcm_driver.GCMMessage;
 
@@ -32,6 +35,7 @@ public class GCMBackgroundTask implements BackgroundTask {
     @Override
     public boolean onStartTask(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
+        long startTime = SystemClock.uptimeMillis();
         PersistableBundle extras = taskParameters.getExtras();
         GCMMessage message = GCMMessage.createFromPersistableBundle(extras);
         if (message == null) {
@@ -40,6 +44,9 @@ public class GCMBackgroundTask implements BackgroundTask {
         }
 
         ChromeGcmListenerServiceImpl.dispatchMessageToDriver(message);
+        long timeTaken = SystemClock.uptimeMillis() - startTime;
+        BackgroundTaskSchedulerFactory.getUmaReporter()
+                .reportTaskFinished(TaskIds.GCM_BACKGROUND_TASK_JOB_ID, timeTaken);
         return false;
     }
 
