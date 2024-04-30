@@ -71,9 +71,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
               TriggerEphemeralNetworkConfigActions());
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   testing::Mock::VerifyAndClearExpectations(
       &mock_managed_network_configuration_handler_);
@@ -103,9 +104,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
       .WillRepeatedly(Return(false));
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   // Apply policies enabling ephemeral network policy actions.
   EXPECT_CALL(mock_managed_network_configuration_handler_,
@@ -144,9 +146,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
       .WillRepeatedly(Return(false));
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/false);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               TriggerEphemeralNetworkConfigActions())
@@ -188,9 +191,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
       .WillRepeatedly(Return(false));
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -218,9 +222,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
       .WillRepeatedly(Return(false));
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               TriggerEphemeralNetworkConfigActions())
@@ -238,9 +243,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
                                       LoginState::LOGGED_IN_USER_NONE);
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -285,9 +291,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest,
                                       LoginState::LOGGED_IN_USER_NONE);
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               UserCreatedNetworkConfigurationsAreEphemeral())
@@ -330,9 +337,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, SuspendDoneSpurious_Active) {
                                       LoginState::LOGGED_IN_USER_NONE);
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -353,9 +361,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, SuspendDoneReal_NotActive) {
                                       LoginState::LOGGED_IN_USER_NONE);
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -379,9 +388,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, SuspendDoneReal_NoPolicy) {
       LoginState::LOGGED_IN_ACTIVE, LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT);
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               TriggerEphemeralNetworkConfigActions())
@@ -397,9 +407,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, ScreenIdleState_Active) {
                                       LoginState::LOGGED_IN_USER_NONE);
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())
@@ -461,9 +472,10 @@ TEST_F(EphemeralNetworkConfigurationHandlerTest, ScreenIdleState_NotActive) {
                                       LoginState::LOGGED_IN_USER_NONE);
 
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           &mock_managed_network_configuration_handler_,
           /*was_enterprise_managed_at_startup=*/true);
+  ASSERT_TRUE(ephemeral_network_configuration_handler_);
 
   EXPECT_CALL(mock_managed_network_configuration_handler_,
               RecommendedValuesAreEphemeral())

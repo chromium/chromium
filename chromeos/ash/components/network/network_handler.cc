@@ -450,7 +450,7 @@ void NetworkHandler::SetIsEnterpriseManaged(bool is_enterprise_managed) {
 void NetworkHandler::OnEphemeralNetworkPoliciesEnabled() {
   DCHECK(policy_util::AreEphemeralNetworkPoliciesEnabled());
   ephemeral_network_configuration_handler_ =
-      std::make_unique<EphemeralNetworkConfigurationHandler>(
+      EphemeralNetworkConfigurationHandler::TryCreate(
           managed_network_configuration_handler_.get(),
           was_enterprise_managed_at_startup_);
 }
