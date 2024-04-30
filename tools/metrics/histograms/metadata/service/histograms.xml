@@ -1064,7 +1064,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTopLevelScript.{ResultStatus}.{WhetherAlreadyInstalledOrNot}.Time"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2024-10-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1087,7 +1087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.MainFrame.MainResource.FetchResult"
-    enum="ServiceWorkerFetchEventResult" expires_after="2024-09-01">
+    enum="ServiceWorkerFetchEventResult" expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1439,7 +1439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StartTiming.StartToReceivedStartWorker"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2024-10-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1489,7 +1489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StartWorker.Purpose"
-    enum="ServiceWorkerMetrics.EventType" expires_after="2024-09-01">
+    enum="ServiceWorkerMetrics.EventType" expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1526,7 +1526,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.StartWorker.Time" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1610,7 +1610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.Storage.PurgeResourceResult"
-    enum="NetErrorCodes" expires_after="2024-06-01">
+    enum="NetErrorCodes" expires_after="2024-10-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
