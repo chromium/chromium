@@ -6,29 +6,28 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_SCANNED_DEVICE_INFO_H_
 
 #include "base/types/expected.h"
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 
 namespace ash::tether {
 
-enum ScannedDeviceInfoError { kNotificationsDisabled };
-
 struct ScannedDeviceInfo {
-  ScannedDeviceInfo(multidevice::RemoteDeviceRef remote_device,
-                    const DeviceStatus& device_status,
-                    bool setup_required);
+  ScannedDeviceInfo(const std::string& device_id,
+                    const std::string& device_name,
+                    std::optional<DeviceStatus> device_status,
+                    bool setup_required,
+                    bool notifications_enabled);
+  ScannedDeviceInfo(const ScannedDeviceInfo&);
   ~ScannedDeviceInfo();
 
   friend bool operator==(const ScannedDeviceInfo& first,
                          const ScannedDeviceInfo& second);
 
-  multidevice::RemoteDeviceRef remote_device;
-  DeviceStatus device_status;
+  std::string device_id;
+  std::string device_name;
+  std::optional<DeviceStatus> device_status;
+  bool notifications_enabled;
   bool setup_required;
 };
-
-using ScannedDeviceResult =
-    base::expected<ScannedDeviceInfo, ScannedDeviceInfoError>;
 
 }  // namespace ash::tether
 

@@ -98,11 +98,11 @@ class TetherAvailabilityOperationTest : public testing::Test {
     connection_attempt_->NotifyConnection(std::move(fake_client_channel));
   }
 
-  void OnResponse(std::optional<ScannedDeviceResult> result) {
+  void OnResponse(std::optional<ScannedDeviceInfo> result) {
     received_result_ = result;
   }
 
-  std::optional<ScannedDeviceResult> received_result_;
+  std::optional<ScannedDeviceInfo> received_result_;
   const multidevice::RemoteDeviceRef local_device_;
   const multidevice::RemoteDeviceRef remote_device_;
 
@@ -217,8 +217,7 @@ TEST_F(TetherAvailabilityOperationTest, NotificationsDisabled) {
            .last_requested_preserved_connection_device_id()
            .empty();
   EXPECT_FALSE(connection_preserved);
-  EXPECT_EQ(received_result_.value().error(),
-            ScannedDeviceInfoError::kNotificationsDisabled);
+  EXPECT_FALSE(received_result_.value().notifications_enabled);
 }
 
 TEST_F(TetherAvailabilityOperationTest,
@@ -243,8 +242,7 @@ TEST_F(TetherAvailabilityOperationTest,
            .last_requested_preserved_connection_device_id()
            .empty();
   EXPECT_FALSE(connection_preserved);
-  EXPECT_EQ(received_result_.value().error(),
-            ScannedDeviceInfoError::kNotificationsDisabled);
+  EXPECT_FALSE(received_result_.value().notifications_enabled);
 }
 
 TEST_F(TetherAvailabilityOperationTest, TetherAvailable) {
@@ -255,8 +253,9 @@ TEST_F(TetherAvailabilityOperationTest, TetherAvailable) {
 
   // The observer is notified of the scanned device.
   DeviceStatus device_status = CreateFakeDeviceStatus();
-  ScannedDeviceInfo scanned_device(remote_device_, device_status,
-                                   false /* setup_required */);
+  ScannedDeviceInfo scanned_device(
+      remote_device_.GetDeviceId(), remote_device_.name(), device_status,
+      false /* setup_required */, /*notifications_enabled=*/true);
 
   // Respond with TETHER_AVAILABLE response code and the device info and status.
   TetherAvailabilityResponse response;
@@ -274,7 +273,7 @@ TEST_F(TetherAvailabilityOperationTest, TetherAvailable) {
                 .last_requested_preserved_connection_device_id());
 
   EXPECT_TRUE(received_result_.has_value());
-  EXPECT_EQ(received_result_.value().value(), scanned_device);
+  EXPECT_EQ(received_result_.value(), scanned_device);
 }
 
 TEST_F(TetherAvailabilityOperationTest, LastProvisioningFailed) {
@@ -285,8 +284,9 @@ TEST_F(TetherAvailabilityOperationTest, LastProvisioningFailed) {
 
   // The observer is notified of the scanned device.
   DeviceStatus device_status = CreateFakeDeviceStatus();
-  ScannedDeviceInfo scanned_device(remote_device_, device_status,
-                                   false /* setup_required */);
+  ScannedDeviceInfo scanned_device(
+      remote_device_.GetDeviceId(), remote_device_.name(), device_status,
+      false /* setup_required */, /*notifications_enabled=*/true);
   std::vector<ScannedDeviceInfo> scanned_devices({scanned_device});
 
   // Respond with TETHER_AVAILABLE response code and the device info and status.
@@ -304,7 +304,7 @@ TEST_F(TetherAvailabilityOperationTest, LastProvisioningFailed) {
 
   test_task_runner_->RunUntilIdle();
 
-  EXPECT_EQ(scanned_device, received_result_.value().value());
+  EXPECT_EQ(scanned_device, received_result_.value());
 }
 
 TEST_F(TetherAvailabilityOperationTest, SetupRequired) {
@@ -316,8 +316,9 @@ TEST_F(TetherAvailabilityOperationTest, SetupRequired) {
   // The observer is notified that the scanned device has the |setup_required|
   // flag set.
   DeviceStatus device_status = CreateFakeDeviceStatus();
-  ScannedDeviceInfo scanned_device(remote_device_, device_status,
-                                   true /* setup_required */);
+  ScannedDeviceInfo scanned_device(
+      remote_device_.GetDeviceId(), remote_device_.name(), device_status,
+      true /* setup_required */, /*notifications_enabled=*/true);
   std::vector<ScannedDeviceInfo> scanned_devices({scanned_device});
 
   // Respond with SETUP_NEEDED response code and the device info and status.
@@ -334,7 +335,7 @@ TEST_F(TetherAvailabilityOperationTest, SetupRequired) {
   EXPECT_EQ(remote_device_.GetDeviceId(),
             fake_connection_preserver_
                 .last_requested_preserved_connection_device_id());
-  EXPECT_EQ(scanned_device, received_result_.value().value());
+  EXPECT_EQ(scanned_device, received_result_.value());
 }
 
 }  // namespace tether

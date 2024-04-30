@@ -59,8 +59,9 @@ class TetherNotificationDelegate
 
   // NotificationDelegate:
   void Close(bool by_user) override {
-    if (!close_callback_.is_null())
+    if (!close_callback_.is_null()) {
       close_callback_.Run();
+    }
   }
 
  private:
@@ -128,14 +129,14 @@ TetherNotificationPresenter::TetherNotificationPresenter(
 TetherNotificationPresenter::~TetherNotificationPresenter() = default;
 
 void TetherNotificationPresenter::NotifyPotentialHotspotNearby(
-    multidevice::RemoteDeviceRef remote_device,
+    const std::string& device_id,
+    const std::string& device_name,
     int signal_strength) {
   PA_LOG(VERBOSE) << "Displaying \"potential hotspot nearby\" notification for "
-                  << "device with name \"" << remote_device.name() << "\". "
+                  << "device with name \"" << device_name << "\". "
                   << "Notification ID = " << kPotentialHotspotNotificationId;
 
-  hotspot_nearby_device_id_ =
-      std::make_unique<std::string>(remote_device.GetDeviceId());
+  hotspot_nearby_device_id_ = std::make_unique<std::string>(device_id);
 
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(
@@ -149,7 +150,7 @@ void TetherNotificationPresenter::NotifyPotentialHotspotNearby(
           IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_ONE_DEVICE_TITLE),
       l10n_util::GetStringFUTF16(
           IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_ONE_DEVICE_MESSAGE,
-          base::ASCIIToUTF16(remote_device.name())),
+          base::ASCIIToUTF16(device_name)),
       GetImageForSignalStrength(signal_strength), rich_notification_data));
 }
 
@@ -295,8 +296,9 @@ TetherNotificationPresenter::GetMetricValueForClickOnNotificationBody(
 
 void TetherNotificationPresenter::OnNotificationClosed(
     const std::string& notification_id) {
-  if (showing_notification_id_ == notification_id)
+  if (showing_notification_id_ == notification_id) {
     showing_notification_id_.clear();
+  }
 }
 
 std::unique_ptr<message_center::Notification>
@@ -355,8 +357,9 @@ void TetherNotificationPresenter::OpenSettingsAndRemoveNotification(
 
 void TetherNotificationPresenter::RemoveNotificationIfVisible(
     const std::string& notification_id) {
-  if (notification_id == kPotentialHotspotNotificationId)
+  if (notification_id == kPotentialHotspotNotificationId) {
     hotspot_nearby_device_id_.reset();
+  }
 
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_id);

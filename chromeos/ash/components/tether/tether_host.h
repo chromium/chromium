@@ -9,9 +9,10 @@
 
 namespace ash::tether {
 
-// Represents a Tether host, which can either be a multidevice::RemoteDeviceRef
-// (if the host can be connected over Secure Channel), or a PresenceDevice (if
-// the host can be connected over Nearby Connections).
+// Represents a Tether host, which can either be a
+// multidevice::RemoteDeviceRef (if the host can be connected over Secure
+// Channel), or a PresenceDevice (if the host can be connected over Nearby
+// Connections).
 struct TetherHost {
  public:
   explicit TetherHost(multidevice::RemoteDeviceRef remote_device_ref);
@@ -19,6 +20,8 @@ struct TetherHost {
   TetherHost& operator=(const TetherHost&) = delete;
 
   ~TetherHost();
+
+  friend bool operator==(const TetherHost& first, const TetherHost& second);
 
   const std::string GetDeviceId() const;
   const std::string& GetName() const;
@@ -33,7 +36,6 @@ struct TetherHost {
  private:
   std::optional<multidevice::RemoteDeviceRef> remote_device_ref_;
 };
-
 }  // namespace ash::tether
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_HOST_H_

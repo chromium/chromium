@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/tether/notification_presenter.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -45,7 +44,8 @@ class TetherNotificationPresenter : public NotificationPresenter {
   ~TetherNotificationPresenter() override;
 
   // NotificationPresenter:
-  void NotifyPotentialHotspotNearby(multidevice::RemoteDeviceRef remote_device,
+  void NotifyPotentialHotspotNearby(const std::string& device_id,
+                                    const std::string& device_name,
                                     int signal_strength) override;
   void NotifyMultiplePotentialHotspotsNearby() override;
   NotificationPresenter::PotentialHotspotNotificationState

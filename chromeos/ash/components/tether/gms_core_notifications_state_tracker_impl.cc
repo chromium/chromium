@@ -8,9 +8,7 @@
 
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -18,19 +16,9 @@ bool ContainsDeviceWithId(
     const std::string& device_id,
     const std::vector<ScannedDeviceInfo>& device_info_list) {
   for (const auto& device_info : device_info_list) {
-    if (device_info.remote_device.GetDeviceId() == device_id)
+    if (device_info.device_id == device_id) {
       return true;
-  }
-
-  return false;
-}
-
-bool ContainsDeviceWithId(
-    const std::string& device_id,
-    const multidevice::RemoteDeviceRefList& remote_device_list) {
-  for (const auto& device_info : remote_device_list) {
-    if (device_info.GetDeviceId() == device_id)
-      return true;
+    }
   }
 
   return false;
@@ -45,28 +33,31 @@ GmsCoreNotificationsStateTrackerImpl::~GmsCoreNotificationsStateTrackerImpl() {
   bool was_empty = device_id_to_name_map_.empty();
   device_id_to_name_map_.clear();
 
-  if (!was_empty)
+  if (!was_empty) {
     SendDeviceNamesChangeEvent();
+  }
 }
 
 std::vector<std::string> GmsCoreNotificationsStateTrackerImpl::
     GetGmsCoreNotificationsDisabledDeviceNames() {
   std::vector<std::string> device_names;
-  for (const auto& map_entry : device_id_to_name_map_)
+  for (const auto& map_entry : device_id_to_name_map_) {
     device_names.push_back(map_entry.second);
+  }
   return device_names;
 }
 
 void GmsCoreNotificationsStateTrackerImpl::OnTetherAvailabilityResponse(
     const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
-    const multidevice::RemoteDeviceRefList&
+    const std::vector<ScannedDeviceInfo>&
         gms_core_notifications_disabled_devices,
     bool is_final_scan_result) {
   size_t old_size = device_id_to_name_map_.size();
 
   // Insert all names gathered by this scan to |device_id_to_name_map_|.
-  for (const auto& remote_device : gms_core_notifications_disabled_devices)
-    device_id_to_name_map_[remote_device.GetDeviceId()] = remote_device.name();
+  for (const auto& remote_device : gms_core_notifications_disabled_devices) {
+    device_id_to_name_map_[remote_device.device_id] = remote_device.device_name;
+  }
 
   bool names_changed = old_size < device_id_to_name_map_.size();
 
@@ -96,8 +87,9 @@ void GmsCoreNotificationsStateTrackerImpl::OnTetherAvailabilityResponse(
     }
   }
 
-  if (names_changed)
+  if (names_changed) {
     SendDeviceNamesChangeEvent();
+  }
 }
 
 void GmsCoreNotificationsStateTrackerImpl::SendDeviceNamesChangeEvent() {
@@ -121,6 +113,4 @@ void GmsCoreNotificationsStateTrackerImpl::SendDeviceNamesChangeEvent() {
   NotifyGmsCoreNotificationStateChanged();
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

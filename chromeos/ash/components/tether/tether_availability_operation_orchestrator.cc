@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/tether/tether_availability_operation_orchestrator.h"
+
 #include "base/containers/contains.h"
 
 namespace ash::tether {
@@ -53,26 +54,24 @@ void TetherAvailabilityOperationOrchestrator::RemoveObserver(
 
 void TetherAvailabilityOperationOrchestrator::OnScannedDeviceResult(
     const multidevice::RemoteDeviceRef& remote_device,
-    std::optional<ScannedDeviceResult> result) {
+    std::optional<ScannedDeviceInfo> result) {
   CHECK(base::Contains(active_operations_, remote_device));
 
   if (result.has_value()) {
-    ScannedDeviceResult scanned_device_result = result.value();
+    ScannedDeviceInfo scanned_device_info = result.value();
 
-    if (scanned_device_result.has_value()) {
+    if (scanned_device_info.notifications_enabled) {
       PA_LOG(INFO) << "Received successful TetherAvailabilityResponse from "
                       "device with ID "
                    << remote_device.GetTruncatedDeviceIdForLogs() << ".";
-      scanned_device_list_so_far_.push_back(scanned_device_result.value());
+      scanned_device_list_so_far_.push_back(scanned_device_info);
     } else {
-      ScannedDeviceInfoError error = scanned_device_result.error();
-      if (error == ScannedDeviceInfoError::kNotificationsDisabled) {
-        PA_LOG(WARNING)
-            << "Received TetherAvailabilityResponse from device with ID "
-            << remote_device.GetTruncatedDeviceIdForLogs() << " which "
-            << "indicates that Google Play Services notifications are disabled";
-        gms_core_notifications_disabled_devices_.push_back(remote_device);
-      }
+      PA_LOG(WARNING)
+          << "Received TetherAvailabilityResponse from device with ID "
+          << remote_device.GetTruncatedDeviceIdForLogs() << " which "
+          << "indicates that Google Play Services notifications are disabled";
+      gms_core_notifications_disabled_devices_.emplace_back(
+          scanned_device_info);
     }
   }
 

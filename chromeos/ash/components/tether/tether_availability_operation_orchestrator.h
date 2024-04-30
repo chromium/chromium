@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/scanned_device_info.h"
 #include "chromeos/ash/components/tether/tether_availability_operation.h"
+#include "chromeos/ash/components/tether/tether_host.h"
 
 namespace ash::tether {
 
@@ -30,7 +31,7 @@ class TetherAvailabilityOperationOrchestrator {
     // |is_final_scan_result| = true.
     virtual void OnTetherAvailabilityResponse(
         const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
-        const multidevice::RemoteDeviceRefList&
+        const std::vector<ScannedDeviceInfo>&
             gms_core_notifications_disabled_devices,
         bool is_final_scan_result) = 0;
   };
@@ -55,11 +56,11 @@ class TetherAvailabilityOperationOrchestrator {
 
   base::ObserverList<Observer> observers_;
   std::vector<ScannedDeviceInfo> scanned_device_list_so_far_;
-  multidevice::RemoteDeviceRefList gms_core_notifications_disabled_devices_;
+  std::vector<ScannedDeviceInfo> gms_core_notifications_disabled_devices_;
 
  private:
   void OnScannedDeviceResult(const multidevice::RemoteDeviceRef& remote_device,
-                             std::optional<ScannedDeviceResult> result);
+                             std::optional<ScannedDeviceInfo> result);
 
  private:
   base::flat_map<multidevice::RemoteDeviceRef,

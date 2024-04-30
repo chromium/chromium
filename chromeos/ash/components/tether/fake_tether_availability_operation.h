@@ -23,7 +23,7 @@ class FakeTetherAvailabilityOperation : public TetherAvailabilityOperation {
             OnTetherAvailabilityOperationFinishedCallback callback) override;
 
     void send_result(const multidevice::RemoteDeviceRef& remote_device,
-                     std::optional<ScannedDeviceResult> result);
+                     std::optional<ScannedDeviceInfo> result);
     bool has_active_operation_for_device(
         const multidevice::RemoteDeviceRef& remote_device);
 

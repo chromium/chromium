@@ -166,8 +166,9 @@ std::vector<ScannedDeviceInfo> CreateFakeScannedDeviceInfos(
     // Require set-up for odd-numbered device indices.
     bool setup_required = i % 2 == 0;
 
-    scanned_device_infos.push_back(
-        ScannedDeviceInfo(remote_devices[i], device_status, setup_required));
+    scanned_device_infos.push_back(ScannedDeviceInfo(
+        remote_devices[i].GetDeviceId(), remote_devices[i].name(),
+        device_status, setup_required, /*notifications_enabled=*/true));
   }
 
   return scanned_device_infos;
@@ -242,7 +243,7 @@ class HostScannerImplTest : public testing::Test {
       int num_expected_host_scan_histogram_samples = 1) {
     bool already_in_list = false;
     for (auto& scanned_device_info : scanned_device_infos_from_current_scan_) {
-      if (scanned_device_info.remote_device.GetDeviceId() ==
+      if (scanned_device_info.device_id ==
           test_devices_[test_device_index].GetDeviceId()) {
         already_in_list = true;
         break;
@@ -294,8 +295,7 @@ class HostScannerImplTest : public testing::Test {
          scanned_device_infos_from_previous_scans_) {
       bool already_in_combined = false;
       for (const auto& combined_device_info : combined_device_infos) {
-        if (previous_scan_result.remote_device.GetDeviceId() ==
-            combined_device_info.remote_device.GetDeviceId()) {
+        if (previous_scan_result.device_id == combined_device_info.device_id) {
           already_in_combined = true;
           break;
         }
@@ -309,7 +309,7 @@ class HostScannerImplTest : public testing::Test {
     for (auto& scanned_device_info : combined_device_infos) {
       std::string tether_network_guid =
           device_id_tether_network_guid_map_->GetTetherNetworkGuidForDeviceId(
-              scanned_device_info.remote_device.GetDeviceId());
+              scanned_device_info.device_id);
       const HostScanCacheEntry* entry =
           fake_host_scan_cache_->GetCacheEntry(tether_network_guid);
       ASSERT_TRUE(entry);
@@ -321,9 +321,9 @@ class HostScannerImplTest : public testing::Test {
   void VerifyScannedDeviceInfoAndCacheEntryAreEquivalent(
       const ScannedDeviceInfo& scanned_device_info,
       const HostScanCacheEntry& entry) {
-    EXPECT_EQ(scanned_device_info.remote_device.name(), entry.device_name);
+    EXPECT_EQ(scanned_device_info.device_name, entry.device_name);
 
-    const DeviceStatus& status = scanned_device_info.device_status;
+    const DeviceStatus& status = scanned_device_info.device_status.value();
     if (!status.has_cell_provider() || status.cell_provider().empty()) {
       EXPECT_EQ("unknown-carrier", entry.carrier);
     } else {

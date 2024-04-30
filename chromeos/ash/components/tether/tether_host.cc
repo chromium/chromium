@@ -13,6 +13,16 @@ TetherHost::TetherHost(const multidevice::RemoteDeviceRef remote_device_ref)
 
 TetherHost::~TetherHost() = default;
 
+bool operator==(const TetherHost& first, const TetherHost& second) {
+  if (first.remote_device_ref().has_value()) {
+    return second.remote_device_ref().has_value() &&
+           first.remote_device_ref().value() ==
+               second.remote_device_ref().value();
+  }
+
+  NOTREACHED_NORETURN();
+}
+
 const std::string TetherHost::GetDeviceId() const {
   if (remote_device_ref_.has_value()) {
     return remote_device_ref_->GetDeviceId();

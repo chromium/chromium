@@ -4,6 +4,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/tether/fake_tether_availability_operation.h"
+
 #include "base/containers/contains.h"
 
 namespace ash::tether {
@@ -32,7 +33,7 @@ FakeTetherAvailabilityOperation::Initializer::Initialize(
 
 void FakeTetherAvailabilityOperation::Initializer::send_result(
     const multidevice::RemoteDeviceRef& remote_device,
-    std::optional<ScannedDeviceResult> result) {
+    std::optional<ScannedDeviceInfo> result) {
   std::move(pending_callbacks_[remote_device]).Run(result);
   pending_callbacks_.erase(remote_device);
 }

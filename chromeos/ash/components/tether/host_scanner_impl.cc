@@ -22,9 +22,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 HostScannerImpl::HostScannerImpl(
     std::unique_ptr<TetherAvailabilityOperationOrchestrator::Factory>
@@ -98,7 +96,7 @@ void HostScannerImpl::StopScan() {
 
 void HostScannerImpl::OnTetherAvailabilityResponse(
     const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
-    const multidevice::RemoteDeviceRefList&
+    const std::vector<ScannedDeviceInfo>&
         gms_core_notifications_disabled_devices,
     bool is_final_scan_result) {
   if (scanned_device_list_so_far.empty() && !is_final_scan_result) {
@@ -119,14 +117,15 @@ void HostScannerImpl::OnTetherAvailabilityResponse(
              NotificationPresenter::PotentialHotspotNotificationState::
                  MULTIPLE_HOTSPOTS_NEARBY_SHOWN ||
          is_final_scan_result)) {
-      multidevice::RemoteDeviceRef remote_device =
-          scanned_device_list_so_far.at(0).remote_device;
+      const ScannedDeviceInfo& scanned_device =
+          scanned_device_list_so_far.front();
       int32_t signal_strength;
-      NormalizeDeviceStatus(scanned_device_list_so_far.at(0).device_status,
+      NormalizeDeviceStatus(scanned_device.device_status.value(),
                             nullptr /* carrier */,
                             nullptr /* battery_percentage */, &signal_strength);
-      notification_presenter_->NotifyPotentialHotspotNearby(remote_device,
-                                                            signal_strength);
+      notification_presenter_->NotifyPotentialHotspotNearby(
+          scanned_device.device_id, scanned_device.device_name,
+          signal_strength);
     } else {
       // Note: If a single-device notification was previously displayed, calling
       // NotifyMultiplePotentialHotspotsNearby() will reuse the existing
@@ -162,9 +161,7 @@ void HostScannerImpl::OnSessionStateChanged() {
 
 void HostScannerImpl::SetCacheEntry(
     const ScannedDeviceInfo& scanned_device_info) {
-  const DeviceStatus& status = scanned_device_info.device_status;
-  multidevice::RemoteDeviceRef remote_device =
-      scanned_device_info.remote_device;
+  const DeviceStatus& status = scanned_device_info.device_status.value();
 
   std::string carrier;
   int32_t battery_percentage;
@@ -176,8 +173,8 @@ void HostScannerImpl::SetCacheEntry(
       *HostScanCacheEntry::Builder()
            .SetTetherNetworkGuid(device_id_tether_network_guid_map_
                                      ->GetTetherNetworkGuidForDeviceId(
-                                         remote_device.GetDeviceId()))
-           .SetDeviceName(remote_device.name())
+                                         scanned_device_info.device_id))
+           .SetDeviceName(scanned_device_info.device_name)
            .SetCarrier(carrier)
            .SetBatteryPercentage(battery_percentage)
            .SetSignalStrength(signal_strength)
@@ -195,8 +192,7 @@ void HostScannerImpl::OnFinalScanResultReceived(
 
     for (const auto& scan_result : final_scan_results) {
       if (device_id_tether_network_guid_map_->GetTetherNetworkGuidForDeviceId(
-              scan_result.remote_device.GetDeviceId()) ==
-          tether_guid_in_cache) {
+              scan_result.device_id) == tether_guid_in_cache) {
         is_guid_in_final_scan_results = true;
         break;
       }
@@ -293,6 +289,4 @@ bool HostScannerImpl::CanAvailableHostNotificationBeShown() {
   return true;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

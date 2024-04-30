@@ -144,8 +144,10 @@ void TetherAvailabilityOperation::OnMessageReceived(
         << remote_device().GetTruncatedDeviceIdForLogs() << " which "
         << "indicates that Google Play Services notifications are "
         << "disabled. Response code: " << response->response_code();
-    scanned_device_info_result_ =
-        base::unexpected(ScannedDeviceInfoError::kNotificationsDisabled);
+
+    scanned_device_info_result_ = ScannedDeviceInfo(
+        remote_device().GetDeviceId(), remote_device().name(), std::nullopt,
+        /*setup_required=*/false, /*notifications_enabled=*/false);
   } else if (!IsTetheringAvailableWithValidDeviceStatus(response)) {
     // If the received message is invalid or if it states that tethering is
     // unavailable, ignore it.
@@ -174,8 +176,10 @@ void TetherAvailabilityOperation::OnMessageReceived(
     connection_preserver_->HandleSuccessfulTetherAvailabilityResponse(
         remote_device().GetDeviceId());
 
-    scanned_device_info_result_ = ScannedDeviceInfo(
-        remote_device(), response->device_status(), setup_required);
+    scanned_device_info_result_ =
+        ScannedDeviceInfo(remote_device().GetDeviceId(), remote_device().name(),
+                          response->device_status(), setup_required,
+                          /*notifications_enabled=*/true);
   }
 
   RecordTetherAvailabilityResponseDuration(remote_device().GetDeviceId());

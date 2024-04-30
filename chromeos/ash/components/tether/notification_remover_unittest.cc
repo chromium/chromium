@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
-#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/tether/fake_active_host.h"
 #include "chromeos/ash/components/tether/fake_host_scan_cache.h"
@@ -17,9 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 const int kTestSignalStrength = 100;
@@ -48,7 +44,7 @@ class NotificationRemoverTest : public testing::Test {
 
   void NotifyPotentialHotspotNearby() {
     notification_presenter_->NotifyPotentialHotspotNearby(
-        multidevice::CreateRemoteDeviceRefForTest(), 100 /* signal_strength */);
+        "device id", "device name", 100 /* signal_strength */);
   }
 
   void SetAndRemoveHostScanResult() {
@@ -135,6 +131,4 @@ TEST_F(NotificationRemoverTest, TestActiveHostConnecting) {
             notification_presenter_->GetPotentialHotspotNotificationState());
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

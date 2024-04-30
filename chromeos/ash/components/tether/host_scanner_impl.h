@@ -72,7 +72,7 @@ class HostScannerImpl
   // TetherAvailabilityOperationOrchestrator::Observer:
   void OnTetherAvailabilityResponse(
       const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
-      const multidevice::RemoteDeviceRefList&
+      const std::vector<ScannedDeviceInfo>&
           gms_core_notifications_disabled_devices,
       bool is_final_scan_result) override;
 

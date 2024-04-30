@@ -30,7 +30,7 @@ class SecureChannelTetherAvailabilityOperationOrchestratorTest
   // TetherAvailabilityOperationOrchestrator::Observer:
   void OnTetherAvailabilityResponse(
       const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
-      const multidevice::RemoteDeviceRefList&
+      const std::vector<ScannedDeviceInfo>&
           gms_core_notifications_disabled_devices,
       bool is_final_scan_result) override {
     scanned_device_list_so_far_ = scanned_device_list_so_far;
@@ -58,12 +58,13 @@ class SecureChannelTetherAvailabilityOperationOrchestratorTest
       const multidevice::RemoteDeviceRef& remote_device) {
     auto device_status = CreateTestDeviceStatus(
         "Google Fi", 75 /* battery_percentage */, 4 /* connection_strength */);
-    return ScannedDeviceInfo(remote_device, device_status,
-                             /*setup_required=*/false);
+    return ScannedDeviceInfo(
+        remote_device.GetDeviceId(), remote_device.name(), device_status,
+        /*setup_required=*/false, /*notifications_enabled=*/true);
   }
 
   std::vector<ScannedDeviceInfo> scanned_device_list_so_far_;
-  multidevice::RemoteDeviceRefList gms_core_notifications_disabled_devices_;
+  std::vector<ScannedDeviceInfo> gms_core_notifications_disabled_devices_;
   bool is_final_scan_;
 
  protected:

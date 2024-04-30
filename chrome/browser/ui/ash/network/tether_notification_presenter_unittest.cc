@@ -18,7 +18,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/network/network_connect.h"
 
 namespace ash::tether {
@@ -28,6 +27,9 @@ namespace {
 const int kTestNetworkSignalStrength = 50;
 
 const char kTetherSettingsSubpage[] = "networks?type=Tether";
+
+const char kDeviceId[] = "device_id";
+const char kDeviceName[] = "device_name";
 
 }  // namespace
 
@@ -90,8 +92,7 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
       const TetherNotificationPresenterTest&) = delete;
 
  protected:
-  TetherNotificationPresenterTest()
-      : test_device_(multidevice::CreateRemoteDeviceRefListForTest(1)[0]) {}
+  TetherNotificationPresenterTest() {}
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -191,8 +192,6 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     has_verified_metrics_ = true;
   }
 
-  multidevice::RemoteDeviceRef test_device_;
-
   base::HistogramTester histogram_tester_;
   bool has_verified_metrics_;
 
@@ -250,7 +249,7 @@ TEST_F(TetherNotificationPresenterTest,
        TestSetupRequiredNotification_RemoveProgrammatically) {
   EXPECT_FALSE(
       display_service_->GetNotification(GetSetupRequiredNotificationId()));
-  notification_presenter_->NotifySetupRequired(test_device_.name(),
+  notification_presenter_->NotifySetupRequired(kDeviceName,
                                                kTestNetworkSignalStrength);
 
   std::optional<message_center::Notification> notification =
@@ -269,7 +268,7 @@ TEST_F(TetherNotificationPresenterTest,
        TestSetupRequiredNotification_TapNotification) {
   EXPECT_FALSE(
       display_service_->GetNotification(GetSetupRequiredNotificationId()));
-  notification_presenter_->NotifySetupRequired(test_device_.name(),
+  notification_presenter_->NotifySetupRequired(kDeviceName,
                                                kTestNetworkSignalStrength);
 
   std::optional<message_center::Notification> notification =
@@ -299,7 +298,7 @@ TEST_F(TetherNotificationPresenterTest,
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
 
   std::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
@@ -312,7 +311,7 @@ TEST_F(TetherNotificationPresenterTest,
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
 
   std::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
@@ -325,7 +324,7 @@ TEST_F(TetherNotificationPresenterTest,
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
 
   std::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
@@ -344,7 +343,7 @@ TEST_F(TetherNotificationPresenterTest,
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
 
   std::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
@@ -370,7 +369,7 @@ TEST_F(TetherNotificationPresenterTest,
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
 
   std::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
@@ -383,8 +382,7 @@ TEST_F(TetherNotificationPresenterTest,
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
 
-  EXPECT_EQ(test_device_.GetDeviceId(),
-            test_network_connect_->network_id_to_connect());
+  EXPECT_EQ(kDeviceId, test_network_connect_->network_id_to_connect());
 
   VerifyNotificationInteractionMetrics(
       0u /* num_expected_body_tapped_single_host_nearby */,
@@ -443,7 +441,7 @@ TEST_F(TetherNotificationPresenterTest,
   EXPECT_FALSE(
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
 
   std::optional<message_center::Notification> notification =
       display_service_->GetNotification(GetPotentialHotspotNotificationId());
@@ -476,7 +474,7 @@ TEST_F(TetherNotificationPresenterTest,
 
   // Notify single host available and remove.
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
   EXPECT_EQ(notification_presenter_->GetPotentialHotspotNotificationState(),
             NotificationPresenter::PotentialHotspotNotificationState::
                 SINGLE_HOTSPOT_NEARBY_SHOWN);
@@ -487,7 +485,7 @@ TEST_F(TetherNotificationPresenterTest,
 
   // Notify single host available and remove by tapping notification.
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
   EXPECT_EQ(notification_presenter_->GetPotentialHotspotNotificationState(),
             NotificationPresenter::PotentialHotspotNotificationState::
                 SINGLE_HOTSPOT_NEARBY_SHOWN);
@@ -500,7 +498,7 @@ TEST_F(TetherNotificationPresenterTest,
 
   // Notify single host available and remove by tapping notification button.
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
   EXPECT_EQ(notification_presenter_->GetPotentialHotspotNotificationState(),
             NotificationPresenter::PotentialHotspotNotificationState::
                 SINGLE_HOTSPOT_NEARBY_SHOWN);
@@ -513,7 +511,7 @@ TEST_F(TetherNotificationPresenterTest,
 
   // Notify single, then multiple hosts available and remove.
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
   EXPECT_EQ(notification_presenter_->GetPotentialHotspotNotificationState(),
             NotificationPresenter::PotentialHotspotNotificationState::
                 SINGLE_HOTSPOT_NEARBY_SHOWN);
@@ -529,7 +527,7 @@ TEST_F(TetherNotificationPresenterTest,
   // Notify single, then multiple hosts available and remove by tapping
   // notification.
   notification_presenter_->NotifyPotentialHotspotNearby(
-      test_device_, kTestNetworkSignalStrength);
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
   EXPECT_EQ(notification_presenter_->GetPotentialHotspotNotificationState(),
             NotificationPresenter::PotentialHotspotNotificationState::
                 SINGLE_HOTSPOT_NEARBY_SHOWN);

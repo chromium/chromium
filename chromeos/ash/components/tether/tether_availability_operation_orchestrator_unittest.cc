@@ -43,7 +43,7 @@ class TetherAvailabilityOperationOrchestratorTest
 
   void OnTetherAvailabilityResponse(
       const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
-      const multidevice::RemoteDeviceRefList&
+      const std::vector<ScannedDeviceInfo>&
           gms_core_notifications_disabled_devices,
       bool is_final_scan_result) override {
     scanned_device_list_so_far_ = scanned_device_list_so_far;
@@ -55,7 +55,7 @@ class TetherAvailabilityOperationOrchestratorTest
  protected:
   TetherAvailabilityOperationOrchestratorTest() {}
   std::vector<ScannedDeviceInfo> scanned_device_list_so_far_;
-  multidevice::RemoteDeviceRefList gms_core_notifications_disabled_devices_;
+  std::vector<ScannedDeviceInfo> gms_core_notifications_disabled_devices_;
   bool is_final_scan_result_;
 
  private:
@@ -81,7 +81,10 @@ TEST_F(TetherAvailabilityOperationOrchestratorTest,
 
   fake_tether_availability_operation_initializer->send_result(
       remote_device,
-      base::unexpected(ScannedDeviceInfoError::kNotificationsDisabled));
+      ScannedDeviceInfo(remote_device.GetDeviceId(), remote_device.name(),
+                        /*device_status=*/std::nullopt,
+                        /*setup_required=*/false,
+                        /*notifications_enabled=*/false));
 
   EXPECT_TRUE(is_final_scan_result_);
 }

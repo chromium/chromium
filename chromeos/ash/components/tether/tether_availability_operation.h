@@ -39,7 +39,7 @@ class TetherHostResponseRecorder;
 class TetherAvailabilityOperation : public MessageTransferOperation {
  public:
   using OnTetherAvailabilityOperationFinishedCallback =
-      base::OnceCallback<void(std::optional<ScannedDeviceResult>)>;
+      base::OnceCallback<void(std::optional<ScannedDeviceInfo>)>;
 
   class Initializer {
    public:
@@ -113,7 +113,7 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
   raw_ptr<base::Clock> clock_;
   scoped_refptr<base::TaskRunner> task_runner_;
 
-  std::optional<ScannedDeviceResult> scanned_device_info_result_;
+  std::optional<ScannedDeviceInfo> scanned_device_info_result_;
   OnTetherAvailabilityOperationFinishedCallback on_operation_finished_;
   std::optional<base::Time> tether_availability_request_start_time_;
 
