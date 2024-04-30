@@ -9,10 +9,14 @@
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/shell.h"
+#include "base/strings/string_util.h"
 #include "base/time/time_override.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/browsertest_util.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -60,6 +64,10 @@ void TogglePickerByAccelerator() {
   ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_S,
                             /*control=*/false, /*shift=*/false,
                             /*alt=*/false, /*command=*/true);
+}
+
+void TogglePicker() {
+  ash::Shell::Get()->picker_controller()->ToggleWidget();
 }
 
 class PickerInteractiveUiTest : public InteractiveAshTest {
@@ -235,6 +243,78 @@ IN_PROC_BROWSER_TEST_F(PickerInteractiveUiTest, MAYBE_SearchAndInsertMath) {
               })),
       PressButton(kMathResultName), WaitForHide(ash::kPickerElementId),
       InContext(browser_context, WaitForWebInputFieldValue(kExpectedResult)));
+}
+
+class PickerSpokenFeedbackInteractiveUiTest : public PickerInteractiveUiTest {
+ public:
+  void SetUpOnMainThread() override {
+    PickerInteractiveUiTest::SetUpOnMainThread();
+
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+    // Ignore the intro.
+    sm_.ExpectSpeechPattern("*");
+    // Disable earcons which can be annoying in tests.
+    sm_.Call([this]() {
+      ImportJSModuleForChromeVox("ChromeVox",
+                                 "/chromevox/background/chromevox.js");
+      DisableEarcons();
+    });
+  }
+
+  void TearDownOnMainThread() override {
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+    PickerInteractiveUiTest::TearDownOnMainThread();
+  }
+
+ protected:
+  ash::test::SpeechMonitor sm_;
+
+ private:
+  void ImportJSModuleForChromeVox(std::string_view name,
+                                  std::string_view path) {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
+        ash::AccessibilityManager::Get()->profile(),
+        extension_misc::kChromeVoxExtensionId,
+        base::ReplaceStringPlaceholders(
+            R"(import('$1').then(mod => {
+            globalThis.$2 = mod.$2;
+            window.domAutomationController.send('done');
+          }))",
+            {std::string(path), std::string(name)}, nullptr));
+  }
+
+  void DisableEarcons() {
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        ash::AccessibilityManager::Get()->profile(),
+        extension_misc::kChromeVoxExtensionId,
+        "ChromeVox.earcons.playEarcon = function() {};");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
+                       AnnouncesOnWindowShown) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  // Wait for Chromevox to focus on the input field.
+  sm_.ExpectSpeechPattern("Edit text");
+
+  sm_.Call([this]() {
+    views::Textfield* picker_search_field = nullptr;
+    RunTestSequence(
+        Do([]() { TogglePicker(); }),
+        AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                  [&picker_search_field](ui::TrackedElement* el) {
+                    picker_search_field = AsView<views::Textfield>(el);
+                  }),
+        ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+        WaitForState(kSearchFieldFocusedState, true));
+  });
+
+  // TODO(b/309706053): Replace this once the strings are finalized.
+  sm_.ExpectSpeechPattern("placeholder");
+  sm_.ExpectSpeechPattern("Edit text");
+  sm_.ExpectSpeechPattern("window");
+  sm_.Replay();
 }
 
 }  // namespace
