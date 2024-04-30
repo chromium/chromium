@@ -4729,6 +4729,43 @@ TEST_F(SnapGroupDesksTest, OneSnapGroupOnEachDesk) {
   EXPECT_TRUE(w3->IsVisible());
 }
 
+// Verify that existing snap groups are hidden in partial overview mode only if
+// they are located on the currently active desktop.
+TEST_F(SnapGroupDesksTest, OnlyHideSnapGroupOnActiveDesk) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  // Create `snap_group0` on `desk0`.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group0 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group0);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  // Activate `desk1` and start partial Overview on `desk1`.
+  ActivateDesk(desk1);
+  ASSERT_TRUE(desk1->is_active());
+  ASSERT_FALSE(desk0->is_active());
+
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapOneTestWindow(w2.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio);
+  VerifySplitViewOverviewSession(w2.get());
+
+  // Verify that the target visibility of `w0` and `w1` are not affected.
+  EXPECT_TRUE(w0->TargetVisibility());
+  EXPECT_TRUE(w1->TargetVisibility());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupWindowCycleTest:
 
@@ -5354,7 +5391,7 @@ TEST_F(SnapGroupMultipleSnapGroupsTest, DoNotShowSnapGroupsInPartialOverview) {
   EXPECT_TRUE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
-  // Start normal Overview and verify that snap group will show.
+  // Start full Overview and verify that snap group will show.
   OverviewController::Get()->StartOverview(
       OverviewStartAction::kOverviewButton);
   ASSERT_TRUE(IsInOverviewSession());

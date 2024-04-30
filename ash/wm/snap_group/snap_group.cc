@@ -39,6 +39,8 @@ using chromeos::WindowStateType;
 
 SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
     : snap_group_divider_(this) {
+  CHECK_EQ(window1->parent(), window2->parent());
+
   auto* window_state1 = WindowState::Get(window1);
   auto* window_state2 = WindowState::Get(window2);
   CHECK(window_state1->IsSnapped() && window_state2->IsSnapped() &&
@@ -386,6 +388,14 @@ void SnapGroup::RefreshSnapGroup() {
 }
 
 void SnapGroup::OnOverviewModeStarting() {
+  // It's unnecessary to hide windows on inactive desks in partial Overview.
+  // Since `window1_` and `window2_` are guaranteed to be on the same parent
+  // container in ctor, it's enough to check just one of them to determine if
+  // both windows are on the active desk.
+  if (!desks_util::BelongsToActiveDesk(window1_)) {
+    return;
+  }
+
   SplitViewController* split_view_constroller =
       SplitViewController::Get(GetRootWindow());
   SplitViewController::State split_view_state = split_view_constroller->state();
