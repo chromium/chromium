@@ -1292,8 +1292,15 @@ class EnclaveAuthenticatorWithoutPinBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(enclave): re-enable these tests, probably by overriding webauthn.dll in
+// the test class.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_NotAvailableWithoutUV DISABLED_NotAvailableWithoutUV
+#else
+#define MAYBE_NotAvailableWithoutUV NotAvailableWithoutUV
+#endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       NotAvailableWithoutUV) {
+                       MAYBE_NotAvailableWithoutUV) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::DOMMessageQueue message_queue(web_contents);
@@ -1309,8 +1316,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
       request_delegate()->enclave_controller_for_testing()->is_active());
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_NotAvailableForEmptyAccounts DISABLED_NotAvailableForEmptyAccounts
+#else
+#define MAYBE_NotAvailableForEmptyAccounts NotAvailableForEmptyAccounts
+#endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       NotAvailableForEmptyAccounts) {
+                       MAYBE_NotAvailableForEmptyAccounts) {
   EnableUVKeySupport();
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
@@ -1333,8 +1345,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
       request_delegate()->enclave_controller_for_testing()->is_active());
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_NoGpmCredentialsIfDeviceCannotBeEnrolled \
+  DISABLED_NoGpmCredentialsIfDeviceCannotBeEnrolled
+#else
+#define MAYBE_NoGpmCredentialsIfDeviceCannotBeEnrolled \
+  NoGpmCredentialsIfDeviceCannotBeEnrolled
+#endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
-                       NoGpmCredentialsIfDeviceCannotBeEnrolled) {
+                       MAYBE_NoGpmCredentialsIfDeviceCannotBeEnrolled) {
   AddTestPasskeyToModel();
 
   content::WebContents* web_contents =
