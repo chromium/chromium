@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import './header.js';
 import './product_selector.js';
 import './table.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';

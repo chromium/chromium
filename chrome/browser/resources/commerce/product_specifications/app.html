@@ -1,12 +1,24 @@
 <style include="cr-hidden-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    width: fit-content;
+  }
+
+  product-specifications-header {
+    width: 100%;
+  }
+
   #summaryContainer {
     background-color: var(--color-product-specifications-summary-background);
     border-radius: 12px;
     display: flex;
-    margin: 24px 48px 0px 48px;
+    margin-inline-start: 48px;
     min-height: 50px;
-    padding: 16px;
     min-width: 758px;
+    padding: 16px;
     width: fit-content;
   }
 
@@ -58,20 +70,19 @@
     padding: 16px;
   }
 </style>
+<product-specifications-header></product-specifications-header>
 <div id="summaryContainer">
   <div id="empty" class="summary" hidden$="[[!showEmptyState_]]">
-      <img id="emptyImg" src="images/empty_state.svg"
-          aria-labelledby="classicChromeThemeTitle">
-      </img>
+      <img id="emptyImg" src="images/empty_state.svg">
       <div id="emptyTitle">$i18n{emptyStateTitle}</div>
       <div id="emptyDescription">$i18n{emptyStateDescription}</div>
       <product-selector></product-selector>
   </div>
   <div id="specs" class="summary" hidden$="[[showEmptyState_]]">
     <product-specifications-table
-        id="summaryTable"
-        columns="[[specsTable_.columns]]"
-        rows="[[specsTable_.rows]]">
+      id="summaryTable"
+      columns="[[specsTable_.columns]]"
+      rows="[[specsTable_.rows]]">
     </product-specifications-table>
   </div>
 </div>

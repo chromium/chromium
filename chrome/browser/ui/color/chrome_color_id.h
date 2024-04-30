@@ -378,7 +378,10 @@
   /* Product Specifications colors */ \
   E_CPONLY(kColorProductSpecificationsButtonBackground) \
   E_CPONLY(kColorProductSpecificationsContentBackground) \
+  E_CPONLY(kColorProductSpecificationsDivider) \
   E_CPONLY(kColorProductSpecificationsPageBackground) \
+  E_CPONLY(kColorProductSpecificationsPrimaryTitle) \
+  E_CPONLY(kColorProductSpecificationsSecondaryTitle) \
   E_CPONLY(kColorProductSpecificationsSummaryBackground) \
   /* Profile Menu colors. */ \
   E_CPONLY(kColorProfileMenuBackground) \

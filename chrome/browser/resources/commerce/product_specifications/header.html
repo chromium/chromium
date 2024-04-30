@@ -1,0 +1,40 @@
+<style include="cr-shared-style">
+  :host {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #logo {
+    margin-inline-end: 4px;
+  }
+
+  .title-text {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  #pageTitle {
+    color: var(--color-product-specifications-primary-title);
+  }
+
+  #divider {
+    background: var(--color-product-specifications-divider);
+    display: inline;
+    height: 2em;
+    margin: 4px 2px;
+    width: 2px;
+  }
+
+  #pageSubtitle {
+    color: var(--color-product-specifications-secondary-title);
+    flex: 1;
+  }
+</style>
+<img id="logo" srcset="chrome://theme/current-channel-logo@4x 4x"
+  role="presentation">
+<div class="title-text" id="pageTitle">$i18n{pageTitle}</div>
+<div id="divider"></div>
+<div class="title-text" id="pageSubtitle">$i18n{categoryTitle}</div>
+<cr-icon-button class="icon-more-vert" id="dots"></cr-icon-button>

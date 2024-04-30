@@ -18,4 +18,8 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
       ui::kColorSysBaseContainer};
   mixer[kColorProductSpecificationsPageBackground] = {ui::kColorSysSurface2};
   mixer[kColorProductSpecificationsSummaryBackground] = {ui::kColorSysSurface};
+  mixer[kColorProductSpecificationsPrimaryTitle] = {ui::kColorSysOnSurface};
+  mixer[kColorProductSpecificationsSecondaryTitle] = {
+      ui::kColorSysOnSurfaceSecondary};
+  mixer[kColorProductSpecificationsDivider] = {ui::kColorSysDivider};
 }
