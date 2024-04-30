@@ -1183,8 +1183,7 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
 #if !BUILDFLAG(IS_ANDROID)
   // This is an approximation because passwords are only enabled if the signin
   // is explicit (they are not enabled for users who signed in through Dice).
-  allow_passwords &= switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-      switches::ExplicitBrowserSigninPhase::kExperimental);
+  allow_passwords &= switches::IsExplicitBrowserSigninUIOnDesktopEnabled();
 #endif
 
   if (allow_passwords) {

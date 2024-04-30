@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
@@ -1441,8 +1442,8 @@ class AccountReconcilorDiceTestForSupervisedUsers
     : public AccountReconcilorDiceTest {
  public:
   AccountReconcilorDiceTestForSupervisedUsers() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, /*disabled_features=*/{switches::kUnoDesktop});
+    feature_list_.InitAndDisableFeature(
+        switches::kExplicitBrowserSigninUIOnDesktop);
   }
 
   ~AccountReconcilorDiceTestForSupervisedUsers() override = default;
@@ -1511,27 +1512,22 @@ TEST_F(AccountReconcilorDiceTestForSupervisedUsers,
 
 class AccountReconcilorDiceTestWithUnoDesktop
     : public AccountReconcilorDiceTest,
-      public ::testing::WithParamInterface<bool> {
+      public base::test::WithFeatureOverride {
  public:
-  AccountReconcilorDiceTestWithUnoDesktop() {
-    if (is_uno_desktop_enabled()) {
-      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
-    } else {
-      feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-    }
-  }
+  AccountReconcilorDiceTestWithUnoDesktop()
+      : base::test::WithFeatureOverride(
+            switches::kExplicitBrowserSigninUIOnDesktop) {}
 
   ~AccountReconcilorDiceTestWithUnoDesktop() override = default;
 
-  bool is_uno_desktop_enabled() const { return GetParam(); }
+  bool is_uno_desktop_enabled() const { return IsParamFeatureEnabled(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(AccountReconcilorDiceTestWithUnoDesktop,
-                         AccountReconcilorDiceTestWithUnoDesktop,
-                         ::testing::Bool());
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    AccountReconcilorDiceTestWithUnoDesktop);
 
 TEST_P(AccountReconcilorDiceTestWithUnoDesktop, DeleteCookieForSignedInUser) {
   auto* identity_manager = identity_test_env()->identity_manager();
@@ -1633,7 +1629,8 @@ class AccountReconcilorTestDiceExplicitBrowserSignin
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 using AccountReconcilorTestDicePreChromeSignIn =

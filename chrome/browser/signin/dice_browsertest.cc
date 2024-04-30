@@ -396,11 +396,10 @@ class DiceBrowserTest : public InProcessBrowserTest,
         reconcilor_blocked_count_(0),
         reconcilor_unblocked_count_(0),
         reconcilor_started_count_(0) {
-    // TODO(b/320650075): Adapt tests for UNO Desktop is enabled.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{switches::kUnoDesktop,
-                               switches::kExplicitBrowserSigninUIOnDesktop});
+    // TODO(b/320650075): Adapt tests for
+    // `switches::kExplicitBrowserSigninUIOnDesktop` is enabled.
+    feature_list_.InitAndDisableFeature(
+        switches::kExplicitBrowserSigninUIOnDesktop);
     https_server_.RegisterDefaultHandler(base::BindRepeating(
         &FakeGaia::HandleSigninURL, main_email_,
         base::BindRepeating(&DiceBrowserTest::OnSigninRequest,
@@ -752,9 +751,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
                   .empty());
 
   // Make sure we are recording this value for the Control group of the
-  // `switches::kUnoDesktop` experiment.
-  ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-      switches::ExplicitBrowserSigninPhase::kExperimental));
+  // `switches::kExplicitBrowserSigninUIOnDesktop` experiment.
+  ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
       ShouldShowChromeSigninBubbleWithReason::kShouldShow, 1);
@@ -1282,8 +1280,7 @@ class DiceExplicitSigninBrowserTest : public InProcessBrowserTest {
     std::vector<base::test::FeatureRef> enabled_features = {
         syncer::kSyncEnableContactInfoDataTypeInTransportMode,
     };
-    std::vector<base::test::FeatureRef> disabled_features = {
-        switches::kUnoDesktop};
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     if (content::IsPreTest()) {
       disabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);

@@ -1749,7 +1749,8 @@ TEST_F(DiceWebSigninInterceptorTest, StateResetTest) {
 class DiceWebSigninInterceptorTestWithUnoEnabled
     : public DiceWebSigninInterceptorTest {
  private:
-  base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
@@ -2030,7 +2031,8 @@ class DiceWebSigninInterceptorTestWithUnoDisabled
     : public DiceWebSigninInterceptorTest {
  public:
   DiceWebSigninInterceptorTestWithUnoDisabled() {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+    feature_list_.InitAndDisableFeature(
+        switches::kExplicitBrowserSigninUIOnDesktop);
   }
 
  private:

@@ -137,7 +137,7 @@ class BrowsingDataRemoverBrowserTest
     std::vector<base::test::FeatureRef> enabled_features = {};
     // TODO(b/314968275): Add tests for when UNO Desktop is enabled.
     std::vector<base::test::FeatureRef> disabled_features = {
-        switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop};
+        switches::kExplicitBrowserSigninUIOnDesktop};
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
     enabled_features.push_back(features::kCdmStorageDatabase);

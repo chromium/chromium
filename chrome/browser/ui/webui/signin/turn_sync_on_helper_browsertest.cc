@@ -414,18 +414,20 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   ASSERT_EQ(reconcilor->GetState(),
             signin_metrics::AccountReconcilorState::kRunning);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Dice platforms with `switches::kUnoDesktop` enabled and empty primary
-  // account, updating cookies is disabled. Therefore running the reconcilor
-  // doesn't require any network requests and might have been completed by now.
-  // The reconcilor will not remove the account from cookies but revoking
-  // refresh tokens should be sufficient to invalidate cookies.
+  // On Dice platforms with `switches::kExplicitBrowserSigninUIOnDesktop`
+  // enabled and empty primary account, updating cookies is disabled. Therefore
+  // running the reconcilor doesn't require any network requests and might have
+  // been completed by now. The reconcilor will not remove the account from
+  // cookies but revoking refresh tokens should be sufficient to invalidate
+  // cookies.
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class TurnSyncOnHelperBrowserTestWithUnoDesktop
     : public TurnSyncOnHelperBrowserTest {
  private:
-  base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 // Tests that aborting a Sync opt-in flow started with a web only signed in

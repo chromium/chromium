@@ -815,7 +815,8 @@ TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class SigninUiUtilWithUnoDesktopTest : public SigninUiUtilTest {
  private:
-  base::test::ScopedFeatureList feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 TEST_F(SigninUiUtilWithUnoDesktopTest, EnableSyncWithExistingWebOnlyAccount) {

@@ -185,8 +185,7 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
 
 #if !BUILDFLAG(IS_ANDROID)
     // Explicitly opt out of account storage when signin is explicit.
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kExperimental)) {
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
       password_manager::features_util::OptOutOfAccountStorage(
           GetProfile(0)->GetPrefs(), GetSyncService(0));
     }

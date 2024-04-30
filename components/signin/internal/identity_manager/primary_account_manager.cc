@@ -216,8 +216,7 @@ PrimaryAccountManager::PrimaryAccountManager(
   DCHECK(account_tracker_service_);
 
   // Clear the pref it is was set and the feature is now off.
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental)) {
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     ScopedPrefCommit(client_->GetPrefs(), /*commit_on_destroy=*/false)
         .ClearPref(prefs::kExplicitBrowserSignin);
   }
@@ -732,8 +731,7 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
       return;
     case PrimaryAccountChangeEvent::Type::kCleared:
       scoped_pref_commit.ClearPref(kExplicitBrowserSigninWithoutFeatureEnabled);
-      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-              switches::ExplicitBrowserSigninPhase::kExperimental)) {
+      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
         scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
       }
       return;
@@ -747,8 +745,7 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
               signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
         scoped_pref_commit.ClearPref(
             kExplicitBrowserSigninWithoutFeatureEnabled);
-        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-                switches::ExplicitBrowserSigninPhase::kExperimental)) {
+        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
           scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
         }
       } else {
@@ -756,8 +753,7 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
         // Signin event.
         scoped_pref_commit.SetBoolean(
             kExplicitBrowserSigninWithoutFeatureEnabled, true);
-        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-                switches::ExplicitBrowserSigninPhase::kExperimental)) {
+        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
           scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
         }
       }

@@ -113,8 +113,7 @@ class SigninViewControllerBrowserImplicitSigninTest
   SigninViewControllerBrowserImplicitSigninTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop,
-                               switches::kUnoDesktop});
+        /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop});
   }
 
  private:

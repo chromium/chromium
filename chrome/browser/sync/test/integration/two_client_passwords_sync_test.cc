@@ -96,8 +96,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
     ASSERT_FALSE(GetSyncService(i)->IsSyncFeatureEnabled());
 
     // The PASSWORDS are active only if the signin was explicit.
-    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kExperimental)) {
+    if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
       // Opt in. PASSWORDS should become active.
       password_manager::features_util::OptInToAccountStorage(
           GetProfile(i)->GetPrefs(), GetSyncService(i));

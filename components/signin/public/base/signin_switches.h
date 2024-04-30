@@ -97,13 +97,7 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEnginePromoDialogRewrite);
 #endif
 
-// Used to experiment and validate the UNO model on Desktop. Not meant to be
-// launched to stable for the moment, while it's still in a prototype state.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kUnoDesktop);
-
-// Used for the launch of the UNO model on Desktop, as well as for the later
-// phases of the experiment.
+// Used for the launch of the UNO model on Desktop Phase 0.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kExplicitBrowserSigninUIOnDesktop);
 // Param to control whether the bubbles are dismissible by pressing on the
@@ -115,7 +109,7 @@ extern const base::FeatureParam<bool>
 enum class ExplicitBrowserSigninPhase {
   // Used to enable the changes made for the experimental feature `kUnoDesktop`
   // and for the full launch feature `kExplicitBrowserSigninUIOnDesktop`.
-  kExperimental = 0,
+  // DEPRECATED -- kExperimental = 0, will be removed.
   // Used to enable the changes made only for the full launch feature
   // `kExplicitBrowserSigninUIOnDesktop`.
   kFull = 1,
@@ -123,7 +117,7 @@ enum class ExplicitBrowserSigninPhase {
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsExplicitBrowserSigninUIOnDesktopEnabled(
-    ExplicitBrowserSigninPhase phase);
+    ExplicitBrowserSigninPhase phase = ExplicitBrowserSigninPhase::kFull);
 
 // Controls the view mode for (history) sync screen.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \

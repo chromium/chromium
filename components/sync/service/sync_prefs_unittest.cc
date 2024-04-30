@@ -447,82 +447,38 @@ TEST_F(SyncPrefsTest,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-struct SyncPrefsExplicitBrowserSigninTestParam {
-  UserSelectableType user_selectable_type = UserSelectableType::kPasswords;
-  switches::ExplicitBrowserSigninPhase phase =
-      switches::ExplicitBrowserSigninPhase::kExperimental;
-  bool expected_enabled_by_default = false;
-};
-
-SyncPrefsExplicitBrowserSigninTestParam
-    kSyncPrefsExplicitBrowserSigninTestParams[] = {
-        // Experimental phase.
-        {.user_selectable_type = UserSelectableType::kPasswords,
-         .expected_enabled_by_default = true},
-        {.user_selectable_type = UserSelectableType::kAutofill},
-        // Full implementation.
-        {.user_selectable_type = UserSelectableType::kPasswords,
-         .phase = switches::ExplicitBrowserSigninPhase::kFull,
-         .expected_enabled_by_default = true},
-        {.user_selectable_type = UserSelectableType::kAutofill,
-         .phase = switches::ExplicitBrowserSigninPhase::kFull,
-         .expected_enabled_by_default = true},
-};
-
-class SyncPrefsExplicitBrowserSigninTest
-    : public SyncPrefsTest,
-      public testing::WithParamInterface<
-          SyncPrefsExplicitBrowserSigninTestParam> {
+class SyncPrefsExplicitBrowserSigninTest : public SyncPrefsTest {
  public:
   SyncPrefsExplicitBrowserSigninTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode};
-
-    switch (GetParam().phase) {
-      case switches::ExplicitBrowserSigninPhase::kExperimental:
-        enabled_features.push_back(switches::kUnoDesktop);
-        break;
-      case switches::ExplicitBrowserSigninPhase::kFull:
-        enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
-        break;
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
-  }
-
-  UserSelectableType user_selectable_type() const {
-    return GetParam().user_selectable_type;
-  }
-
-  bool expected_enabled_by_default() const {
-    return GetParam().expected_enabled_by_default;
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::
+                                  kSyncEnableContactInfoDataTypeInTransportMode,
+                              switches::kExplicitBrowserSigninUIOnDesktop},
+        /*disabled_features=*/{});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(SyncPrefsExplicitBrowserSigninTest, DefaultWithExplicitBrowserSignin) {
+TEST_F(SyncPrefsExplicitBrowserSigninTest, DefaultWithExplicitBrowserSignin) {
   // If no explicit browser sign in occurred, then the type is still disabled
   // by default.
   ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
   EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                   .Has(user_selectable_type()));
+                   .Has(UserSelectableType::kAutofill));
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
+                   .Has(UserSelectableType::kPasswords));
 
   // Set an explicit browser signin.
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
 
-  // With an explicit sign in, may be enabled by default.
-  EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
-                .Has(user_selectable_type()),
-            expected_enabled_by_default());
+  // With an explicit sign in, passwords and autofill are enabled by default.
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kAutofill));
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_)
+                  .Has(UserSelectableType::kPasswords));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SyncPrefsExplicitBrowserSigninTest,
-    testing::ValuesIn(kSyncPrefsExplicitBrowserSigninTestParams));
 
 #endif
 

@@ -10456,10 +10456,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          profile_management::features::kThirdPartyProfileManagement)},
 
-    {"uno-desktop", flag_descriptions::kUnoDesktopName,
-     flag_descriptions::kUnoDesktopDescription, kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(switches::kUnoDesktop)},
-
     {"explicit-browser-signin-ui-on-desktop",
      flag_descriptions::kExplicitBrowserSigninUIOnDesktopName,
      flag_descriptions::kExplicitBrowserSigninUIOnDesktopDescription,

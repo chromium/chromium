@@ -117,7 +117,6 @@ BASE_FEATURE(kSearchEnginePromoDialogRewrite,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kUnoDesktop, "UnoDesktop", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kExplicitBrowserSigninUIOnDesktop,
              "ExplicitBrowserSigninUIOnDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -128,11 +127,7 @@ const base::FeatureParam<bool> kInterceptBubblesDismissibleByAvatarButton{
 
 bool IsExplicitBrowserSigninUIOnDesktopEnabled(
     ExplicitBrowserSigninPhase phase) {
-  if (phase == ExplicitBrowserSigninPhase::kFull) {
-    return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);
-  }
-  return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop) ||
-         base::FeatureList::IsEnabled(kUnoDesktop);
+  return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \

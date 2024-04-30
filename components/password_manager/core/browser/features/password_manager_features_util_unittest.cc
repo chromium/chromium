@@ -577,7 +577,8 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        MigrateDeclinedSaveOptInToExplicitOptOut) {
   // Using the Uno Flag because it will automatically turn on account password
   // storage if the default store has not been set to kProfileStore.
-  base::test::ScopedFeatureList scoped_feature_list{switches::kUnoDesktop};
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kExplicitBrowserSigninUIOnDesktop};
   syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
 

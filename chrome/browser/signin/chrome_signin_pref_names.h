@@ -12,16 +12,6 @@ namespace prefs {
 inline constexpr char kProfileCreationInterceptionDeclined[] =
     "signin.ProfileCreationInterceptionDeclinedPref";
 
-// Dictionary pref to store the number of times the Chrome Signin Bubble was
-// successively declined per account. The key is the hash of the email.
-inline constexpr char kChromeSigninInterceptionDeclined[] =
-    "signin.ChromeSigninInterceptionDeclinedPref";
-
-// Dictionary pref to store the number of times the Chrome Signin Bubble is
-// shown per account. The key is the hash of the email.
-inline constexpr char kChromeSigninInterceptionShownCount[] =
-    "signin.ChromeSigninInterceptionShownCountPref";
-
 // Dictionary pref to store the user choice for the Chrome Signin Intercept per
 // account. The key is the hash of the email.
 inline constexpr char kChromeSigninInterceptionUserChoice[] =

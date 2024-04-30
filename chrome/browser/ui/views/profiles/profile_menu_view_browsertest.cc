@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -427,26 +428,17 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, Signout) {
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// Wrapper class to add parametrized feature tests.
-// Param of the ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature:
-// -- bool uno_enabled;
+// Wrapper class to add parametrized
+// `switches::kExplicitBrowserSigninUIOnDesktop` feature tests.
 class ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature
     : public ProfileMenuViewSignoutTest,
-      public testing::WithParamInterface<bool> {
+      public base::test::WithFeatureOverride {
  public:
-  ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature() {
-    if (uno_enabled()) {
-      feature_list_.InitWithFeatures(
-          {switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {},
-          {switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop});
-    }
-  }
+  ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature()
+      : base::test::WithFeatureOverride(
+            switches::kExplicitBrowserSigninUIOnDesktop) {}
 
-  bool uno_enabled() const { return GetParam(); }
+  bool uno_enabled() const { return IsParamFeatureEnabled(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -504,13 +496,8 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature,
-    testing::Bool(),
-    [](const ::testing::TestParamInfo<bool>& info) {
-      return info.param ? "UnoEnabled" : "UnoDisabled";
-    });
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature);
 
 // Signout test that handles logout requests. The parameter indicates whether
 // an error page is generated for the logout request.
@@ -527,15 +514,8 @@ class ProfileMenuViewSignoutTestWithNetwork
         &ProfileMenuViewSignoutTestWithNetwork::HandleSignoutURL,
         has_network_error()));
 
-    if (uno_enabled()) {
-      feature_list_.InitWithFeatures(
-          {switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop},
-          {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {},
-          {switches::kUnoDesktop, switches::kExplicitBrowserSigninUIOnDesktop});
-    }
+    feature_list_.InitWithFeatureState(
+        switches::kExplicitBrowserSigninUIOnDesktop, uno_enabled());
   }
 
   bool uno_enabled() const { return std::get<0>(GetParam()); }

@@ -100,8 +100,7 @@ bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
 
 bool DiceAccountReconcilorDelegate::IsCookieBasedConsistencyMode() const {
   CHECK(IsReconcileEnabled());
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-             switches::ExplicitBrowserSigninPhase::kExperimental) &&
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
          !identity_manager_->HasPrimaryAccount(
              GetConsentLevelForPrimaryAccount());
 }
@@ -245,8 +244,7 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   }
 #endif
 
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental)) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     return ConsentLevel::kSignin;
   }
 
@@ -400,10 +398,9 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
     return;
   }
 
-  // In the UNO model the primary account should not be signed out if
-  // authentication cookies are deleted by user action.
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental) &&
+  // In the explicit browser signin model the primary account should not be
+  // signed out if authentication cookies are deleted by user action.
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
       !identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
     return;
   }

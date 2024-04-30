@@ -1409,7 +1409,8 @@ INSTANTIATE_TEST_SUITE_P(
 class MutableProfileOAuth2TokenServiceDelegateWithUnoDesktopTest
     : public MutableProfileOAuth2TokenServiceDelegateTest {
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 // Checks that, for a signed in non-syncing account in UNO with clear on exit,

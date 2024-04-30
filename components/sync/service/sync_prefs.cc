@@ -22,7 +22,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/pref_names.h"
@@ -222,9 +221,7 @@ bool SyncPrefs::IsInitialSyncFeatureSetupComplete() const {
 }
 
 bool SyncPrefs::IsExplicitBrowserSignin() const {
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-             switches::ExplicitBrowserSigninPhase::kFull) &&
-         pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
+  return pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -280,19 +277,13 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         type_enabled = true;
 #else
         // kPasswords and kAutofill are only on by default if there was an
-        // explicit sign in recorded and
-        // `IsExplicitBrowserSigninUIOnDesktopEnabled()` is true.
+        // explicit sign in recorded.
         // Otherwise:
         // - kPasswords requires a dedicated opt-in.
         // - kAutofill cannot be enabled.
         // Note: If this changes, also update the migration logic in
         // MigrateGlobalDataTypePrefsToAccount().
-        switches::ExplicitBrowserSigninPhase phase =
-            type == UserSelectableType::kPasswords
-                ? switches::ExplicitBrowserSigninPhase::kExperimental
-                : switches::ExplicitBrowserSigninPhase::kFull;
         type_enabled =
-            switches::IsExplicitBrowserSigninUIOnDesktopEnabled(phase) &&
             pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 #endif
       } else if (type == UserSelectableType::kBookmarks ||

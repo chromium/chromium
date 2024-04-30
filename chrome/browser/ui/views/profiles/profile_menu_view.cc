@@ -579,14 +579,6 @@ void ProfileMenuView::BuildIdentity() {
         ui::ImageModel::FromImage(account_info.account_image),
         badge_image_model, menu_title_, menu_subtitle_, management_label);
   } else {
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kExperimental) &&
-        !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-            switches::ExplicitBrowserSigninPhase::kFull) &&
-        account.IsEmpty()) {
-      account_info =
-          signin_ui_util::GetSingleAccountForPromos(identity_manager);
-    }
     menu_title_ = l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
     // The email may be empty.
     menu_subtitle_ = base::UTF8ToUTF16(account_info.email);
@@ -732,8 +724,7 @@ void ProfileMenuView::BuildSyncInfo() {
       show_sync_badge = !switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
           switches::ExplicitBrowserSigninPhase::kFull);
     }
-  } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-                 switches::ExplicitBrowserSigninPhase::kExperimental) &&
+  } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
              !account_info_for_promos.IsEmpty()) {
     // Web-only signed-in state.
     account_info = account_info_for_promos;

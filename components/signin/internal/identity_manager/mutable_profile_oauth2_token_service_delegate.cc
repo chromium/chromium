@@ -497,8 +497,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       case RevokeAllTokensOnLoad::kNo:
         break;
       case RevokeAllTokensOnLoad::kDeleteSiteDataOnExit:
-        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-                switches::ExplicitBrowserSigninPhase::kExperimental)) {
+        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
           // With Uno, tokens are not revoked when clearing cookies if the user
           // is signed in non-syncing.
           revoke_token =

@@ -59,7 +59,7 @@ enum class ShouldShowChromeSigninBubbleWithReason {
 
   // The bubble should not be shown: multiple reasons listed below with order of
   // priority.
-  kShouldNotShowMaxShownCountReached = 1,
+  // Deprecated: kShouldNotShowMaxShownCountReached = 1,
   kShouldNotShowAlreadySignedIn = 2,
   // Deprecated: kShouldNotShowSecondaryAccount = 3,
   kShouldNotShowUnknownAccessPoint = 4,
@@ -330,13 +330,10 @@ class DiceWebSigninInterceptor : public KeyedService,
   size_t IncrementEmailToCountDictionaryPref(const char* pref_name,
                                              const std::string& email);
 
-  // In the experiment phase, the number of attempts is the number of declines.
-  // Also only records on accept and resets the decline count when recorded.
-  // In the full phase, since the choice is remembered, the number of attempts
-  // is the number of dimisses - this value is not reset. Records the number of
-  // times the user previously dismissed the Chrome Signin bubble when
-  // accepting/declining it. Result is expected to be either
-  // `SigninInterceptionResult::kAccepted` or
+  // The number of attempts is the number of dismisses - this value is not
+  // reset when recoreded. Records the number of times the user previously
+  // dismissed the Chrome Signin bubble when accepting/declining it. Result is
+  // expected to be either `SigninInterceptionResult::kAccepted` or
   // `SigninInterceptionResult::kDeclined`.
   void RecordChromeSigninNumberOfAttemptsBeforeExplicitUserAction(
       const std::string& email,
@@ -345,10 +342,6 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Checks if the user previously declined 2 times creating a new profile for
   // this account.
   bool HasUserDeclinedProfileCreation(const std::string& email) const;
-
-  // Returns the number of times the Chrome Signin Bubble was shown per `email`.
-  // The value is stored in a profile pref.
-  size_t GetChromeSigninBubbleShownCount(const std::string& email) const;
 
   // Fetches the value of the cloud user level value of the
   // ManagedAccountsSigninRestriction policy for 'account_info' and runs
