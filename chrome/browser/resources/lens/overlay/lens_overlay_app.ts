@@ -36,7 +36,10 @@ export class LensOverlayAppElement extends PolymerElement {
   static get properties() {
     return {
       screenshotDataUri: String,
-      closeButtonHidden: Boolean,
+      closeButtonHidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 

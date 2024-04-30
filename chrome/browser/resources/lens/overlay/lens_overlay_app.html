@@ -16,6 +16,11 @@
     --cr-icon-button-fill-color: white;
   }
 
+
+  :host([close-button-hidden]) #closeButton {
+    display: none;
+  }
+
   initial-toast {
     pointer-events: none;
   }
@@ -29,5 +34,5 @@
   <initial-toast id="initialToast"></initial-toast>
   <cr-icon-button id="closeButton" class="action-button"
     on-click="onCloseButtonClick" aria-label="$i18n{close}"
-    title="$i18n{close}" hidden$="[[closeButtonHidden]]"></cr-icon-button>
+    title="$i18n{close}"></cr-icon-button>
 </div>
