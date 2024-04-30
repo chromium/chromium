@@ -13,8 +13,10 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 
-import {prefToString as prefValueToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
+import {prefToString as prefValueToString} from '/shared/settings/prefs/pref_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertExists} from '../../assert_extras.js';
 
 import {PrefControlMixinInternal} from './pref_control_mixin_internal.js';
 import {getTemplate} from './settings_dropdown_v2.html.js';
@@ -62,6 +64,16 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
       },
 
       /**
+       * Note: This property should not be set if `pref` is defined.
+       * When this component is used without a pref object, `value` represents
+       * the current value of the dropdown. Setting `value` from parent elements
+       * via downward data binding will update the selected option accordingly.
+       */
+      value: {
+        type: String,
+      },
+
+      /**
        * Label for a11y purposes.
        */
       ariaLabel: {
@@ -78,6 +90,14 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
         value: 'SETTINGS_DROPDOWN_NOT_FOUND',
         readOnly: true,
       },
+
+      /**
+       * Determines if the "not found" option is selected or not.
+       */
+      isNotFoundOptionSelected_: {
+        type: Boolean,
+        computed: 'computeIsNotFoundOptionSelected_(options, pref.*, value)',
+      },
     };
   }
 
@@ -87,6 +107,7 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
     chrome.settingsPrivate.PrefType.NUMBER,
     chrome.settingsPrivate.PrefType.STRING,
   ];
+  value?: DropdownOption['value'];
 
   override focus(): void {
     this.$.select.focus();
@@ -94,25 +115,29 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
 
   /**
    * Event handler for when a menu item is selected by user action. Dispatches a
-   * change event containing the newly selected value.
+   * `change` event containing the selected value.
    */
-  private onChange_(event: Event): void {
-    event.stopPropagation();
-    const selectedValue = this.$.select.value;
+  private onChange_(): void {
+    const selectedOption = this.findMatchingOption_(this.$.select.value);
+    assertExists(selectedOption);
+    const newValue = selectedOption.value;
 
     if (this.pref) {
-      const prefValue = stringToPrefValue(selectedValue, this.pref);
-      if (prefValue === undefined) {
-        return;
-      }
-
-      this.updatePrefValueFromUserAction(prefValue);
-
-      this.dispatchEvent(new CustomEvent(
-          'change', {bubbles: true, composed: true, detail: prefValue}));
+      this.updatePrefValueFromUserAction(newValue);
     } else {
-      // TODO(b/333454296) Support non-pref capability.
+      this.value = newValue;
     }
+
+    this.dispatchEvent(new CustomEvent(
+        'change', {bubbles: true, composed: true, detail: newValue}));
+  }
+
+  /**
+   * Returns a matching option from `options` based on the given `value`. Else,
+   * returns `undefined` if no matching option.
+   */
+  private findMatchingOption_(value: string): DropdownOption|undefined {
+    return this.options.find(option => option.value.toString() === value);
   }
 
   /**
@@ -124,26 +149,26 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
   }
 
   /**
-   * Determines if the option with the given `value` is selected. If `value`
-   * matches the pref value, then the respective option is selected.
+   * Determines if the given `option` is selected based on its value.
    */
   private isOptionSelected_(option: DropdownOption): boolean {
     if (this.pref) {
       return prefValueToString(this.pref) === option.value.toString();
     }
 
-    // TODO(b/333454296) Support non-pref capability.
+    if (this.value !== undefined) {
+      return this.value.toString() === option.value.toString();
+    }
+
     return false;
   }
 
   /**
-   * Determines if the "not found" option is selected. This option should be
-   * selected if no other options are selected.
+   * Computes if the "not found" option is selected. This option should be
+   * selected only if no other options are selected.
    */
-  private isNotFoundOptionSelected_(): boolean {
-    return !this.options.some((option) => {
-      return this.isOptionSelected_(option);
-    });
+  private computeIsNotFoundOptionSelected_(): boolean {
+    return !this.options.some((option) => this.isOptionSelected_(option));
   }
 }
 

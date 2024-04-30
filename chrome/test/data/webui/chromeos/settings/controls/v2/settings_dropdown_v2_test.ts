@@ -229,11 +229,50 @@ suite('<settings-dropdown-v2>', () => {
 
     test('Selecting an option dispatches change event', async () => {
       for (const testOption of testOptions) {
+        const value = testOption.value;
         const changeEventPromise = eventToPromise('change', window);
+        simulateSelectAction(value);
+        assertOptionSelected(value);
+        const event = await changeEventPromise;
+        assertEquals(value, event.detail);
+      }
+    });
+  });
+
+  suite('without pref', () => {
+    test('Selected option updates according to value property', () => {
+      dropdownElement.value = 1;
+      assertOptionSelected(1);
+      dropdownElement.value = 2;
+      assertOptionSelected(2);
+      dropdownElement.value = 3;
+      assertOptionSelected(3);
+    });
+
+    test('Not found option is selected if no matching option for value', () => {
+      dropdownElement.value = 1;
+      assertOptionSelected(1);
+      dropdownElement.value = 9001;
+      assertOptionSelected('SETTINGS_DROPDOWN_NOT_FOUND');
+      dropdownElement.value = 2;
+      assertOptionSelected(2);
+    });
+
+    test('Selecting an option updates value property', () => {
+      for (const testOption of testOptions) {
         const value = testOption.value;
         simulateSelectAction(value);
         assertOptionSelected(value);
+        assertEquals(value, dropdownElement.value);
+      }
+    });
 
+    test('Selecting an option dispatches change event', async () => {
+      for (const testOption of testOptions) {
+        const value = testOption.value;
+        const changeEventPromise = eventToPromise('change', window);
+        simulateSelectAction(value);
+        assertOptionSelected(value);
         const event = await changeEventPromise;
         assertEquals(value, event.detail);
       }

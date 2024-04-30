@@ -9,11 +9,11 @@
   <template is="dom-repeat" items="[[options]]" as="option">
     <option value="[[option.value]]"
         hidden="[[option.hidden]]"
-        selected="[[isOptionSelected_(option, pref.*)]]">
+        selected="[[isOptionSelected_(option, pref.*, value)]]">
       [[option.label]]
     </option>
   </template>
   <option value="[[notFoundValue]]" hidden aria-hidden="true"
-      selected="[[isNotFoundOptionSelected_(pref.*)]]">
+      selected="[[isNotFoundOptionSelected_]]">
   </option>
 </select>
