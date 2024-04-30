@@ -1118,14 +1118,20 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame =
       CreateTestHardwareVideoFrame(PIXEL_FORMAT_NV12, GL_TEXTURE_EXTERNAL_OES);
-
+#if BUILDFLAG(IS_OZONE)
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormatExternalSampler);
+#else
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+#endif
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGB, resources.type);
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::LegacyMultiPlaneFormat::kNV12, resources.resources[0].format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resources.resources[0].format);
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
@@ -1208,6 +1214,13 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
       PIXEL_FORMAT_P016LE, GL_TEXTURE_EXTERNAL_OES);
+#if BUILDFLAG(IS_OZONE)
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormatExternalSampler);
+#else
+  video_frame->set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+#endif
   video_frame->set_color_space(kHDR10ColorSpace);
   video_frame->set_hdr_metadata(hdr_metadata);
 
@@ -1217,7 +1230,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
   EXPECT_EQ(1u, resources.resources.size());
   EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_EXTERNAL_OES),
             resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(viz::LegacyMultiPlaneFormat::kP010, resources.resources[0].format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kP010, resources.resources[0].format);
   EXPECT_EQ(kHDR10ColorSpace, resources.resources[0].color_space);
   EXPECT_EQ(hdr_metadata, resources.resources[0].hdr_metadata);
   EXPECT_EQ(0u, GetSharedImageCount());
