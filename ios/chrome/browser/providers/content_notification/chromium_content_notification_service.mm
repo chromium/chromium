@@ -21,6 +21,10 @@ class ChromiumContentNotificationService final
       NSDictionary<NSString*, id>* payload) final {
     return nil;
   }
+  void SendNAUForConfiguration(
+      ContentNotificationNAUConfiguration* configuration) final {
+    return;
+  }
 };
 
 }  // anonymous namespace
