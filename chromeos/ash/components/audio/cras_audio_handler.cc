@@ -1140,9 +1140,11 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
     NotifyActiveNodeChanged(active_device.is_input);
   }
 
-  // Active device has changed, update user preference.
+  // Active device has changed, update user preference and add the device to
+  // most recently activated device list.
   if (features::IsAudioSelectionImprovementEnabled()) {
     SyncDevicePrefSetMap(active_device.is_input);
+    AddDeviceToMostRecentActivatedList(active_device);
   }
 
   // Save active state for the nodes.
@@ -1838,11 +1840,6 @@ void CrasAudioHandler::SwitchToDevice(const AudioDevice& device,
 
   SetActiveDevice(device, notify, activate_by);
 
-  // Active device has changed, update user preference.
-  if (features::IsAudioSelectionImprovementEnabled()) {
-    SyncDevicePrefSetMap(device.is_input);
-  }
-
   // content::MediaStreamManager listens to
   // base::SystemMonitor::DevicesChangedObserver for audio devices,
   // and updates EnumerateDevices when OnDevicesChanged is called.
@@ -2063,6 +2060,7 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
       return;
     }
 
+    // Unplugged the current active device.
     if (active_device_removed) {
       // Pauses active streams when the active output device is
       // removed.
@@ -2070,8 +2068,34 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
         PauseAllStreams();
       }
 
-      // Unplugged the current active device.
-      SwitchToTopPriorityDevice(devices);
+      if (!features::IsAudioSelectionImprovementEnabled()) {
+        SwitchToTopPriorityDevice(devices);
+        return;
+      }
+
+      CHECK(features::IsAudioSelectionImprovementEnabled());
+
+      // If there is only one device left, activate it.
+      if (devices.size() == 1) {
+        SwitchToDevice(devices.front(), /*notify=*/true,
+                       DeviceActivateType::kActivateByPriority);
+        return;
+      }
+
+      // Check if the remaining device set was seen before, activate the
+      // preferred one if so, otherwise, activate the most recently active
+      // device.
+      const std::optional<AudioDevice> preferred_device =
+          GetPreferredDeviceIfDeviceSetSeenBefore(
+              is_input, GetSimpleUsageAudioDevices(audio_devices_, is_input));
+      if (preferred_device.has_value()) {
+        SwitchToDevice(preferred_device.value(), /*notify=*/true,
+                       DeviceActivateType::kActivateByPriority);
+      } else if (!ActivateMostRecentActiveDevice(is_input)) {
+        // Fall back to previous approach if no device in the most recently
+        // active device list is currently connected.
+        SwitchToTopPriorityDevice(devices);
+      }
 
       return;
     }
@@ -2082,6 +2106,44 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
   // error. Restore the previously selected active.
   VLOG(1) << "Odd case from cras, the active node is lost unexpectedly.";
   SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
+}
+
+void CrasAudioHandler::AddDeviceToMostRecentActivatedList(
+    const AudioDevice& device) {
+  std::vector<std::string>& ids =
+      device.is_input ? most_recent_activated_input_device_ids_
+                      : most_recent_activated_output_device_ids_;
+  std::string target_device_id = GetDeviceIdString(device);
+  // Find if this device is already in the list, remove it if so.
+  for (auto it = ids.begin(); it != ids.end(); it++) {
+    if (target_device_id == *it) {
+      ids.erase(it);
+      break;
+    }
+  }
+
+  // Add this device to the end of the list.
+  ids.push_back(target_device_id);
+}
+
+bool CrasAudioHandler::ActivateMostRecentActiveDevice(bool is_input) {
+  const std::vector<std::string>& ids =
+      is_input ? most_recent_activated_input_device_ids_
+               : most_recent_activated_output_device_ids_;
+  for (int i = ids.size() - 1; i >= 0; i--) {
+    std::optional<uint64_t> device_stable_id = ParseDeviceId(ids[i]);
+    if (!device_stable_id.has_value()) {
+      continue;
+    }
+    const AudioDevice* device = GetDeviceFromStableDeviceId(*device_stable_id);
+    if (!device) {
+      continue;
+    }
+    SwitchToDevice(*device, /*notify=*/true,
+                   DeviceActivateType::kActivateByPriority);
+    return true;
+  }
+  return false;
 }
 
 bool CrasAudioHandler::ShouldSwitchToHotPlugDevice(
@@ -2154,7 +2216,11 @@ void CrasAudioHandler::SwitchToTopPriorityDevice(
     return;
   }
 
-  AudioDevice top_device = base::ranges::max(devices, LessUserPriority);
+  // When the audio selection improvement flag is on, no user priority will be
+  // maintained. Use built-in priority rather than user priority.
+  AudioDevice top_device = features::IsAudioSelectionImprovementEnabled()
+                               ? base::ranges::max(devices, LessBuiltInPriority)
+                               : base::ranges::max(devices, LessUserPriority);
   if (!top_device.is_for_simple_usage()) {
     return;
   }
@@ -2396,6 +2462,9 @@ void CrasAudioHandler::HandleAudioDeviceChange(
     HandleNonHotplugNodesChange(is_input, devices, hotplug_devices,
                                 has_device_change, has_device_removed,
                                 active_device_removed);
+    if (features::IsAudioSelectionImprovementEnabled()) {
+      SyncDevicePrefSetMap(is_input);
+    }
   } else {
     // Typical user hotplug case.
     HandleHotPlugDeviceByUserPriority(hotplug_devices.front());

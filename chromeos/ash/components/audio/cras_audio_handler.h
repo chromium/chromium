@@ -939,6 +939,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // set.
   void HandleHotPlugDeviceWithNotification(const AudioDevice& hotplug_device);
 
+  // Adds a device to most recently activated device list.
+  void AddDeviceToMostRecentActivatedList(const AudioDevice& device);
+
+  // Activates the most recently active device. Return false if no device in the
+  // most recently active device list is currently connected, otherwise
+  // return true.
+  bool ActivateMostRecentActiveDevice(bool is_input);
+
   // Static helper function to abstract the |AudioSurvey| from input
   // |survey_specific_data|.
   static std::unique_ptr<CrasAudioHandler::AudioSurvey> AbstractAudioSurvey(
@@ -1032,6 +1040,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // by real interaction with Pref service.
   std::map<std::string, std::string> output_device_pref_set_map_;
   std::map<std::string, std::string> input_device_pref_set_map_;
+
+  // Stores a list of most recently activated devices' stable id. Most recent
+  // device on the end.
+  // TODO(zhangwenyu): To be replaced by real interaction with Pref service.
+  std::vector<std::string> most_recent_activated_input_device_ids_;
+  std::vector<std::string> most_recent_activated_output_device_ids_;
 
   // Indicates whether the audio selection notification should be displayed.
   bool should_show_notification_ = false;
