@@ -21,8 +21,6 @@ bool IsEnabled(Profile* profile);
 
 bool IsAppVariationEnabled();
 
-bool HasModulesToShow(Profile* profile);
-
 base::Value::Dict GetModules(Profile* profile);
 
 // Exposed for testing.
