@@ -1254,8 +1254,7 @@ TEST_P(AddressProfileSaveManagerTest,
 // Silent Update is enabled for the test.
 TEST_P(AddressProfileSaveManagerTest,
        SilentlyUpdateProfile_UpdateStructuredNameWithIncompleteProfile) {
-  AutofillProfile updateable_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
+  AutofillProfile updateable_profile(AddressCountryCode("US"));
   test::SetProfileTestValues(
       &updateable_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1264,13 +1263,11 @@ TEST_P(AddressProfileSaveManagerTest,
        {NAME_LAST, "CCC", VerificationStatus::kParsed},
        {ADDRESS_HOME_STREET_ADDRESS, "119 Some Avenue",
         VerificationStatus::kObserved},
-       {ADDRESS_HOME_COUNTRY, "US", VerificationStatus::kObserved},
        {ADDRESS_HOME_STATE, "CA", VerificationStatus::kObserved},
        {ADDRESS_HOME_ZIP, "99666", VerificationStatus::kObserved},
        {ADDRESS_HOME_CITY, "Los Angeles", VerificationStatus::kObserved}});
 
-  AutofillProfile observed_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
+  AutofillProfile observed_profile(AddressCountryCode("US"));
   test::SetProfileTestValues(
       &observed_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1278,8 +1275,7 @@ TEST_P(AddressProfileSaveManagerTest,
        {NAME_MIDDLE, "", VerificationStatus::kParsed},
        {NAME_LAST, "BBB CCC", VerificationStatus::kParsed}});
 
-  AutofillProfile final_profile(
-      i18n_model_definition::kLegacyHierarchyCountryCode);
+  AutofillProfile final_profile(AddressCountryCode("US"));
   test::SetProfileTestValues(
       &final_profile,
       {{NAME_FULL, "AAA BBB CCC", VerificationStatus::kObserved},
@@ -1288,7 +1284,6 @@ TEST_P(AddressProfileSaveManagerTest,
        {NAME_LAST, "BBB CCC", VerificationStatus::kParsed},
        {ADDRESS_HOME_STREET_ADDRESS, "119 Some Avenue",
         VerificationStatus::kObserved},
-       {ADDRESS_HOME_COUNTRY, "US", VerificationStatus::kObserved},
        {ADDRESS_HOME_STATE, "CA", VerificationStatus::kObserved},
        {ADDRESS_HOME_ZIP, "99666", VerificationStatus::kObserved},
        {ADDRESS_HOME_CITY, "Los Angeles", VerificationStatus::kObserved}});
