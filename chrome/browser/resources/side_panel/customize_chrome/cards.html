@@ -1,105 +1,48 @@
-<style include="sp-shared-style">
-  #showToggleContainer {
-    align-items: center;
-    display: flex;
-    font-size: inherit;
-    line-height: inherit;
-    margin: 0;
-    padding: var(--sp-card-padding);
-  }
-
-  #showToggleTitle {
-    flex-grow: 1;
-  }
-
-  #cards {
-    display: flex;
-    margin: 0;
-  }
-
-  .card {
-    display: flex;
-    justify-content: space-between;
-    margin: 0;
-    padding: var(--sp-card-padding);
-    padding-inline-start: 32px;
-  }
-
-  .card-name {
-    font-size: inherit;
-    line-height: inherit;
-  }
-
-  .card-checkbox {
-    width: 16px;
-  }
-
-  .card-option-name {
-    margin-inline-start: 40px;
-  }
-
-  iron-collapse {
-    --iron-collapse-transition-duration: 300ms;
-    width: 100%;
-  }
-
-  hr {
-    margin: var(--sp-card-block-padding) var(--sp-card-inline-padding);
-    width: auto;
-  }
-
-  cr-toggle {
-    margin-inline-start: 16px;
-  }
-</style>
 <div id="showToggleContainer">
   <div id="showToggleTitle">$i18n{showCardsToggleTitle}</div>
   <cr-policy-indicator indicator-type="devicePolicy"
-      hidden="[[!managedByPolicy_]]">
+      ?hidden="${!this.managedByPolicy_}">
   </cr-policy-indicator>
-  <cr-toggle title="$i18n{showCardsToggleTitle}" checked="[[show_]]"
-      disabled="[[managedByPolicy_]]"
-      on-change="onShowChange_">
+  <cr-toggle title="$i18n{showCardsToggleTitle}" ?checked="${this.show_}"
+      ?disabled="${this.managedByPolicy_}"
+      @change="${this.onShowChange_}">
   </cr-toggle>
 </div>
 <div id="cards">
-  <iron-collapse opened="[[show_]]" no-animation="[[!initialized_]]">
+  <iron-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
     <hr class="sp-hr">
-    <template is="dom-repeat" items="[[modules_]]">
+    ${this.modules_.map((item, index) => html`
       <div class="card">
-        <div class="card-name">[[item.name]]</div>
-        <cr-checkbox class="card-checkbox" checked="{{item.enabled}}"
-            disabled="[[managedByPolicy_]]"
-            title="[[item.name]]" on-change="onCardStatusChange_">
+        <div class="card-name">${item.name}</div>
+        <cr-checkbox class="card-checkbox" data-index="${index}"
+            ?checked="${item.enabled}" ?disabled="${this.managedByPolicy_}"
+            title="${item.name}" @change="${this.onCardStatusChange_}">
         </cr-checkbox>
       </div>
-      <template is="dom-if"
-          if="[[showCartOptionCheckbox_(item.id, item.enabled)]]">
+      ${this.showCartOptionCheckbox_(item.id, item.enabled) ? html`
         <div class="card">
           <div class="card-option-name"
               id="cartOption" >$i18n{modulesCartSentence}</div>
           <cr-checkbox class="card-checkbox"
-              checked="{{cartOptionCheckbox_}}"
-              disabled="[[managedByPolicy_]]"
+              ?checked="${this.cartOptionCheckbox_}"
+              ?disabled="${this.managedByPolicy_}"
               title="$i18n{modulesCartSentence}"
-              on-change="onCartCheckboxChange_">
+              @change="${this.onCartCheckboxChange_}">
           </cr-checkbox>
         </div>
-      </template>
-      <template is="dom-if"
-          if="[[showDiscountOptionCheckbox_(item.id, item.enabled,
-          discountCheckboxEligible_, cartOptionCheckbox_)]]">
+      ` : ''}
+      ${this.showDiscountOptionCheckbox_(item.id, item.enabled) ? html`
         <div class="card">
           <div class="card-option-name"
               id="discountOption">$i18n{modulesCartDiscountConsentAccept}</div>
           <cr-checkbox class="card-checkbox"
-              checked="{{discountCheckbox_}}"
-              disabled="[[managedByPolicy_]]"
+              ?checked="${this.discountCheckbox_}"
+              ?disabled="${this.managedByPolicy_}"
               title="$i18n{modulesCartDiscountConsentAccept}"
-              on-change="onDiscountCheckboxChange_">
+              @change="${this.onDiscountCheckboxChange_}">
           </cr-checkbox>
         </div>
-      </template>
-    </template>
+      ` : ''}
+    `)}
   </iron-collapse>
 </div>

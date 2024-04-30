@@ -43,6 +43,8 @@ build_webui("build") {
 
   css_files = [
     "button_label.css",
+    "cards.css",
+    "categories.css",
     "check_mark_wrapper.css",
     "hover_button.css",
     "shortcuts.css",
