@@ -4848,9 +4848,13 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     }
   }
 
-  if (render_process_host &&
-      base::FeatureList::IsEnabled(kEnsureExistingRendererAlive)) {
-    render_process_host->Init();
+  if (render_process_host) {
+    base::UmaHistogramBoolean(
+        "BrowserRenderProcessHost.ExistingRendererIsInitializedAndNotDead",
+        render_process_host->IsInitializedAndNotDead());
+    if (base::FeatureList::IsEnabled(kEnsureExistingRendererAlive)) {
+      render_process_host->Init();
+    }
   }
 
   // If we found a process to reuse, double-check that it is suitable for
