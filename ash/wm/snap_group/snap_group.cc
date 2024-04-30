@@ -173,13 +173,11 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
   base::AutoReset<bool> lock(&is_moving_snap_group_, true);
 
   const bool cached_divider_visibility =
-      snap_group_divider_.divider_widget()->IsVisible();
+      snap_group_divider_.target_visibility();
 
-  if (cached_divider_visibility) {
-    // Hide the divider, then move the to-be-moved window to the same `parent`
-    // container as the moved `window`.
-    snap_group_divider_.SetVisible(false);
-  }
+  // Hide the divider, then move the to-be-moved window to the same `parent`
+  // container as the moved `window`.
+  snap_group_divider_.SetVisible(false);
 
   aura::Window* to_be_moved_window = window == window1_ ? window2_ : window1_;
   bool did_parent_change = false;
@@ -201,7 +199,7 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
   }
 
   // Restore the divider visibility after both windows are moved to the target
-  // display.
+  // parent container.
   snap_group_divider_.SetVisible(cached_divider_visibility);
 
   RefreshSnapGroup();

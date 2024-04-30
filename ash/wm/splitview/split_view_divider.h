@@ -60,6 +60,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   int divider_position() const { return divider_position_; }
 
+  bool target_visibility() const { return target_visibility_; }
+
   bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
 
   // Does not consider any order of `observed_windows_`. Clients of the divider
@@ -165,6 +167,11 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   void CreateDividerWidget(int divider_position);
   void CloseDividerWidget();
+
+  // Returns the `TargetVisibility()` of the `divider_widget_`,  which directly
+  // assesses the window's target visibility, regardless of the visibility of
+  // its parent's layer.
+  bool GetActualTargetVisibility() const;
 
   // Refreshes the stacking order of the `divider_widget_` to be right on top of
   // the `observed_windows_` and reparents the split view divider to be on the

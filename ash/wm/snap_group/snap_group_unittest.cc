@@ -4564,6 +4564,91 @@ TEST_F(SnapGroupDesksTest, DeskRemovalAndUndo) {
   EXPECT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
 }
 
+// Tests that when an active desk is removed by keyboard shortcut `Search +
+// Shift + -`, the Snap Group will be moved to the next available desk. The
+// divider widget is visible when not in overview mode, and hidden when in
+// overview mode. See the bug at http://b/335300918.
+TEST_F(SnapGroupDesksTest, DeskRemovalAndEnterOverview) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  // Use `Search + Shift + -` to remove `desk0`.
+  DeskSwitchAnimationWaiter waiter;
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS,
+                     ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  waiter.Wait();
+
+  // Verify that both `w0` and `w1` will be moved to `desk1`.
+  EXPECT_TRUE(desk1->is_active());
+  EXPECT_EQ(1u, desks_controller->desks().size());
+  EXPECT_EQ(desk1, desks_util::GetDeskForContext(w0.get()));
+  EXPECT_EQ(desk1, desks_util::GetDeskForContext(w1.get()));
+  EXPECT_TRUE(snap_group);
+  auto* divider = snap_group->snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  EXPECT_TRUE(divider_widget);
+  EXPECT_TRUE(divider_widget->IsVisible());
+  UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), divider);
+
+  // Verify that the divider is invisible in Overview.
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  EXPECT_FALSE(divider_widget->IsVisible());
+
+  // Verify that the divider is visible again on Overview exit.
+  ToggleOverview();
+  ASSERT_FALSE(IsInOverviewSession());
+  EXPECT_TRUE(divider_widget->IsVisible());
+  UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), divider);
+}
+
+// Tests that the desk removal with only one active desk by keyboard shortcut
+// `Search + Shift + -` will not be successful, the Snap Group will remain on
+// the active desk.
+TEST_F(SnapGroupDesksTest, DeskRemovalWithOneAciveDesk) {
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(1u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  // Use `Search + Shift + -` to attempt to remove `desk0`.
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS,
+                     ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+
+  // Verify that both `w0` and `w1` will still be on `desk0`.
+  EXPECT_EQ(1u, desks_controller->desks().size());
+  EXPECT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  EXPECT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+  EXPECT_TRUE(snap_group);
+  auto* divider = snap_group->snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  EXPECT_TRUE(divider_widget);
+  EXPECT_TRUE(divider_widget->IsVisible());
+  UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), divider);
+}
+
 // Test that merging a desk with a Snap Group into another desk doesn't cause
 // crash and correctly moves all windows to the destination desk.
 TEST_F(SnapGroupDesksTest, DesksMerge) {

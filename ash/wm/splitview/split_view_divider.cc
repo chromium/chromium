@@ -512,7 +512,7 @@ void SplitViewDivider::RefreshDividerState(bool observed_windows_changed) {
   }
 
   const bool update_visibility =
-      target_visibility_ != divider_widget_->IsVisible();
+      target_visibility_ != GetActualTargetVisibility();
 
   if (target_visibility_) {
     UpdateDividerBounds();
@@ -605,6 +605,11 @@ void SplitViewDivider::CloseDividerWidget() {
     divider_view_ = nullptr;
     divider_widget_ = nullptr;
   }
+}
+
+bool SplitViewDivider::GetActualTargetVisibility() const {
+  return divider_widget_ &&
+         divider_widget_->GetNativeWindow()->TargetVisibility();
 }
 
 void SplitViewDivider::RefreshStackingOrder() {
