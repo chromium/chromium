@@ -113,30 +113,16 @@ namespace ash {
 
 // TODO(b/278643115) Remove the using when moved.
 namespace prefs {
-using user_manager::prefs::kMultiProfileNeverShowIntro;
-using user_manager::prefs::kMultiProfileUserBehaviorPref;
-using user_manager::prefs::kMultiProfileWarningShowDismissed;
+using user_manager::prefs::kDeviceLocalAccountPendingDataRemoval;
+using user_manager::prefs::kDeviceLocalAccountsWithSavedData;
 using user_manager::prefs::kRegularUsersPref;
 }  // namespace prefs
 using user_manager::MultiUserSignInPolicy;
 using user_manager::MultiUserSignInPolicyController;
-using user_manager::ParseMultiUserSignInPolicyPref;
 
 namespace {
 
 using ::content::BrowserThread;
-
-// A string pref that gets set when a device local account is removed but a
-// user is currently logged into that account, requiring the account's data to
-// be removed after logout.
-const char kDeviceLocalAccountPendingDataRemoval[] =
-    "PublicAccountPendingDataRemoval";
-
-// A vector pref of the device local accounts defined on this device. Note that
-// this is separate from kAccountsPrefDeviceLocalAccounts because it reflects
-// the accounts that existed on the last run of Chrome and therefore have saved
-// data.
-const char kDeviceLocalAccountsWithSavedData[] = "PublicAccounts";
 
 // Callback that is called after user removal is complete.
 void OnRemoveUserComplete(const AccountId& account_id,
@@ -229,33 +215,6 @@ user_manager::UserManager::EphemeralModeConfig CreateEphemeralModeConfig(
 }
 
 }  // namespace
-
-// static
-void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
-  UserManagerBase::RegisterPrefs(registry);
-
-  registry->RegisterListPref(kDeviceLocalAccountsWithSavedData);
-  registry->RegisterStringPref(kDeviceLocalAccountPendingDataRemoval,
-                               std::string());
-  MultiUserSignInPolicyController::RegisterPrefs(registry);
-}
-
-// static
-void ChromeUserManagerImpl::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  // TODO(b/278643115): Move to components/user_manager. Currently,
-  // using user_prefs::PrefRegistrySyncable in components/user_manager
-  // will cause circular dependency.
-  registry->RegisterStringPref(prefs::kMultiProfileUserBehaviorPref,
-                               std::string(MultiUserSignInPolicyToPrefValue(
-                                   MultiUserSignInPolicy::kUnrestricted)));
-  registry->RegisterBooleanPref(
-      prefs::kMultiProfileNeverShowIntro, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kMultiProfileWarningShowDismissed, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-}
 
 // static
 std::unique_ptr<ChromeUserManagerImpl>
@@ -480,7 +439,7 @@ bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
 void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
     std::set<AccountId>* device_local_accounts_set) {
   const base::Value::List& prefs_device_local_accounts =
-      GetLocalState()->GetList(kDeviceLocalAccountsWithSavedData);
+      GetLocalState()->GetList(prefs::kDeviceLocalAccountsWithSavedData);
   std::vector<AccountId> device_local_accounts;
   ParseUserList(prefs_device_local_accounts, std::set<AccountId>(),
                 &device_local_accounts, device_local_accounts_set);
@@ -499,7 +458,7 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
 bool ChromeUserManagerImpl::IsDeviceLocalAccountMarkedForRemoval(
     const AccountId& account_id) const {
   return account_id == AccountId::FromUserEmail(GetLocalState()->GetString(
-                           kDeviceLocalAccountPendingDataRemoval));
+                           prefs::kDeviceLocalAccountPendingDataRemoval));
 }
 
 void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
@@ -619,7 +578,7 @@ void ChromeUserManagerImpl::
     CleanUpDeviceLocalAccountNonCryptohomeDataPendingRemoval() {
   PrefService* local_state = GetLocalState();
   const std::string device_local_account_pending_data_removal =
-      local_state->GetString(kDeviceLocalAccountPendingDataRemoval);
+      local_state->GetString(prefs::kDeviceLocalAccountPendingDataRemoval);
   if (device_local_account_pending_data_removal.empty() ||
       (IsUserLoggedIn() &&
        device_local_account_pending_data_removal ==
@@ -629,7 +588,7 @@ void ChromeUserManagerImpl::
 
   RemoveNonCryptohomeData(
       AccountId::FromUserEmail(device_local_account_pending_data_removal));
-  local_state->ClearPref(kDeviceLocalAccountPendingDataRemoval);
+  local_state->ClearPref(prefs::kDeviceLocalAccountPendingDataRemoval);
 }
 
 void ChromeUserManagerImpl::CleanUpDeviceLocalAccountNonCryptohomeData(
@@ -648,7 +607,7 @@ void ChromeUserManagerImpl::CleanUpDeviceLocalAccountNonCryptohomeData(
     const std::string active_user_id =
         active_user->GetAccountId().GetUserEmail();
     if (users.find(active_user_id) == users.end()) {
-      GetLocalState()->SetString(kDeviceLocalAccountPendingDataRemoval,
+      GetLocalState()->SetString(prefs::kDeviceLocalAccountPendingDataRemoval,
                                  active_user_id);
       users.insert(active_user_id);
     }
@@ -697,7 +656,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   // of whether they still exist in kAccountsPrefDeviceLocalAccounts, allowing
   // us to clean up associated data if they disappear from policy.
   ScopedListPrefUpdate prefs_device_local_accounts_update(
-      GetLocalState(), kDeviceLocalAccountsWithSavedData);
+      GetLocalState(), prefs::kDeviceLocalAccountsWithSavedData);
   prefs_device_local_accounts_update->clear();
   for (const auto& account : device_local_accounts) {
     prefs_device_local_accounts_update->Append(account.user_id);

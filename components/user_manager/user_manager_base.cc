@@ -35,11 +35,13 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
@@ -110,8 +112,27 @@ void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kLastActiveUser, std::string());
   registry->RegisterDictionaryPref(prefs::kOwnerAccount);
 
+  registry->RegisterListPref(prefs::kDeviceLocalAccountsWithSavedData);
+  registry->RegisterStringPref(prefs::kDeviceLocalAccountPendingDataRemoval,
+                               std::string());
+
   UserDirectoryIntegrityManager::RegisterLocalStatePrefs(registry);
   KnownUser::RegisterPrefs(registry);
+  MultiUserSignInPolicyController::RegisterPrefs(registry);
+}
+
+// static
+void UserManagerBase::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterStringPref(prefs::kMultiProfileUserBehaviorPref,
+                               std::string(MultiUserSignInPolicyToPrefValue(
+                                   MultiUserSignInPolicy::kUnrestricted)));
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileNeverShowIntro, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileWarningShowDismissed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 UserManagerBase::UserManagerBase(

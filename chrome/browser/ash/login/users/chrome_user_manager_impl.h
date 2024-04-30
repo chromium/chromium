@@ -31,15 +31,9 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
 
-class PrefRegistrySimple;
-
 namespace policy {
 class CloudExternalDataPolicyHandler;
 }  // namespace policy
-
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
 
 namespace ash {
 
@@ -59,10 +53,6 @@ class ChromeUserManagerImpl
 
   // Creates ChromeUserManagerImpl instance.
   static std::unique_ptr<ChromeUserManagerImpl> CreateChromeUserManager();
-
-  // Registers user manager preferences.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // UserManager implementation:
   void Shutdown() override;

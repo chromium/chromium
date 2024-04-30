@@ -72,6 +72,7 @@ component("user_manager") {
       "//ash/constants",
       "//chromeos/ash/components/install_attributes",
       "//chromeos/ash/components/settings",
+      "//components/pref_registry",
       "//skia",
       "//ui/base",
       "//ui/chromeos/resources",

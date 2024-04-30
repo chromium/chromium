@@ -37,6 +37,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace user_manager {
 
 // Feature that removes legacy supervised users.
@@ -101,6 +105,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Registers UserManagerBase preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // UserManager implementation:
   void Shutdown() override;
