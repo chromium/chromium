@@ -97,8 +97,10 @@ void ViewTransitionTypeSet::InvalidateStyle() {
     return;
   }
 
-  document->documentElement()->PseudoStateChanged(
-      CSSSelector::kPseudoActiveViewTransitionType);
+  if (Element* document_element = document->documentElement()) {
+    document_element->PseudoStateChanged(
+        CSSSelector::kPseudoActiveViewTransitionType);
+  }
 }
 
 void ViewTransitionTypeSet::clearForBinding(ScriptState*, ExceptionState&) {
