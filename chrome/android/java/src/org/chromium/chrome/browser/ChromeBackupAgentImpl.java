@@ -227,12 +227,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     public void onBackup(
             ParcelFileDescriptor oldState, BackupDataOutput data, ParcelFileDescriptor newState)
             throws IOException {
-        // Ensure that this logic will be updated when UserSelectableType enum is updated:
-        // When new data type is added, a new case should be added to the switch below and the
-        // corresponding sync preference name should be added in BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS
-        // so it can be backed-up.
-        assert UserSelectableType.LAST_TYPE == 14;
-
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
@@ -265,6 +259,10 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                         "Recorded signed in account differs from syncing account");
                             }
 
+                            // When new data type is added to the UserSelectableType enum, also add
+                            // it to BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS (if the type is supported on
+                            // Android).
+                            assert UserSelectableType.LAST_TYPE == 14;
                             PrefService prefService = UserPrefs.get(profile);
                             for (String name : BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS) {
                                 backupNames.add(NATIVE_BOOL_PREF_PREFIX + name);
