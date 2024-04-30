@@ -64,8 +64,7 @@ VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
 }
 
 VaapiVideoDecoderDelegate::~VaapiVideoDecoderDelegate() {
-  // TODO(mcasas): consider enabling the checker, https://crbug.com/789160
-  // DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Also destroy the protected session on destruction of the accelerator
   // delegate. That way if a new delegate is created, when it tries to create a
   // new protected session it won't overwrite the existing one.

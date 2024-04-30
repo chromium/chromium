@@ -101,12 +101,14 @@ static void InitVAPicture(VAPictureH264* va_pic) {
 void H264VaapiVideoDecoderDelegate::ProcessSPS(
     const H264SPS* sps,
     base::span<const uint8_t> sps_nalu_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_sps_nalu_data_.assign(sps_nalu_data.begin(), sps_nalu_data.end());
 }
 
 void H264VaapiVideoDecoderDelegate::ProcessPPS(
     const H264PPS* pps,
     base::span<const uint8_t> pps_nalu_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_pps_nalu_data_.assign(pps_nalu_data.begin(), pps_nalu_data.end());
 }
 
@@ -235,6 +237,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
     const std::vector<SubsampleEntry>& subsamples,
     uint64_t /*secure_handle*/,
     H264SliceHeader* slice_header_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(slice_header_out);
   DCHECK(!subsamples.empty());
   DCHECK(!data.empty());
@@ -613,7 +616,7 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
 }
 
 void H264VaapiVideoDecoderDelegate::Reset() {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -38,10 +38,14 @@ class VP8VaapiVideoDecoderDelegate : public VP8Decoder::VP8Accelerator,
   void OnVAContextDestructionSoon() override;
 
  private:
-  std::unique_ptr<ScopedVABuffer> iq_matrix_;
-  std::unique_ptr<ScopedVABuffer> prob_buffer_;
-  std::unique_ptr<ScopedVABuffer> picture_params_;
-  std::unique_ptr<ScopedVABuffer> slice_params_;
+  std::unique_ptr<ScopedVABuffer> iq_matrix_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<ScopedVABuffer> prob_buffer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<ScopedVABuffer> picture_params_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<ScopedVABuffer> slice_params_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace media

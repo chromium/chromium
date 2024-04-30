@@ -920,6 +920,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
 }
 
 void AV1VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Destroy the member ScopedVABuffers below since they refer to a VAContextID
   // that will be destroyed soon.
   picture_params_.reset();

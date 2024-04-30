@@ -80,20 +80,23 @@ class H264VaapiVideoDecoderDelegate : public H264Decoder::H264Accelerator,
   // We need to hold onto this memory here because it's referenced by the
   // mapped buffer in libva across calls. It is filled in SubmitSlice() and
   // stays alive until SubmitDecode() or Reset().
-  std::vector<VAEncryptionSegmentInfo> encryption_segment_info_;
+  std::vector<VAEncryptionSegmentInfo> encryption_segment_info_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // We need to retain this for the multi-slice case since that will aggregate
   // the encryption details across all the slices.
-  VAEncryptionParameters crypto_params_;
+  VAEncryptionParameters crypto_params_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // We need to set this so we don't resubmit crypto params on decode.
-  bool full_sample_;
+  bool full_sample_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The most recent SPS and PPS, assumed to be active when samples are fully
   // encrypted.
-  std::vector<uint8_t> last_sps_nalu_data_;
-  std::vector<uint8_t> last_pps_nalu_data_;
+  std::vector<uint8_t> last_sps_nalu_data_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<uint8_t> last_pps_nalu_data_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace media

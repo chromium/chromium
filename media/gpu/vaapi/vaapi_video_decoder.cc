@@ -605,6 +605,7 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
 
 void VaapiVideoDecoder::
     set_ignore_resolution_changes_to_smaller_vp9_for_testing(bool value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ignore_resolution_changes_to_smaller_for_testing_ = value;
 }
 
@@ -916,6 +917,7 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
 }
 
 bool VaapiVideoDecoder::NeedsBitstreamConversion() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(output_cb_) << "VaapiVideoDecoder hasn't been initialized";
   NOTREACHED();
   return (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
@@ -1156,9 +1158,9 @@ void VaapiVideoDecoder::ResetDone(base::OnceClosure reset_cb) {
 }
 
 void VaapiVideoDecoder::SetState(State state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3) << static_cast<int>(state)
             << ", current state: " << static_cast<int>(state_);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check whether the state change is valid.
   switch (state) {
