@@ -70,6 +70,8 @@ class MicCoordinator {
   const media_preview_metrics::Context metrics_context_;
   std::optional<MicViewController> mic_view_controller_;
   std::optional<AudioStreamCoordinator> audio_stream_coordinator_;
+
+  base::WeakPtrFactory<MicCoordinator> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MIC_PREVIEW_MIC_COORDINATOR_H_

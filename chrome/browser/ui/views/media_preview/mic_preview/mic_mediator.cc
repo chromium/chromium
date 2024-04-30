@@ -14,22 +14,16 @@ MicMediator::MicMediator(PrefService& prefs,
                          DevicesChangedCallback devices_changed_callback)
     : prefs_(&prefs),
       devices_changed_callback_(std::move(devices_changed_callback)) {
-  if (auto* monitor = base::SystemMonitor::Get(); monitor) {
-    monitor->AddDevicesChangedObserver(this);
-  }
-
-  content::GetAudioService().BindSystemInfo(
-      system_info_.BindNewPipeAndPassReceiver());
-  system_info_.reset_on_disconnect();
-  OnDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
+  devices_observer_.Observe(media_effects::MediaDeviceInfo::GetInstance());
 }
+
+MicMediator::~MicMediator() = default;
 
 void MicMediator::GetAudioInputDeviceFormats(
     const std::string& device_id,
     audio::mojom::SystemInfo::GetInputStreamParametersCallback callback) {
-  if (system_info_) {
-    system_info_->GetInputStreamParameters(device_id, std::move(callback));
-  }
+  media_effects::MediaDeviceInfo::GetInstance()->GetAudioInputStreamParameters(
+      device_id, std::move(callback));
 }
 
 void MicMediator::BindAudioStreamFactory(
@@ -38,22 +32,22 @@ void MicMediator::BindAudioStreamFactory(
   content::GetAudioService().BindStreamFactory(std::move(audio_stream_factory));
 }
 
-void MicMediator::OnDevicesChanged(
-    base::SystemMonitor::DeviceType device_type) {
-  if (device_type == base::SystemMonitor::DEVTYPE_AUDIO && system_info_) {
-    system_info_->GetInputDeviceDescriptions(base::BindOnce(
-        &MicMediator::OnAudioSourceInfosReceived, base::Unretained(this)));
-  }
+void MicMediator::InitializeDeviceList() {
+  // Get current list of audio input devices.
+  OnAudioDevicesChanged(
+      media_effects::MediaDeviceInfo::GetInstance()->GetAudioDeviceInfos());
 }
 
-void MicMediator::OnAudioSourceInfosReceived(
-    std::vector<media::AudioDeviceDescription> device_infos) {
-  media_prefs::PreferenceRankAudioDeviceInfos(*prefs_, device_infos);
-  devices_changed_callback_.Run(device_infos);
-}
-
-MicMediator::~MicMediator() {
-  if (auto* monitor = base::SystemMonitor::Get(); monitor) {
-    monitor->RemoveDevicesChangedObserver(this);
+void MicMediator::OnAudioDevicesChanged(
+    const std::optional<std::vector<media::AudioDeviceDescription>>&
+        device_infos) {
+  if (!device_infos) {
+    devices_changed_callback_.Run({});
+    return;
   }
+  // Copy into a mutable vector in order to be re-ordered by
+  // `PreferenceRankDeviceInfos`.
+  auto infos = device_infos.value();
+  media_prefs::PreferenceRankAudioDeviceInfos(*prefs_, infos);
+  devices_changed_callback_.Run(infos);
 }

@@ -137,6 +137,16 @@ MediaDeviceInfo::GetVideoDeviceInfos() const {
   return video_device_infos_;
 }
 
+void MediaDeviceInfo::GetAudioInputStreamParameters(
+    const std::string& device_id,
+    audio::mojom::SystemInfo::GetInputStreamParametersCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (audio_system_info_) {
+    audio_system_info_->GetInputStreamParameters(device_id,
+                                                 std::move(callback));
+  }
+}
+
 void MediaDeviceInfo::AddObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!observers_.HasObserver(observer)) {

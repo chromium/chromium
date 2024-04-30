@@ -67,6 +67,11 @@ class MediaDeviceInfo : public base::SystemMonitor::DevicesChangedObserver {
   const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
   GetVideoDeviceInfos() const;
 
+  // Used to get mic format info (e.g. sample rate).
+  void GetAudioInputStreamParameters(
+      const std::string& device_id,
+      audio::mojom::SystemInfo::GetInputStreamParametersCallback callback);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

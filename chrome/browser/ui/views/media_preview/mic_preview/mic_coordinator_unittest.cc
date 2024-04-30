@@ -11,13 +11,14 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
-#include "base/system/system_monitor.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_effects/test/fake_audio_service.h"
+#include "components/media_effects/test/fake_video_capture_service.h"
+#include "components/media_effects/test/scoped_media_device_info.h"
 #include "content/public/browser/audio_service.h"
 #include "media/audio/audio_device_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,8 +50,6 @@ class MicCoordinatorTest : public TestWithBrowserView {
  protected:
   void SetUp() override {
     TestWithBrowserView::SetUp();
-    auto_reset_audio_service_.emplace(
-        content::OverrideAudioServiceForTesting(&fake_audio_service_));
     fake_audio_service_.SetOnGetInputStreamParametersCallback(
         on_input_stream_id_future_.GetRepeatingCallback());
     fake_audio_service_.SetBindStreamFactoryCallback(
@@ -67,17 +66,16 @@ class MicCoordinatorTest : public TestWithBrowserView {
   }
 
   void InitializeCoordinator(std::vector<std::string> eligible_mic_ids) {
-    base::test::TestFuture<void> replied_with_device_descriptions_future;
-    fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-        replied_with_device_descriptions_future.GetCallback());
-
     CHECK(profile()->GetPrefs());
+
+    if (!media_device_info_) {
+      media_device_info_.emplace();
+    }
+
     coordinator_.emplace(*parent_view_,
                          /*needs_borders=*/true, eligible_mic_ids,
                          *profile()->GetPrefs(),
                          /*allow_device_selection=*/true, GetMetricsContext());
-
-    ASSERT_TRUE(replied_with_device_descriptions_future.WaitAndClear());
   }
 
   const ui::SimpleComboboxModel& GetComboboxModel() const {
@@ -125,10 +123,9 @@ class MicCoordinatorTest : public TestWithBrowserView {
     histogram_tester_.emplace();
   }
 
-  base::SystemMonitor monitor_;
-  media_effects::FakeAudioService fake_audio_service_;
-  std::optional<base::AutoReset<audio::mojom::AudioService*>>
-      auto_reset_audio_service_;
+  media_effects::ScopedFakeAudioService fake_audio_service_;
+  media_effects::ScopedFakeVideoCaptureService fake_video_capture_service_;
+  std::optional<media_effects::ScopedMediaDeviceInfo> media_device_info_;
 
   base::test::TestFuture<const std::string&> on_input_stream_id_future_;
   base::test::TestFuture<void> on_bind_stream_factory_future_;
@@ -276,7 +273,9 @@ TEST_F(MicCoordinatorTest, DefaultMicHandling) {
   EXPECT_THAT(GetComboboxItems(), ElementsAre(kDefaultDeviceName, kDeviceName));
   EXPECT_THAT(GetComboboxSecondaryTexts(),
               ElementsAre(std::string{}, std::string{}));
-  on_input_stream_id_future_.Clear();
+  ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
+  EXPECT_EQ(on_input_stream_id_future_.Take(),
+            media::AudioDeviceDescription::kDefaultDeviceId);
 
   // Add another mic marked with `is_system_default`.
   ASSERT_TRUE(AddFakeInputDevice(
@@ -287,6 +286,8 @@ TEST_F(MicCoordinatorTest, DefaultMicHandling) {
   // The system default device should have the secondary text.
   EXPECT_THAT(GetComboboxSecondaryTexts(),
               ElementsAre(std::string{}, kDefaultDeviceName));
+  ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
+  EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
 
   coordinator_.reset();
   ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
@@ -327,4 +328,16 @@ TEST_F(MicCoordinatorTest, UpdateDevicePreferenceRanking) {
 
   coordinator_.reset();
   ExpectHistogramTotalDevices(/*expected_bucket_min_value=*/2);
+}
+
+TEST_F(MicCoordinatorTest, ConnectDevicesBeforeCoordinatorInitialize) {
+  coordinator_.reset();
+
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2}));
+
+  InitializeCoordinator({});
+  ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
+  EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
+  EXPECT_THAT(GetComboboxItems(), ElementsAre(kDeviceName, kDeviceName2));
 }

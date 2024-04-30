@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "components/media_effects/test/fake_audio_service.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
+#include "components/media_effects/test/scoped_media_device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +46,11 @@ using testing::Pointwise;
 
 class MediaCoordinatorTest : public TestWithBrowserView {
  protected:
+  void SetUp() override {
+    TestWithBrowserView::SetUp();
+    media_device_info_.emplace();
+  }
+
   void InitializeCoordinator(MediaCoordinator::ViewType view_type) {
     coordinator_.emplace(
         view_type, parent_view_, /*is_subsection=*/false,
@@ -71,9 +77,9 @@ class MediaCoordinatorTest : public TestWithBrowserView {
         {kMicName2, kMicId2, kGroupId2}));
   }
 
-  base::SystemMonitor system_monitor_;
   media_effects::ScopedFakeAudioService audio_service_;
   media_effects::ScopedFakeVideoCaptureService video_service_;
+  std::optional<media_effects::ScopedMediaDeviceInfo> media_device_info_;
 
   MediaView parent_view_;
   std::optional<MediaCoordinator> coordinator_;

@@ -52,6 +52,8 @@ MicCoordinator::MicCoordinator(
 
   audio_stream_coordinator_.emplace(
       mic_view_controller_->GetLiveFeedContainer());
+
+  mic_mediator_.InitializeDeviceList();
 }
 
 MicCoordinator::~MicCoordinator() {
@@ -110,8 +112,10 @@ void MicCoordinator::OnAudioSourceChanged(
   active_device_id_ = device_info.unique_id;
   mic_mediator_.GetAudioInputDeviceFormats(
       active_device_id_,
+      // WeakPtr is needed because the callback is passed later to
+      // MediaDeviceInfo which outlives `this`.
       base::BindOnce(&MicCoordinator::ConnectAudioStream,
-                     base::Unretained(this), active_device_id_));
+                     weak_factory_.GetWeakPtr(), active_device_id_));
 }
 
 void MicCoordinator::ConnectAudioStream(

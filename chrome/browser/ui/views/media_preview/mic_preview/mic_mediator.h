@@ -9,14 +9,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/system/system_monitor.h"
+#include "base/scoped_observation.h"
+#include "components/media_effects/media_device_info.h"
 #include "components/prefs/pref_service.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/mojom/system_info.mojom.h"
 
 // Handles interactions with the backend services for the coordinator.
-class MicMediator : public base::SystemMonitor::DevicesChangedObserver {
+class MicMediator : public media_effects::MediaDeviceInfo::Observer {
  public:
   using DevicesChangedCallback = base::RepeatingCallback<void(
       const std::vector<media::AudioDeviceDescription>& device_infos)>;
@@ -38,17 +37,18 @@ class MicMediator : public base::SystemMonitor::DevicesChangedObserver {
       mojo::PendingReceiver<media::mojom::AudioStreamFactory>
           audio_stream_factory);
 
-  // base::SystemMonitor::DevicesChangedObserver.
-  void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
+  void InitializeDeviceList();
 
  private:
-  void OnAudioSourceInfosReceived(
-      const std::vector<media::AudioDeviceDescription> device_infos);
-
-  mojo::Remote<audio::mojom::SystemInfo> system_info_;
+  // media_effects::MediaDeviceInfo::Observer overrides.
+  void OnAudioDevicesChanged(
+      const std::optional<std::vector<media::AudioDeviceDescription>>&
+          device_infos) override;
 
   raw_ptr<PrefService> prefs_;
   DevicesChangedCallback devices_changed_callback_;
+  base::ScopedObservation<media_effects::MediaDeviceInfo, MicMediator>
+      devices_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MIC_PREVIEW_MIC_MEDIATOR_H_
