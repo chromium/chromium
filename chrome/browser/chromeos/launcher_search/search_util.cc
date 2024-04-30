@@ -7,6 +7,8 @@
 #include <string_view>
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -56,6 +58,7 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::HISTORY_TITLE:
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_KEYWORD:
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS:
     case AutocompleteMatchType::NAVSUGGEST:
     case AutocompleteMatchType::BOOKMARK_TITLE:
     case AutocompleteMatchType::NAVSUGGEST_PERSONALIZED:
@@ -88,10 +91,31 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::OPEN_TAB:
       return SearchResult::OmniboxType::kOpenTab;
 
-    default:
-      NOTREACHED();
+    // Currently unhandled enum values.
+    // If you came here from a compile error, please contact
+    // chromeos-launcher-search@google.com to determine what the correct
+    // `OmniboxType` should be.
+    case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
+    case AutocompleteMatchType::CALCULATOR:
+    case AutocompleteMatchType::NULL_RESULT_MESSAGE:
+    case AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH:
+    // TILE types seem to be mobile-only.
+    case AutocompleteMatchType::TILE_SUGGESTION:
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
+    case AutocompleteMatchType::TILE_MOST_VISITED_SITE:
+    case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
+      LOG(ERROR) << "Unhandled AutocompleteMatchType value: "
+                 << AutocompleteMatchType::ToString(type);
       return SearchResult::OmniboxType::kDomain;
+
+    case AutocompleteMatchType::NUM_TYPES:
+      // NUM_TYPES is not a valid enumerator value, so fall through below.
+      break;
   }
+  // https://abseil.io/tips/147: Handle non-enumerator values.
+  NOTREACHED() << "Unexpected AutocompleteMatchType value: "
+               << static_cast<int>(type);
+  return SearchResult::OmniboxType::kDomain;
 }
 
 SearchResult::MetricsType MatchTypeToMetricsType(
