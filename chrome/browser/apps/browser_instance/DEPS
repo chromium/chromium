@@ -1,0 +1,11 @@
+include_rules = [
+  # This is a dependency of the App Service, so ban includes from that directory in here.
+  "-chrome/browser/apps/app_service",
+]
+
+specific_include_rules = {
+  "browser_app_instance_tracker_browsertest\.cc": [
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+  ],
+}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_REGISTRY_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_REGISTRY_H_
+#ifndef CHROME_BROWSER_APPS_BROWSER_INSTANCE_BROWSER_APP_INSTANCE_REGISTRY_H_
+#define CHROME_BROWSER_APPS_BROWSER_INSTANCE_BROWSER_APP_INSTANCE_REGISTRY_H_
 
 #include <map>
 #include <memory>
@@ -18,10 +18,10 @@
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/browser_app_instance.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_map.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_map.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_observer.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chromeos/crosapi/mojom/browser_app_instance_registry.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -262,4 +262,4 @@ class BrowserAppInstanceRegistry
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_REGISTRY_H_
+#endif  // CHROME_BROWSER_APPS_BROWSER_INSTANCE_BROWSER_APP_INSTANCE_REGISTRY_H_

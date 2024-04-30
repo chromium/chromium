@@ -43,8 +43,6 @@ namespace apps {
 
 LaunchContainer ConvertWindowModeToAppLaunchContainer(WindowMode window_mode);
 
-bool IsInstalledApp(Profile* profile, const std::string& app_id);
-
 // Converts file arguments to an app on |command_line| into base::FilePaths.
 std::vector<base::FilePath> GetLaunchFilesFromCommandLine(
     const base::CommandLine& command_line);

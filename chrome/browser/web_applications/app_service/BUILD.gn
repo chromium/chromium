@@ -36,6 +36,11 @@ source_set("app_service") {
     "//url",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/apps/browser_instance" ]
+    allow_circular_includes_from += [ "//chrome/browser/apps/browser_instance" ]
+  }
+
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
     sources += [

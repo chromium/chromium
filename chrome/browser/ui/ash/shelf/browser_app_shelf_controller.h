@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_observer.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 
 namespace apps {
 struct BrowserAppInstance;

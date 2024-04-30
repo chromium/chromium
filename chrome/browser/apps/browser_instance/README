@@ -1,0 +1,6 @@
+This folder contains the functionality for tracking browser app instances, that
+is, tabs opened in Chrome (and are part of the tabbed browser) that are
+logically considered part of an app. This functionality is only used on
+ChromeOS, which has "tabbed apps" as part of its UX where URLs in the browser
+can have first-class OS UX, e.g. icons in the shelf and launcher. This code
+is required to ensure those UX work correctly.
