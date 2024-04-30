@@ -332,17 +332,26 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
   // unset.
   context()->is_owner_flow = is_owner_;
 
-  // TODO(b/325492473): Remove logic to remove SetUsageOptInHidden.
+  const bool is_demo = arc::IsArcDemoModeSetupFlow();
+
+  // TODO(b/325492473): Evaluate logic to remove/simplify SetUsageOptInHidden.
   if (view_) {
     // All new accounts are shown the default usage opt-in.
     // Managed devices have their consent set by the device enterprise policy.
     // Unmanaged devices have UMA opted in by default with the ability to
     // toggle. view_->SetUsageMode() controls setting the value of the users
     // consent and controls whether the user is able to toggle the consent.
-    view_->SetUsageOptinHidden(false);
+    //
+    // Demo devices are not enterprise enrolled until after the consolidated
+    // consent screen is shown, even though they're considered managed devices.
+    // If in demo mode enrollment, hide UMA opt in completely in ToS.
+    // If the consent screen is shown during other managed device flows,
+    // the ability of the users to toggle the usage opt-in will be disabled
+    // while still showing the value set by the enterprise.
+    // Unmanaged user flows enable the option for the user to toggle.
+    view_->SetUsageOptinHidden(is_demo);
   }
 
-  const bool is_demo = arc::IsArcDemoModeSetupFlow();
   const bool is_negotiation_needed =
       ash::features::IsCrosPrivacyHubLocationEnabled()
           ? true
@@ -379,10 +388,6 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     }
 
     UpdateMetricsMode(is_enabled, is_managed);
-  } else {
-    // Demo mode devices cannot modify reporting consent during OOBE.
-    // Disables user consent toggle since it's set by the enterprise policy.
-    UpdateMetricsMode(StatsReportingController::Get()->IsEnabled(), is_managed);
   }
 }
 
