@@ -128,15 +128,6 @@ void LayoutSVGPath::UpdateMarkerPositions() {
   if (!client) {
     return;
   }
-  auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, style.MarkerStartResource());
-  auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, style.MarkerMidResource());
-  auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, style.MarkerEndResource());
-  if (!(marker_start || marker_mid || marker_end)) {
-    return;
-  }
   SVGMarkerDataBuilder builder(marker_positions_);
   if (const StylePath* style_path = GetStylePath()) {
     builder.Build(style_path->ByteStream());
