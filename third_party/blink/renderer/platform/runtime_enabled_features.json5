@@ -1869,18 +1869,6 @@
       status: "stable",
     },
     {
-      // Allow these form controls to have vertical writing mode: select, meter,
-      // progress, button and non-text-based input types.
-      name: "FormControlsVerticalWritingModeSupport",
-      status: "stable",
-    },
-    {
-      // Allow text-based form controls to have vertical writing mode: textarea
-      // and input types email, number, password, search, tel, text, url.
-      name: "FormControlsVerticalWritingModeTextSupport",
-      status: "stable",
-    },
-    {
       // Bug fix for crbug.com/1429585
       name: "FormStateRestoreCallbackCallWithState",
       status: "stable",

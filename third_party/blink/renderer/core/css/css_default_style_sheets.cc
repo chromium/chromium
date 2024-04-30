@@ -38,17 +38,12 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
-#include "third_party/blink/renderer/core/html/html_meter_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
-#include "third_party/blink/renderer/core/html/html_progress_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -135,8 +130,6 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   stylable_select_style_sheet_.Clear();
   stylable_select_forced_colors_style_sheet_.Clear();
   marker_style_sheet_.Clear();
-  form_controls_not_vertical_style_sheet_.Clear();
-  form_controls_not_vertical_style_text_sheet_.Clear();
   auto_sizes_style_sheet_.Clear();
   permission_element_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
@@ -364,36 +357,6 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  // TODO(crbug.com/681917, crbug.com/484651): We enable vertical writing mode
-  // on form controls using features FormControlsVerticalWritingModeSupport
-  // and FormControlsVerticalWritingModeTextSupport. When it is *disabled*,
-  // we need to force horizontal writing mode.
-  const auto* input = DynamicTo<HTMLInputElement>(element);
-  if (!RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeSupportEnabled() &&
-      !form_controls_not_vertical_style_sheet_ &&
-      (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element) ||
-       IsA<HTMLButtonElement>(element) || IsA<HTMLSelectElement>(element) ||
-       (input && !input->IsTextField()))) {
-    form_controls_not_vertical_style_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(
-            IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS));
-    AddRulesToDefaultStyleSheets(form_controls_not_vertical_style_sheet_,
-                                 NamespaceType::kHTML);
-    changed_default_style = true;
-  }
-  if (!RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeTextSupportEnabled() &&
-      !form_controls_not_vertical_style_text_sheet_ &&
-      (IsA<HTMLTextAreaElement>(element) || (input && input->IsTextField()))) {
-    form_controls_not_vertical_style_text_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(
-            IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS_TEXT));
-    AddRulesToDefaultStyleSheets(form_controls_not_vertical_style_text_sheet_,
-                                 NamespaceType::kHTML);
-    changed_default_style = true;
-  }
-
   if (!auto_sizes_style_sheet_ && IsA<HTMLImageElement>(element) &&
       RuntimeEnabledFeatures::AutoSizeLazyLoadedImagesEnabled()) {
     auto_sizes_style_sheet_ = ParseUASheet(
@@ -553,8 +516,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(stylable_select_style_sheet_);
   visitor->Trace(stylable_select_forced_colors_style_sheet_);
   visitor->Trace(marker_style_sheet_);
-  visitor->Trace(form_controls_not_vertical_style_sheet_);
-  visitor->Trace(form_controls_not_vertical_style_text_sheet_);
   visitor->Trace(auto_sizes_style_sheet_);
   visitor->Trace(default_json_document_style_);
 }

@@ -2538,19 +2538,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "vertical-form-controls-text-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html",
-      "external/wpt/css/css-writing-modes/forms/text-input-block-size.optional.html",
-      "external/wpt/css/css-flexbox/flex-item-compressible-002.html"
-    ],
-    "args": ["--disable-features=FormControlsVerticalWritingModeTextSupport",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "owners": ["dizhangg@chromium.org"],
-    "expires": "Mar 1, 2024"
-  },
-  {
     "prefix": "url-non-special",
     "platforms": ["Linux"],
     "bases": [
@@ -2744,7 +2731,7 @@
              "--disable-features=NonStandardAppearanceValueSliderVertical",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
-    "expires": "Jun 1, 2024"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "vertical-form-controls-direction-disabled-slider-vertical-enabled",
@@ -2756,7 +2743,7 @@
              "--enable-features=NonStandardAppearanceValueSliderVertical",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["dizhangg@chromium.org"],
-    "expires": "Jun 1, 2024"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "import-attributes-json-css-modules",

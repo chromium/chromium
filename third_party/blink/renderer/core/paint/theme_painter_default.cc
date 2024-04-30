@@ -498,9 +498,7 @@ void ThemePainterDefault::SetupMenuListArrow(
     WebThemeEngine::ExtraParams& extra_params) {
   auto& menu_list =
       absl::get<WebThemeEngine::MenuListExtraParams>(extra_params);
-  if (IsHorizontalWritingMode(style.GetWritingMode()) ||
-      !RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeSupportEnabled()) {
+  if (IsHorizontalWritingMode(style.GetWritingMode())) {
     menu_list.arrow_direction = WebThemeEngine::ArrowDirection::kDown;
     const int left = rect.x() + floorf(style.BorderLeftWidth());
     const int right =
@@ -562,7 +560,6 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
           NonStandardAppearanceValueSliderVerticalEnabled() &&
       style.EffectiveAppearance() == kSliderVerticalPart;
   bool is_writing_mode_vertical =
-      RuntimeEnabledFeatures::FormControlsVerticalWritingModeSupportEnabled() &&
       !IsHorizontalWritingMode(style.GetWritingMode());
   slider.vertical = is_writing_mode_vertical || is_slider_vertical;
   slider.in_drag = false;
@@ -631,9 +628,7 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                                            const PaintInfo& paint_info,
                                            const gfx::Rect& rect) {
   WebThemeEngine::SliderExtraParams slider;
-  slider.vertical = (RuntimeEnabledFeatures::
-                         FormControlsVerticalWritingModeSupportEnabled() &&
-                     !IsHorizontalWritingMode(style.GetWritingMode())) ||
+  slider.vertical = !IsHorizontalWritingMode(style.GetWritingMode()) ||
                     (RuntimeEnabledFeatures::
                          NonStandardAppearanceValueSliderVerticalEnabled() &&
                      style.EffectiveAppearance() == kSliderThumbVerticalPart);

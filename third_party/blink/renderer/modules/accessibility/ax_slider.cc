@@ -54,14 +54,12 @@ AccessibilityOrientation AXSlider::Orientation() const {
   if (!style)
     return kAccessibilityOrientationHorizontal;
 
-  if (RuntimeEnabledFeatures::FormControlsVerticalWritingModeSupportEnabled()) {
-    if (IsHorizontalWritingMode(style->GetWritingMode())) {
-      return kAccessibilityOrientationHorizontal;
-    } else {
-      return kAccessibilityOrientationVertical;
-    }
+  // If CSS writing-mode is vertical, return kAccessibilityOrientationVertical.
+  if (!IsHorizontalWritingMode(style->GetWritingMode())) {
+    return kAccessibilityOrientationVertical;
   }
 
+  // Else, look at the CSS appearance property for slider orientation.
   ControlPart style_appearance = style->EffectiveAppearance();
   switch (style_appearance) {
     case kSliderThumbHorizontalPart:

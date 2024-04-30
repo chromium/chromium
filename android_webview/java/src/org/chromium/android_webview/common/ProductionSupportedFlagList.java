@@ -739,10 +739,6 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.PREFETCH_REDIRECTS,
                 "Enables following redirects during speculation rules prefetch."),
         Flag.baseFeature(
-                BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_SUPPORT,
-                "Enables support for CSS vertical writing mode on non-text-based form"
-                        + " controls."),
-        Flag.baseFeature(
                 BlinkFeatures.FIX_GESTURE_SCROLL_QUEUING_BUG,
                 "Queues gesture scrolls that do not hit a blocking handler, "
                         + "while handling events that hit a blocking handler instantly"
@@ -770,9 +766,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "PartitionAllocUsePoolOffsetFreelists",
                 "Activates an alternative freelist implementation in PartitionAlloc."),
-        Flag.baseFeature(
-                BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_TEXT_SUPPORT,
-                "Enables support for CSS vertical writing mode on text-based form controls."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_CHECK_PAK_FILE_DESCRIPTORS,
                 "Crash on failing to load pak file fds."),

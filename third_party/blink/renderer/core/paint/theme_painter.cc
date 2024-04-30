@@ -313,7 +313,6 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
           NonStandardAppearanceValueSliderVerticalEnabled() &&
       part == kSliderVerticalPart;
   bool is_writing_mode_vertical =
-      RuntimeEnabledFeatures::FormControlsVerticalWritingModeSupportEnabled() &&
       !IsHorizontalWritingMode(o.StyleRef().GetWritingMode());
   if (!(part == kSliderHorizontalPart || is_slider_vertical)) {
     return;

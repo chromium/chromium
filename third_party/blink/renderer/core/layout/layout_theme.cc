@@ -491,8 +491,7 @@ void LayoutTheme::AdjustSliderContainerStyle(
     ComputedStyleBuilder& builder) const {
   DCHECK(IsSliderContainer(element));
 
-  if (RuntimeEnabledFeatures::FormControlsVerticalWritingModeSupportEnabled() &&
-      !IsHorizontalWritingMode(builder.GetWritingMode())) {
+  if (!IsHorizontalWritingMode(builder.GetWritingMode())) {
     builder.SetTouchAction(TouchAction::kPanX);
     // If FormControlsVerticalWritingModeDirectionSupport disabled, then it is
     // always RTL because the slider value increases up even in LTR.

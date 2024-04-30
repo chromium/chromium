@@ -1349,14 +1349,6 @@ crbug.com/1512722 external/wpt/html/semantics/permission-element/invalid-css-pro
 crbug.com/1512722 external/wpt/html/semantics/permission-element/negative-offset-and-margin.html [ Crash Failure Pass ]
 crbug.com/1512722 external/wpt/html/semantics/permission-element/no-end-tag-no-contents.html [ Crash Failure Pass ]
 
-# These tests are mismatch tests which means they will only pass if the rendered page is not the
-# same between vertical and horizontal writing mode. Failing the tests is equivalent to testing
-# that the appearance is the same. For the virtual version, we disable the features
-# FormControlsVerticalWritingModeTextSupport and expect failures (meaning
-# vertical writing mode is definitely disabled).
-crbug.com/484651 virtual/vertical-form-controls-text-disabled/external/wpt/css/css-writing-modes/forms/textarea-appearance-native-vlr.optional.html [ Failure ]
-crbug.com/484651 virtual/vertical-form-controls-text-disabled/external/wpt/css/css-writing-modes/forms/text-input-block-size.optional.html [ Failure ]
-
 ### With LayoutNGFragmentItem enabled
 crbug.com/982194 [ Win10.20h2 ] fast/writing-mode/border-image-vertical-lr.html [ Failure Pass ]
 
