@@ -51,7 +51,8 @@ class CookieControlsBubbleViewImpl : public CookieControlsBubbleView,
       base::RepeatingClosureList::CallbackType callback) override;
 
  protected:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   // LocationBarBubbleDelegateView:

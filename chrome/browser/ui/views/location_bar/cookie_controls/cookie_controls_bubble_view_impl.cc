@@ -106,8 +106,10 @@ CookieControlsBubbleViewImpl::RegisterOnUserClosedContentViewCallback(
   return on_user_closed_content_view_callback_list_.Add(std::move(callback));
 }
 
-gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize() const {
-  auto size = LocationBarBubbleDelegateView::CalculatePreferredSize();
+gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  auto size =
+      LocationBarBubbleDelegateView::CalculatePreferredSize(available_size);
 
   // Enforce a range of valid widths.
   auto* provider = ChromeLayoutProvider::Get();

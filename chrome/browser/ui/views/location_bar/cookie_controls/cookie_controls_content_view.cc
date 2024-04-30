@@ -229,19 +229,17 @@ void CookieControlsContentView::SetContentLabelsVisible(bool visible) {
 
 CookieControlsContentView::~CookieControlsContentView() = default;
 
-gfx::Size CookieControlsContentView::CalculatePreferredSize() const {
+gfx::Size CookieControlsContentView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Ensure that the width is only increased to support a longer title string,
   // or a longer toggle. Other information can be wrapped or elided to keep the
   // standard size.
-  auto size = views::View::CalculatePreferredSize();
+  auto size = views::View::CalculatePreferredSize(available_size);
 
   auto* provider = ChromeLayoutProvider::Get();
-  const int margins = provider->GetInsetsMetric(views::INSETS_DIALOG).left() +
-                      provider->GetInsetsMetric(views::INSETS_DIALOG).right();
+  const int margins = provider->GetInsetsMetric(views::INSETS_DIALOG).width();
 
-  int title_width =
-      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).width() +
-      margins;
+  int title_width = title_->GetPreferredSize().width() + margins;
   int toggle_width = toggle_row_->GetPreferredSize().width();
 
   int desired_width =

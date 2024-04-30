@@ -54,7 +54,8 @@ class CookieControlsContentView : public views::View {
       base::RepeatingClosureList::CallbackType callback);
 
  protected:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   friend class CookieControlsContentViewUnitTest;
