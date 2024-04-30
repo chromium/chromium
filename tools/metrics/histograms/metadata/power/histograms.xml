@@ -926,6 +926,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.BatteryRemainingWhenChargeStarts" units="%"
+    expires_after="2025-04-10">
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Chrome OS remaining battery charge as percent of the maximum battery charge,
+    sampled when charging starts.
+
+    Warning: this histogram was expired from 2022-05-01 to 2024-04-12; data may
+    be missing.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatterySaver.UserBrightenedSec" units="seconds"
     expires_after="2024-09-01">
   <owner>cwd@google.com</owner>
@@ -953,6 +966,26 @@ chromium-metrics-reviews@google.com.
     around 97% of the time and a non-zero value around 3% of the time. Would be
     exactly equal to Power.BitfixChunks if there were only one corrupted word in
     each chunk but is sometimes several times higher.
+  </summary>
+</histogram>
+
+<histogram name="Power.ConnectedChargingPorts"
+    enum="PowerConnectedChargingPorts" expires_after="2025-04-10">
+  <owner>bleung@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Connected charging ports on Chrome OS. A sample is reported every time that
+    the power manager polls sysfs (typically every 30 seconds). Ordinals are
+    assigned based on the lexicographical ordering of power supply names from
+    sysfs and have no implied correspondence with ports' physical locations. For
+    example, with ports 'CROS_USB_PD_CHARGER0' and 'CROS_USB_PD_CHARGER1',
+    'first' refers to the former and 'second' to the latter. To determine a
+    port's physical location, see the powerd charging_ports pref in the device's
+    overlay.
+
+    Warning: this histogram was expired from 2022-04-25 to 2024-04-12; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1103,6 +1136,21 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from M85 to 2024-04-12; data may be
     missing.
+  </summary>
+</histogram>
+
+<histogram name="Power.DarkResumeWakeupsPerHour" units="units"
+    expires_after="2025-04-10">
+  <owner>mka@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The number of times a system woke up in dark resume in an hour. Note that
+    this value is scaled up or down to an hour based on the amount of time the
+    system spent in suspend. So if the system suspended for 20 minutes and woke
+    up 3 times, it would report a value of 9.
+
+    Warning: this histogram was expired from 2020-08-02 to 2024-04-12; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -1638,6 +1686,51 @@ chromium-metrics-reviews@google.com.
     Press power button in tablet mode will result in different scenarios
     according to the power button up state. Counts the different power button
     press scenarios in tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Power.PowerSupplyMaxPower" units="W"
+    expires_after="2025-04-10">
+  <owner>bleung@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The maximum power supported by the connected power supply on Chrome OS. A
+    sample is reported every time that the power manager polls sysfs (typically
+    every 30 seconds) and sees a connected supply.
+
+    Warning: this histogram was expired from 2022-04-18 to 2024-04-12; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="Power.PowerSupplyMaxVoltage" units="V"
+    expires_after="2025-04-10">
+  <owner>bleung@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The maximum voltage supported by the connected power supply on Chrome OS. A
+    sample is reported every time that the power manager polls sysfs (typically
+    every 30 seconds) and sees a connected supply.
+
+    Warning: this histogram was expired from 2022-04-18 to 2024-04-12; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="Power.PowerSupplyType" enum="PowerSupplyType"
+    expires_after="2025-04-10">
+  <owner>bleung@chromium.org</owner>
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The type of the connected power supply on Chrome OS. A sample is reported
+    every time that the power manager polls sysfs (typically every 30 seconds)
+    and sees a connected supply.
+
+    Warning: this histogram was expired from 2022-04-11 to 2024-04-12; data may
+    be missing.
   </summary>
 </histogram>
 

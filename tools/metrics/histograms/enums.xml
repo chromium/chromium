@@ -29674,6 +29674,17 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Long press when menu is already shown to shut down"/>
 </enum>
 
+<enum name="PowerConnectedChargingPorts">
+  <summary>
+    Connected charging ports on Chrome OS, as reported by the kernel.
+  </summary>
+  <int value="0" label="No ports connected"/>
+  <int value="1" label="First port connected"/>
+  <int value="2" label="Second port connected"/>
+  <int value="3" label="First and second ports connected"/>
+  <int value="4" label="More than two ports exist"/>
+</enum>
+
 <enum name="PowerDimEvent">
   <summary>
     The type of dimming/undimming events in powerd, as reported by the kernel.
@@ -29815,6 +29826,23 @@ Called by update_net_error_codes.py.-->
 <enum name="PowerMLSmartDimWebPageInfoSource">
   <int value="0" label="Ash">Web page info comes from ash chrome.</int>
   <int value="1" label="Lacros">Web page info comes from lacros chrome.</int>
+</enum>
+
+<enum name="PowerSupplyType">
+  <summary>
+    The type of power supply connected to a Chrome OS system, as reported by the
+    kernel.
+  </summary>
+  <int value="0" label="Other"/>
+  <int value="1" label="Mains"/>
+  <int value="2" label="USB"/>
+  <int value="3" label="USB_ACA"/>
+  <int value="4" label="USB_CDP"/>
+  <int value="5" label="USB_DCP"/>
+  <int value="6" label="USB_C"/>
+  <int value="7" label="USB_PD"/>
+  <int value="8" label="USB_PD_DRP"/>
+  <int value="9" label="BrickID (Apple)"/>
 </enum>
 
 <enum name="PredictionGrantLikelihood">
