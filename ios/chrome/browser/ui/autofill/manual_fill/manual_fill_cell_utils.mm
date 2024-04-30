@@ -302,6 +302,10 @@ void LayViewsHorizontallyWhenPossible(
     UILayoutGuide* guide,
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSMutableArray<UIView*>* vertical_lead_views) {
+  if (!views || !views.count) {
+    return;
+  }
+
   CGFloat available_width = GetLayoutGuideWidth(guide);
   NSMutableArray<UIView*>* horizontal_views = [[NSMutableArray alloc] init];
 

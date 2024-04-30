@@ -149,4 +149,20 @@ TEST_F(ManualFillTestUtilsTest, TestLayViewsHorizontallyWhenPossible) {
       [vertical_lead_views isEqualToArray:expected_vertical_lead_views]);
 }
 
+// Tests that `LayViewsHorizontallyWhenPossible` leaves `constraints` and
+// `vertical_lead_views` empty when called with an empty array of views.
+TEST_F(ManualFillTestUtilsTest,
+       TestLayViewsHorizontallyWhenPossibleWithoutViews) {
+  UILayoutGuide* guide = CreateLayoutGuideOfWidth(100);
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<UIView*>* vertical_lead_views = [[NSMutableArray alloc] init];
+
+  LayViewsHorizontallyWhenPossible(@[], guide, constraints,
+                                   vertical_lead_views);
+
+  EXPECT_EQ(constraints.count, 0u);
+  EXPECT_EQ(vertical_lead_views.count, 0u);
+}
+
 }  // namespace
