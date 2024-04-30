@@ -1898,6 +1898,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "strike-limit": "5"
+                    },
                     "enable_features": [
                         "AutofillSuggestionNStrikeModel"
                     ]
