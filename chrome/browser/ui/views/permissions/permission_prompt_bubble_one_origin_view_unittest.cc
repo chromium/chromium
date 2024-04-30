@@ -283,29 +283,22 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   auto mic_label = permission_prompt_->GetMicPermissionLabelForTesting();
   ASSERT_TRUE(mic_label);
 
-  // TODO(b/332604136): Remove `base::RunLoop().RunUntilIdle()` here and
-  // below, once fully migrate to use cached media device infos.
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(0));
   EXPECT_EQ(mic_label->GetTooltipText(), std::u16string());
 
   ASSERT_TRUE(
       audio_service_.AddFakeInputDeviceBlocking({kMicName, kMicId, kGroupId}));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(1));
   EXPECT_EQ(mic_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kMicName)));
 
   ASSERT_TRUE(audio_service_.AddFakeInputDeviceBlocking(
       {kMicName2, kMicId2, kGroupId2}));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(2));
   EXPECT_EQ(mic_label->GetTooltipText(),
             base::UTF8ToUTF16(kMicName + std::string("\n") + kMicName2));
 
   ASSERT_TRUE(audio_service_.RemoveFakeInputDeviceBlocking(kMicId));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mic_label->GetText(), GetExpectedMicLabelText(1));
   EXPECT_EQ(mic_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kMicName2)));
@@ -320,25 +313,21 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   auto camera_label = permission_prompt_->GetCameraPermissionLabelForTesting();
   ASSERT_TRUE(camera_label);
   ASSERT_FALSE(permission_prompt_->GetMicPermissionLabelForTesting());
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(0));
   EXPECT_EQ(camera_label->GetTooltipText(), std::u16string());
 
   ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName, kCameraId}));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(1));
   EXPECT_EQ(camera_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kCameraName)));
 
   ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName2, kCameraId2}));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(2));
   EXPECT_EQ(camera_label->GetTooltipText(),
             base::UTF8ToUTF16(kCameraName + std::string("\n") + kCameraName2));
 
   ASSERT_TRUE(video_service_.RemoveFakeCameraBlocking(kCameraId2));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(1));
   EXPECT_EQ(camera_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kCameraName)));
@@ -355,7 +344,6 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   ASSERT_TRUE(camera_label);
   auto mic_label = permission_prompt_->GetMicPermissionLabelForTesting();
   ASSERT_TRUE(mic_label);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(0));
   EXPECT_EQ(camera_label->GetTooltipText(), std::u16string());
@@ -368,7 +356,6 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
       audio_service_.AddFakeInputDeviceBlocking({kMicName, kMicId, kGroupId}));
   ASSERT_TRUE(audio_service_.AddFakeInputDeviceBlocking(
       {kMicName2, kMicId2, kGroupId2}));
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(2));
   EXPECT_EQ(camera_label->GetTooltipText(),
@@ -380,7 +367,6 @@ TEST_F(PermissionPromptBubbleOneOriginViewTestMediaPreview,
   ASSERT_TRUE(video_service_.RemoveFakeCameraBlocking(kCameraId));
   ASSERT_TRUE(audio_service_.RemoveFakeInputDeviceBlocking(kMicId));
   ASSERT_TRUE(video_service_.RemoveFakeCameraBlocking(kCameraId2));
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(camera_label->GetText(), GetExpectedCameraLabelText(0));
   EXPECT_EQ(camera_label->GetTooltipText(), std::u16string());

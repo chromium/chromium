@@ -151,27 +151,20 @@ TEST_F(PageInfoPermissionContentViewTestMediaPreview, MediaPreviewCamera) {
   auto title_label = page_info_->GetTitleForTesting();
   ASSERT_TRUE(title_label);
 
-  // TODO(b/332604136): Remove `base::RunLoop().RunUntilIdle()` here and
-  // below, once fully migrate to use cached media device infos.
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_EQ(title_label->GetText(), GetExpectedCameraLabelText(0));
   EXPECT_EQ(title_label->GetTooltipText(), std::u16string());
 
   ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName, kCameraId}));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(title_label->GetText(), GetExpectedCameraLabelText(1));
   EXPECT_EQ(title_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kCameraName)));
 
   ASSERT_TRUE(video_service_.AddFakeCameraBlocking({kCameraName2, kCameraId2}));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(title_label->GetText(), GetExpectedCameraLabelText(2));
   EXPECT_EQ(title_label->GetTooltipText(),
             base::UTF8ToUTF16(kCameraName + std::string("\n") + kCameraName2));
 
   ASSERT_TRUE(video_service_.RemoveFakeCameraBlocking(kCameraId2));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(title_label->GetText(), GetExpectedCameraLabelText(1));
   EXPECT_EQ(title_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kCameraName)));
@@ -185,27 +178,23 @@ TEST_F(PageInfoPermissionContentViewTestMediaPreview, MediaPreviewMic) {
 
   auto title_label = page_info_->GetTitleForTesting();
   ASSERT_TRUE(title_label);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(title_label->GetText(), GetExpectedMicLabelText(0));
   EXPECT_EQ(title_label->GetTooltipText(), std::u16string());
 
   ASSERT_TRUE(
       audio_service_.AddFakeInputDeviceBlocking({kMicName, kMicId, kGroupId}));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(title_label->GetText(), GetExpectedMicLabelText(1));
   EXPECT_EQ(title_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kMicName)));
 
   ASSERT_TRUE(audio_service_.AddFakeInputDeviceBlocking(
       {kMicName2, kMicId2, kGroupId2}));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(title_label->GetText(), GetExpectedMicLabelText(2));
   EXPECT_EQ(title_label->GetTooltipText(),
             base::UTF8ToUTF16(kMicName + std::string("\n") + kMicName2));
 
   ASSERT_TRUE(audio_service_.RemoveFakeInputDeviceBlocking(kMicId));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(title_label->GetText(), GetExpectedMicLabelText(1));
   EXPECT_EQ(title_label->GetTooltipText(),
             base::UTF8ToUTF16(std::string(kMicName2)));
