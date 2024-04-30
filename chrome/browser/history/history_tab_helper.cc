@@ -47,8 +47,8 @@
 
 #if BUILDFLAG(ENABLE_FEED_V2)
 #include "chrome/browser/feed/feed_service_factory.h"
-#include "components/feed/core/v2/public/feed_api.h"
-#include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/feed_api.h"      // nogncheck
+#include "components/feed/core/v2/public/feed_service.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
 
 namespace {

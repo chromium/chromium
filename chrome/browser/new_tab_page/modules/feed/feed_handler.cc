@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_version.h"
-#include "components/feed/core/v2/public/ntp_feed_content_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -20,8 +19,8 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 
 class Browser;
-
 namespace ntp {
+#if BUILDFLAG(ENABLE_FEED_V2)
 namespace {
 
 void HandleFetchArticlesResponse(
@@ -64,21 +63,29 @@ std::unique_ptr<FeedHandler> FeedHandler::Create(
           identity_manager, url_loader_factory, api_key, profile->GetPrefs()),
       profile);
 }
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
 
 FeedHandler::FeedHandler(
     mojo::PendingReceiver<ntp::feed::mojom::FeedHandler> handler,
+#if BUILDFLAG(ENABLE_FEED_V2)
     std::unique_ptr<::feed::NtpFeedContentFetcher> ntp_feed_content_fetcher,
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
     Profile* profile)
     : handler_(this, std::move(handler)),
+#if BUILDFLAG(ENABLE_FEED_V2)
       ntp_feed_content_fetcher_(std::move(ntp_feed_content_fetcher)),
-      profile_(profile) {}
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
+      profile_(profile) {
+}
 
 FeedHandler::~FeedHandler() = default;
 
 void FeedHandler::GetFollowingFeedArticles(
     ntp::feed::mojom::FeedHandler::GetFollowingFeedArticlesCallback callback) {
+#if BUILDFLAG(ENABLE_FEED_V2)
   ntp_feed_content_fetcher_->FetchFollowingFeedArticles(
       base::BindOnce(&HandleFetchArticlesResponse, std::move(callback)));
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
 }
 
 void FeedHandler::ArticleOpened() {

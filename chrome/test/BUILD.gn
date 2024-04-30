@@ -8284,7 +8284,6 @@ test("unit_tests") {
       # NTP is in native code on Android.
       "../browser/new_tab_page/chrome_colors/chrome_colors_service_unittest.cc",
       "../browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper_unittest.cc",
-      "../browser/new_tab_page/modules/feed/feed_handler_unittest.cc",
       "../browser/new_tab_page/modules/file_suggestion/drive_service_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/cart/cart_processor_unittest.cc",
       "../browser/new_tab_page/modules/history_clusters/discount/discount_processor_unittest.cc",
@@ -8310,6 +8309,12 @@ test("unit_tests") {
       "../browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_test_support.h",
       "../browser/search/ntp_features_unittest.cc",
     ]
+
+    if (enable_feed_v2) {
+      sources +=
+          [ "../browser/new_tab_page/modules/feed/feed_handler_unittest.cc" ]
+    }
+
     if (build_with_tflite_lib) {
       sources += [ "../browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler_unittest.cc" ]
       data += [ "//components/test/data/omnibox/adder.tflite" ]
