@@ -154,7 +154,10 @@ public class HistoryManager
         mBackPressStateSupplier.set(false);
 
         // When launched for apps, info header always starts in hidden state.
-        mHeaderPref = launchedForApp ? new InfoHeaderPref() {} : new BrowserHistoryInfoHeaderPref();
+        mHeaderPref =
+                launchedForApp
+                        ? new AppHistoryInfoHeaderPref()
+                        : new BrowserHistoryInfoHeaderPref();
 
         mUmaRecorder.recordOpenHistory();
         // If incognito placeholder is shown, we don't need to create History UI elements.
