@@ -44,11 +44,13 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.AppHeaderDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetsRectProvider;
@@ -106,6 +108,10 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void notEnabledWithNoTopInsets() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult",
+                        DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT);
         // Bottom insets with height = 30
         Insets bottomInsets = Insets.of(0, 0, 0, 30);
         // Left block: 10, right block: 20
@@ -120,46 +126,64 @@ public class AppHeaderCoordinatorUnitTest {
         Rect widestUnOccludedRect =
                 new Rect(LEFT_BLOCK, WINDOW_HEIGHT - 30, WINDOW_WIDTH - RIGHT_BLOCK, WINDOW_HEIGHT);
         setupInsetsRectProvider(bottomInsets, blockedRects, widestUnOccludedRect, WINDOW_RECT);
+        notifyInsetsRectObserver();
 
         assertFalse(
                 "Desktop Windowing not enabled for bottom insets.",
                 mAppHeaderCoordinator.isInDesktopWindow());
+        watcher.assertExpected();
     }
 
     @Test
     public void notEnabledWithBoundingRectsWithPartialHeight() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult",
+                        DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT);
         // Bottom insets with height = 30
         Insets insets = Insets.of(0, 30, 0, 0);
         // Left block: 10, right block: 20. Bounding rect is not at the full height.
         List<Rect> blockedRects =
                 List.of(
-                        new Rect(0, 0, LEFT_BLOCK, RIGHT_BLOCK),
-                        new Rect(WINDOW_WIDTH - RIGHT_BLOCK, 0, WINDOW_WIDTH, 20));
-        Rect widestUnoccludedRect = new Rect(0, 20, WINDOW_WIDTH, 30);
+                        new Rect(0, 0, LEFT_BLOCK, HEADER_HEIGHT - 10),
+                        new Rect(WINDOW_WIDTH - RIGHT_BLOCK, 0, WINDOW_WIDTH, HEADER_HEIGHT - 10));
+        Rect widestUnoccludedRect = new Rect(0, 20, WINDOW_WIDTH, HEADER_HEIGHT - 10);
         setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
+        notifyInsetsRectObserver();
 
         assertFalse(
                 "Desktop Windowing enabled for widestUnOccludedRect with less height "
                         + " than the insets.",
                 mAppHeaderCoordinator.isInDesktopWindow());
+        watcher.assertExpected();
     }
 
     @Test
     public void notEnabledWithLessThanTwoBoundingRects() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult",
+                        DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECTS_UNEXPECTED_NUMBER);
         // Top insets with height of 30.
         Insets insets = Insets.of(0, 30, 0, 0);
         // Left block: 10
         List<Rect> blockedRects = List.of(new Rect(0, 0, LEFT_BLOCK, 30));
         Rect widestUnoccludedRect = new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH, 30);
         setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
+        notifyInsetsRectObserver();
 
         assertFalse(
                 "Desktop Windowing enabled with only one bounding rect.",
                 mAppHeaderCoordinator.isInDesktopWindow());
+        watcher.assertExpected();
     }
 
     @Test
     public void notEnabledWithMoreThanTwoBoundingRects() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult",
+                        DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECTS_UNEXPECTED_NUMBER);
         // Top insets with height of 30.
         Insets insets = Insets.of(0, 30, 0, 0);
         // Left block: 10, two right block: 5, 15
@@ -170,14 +194,20 @@ public class AppHeaderCoordinatorUnitTest {
                         new Rect(WINDOW_WIDTH - 15, 0, WINDOW_WIDTH, 30));
         Rect widestUnoccludedRect = new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, 30);
         setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
+        notifyInsetsRectObserver();
 
         assertFalse(
                 "Desktop Windowing enabled with more than two bounding rects.",
                 mAppHeaderCoordinator.isInDesktopWindow());
+        watcher.assertExpected();
     }
 
     @Test
     public void notEnabledWhenNotInMultiWindowMode() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult",
+                        DesktopWindowHeuristicResult.NOT_IN_MULTIWINDOW_MODE);
         doReturn(false).when(mSpyActivity).isInMultiWindowMode();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
@@ -185,10 +215,15 @@ public class AppHeaderCoordinatorUnitTest {
         assertFalse(
                 "Desktop Windowing does not enable when not in multi window mode.",
                 mAppHeaderCoordinator.isInDesktopWindow());
+        watcher.assertExpected();
     }
 
     @Test
     public void notEnabledWhenNavBarBottomInsetsSeen() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult",
+                        DesktopWindowHeuristicResult.NAV_BAR_BOTTOM_INSETS_PRESENT);
         setupWithLeftAndRightBoundingRect();
         // Override the last seen raw insets so there's a bottom nav bar insets.
         mLastSeenRawWindowInsets =
@@ -200,10 +235,15 @@ public class AppHeaderCoordinatorUnitTest {
         assertFalse(
                 "Desktop Windowing does not enable when there are bottom insets.",
                 mAppHeaderCoordinator.isInDesktopWindow());
+        watcher.assertExpected();
     }
 
     @Test
     public void enableDesktopWindowing() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DesktopWindowHeuristicResult",
+                        DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW);
         initPostNative();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
@@ -217,6 +257,29 @@ public class AppHeaderCoordinatorUnitTest {
                 expectedState,
                 mAppHeaderCoordinator.getAppHeaderState());
         verify(mObserver).onAppHeaderStateChanged(eq(expectedState));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void desktopWindowHeuristicResultHistogramNotRecordedWithSameValues() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes("Android.DesktopWindowHeuristicResult", 1)
+                        .build();
+        setupWithLeftAndRightBoundingRect();
+        // Override the last seen raw insets so there's a bottom nav bar insets.
+        mLastSeenRawWindowInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
+                        .build();
+
+        // Simulate multiple rect updates that will trigger the heuristic checks for desktop
+        // windowing mode.
+        notifyInsetsRectObserver();
+        notifyInsetsRectObserver();
+
+        // Histogram should be emitted just once.
+        watcher.assertExpected();
     }
 
     @Test
