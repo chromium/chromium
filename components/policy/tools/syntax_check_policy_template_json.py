@@ -1065,6 +1065,13 @@ class PolicyTemplateChecker(object):
             '"per_profile" attribute is set with device_only=True', policy,
             'features')
 
+      # 'generate_device_proto' can only be present on 'device_only' policies.
+      if (not policy.get('device_only', False)
+          and 'generate_device_proto' in policy):
+        self._PolicyError(
+            'generate_device_proto must only be set on a policy that is '
+            'device_only')
+
       # If 'device only' policy is on, 'default_for_enterprise_users' shouldn't
       # exist.
       if (policy.get('device_only', False) and
