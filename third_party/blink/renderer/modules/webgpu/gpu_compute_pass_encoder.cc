@@ -15,19 +15,17 @@ namespace blink {
 
 GPUComputePassEncoder::GPUComputePassEncoder(
     GPUDevice* device,
-    wgpu::ComputePassEncoder compute_pass_encoder,
+    WGPUComputePassEncoder compute_pass_encoder,
     const String& label)
-    : DawnObject<wgpu::ComputePassEncoder>(device,
-                                           compute_pass_encoder,
-                                           label) {}
+    : DawnObject<WGPUComputePassEncoder>(device, compute_pass_encoder, label) {}
 
 void GPUComputePassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
     const Vector<uint32_t>& dynamicOffsets) {
-  GetHandle().SetBindGroup(
-      index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr),
-      dynamicOffsets.size(), dynamicOffsets.data());
+  WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
+  GetProcs().computePassEncoderSetBindGroup(
+      GetHandle(), index, bgImpl, dynamicOffsets.size(), dynamicOffsets.data());
 }
 
 void GPUComputePassEncoder::setBindGroup(
@@ -46,13 +44,13 @@ void GPUComputePassEncoder::setBindGroup(
   const uint32_t* data =
       dynamic_offsets_data.DataMaybeOnStack() + dynamic_offsets_data_start;
 
-  GetHandle().SetBindGroup(
-      index, bind_group ? bind_group->GetHandle() : wgpu::BindGroup(nullptr),
-      dynamic_offsets_data_length, data);
+  WGPUBindGroupImpl* bgImpl = bind_group ? bind_group->GetHandle() : nullptr;
+  GetProcs().computePassEncoderSetBindGroup(GetHandle(), index, bgImpl,
+                                            dynamic_offsets_data_length, data);
 }
 
 void GPUComputePassEncoder::writeTimestamp(
-    const DawnObject<wgpu::QuerySet>* querySet,
+    const DawnObject<WGPUQuerySet>* querySet,
     uint32_t queryIndex,
     ExceptionState& exception_state) {
   V8GPUFeatureName::Enum requiredFeatureEnum =
@@ -65,7 +63,8 @@ void GPUComputePassEncoder::writeTimestamp(
         device_->formattedLabel().c_str()));
     return;
   }
-  GetHandle().WriteTimestamp(querySet->GetHandle(), queryIndex);
+  GetProcs().computePassEncoderWriteTimestamp(
+      GetHandle(), querySet->GetHandle(), queryIndex);
 }
 
 }  // namespace blink

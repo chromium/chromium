@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_MEMORY_HEAP_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_MEMORY_HEAP_INFO_H_
 
+#include <dawn/webgpu.h>
+
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 
 namespace blink {
 
@@ -14,17 +15,18 @@ class GPUMemoryHeapInfo : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit GPUMemoryHeapInfo(const wgpu::MemoryHeapInfo&);
+  explicit GPUMemoryHeapInfo(const WGPUMemoryHeapInfo&);
 
   GPUMemoryHeapInfo(const GPUMemoryHeapInfo&) = delete;
   GPUMemoryHeapInfo& operator=(const GPUMemoryHeapInfo&) = delete;
 
   // gpu_memory_heap_info.idl
-  uint64_t size() const;
-  uint32_t properties() const;
+  const uint64_t& size() const;
+  const uint32_t& properties() const;
 
  private:
-  wgpu::MemoryHeapInfo info_;
+  uint64_t size_;
+  uint32_t properties_;
 };
 
 }  // namespace blink

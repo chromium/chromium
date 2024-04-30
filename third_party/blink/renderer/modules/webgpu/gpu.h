@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_H_
 
+#include <dawn/webgpu.h>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -12,28 +14,14 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
-namespace WTF {
+// Forward declarations from webgpu.h
+typedef struct WGPUBufferImpl* WGPUBuffer;
+// Forward declaration from dawn_proc.h
+struct DawnProcTable;
 
-template <>
-struct HashTraits<wgpu::Buffer> : GenericHashTraits<wgpu::Buffer> {
-  STATIC_ONLY(HashTraits);
-  static unsigned GetHash(const wgpu::Buffer& buffer) {
-    return HashPointer(buffer.Get());
-  }
-  static bool Equal(const wgpu::Buffer& a, const wgpu::Buffer& b) {
-    return a.Get() == b.Get();
-  }
-
-  static constexpr bool kEmptyValueIsZero = true;
-  static std::nullptr_t EmptyValue() { return nullptr; }
-  static std::nullptr_t DeletedValue() { return nullptr; }
-};
-
-}  // namespace WTF
 namespace blink {
 
 class GPUAdapter;
@@ -47,13 +35,20 @@ class WGSLLanguageFeatures;
 struct BoxedMappableWGPUBufferHandles
     : public RefCounted<BoxedMappableWGPUBufferHandles> {
  public:
-  void insert(const wgpu::Buffer& buffer) { contents_.insert(buffer); }
-  void erase(const wgpu::Buffer& buffer) { contents_.erase(buffer); }
+  // Basic typed wrapper around |contents_|.
+  void insert(WGPUBuffer buffer) { contents_.insert(buffer); }
 
-  void ClearAndDestroyAll();
+  // Basic typed wrapper around |contents_|.
+  void erase(WGPUBuffer buffer) { contents_.erase(buffer); }
+
+  void ClearAndDestroyAll(const DawnProcTable& procs);
 
  private:
-  HashSet<wgpu::Buffer> contents_;
+  // void* because HashSet tries to infer if T is GarbageCollected,
+  // but WGPUBufferImpl has no real definition. We could define
+  // IsGarbageCollectedType<struct WGPUBufferImpl> but it could easily
+  // lead to a ODR violation.
+  HashSet<void*> contents_;
 };
 
 class MODULES_EXPORT GPU final : public ScriptWrappable,
@@ -87,7 +82,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   String getPreferredCanvasFormat();
   WGSLLanguageFeatures* wgslLanguageFeatures() const;
 
-  static wgpu::TextureFormat preferred_canvas_format();
+  static WGPUTextureFormat preferred_canvas_format();
 
   // Store the buffer in a weak hash set so we can destroy it when the
   // context is destroyed.

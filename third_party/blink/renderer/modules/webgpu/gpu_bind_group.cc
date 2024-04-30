@@ -19,11 +19,11 @@
 
 namespace blink {
 
-wgpu::BindGroupEntry AsDawnType(
+WGPUBindGroupEntry AsDawnType(
     const GPUBindGroupEntry* webgpu_binding,
-    Vector<std::unique_ptr<wgpu::ExternalTextureBindingEntry>>*
+    Vector<std::unique_ptr<WGPUExternalTextureBindingEntry>>*
         externalTextureBindingEntries) {
-  wgpu::BindGroupEntry dawn_binding = {};
+  WGPUBindGroupEntry dawn_binding = {};
 
   dawn_binding.binding = webgpu_binding->binding();
 
@@ -32,9 +32,7 @@ wgpu::BindGroupEntry AsDawnType(
       GPUBufferBinding* buffer =
           webgpu_binding->resource()->GetAsGPUBufferBinding();
       dawn_binding.offset = buffer->offset();
-      if (buffer->hasSize()) {
-        dawn_binding.size = buffer->size();
-      }
+      dawn_binding.size = buffer->hasSize() ? buffer->size() : WGPU_WHOLE_SIZE;
       dawn_binding.buffer = AsDawnType(buffer->buffer());
       break;
     }
@@ -47,12 +45,15 @@ wgpu::BindGroupEntry AsDawnType(
           AsDawnType(webgpu_binding->resource()->GetAsGPUTextureView());
       break;
     case V8GPUBindingResource::ContentType::kGPUExternalTexture:
-      std::unique_ptr<wgpu::ExternalTextureBindingEntry>
+      std::unique_ptr<WGPUExternalTextureBindingEntry>
           externalTextureBindingEntry =
-              std::make_unique<wgpu::ExternalTextureBindingEntry>();
+              std::make_unique<WGPUExternalTextureBindingEntry>();
       externalTextureBindingEntry->externalTexture =
           AsDawnType(webgpu_binding->resource()->GetAsGPUExternalTexture());
-      dawn_binding.nextInChain = externalTextureBindingEntry.get();
+      externalTextureBindingEntry->chain.sType =
+          WGPUSType_ExternalTextureBindingEntry;
+      dawn_binding.nextInChain = reinterpret_cast<WGPUChainedStruct*>(
+          externalTextureBindingEntry.get());
       externalTextureBindingEntries->push_back(
           std::move(externalTextureBindingEntry));
       break;
@@ -61,13 +62,13 @@ wgpu::BindGroupEntry AsDawnType(
   return dawn_binding;
 }
 
-std::unique_ptr<wgpu::BindGroupEntry[]> AsDawnType(
+std::unique_ptr<WGPUBindGroupEntry[]> AsDawnType(
     const HeapVector<Member<GPUBindGroupEntry>>& webgpu_objects,
-    Vector<std::unique_ptr<wgpu::ExternalTextureBindingEntry>>*
+    Vector<std::unique_ptr<WGPUExternalTextureBindingEntry>>*
         externalTextureBindingEntries) {
   wtf_size_t count = webgpu_objects.size();
-  std::unique_ptr<wgpu::BindGroupEntry[]> dawn_objects(
-      new wgpu::BindGroupEntry[count]);
+  std::unique_ptr<WGPUBindGroupEntry[]> dawn_objects(
+      new WGPUBindGroupEntry[count]);
   for (wtf_size_t i = 0; i < count; ++i) {
     dawn_objects[i] =
         AsDawnType(webgpu_objects[i].Get(), externalTextureBindingEntries);
@@ -83,8 +84,8 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
   DCHECK(webgpu_desc);
 
   uint32_t entry_count = 0;
-  std::unique_ptr<wgpu::BindGroupEntry[]> entries;
-  Vector<std::unique_ptr<wgpu::ExternalTextureBindingEntry>>
+  std::unique_ptr<WGPUBindGroupEntry[]> entries;
+  Vector<std::unique_ptr<WGPUExternalTextureBindingEntry>>
       externalTextureBindingEntries;
   entry_count = static_cast<uint32_t>(webgpu_desc->entries().size());
   if (entry_count > 0) {
@@ -92,7 +93,8 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
         AsDawnType(webgpu_desc->entries(), &externalTextureBindingEntries);
   }
 
-  wgpu::BindGroupDescriptor dawn_desc = {};
+  WGPUBindGroupDescriptor dawn_desc = {};
+  dawn_desc.nextInChain = nullptr;
   dawn_desc.layout = AsDawnType(webgpu_desc->layout());
   dawn_desc.entryCount = entry_count;
   dawn_desc.entries = entries.get();
@@ -102,14 +104,15 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
   }
 
   GPUBindGroup* bind_group = MakeGarbageCollected<GPUBindGroup>(
-      device, device->GetHandle().CreateBindGroup(&dawn_desc),
+      device,
+      device->GetProcs().deviceCreateBindGroup(device->GetHandle(), &dawn_desc),
       webgpu_desc->label());
   return bind_group;
 }
 
 GPUBindGroup::GPUBindGroup(GPUDevice* device,
-                           wgpu::BindGroup bind_group,
+                           WGPUBindGroup bind_group,
                            const String& label)
-    : DawnObject<wgpu::BindGroup>(device, std::move(bind_group), label) {}
+    : DawnObject<WGPUBindGroup>(device, bind_group, label) {}
 
 }  // namespace blink

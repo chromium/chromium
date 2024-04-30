@@ -1277,7 +1277,6 @@ _CONFIG = [
             'viz::SinglePlaneFormat',
             'viz::ToClosestSkColorType',
             'viz::TransferableResource',
-            'wgpu::.+',
         ],
     },
     {

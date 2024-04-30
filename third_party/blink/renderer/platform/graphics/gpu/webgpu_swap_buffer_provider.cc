@@ -17,13 +17,13 @@
 namespace blink {
 
 namespace {
-viz::SharedImageFormat WGPUFormatToViz(wgpu::TextureFormat format) {
+viz::SharedImageFormat WGPUFormatToViz(WGPUTextureFormat format) {
   switch (format) {
-    case wgpu::TextureFormat::BGRA8Unorm:
+    case WGPUTextureFormat_BGRA8Unorm:
       return viz::SinglePlaneFormat::kBGRA_8888;
-    case wgpu::TextureFormat::RGBA8Unorm:
+    case WGPUTextureFormat_RGBA8Unorm:
       return viz::SinglePlaneFormat::kRGBA_8888;
-    case wgpu::TextureFormat::RGBA16Float:
+    case WGPUTextureFormat_RGBA16Float:
       return viz::SinglePlaneFormat::kRGBA_F16;
     default:
       NOTREACHED();
@@ -36,9 +36,9 @@ viz::SharedImageFormat WGPUFormatToViz(wgpu::TextureFormat format) {
 WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
     Client* client,
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
-    const wgpu::Device& device,
-    wgpu::TextureUsage usage,
-    wgpu::TextureFormat format,
+    WGPUDevice device,
+    WGPUTextureUsage usage,
+    WGPUTextureFormat format,
     PredefinedColorSpace color_space,
     const gfx::HDRMetadata& hdr_metadata)
     : dawn_control_client_(dawn_control_client),
@@ -48,8 +48,11 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
       usage_(usage),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata) {
-  wgpu::SupportedLimits limits = {};
-  auto get_limits_succeeded = device_.GetLimits(&limits);
+  dawn_control_client_->GetProcs().deviceReference(device_);
+
+  WGPUSupportedLimits limits = {};
+  auto get_limits_succeeded =
+      dawn_control_client_->GetProcs().deviceGetLimits(device_, &limits);
   CHECK(get_limits_succeeded);
 
   max_texture_size_ = limits.limits.maxTextureDimension2D;
@@ -57,6 +60,8 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
 
 WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
   Neuter();
+  dawn_control_client_->GetProcs().deviceRelease(device_);
+  device_ = nullptr;
 }
 
 viz::SharedImageFormat WebGPUSwapBufferProvider::Format() const {
@@ -144,7 +149,7 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
                      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                      gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
                      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (usage_ & wgpu::TextureUsage::StorageBinding) {
+    if (usage_ & WGPUTextureUsage_StorageBinding) {
       usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
     }
     auto client_shared_image = sii->CreateSharedImage(
@@ -180,12 +185,12 @@ void WebGPUSwapBufferProvider::RecycleSwapBuffer(
 }
 
 scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
-    const wgpu::TextureDescriptor& desc,
+    const WGPUTextureDescriptor& desc,
     SkAlphaType alpha_mode) {
   DCHECK_EQ(desc.nextInChain, nullptr);
   DCHECK_EQ(desc.usage, usage_);
   DCHECK_EQ(WGPUFormatToViz(desc.format), format_);
-  DCHECK_EQ(desc.dimension, wgpu::TextureDimension::e2D);
+  DCHECK_EQ(desc.dimension, WGPUTextureDimension_2D);
   DCHECK_EQ(desc.size.depthOrArrayLayers, 1u);
   DCHECK_EQ(desc.mipLevelCount, 1u);
   DCHECK_EQ(desc.sampleCount, 1u);
@@ -267,7 +272,7 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
     return WebGPUMailboxTextureAndSize(nullptr, gfx::Size());
   }
 
-  wgpu::TextureDescriptor desc = {};
+  WGPUTextureDescriptor desc = {};
   desc.usage = usage_;
 
   return WebGPUMailboxTextureAndSize(

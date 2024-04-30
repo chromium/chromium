@@ -17,7 +17,7 @@ class GPUTextureViewDescriptor;
 class StaticBitmapImage;
 class WebGPUMailboxTexture;
 
-class GPUTexture : public DawnObject<wgpu::Texture> {
+class GPUTexture : public DawnObject<WGPUTexture> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -25,12 +25,12 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
                             const GPUTextureDescriptor* webgpu_desc,
                             ExceptionState& exception_state);
   static GPUTexture* CreateError(GPUDevice* device,
-                                 const wgpu::TextureDescriptor* desc);
+                                 const WGPUTextureDescriptor* desc);
 
-  GPUTexture(GPUDevice* device, wgpu::Texture texture, const String& label);
+  GPUTexture(GPUDevice* device, WGPUTexture texture, const String& label);
   GPUTexture(GPUDevice* device,
-             wgpu::TextureFormat format,
-             wgpu::TextureUsage usage,
+             WGPUTextureFormat format,
+             WGPUTextureUsage usage,
              scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
              const String& label);
 
@@ -52,9 +52,9 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   String format() const;
   uint32_t usage() const;
 
-  wgpu::TextureDimension Dimension() { return dimension_; }
-  wgpu::TextureFormat Format() { return format_; }
-  wgpu::TextureUsage Usage() { return usage_; }
+  WGPUTextureDimension Dimension() { return dimension_; }
+  WGPUTextureFormat Format() { return format_; }
+  WGPUTextureUsageFlags Usage() { return usage_; }
   bool Destroyed() { return destroyed_; }
 
   void DissociateMailbox();
@@ -71,12 +71,12 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
  private:
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+    GetProcs().textureSetLabel(GetHandle(), utf8_label.c_str());
   }
 
-  wgpu::TextureDimension dimension_;
-  wgpu::TextureFormat format_;
-  wgpu::TextureUsage usage_;
+  WGPUTextureDimension dimension_;
+  WGPUTextureFormat format_;
+  WGPUTextureUsageFlags usage_;
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
   bool destroyed_ = false;
   base::OnceClosure destroy_callback_;

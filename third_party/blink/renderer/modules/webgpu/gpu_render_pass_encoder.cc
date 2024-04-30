@@ -19,19 +19,17 @@ namespace blink {
 
 GPURenderPassEncoder::GPURenderPassEncoder(
     GPUDevice* device,
-    wgpu::RenderPassEncoder render_pass_encoder,
+    WGPURenderPassEncoder render_pass_encoder,
     const String& label)
-    : DawnObject<wgpu::RenderPassEncoder>(device,
-                                          std::move(render_pass_encoder),
-                                          label) {}
+    : DawnObject<WGPURenderPassEncoder>(device, render_pass_encoder, label) {}
 
 void GPURenderPassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
     const Vector<uint32_t>& dynamicOffsets) {
-  GetHandle().SetBindGroup(
-      index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr),
-      dynamicOffsets.size(), dynamicOffsets.data());
+  WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
+  GetProcs().renderPassEncoderSetBindGroup(
+      GetHandle(), index, bgImpl, dynamicOffsets.size(), dynamicOffsets.data());
 }
 
 void GPURenderPassEncoder::setBindGroup(
@@ -50,30 +48,31 @@ void GPURenderPassEncoder::setBindGroup(
   const uint32_t* data =
       dynamic_offsets_data.DataMaybeOnStack() + dynamic_offsets_data_start;
 
-  GetHandle().SetBindGroup(
-      index, bind_group ? bind_group->GetHandle() : wgpu::BindGroup(nullptr),
-      dynamic_offsets_data_length, data);
+  WGPUBindGroupImpl* bgImpl = bind_group ? bind_group->GetHandle() : nullptr;
+  GetProcs().renderPassEncoderSetBindGroup(GetHandle(), index, bgImpl,
+                                           dynamic_offsets_data_length, data);
 }
 
 void GPURenderPassEncoder::setBlendConstant(const V8GPUColor* color,
                                             ExceptionState& exception_state) {
-  wgpu::Color dawn_color;
+  WGPUColor dawn_color;
   if (!ConvertToDawn(color, &dawn_color, exception_state)) {
     return;
   }
 
-  GetHandle().SetBlendConstant(&dawn_color);
+  GetProcs().renderPassEncoderSetBlendConstant(GetHandle(), &dawn_color);
 }
 
 void GPURenderPassEncoder::executeBundles(
     const HeapVector<Member<GPURenderBundle>>& bundles) {
-  std::unique_ptr<wgpu::RenderBundle[]> dawn_bundles = AsDawnType(bundles);
+  std::unique_ptr<WGPURenderBundle[]> dawn_bundles = AsDawnType(bundles);
 
-  GetHandle().ExecuteBundles(bundles.size(), dawn_bundles.get());
+  GetProcs().renderPassEncoderExecuteBundles(GetHandle(), bundles.size(),
+                                             dawn_bundles.get());
 }
 
 void GPURenderPassEncoder::writeTimestamp(
-    const DawnObject<wgpu::QuerySet>* querySet,
+    const DawnObject<WGPUQuerySet>* querySet,
     uint32_t queryIndex,
     ExceptionState& exception_state) {
   V8GPUFeatureName::Enum requiredFeatureEnum =
@@ -87,7 +86,8 @@ void GPURenderPassEncoder::writeTimestamp(
         device_->formattedLabel().c_str()));
     return;
   }
-  GetHandle().WriteTimestamp(querySet->GetHandle(), queryIndex);
+  GetProcs().renderPassEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
+                                             queryIndex);
 }
 
 }  // namespace blink

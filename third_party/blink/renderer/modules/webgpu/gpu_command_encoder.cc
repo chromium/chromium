@@ -29,13 +29,14 @@
 namespace blink {
 
 bool ConvertToDawn(const GPURenderPassColorAttachment* in,
-                   wgpu::RenderPassColorAttachment* out,
+                   WGPURenderPassColorAttachment* out,
                    ExceptionState& exception_state) {
   DCHECK(in);
   DCHECK(out);
 
   *out = {};
   out->view = in->view()->GetHandle();
+  out->depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
   if (in->hasDepthSlice()) {
     out->depthSlice = in->depthSlice();
   }
@@ -55,9 +56,9 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
 namespace {
 
 // Dawn represents `undefined` as the special uint32_t value
-// wgpu::kDepthSliceUndefined (0xFFFF'FFFF). Blink must make sure that an
+// WGPU_DEPTH_SLICE_UNDEFINED (0xFFFF'FFFF). Blink must make sure that an
 // actual value of 0xFFFF'FFFF coming in from JS is not treated as
-// wgpu::kDepthSliceUndefined, so it injects an error in that case.
+// WGPU_DEPTH_SLICE_UNDEFINED, so it injects an error in that case.
 std::string ValidateColorAttachmentsDepthSlice(
     const HeapVector<Member<GPURenderPassColorAttachment>>& in,
     const char* desc_label) {
@@ -68,7 +69,7 @@ std::string ValidateColorAttachmentsDepthSlice(
 
     const GPURenderPassColorAttachment* attachment = in[i].Get();
     if (attachment->hasDepthSlice() &&
-        attachment->depthSlice() == wgpu::kDepthSliceUndefined) {
+        attachment->depthSlice() == WGPU_DEPTH_SLICE_UNDEFINED) {
       std::ostringstream error;
       error << "depthSlice (" << attachment->depthSlice()
             << ") is too large when validating [GPURenderPassDescriptor";
@@ -84,13 +85,13 @@ std::string ValidateColorAttachmentsDepthSlice(
 }
 
 // Dawn represents `undefined` as the special uint32_t value
-// wgpu::kQuerySetIndexUndefined (0xFFFF'FFFF). Blink must make sure that an
+// WGPU_QUERY_SET_INDEX_UNDEFINED (0xFFFF'FFFF). Blink must make sure that an
 // actual value of 0xFFFF'FFFF coming in from JS is not treated as
-// wgpu::kQuerySetIndexUndefined, so it injects an error in that case.
-template <typename GPUTimestampWrites, typename TimestampWrites>
+// WGPU_QUERY_SET_INDEX_UNDEFINED, so it injects an error in that case.
+template <typename GPUTimestampWrites, typename WGPUTimestampWrites>
 std::string ValidateAndConvertTimestampWrites(
     const GPUTimestampWrites* webgpu_desc,
-    TimestampWrites* dawn_desc,
+    WGPUTimestampWrites* dawn_desc,
     const char* desc_type,
     const char* desc_label) {
   DCHECK(webgpu_desc);
@@ -99,7 +100,7 @@ std::string ValidateAndConvertTimestampWrites(
   uint32_t beginningOfPassWriteIndex = 0;
   if (webgpu_desc->hasBeginningOfPassWriteIndex()) {
     beginningOfPassWriteIndex = webgpu_desc->beginningOfPassWriteIndex();
-    if (beginningOfPassWriteIndex == wgpu::kQuerySetIndexUndefined) {
+    if (beginningOfPassWriteIndex == WGPU_QUERY_SET_INDEX_UNDEFINED) {
       std::ostringstream error;
       error << "beginningOfPassWriteIndex (" << beginningOfPassWriteIndex
             << ") is too large when validating [" << desc_type;
@@ -111,13 +112,13 @@ std::string ValidateAndConvertTimestampWrites(
       return error.str();
     }
   } else {
-    beginningOfPassWriteIndex = wgpu::kQuerySetIndexUndefined;
+    beginningOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
   }
 
   uint32_t endOfPassWriteIndex = 0;
   if (webgpu_desc->hasEndOfPassWriteIndex()) {
     endOfPassWriteIndex = webgpu_desc->endOfPassWriteIndex();
-    if (endOfPassWriteIndex == wgpu::kQuerySetIndexUndefined) {
+    if (endOfPassWriteIndex == WGPU_QUERY_SET_INDEX_UNDEFINED) {
       std::ostringstream error;
       error << "endOfPassWriteIndex (" << endOfPassWriteIndex
             << ") is too large when validating [" << desc_type;
@@ -128,7 +129,7 @@ std::string ValidateAndConvertTimestampWrites(
       return error.str();
     }
   } else {
-    endOfPassWriteIndex = wgpu::kQuerySetIndexUndefined;
+    endOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
   }
 
   *dawn_desc = {};
@@ -139,12 +140,12 @@ std::string ValidateAndConvertTimestampWrites(
   return std::string();
 }
 
-wgpu::RenderPassDepthStencilAttachment AsDawnType(
+WGPURenderPassDepthStencilAttachment AsDawnType(
     GPUDevice* device,
     const GPURenderPassDepthStencilAttachment* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::RenderPassDepthStencilAttachment dawn_desc = {};
+  WGPURenderPassDepthStencilAttachment dawn_desc = {};
   dawn_desc.view = webgpu_desc->view()->GetHandle();
 
   if (webgpu_desc->hasDepthLoadOp()) {
@@ -174,26 +175,27 @@ wgpu::RenderPassDepthStencilAttachment AsDawnType(
   return dawn_desc;
 }
 
-wgpu::ImageCopyBuffer ValidateAndConvertImageCopyBuffer(
+WGPUImageCopyBuffer ValidateAndConvertImageCopyBuffer(
     const GPUImageCopyBuffer* webgpu_view,
     const char** error) {
   DCHECK(webgpu_view);
   DCHECK(webgpu_view->buffer());
 
-  wgpu::ImageCopyBuffer dawn_view = {};
+  WGPUImageCopyBuffer dawn_view = {};
   dawn_view.buffer = webgpu_view->buffer()->GetHandle();
 
   *error = ValidateTextureDataLayout(webgpu_view, &dawn_view.layout);
   return dawn_view;
 }
 
-wgpu::CommandEncoderDescriptor AsDawnType(
+WGPUCommandEncoderDescriptor AsDawnType(
     const GPUCommandEncoderDescriptor* webgpu_desc,
     std::string* label) {
   DCHECK(webgpu_desc);
   DCHECK(label);
 
-  wgpu::CommandEncoderDescriptor dawn_desc = {};
+  WGPUCommandEncoderDescriptor dawn_desc = {};
+  dawn_desc.nextInChain = nullptr;
   *label = webgpu_desc->label().Utf8();
   if (!label->empty()) {
     dawn_desc.label = label->c_str();
@@ -212,40 +214,41 @@ GPUCommandEncoder* GPUCommandEncoder::Create(
   DCHECK(webgpu_desc);
 
   std::string label;
-  wgpu::CommandEncoderDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
+  WGPUCommandEncoderDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
 
   GPUCommandEncoder* encoder = MakeGarbageCollected<GPUCommandEncoder>(
-      device, device->GetHandle().CreateCommandEncoder(&dawn_desc),
+      device,
+      device->GetProcs().deviceCreateCommandEncoder(device->GetHandle(),
+                                                    &dawn_desc),
       webgpu_desc->label());
   return encoder;
 }
 
 GPUCommandEncoder::GPUCommandEncoder(GPUDevice* device,
-                                     wgpu::CommandEncoder command_encoder,
+                                     WGPUCommandEncoder command_encoder,
                                      const String& label)
-    : DawnObject<wgpu::CommandEncoder>(device,
-                                       std::move(command_encoder),
-                                       label) {}
+    : DawnObject<WGPUCommandEncoder>(device, command_encoder, label) {}
 
 GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     const GPURenderPassDescriptor* descriptor,
     ExceptionState& exception_state) {
   DCHECK(descriptor);
 
-  wgpu::RenderPassDescriptor dawn_desc = {};
+  WGPURenderPassDescriptor dawn_desc = {};
 
   std::string label = descriptor->label().Utf8();
   if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
-  std::unique_ptr<wgpu::RenderPassColorAttachment[]> color_attachments;
+  std::unique_ptr<WGPURenderPassColorAttachment[]> color_attachments;
   dawn_desc.colorAttachmentCount = descriptor->colorAttachments().size();
   if (dawn_desc.colorAttachmentCount > 0) {
     std::string error = ValidateColorAttachmentsDepthSlice(
         descriptor->colorAttachments(), label.c_str());
     if (!error.empty()) {
-      GetHandle().InjectValidationError(error.c_str());
+      GetProcs().commandEncoderInjectValidationError(GetHandle(),
+                                                     error.c_str());
     }
 
     if (!ConvertToDawn(descriptor->colorAttachments(), &color_attachments,
@@ -255,7 +258,7 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.colorAttachments = color_attachments.get();
   }
 
-  wgpu::RenderPassDepthStencilAttachment depthStencilAttachment = {};
+  WGPURenderPassDepthStencilAttachment depthStencilAttachment = {};
   if (descriptor->hasDepthStencilAttachment()) {
     const GPURenderPassDepthStencilAttachment* depth_stencil =
         descriptor->depthStencilAttachment();
@@ -267,7 +270,7 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     dawn_desc.occlusionQuerySet = AsDawnType(descriptor->occlusionQuerySet());
   }
 
-  wgpu::RenderPassTimestampWrites timestampWrites = {};
+  WGPURenderPassTimestampWrites timestampWrites = {};
   if (descriptor->hasTimestampWrites()) {
     GPURenderPassTimestampWrites* timestamp_writes =
         descriptor->timestampWrites();
@@ -275,33 +278,38 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
         timestamp_writes, &timestampWrites, "GPURenderPassDescriptor",
         label.c_str());
     if (!error.empty()) {
-      GetHandle().InjectValidationError(error.c_str());
+      GetProcs().commandEncoderInjectValidationError(GetHandle(),
+                                                     error.c_str());
     } else {
       dawn_desc.timestampWrites = &timestampWrites;
     }
   }
 
-  wgpu::RenderPassDescriptorMaxDrawCount max_draw_count = {};
+  WGPURenderPassDescriptorMaxDrawCount max_draw_count = {};
   if (descriptor->hasMaxDrawCount()) {
+    max_draw_count.chain.sType = WGPUSType_RenderPassDescriptorMaxDrawCount;
     max_draw_count.maxDrawCount = descriptor->maxDrawCount();
-    dawn_desc.nextInChain = &max_draw_count;
+    dawn_desc.nextInChain =
+        reinterpret_cast<WGPUChainedStruct*>(&max_draw_count);
   }
 
   GPURenderPassEncoder* encoder = MakeGarbageCollected<GPURenderPassEncoder>(
-      device_, GetHandle().BeginRenderPass(&dawn_desc), descriptor->label());
+      device_,
+      GetProcs().commandEncoderBeginRenderPass(GetHandle(), &dawn_desc),
+      descriptor->label());
   return encoder;
 }
 
 GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
     const GPUComputePassDescriptor* descriptor,
     ExceptionState& exception_state) {
-  wgpu::ComputePassDescriptor dawn_desc = {};
+  WGPUComputePassDescriptor dawn_desc = {};
   std::string label = descriptor->label().Utf8();
   if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
-  wgpu::ComputePassTimestampWrites timestampWrites = {};
+  WGPUComputePassTimestampWrites timestampWrites = {};
   if (descriptor->hasTimestampWrites()) {
     GPUComputePassTimestampWrites* timestamp_writes =
         descriptor->timestampWrites();
@@ -309,14 +317,17 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
         timestamp_writes, &timestampWrites, "GPUComputePassDescriptor",
         label.c_str());
     if (!error.empty()) {
-      GetHandle().InjectValidationError(error.c_str());
+      GetProcs().commandEncoderInjectValidationError(GetHandle(),
+                                                     error.c_str());
     } else {
       dawn_desc.timestampWrites = &timestampWrites;
     }
   }
 
   GPUComputePassEncoder* encoder = MakeGarbageCollected<GPUComputePassEncoder>(
-      device_, GetHandle().BeginComputePass(&dawn_desc), descriptor->label());
+      device_,
+      GetProcs().commandEncoderBeginComputePass(GetHandle(), &dawn_desc),
+      descriptor->label());
   return encoder;
 }
 
@@ -324,66 +335,66 @@ void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
                                             GPUImageCopyTexture* destination,
                                             const V8GPUExtent3D* copy_size,
                                             ExceptionState& exception_state) {
-  wgpu::Extent3D dawn_copy_size;
-  wgpu::ImageCopyTexture dawn_destination;
+  WGPUExtent3D dawn_copy_size;
+  WGPUImageCopyTexture dawn_destination;
   if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {
     return;
   }
 
   const char* error = nullptr;
-  wgpu::ImageCopyBuffer dawn_source =
+  WGPUImageCopyBuffer dawn_source =
       ValidateAndConvertImageCopyBuffer(source, &error);
   if (error) {
-    GetHandle().InjectValidationError(error);
+    GetProcs().commandEncoderInjectValidationError(GetHandle(), error);
     return;
   }
 
-  GetHandle().CopyBufferToTexture(&dawn_source, &dawn_destination,
-                                  &dawn_copy_size);
+  GetProcs().commandEncoderCopyBufferToTexture(
+      GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);
 }
 
 void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
                                             GPUImageCopyBuffer* destination,
                                             const V8GPUExtent3D* copy_size,
                                             ExceptionState& exception_state) {
-  wgpu::Extent3D dawn_copy_size;
-  wgpu::ImageCopyTexture dawn_source;
+  WGPUExtent3D dawn_copy_size;
+  WGPUImageCopyTexture dawn_source;
   if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(source, &dawn_source, exception_state)) {
     return;
   }
 
   const char* error = nullptr;
-  wgpu::ImageCopyBuffer dawn_destination =
+  WGPUImageCopyBuffer dawn_destination =
       ValidateAndConvertImageCopyBuffer(destination, &error);
   if (error) {
-    GetHandle().InjectValidationError(error);
+    GetProcs().commandEncoderInjectValidationError(GetHandle(), error);
     return;
   }
 
-  GetHandle().CopyTextureToBuffer(&dawn_source, &dawn_destination,
-                                  &dawn_copy_size);
+  GetProcs().commandEncoderCopyTextureToBuffer(
+      GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);
 }
 
 void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
                                              GPUImageCopyTexture* destination,
                                              const V8GPUExtent3D* copy_size,
                                              ExceptionState& exception_state) {
-  wgpu::Extent3D dawn_copy_size;
-  wgpu::ImageCopyTexture dawn_source;
-  wgpu::ImageCopyTexture dawn_destination;
+  WGPUExtent3D dawn_copy_size;
+  WGPUImageCopyTexture dawn_source;
+  WGPUImageCopyTexture dawn_destination;
   if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(source, &dawn_source, exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {
     return;
   }
 
-  GetHandle().CopyTextureToTexture(&dawn_source, &dawn_destination,
-                                   &dawn_copy_size);
+  GetProcs().commandEncoderCopyTextureToTexture(
+      GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);
 }
 
-void GPUCommandEncoder::writeTimestamp(DawnObject<wgpu::QuerySet>* querySet,
+void GPUCommandEncoder::writeTimestamp(DawnObject<WGPUQuerySet>* querySet,
                                        uint32_t queryIndex,
                                        ExceptionState& exception_state) {
   V8GPUFeatureName::Enum requiredFeatureEnum =
@@ -396,19 +407,21 @@ void GPUCommandEncoder::writeTimestamp(DawnObject<wgpu::QuerySet>* querySet,
                        device_->formattedLabel().c_str()));
     return;
   }
-  GetHandle().WriteTimestamp(querySet->GetHandle(), queryIndex);
+  GetProcs().commandEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
+                                          queryIndex);
 }
 
 GPUCommandBuffer* GPUCommandEncoder::finish(
     const GPUCommandBufferDescriptor* descriptor) {
-  wgpu::CommandBufferDescriptor dawn_desc = {};
+  WGPUCommandBufferDescriptor dawn_desc = {};
   std::string label = descriptor->label().Utf8();
   if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
   GPUCommandBuffer* command_buffer = MakeGarbageCollected<GPUCommandBuffer>(
-      device_, GetHandle().Finish(&dawn_desc), descriptor->label());
+      device_, GetProcs().commandEncoderFinish(GetHandle(), &dawn_desc),
+      descriptor->label());
 
   return command_buffer;
 }

@@ -62,20 +62,20 @@ namespace {
   }
 }
 
-wgpu::PowerPreference AsDawnType(V8GPUPowerPreference power_preference) {
+WGPUPowerPreference AsDawnType(V8GPUPowerPreference power_preference) {
   switch (power_preference.AsEnum()) {
     case V8GPUPowerPreference::Enum::kLowPower:
-      return wgpu::PowerPreference::LowPower;
+      return WGPUPowerPreference_LowPower;
     case V8GPUPowerPreference::Enum::kHighPerformance:
-      return wgpu::PowerPreference::HighPerformance;
+      return WGPUPowerPreference_HighPerformance;
   }
 }
 
-wgpu::RequestAdapterOptions AsDawnType(
+WGPURequestAdapterOptions AsDawnType(
     const GPURequestAdapterOptions* webgpu_options) {
   DCHECK(webgpu_options);
 
-  wgpu::RequestAdapterOptions dawn_options = {};
+  WGPURequestAdapterOptions dawn_options = {};
   dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
   dawn_options.compatibilityMode = webgpu_options->compatibilityMode();
   if (webgpu_options->hasPowerPreference()) {
@@ -169,14 +169,15 @@ void GPU::ContextDestroyed() {
       buffer->DetachMappedArrayBuffers(isolate);
     }
   }
-  // GPUBuffer::~GPUBuffer and GPUBuffer::destroy will remove wgpu::Buffers from
+  // GPUBuffer::~GPUBuffer and GPUBuffer::destroy will remove WGPUBuffers from
   // |mappable_buffer_handles_|.
   // However, there may be GPUBuffers that were removed from mappable_buffers_
   // for which ~GPUBuffer has not run yet. These GPUBuffers and their
   // DOMArrayBuffer mappings are no longer reachable from JS, so we don't need
-  // to detach them, but we do need to eagerly destroy the wgpu::Buffer so that
+  // to detach them, but we do need to eagerly destroy the WGPUBuffer so that
   // its shared memory is freed before the context is completely destroyed.
-  mappable_buffer_handles_->ClearAndDestroyAll();
+  mappable_buffer_handles_->ClearAndDestroyAll(
+      dawn_control_client_->GetProcs());
   dawn_control_client_->Destroy();
 }
 
@@ -184,25 +185,22 @@ void GPU::OnRequestAdapterCallback(
     ScriptState* script_state,
     const GPURequestAdapterOptions* options,
     ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
-    WGPURequestAdapterStatus cStatus,
-    WGPUAdapter cAdapter,
+    WGPURequestAdapterStatus status,
+    WGPUAdapter adapter,
     const char* error_message) {
-  wgpu::RequestAdapterStatus status =
-      static_cast<wgpu::RequestAdapterStatus>(cStatus);
-  wgpu::Adapter adapter = wgpu::Adapter::Acquire(cAdapter);
   GPUAdapter* gpu_adapter = nullptr;
   switch (status) {
-    case wgpu::RequestAdapterStatus::Success:
-      gpu_adapter = MakeGarbageCollected<GPUAdapter>(this, std::move(adapter),
-                                                     dawn_control_client_);
+    case WGPURequestAdapterStatus_Success:
+      gpu_adapter =
+          MakeGarbageCollected<GPUAdapter>(this, adapter, dawn_control_client_);
       break;
 
     // Note: requestAdapter never rejects, but we print a console warning if
     // there are error messages.
-    case wgpu::RequestAdapterStatus::Unavailable:
-    case wgpu::RequestAdapterStatus::Error:
-    case wgpu::RequestAdapterStatus::Unknown:
-    case wgpu::RequestAdapterStatus::InstanceDropped:
+    case WGPURequestAdapterStatus_Unavailable:
+    case WGPURequestAdapterStatus_Error:
+    case WGPURequestAdapterStatus_Unknown:
+    case WGPURequestAdapterStatus_InstanceDropped:
       break;
 
     default:
@@ -299,7 +297,7 @@ void GPU::RequestAdapterImpl(
             // creation error.
             gpu->OnRequestAdapterCallback(
                 script_state, options, resolver, WGPURequestAdapterStatus_Error,
-                nullptr, "Failed to create WebGPU Context Provider");
+                0, "Failed to create WebGPU Context Provider");
           }
         },
         WrapPersistent(this), WrapPersistent(script_state),
@@ -355,13 +353,14 @@ void GPU::RequestAdapterImpl(
 
   DCHECK_NE(dawn_control_client_, nullptr);
 
-  wgpu::RequestAdapterOptions dawn_options = AsDawnType(options);
+  WGPURequestAdapterOptions dawn_options = AsDawnType(options);
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                     WrapPersistent(script_state), WrapPersistent(options))));
 
-  dawn_control_client_->GetWGPUInstance().RequestAdapter(
-      &dawn_options, callback->UnboundCallback(), callback->AsUserdata());
+  dawn_control_client_->GetProcs().instanceRequestAdapter(
+      dawn_control_client_->GetWGPUInstance(), &dawn_options,
+      callback->UnboundCallback(), callback->AsUserdata());
   dawn_control_client_->EnsureFlush(
       *execution_context->GetAgent()->event_loop());
 
@@ -395,11 +394,11 @@ String GPU::getPreferredCanvasFormat() {
   return FromDawnEnum(preferred_canvas_format());
 }
 
-wgpu::TextureFormat GPU::preferred_canvas_format() {
+WGPUTextureFormat GPU::preferred_canvas_format() {
 #if BUILDFLAG(IS_ANDROID)
-  return wgpu::TextureFormat::RGBA8Unorm;
+  return WGPUTextureFormat_RGBA8Unorm;
 #else
-  return wgpu::TextureFormat::BGRA8Unorm;
+  return WGPUTextureFormat_BGRA8Unorm;
 #endif
 }
 
@@ -413,9 +412,10 @@ void GPU::UntrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffer_handles_->erase(buffer->GetHandle());
 }
 
-void BoxedMappableWGPUBufferHandles::ClearAndDestroyAll() {
-  for (const wgpu::Buffer& b : contents_) {
-    b.Destroy();
+void BoxedMappableWGPUBufferHandles::ClearAndDestroyAll(
+    const DawnProcTable& procs) {
+  for (void* p : contents_) {
+    procs.bufferDestroy(static_cast<WGPUBuffer>(p));
   }
   contents_.clear();
 }

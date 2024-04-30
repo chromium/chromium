@@ -135,8 +135,11 @@ void WebGPUTest::Initialize(const Options& options) {
   webgpu_impl()->SetLostContextCallback(base::BindLambdaForTesting(
       []() { GTEST_FAIL() << "Context lost unexpectedly."; }));
 
-  // Use the wire procs for the test main thread.
-  dawnProcSetPerThreadProcs(&dawn::wire::client::GetProcs());
+  {
+    // Use the wire procs for the test main thread.
+    DawnProcTable procs = webgpu()->GetAPIChannel()->GetProcs();
+    dawnProcSetPerThreadProcs(&procs);
+  }
 
   instance_ = wgpu::Instance(webgpu()->GetAPIChannel()->GetWGPUInstance());
 

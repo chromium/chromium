@@ -16,7 +16,7 @@
 
 namespace blink {
 
-wgpu::ComputePipelineDescriptor AsDawnType(
+WGPUComputePipelineDescriptor AsDawnType(
     GPUDevice* device,
     const GPUComputePipelineDescriptor* webgpu_desc,
     std::string* label,
@@ -25,7 +25,9 @@ wgpu::ComputePipelineDescriptor AsDawnType(
   DCHECK(label);
   DCHECK(computeStage);
 
-  wgpu::ComputePipelineDescriptor dawn_desc = {};
+  WGPUComputePipelineDescriptor dawn_desc = {};
+  dawn_desc.nextInChain = nullptr;
+
   dawn_desc.layout = AsDawnType(webgpu_desc->layout());
   *label = webgpu_desc->label().Utf8();
   if (!label->empty()) {
@@ -53,35 +55,38 @@ GPUComputePipeline* GPUComputePipeline::Create(
 
   std::string label;
   OwnedProgrammableStage computeStage;
-  wgpu::ComputePipelineDescriptor dawn_desc =
+  WGPUComputePipelineDescriptor dawn_desc =
       AsDawnType(device, webgpu_desc, &label, &computeStage);
 
   // If ChromiumExperimentalSubgroups feature is enabled, chain the full
   // subgroups options after compute pipeline descriptor.
-  wgpu::DawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
+  WGPUDawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
   if (device->features()->has(
           V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
+    fullSubgroupsOptions.chain.sType =
+        WGPUSType_DawnComputePipelineFullSubgroups;
     fullSubgroupsOptions.requiresFullSubgroups =
         webgpu_desc->getRequiresFullSubgroupsOr(false);
-    dawn_desc.nextInChain = &fullSubgroupsOptions;
+    dawn_desc.nextInChain = &fullSubgroupsOptions.chain;
   }
 
   GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
-      device, device->GetHandle().CreateComputePipeline(&dawn_desc),
+      device,
+      device->GetProcs().deviceCreateComputePipeline(device->GetHandle(),
+                                                     &dawn_desc),
       webgpu_desc->label());
   return pipeline;
 }
 
 GPUComputePipeline::GPUComputePipeline(GPUDevice* device,
-                                       wgpu::ComputePipeline compute_pipeline,
+                                       WGPUComputePipeline compute_pipeline,
                                        const String& label)
-    : DawnObject<wgpu::ComputePipeline>(device,
-                                        std::move(compute_pipeline),
-                                        label) {}
+    : DawnObject<WGPUComputePipeline>(device, compute_pipeline, label) {}
 
 GPUBindGroupLayout* GPUComputePipeline::getBindGroupLayout(uint32_t index) {
   return MakeGarbageCollected<GPUBindGroupLayout>(
-      device_, GetHandle().GetBindGroupLayout(index), String());
+      device_, GetProcs().computePipelineGetBindGroupLayout(GetHandle(), index),
+      String());
 }
 
 }  // namespace blink

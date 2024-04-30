@@ -11,12 +11,12 @@ namespace blink {
 
 class GPUDevice;
 
-class GPURenderBundle : public DawnObject<wgpu::RenderBundle> {
+class GPURenderBundle : public DawnObject<WGPURenderBundle> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit GPURenderBundle(GPUDevice* device,
-                           wgpu::RenderBundle render_bundle,
+                           WGPURenderBundle render_bundle,
                            const String& label);
 
   GPURenderBundle(const GPURenderBundle&) = delete;
@@ -25,7 +25,7 @@ class GPURenderBundle : public DawnObject<wgpu::RenderBundle> {
  private:
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+    GetProcs().renderBundleSetLabel(GetHandle(), utf8_label.c_str());
   }
 };
 

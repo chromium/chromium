@@ -53,24 +53,24 @@ constexpr T UndefinedLimitValue();
 
 template <>
 constexpr uint32_t UndefinedLimitValue<uint32_t>() {
-  return wgpu::kLimitU32Undefined;
+  return WGPU_LIMIT_U32_UNDEFINED;
 }
 
 template <>
 constexpr uint64_t UndefinedLimitValue<uint64_t>() {
-  return wgpu::kLimitU64Undefined;
+  return WGPU_LIMIT_U64_UNDEFINED;
 }
 }  // namespace
 
-GPUSupportedLimits::GPUSupportedLimits(const wgpu::SupportedLimits& limits)
+GPUSupportedLimits::GPUSupportedLimits(const WGPUSupportedLimits& limits)
     : limits_(limits.limits) {
-  for (auto* chain = limits.nextInChain; chain; chain = chain->nextInChain) {
+  for (auto* chain = limits.nextInChain; chain; chain = chain->next) {
     switch (chain->sType) {
-      case (wgpu::SType::DawnExperimentalSubgroupLimits): {
-        auto* t = static_cast<wgpu::DawnExperimentalSubgroupLimits*>(
+      case (WGPUSType_DawnExperimentalSubgroupLimits): {
+        auto* t = reinterpret_cast<WGPUDawnExperimentalSubgroupLimits*>(
             limits.nextInChain);
         subgroup_limits_ = *t;
-        subgroup_limits_.nextInChain = nullptr;
+        subgroup_limits_.chain.next = nullptr;
         subgroup_limits_initialized_ = true;
         break;
       }
@@ -81,24 +81,24 @@ GPUSupportedLimits::GPUSupportedLimits(const wgpu::SupportedLimits& limits)
 }
 
 // static
-void GPUSupportedLimits::MakeUndefined(wgpu::RequiredLimits* out) {
+void GPUSupportedLimits::MakeUndefined(WGPURequiredLimits* out) {
 #define X(name) \
-  out->limits.name = UndefinedLimitValue<decltype(wgpu::Limits::name)>();
+  out->limits.name = UndefinedLimitValue<decltype(WGPULimits::name)>();
   SUPPORTED_LIMITS(X)
 #undef X
 }
 
 // static
-bool GPUSupportedLimits::Populate(wgpu::RequiredLimits* out,
+bool GPUSupportedLimits::Populate(WGPURequiredLimits* out,
                                   const Vector<std::pair<String, uint64_t>>& in,
                                   ScriptPromiseResolverBase* resolver) {
   // TODO(crbug.com/dawn/685): This loop is O(n^2) if the developer
   // passes all of the limits. It could be O(n) with a mapping of
-  // String -> wgpu::Limits::*member.
+  // String -> WGPULimits::*member.
   for (const auto& [limitName, limitRawValue] : in) {
 #define X(name)                                                               \
   if (limitName == #name) {                                                   \
-    using T = decltype(wgpu::Limits::name);                                   \
+    using T = decltype(WGPULimits::name);                                     \
     base::CheckedNumeric<T> value{limitRawValue};                             \
     if (!value.IsValid() || value.ValueOrDie() == UndefinedLimitValue<T>()) { \
       resolver->RejectWithDOMException(                                       \
@@ -120,9 +120,9 @@ bool GPUSupportedLimits::Populate(wgpu::RequiredLimits* out,
   return true;
 }
 
-#define X(name)                                                   \
-  decltype(wgpu::Limits::name) GPUSupportedLimits::name() const { \
-    return limits_.name;                                          \
+#define X(name)                                                 \
+  decltype(WGPULimits::name) GPUSupportedLimits::name() const { \
+    return limits_.name;                                        \
   }
 SUPPORTED_LIMITS(X)
 #undef X

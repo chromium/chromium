@@ -3463,11 +3463,11 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
   }
 
   // Verify that the usage flags are supported.
-  constexpr wgpu::TextureUsage kSupportedUsageFlags =
-      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
-      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::RenderAttachment;
-  wgpu::TextureUsage tex_usage =
-      AsDawnFlags<wgpu::TextureUsage>(access_options->usage());
+  constexpr int kSupportedUsageFlags =
+      WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
+      WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
+  WGPUTextureUsage tex_usage =
+      AsDawnFlags<WGPUTextureUsage>(access_options->usage());
   if (tex_usage & ~kSupportedUsageFlags) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Usage flags are not supported.");
@@ -3491,6 +3491,7 @@ GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
   }
 
   SkImageInfo image_info = image->GetSkImageInfo();
+
   scoped_refptr<WebGPUMailboxTexture> texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
           blink_device->GetDawnControlClient(), blink_device->GetHandle(),

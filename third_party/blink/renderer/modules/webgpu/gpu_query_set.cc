@@ -17,7 +17,8 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
   DCHECK(device);
   DCHECK(webgpu_desc);
 
-  wgpu::QuerySetDescriptor dawn_desc = {};
+  WGPUQuerySetDescriptor dawn_desc = {};
+  dawn_desc.nextInChain = nullptr;
   dawn_desc.type = AsDawnEnum(webgpu_desc->type());
   dawn_desc.count = webgpu_desc->count();
 
@@ -27,26 +28,27 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
   }
 
   GPUQuerySet* query_set = MakeGarbageCollected<GPUQuerySet>(
-      device, device->GetHandle().CreateQuerySet(&dawn_desc),
+      device,
+      device->GetProcs().deviceCreateQuerySet(device->GetHandle(), &dawn_desc),
       webgpu_desc->label());
   return query_set;
 }
 
 GPUQuerySet::GPUQuerySet(GPUDevice* device,
-                         wgpu::QuerySet querySet,
+                         WGPUQuerySet querySet,
                          const String& label)
-    : DawnObject<wgpu::QuerySet>(device, std::move(querySet), label) {}
+    : DawnObject<WGPUQuerySet>(device, querySet, label) {}
 
 void GPUQuerySet::destroy() {
-  GetHandle().Destroy();
+  GetProcs().querySetDestroy(GetHandle());
 }
 
 String GPUQuerySet::type() const {
-  return FromDawnEnum(GetHandle().GetType());
+  return FromDawnEnum(GetProcs().querySetGetType(GetHandle()));
 }
 
 uint32_t GPUQuerySet::count() const {
-  return GetHandle().GetCount();
+  return GetProcs().querySetGetCount(GetHandle());
 }
 
 }  // namespace blink

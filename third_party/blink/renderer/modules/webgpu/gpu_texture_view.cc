@@ -9,8 +9,8 @@
 namespace blink {
 
 GPUTextureView::GPUTextureView(GPUDevice* device,
-                               wgpu::TextureView texture_view,
+                               WGPUTextureView texture_view,
                                const String& label)
-    : DawnObject<wgpu::TextureView>(device, std::move(texture_view), label) {}
+    : DawnObject<WGPUTextureView>(device, texture_view, label) {}
 
 }  // namespace blink

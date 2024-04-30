@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_SUPPORTED_LIMITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_SUPPORTED_LIMITS_H_
 
+#include <dawn/webgpu.h>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -17,12 +18,12 @@ class GPUSupportedLimits final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit GPUSupportedLimits(const wgpu::SupportedLimits& limits);
+  explicit GPUSupportedLimits(const WGPUSupportedLimits& limits);
 
-  static void MakeUndefined(wgpu::RequiredLimits* out);
+  static void MakeUndefined(WGPURequiredLimits* out);
   // Returns true if populated, false if not and the ScriptPromiseResolverBase
   // has been rejected.
-  static bool Populate(wgpu::RequiredLimits* out,
+  static bool Populate(WGPURequiredLimits* out,
                        const Vector<std::pair<String, uint64_t>>& in,
                        ScriptPromiseResolverBase*);
 
@@ -65,10 +66,10 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxSubgroupSize() const;
 
  private:
-  wgpu::Limits limits_;
+  WGPULimits limits_;
 
   bool subgroup_limits_initialized_;
-  wgpu::DawnExperimentalSubgroupLimits subgroup_limits_;
+  WGPUDawnExperimentalSubgroupLimits subgroup_limits_;
 };
 
 }  // namespace blink

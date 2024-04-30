@@ -84,7 +84,7 @@ class ExternalTextureCache : public GarbageCollected<ExternalTextureCache> {
   Member<GPUDevice> device_;
 };
 
-class GPUExternalTexture : public DawnObject<wgpu::ExternalTexture> {
+class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -104,7 +104,7 @@ class GPUExternalTexture : public DawnObject<wgpu::ExternalTexture> {
       ExceptionState& exception_state);
   explicit GPUExternalTexture(
       ExternalTextureCache* cache,
-      wgpu::ExternalTexture external_texture,
+      WGPUExternalTexture external_texture,
       scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
       bool is_zero_copy,
       bool read_lock_fences_enabled,
@@ -162,7 +162,7 @@ class GPUExternalTexture : public DawnObject<wgpu::ExternalTexture> {
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+    GetProcs().externalTextureSetLabel(GetHandle(), utf8_label.c_str());
   }
 
   bool IsCurrentFrameFromHTMLVideoElementValid();

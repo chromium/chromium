@@ -17,22 +17,23 @@ class GPUBindGroup;
 class GPURenderBundle;
 class V8GPUIndexFormat;
 
-class GPURenderPassEncoder : public DawnObject<wgpu::RenderPassEncoder>,
+class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
                              public GPUProgrammablePassEncoder {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   explicit GPURenderPassEncoder(GPUDevice* device,
-                                wgpu::RenderPassEncoder render_pass_encoder,
+                                WGPURenderPassEncoder render_pass_encoder,
                                 const String& label);
 
   GPURenderPassEncoder(const GPURenderPassEncoder&) = delete;
   GPURenderPassEncoder& operator=(const GPURenderPassEncoder&) = delete;
 
   // gpu_render_pass_encoder.idl
-  void setBindGroup(uint32_t index, DawnObject<wgpu::BindGroup>* bindGroup) {
-    GetHandle().SetBindGroup(
-        index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr));
+  void setBindGroup(uint32_t index, DawnObject<WGPUBindGroup>* bindGroup) {
+    WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
+    GetProcs().renderPassEncoderSetBindGroup(GetHandle(), index, bgImpl, 0,
+                                             nullptr);
   }
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,
@@ -45,21 +46,23 @@ class GPURenderPassEncoder : public DawnObject<wgpu::RenderPassEncoder>,
                     ExceptionState& exception_state);
   void pushDebugGroup(String groupLabel) {
     std::string label = groupLabel.Utf8();
-    GetHandle().PushDebugGroup(label.c_str());
+    GetProcs().renderPassEncoderPushDebugGroup(GetHandle(), label.c_str());
   }
-  void popDebugGroup() { GetHandle().PopDebugGroup(); }
+  void popDebugGroup() {
+    GetProcs().renderPassEncoderPopDebugGroup(GetHandle());
+  }
   void insertDebugMarker(String markerLabel) {
     std::string label = markerLabel.Utf8();
-    GetHandle().InsertDebugMarker(label.c_str());
+    GetProcs().renderPassEncoderInsertDebugMarker(GetHandle(), label.c_str());
   }
-  void setPipeline(const DawnObject<wgpu::RenderPipeline>* pipeline) {
-    GetHandle().SetPipeline(pipeline->GetHandle());
+  void setPipeline(const DawnObject<WGPURenderPipeline>* pipeline) {
+    GetProcs().renderPassEncoderSetPipeline(GetHandle(), pipeline->GetHandle());
   }
 
   void setBlendConstant(const V8GPUColor* color,
                         ExceptionState& exception_state);
   void setStencilReference(uint32_t reference) {
-    GetHandle().SetStencilReference(reference);
+    GetProcs().renderPassEncoderSetStencilReference(GetHandle(), reference);
   }
   void setViewport(float x,
                    float y,
@@ -67,73 +70,83 @@ class GPURenderPassEncoder : public DawnObject<wgpu::RenderPassEncoder>,
                    float height,
                    float minDepth,
                    float maxDepth) {
-    GetHandle().SetViewport(x, y, width, height, minDepth, maxDepth);
+    GetProcs().renderPassEncoderSetViewport(GetHandle(), x, y, width, height,
+                                            minDepth, maxDepth);
   }
   void setScissorRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
-    GetHandle().SetScissorRect(x, y, width, height);
+    GetProcs().renderPassEncoderSetScissorRect(GetHandle(), x, y, width,
+                                               height);
   }
-  void setIndexBuffer(const DawnObject<wgpu::Buffer>* buffer,
+  void setIndexBuffer(const DawnObject<WGPUBuffer>* buffer,
                       const V8GPUIndexFormat& format,
                       uint64_t offset) {
-    GetHandle().SetIndexBuffer(buffer->GetHandle(), AsDawnEnum(format), offset);
+    GetProcs().renderPassEncoderSetIndexBuffer(GetHandle(), buffer->GetHandle(),
+                                               AsDawnEnum(format), offset,
+                                               WGPU_WHOLE_SIZE);
   }
-  void setIndexBuffer(const DawnObject<wgpu::Buffer>* buffer,
+  void setIndexBuffer(const DawnObject<WGPUBuffer>* buffer,
                       const V8GPUIndexFormat& format,
                       uint64_t offset,
                       uint64_t size) {
-    GetHandle().SetIndexBuffer(buffer->GetHandle(), AsDawnEnum(format), offset,
-                               size);
+    GetProcs().renderPassEncoderSetIndexBuffer(
+        GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset, size);
   }
   void setVertexBuffer(uint32_t slot,
-                       const DawnObject<wgpu::Buffer>* buffer,
+                       const DawnObject<WGPUBuffer>* buffer,
                        uint64_t offset) {
-    GetHandle().SetVertexBuffer(
-        slot, buffer ? buffer->GetHandle() : wgpu::Buffer(nullptr), offset);
+    WGPUBufferImpl* bufferImpl = buffer ? buffer->GetHandle() : nullptr;
+    GetProcs().renderPassEncoderSetVertexBuffer(GetHandle(), slot, bufferImpl,
+                                                offset, WGPU_WHOLE_SIZE);
   }
   void setVertexBuffer(uint32_t slot,
-                       const DawnObject<wgpu::Buffer>* buffer,
+                       const DawnObject<WGPUBuffer>* buffer,
                        uint64_t offset,
                        uint64_t size) {
-    GetHandle().SetVertexBuffer(
-        slot, buffer ? buffer->GetHandle() : wgpu::Buffer(nullptr), offset,
-        size);
+    WGPUBufferImpl* bufferImpl = buffer ? buffer->GetHandle() : nullptr;
+    GetProcs().renderPassEncoderSetVertexBuffer(GetHandle(), slot, bufferImpl,
+                                                offset, size);
   }
   void draw(uint32_t vertexCount,
             uint32_t instanceCount,
             uint32_t firstVertex,
             uint32_t firstInstance) {
-    GetHandle().Draw(vertexCount, instanceCount, firstVertex, firstInstance);
+    GetProcs().renderPassEncoderDraw(GetHandle(), vertexCount, instanceCount,
+                                     firstVertex, firstInstance);
   }
   void drawIndexed(uint32_t indexCount,
                    uint32_t instanceCount,
                    uint32_t firstIndex,
                    int32_t baseVertex,
                    uint32_t firstInstance) {
-    GetHandle().DrawIndexed(indexCount, instanceCount, firstIndex, baseVertex,
-                            firstInstance);
+    GetProcs().renderPassEncoderDrawIndexed(GetHandle(), indexCount,
+                                            instanceCount, firstIndex,
+                                            baseVertex, firstInstance);
   }
-  void drawIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
+  void drawIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
                     uint64_t indirectOffset) {
-    GetHandle().DrawIndirect(indirectBuffer->GetHandle(), indirectOffset);
+    GetProcs().renderPassEncoderDrawIndirect(
+        GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
   }
-  void drawIndexedIndirect(const DawnObject<wgpu::Buffer>* indirectBuffer,
+  void drawIndexedIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
                            uint64_t indirectOffset) {
-    GetHandle().DrawIndexedIndirect(indirectBuffer->GetHandle(),
-                                    indirectOffset);
+    GetProcs().renderPassEncoderDrawIndexedIndirect(
+        GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
   }
   void executeBundles(const HeapVector<Member<GPURenderBundle>>& bundles);
   void beginOcclusionQuery(uint32_t queryIndex) {
-    GetHandle().BeginOcclusionQuery(queryIndex);
+    GetProcs().renderPassEncoderBeginOcclusionQuery(GetHandle(), queryIndex);
   }
-  void endOcclusionQuery() { GetHandle().EndOcclusionQuery(); }
-  void writeTimestamp(const DawnObject<wgpu::QuerySet>* querySet,
+  void endOcclusionQuery() {
+    GetProcs().renderPassEncoderEndOcclusionQuery(GetHandle());
+  }
+  void writeTimestamp(const DawnObject<WGPUQuerySet>* querySet,
                       uint32_t queryIndex,
                       ExceptionState& exception_state);
-  void end() { GetHandle().End(); }
+  void end() { GetProcs().renderPassEncoderEnd(GetHandle()); }
 
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
-    GetHandle().SetLabel(utf8_label.c_str());
+    GetProcs().renderPassEncoderSetLabel(GetHandle(), utf8_label.c_str());
   }
 };
 

@@ -44,9 +44,9 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   WebGPUSwapBufferProvider(
       Client* client,
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
-      const wgpu::Device& device,
-      wgpu::TextureUsage usage,
-      wgpu::TextureFormat format,
+      WGPUDevice device,
+      WGPUTextureUsage usage,
+      WGPUTextureFormat format,
       PredefinedColorSpace color_space,
       const gfx::HDRMetadata& hdr_metadata);
   ~WebGPUSwapBufferProvider() override;
@@ -58,7 +58,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void Neuter();
   void DiscardCurrentSwapBuffer();
   scoped_refptr<WebGPUMailboxTexture> GetNewTexture(
-      const wgpu::TextureDescriptor& desc,
+      const WGPUTextureDescriptor& desc,
       SkAlphaType alpha_type);
 
   // Copy swapchain's texture to a video frame.
@@ -155,7 +155,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   raw_ptr<Client> client_;
-  wgpu::Device device_;
+  WGPUDevice device_;
   scoped_refptr<cc::TextureLayer> layer_;
   bool neutered_ = false;
 
@@ -166,7 +166,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   WTF::Vector<scoped_refptr<SwapBuffer>> unused_swap_buffers_;
   scoped_refptr<SwapBuffer> last_swap_buffer_;
   const viz::SharedImageFormat format_;
-  const wgpu::TextureUsage usage_;
+  const WGPUTextureUsage usage_;
   const PredefinedColorSpace color_space_;
   const gfx::HDRMetadata hdr_metadata_;
   cc::PaintFlags::FilterQuality filter_quality_ =

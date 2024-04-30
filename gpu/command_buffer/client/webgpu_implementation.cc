@@ -4,8 +4,6 @@
 
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 
-#include <dawn/wire/client/webgpu.h>
-
 #include <algorithm>
 #include <vector>
 
@@ -24,7 +22,7 @@ namespace webgpu {
 
 #if BUILDFLAG(USE_DAWN)
 DawnWireServices::~DawnWireServices() {
-  wgpuDawnWireClientInstanceRelease(wgpu_instance_);
+  GetProcs().instanceRelease(wgpu_instance_);
 }
 
 DawnWireServices::DawnWireServices(
@@ -43,6 +41,10 @@ DawnWireServices::DawnWireServices(
       }),
       wgpu_instance_(wire_client_.ReserveInstance().instance) {
   DCHECK(wgpu_instance_);
+}
+
+const DawnProcTable& DawnWireServices::GetProcs() const {
+  return dawn::wire::client::GetProcs();
 }
 
 WGPUInstance DawnWireServices::GetWGPUInstance() const {

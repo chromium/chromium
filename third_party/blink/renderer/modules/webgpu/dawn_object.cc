@@ -59,7 +59,7 @@ DawnObjectImpl::DawnObjectImpl(GPUDevice* device, const String& label)
 
 DawnObjectImpl::~DawnObjectImpl() = default;
 
-const wgpu::Device& DawnObjectImpl::GetDeviceHandle() const {
+WGPUDevice DawnObjectImpl::GetDeviceHandle() {
   return device_->GetHandle();
 }
 
