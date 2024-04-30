@@ -29,11 +29,26 @@ class ProductSpecificationsService : public KeyedService {
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecifications();
 
+  std::optional<ProductSpecificationsSet> GetSetByUuid(const base::Uuid& uuid);
+
   // Add new product specifications set called |name| with product pages
   // corresponding to |urls|.
   virtual const std::optional<const ProductSpecificationsSet>
   AddProductSpecificationsSet(const std::string& name,
                               const std::vector<GURL>& urls);
+
+  // Set the URLs for a product specifications set associated with the provided
+  // Uuid. If a set with the provided Uuid exists, an updated
+  // ProductSpecificationsSet will be returned, otherwise nullopt.
+  std::optional<ProductSpecificationsSet> SetUrls(
+      const base::Uuid& uuid,
+      const std::vector<GURL>& urls);
+
+  // Set the name for a product specifications set associated with the provided
+  // Uuid. If a set with the provided Uuid exists, an updated
+  // ProductSpecificationsSet will be returned, otherwise nullopt.
+  std::optional<ProductSpecificationsSet> SetName(const base::Uuid& uuid,
+                                                  const std::string& name);
 
   // Deletes product specification set corresponding to identifier |uuid|.
   virtual void DeleteProductSpecificationsSet(const std::string& uuid);

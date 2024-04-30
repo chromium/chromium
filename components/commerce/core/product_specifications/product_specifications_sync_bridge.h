@@ -54,16 +54,18 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   friend class commerce::ProductSpecificationsSyncBridgeTest;
   using CompareSpecificsEntries =
       std::map<std::string, sync_pb::CompareSpecifics>;
-  CompareSpecificsEntries entries_;
-  CompareSpecificsEntries entries() { return entries_; }
 
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  const CompareSpecificsEntries& entries() { return entries_; }
 
-  base::ObserverList<commerce::ProductSpecificationsSet::Observer> observers_;
+  virtual sync_pb::CompareSpecifics AddProductSpecifications(
+      const std::string& name,
+      const std::vector<GURL>& urls);
 
-  virtual const std::optional<sync_pb::CompareSpecifics>
-  AddProductSpecifications(const std::string& name,
-                           const std::vector<GURL>& urls);
+  // Update the specifics for the provided ProductSpecificationsSet based on its
+  // UUID. If no specifics for a UUID are found, this method is a noop and
+  // nullopt is returned.
+  sync_pb::CompareSpecifics UpdateProductSpecificationsSet(
+      const ProductSpecificationsSet& set);
 
   void DeleteProductSpecificationsSet(const std::string& uuid);
 
@@ -85,6 +87,12 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void OnSpecificsAdded(const sync_pb::CompareSpecifics& compare_specifics);
   void OnSpecificsUpdated(const sync_pb::CompareSpecifics& compare_specifics);
   void OnSpecificsRemoved(const std::string& uuid);
+
+  CompareSpecificsEntries entries_;
+
+  std::unique_ptr<syncer::ModelTypeStore> store_;
+
+  base::ObserverList<commerce::ProductSpecificationsSet::Observer> observers_;
 
   base::WeakPtrFactory<ProductSpecificationsSyncBridge> weak_ptr_factory_{this};
 };

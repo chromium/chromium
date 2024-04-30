@@ -96,6 +96,10 @@ MATCHER_P(HasAllProductSpecs, compare_specifics, "") {
          arg.name() == compare_specifics.name() && arg.urls() == specifics_urls;
 }
 
+MATCHER_P(IsSetWithUuid, uuid, "") {
+  return arg.uuid() == uuid;
+}
+
 MATCHER_P(IsUuid, uuid, "") {
   return arg.AsLowercaseString() == uuid;
 }
@@ -200,11 +204,6 @@ class ProductSpecificationsServiceTest : public testing::Test {
     return &observer_;
   }
 
-  void MockFailedAddProductSpecifications() {
-    ON_CALL(processor_, IsTrackingMetadata())
-        .WillByDefault(testing::Return(false));
-  }
-
   void CheckSpecsAgainstSpecifics(
       const ProductSpecificationsSet& specifications,
       const sync_pb::CompareSpecifics& specifics) const {
@@ -275,13 +274,6 @@ TEST_F(ProductSpecificationsServiceTest, TestRemoveProductSpecifications) {
   service()->DeleteProductSpecificationsSet(kCompareSpecifics[0].uuid());
 }
 
-TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsFailure) {
-  MockFailedAddProductSpecifications();
-  EXPECT_EQ(std::nullopt, service()->AddProductSpecificationsSet(
-                              kProductSpecsName,
-                              {GURL(kProductOneUrl), GURL(kProductTwoUrl)}));
-}
-
 TEST_F(ProductSpecificationsServiceTest, TestObserverNewSpecifics) {
   syncer::EntityChangeList add_changes;
   for (const auto& specifics : kCompareSpecifics) {
@@ -294,6 +286,85 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverNewSpecifics) {
   bridge()->ApplyIncrementalSyncChanges(
       std::make_unique<syncer::InMemoryMetadataChangeList>(),
       std::move(add_changes));
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestSetUrls) {
+  for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
+    bridge()->AddCompareSpecifics(specifics);
+  }
+
+  const std::vector<ProductSpecificationsSet> specifications =
+      service()->GetAllProductSpecifications();
+
+  const base::Uuid uuid_to_modify = specifications[0].uuid();
+
+  EXPECT_CALL(*observer(),
+              OnProductSpecificationsSetUpdate(IsSetWithUuid(uuid_to_modify)))
+      .Times(1);
+
+  const std::vector<GURL> new_urls = {GURL("http://example.com/updated")};
+
+  service()->SetUrls(uuid_to_modify, new_urls);
+
+  const std::optional<ProductSpecificationsSet> updated_set =
+      service()->GetSetByUuid(uuid_to_modify);
+
+  EXPECT_TRUE(updated_set.has_value());
+  EXPECT_EQ(new_urls[0].spec(), updated_set->urls()[0].spec());
+  EXPECT_GT(updated_set->update_time(), specifications[0].update_time());
+  EXPECT_EQ(updated_set->creation_time(), specifications[0].creation_time());
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestSetName) {
+  for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
+    bridge()->AddCompareSpecifics(specifics);
+  }
+
+  const std::vector<ProductSpecificationsSet> specifications =
+      service()->GetAllProductSpecifications();
+
+  const base::Uuid uuid_to_modify = specifications[0].uuid();
+
+  EXPECT_CALL(*observer(),
+              OnProductSpecificationsSetUpdate(IsSetWithUuid(uuid_to_modify)))
+      .Times(1);
+
+  const std::string new_name = "updated name";
+
+  service()->SetName(uuid_to_modify, new_name);
+
+  const std::optional<ProductSpecificationsSet> updated_set =
+      service()->GetSetByUuid(uuid_to_modify);
+
+  EXPECT_TRUE(updated_set.has_value());
+  EXPECT_EQ(new_name, updated_set->name());
+  EXPECT_GT(updated_set->update_time(), specifications[0].update_time());
+  EXPECT_EQ(updated_set->creation_time(), specifications[0].creation_time());
+}
+
+TEST_F(ProductSpecificationsServiceTest, TestSetNameAndUrls_BadId) {
+  for (const sync_pb::CompareSpecifics& specifics : kCompareSpecifics) {
+    bridge()->AddCompareSpecifics(specifics);
+  }
+
+  const std::vector<ProductSpecificationsSet> specifications =
+      service()->GetAllProductSpecifications();
+
+  const base::Uuid uuid_to_modify =
+      base::Uuid::ParseLowercase("90000000-0000-0000-0000-000000000000");
+
+  EXPECT_CALL(*observer(), OnProductSpecificationsSetUpdate(testing::_))
+      .Times(0);
+
+  const std::vector<GURL> new_urls = {GURL("http://example.com/updated")};
+
+  service()->SetUrls(uuid_to_modify, new_urls);
+  service()->SetName(uuid_to_modify, "new name");
+
+  const std::optional<ProductSpecificationsSet> updated_set =
+      service()->GetSetByUuid(uuid_to_modify);
+
+  EXPECT_FALSE(updated_set.has_value());
 }
 
 TEST_F(ProductSpecificationsServiceTest, TestObserverUpdateSpecifics) {

@@ -40,6 +40,18 @@ ProductSpecificationsService::GetAllProductSpecifications() {
   return product_specifications;
 }
 
+std::optional<ProductSpecificationsSet>
+ProductSpecificationsService::GetSetByUuid(const base::Uuid& uuid) {
+  // TODO(b:337263623): Consider centralizing ID logic for product
+  //                    specifications.
+  auto it = bridge_->entries().find(uuid.AsLowercaseString());
+  if (it == bridge_->entries().end()) {
+    return std::nullopt;
+  }
+
+  return ProductSpecificationsSet::FromProto(it->second);
+}
+
 const std::optional<const ProductSpecificationsSet>
 ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
@@ -51,6 +63,47 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     return std::nullopt;
   }
   return std::optional(ProductSpecificationsSet::FromProto(specifics.value()));
+}
+
+std::optional<ProductSpecificationsSet> ProductSpecificationsService::SetUrls(
+    const base::Uuid& uuid,
+    const std::vector<GURL>& urls) {
+  std::optional<ProductSpecificationsSet> product_specs_set =
+      GetSetByUuid(uuid);
+  if (!product_specs_set.has_value()) {
+    return std::nullopt;
+  }
+
+  product_specs_set->urls_.clear();
+  for (const auto& url : urls) {
+    product_specs_set->urls_.push_back(url);
+  }
+
+  std::optional<sync_pb::CompareSpecifics> updated_specifics =
+      bridge_->UpdateProductSpecificationsSet(product_specs_set.value());
+  if (!updated_specifics.has_value()) {
+    return std::nullopt;
+  }
+  return ProductSpecificationsSet::FromProto(updated_specifics.value());
+}
+
+std::optional<ProductSpecificationsSet> ProductSpecificationsService::SetName(
+    const base::Uuid& uuid,
+    const std::string& name) {
+  std::optional<ProductSpecificationsSet> product_specs_set =
+      GetSetByUuid(uuid);
+  if (!product_specs_set.has_value()) {
+    return std::nullopt;
+  }
+
+  product_specs_set->name_ = name;
+
+  std::optional<sync_pb::CompareSpecifics> updated_specifics =
+      bridge_->UpdateProductSpecificationsSet(product_specs_set.value());
+  if (!updated_specifics.has_value()) {
+    return std::nullopt;
+  }
+  return ProductSpecificationsSet::FromProto(updated_specifics.value());
 }
 
 void ProductSpecificationsService::DeleteProductSpecificationsSet(

@@ -74,9 +74,9 @@ class ProductSpecificationsSet {
 
   const base::Uuid uuid_;
   const base::Time creation_time_;
-  const base::Time update_time_;
-  const std::vector<GURL> urls_;
-  const std::string name_;
+  base::Time update_time_;
+  std::vector<GURL> urls_;
+  std::string name_;
 };
 
 }  // namespace commerce

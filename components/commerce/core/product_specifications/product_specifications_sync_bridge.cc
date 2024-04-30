@@ -128,13 +128,12 @@ void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
   std::move(callback).Run(std::move(batch));
 }
 
-const std::optional<sync_pb::CompareSpecifics>
+sync_pb::CompareSpecifics
 ProductSpecificationsSyncBridge::AddProductSpecifications(
     const std::string& name,
     const std::vector<GURL>& urls) {
-  if (!change_processor()->IsTrackingMetadata()) {
-    return std::nullopt;
-  }
+  // Sync is mandatory for this feature to be usable.
+  CHECK(change_processor()->IsTrackingMetadata());
 
   sync_pb::CompareSpecifics specifics;
   specifics.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -158,7 +157,40 @@ ProductSpecificationsSyncBridge::AddProductSpecifications(
   batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
   Commit(std::move(batch));
   OnSpecificsAdded(specifics);
-  return std::optional(specifics);
+  return specifics;
+}
+
+sync_pb::CompareSpecifics
+ProductSpecificationsSyncBridge::UpdateProductSpecificationsSet(
+    const ProductSpecificationsSet& product_specs_set) {
+  auto it = entries_.find(product_specs_set.uuid().AsLowercaseString());
+
+  CHECK(it != entries_.end());
+
+  // Sync is mandatory for this feature to be usable.
+  CHECK(change_processor()->IsTrackingMetadata());
+
+  sync_pb::CompareSpecifics& specifics = it->second;
+  specifics.set_update_time_unix_epoch_micros(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+  specifics.set_name(product_specs_set.name());
+
+  specifics.clear_data();
+  for (const GURL& url : product_specs_set.urls()) {
+    sync_pb::ComparisonData* comparison_data = specifics.add_data();
+    comparison_data->set_url(url.spec());
+  }
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+
+  change_processor()->Put(specifics.uuid(), CreateEntityData(specifics),
+                          batch->GetMetadataChangeList());
+
+  batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
+  Commit(std::move(batch));
+  OnSpecificsUpdated(specifics);
+  return specifics;
 }
 
 void ProductSpecificationsSyncBridge::DeleteProductSpecificationsSet(

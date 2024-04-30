@@ -24,7 +24,10 @@
 
 namespace {
 
-const std::vector<std::string> kInitUuid = {"asdf", "zdxc", "zetf"};
+const std::vector<std::string> kInitUuid = {
+    "10000000-0000-0000-0000-000000000000",
+    "20000000-0000-0000-0000-000000000000",
+    "30000000-0000-0000-0000-000000000000"};
 const std::vector<std::string> kInitName = {"my_name", "another name",
                                             "yet another name"};
 const std::vector<int64_t> kCreationTime = {1710953277, 1711035900, 1711118523};
@@ -180,6 +183,11 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
       const std::string& name,
       const std::vector<GURL> urls) {
     return bridge().AddProductSpecifications(name, urls);
+  }
+
+  std::optional<sync_pb::CompareSpecifics> UpdateProductSpecificationsSet(
+      const ProductSpecificationsSet& set) {
+    return bridge().UpdateProductSpecificationsSet(set);
   }
 
   void DeleteProductSpecifications(const std::string& uuid) {
@@ -449,13 +457,32 @@ TEST_F(ProductSpecificationsSyncBridgeTest, AddProductSpecifications) {
   VerifyStoreAndEntriesSizeIncreasedBy(1);
 }
 
-TEST_F(ProductSpecificationsSyncBridgeTest,
-       AddProductSpecificationsProcessorNotTrackingMetadata) {
-  ProcessorNotTrackingMetadata();
-  const std::optional<sync_pb::CompareSpecifics> new_specifics =
-      AddProductSpecifications(
-          kInitName[0], {GURL(kCompareUrls[0][0]), GURL(kCompareUrls[0][1])});
-  EXPECT_FALSE(new_specifics.has_value());
+TEST_F(ProductSpecificationsSyncBridgeTest, TestUpdate) {
+  VerifyEntriesAndStoreSize(3);
+
+  sync_pb::CompareSpecifics specifics = entries().begin()->second;
+
+  const std::string original_name = specifics.name();
+  const int original_url_count = specifics.data().size();
+  const std::string original_uuid = specifics.uuid();
+
+  std::vector<GURL> urls;
+  for (const sync_pb::ComparisonData& data : specifics.data()) {
+    urls.emplace_back(data.url());
+  }
+  urls.emplace_back(GURL("http://example.com/additional_url"));
+
+  ProductSpecificationsSet set(
+      specifics.uuid(), specifics.creation_time_unix_epoch_micros(),
+      specifics.update_time_unix_epoch_micros(), urls, "new name");
+
+  EXPECT_TRUE(UpdateProductSpecificationsSet(set).has_value());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_NE(original_name, entries()[original_uuid].name());
+  EXPECT_NE(original_url_count, entries()[original_uuid].data().size());
+
+  VerifyEntriesAndStoreSize(3);
 }
 
 TEST_F(ProductSpecificationsSyncBridgeTest,
