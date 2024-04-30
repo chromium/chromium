@@ -643,7 +643,7 @@ CHAR_LIMIT guidelines:
         Passwords
       </message>
       <message name="IDS_PASSWORD_MANAGER_SETTINGS_TITLE" desc="Title for the settings menu item leading to the Password Manager UI surface. This allows users to e.g. manage their saved passwords, toggle saving and auto-sign-in on/off, etc. [CHAR_LIMIT=32]">
-        Password Manager
+        Google Password Manager
       </message>
       <message name="IDS_PASSWORD_SAVING_ON_BY_ADMINISTRATOR" desc="Subtitle for the settings menu item leading to the Password Manager UI surface, shown when the device administrator set saving passwords to enabled.">
         Password saving is turned on by your administrator
