@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -32,7 +31,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/heap_profiling/in_process/switches.h"
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
@@ -159,118 +157,6 @@ bool DecideIfCollectionIsEnabled(version_info::Channel channel,
   }
   return true;
 }
-
-// Records a time histogram for the `interval` between snapshots, using the
-// appropriate histogram buckets for the platform (desktop or mobile).
-// `recording_time` must be one of the {RecordingTime} token variants in the
-// definition of HeapProfiling.InProcess.SnapshotInterval.{Platform}.
-// {RecordingTime} in tools/metrics/histograms/metadata/memory/histograms.xml.
-void RecordUmaSnapshotInterval(base::TimeDelta interval,
-                               base::StringPiece recording_time,
-                               ProcessType process_type) {
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  // On mobile, the interval is distributed around a mean of 30 minutes.
-  constexpr base::TimeDelta kMinHistogramTime = base::Seconds(30);
-  constexpr base::TimeDelta kMaxHistogramTime = base::Hours(3);
-  constexpr const char* const kPlatform = "Mobile";
-#else
-  // On desktop, the interval is distributed around a mean of 1 day.
-  constexpr base::TimeDelta kMinHistogramTime = base::Minutes(30);
-  constexpr base::TimeDelta kMaxHistogramTime = base::Days(6);
-  constexpr const char* const kPlatform = "Desktop";
-#endif
-
-  const auto base_name =
-      base::StrCat({"HeapProfiling.InProcess.SnapshotInterval.", kPlatform, ".",
-                    recording_time});
-  base::UmaHistogramCustomTimes(ProcessHistogramName(base_name, process_type),
-                                interval, kMinHistogramTime, kMaxHistogramTime,
-                                50);
-  // Also summarize over all process types.
-  base::UmaHistogramCustomTimes(base_name, interval, kMinHistogramTime,
-                                kMaxHistogramTime, 50);
-}
-
-#if BUILDFLAG(IS_ANDROID)
-// Records metrics about the quality of each stack that is sampled.
-class StackQualityMetricsRecorder {
- public:
-  StackQualityMetricsRecorder(ProcessType process_type,
-                              base::ModuleCache& module_cache)
-      : process_type_(process_type),
-        chrome_module_(GetCurrentModule(module_cache)) {}
-
-  // Records that a new stack is being processed.
-  void NewStack(size_t stack_size) {
-    stack_size_ = stack_size;
-    num_non_chrome_frames_ = 0;
-  }
-
-  // Records that a frame was found in `module` in the ModuleCache.
-  void AddFrameInModule(const base::ModuleCache::Module* module) {
-    // If the chrome module couldn't be found, record all frames as non-chrome.
-    if (!chrome_module_ || !module ||
-        module->GetBaseAddress() != chrome_module_->GetBaseAddress()) {
-      num_non_chrome_frames_ += 1;
-    }
-  }
-
-  // Records summary metrics through UMA.
-  void RecordUmaMetrics() {
-    // From inspecting reports received on Android, most reports with only 1 to
-    // 3 frames are clearly truncated, suggesting a problem with the unwinder,
-    // or contain a JNI base call that directly allocates. (These are not broken
-    // but don't have anything actionable in them.) Reports with 4 frames are
-    // more likely to be useful but still have a large proportion of truncated
-    // or non-actionable stacks. With 5 or more frames the stacks are more
-    // likely than not to be actionable.
-    constexpr size_t kMinFramesForGoodQuality = 5;
-
-    const bool has_few_frames = stack_size_ < kMinFramesForGoodQuality;
-    base::UmaHistogramBoolean("HeapProfiling.InProcess.AndroidShortStacks",
-                              has_few_frames);
-    base::UmaHistogramBoolean(
-        ProcessHistogramName("HeapProfiling.InProcess.AndroidShortStacks",
-                             process_type_),
-        has_few_frames);
-
-    if (stack_size_ > 0) {
-      const double non_chrome_frame_percent =
-          100.0 * num_non_chrome_frames_ / stack_size_;
-      base::UmaHistogramPercentage(
-          "HeapProfiling.InProcess.AndroidNonChromeFrames",
-          non_chrome_frame_percent);
-      base::UmaHistogramPercentage(
-          ProcessHistogramName("HeapProfiling.InProcess.AndroidNonChromeFrames",
-                               process_type_),
-          non_chrome_frame_percent);
-    }
-  }
-
- private:
-  static const base::ModuleCache::Module* GetCurrentModule(
-      base::ModuleCache& module_cache) {
-    // Get the address of the current function.
-    const uintptr_t address = reinterpret_cast<const uintptr_t>(
-        &StackQualityMetricsRecorder::GetCurrentModule);
-    return module_cache.GetModuleForAddress(address);
-  }
-
-  ProcessType process_type_;
-  raw_ptr<const base::ModuleCache::Module> chrome_module_;
-  size_t stack_size_ = 0;
-  size_t num_non_chrome_frames_ = 0;
-};
-#else
-// No-op implementation of StackQualityMetricsRecorder.
-class StackQualityMetricsRecorder {
- public:
-  StackQualityMetricsRecorder(ProcessType, base::ModuleCache&) {}
-  void NewStack(size_t) {}
-  void AddFrameInModule(const base::ModuleCache::Module*) {}
-  void RecordUmaMetrics() {}
-};
-#endif
 
 }  // namespace
 
@@ -400,17 +286,14 @@ void HeapProfilerController::ScheduleNextSnapshot(SnapshotParams params) {
   base::TimeDelta interval = params.use_random_interval
                                  ? RandomInterval(params.mean_interval)
                                  : params.mean_interval;
-  RecordUmaSnapshotInterval(interval, "Scheduled", params.process_type);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(params),
-                     /*previous_interval=*/interval),
+      base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(params)),
       interval);
 }
 
 // static
-void HeapProfilerController::TakeSnapshot(SnapshotParams params,
-                                          base::TimeDelta previous_interval) {
+void HeapProfilerController::TakeSnapshot(SnapshotParams params) {
   // Use DoNothing instead of null to simplify control flow.
   base::OnceCallback<void(bool)> on_snapshot_callback =
       params.on_first_snapshot_callback.is_null()
@@ -420,7 +303,6 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params,
     std::move(on_snapshot_callback).Run(false);
     return;
   }
-  RecordUmaSnapshotInterval(previous_interval, "Taken", params.process_type);
   RetrieveAndSendSnapshot(
       params.process_type,
       base::TimeTicks::Now() - params.profiler_creation_time,
@@ -475,7 +357,6 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
 
   SampleMap merged_samples = MergeSamples(samples);
 
-  StackQualityMetricsRecorder quality_recorder(process_type, module_cache);
   for (auto& pair : merged_samples) {
     const Sample& sample = pair.first;
     const SampleValue& value = pair.second;
@@ -484,15 +365,12 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
     std::vector<base::Frame> frames;
     frames.reserve(stack_size);
 
-    quality_recorder.NewStack(stack_size);
     for (const void* frame : sample.stack) {
       const uintptr_t address = reinterpret_cast<const uintptr_t>(frame);
       const base::ModuleCache::Module* module =
           module_cache.GetModuleForAddress(address);
-      quality_recorder.AddFrameInModule(module);
       frames.emplace_back(address, module);
     }
-    quality_recorder.RecordUmaMetrics();
 
     // Heap "samples" represent allocation stacks aggregated over time so
     // do not have a meaningful timestamp.

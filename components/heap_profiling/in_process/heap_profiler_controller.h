@@ -131,10 +131,7 @@ class HeapProfilerController {
   static void ScheduleNextSnapshot(SnapshotParams params);
 
   // Takes a heap snapshot unless the `params.stopped` flag is set.
-  // `previous_interval` is the time since the previous snapshot, which is used
-  // to log metrics about snapshot frequency.
-  static void TakeSnapshot(SnapshotParams params,
-                           base::TimeDelta previous_interval);
+  static void TakeSnapshot(SnapshotParams params);
 
   // Processes the most recent snapshot and sends it to CallStackProfileBuilder.
   // Invokes `on_snapshot_callback` with true if a snapshot will be sent,

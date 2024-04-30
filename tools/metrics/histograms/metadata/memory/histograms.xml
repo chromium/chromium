@@ -104,32 +104,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HeapProfiling.InProcess.AndroidNonChromeFrames{Process}"
-    units="%" expires_after="2023-06-05">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    For every stack captured by the in-process heap profiler in {Process} on
-    Android, records the percentage of stack frames whose address was not found
-    in the Chrome module. Emitted at the time a snapshot is taken with an entry
-    for every stack in the snapshot.
-  </summary>
-  <token key="Process" variants="ProfiledProcess"/>
-</histogram>
-
-<histogram name="HeapProfiling.InProcess.AndroidShortStacks{Process}"
-    enum="Boolean" expires_after="2023-06-05">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    For every stack captured by the in-process heap profiler in {Process} on
-    Android, records if it has fewer than 5 frames. Stacks with few frames are
-    low-quality and may indicate a problem with the stack unwinder. Emitted at
-    the time a snapshot is taken with an entry for every stack in the snapshot.
-  </summary>
-  <token key="Process" variants="ProfiledProcess"/>
-</histogram>
-
 <histogram name="HeapProfiling.InProcess.Enabled{Process}"
     enum="BooleanEnabled" expires_after="2024-10-06">
   <owner>joenotcharles@google.com</owner>
@@ -149,32 +123,6 @@ chromium-metrics-reviews@google.com.
     The number of samples in a heap snapshot taken in {Process}. Emitted once
     per snapshot when the in-process heap profiler is enabled.
   </summary>
-  <token key="Process" variants="ProfiledProcess"/>
-</histogram>
-
-<histogram
-    name="HeapProfiling.InProcess.SnapshotInterval.{Platform}.{RecordingTime}{Process}"
-    units="ms" expires_after="2024-10-06">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    The time between heap snapshots taken in {Process} on {Platform}. Emitted
-    for each snapshot when the in-process heap profiler is enabled, at the
-    beginning and end of the snapshot interval. *.Scheduled histograms are
-    recorded at the beginning of the interval, when the snapshot is scheduled.
-    *.Taken histograms are recorded at the end of the interval, when the
-    snapshot is taken. Entries in *.Scheduled that don't appear in *.Taken show
-    which snapshot intervals are interrupted before the snapshot is taken.
-  </summary>
-  <token key="Platform">
-    <variant name="Desktop" summary="All desktop platforms"/>
-    <variant name="Mobile" summary="Android and iOS"/>
-  </token>
-  <token key="RecordingTime">
-    <variant name="Scheduled"
-        summary="Recorded when the snapshot is scheduled."/>
-    <variant name="Taken" summary="Recorded when the snapshot is taken."/>
-  </token>
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
