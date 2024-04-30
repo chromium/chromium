@@ -8,18 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <string>
 
-// Enum for the NAU implementation for Content notifications.
-enum class ContentNotificationActionType {
-  // When a content notification is displayed on the device.
-  kContentNotificationActionTypeDisplayed = 0,
-  // When a content notification is opened.
-  kContentNotificationActionTypeOpened = 1,
-  // When a content notification is dismissed.
-  kContentNotificationActionTypeDismissed = 2,
-  // When the feedback secondary action is triggered.
-  kContentNotificationActionTypeFeedbackClicked = 3,
-};
-
 // Key of commerce notification used in pref
 // kFeaturePushNotificationPermissions.
 extern const char kCommerceNotificationKey[];
