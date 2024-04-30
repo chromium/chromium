@@ -25,17 +25,13 @@
 
 namespace {
 
-// OIDC enrollment can be intiated by passing tokens through either of the
-// following host/URL, but `kOidcEnrollmentHost` may need to be deprecated once
-// the redirect URL
-constexpr char kOidcEnrollmentHost[] = "chromeprofiletoken";
 constexpr char kEnrollmentFallbackHost[] = "chromeenterprise.google";
 constexpr char kEnrollmentFallbackPath[] = "/enroll/";
 
 // Msft Entra will first navigate to a reprocess URL and redirect to our
 // enrolllment URL, we need to capture this to correctly create the navigation
 // throttle.
-constexpr char kOidcEntraReprocessHost[] = "login.microsoftonline.com";
+constexpr char kOidcEntraLoginHost[] = "login.microsoftonline.com";
 constexpr char kOidcEntraReprocessPath[] = "/common/reprocess";
 // For new identities, the redirection starts from the "Keep me signed in" page.
 constexpr char kOidcEntraKmsiPath[] = "/kmsi";
@@ -58,9 +54,8 @@ std::string ExtractFragmentValueWithKey(const std::string& fragment,
 }
 
 bool IsEnrollmentUrl(GURL& url) {
-  return url.DomainIs(kOidcEnrollmentHost) ||
-         (url.DomainIs(kEnrollmentFallbackHost) &&
-          url.path() == kEnrollmentFallbackPath);
+  return url.DomainIs(kEnrollmentFallbackHost) &&
+         url.path() == kEnrollmentFallbackPath;
 }
 
 }  // namespace
@@ -77,9 +72,9 @@ OidcAuthResponseCaptureNavigationThrottle::MaybeCreateThrottleFor(
   }
 
   auto url = navigation_handle->GetURL();
-  if (!IsEnrollmentUrl(url) && !(url.DomainIs(kOidcEntraReprocessHost) &&
-                                 (url.path() == kOidcEntraReprocessPath ||
-                                  url.path() == kOidcEntraKmsiPath))) {
+  if (!(url.DomainIs(kOidcEntraLoginHost) &&
+        (url.path() == kOidcEntraReprocessPath ||
+         url.path() == kOidcEntraKmsiPath))) {
     return nullptr;
   }
 
@@ -98,12 +93,7 @@ OidcAuthResponseCaptureNavigationThrottle::
     ~OidcAuthResponseCaptureNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
-OidcAuthResponseCaptureNavigationThrottle::WillStartRequest() {
-  return WillRedirectRequest();
-}
-
-content::NavigationThrottle::ThrottleCheckResult
-OidcAuthResponseCaptureNavigationThrottle::WillRedirectRequest() {
+OidcAuthResponseCaptureNavigationThrottle::WillProcessResponse() {
   auto url = navigation_handle()->GetURL();
 
   // This maybe some other redirect from MSFT Entra that isn't an OIDC profile
@@ -155,7 +145,7 @@ OidcAuthResponseCaptureNavigationThrottle::WillRedirectRequest() {
           weak_ptr_factory_.GetWeakPtr(),
           ProfileManagementOicdTokens{.auth_token = std::move(auth_token),
                                       .id_token = std::move(id_token)}));
-  return PROCEED;
+  return DEFER;
 }
 
 const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {
@@ -168,21 +158,21 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
   if (!result.has_value()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Failed to parse decoded Oauth token payload.";
-    return;
+    return Resume();
   }
   const base::Value::Dict* parsed_json = result->GetIfDict();
 
   if (!parsed_json) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Decoded Oauth token payload is empty.";
-    return;
+    return Resume();
   }
 
   const std::string* subject_id = parsed_json->FindString("sub");
   if (!subject_id || (*subject_id).empty()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Subject ID is missing in token payload.";
-    return;
+    return Resume();
   }
 
   auto* interceptor = OidcAuthenticationSigninInterceptorFactory::GetForProfile(
@@ -193,7 +183,9 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
       << "OIDC redirection meets all requirements, starting enrollment "
          "process.";
   interceptor->MaybeInterceptOidcAuthentication(
-      navigation_handle()->GetWebContents(), tokens, *subject_id);
+      navigation_handle()->GetWebContents(), tokens, *subject_id,
+      base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace profile_management

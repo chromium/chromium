@@ -277,7 +277,7 @@ class OidcAuthenticationSigninInterceptorTest
           OidcInterceptionStatus::kCompleted,
       bool expect_dialog_to_show = true) {
     auto mock_client = std::make_unique<MockCloudPolicyClient>();
-    base::RunLoop run_loop;
+    base::RunLoop register_run_loop;
     auto* mock_client_ptr = mock_client.get();
 
     if (expect_registration_attempt == RegistrationResult::kFailure) {
@@ -287,7 +287,7 @@ class OidcAuthenticationSigninInterceptorTest
           .WillOnce(Invoke([&]() {
             mock_client_ptr->SetStatus(policy::DM_STATUS_TEMPORARY_UNAVAILABLE);
             mock_client_ptr->NotifyClientError();
-            run_loop.Quit();
+            register_run_loop.Quit();
           }));
     } else if (expect_registration_attempt == RegistrationResult::kSuccess) {
       EXPECT_CALL(*mock_client_ptr,
@@ -304,7 +304,7 @@ class OidcAuthenticationSigninInterceptorTest
                                         : policy::ThirdPartyIdentityType::
                                               OIDC_MANAGEMENT_DASHERLESS;
             mock_client_ptr->NotifyRegistrationStateChanged();
-            run_loop.Quit();
+            register_run_loop.Quit();
           }));
     }
 
@@ -336,15 +336,16 @@ class OidcAuthenticationSigninInterceptorTest
       EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _)).Times(0);
     }
 
-    interceptor_->MaybeInterceptOidcAuthentication(web_contents(), oidc_tokens,
-                                                   subject_id);
+    interceptor_->MaybeInterceptOidcAuthentication(
+        web_contents(), oidc_tokens, subject_id,
+        task_environment()->QuitClosure());
 
     if (expect_registration_attempt !=
         RegistrationResult::kNoRegistrationExpected) {
-      run_loop.Run();
+      register_run_loop.Run();
     }
 
-    task_environment()->RunUntilIdle();
+    task_environment()->RunUntilQuit();
     EXPECT_EQ(interceptor_->interception_status(),
               expected_interception_status);
 

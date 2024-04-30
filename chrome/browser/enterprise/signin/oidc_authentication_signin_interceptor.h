@@ -44,6 +44,7 @@ class ProfileAttributesEntry;
 
 using ClientRegisterCallback =
     base::OnceCallback<void(std::unique_ptr<policy::CloudPolicyClient>)>;
+using OidcInterceptionCallback = base::OnceCallback<void()>;
 using policy::CloudPolicyClient;
 
 // Called after a valid OIDC authentication redirection is captured. The
@@ -72,7 +73,8 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   virtual void MaybeInterceptOidcAuthentication(
       content::WebContents* intercepted_contents,
       ProfileManagementOicdTokens oidc_tokens,
-      std::string subject_id);
+      std::string subject_id,
+      OidcInterceptionCallback oidc_callback);
 
   // KeyedService:
   void Shutdown() override;
@@ -90,7 +92,6 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
 
  private:
   void CreateBrowserAfterSigninInterception();
-  void CloseInterceptedWebContent(content::WebContents* intercepted_contents);
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
   void Reset();
@@ -145,6 +146,8 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
 
   std::unique_ptr<CloudPolicyClient> client_for_testing_ = nullptr;
   bool disable_browser_creation_after_interception_for_testing_ = false;
+
+  OidcInterceptionCallback oidc_callback_;
 
   base::WeakPtrFactory<OidcAuthenticationSigninInterceptor> weak_factory_{this};
 

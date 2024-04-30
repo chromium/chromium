@@ -41,8 +41,7 @@ class OidcAuthResponseCaptureNavigationThrottle
   ~OidcAuthResponseCaptureNavigationThrottle() override;
 
   // content::NavigationThrottle implementation:
-  ThrottleCheckResult WillStartRequest() override;
-  ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:

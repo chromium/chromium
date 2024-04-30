@@ -26,7 +26,8 @@ class MockOidcAuthenticationSigninInterceptor
               MaybeInterceptOidcAuthentication,
               (content::WebContents * intercepted_contents,
                ProfileManagementOicdTokens oidc_tokens,
-               std::string user_email),
+               std::string subject_id,
+               OidcInterceptionCallback oidc_callback),
               (override));
 };
 
