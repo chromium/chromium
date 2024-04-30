@@ -20,6 +20,7 @@
 #include "content/public/common/web_identity.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -119,34 +120,7 @@ bool IsEndpointSameOrigin(const GURL& identity_provider_config_url,
 }
 
 bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
-  if (origin1.opaque() || origin2.opaque()) {
-    return false;
-  }
-  // We don't use FormatUrlWithDomain because that does not let us detect if
-  // the eTLD+1 is empty -- an empty eTLD+1 should be considered cross-site
-  // unless the host is equal (we want "localhost" to be same-site with
-  // "localhost", but cross-site with "foo"). Conversely, GetDomainAndRegistry
-  // only returns the domain itself without a scheme. Combining these
-  // constraints means we have to explicitly compare the scheme and the host
-  // here.
-  if (origin1.scheme() != origin2.scheme()) {
-    return false;
-  }
-  if (origin1.host() == origin2.host()) {
-    return true;
-  }
-  std::string origin1_etld_plus_one =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          origin1.GetURL(), kDefaultPrivateRegistryFilter);
-  if (origin1_etld_plus_one.empty()) {
-    // If the host is different but there is no eTLD, the origins are not
-    // same-site.
-    return false;
-  }
-  std::string origin2_etld_plus_one =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          origin2.GetURL(), kDefaultPrivateRegistryFilter);
-  return origin1_etld_plus_one == origin2_etld_plus_one;
+  return net::SchemefulSite(origin1) == net::SchemefulSite(origin2);
 }
 
 bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(

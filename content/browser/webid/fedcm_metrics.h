@@ -380,8 +380,8 @@ class CONTENT_EXPORT FedCmMetrics {
   void RecordDisconnectMetrics(FedCmDisconnectStatus status,
                                std::optional<base::TimeDelta> duration,
                                const RenderFrameHost& rfh,
-                               url::Origin requester,
-                               url::Origin embedder,
+                               const url::Origin& requester,
+                               const url::Origin& embedder,
                                const GURL& provider_url,
                                int disconnect_session_id);
 
@@ -435,8 +435,8 @@ class CONTENT_EXPORT FedCmMetrics {
 // existing FedCM call. Records metrics associated with a preventSilentAccess()
 // call from the given RenderFrameHost.
 void RecordPreventSilentAccess(RenderFrameHost& rfh,
-                               url::Origin requester,
-                               url::Origin embedder);
+                               const url::Origin& requester,
+                               const url::Origin& embedder);
 
 // The following are UMA-only recordings, hence do not need to be in the
 // FedCmMetrics class.

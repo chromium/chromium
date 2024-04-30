@@ -9,6 +9,7 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -20,21 +21,16 @@ namespace content {
 namespace {
 
 FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
-                                                  url::Origin requester,
-                                                  url::Origin embedder) {
+                                                  const url::Origin& requester,
+                                                  const url::Origin& embedder) {
   // Since FedCM methods are not supported in FencedFrames, we can know whether
   // this is a main frame by calling GetParent().
   if (!rfh.GetParent()) {
     return FedCmRequesterFrameType::kMainFrame;
   }
-  std::string requester_str =
-      webid::FormatUrlWithDomain(requester.GetURL(), /*for_display=*/false);
-  std::string embedder_str = webid::FormatUrlWithDomain(embedder.GetURL(),
-                                                        /*for_display=*/false);
-  if (requester_str == embedder_str) {
-    return FedCmRequesterFrameType::kSameSiteIframe;
-  }
-  return FedCmRequesterFrameType::kCrossSiteIframe;
+  return webid::IsSameSite(requester, embedder)
+             ? FedCmRequesterFrameType::kSameSiteIframe
+             : FedCmRequesterFrameType::kCrossSiteIframe;
 }
 
 }  // namespace
@@ -538,8 +534,8 @@ void FedCmMetrics::RecordDisconnectMetrics(
     FedCmDisconnectStatus status,
     std::optional<base::TimeDelta> duration,
     const RenderFrameHost& rfh,
-    url::Origin requester,
-    url::Origin embedder,
+    const url::Origin& requester,
+    const url::Origin& embedder,
     const GURL& provider_url,
     int disconnect_session_id) {
   DCHECK_GT(disconnect_session_id, 0);
@@ -699,8 +695,8 @@ ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
 }
 
 void RecordPreventSilentAccess(RenderFrameHost& rfh,
-                               url::Origin requester,
-                               url::Origin embedder) {
+                               const url::Origin& requester,
+                               const url::Origin& embedder) {
   FedCmRequesterFrameType requester_frame_type =
       ComputeRequesterFrameType(rfh, requester, embedder);
   base::UmaHistogramEnumeration("Blink.FedCm.PreventSilentAccessFrameType",
