@@ -23,7 +23,7 @@ class SimpleGridLayoutTest : public testing::Test {
 
 TEST_F(SimpleGridLayoutTest, ChildIgnoredByLayout) {
   // Create a SimpleGrid host view for 2 columns.
-  SimpleGridLayout* layout =
+  views::LayoutManagerBase* layout =
       host_->SetLayoutManager(std::make_unique<SimpleGridLayout>(2, 0, 0));
 
   // Add a child view of size 20 and verify that the Grid has a correct size.

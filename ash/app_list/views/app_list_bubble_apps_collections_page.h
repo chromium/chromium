@@ -119,6 +119,10 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   // Subscription to notify of scrolling events.
   base::CallbackListSubscription on_contents_scrolled_subscription_;
 
+  // The last observed offset between the scroll view's visible and contents
+  // bounds bottoms.
+  std::optional<int> last_bottom_scroll_offset_;
+
   base::WeakPtrFactory<AppListBubbleAppsCollectionsPage> weak_factory_{this};
 };
 

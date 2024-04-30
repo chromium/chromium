@@ -131,7 +131,7 @@ AppsCollectionSectionView::AppsCollectionSectionView(
       views::BoxLayout::Orientation::kVertical));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
+      views::BoxLayout::CrossAxisAlignment::kStretch);
 
   views::Label* label = AddChildView(
       std::make_unique<views::Label>(GetAppCollectionName(collection)));
@@ -143,7 +143,7 @@ AppsCollectionSectionView::AppsCollectionSectionView(
   apps_container_ = AddChildView(std::make_unique<views::View>());
   apps_container_->SetProperty(views::kMarginsKey, kAppsGridPadding);
   apps_container_->SetLayoutManager(
-      std::make_unique<SimpleGridLayout>(kAppsPerColumn, 0, 0));
+      std::make_unique<SimpleGridLayout>(kAppsPerColumn));
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kCornerRadius));
@@ -205,23 +205,6 @@ void AppsCollectionSectionView::SetModel(AppListModel* model) {
 
 size_t AppsCollectionSectionView::GetItemViewCount() const {
   return item_views_.view_size();
-}
-
-void AppsCollectionSectionView::OnBoundsChanged(
-    const gfx::Rect& previous_bounds) {
-  const int between_child_padding = CalculateTilePadding();
-  apps_container_->SetLayoutManager(std::make_unique<SimpleGridLayout>(
-      kAppsPerColumn, 2 * between_child_padding, between_child_padding));
-}
-
-int AppsCollectionSectionView::CalculateTilePadding() const {
-  DCHECK(app_list_config_);
-  int content_width = GetContentsBounds().width();
-  int tile_width = app_list_config_->grid_tile_width();
-  int width_to_distribute =
-      content_width - kAppsGridPadding.width() - kAppsPerColumn * tile_width;
-
-  return width_to_distribute / ((kAppsPerColumn - 1) * 2);
 }
 
 std::optional<size_t> AppsCollectionSectionView::GetViewIndexForItem(

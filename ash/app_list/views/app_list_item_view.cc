@@ -1196,6 +1196,13 @@ void AppListItemView::OnDragDone() {
   OnDragEnded();
 }
 
+void AppListItemView::ScrollRectToVisible(const gfx::Rect& rect) {
+  gfx::Rect enlarged_rect = rect;
+  enlarged_rect.Outset(8);
+
+  views::Button::ScrollRectToVisible(enlarged_rect);
+}
+
 void AppListItemView::CancelContextMenu() {
   if (item_menu_model_adapter_) {
     menu_close_initiated_from_drag_ = true;

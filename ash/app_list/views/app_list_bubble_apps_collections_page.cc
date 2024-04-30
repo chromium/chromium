@@ -344,18 +344,26 @@ void AppListBubbleAppsCollectionsPage::DismissPageAndReorder(
 }
 
 void AppListBubbleAppsCollectionsPage::OnPageScrolled() {
-  // Do not log anything if the contents are not scrollable.
-  if (scroll_view_->GetVisibleRect().height() >=
-      scroll_view_->contents()->height()) {
+  const gfx::Rect visible_bounds = scroll_view_->GetVisibleRect();
+  const gfx::Rect contents_bounds = scroll_view_->contents()->bounds();
+
+  // Do not log anything if the contents are not scrolled.
+  if (visible_bounds.y() == contents_bounds.y()) {
+    last_bottom_scroll_offset_.reset();
     return;
   }
 
-  if (scroll_view_->GetVisibleRect().bottom() ==
-      scroll_view_->contents()->bounds().bottom()) {
+  const int bottom_scroll_offset =
+      contents_bounds.bottom() - visible_bounds.bottom();
+  const int buffer =
+      kVerticalPaddingBetweenSections + kVerticalPaddingBetweenNudgeAndSections;
+  if (bottom_scroll_offset <= buffer &&
+      (!last_bottom_scroll_offset_ || last_bottom_scroll_offset_ > buffer)) {
     RecordLauncherWorkflowMetrics(
         AppListUserAction::kNavigatedToBottomOfAppList,
         /*is_tablet_mode = */ false, std::nullopt);
   }
+  last_bottom_scroll_offset_ = bottom_scroll_offset;
 }
 
 BEGIN_METADATA(AppListBubbleAppsCollectionsPage)
