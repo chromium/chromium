@@ -1417,6 +1417,17 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
             ui::kColorAppMenuUpgradeRowBackground);
         break;
       }
+      case IDC_SET_BROWSER_AS_DEFAULT: {
+        // Only highlight the default browser item when it is first in the
+        // AppMenu.
+        if (i == 0) {
+          add_menu_row_background(
+              views::LayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
+              ui::kColorAppMenuUpgradeRowBackground);
+        }
+        break;
+      }
       case IDC_EDIT_MENU: {
         ui::ButtonMenuItemModel* submodel = model->GetButtonMenuItemAt(i);
         DCHECK_EQ(IDC_CUT, submodel->GetCommandIdAt(0));
