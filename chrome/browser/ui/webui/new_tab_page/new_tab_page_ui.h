@@ -34,6 +34,7 @@
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
+#include "components/feed/buildflags.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -321,8 +322,9 @@ class NewTabPageUI
   std::unique_ptr<RecipesHandler> recipes_handler_;
   std::unique_ptr<FileSuggestionHandler> file_handler_;
   std::unique_ptr<PhotosHandler> photos_handler_;
+#if BUILDFLAG(ENABLE_FEED_V2)
   std::unique_ptr<ntp::FeedHandler> feed_handler_;
-
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
   PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<NewTabPageUI> weak_ptr_factory_{this};
