@@ -482,14 +482,16 @@ BASE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu,
              "AutofillPopupDoesNotOverlapWithContextMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If the feature is enabled, then the time when the Autofill popup is
-// considered to have been shown is measured only once the UI thread has become
-// idle. The intent behind this is to avoid situations in which the OS message
-// queue has a backlog and input event timestamps become inaccurate (i.e. event
-// timestamps indicate that events are more recent than they should be).
-BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
-             "AutofillPopupImprovedTimingChecks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If the feature is enabled, then the timing measurement of when the Autofill
+// popup is considered to have been shown only happens at a delay - 500 ms after
+// showing the popup. The same protection mechanisms as for
+// `kAutofillPopupImprovedTimingChecks` are used, but only after 500 ms have
+// passed. The intent is to ensure that events that the user triggered within
+// 500 ms of the popup are showing do not arrive delayed on the UI thread of the
+// browser process.
+BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
+             "AutofillPopupImprovedTimingChecksV2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(b/334909042): remove after sufficient time of stable operation (~end of
 // 2024 or earlier).
@@ -501,19 +503,6 @@ BASE_FEATURE(kAutofillPopupImprovedTimingChecks,
 // affect their functionality, hence this killswitch enabled by default.
 BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
              "AutofillPopupZOrderSecuritySurface",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If the feature is enabled, then the timing measurement of when the Autofill
-// popup is considered to have been shown only happens at a delay - 500 ms after
-// showing the popup. The same protection mechanisms as for
-// `kAutofillPopupImprovedTimingChecks` are used, but only after 500 ms have
-// passed. The intent is to ensure that events that the user triggered within
-// 500 ms of the popup are showing do not arrive delayed on the UI thread of the
-// browser process.
-// TODO(crbug.com/41167614): If this feature proves effective, combine it with
-// `kAutofillPopupImprovedTimingChecks`.
-BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
-             "AutofillPopupImprovedTimingChecksV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls non-default Autofill API predictions. See crbug.com/1331322.

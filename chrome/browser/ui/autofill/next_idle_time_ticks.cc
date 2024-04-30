@@ -49,8 +49,6 @@ struct NextIdleTimeTicks::Data {
 void NextIdleTimeTicks::Data::SetValueToCurrentTimeTicks() {
   value = base::TimeTicks::Now();
   if (base::FeatureList::IsEnabled(
-          features::kAutofillPopupImprovedTimingChecks) ||
-      base::FeatureList::IsEnabled(
           features::kAutofillPopupImprovedTimingChecksV2)) {
     CHECK(!start_time_measurement_attempt.is_null());
     base::UmaHistogramTimes(
@@ -67,12 +65,17 @@ void NextIdleTimeTicks::Data::StartTimerForMeasurementAttempt(
 }
 
 void NextIdleTimeTicks::Data::AttemptMeasurement() {
-  start_time_measurement_attempt = base::TimeTicks::Now();
-  on_idle_callback_subscription =
-      base::CurrentUIThread::Get()->RegisterOnNextIdleCallback(
-          {},
-          base::BindOnce(&NextIdleTimeTicks::Data::SetValueToCurrentTimeTicks,
-                         base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPopupImprovedTimingChecksV2)) {
+    start_time_measurement_attempt = base::TimeTicks::Now();
+    on_idle_callback_subscription =
+        base::CurrentUIThread::Get()->RegisterOnNextIdleCallback(
+            {},
+            base::BindOnce(&NextIdleTimeTicks::Data::SetValueToCurrentTimeTicks,
+                           base::Unretained(this)));
+  } else {
+    SetValueToCurrentTimeTicks();
+  }
 }
 
 NextIdleTimeTicks::NextIdleTimeTicks() = default;
@@ -82,20 +85,6 @@ NextIdleTimeTicks::NextIdleTimeTicks(NextIdleTimeTicks&&) = default;
 NextIdleTimeTicks& NextIdleTimeTicks::operator=(NextIdleTimeTicks&&) = default;
 
 NextIdleTimeTicks::~NextIdleTimeTicks() = default;
-
-// static
-NextIdleTimeTicks NextIdleTimeTicks::CaptureNextIdleTimeTicks() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NextIdleTimeTicks result;
-  result.data_ = std::make_unique<Data>();
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillPopupImprovedTimingChecks)) {
-    result.data_->AttemptMeasurement();
-  } else {
-    result.data_->SetValueToCurrentTimeTicks();
-  }
-  return result;
-}
 
 // static
 NextIdleTimeTicks NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(

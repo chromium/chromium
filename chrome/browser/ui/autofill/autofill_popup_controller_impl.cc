@@ -212,11 +212,8 @@ void AutofillPopupControllerImpl::Show(
     FireControlsChangedEvent(true);
   }
 
-  time_view_shown_ = base::FeatureList::IsEnabled(
-                         features::kAutofillPopupImprovedTimingChecksV2)
-                         ? NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
-                               kIgnoreEarlyClicksOnPopupDuration)
-                         : NextIdleTimeTicks::CaptureNextIdleTimeTicks();
+  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+      kIgnoreEarlyClicksOnPopupDuration);
 
   if (IsRootPopup()) {
     // We may already be observing from a previous `Show` call.
@@ -767,11 +764,8 @@ void AutofillPopupControllerImpl::SetFilter(
 void AutofillPopupControllerImpl::SetViewForTesting(
     base::WeakPtr<AutofillPopupView> view) {
   view_ = std::move(view);
-  time_view_shown_ = base::FeatureList::IsEnabled(
-                         features::kAutofillPopupImprovedTimingChecksV2)
-                         ? NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
-                               kIgnoreEarlyClicksOnPopupDuration)
-                         : NextIdleTimeTicks::CaptureNextIdleTimeTicks();
+  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+      kIgnoreEarlyClicksOnPopupDuration);
 }
 
 }  // namespace autofill

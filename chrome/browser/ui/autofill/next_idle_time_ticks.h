@@ -20,16 +20,13 @@ class NextIdleTimeTicks {
   NextIdleTimeTicks& operator=(NextIdleTimeTicks&&);
   ~NextIdleTimeTicks();
 
-  // Returns a `NextIdleTimeTicks` whose value is set to `base::TimeTicks::Now`
-  // the next time the current UI thread is idle - until then, its value is
-  // null. Note that this is currently guarded behind the
-  // `autofill::features::kAutofillPopupImprovedTimingChecks` feature. While the
-  // feature is disabled, it defaults to measuring the time immediately.
-  static NextIdleTimeTicks CaptureNextIdleTimeTicks();
-
   // Returns a `NextIdleTimeTicks` whose value is set to `delay` +
   // `base::TimeTicksNow()` once `delay` has passed on the UI thread and the UI
   // thread has become idle afterwards.
+  // Note that this is currently guarded behind the
+  // `autofill::features::kAutofillPopupImprovedTimingChecksV2` feature. If the
+  // feature is disabled, it defaults to measuring the time immediately once
+  // `delay` has passed.
   static NextIdleTimeTicks CaptureNextIdleTimeTicksWithDelay(
       base::TimeDelta delay);
 
