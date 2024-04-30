@@ -1893,8 +1893,7 @@ inline bool Element::FastHasAttribute(const QualifiedName& name) const {
   DCHECK(FastAttributeLookupAllowed(name))
       << TagQName().ToString().Utf8() << "/@" << name.ToString().Utf8();
 #endif
-  return HasElementData() &&
-         GetElementData()->Attributes().FindIndex(name) != kNotFound;
+  return HasElementData() && GetElementData()->Attributes().Find(name);
 }
 
 inline const AtomicString& Element::FastGetAttribute(

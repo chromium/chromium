@@ -5900,8 +5900,7 @@ bool Element::hasAttribute(const AtomicString& local_name) const {
   WTF::AtomicStringTable::WeakResult hint =
       WeakLowercaseIfNecessary(local_name);
   SynchronizeAttributeHinted(local_name, hint);
-  return GetElementData()->Attributes().FindIndexHinted(local_name, hint) !=
-         kNotFound;
+  return GetElementData()->Attributes().FindHinted(local_name, hint);
 }
 
 bool Element::hasAttributeNS(const AtomicString& namespace_uri,
