@@ -568,7 +568,8 @@ gfx::Size LocationBarView::GetMinimumSize() const {
   return gfx::Size(width, height);
 }
 
-gfx::Size LocationBarView::CalculatePreferredSize() const {
+gfx::Size LocationBarView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int height = GetLayoutConstant(LOCATION_BAR_HEIGHT);
   if (!IsInitialized())
     return gfx::Size(0, height);
