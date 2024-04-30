@@ -53,19 +53,22 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   // A notification that the user navigated away from `from_url`.
   void DidNavigateAway(const GURL& from_url);
 
-  // Gets a product group that the given product can be clustered into,
-  // or returns the product group this product already belongs to.
-  // TODO(qinmin): Check if we need to support the case that a candidate
-  // product can belong to multiple product groups.
+  // Gets a product group that the given product can be clustered into. If
+  // this candidate product is already in a product group, empty result
+  // is returned.
   std::optional<ProductGroup> GetProductGroupForCandidateProduct(
       const GURL& product_url);
 
-  // Finds similar candidate products for a product group.
+  // Finds similar candidate products for a product group, the returned
+  // result will exclude all candidate products that are already in
+  // any product groups.
   std::vector<GURL> FindSimilarCandidateProductsForProductGroup(
       const base::Uuid& uuid);
 
   // Finds similar candidate products for a candidate product. The returned
-  // URLs doesn't include the `product_url`.
+  // URLs doesn't include the `product_url` and any candidate products that
+  // are already in a product group. If the `product_url` is in a product
+  // group, this method will return an empty result.
   std::set<GURL> FindSimilarCandidateProducts(const GURL& product_url);
 
  private:

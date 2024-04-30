@@ -118,11 +118,18 @@ class ClusterManagerTest : public testing::Test {
 
  protected:
   ProductSpecificationsSet CreateProductSpecificationsSet(
-      const std::string& url) {
+      const std::string& url,
+      int64_t update_time_usec_since_epoch) {
     base::Uuid uuid = base::Uuid::GenerateRandomV4();
     std::vector<GURL> url_group = {GURL(url)};
-    return ProductSpecificationsSet(uuid.AsLowercaseString(), 0, 0, url_group,
+    return ProductSpecificationsSet(uuid.AsLowercaseString(), 0,
+                                    update_time_usec_since_epoch, url_group,
                                     kProductGroupName);
+  }
+
+  ProductSpecificationsSet CreateProductSpecificationsSet(
+      const std::string& url) {
+    return CreateProductSpecificationsSet(url, 0);
   }
 
   ProductInfo CreateProductInfo(const std::string& label) {
@@ -167,8 +174,10 @@ TEST_F(ClusterManagerTest, AddAndRemoveCandidateProduct) {
 
 TEST_F(ClusterManagerTest,
        ClusterManagerInitializationWithExistingProductSpecificationsSets) {
-  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
-  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(kProduct2Url);
+  ProductSpecificationsSet set1 =
+      CreateProductSpecificationsSet(kProduct1Url, 0);
+  ProductSpecificationsSet set2 =
+      CreateProductSpecificationsSet(kProduct2Url, 0);
   ON_CALL(*product_specification_service_, GetAllProductSpecifications())
       .WillByDefault(
           testing::Return(std::vector<ProductSpecificationsSet>{set1, set2}));
@@ -378,6 +387,42 @@ TEST_F(ClusterManagerTest,
 }
 
 TEST_F(ClusterManagerTest,
+       FindSimilarCandidateProductWithProductsAlreadyInGroup) {
+  GURL foo1(kProduct1Url);
+  GURL foo2(kTestUrl1);
+  GURL foo3(kTestUrl2);
+  GURL foo4(kTestUrl3);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3, foo4});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo4);
+  base::RunLoop().RunUntilIdle();
+
+  std::set<GURL> similar_candidates =
+      cluster_manager_->FindSimilarCandidateProducts(foo2);
+  ASSERT_EQ(2u, similar_candidates.size());
+  ASSERT_EQ(similar_candidates.count(foo1), 1u);
+  ASSERT_EQ(similar_candidates.count(foo4), 1u);
+  similar_candidates = cluster_manager_->FindSimilarCandidateProducts(foo1);
+  ASSERT_EQ(2u, similar_candidates.size());
+  ASSERT_EQ(similar_candidates.count(foo2), 1u);
+  ASSERT_EQ(similar_candidates.count(foo4), 1u);
+
+  // Similar candidates will not include `foo1` if it is added to a product
+  // group.
+  ProductSpecificationsSet set1 =
+      CreateProductSpecificationsSet(kProduct1Url, 0);
+  cluster_manager_->OnProductSpecificationsSetAdded(set1);
+
+  similar_candidates = cluster_manager_->FindSimilarCandidateProducts(foo2);
+  ASSERT_EQ(1u, similar_candidates.size());
+  ASSERT_EQ(similar_candidates.count(foo4), 1u);
+  similar_candidates = cluster_manager_->FindSimilarCandidateProducts(foo1);
+  ASSERT_EQ(0u, similar_candidates.size());
+}
+
+TEST_F(ClusterManagerTest,
        FindSimilarCandidateProductForMultiLabelProductGroup) {
   ProductInfo product_info = ProductInfo();
   product_info.category_data.add_product_categories()
@@ -411,6 +456,32 @@ TEST_F(ClusterManagerTest,
               candidates.end());
   ASSERT_TRUE(std::find(candidates.begin(), candidates.end(), foo3) !=
               candidates.end());
+}
+
+TEST_F(ClusterManagerTest,
+       FindSimilarCandidateProductsForProductGroupWithProductsAlreadyInGroup) {
+  ProductSpecificationsSet set1 =
+      CreateProductSpecificationsSet(kProduct1Url, 0);
+  ProductSpecificationsSet set2 =
+      CreateProductSpecificationsSet(kProduct2Url, 0);
+  cluster_manager_->OnProductSpecificationsSetAdded(set1);
+  cluster_manager_->OnProductSpecificationsSetAdded(set2);
+  GURL foo1(kProduct1Url);
+  GURL foo2(kProduct2Url);
+  GURL foo3(kTestUrl1);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<GURL> candidates =
+      FindSimilarCandidateProductsForProductGroup(set1.uuid());
+  ASSERT_EQ(1u, candidates.size());
+  ASSERT_TRUE(std::find(candidates.begin(), candidates.end(), foo3) !=
+              candidates.end());
+  candidates = FindSimilarCandidateProductsForProductGroup(set2.uuid());
+  ASSERT_EQ(0u, candidates.size());
 }
 
 TEST_F(ClusterManagerTest, RemoveProductGroup) {
@@ -450,6 +521,45 @@ TEST_F(ClusterManagerTest, GetProductGroupForCandidateProduct) {
   UpdateUrlInfos(std::vector<GURL>());
   cluster_manager_->DidNavigateAway(foo1);
   ASSERT_FALSE(cluster_manager_->GetProductGroupForCandidateProduct(foo1));
+}
+
+TEST_F(ClusterManagerTest, GetProductGroupForCandidateProductAlreadyInGroup) {
+  ProductSpecificationsSet set1 =
+      CreateProductSpecificationsSet(kProduct1Url, 0);
+  cluster_manager_->OnProductSpecificationsSetAdded(set1);
+  GURL foo1(kProduct1Url);
+  GURL foo2(kTestUrl1);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  base::RunLoop().RunUntilIdle();
+
+  auto product_group =
+      cluster_manager_->GetProductGroupForCandidateProduct(foo1);
+  ASSERT_FALSE(product_group);
+  product_group = cluster_manager_->GetProductGroupForCandidateProduct(foo2);
+  ASSERT_TRUE(product_group);
+  ASSERT_EQ(product_group->uuid, set1.uuid());
+}
+
+TEST_F(ClusterManagerTest, MultipleSimilarProductGroupForCandidateProduct) {
+  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kTestUrl1, 0);
+  cluster_manager_->OnProductSpecificationsSetAdded(set1);
+  GURL foo(kProduct1Url);
+  UpdateUrlInfos(std::vector<GURL>{foo});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo);
+  base::RunLoop().RunUntilIdle();
+
+  auto product_group =
+      cluster_manager_->GetProductGroupForCandidateProduct(foo);
+  ASSERT_EQ(product_group->uuid, set1.uuid());
+
+  ProductSpecificationsSet set2 =
+      CreateProductSpecificationsSet(kTestUrl3, 100);
+  cluster_manager_->OnProductSpecificationsSetAdded(set2);
+  base::RunLoop().RunUntilIdle();
+  product_group = cluster_manager_->GetProductGroupForCandidateProduct(foo);
+  ASSERT_EQ(product_group->uuid, set2.uuid());
 }
 
 TEST_F(ClusterManagerTest, AddCandidateProductAlreadyInProductGroups) {

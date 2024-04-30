@@ -98,6 +98,19 @@ void GetCategoryData(
       url, base::BindOnce(&OnGetCategoryDataDone, std::move(callback)));
 }
 
+bool IsCandidateProductInProductGroup(
+    const GURL& candidate_product_url,
+    const std::map<base::Uuid, std::unique_ptr<ProductGroup>>&
+        product_group_map) {
+  for (const auto& product_group : product_group_map) {
+    if (product_group.second->member_products.find(candidate_product_url) !=
+        product_group.second->member_products.end()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 ClusterManager::ClusterManager(
@@ -121,7 +134,8 @@ void ClusterManager::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& product_specifications_set) {
   base::Uuid uuid = product_specifications_set.uuid();
   product_group_map_[uuid] =
-      std::make_unique<ProductGroup>(uuid, product_specifications_set.urls());
+      std::make_unique<ProductGroup>(uuid, product_specifications_set.urls(),
+                                     product_specifications_set.update_time());
   const std::set<GURL>& urls = product_group_map_[uuid]->member_products;
   if (urls.size() == 0) {
     CHECK(false) << "Production specification set shouldn't be empty.";
@@ -143,6 +157,9 @@ void ClusterManager::OnProductSpecificationsSetUpdate(
 }
 
 void ClusterManager::OnProductSpecificationsSetRemoved(const base::Uuid& uuid) {
+  // TODO(qinmin): Check if we still want to keep candidate product from
+  // the removed product group in `candidate_product_map_` if tab is still
+  // open.
   product_group_map_.erase(uuid);
 }
 
@@ -169,17 +186,23 @@ std::optional<ProductGroup> ClusterManager::GetProductGroupForCandidateProduct(
     return std::nullopt;
   }
 
+  if (IsCandidateProductInProductGroup(product_url, product_group_map_)) {
+    return std::nullopt;
+  }
+
   CandidateProduct* candidate = candidate_product_map_[product_url].get();
+  base::Time max_time = base::Time::Min();
+  base::Uuid uuid;
   for (const auto& product_group : product_group_map_) {
-    if (product_group.second->member_products.find(product_url) !=
-        product_group.second->member_products.end()) {
-      // The product is already in this group, ignore it.
-      continue;
-    }
     if (IsProductSimilarToGroup(candidate->category_data,
-                                product_group.second->categories)) {
-      return *(product_group.second);
+                                product_group.second->categories) &&
+        product_group.second->update_time >= max_time) {
+      max_time = product_group.second->update_time;
+      uuid = product_group.first;
     }
+  }
+  if (uuid.is_valid()) {
+    return *(product_group_map_[uuid]);
   }
   return std::nullopt;
 }
@@ -196,7 +219,6 @@ void ClusterManager::OnProductInfoRetrieved(
   }
 
   // If this candidate product already exists, nothing needs to be done.
-  // TODO(qinmin): check if there are corner cases with existing product groups.
   if (candidate_product_map_.find(url) != candidate_product_map_.end()) {
     return;
   }
@@ -249,10 +271,15 @@ void ClusterManager::RemoveCandidateProductURLIfNotOpen(const GURL& url) {
 std::vector<GURL> ClusterManager::FindSimilarCandidateProductsForProductGroup(
     const base::Uuid& uuid) {
   std::vector<GURL> candidate_products;
+  if (product_group_map_.find(uuid) == product_group_map_.end()) {
+    return candidate_products;
+  }
+
   ProductGroup* group = product_group_map_[uuid].get();
   for (const auto& candidate_product : candidate_product_map_) {
-    if (group->member_products.find(candidate_product.first) !=
-        group->member_products.end()) {
+    // If the candidate product is in any product group, ignore it.
+    if (IsCandidateProductInProductGroup(candidate_product.first,
+                                         product_group_map_)) {
       continue;
     }
     if (IsProductSimilarToGroup(candidate_product.second->category_data,
@@ -265,11 +292,25 @@ std::vector<GURL> ClusterManager::FindSimilarCandidateProductsForProductGroup(
 
 std::set<GURL> ClusterManager::FindSimilarCandidateProducts(
     const GURL& product_url) {
+  std::set<GURL> similar_candidate_products;
   if (candidate_product_map_.find(product_url) ==
       candidate_product_map_.end()) {
-    return std::set<GURL>();
+    return similar_candidate_products;
   }
-  return candidate_product_map_[product_url]->similar_candidate_products_urls;
+
+  if (IsCandidateProductInProductGroup(product_url, product_group_map_)) {
+    return similar_candidate_products;
+  }
+
+  for (const auto& url :
+       candidate_product_map_[product_url]->similar_candidate_products_urls) {
+    // Remove products that are already in a group.
+    if (IsCandidateProductInProductGroup(url, product_group_map_)) {
+      continue;
+    }
+    similar_candidate_products.insert(url);
+  }
+  return similar_candidate_products;
 }
 
 }  // namespace commerce

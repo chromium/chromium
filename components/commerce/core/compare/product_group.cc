@@ -7,8 +7,11 @@
 namespace commerce {
 
 ProductGroup::ProductGroup(const base::Uuid& uuid,
-                           const std::vector<GURL>& urls)
-    : uuid(uuid), member_products(std::set<GURL>(urls.begin(), urls.end())) {}
+                           const std::vector<GURL>& urls,
+                           base::Time update_time)
+    : uuid(uuid),
+      member_products(std::set<GURL>(urls.begin(), urls.end())),
+      update_time(update_time) {}
 
 ProductGroup::~ProductGroup() = default;
 
