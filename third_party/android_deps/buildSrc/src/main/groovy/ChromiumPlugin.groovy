@@ -57,6 +57,10 @@ class ChromiumPlugin implements Plugin<Project> {
                 attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling, Bundling.EXTERNAL))
             }
         }
+        project.configurations.buildCompileNoDeps {
+            // transitive false means do not also pull in the deps of these deps.
+            transitive = false
+        }
     }
 
 }

@@ -347,7 +347,6 @@ class ChromiumDepGraph {
 
     void collectDependencies() {
         Set<ResolvedConfiguration> deps = [] as Set
-        Set<ResolvedConfiguration> buildDepsNoRecurse = [] as Set
         Map<String, List<ResolvedArtifact>> resolvedArtifacts = [:]
         String[] configNames = [
             'compile',
@@ -358,22 +357,19 @@ class ChromiumDepGraph {
         ]
         for (Project project : projects) {
             for (String configName : configNames) {
-                ResolvedConfiguration config = project.configurations.getByName(configName).resolvedConfiguration
-                deps += config.firstLevelModuleDependencies
-                if (configName == 'buildCompileNoDeps') {
-                    buildDepsNoRecurse += config.firstLevelModuleDependencies
-                }
+                ResolvedConfiguration resolvedConfig = project.configurations.getByName(configName).resolvedConfiguration
+                deps += resolvedConfig.firstLevelModuleDependencies
                 if (!resolvedArtifacts.containsKey(configName)) {
                     resolvedArtifacts[configName] = []
                 }
-                resolvedArtifacts[configName].addAll(config.resolvedArtifacts)
+                resolvedArtifacts[configName].addAll(resolvedConfig.resolvedArtifacts)
             }
         }
 
         List<String> topLevelIds = []
         deps.each { dependency ->
             topLevelIds.add(makeModuleId(dependency.module))
-            collectDependenciesInternal(dependency, !buildDepsNoRecurse.contains(dependency))
+            collectDependenciesInternal(dependency)
         }
 
         topLevelIds.each { id -> dependencies.get(id).visible = true }
@@ -387,12 +383,20 @@ class ChromiumDepGraph {
 
         resolvedArtifacts['androidTestCompile'].each { artifact ->
             DependencyDescription dep = dependencies.get(makeModuleId(artifact))
-            assert dep : "No dependency collected for artifact ${artifact.name}"
+            assert dep : "No dependency collected for artifact ${artifact.name} (${makeModuleId(artifact)})"
             dep.supportsAndroid = true
             dep.testOnly = true
         }
 
         resolvedArtifacts['buildCompile'].each { artifact ->
+            String id = makeModuleId(artifact)
+            DependencyDescription dep = dependencies.get(id)
+            assert dep : "No dependency collected for artifact ${artifact.name}"
+            dep.usedInBuild = true
+            dep.testOnly = false
+        }
+
+        resolvedArtifacts['buildCompileNoDeps'].each { artifact ->
             String id = makeModuleId(artifact)
             DependencyDescription dep = dependencies.get(id)
             assert dep : "No dependency collected for artifact ${artifact.name}"
@@ -408,14 +412,6 @@ class ChromiumDepGraph {
             dep.supportsAndroid = true
             dep.testOnly = false
             dep.isShipped = true
-        }
-
-        buildDepsNoRecurse.each { resolvedDep ->
-            String id = makeModuleId(resolvedDep.module)
-            DependencyDescription dep = dependencies.get(id)
-            assert dep : "No dependency collected for artifact ${artifact.name}"
-            dep.usedInBuild = true
-            dep.testOnly = false
         }
 
         PROPERTY_OVERRIDES.each { id, overrides ->
@@ -455,7 +451,7 @@ class ChromiumDepGraph {
         }
     }
 
-    private void collectDependenciesInternal(ResolvedDependency dependency, boolean recurse = true) {
+    private void collectDependenciesInternal(ResolvedDependency dependency) {
         String id = makeModuleId(dependency.module)
         if (dependencies.containsKey(id)) {
             String gotVersion = dependency.module.id.version
@@ -476,40 +472,37 @@ class ChromiumDepGraph {
 
         List<ResolvedDependency> childDependenciesWithArtifacts = []
         List<String> childModules = []
-        if (recurse) {
-            dependency.children.each { childDependency ->
-                // Replace dependency which acts as a redirect (ex: org.jetbrains.kotlinx:kotlinx-coroutines-core) with
-                // dependencies it redirects to.
-                if (childDependency.moduleArtifacts) {
-                    childDependenciesWithArtifacts += childDependency
+        dependency.children.each { childDependency ->
+            // Replace dependency which acts as a redirect (ex: org.jetbrains.kotlinx:kotlinx-coroutines-core) with
+            // dependencies it redirects to.
+            if (childDependency.moduleArtifacts) {
+                childDependenciesWithArtifacts += childDependency
+            } else {
+                if (childDependency.children) {
+                    childDependenciesWithArtifacts += childDependency.children
                 } else {
-                    if (childDependency.children) {
-                        childDependenciesWithArtifacts += childDependency.children
-                    } else {
-                        String childDepId = makeModuleId(childDependency.module)
-                        if (!childDepId.endsWith("_bom") && childDepId !in ALLOWED_EMPTY_DEPS) {
-                            // BOM dependencies are deps that only specify other deps as dependencies but have no
-                            // artifact of their own. These typically have _bom at the end of their names but may also
-                            // be identified by looking at their pom.xml file. For more context see maven's doc:
-                            /* groovylint-disable-next-line LineLength */
-                            // https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#bill-of-materials-bom-poms
-                            throw new IllegalStateException(
-                                    "The dependency ${childDepId} has no children and no artifacts. If this is " +
-                                    'expected (e.g. for BOM dependencies), then please add it to the ' +
-                                    '|ALLOWED_EMPTY_DEPS| set.')
-                        }
+                    String childDepId = makeModuleId(childDependency.module)
+                    if (!childDepId.endsWith("_bom") && childDepId !in ALLOWED_EMPTY_DEPS) {
+                        // BOM dependencies are deps that only specify other deps as dependencies but have no
+                        // artifact of their own. These typically have _bom at the end of their names but may also
+                        // be identified by looking at their pom.xml file. For more context see maven's doc:
+                        /* groovylint-disable-next-line LineLength */
+                        // https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#bill-of-materials-bom-poms
+                        throw new IllegalStateException(
+                                "The dependency ${childDepId} has no children and no artifacts. If this is " +
+                                'expected (e.g. for BOM dependencies), then please add it to the ' +
+                                '|ALLOWED_EMPTY_DEPS| set.')
                     }
                 }
             }
+        }
 
-            childDependenciesWithArtifacts.each { childDependency ->
-                childModules += makeModuleId(childDependency.module)
-            }
+        childDependenciesWithArtifacts.each { childDependency ->
+            childModules += makeModuleId(childDependency.module)
         }
 
         if (dependency.moduleArtifacts.empty) {
             assert childModules : "${id} has no children and no artifacts."
-            assert recurse : "${id} has no artifacts so it needs to have child modules."
             dependencies.put(id, buildDepDescriptionNoArtifact(id, dependency, childModules))
             childDependenciesWithArtifacts.each {
                 childDependency -> collectDependenciesInternal(childDependency)
@@ -522,13 +515,9 @@ class ChromiumDepGraph {
             if (artifact.extension != 'jar' && artifact.extension != 'aar') {
                 throw new IllegalStateException("Type ${artifact.extension} of ${id} not supported.")
             }
-            if (recurse) {
-                dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
-                childDependenciesWithArtifacts.each {
-                    childDependency -> collectDependenciesInternal(childDependency)
-                }
-            } else {
-                dependencies.put(id, buildDepDescription(id, dependency, artifact, []))
+            dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
+            childDependenciesWithArtifacts.each {
+                childDependency -> collectDependenciesInternal(childDependency)
             }
         }
     }
