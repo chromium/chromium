@@ -347,7 +347,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // See https://crbug.com/1448618.
   // Should be removed after TODO(crbug.com/40065405).
   if ([self isRunningTest:@selector
-            (DISABLE_testSyncSpinnerDismissedInRecentlyClosedTabs)]) {
+            (DISABLED_testSyncSpinnerDismissedInRecentlyClosedTabs)]) {
     [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
   }
 
@@ -2806,7 +2806,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that once an account is signed in, the syncing spinner is eventually
 // dismissed: https://crbug.com/1422634.
-- (void)DISABLE_testSyncSpinnerDismissedInRecentlyClosedTabs {
+- (void)DISABLED_testSyncSpinnerDismissedInRecentlyClosedTabs {
   // Clear browsing history to reduce delay during sign-in and fix this test's
   // flakiness on iOS 16.
   [ChromeEarlGrey clearBrowsingHistory];
