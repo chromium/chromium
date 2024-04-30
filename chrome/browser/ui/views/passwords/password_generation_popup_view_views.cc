@@ -696,18 +696,22 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
   node_data->AddState(ax::mojom::State::kExpanded);
 }
 
-gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize() const {
+gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (controller_->ShouldShowNudgePassword()) {
-    int width = std::min(views::View::CalculatePreferredSize().width(),
-                         kPasswordGenerationMaxWidth);
-    return gfx::Size(width, GetHeightForWidth(width));
+    int width =
+        std::min(views::View::CalculatePreferredSize(available_size).width(),
+                 kPasswordGenerationMaxWidth);
+    return gfx::Size(
+        width, GetLayoutManager()->GetPreferredHeightForWidth(this, width));
   }
 
   int width =
       std::max(password_view_->GetPreferredSize().width(),
                gfx::ToEnclosingRect(controller_->element_bounds()).width());
   width = std::min(width, kPasswordGenerationMaxWidth);
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
