@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
@@ -12,30 +12,32 @@
 
 namespace policy::test {
 
-const char kFlexEnrollmentToken[] = "test_flex_token";
-const char kFlexEnrollmentTokenOobeConfig[] = R"({
-  "flexToken": "test_flex_token"
+const char kEnrollmentToken[] = "test_enrollment_token";
+// TODO(b/331285209): Change the JSON key to "enrollmentToken" along with the
+// key definition in configuration_keys.h.
+const char kEnrollmentTokenOobeConfig[] = R"({
+  "flexToken": "test_enrollment_token"
 })";
 
-FlexEnrollmentTestHelper::FlexEnrollmentTestHelper(
+EnrollmentTestHelper::EnrollmentTestHelper(
     base::test::ScopedCommandLine* command_line,
     ash::system::FakeStatisticsProvider* statistics_provider)
     : command_line_(command_line), statistics_provider_(statistics_provider) {
   ash::OobeConfigurationClient::InitializeFake();
 }
 
-FlexEnrollmentTestHelper::~FlexEnrollmentTestHelper() {
+EnrollmentTestHelper::~EnrollmentTestHelper() {
   ash::OobeConfigurationClient::Shutdown();
 }
 
-void FlexEnrollmentTestHelper::SetUpFlexDevice() {
+void EnrollmentTestHelper::SetUpFlexDevice() {
   command_line_->GetProcessCommandLine()->AppendSwitch(
       ash::switches::kRevenBranding);
   statistics_provider_->SetMachineStatistic(
       ash::system::kFirmwareTypeKey, ash::system::kFirmwareTypeValueNonchrome);
 }
 
-void FlexEnrollmentTestHelper::SetUpFlexEnrollmentTokenConfig(
+void EnrollmentTestHelper::SetUpEnrollmentTokenConfig(
     const char config[]) {
   static_cast<ash::FakeOobeConfigurationClient*>(
       ash::OobeConfigurationClient::Get())
@@ -45,7 +47,7 @@ void FlexEnrollmentTestHelper::SetUpFlexEnrollmentTokenConfig(
   oobe_configuration_.CheckConfiguration();
 }
 
-void FlexEnrollmentTestHelper::EnableFREOnFlex() {
+void EnrollmentTestHelper::EnableFREOnFlex() {
   command_line_->GetProcessCommandLine()->AppendSwitchASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
       AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);

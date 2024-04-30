@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_FLEX_ENROLLMENT_TEST_HELPER_H_
-#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_FLEX_ENROLLMENT_TEST_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_TEST_HELPER_H_
+#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_TEST_HELPER_H_
 
 #include "base/test/scoped_command_line.h"
 #include "build/branding_buildflags.h"
@@ -12,27 +12,24 @@
 
 namespace policy::test {
 
-extern const char kFlexEnrollmentToken[];
-extern const char kFlexEnrollmentTokenOobeConfig[];
+extern const char kEnrollmentToken[];
+extern const char kEnrollmentTokenOobeConfig[];
 
-// TODO(b/331285209): Rename this class to "EnrollmentTestHelper" as part of
-// the effort to dissociate "Flex" with enrollment tokens, and so we can
-// include other non-Flex test helper methods here.
-class FlexEnrollmentTestHelper {
+class EnrollmentTestHelper {
  public:
-  FlexEnrollmentTestHelper(
+  EnrollmentTestHelper(
       base::test::ScopedCommandLine* command_line,
       ash::system::FakeStatisticsProvider* statistics_provider);
-  ~FlexEnrollmentTestHelper();
+  ~EnrollmentTestHelper();
 
-  FlexEnrollmentTestHelper(const FlexEnrollmentTestHelper&) = delete;
-  FlexEnrollmentTestHelper& operator=(const FlexEnrollmentTestHelper&) = delete;
+  EnrollmentTestHelper(const EnrollmentTestHelper&) = delete;
+  EnrollmentTestHelper& operator=(const EnrollmentTestHelper&) = delete;
 
   // Configures ash::switches::IsRevenBranding() checks to pass.
   void SetUpFlexDevice();
-  // Configures OobeConfiguration with a Flex enrollment token for testing.
-  void SetUpFlexEnrollmentTokenConfig(
-      const char config[] = kFlexEnrollmentTokenOobeConfig);
+  // Configures OobeConfiguration with an enrollment token for testing.
+  void SetUpEnrollmentTokenConfig(
+      const char config[] = kEnrollmentTokenOobeConfig);
   // Forces FRE (Forced Re-Enrollment) to be enabled on Flex via command line
   // switch.
   void EnableFREOnFlex();
@@ -47,4 +44,4 @@ class FlexEnrollmentTestHelper {
 
 }  // namespace policy::test
 
-#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_FLEX_ENROLLMENT_TEST_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_TEST_HELPER_H_

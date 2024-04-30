@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -660,9 +660,10 @@ INSTANTIATE_TEST_SUITE_P(
         policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
         policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED));
 
-class EnrollmentScreenFlexAutoEnrollmentTest : public EnrollmentScreenBaseTest {
+class EnrollmentScreenTokenBasedEnrollmentTest
+    : public EnrollmentScreenBaseTest {
  protected:
-  EnrollmentScreenFlexAutoEnrollmentTest() {}
+  EnrollmentScreenTokenBasedEnrollmentTest() {}
 
   policy::EnrollmentConfig GetEnrollmentConfig() {
     policy::EnrollmentConfig config;
@@ -672,7 +673,7 @@ class EnrollmentScreenFlexAutoEnrollmentTest : public EnrollmentScreenBaseTest {
         policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
     // The token isn't used directly by EnrollmentScreen, but let's set it here
     // for realism.
-    config.enrollment_token = policy::test::kFlexEnrollmentToken;
+    config.enrollment_token = policy::test::kEnrollmentToken;
     return config;
   }
 
@@ -682,12 +683,12 @@ class EnrollmentScreenFlexAutoEnrollmentTest : public EnrollmentScreenBaseTest {
         policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK;
     config.auth_mechanism =
         policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
-    config.enrollment_token = policy::test::kFlexEnrollmentToken;
+    config.enrollment_token = policy::test::kEnrollmentToken;
     return config;
   }
 };
 
-TEST_F(EnrollmentScreenFlexAutoEnrollmentTest, ShouldFinishEnrollmentScreen) {
+TEST_F(EnrollmentScreenTokenBasedEnrollmentTest, ShouldFinishEnrollmentScreen) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
   ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
@@ -703,7 +704,7 @@ TEST_F(EnrollmentScreenFlexAutoEnrollmentTest, ShouldFinishEnrollmentScreen) {
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
 }
 
-TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
+TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
        ShouldRetryEnrollmentOnUserAction) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
@@ -735,7 +736,7 @@ TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
 }
 
-TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
+TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
        ShouldNotAutomaticallyRetryEnrollment) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
 
@@ -761,7 +762,7 @@ TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
 //
 // TODO(b/329271128): Change this test once the proper DeviceManagementStatus
 // for TOKEN_NOT_FOUND is added and handled in the server response.
-TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
+TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
        ShouldNotAutomaticallyFallbackToManualEnrollment) {
   const policy::EnrollmentConfig config = GetEnrollmentConfig();
   {
@@ -788,7 +789,7 @@ TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
   EXPECT_FALSE(last_screen_result().has_value());
 }
 
-TEST_F(EnrollmentScreenFlexAutoEnrollmentTest,
+TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
        ShouldFallbackToManualEnrollmentOnUserAction) {
   const policy::EnrollmentConfig initial_config = GetEnrollmentConfig();
   const policy::EnrollmentConfig fallback_config =

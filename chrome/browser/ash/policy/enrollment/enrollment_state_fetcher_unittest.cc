@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
@@ -235,7 +235,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
         base::BindRepeating(&CreateRlweClientForTesting, psm_test_case_),
         fake_dm_service_.get(), shared_url_loader_factory_, &system_clock_,
         &state_key_broker_, &device_settings_service_,
-        flex_test_helper_.oobe_configuration());
+        enrollment_test_helper_.oobe_configuration());
     fetcher->Start();
     return future.Get();
   }
@@ -315,10 +315,10 @@ class EnrollmentStateFetcherTest : public testing::Test {
 
   void ExpectStateRetrievalRequestWithEnrollmentToken(
       const em::DeviceManagementResponse& response) {
-    EXPECT_CALL(job_creation_handler_,
-                OnJobCreation(JobWithEnrollmentTokenStateRequest(
-                    policy::test::kFlexEnrollmentToken, kTestSerialNumber,
-                    kTestBrandCode)))
+    EXPECT_CALL(
+        job_creation_handler_,
+        OnJobCreation(JobWithEnrollmentTokenStateRequest(
+            policy::test::kEnrollmentToken, kTestSerialNumber, kTestBrandCode)))
         .WillOnce(fake_dm_service_->SendJobOKAsync(response));
   }
 
@@ -331,7 +331,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
   MockStateKeyBroker state_key_broker_;
   MockDeviceSettingsService device_settings_service_;
   psm::testing::RlweTestCase psm_test_case_;
-  policy::test::FlexEnrollmentTestHelper flex_test_helper_{
+  policy::test::EnrollmentTestHelper enrollment_test_helper_{
       &command_line_, &statistics_provider_};
 
   // Fake URL loader factories.
@@ -580,7 +580,7 @@ TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
           }),
       fake_dm_service_.get(), shared_url_loader_factory_, &system_clock_,
       &state_key_broker_, &device_settings_service_,
-      flex_test_helper_.oobe_configuration());
+      enrollment_test_helper_.oobe_configuration());
 
   fetcher->Start();
   AutoEnrollmentState state = future.Get();
@@ -1250,7 +1250,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPackagedLicense) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(EnrollmentStateFetcherTest,
        DeviceNotOnFlexDoesNotSendEnrollmentTokenInStateRequest) {
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -1272,8 +1272,8 @@ TEST_F(EnrollmentStateFetcherTest,
 
 TEST_F(EnrollmentStateFetcherTest,
        EnrollmentTokenPresentWithFREDisabledSkipsStateKeys) {
-  flex_test_helper_.SetUpFlexDevice();
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -1297,9 +1297,9 @@ TEST_F(EnrollmentStateFetcherTest,
 
 TEST_F(EnrollmentStateFetcherTest,
        EnrollmentTokenPresentWithFREEnabledRetrievesStateKeys) {
-  flex_test_helper_.EnableFREOnFlex();
-  flex_test_helper_.SetUpFlexDevice();
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  enrollment_test_helper_.EnableFREOnFlex();
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -1320,8 +1320,8 @@ TEST_F(EnrollmentStateFetcherTest,
 TEST_F(EnrollmentStateFetcherTest,
        EnrollmentTokenPresentNoPsmStateStillDoesStateRetrieval) {
   psm_test_case_ = psm::testing::LoadTestCase(false);
-  flex_test_helper_.SetUpFlexDevice();
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -1341,8 +1341,8 @@ TEST_F(EnrollmentStateFetcherTest,
 
 TEST_F(EnrollmentStateFetcherTest,
        EnrollmentTokenPresentServerRespondsWithKioskUpgradeType) {
-  flex_test_helper_.SetUpFlexDevice();
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -1383,8 +1383,8 @@ class EnrollmentStateFetcherTestP
   void SetUp() override {
     EnrollmentStateFetcherTest::SetUp();
     if (device_os_ == DeviceOs::Flex) {
-      flex_test_helper_.SetUpFlexDevice();
-      flex_test_helper_.EnableFREOnFlex();
+      enrollment_test_helper_.SetUpFlexDevice();
+      enrollment_test_helper_.EnableFREOnFlex();
     }
   }
 

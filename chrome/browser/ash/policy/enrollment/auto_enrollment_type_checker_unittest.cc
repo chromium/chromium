@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
@@ -64,8 +64,8 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
   }
 
   void SetUpFlexDeviceWithFREOnFlexEnabled() {
-    flex_test_helper_.SetUpFlexDevice();
-    flex_test_helper_.EnableFREOnFlex();
+    enrollment_test_helper_.SetUpFlexDevice();
+    enrollment_test_helper_.EnableFREOnFlex();
   }
 
   void SetupFREEnabled() {
@@ -149,8 +149,8 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
 
   base::test::ScopedCommandLine command_line_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_,
-                                                   &fake_statistics_provider_};
+  test::EnrollmentTestHelper enrollment_test_helper_{
+      &command_line_, &fake_statistics_provider_};
 };
 
 TEST_F(AutoEnrollmentTypeCheckerTest, FREEnabledWhenSwitchIsAlways) {
@@ -378,7 +378,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredOnFlexNotEnabledByCommandLineSwitch) {
-  flex_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpFlexDevice();
 
   EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
@@ -388,8 +388,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWhenTokenPresent) {
-  flex_test_helper_.SetUpFlexDevice();
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                 kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -408,13 +408,13 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   EXPECT_EQ(check_type, expected_check_type);
 }
 
-// If there is a flex_token present for whatever reason on a non-Flex device,
-// auto_enrollment_type_checker should ignore it and continue initial state
-// determination as normal (though the token won't be included in the state
+// If there is an enrollment token present for whatever reason on a non-Flex
+// device, auto_enrollment_type_checker should ignore it and continue initial
+// state determination as normal (and the token won't be included in the state
 // retrieval request).
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeNotOnFlexWhenTokenPresent) {
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                 kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -436,7 +436,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWithoutTokenPresent) {
-  flex_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpFlexDevice();
   fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                 kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -453,11 +453,14 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWithEmptyToken) {
-  constexpr char kEmptyFlexTokenOobeConfig[] = R"({
+  // TODO(b/331285209): Change the JSON key to "enrollmentToken" along with the
+  // key definition in configuration_keys.h.
+  constexpr char kEmptyEnrollmentTokenOobeConfig[] = R"({
     "flexToken": ""
   })";
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig(kEmptyFlexTokenOobeConfig);
-  flex_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig(
+      kEmptyEnrollmentTokenOobeConfig);
+  enrollment_test_helper_.SetUpFlexDevice();
   fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                 kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -686,7 +689,7 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
     if (device_os_ == DeviceOs::Nonchrome) {
       SetUpNonchromeDevice();
     } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
-      flex_test_helper_.SetUpFlexDevice();
+      enrollment_test_helper_.SetUpFlexDevice();
     } else if (device_os_ == DeviceOs::FlexWithFRE) {
       SetUpFlexDeviceWithFREOnFlexEnabled();
     }

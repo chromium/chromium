@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -55,35 +55,35 @@ class EnrollmentConfigTest : public testing::Test {
   EnrollmentConfig GetPrescribedConfig() {
     return EnrollmentConfig::GetPrescribedEnrollmentConfig(
         &local_state_, install_attributes_, &statistics_provider_,
-        flex_test_helper_.oobe_configuration());
+        enrollment_test_helper_.oobe_configuration());
   }
 
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   TestingPrefServiceSimple local_state_;
   ash::StubInstallAttributes install_attributes_;
   base::test::ScopedCommandLine command_line_;
-  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_,
-                                                   &statistics_provider_};
+  test::EnrollmentTestHelper enrollment_test_helper_{&command_line_,
+                                                     &statistics_provider_};
   ash::FakeLoginDisplayHost fake_login_display_host_;
 };
 
 TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenFailsDCheck) {
-  flex_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpFlexDevice();
   auto state_dict = base::Value::Dict().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
 
   EXPECT_CHECK_DEATH(EnrollmentConfig::GetPrescribedEnrollmentConfig(
       &local_state_, install_attributes_, &statistics_provider_,
-      flex_test_helper_.oobe_configuration()));
+      enrollment_test_helper_.oobe_configuration()));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(
     EnrollmentConfigTest,
     TokenEnrollmentModeWithTokenPresentYieldsEnrollmentConfigModeTokenEnrollment) {
-  flex_test_helper_.SetUpFlexDevice();
-  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
   auto state_dict = base::Value::Dict().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
@@ -92,7 +92,7 @@ TEST_F(
 
   EXPECT_EQ(config.mode,
             EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED);
-  EXPECT_EQ(config.enrollment_token, test::kFlexEnrollmentToken);
+  EXPECT_EQ(config.enrollment_token, test::kEnrollmentToken);
   EXPECT_TRUE(config.should_enroll());
   EXPECT_TRUE(config.is_forced());
   EXPECT_TRUE(config.is_mode_with_manual_fallback());
