@@ -1015,6 +1015,29 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                         autofill::mojom::SubmissionSource::FORM_SUBMISSION);
 }
 
+- (void)webState:(web::WebState*)webState
+    didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
+                   inFrame:(web::WebFrame*)frame {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableXHRSubmissionDetectionIOS)) {
+    return;
+  }
+
+  CHECK_EQ(_webState, webState);
+  CHECK(!params.removed_forms.empty())
+      << "Invalid params. Form removal events with missing input should have "
+         "been filtered out by FormActivityTabHelper.";
+
+  autofill::AutofillDriverIOS* autofillDriver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
+  if (!autofillDriver) {
+    return;
+  }
+
+  autofillDriver->FormsRemoved(params.removed_forms,
+                               params.removed_unowned_fields);
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {

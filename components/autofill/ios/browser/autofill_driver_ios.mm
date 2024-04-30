@@ -341,4 +341,10 @@ void AutofillDriverIOS::OnAfterFormsSeen(AutofillManager& manager,
   }
 }
 
+void AutofillDriverIOS::FormsRemoved(
+    const std::set<autofill::FormRendererId>& removed_forms,
+    const std::set<autofill::FieldRendererId>& removed_unowned_fields) {
+  // TODO(crbug.com/328471201): Inspect removed forms and fields for submission.
+}
+
 }  // namespace autofill

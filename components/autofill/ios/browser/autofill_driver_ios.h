@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_H_
 
+#import <set>
 #import <string>
 
 #import "base/containers/flat_map.h"
@@ -131,6 +132,15 @@ class AutofillDriverIOS : public AutofillDriver,
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
                           base::TimeTicks timestamp);
+
+  // AutofillDriverIOS:
+  // Notification that forms or formless fields have been removed. Since Bling's
+  // renderer does not have API's to detect async form submissions, we use he
+  // removal last interacted form or formless field as an indication that the
+  // form was submitted asynchronously.
+  void FormsRemoved(
+      const std::set<autofill::FormRendererId>& removed_forms,
+      const std::set<autofill::FieldRendererId>& removed_unowned_fields);
 
  private:
   friend AutofillDriverIOSFactory;
