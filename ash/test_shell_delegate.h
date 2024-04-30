@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -74,7 +75,7 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<UserEducationDelegate> CreateUserEducationDelegate()
       const override;
   scoped_refptr<network::SharedURLLoaderFactory>
-  GetGeolocationUrlLoaderFactory() const override;
+  GetBrowserProcessUrlLoaderFactory() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
   void SetTabScrubberChromeOSEnabled(bool enabled) override;
   void ShouldExitFullscreenBeforeLock(
@@ -141,6 +142,8 @@ class TestShellDelegate : public ShellDelegate {
 
   MultiDeviceSetupBinder multidevice_setup_binder_;
   UserEducationDelegateFactory user_education_delegate_factory_;
+
+  scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_;
 
   GURL last_committed_url_;
 

@@ -216,7 +216,7 @@ ChromeShellDelegate::CreateUserEducationDelegate() const {
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-ChromeShellDelegate::GetGeolocationUrlLoaderFactory() const {
+ChromeShellDelegate::GetBrowserProcessUrlLoaderFactory() const {
   return g_browser_process->shared_url_loader_factory();
 }
 

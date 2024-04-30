@@ -28,7 +28,9 @@
 
 namespace ash {
 
-TestShellDelegate::TestShellDelegate() = default;
+TestShellDelegate::TestShellDelegate()
+    : url_loader_factory_(
+          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()) {}
 
 TestShellDelegate::~TestShellDelegate() = default;
 
@@ -100,9 +102,8 @@ TestShellDelegate::CreateUserEducationDelegate() const {
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-TestShellDelegate::GetGeolocationUrlLoaderFactory() const {
-  return static_cast<scoped_refptr<network::SharedURLLoaderFactory>>(
-      base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
+TestShellDelegate::GetBrowserProcessUrlLoaderFactory() const {
+  return url_loader_factory_;
 }
 
 bool TestShellDelegate::CanGoBack(gfx::NativeWindow window) const {
