@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
@@ -124,6 +125,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     @VisibleForTesting
     public static final String PREF_MANAGE_YOUR_GOOGLE_ACCOUNT = "manage_your_google_account";
+
+    @VisibleForTesting
+    public static final String PREF_MANAGE_ACCOUNTS_ON_THIS_DEVICE =
+            "manage_accounts_on_this_device";
 
     @VisibleForTesting
     public static final String PREF_SEARCH_AND_BROWSE_CATEGORY = "search_and_browse_category";
@@ -217,6 +222,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             () -> {
                                 SyncSettingsUtils.openGoogleMyAccount(getActivity());
                             }));
+
+            Preference manageAccountsOnThisDevice =
+                    findPreference(PREF_MANAGE_ACCOUNTS_ON_THIS_DEVICE);
+            manageAccountsOnThisDevice.setOnPreferenceClickListener(
+                    SyncSettingsUtils.toOnClickListener(
+                            this, () -> SigninUtils.openSettingsForAllAccounts(getActivity())));
         } else {
             getActivity().setTitle(R.string.sync_category_title);
 

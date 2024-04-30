@@ -70,4 +70,8 @@ found in the LICENSE file.
         android:key="manage_your_google_account"
         android:title="@string/manage_your_google_account"/>
 
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="manage_accounts_on_this_device"
+        android:title="@string/manage_accounts_on_this_device"/>
+
 </PreferenceScreen>

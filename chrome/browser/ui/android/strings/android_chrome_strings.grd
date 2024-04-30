@@ -2285,6 +2285,10 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGNIN_REVIEW_DATA_SUMMARY" desc="Summary for link to https://chrome.google.com/sync Dashboard to manage sync data." translateable="false">
         Review your account data
       </message>
+      <!-- TODO(b/326574743): Revisit string and mark it as translatable.-->
+      <message name="IDS_MANAGE_ACCOUNTS_ON_THIS_DEVICE" desc="Title of account management section." translateable="false">
+        Manage accounts on this device
+      </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_TITLE" desc="Title of sync passphrase type dialog. [CHAR_LIMIT=24]">
         Encryption
       </message>
