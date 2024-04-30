@@ -178,7 +178,7 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
                          std::vector<DisplayType> init_displays,
                          EGLDisplayPlatform native_display,
                          gl::GLDisplayEGL* existing_display);
-  void InitializeCommon(bool for_testing);
+  void InitializeCommon(bool for_unit_tests);
 
   EGLDisplay display_ = EGL_NO_DISPLAY;
   EGLDisplayPlatform native_display_ = EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
