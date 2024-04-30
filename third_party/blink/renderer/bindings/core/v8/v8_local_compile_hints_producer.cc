@@ -19,7 +19,7 @@ namespace blink::v8_compile_hints {
 
 V8LocalCompileHintsProducer::V8LocalCompileHintsProducer(LocalFrame* frame)
     : frame_(frame) {
-  should_generate_data_ =
+  should_generate_data_ = frame->IsMainFrame() &&
       base::FeatureList::IsEnabled(features::kLocalCompileHints);
 }
 
