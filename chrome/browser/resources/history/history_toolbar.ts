@@ -7,10 +7,10 @@ import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './history_toolbar.html.js';
@@ -109,9 +109,7 @@ export class HistoryToolbarElement extends PolymerElement {
 
   clearSelectedItems() {
     this.fire_('unselect-all');
-    IronA11yAnnouncer.requestAvailability();
-    this.fire_(
-        'iron-announce', {text: loadTimeData.getString('itemsUnselected')});
+    getAnnouncerInstance().announce(loadTimeData.getString('itemsUnselected'));
   }
 
   /**
