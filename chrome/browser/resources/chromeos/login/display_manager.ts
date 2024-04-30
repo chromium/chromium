@@ -7,7 +7,7 @@
  */
 
 import {$, ensureTransitionEndEvent} from '//resources/ash/common/util.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertInstanceof} from '//resources/js/assert.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DisplayType, OobeUiState, SCREEN_DEVICE_DISABLED, SCREEN_WELCOME} from './components/display_manager_types.js';
@@ -79,7 +79,7 @@ export function invokePolymerMethod(
  */
 export class DisplayManager {
   private screens: string[];
-  private currentStep: null|number;
+  private currentStepId: null|string;
   private keyboardFlowOn: boolean;
   private virtualKeyboardShown: boolean;
   private displayType: DisplayType;
@@ -93,9 +93,9 @@ export class DisplayManager {
     this.screens = [];
 
     /**
-     * Current OOBE step, index in the screens array.
+     * Current OOBE step id.
      */
-    this.currentStep = null;
+    this.currentStepId = null;
 
     /**
      * Whether keyboard navigation flow is enforced.
@@ -137,10 +137,10 @@ export class DisplayManager {
    * Gets current screen element.
    */
   get currentScreen(): HTMLElement|null {
-    if (this.currentStep === null) {
+    if (this.currentStepId === null) {
       return null;
     }
-    return $(this.screens[this.currentStep]);
+    return $(this.currentStepId);
   }
 
   /**
@@ -213,10 +213,11 @@ export class DisplayManager {
    * Switches to the next OOBE step.
    * @param nextStepIndex Index of the next step.
    */
-  toggleStep(nextStepIndex: number, screenData: any): void {
-    const nextStepId = this.screens[nextStepIndex];
+  private toggleStep(nextStepId: string, screenData: any): void {
     const oldStep = this.currentScreen;
     const newStep = $(nextStepId);
+    assertInstanceof(
+        newStep, HTMLElement, 'No screen with such id: ' + nextStepId);
     const innerContainer = $('inner-container');
     const oobeContainer = $('oobe');
     const isBootAnimationEnabled =
@@ -262,7 +263,7 @@ export class DisplayManager {
         newStep.defaultControl instanceof HTMLElement) {
       defaultControl = newStep.defaultControl;
     }
-    if (this.currentStep !== nextStepIndex && oldStep &&
+    if (this.currentStepId !== nextStepId && oldStep &&
         !oldStep.classList.contains('hidden')) {
       oldStep.classList.add('hidden');
       oldStep.hidden = true;
@@ -284,7 +285,7 @@ export class DisplayManager {
         }
       }
     }
-    this.currentStep = nextStepIndex;
+    this.currentStepId = nextStepId;
 
     const currentScreen = this.currentScreen;
     assert(currentScreen, 'currentScreen must exist at this point');
@@ -317,26 +318,7 @@ export class DisplayManager {
       return;
     }
 
-    const screenId = screen.id;
-
-    const data = screen.data;
-    const index = this.getScreenIndex(screenId);
-    if (index >= 0) {
-      this.toggleStep(index, data);
-    }
-  }
-
-  /**
-   * Gets index of given screen id in screens.
-   * @param screenId Id of the screen to look up.
-   */
-  private getScreenIndex(screenId: string): number {
-    for (let i = 0; i < this.screens.length; ++i) {
-      if (this.screens[i] === screenId) {
-        return i;
-      }
-    }
-    return -1;
+    this.toggleStep(screen.id, screen.data);
   }
 
   /**
