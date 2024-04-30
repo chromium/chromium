@@ -96,8 +96,6 @@ class ChromeUserManagerImpl
  protected:
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
   void NotifyOnLogin() override;
-  void NotifyUserAddedToSession(const user_manager::User* added_user,
-                                bool user_switch_pending) override;
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
   void RemoveUserInternal(const AccountId& account_id,
                           user_manager::UserRemovalReason reason) override;

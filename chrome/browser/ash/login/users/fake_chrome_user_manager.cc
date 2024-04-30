@@ -335,7 +335,7 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
         primary_user_ = user;
       }
       if (active_user_) {
-        NotifyUserAddedToSession(user, /*user_switch_pending=*/true);
+        NotifyUserAddedToSession(user);
       } else {
         active_user_ = user;
       }

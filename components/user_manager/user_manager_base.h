@@ -85,6 +85,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
     // Overrides the home directory path for the `primary_user`.
     virtual void OverrideDirHome(const User& primary_user) = 0;
+
+    // Returns whether user session restore is in progress.
+    virtual bool IsUserSessionRestoreInProgress() = 0;
   };
 
   // Creates UserManagerBase with |task_runner| for UI thread, and given
@@ -256,10 +259,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void NotifyOnLogin();
 
   // Notifies observers that another user was added to the session.
-  // If |user_switch_pending| is true this means that user has not been fully
-  // initialized yet like waiting for profile to be loaded.
-  virtual void NotifyUserAddedToSession(const User* added_user,
-                                        bool user_switch_pending);
+  void NotifyUserAddedToSession(const User* added_user);
 
   // Implementation for RemoveUser method. It is synchronous. It is called from
   // RemoveUserInternal after owner check.
@@ -310,8 +310,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void ResetOwnerId();
   virtual void SetOwnerId(const AccountId& owner_account_id);
 
-  virtual const AccountId& GetPendingUserSwitchID() const;
-  virtual void SetPendingUserSwitchId(const AccountId& account_id);
+  // If there's pending user switch, processes it.
+  void ProcessPendingUserSwitchId();
 
   // TODO(b/278643115): Move to private, once we migrate fake implementation
   // closer enough to the production behavior.

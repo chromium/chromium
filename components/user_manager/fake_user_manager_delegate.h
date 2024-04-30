@@ -22,6 +22,7 @@ class USER_MANAGER_EXPORT FakeUserManagerDelegate
   // UserManagerBase::Delegate:
   const std::string& GetApplicationLocale() override;
   void OverrideDirHome(const User& primary_user) override;
+  bool IsUserSessionRestoreInProgress() override;
 };
 
 }  // namespace user_manager

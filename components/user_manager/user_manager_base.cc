@@ -303,7 +303,15 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
     SetIsCurrentUserNew(false);
     UpdateCrashKey(logged_in_users_.size(), std::nullopt);
     SendMultiUserSignInMetrics();
-    NotifyUserAddedToSession(user, true /* user switch pending */);
+
+    // Special case for user session restoration after browser crash.
+    // We don't switch to each user session that has been restored as once all
+    // session will be restored we'll switch to the session that has been used
+    // before the crash.
+    if (!delegate_->IsUserSessionRestoreInProgress()) {
+      pending_user_switch_ = account_id;
+    }
+    NotifyUserAddedToSession(user);
 
     return;
   }
@@ -360,7 +368,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
     // for non-existent user. The new user is created and automatically set
     // to active and there will be no pending user switch in such case.
     SetIsCurrentUserNew(true);
-    NotifyUserAddedToSession(active_user_, false /* user switch pending */);
+    NotifyUserAddedToSession(active_user_);
   }
 
   base::UmaHistogramEnumeration("UserManager.LoginUserType",
@@ -1051,12 +1059,10 @@ void UserManagerBase::SetOwnerId(const AccountId& owner_account_id) {
   NotifyLoginStateUpdated();
 }
 
-const AccountId& UserManagerBase::GetPendingUserSwitchID() const {
-  return pending_user_switch_;
-}
-
-void UserManagerBase::SetPendingUserSwitchId(const AccountId& account_id) {
-  pending_user_switch_ = account_id;
+void UserManagerBase::ProcessPendingUserSwitchId() {
+  if (pending_user_switch_.is_valid()) {
+    SwitchActiveUser(std::exchange(pending_user_switch_, EmptyAccountId()));
+  }
 }
 
 void UserManagerBase::EnsureUsersLoaded() {
@@ -1401,11 +1407,11 @@ User* UserManagerBase::RemoveRegularOrSupervisedUserFromList(
   return user;
 }
 
-void UserManagerBase::NotifyUserAddedToSession(const User* added_user,
-                                               bool user_switch_pending) {
+void UserManagerBase::NotifyUserAddedToSession(const User* added_user) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  for (auto& observer : session_state_observer_list_)
+  for (auto& observer : session_state_observer_list_) {
     observer.UserAddedToSession(added_user);
+  }
 }
 
 PrefService* UserManagerBase::GetLocalState() const {

@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/path_service.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 
@@ -35,6 +36,10 @@ void UserManagerDelegateImpl::OverrideDirHome(
   base::PathService::OverrideAndCreateIfNeeded(base::DIR_HOME, homedir,
                                                /*is_absolute=*/true,
                                                /*create=*/false);
+}
+
+bool UserManagerDelegateImpl::IsUserSessionRestoreInProgress() {
+  return UserSessionManager::GetInstance()->UserSessionsRestoreInProgress();
 }
 
 }  // namespace ash

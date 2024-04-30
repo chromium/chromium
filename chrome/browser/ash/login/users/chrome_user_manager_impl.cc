@@ -791,11 +791,7 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
     multi_user_sign_in_policy_controller_.StartObserving(user);
   }
 
-  // If there is pending user switch, do it now.
-  if (GetPendingUserSwitchID().is_valid()) {
-    SwitchActiveUser(GetPendingUserSwitchID());
-    SetPendingUserSwitchId(EmptyAccountId());
-  }
+  ProcessPendingUserSwitchId();
 }
 
 void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
@@ -826,21 +822,6 @@ bool ChromeUserManagerImpl::IsUserAllowed(
   return chrome_user_manager_util::IsUserAllowed(
       user, IsGuestSessionAllowed(),
       user.HasGaiaAccount() && IsGaiaUserAllowed(user));
-}
-
-void ChromeUserManagerImpl::NotifyUserAddedToSession(
-    const user_manager::User* added_user,
-    bool user_switch_pending) {
-  // Special case for user session restoration after browser crash.
-  // We don't switch to each user session that has been restored as once all
-  // session will be restored we'll switch to the session that has been used
-  // before the crash.
-  if (user_switch_pending &&
-      !UserSessionManager::GetInstance()->UserSessionsRestoreInProgress()) {
-    SetPendingUserSwitchId(added_user->GetAccountId());
-  }
-
-  UserManagerBase::NotifyUserAddedToSession(added_user, user_switch_pending);
 }
 
 void ChromeUserManagerImpl::AsyncRemoveCryptohome(

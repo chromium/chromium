@@ -23,4 +23,8 @@ void FakeUserManagerDelegate::OverrideDirHome(const User& primary_user) {
   NOTIMPLEMENTED();
 }
 
+bool FakeUserManagerDelegate::IsUserSessionRestoreInProgress() {
+  return false;
+}
+
 }  // namespace user_manager
