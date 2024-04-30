@@ -44,6 +44,7 @@ defaults.set(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enabled = True,
 )
 
 # Builders are defined in lexicographic order by name
