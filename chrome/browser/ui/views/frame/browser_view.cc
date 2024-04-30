@@ -2066,13 +2066,9 @@ void BrowserView::FullscreenStateChanging() {
 
 void BrowserView::FullscreenStateChanged() {
 #if BUILDFLAG(IS_MAC)
-  if (!IsFullscreen() && restore_pre_fullscreen_bounds_callback_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(restore_pre_fullscreen_bounds_callback_));
-  }
-
-  if (AppUsesWindowControlsOverlay())
+  if (AppUsesWindowControlsOverlay()) {
     UpdateWindowControlsOverlayEnabled();
+  }
 #endif  // BUILDFLAG(IS_MAC)
 
   browser_->WindowFullscreenStateChanged();
