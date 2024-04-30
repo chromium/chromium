@@ -29,6 +29,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/navigation_transition_test_utils.h"
@@ -41,6 +42,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
@@ -56,7 +58,7 @@ using NavType = BackForwardTransitionAnimationManager::NavigationDirection;
 // The tolerance for two float to be considered equal.
 static constexpr float kFloatTolerance = 0.001f;
 
-// TODO(liuwilliam): 99 seconds seems aribturary. Pick a meaningful constant
+// TODO(liuwilliam): 99 seconds seems arbitrary. Pick a meaningful constant
 // instead.
 // If the duration is long enough, the spring will return the final (rest /
 // equilibrium) position right away. This means each spring model will just
@@ -1989,6 +1991,83 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
             BlueURL());
   ASSERT_EQ(web_contents()->GetController().GetEntryAtIndex(1)->GetURL(),
             GreenURL());
+}
+
+// Test that input isn't dispatched to the renderer while the transition
+// animation is in progress.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       SuppressRendererInputDuringTransition) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  // Start a back transition gesture.
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop invoke_played;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_played.QuitClosure());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+
+  // Once the gesture's invoked, block the response so we're waiting with the
+  // transition active.
+  TestNavigationManager back_nav_to_green(web_contents(), RedURL());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_green.WaitForResponse());
+
+  // Simulate various kinds of user input, these events should not be dispatched
+  // to the renderer.
+  {
+    InputMsgWatcher input_watcher(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kUndefined);
+    SimulateGestureScrollSequence(web_contents(), gfx::Point(100, 100),
+                                  gfx::Vector2dF(0, 50));
+    RunUntilInputProcessed(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    EXPECT_EQ(input_watcher.last_sent_event_type(),
+              blink::WebInputEvent::Type::kUndefined);
+
+    SimulateTapDownAt(web_contents(), gfx::Point(100, 100));
+    SimulateTapAt(web_contents(), gfx::Point(100, 100));
+    RunUntilInputProcessed(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+
+    EXPECT_EQ(input_watcher.last_sent_event_type(),
+              blink::WebInputEvent::Type::kUndefined);
+
+    SimulateMouseClick(web_contents(),
+                       blink::WebInputEvent::Modifiers::kNoModifiers,
+                       blink::WebMouseEvent::Button::kLeft);
+
+    RunUntilInputProcessed(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    EXPECT_EQ(input_watcher.last_sent_event_type(),
+              blink::WebInputEvent::Type::kUndefined);
+  }
+
+  // Unblock the navigation and wait until the transition is completed.
+  ASSERT_TRUE(back_nav_to_green.WaitForNavigationFinished());
+  ASSERT_TRUE(back_nav_to_green.was_successful());
+  invoke_played.Run();
+  destroyed.Run();
+
+  // Ensure input is now successfully dispatched.
+  {
+    InputMsgWatcher input_watcher(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost(),
+        blink::WebInputEvent::Type::kUndefined);
+    SimulateTapDownAt(web_contents(), gfx::Point(100, 100));
+    SimulateTapAt(web_contents(), gfx::Point(100, 100));
+    RunUntilInputProcessed(
+        web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+    EXPECT_EQ(input_watcher.last_sent_event_type(),
+              blink::WebInputEvent::Type::kGestureTap);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

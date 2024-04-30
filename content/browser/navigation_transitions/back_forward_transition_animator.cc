@@ -195,7 +195,10 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
                          ->GetPhysicalBackingSize()
                          .width(),
                      web_contents_view_android->GetNativeView()->GetDipScale()),
-      latest_progress_gesture_(gesture) {
+      latest_progress_gesture_(gesture),
+      ignore_input_scope_(
+          web_contents_view_android->web_contents()->IgnoreInputEvents(
+              /*audit_callback=*/std::nullopt)) {
   state_ = State::kStarted;
   ProcessState();
 }

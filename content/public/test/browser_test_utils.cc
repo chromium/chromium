@@ -2850,6 +2850,10 @@ void InputMsgWatcher::OnInputEventAck(
   }
 }
 
+void InputMsgWatcher::OnInputEvent(const blink::WebInputEvent& event) {
+  last_sent_event_type_ = event.GetType();
+}
+
 bool InputMsgWatcher::HasReceivedAck() const {
   return ack_result_ != blink::mojom::InputEventResultState::kUnknown;
 }

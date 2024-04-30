@@ -8,6 +8,7 @@
 #include "cc/resources/ui_resource_client.h"
 #include "content/browser/navigation_transitions/physics_model.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -334,6 +335,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // Set by the latest `OnGestureProgressed()`.
   ui::BackGestureEvent latest_progress_gesture_;
+
+  // A transition always suppresses sending input events to the renderer.
+  WebContentsImpl::ScopedIgnoreInputEvents ignore_input_scope_;
 
   State state_;
 };
