@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -25,7 +27,13 @@ class TestOSCryptAsync : public OSCryptAsync {
   [[nodiscard]] base::CallbackListSubscription GetInstance(
       InitCallback callback,
       Encryptor::Option option) override {
-    std::move(callback).Run(encryptor_.Clone(option), true);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](Encryptor encryptor, InitCallback callback) {
+              std::move(callback).Run(std::move(encryptor), true);
+            },
+            encryptor_.Clone(option), std::move(callback)));
     return base::CallbackListSubscription();
   }
 
