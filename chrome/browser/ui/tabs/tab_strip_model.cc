@@ -2623,6 +2623,45 @@ void TabStripModel::AddToNewGroupWithCollectionImpl(
   AddTabsToGroupCollection(tabs, group_collection);
 }
 
+void TabStripModel::AddToExistingGroupWithCollectionImpl(
+    const std::vector<int> indices,
+    const tab_groups::TabGroupId group,
+    const bool add_to_end) {
+  std::vector<tabs::TabModel*> tabs;
+  for (int index : indices) {
+    tabs.push_back(GetTabAtIndex(index));
+  }
+
+  tabs::TabGroupTabCollection* group_collection =
+      GetContentsDataAsCollection()
+          ->GetUnpinnedCollection()
+          ->GetTabGroupCollection(group);
+
+  std::vector<tabs::TabModel*> left_of_group;
+  std::vector<tabs::TabModel*> right_of_group;
+  for (tabs::TabModel* tab : tabs) {
+    if (GetIndexOfTab(tab->GetHandle()) <
+        GetContentsDataAsCollection()->GetIndexOfTabRecursive(
+            group_collection->GetTabAtIndex(0))) {
+      left_of_group.push_back(tab);
+    } else if (GetIndexOfTab(tab->GetHandle()) >
+               GetContentsDataAsCollection()->GetIndexOfTabRecursive(
+                   group_collection->GetTabAtIndex(0))) {
+      right_of_group.push_back(tab);
+    }
+  }
+
+  if (add_to_end) {
+    AddTabsToGroupCollection(tabs, group_collection);
+  } else {
+    // Reverse the left of the group to maintain right final ordering after all
+    // the move operations.
+    std::reverse(left_of_group.begin(), left_of_group.end());
+    AddTabsToGroupCollection(left_of_group, group_collection, true);
+    AddTabsToGroupCollection(right_of_group, group_collection);
+  }
+}
+
 void TabStripModel::AddTabsToGroupCollection(
     const std::vector<tabs::TabModel*> tabs,
     tabs::TabGroupTabCollection* group_collection,
@@ -2697,8 +2736,9 @@ void TabStripModel::RemoveTabsFromGroupCollection(
 void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
                                            const tab_groups::TabGroupId& group,
                                            const bool add_to_end) {
-  if (!group_model_)
+  if (!group_model_) {
     return;
+  }
 
   // Do nothing if the "existing" group can't be found. This would only happen
   // if the existing group is closed programmatically while the user is
@@ -2708,8 +2748,13 @@ void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
   // If this happens, the browser should not crash. So here we just make it a
   // no-op, since we don't want to create unintended side effects in this rare
   // corner case.
-  if (!group_model_->ContainsTabGroup(group))
+  if (!group_model_->ContainsTabGroup(group)) {
     return;
+  }
+
+  if (!IsContentsDataVector()) {
+    return AddToExistingGroupWithCollectionImpl(indices, group, add_to_end);
+  }
 
   const TabGroup* group_object = group_model_->GetTabGroup(group);
   int first_tab_in_group = group_object->GetFirstTab().value();

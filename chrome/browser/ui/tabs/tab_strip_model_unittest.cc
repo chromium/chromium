@@ -3599,9 +3599,6 @@ TEST_P(TabStripModelTest, AddTabToNewGroupMovesPinnedAndUnpinnedTabs) {
 }
 
 TEST_P(TabStripModelTest, AddTabToExistingGroupIdempotent) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
 
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -3621,9 +3618,6 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupIdempotent) {
 }
 
 TEST_P(TabStripModelTest, AddTabToExistingGroup) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
 
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -3641,9 +3635,6 @@ TEST_P(TabStripModelTest, AddTabToExistingGroup) {
 }
 
 TEST_P(TabStripModelTest, AddTabToExistingGroupUpdatesObservers) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
 
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -3662,9 +3653,6 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupUpdatesObservers) {
 }
 
 TEST_P(TabStripModelTest, AddTabToLeftOfExistingGroupReorders) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
 
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -3682,9 +3670,6 @@ TEST_P(TabStripModelTest, AddTabToLeftOfExistingGroupReorders) {
 }
 
 TEST_P(TabStripModelTest, AddTabToRighOfExistingGroupReorders) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
 
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -3703,9 +3688,6 @@ TEST_P(TabStripModelTest, AddTabToRighOfExistingGroupReorders) {
 }
 
 TEST_P(TabStripModelTest, AddTabToExistingGroupReorders) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
 
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -3725,9 +3707,6 @@ TEST_P(TabStripModelTest, AddTabToExistingGroupReorders) {
 }
 
 TEST_P(TabStripModelTest, AddTabToExistingGroupUnpins) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
 
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -3905,9 +3884,6 @@ TEST_P(TabStripModelTest, AddToNewGroupDeletesGroup) {
 }
 
 TEST_P(TabStripModelTest, AddToExistingGroupDeletesGroup) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
 
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());

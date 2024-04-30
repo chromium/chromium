@@ -847,6 +847,10 @@ class TabStripModel : public TabGroupController {
   void AddToNewGroupWithCollectionImpl(std::vector<int> indices,
                                        const tab_groups::TabGroupId new_group);
 
+  void AddToExistingGroupWithCollectionImpl(std::vector<int> indices,
+                                            tab_groups::TabGroupId group,
+                                            const bool add_to_end);
+
   void AddTabsToGroupCollection(std::vector<tabs::TabModel*> tabs,
                                 tabs::TabGroupTabCollection* group_collection,
                                 bool start_of_group = false);
