@@ -83,6 +83,7 @@ android_library("java") {
     "//chrome/browser/util:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/download/internal/common:internal_java",

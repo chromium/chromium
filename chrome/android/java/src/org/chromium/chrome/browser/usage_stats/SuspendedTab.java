@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -68,6 +70,11 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
 
     public static SuspendedTab get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
+    }
+
+    @Override
+    public @ColorInt int getBackgroundColor(Context context) {
+        return SemanticColorUtils.getDefaultBgColor(context);
     }
 
     private final Tab mTab;

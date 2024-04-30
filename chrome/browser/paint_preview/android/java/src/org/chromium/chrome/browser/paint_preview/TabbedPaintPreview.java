@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.paint_preview;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -338,6 +340,13 @@ public class TabbedPaintPreview implements UserData {
         public void onShown() {
             showToolbarPersistent();
             setProgressPreventionNeeded(true);
+        }
+
+        @Override
+        public @ColorInt int getBackgroundColor(Context context) {
+            // TODO(crbug.com/337883538): should be replaced by the background of the preview image
+            // rather that the primary background color.
+            return ChromeColors.getPrimaryBackgroundColor(mTab.getContext(), false);
         }
 
         @Override

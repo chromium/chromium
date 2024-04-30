@@ -17,6 +17,7 @@ import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.autofill.AutofillValue;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -126,6 +127,8 @@ class TabImpl implements Tab {
     /** The view provided by {@link TabViewManager} to be shown on top of Content view. */
     private View mCustomView;
 
+    private @ColorInt Integer mCustomViewBackgroundColor;
+
     AutofillProvider mAutofillProvider;
 
     /**
@@ -206,7 +209,7 @@ class TabImpl implements Tab {
     private boolean mIsDestroyed;
 
     private int mThemeColor;
-    private int mBackgroundColor;
+    private int mWebContentBackgroundColor;
     private boolean mIsWebContentObscured;
     private long mTimestampMillis = INVALID_TIMESTAMP;
     private int mParentId = INVALID_TAB_ID;
@@ -377,9 +380,11 @@ class TabImpl implements Tab {
     }
 
     /** Sets a custom {@link View} for this {@link Tab} that replaces Content view. */
-    void setCustomView(@Nullable View view) {
+    void setCustomView(@Nullable View view, @Nullable Integer backgroundColor) {
         mCustomView = view;
+        mCustomViewBackgroundColor = backgroundColor;
         notifyContentChanged();
+        onBackgroundColorChanged();
     }
 
     @Override
@@ -480,9 +485,14 @@ class TabImpl implements Tab {
     @Override
     public int getBackgroundColor() {
         if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
-            return mNativePage != null ? mNativePage.getBackgroundColor() : mBackgroundColor;
+            if (mCustomView != null && mCustomViewBackgroundColor != null) {
+                return mCustomViewBackgroundColor;
+            }
+            if (mNativePage != null) {
+                return mNativePage.getBackgroundColor();
+            }
         }
-        return mBackgroundColor;
+        return mWebContentBackgroundColor;
     }
 
     @Override
@@ -1446,9 +1456,8 @@ class TabImpl implements Tab {
      *
      * @param color The current for the background.
      */
-    void changeBackgroundColor(int color) {
-        // TODO(https://crbug.com/329287585): Account for native pages.
-        mBackgroundColor = color;
+    void changeWebContentBackgroundColor(int color) {
+        mWebContentBackgroundColor = color;
         onBackgroundColorChanged();
     }
 

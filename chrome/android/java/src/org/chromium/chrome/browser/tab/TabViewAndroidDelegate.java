@@ -83,7 +83,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
 
     @Override
     public void onBackgroundColorChanged(int color) {
-        mTab.changeBackgroundColor(color);
+        mTab.changeWebContentBackgroundColor(color);
     }
 
     @Override

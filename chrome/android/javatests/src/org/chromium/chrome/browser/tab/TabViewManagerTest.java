@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -55,6 +56,11 @@ public class TabViewManagerTest {
                     @Override
                     public View getView() {
                         return view;
+                    }
+
+                    @Override
+                    public int getBackgroundColor(Context context) {
+                        return 0;
                     }
                 };
 

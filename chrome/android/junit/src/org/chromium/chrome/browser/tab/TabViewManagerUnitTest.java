@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Color;
 import android.view.View;
 
 import org.junit.Assert;
@@ -45,8 +47,11 @@ public class TabViewManagerUnitTest {
     @Mock private TabViewProvider mTabViewProvider1;
     @Mock private TabViewProvider mTabViewProvider2;
     @Mock private View mTabView0;
+    private final int mViewBackground0 = Color.WHITE;
     @Mock private View mTabView1;
+    private final int mViewBackground1 = Color.BLACK;
     @Mock private View mTabView2;
+    private final int mViewBackground2 = Color.RED;
 
     private TabViewManagerImpl mTabViewManager;
 
@@ -61,13 +66,16 @@ public class TabViewManagerUnitTest {
         when(mTabViewProvider2.getTabViewProviderType())
                 .thenReturn(TabViewManagerImpl.PRIORITIZED_TAB_VIEW_PROVIDER_TYPES[2]);
         when(mTabViewProvider0.getView()).thenReturn(mTabView0);
+        when(mTabViewProvider0.getBackgroundColor(any())).thenReturn(mViewBackground0);
         when(mTabViewProvider1.getView()).thenReturn(mTabView1);
+        when(mTabViewProvider1.getBackgroundColor(any())).thenReturn(mViewBackground1);
         when(mTabViewProvider2.getView()).thenReturn(mTabView2);
+        when(mTabViewProvider2.getBackgroundColor(any())).thenReturn(mViewBackground2);
     }
 
     /**
-     * Verifies that the {@link TabViewProvider} with the highest priority is always
-     * showing after each call to {@link TabViewManager#addTabViewProvider}.
+     * Verifies that the {@link TabViewProvider} with the highest priority is always showing after
+     * each call to {@link TabViewManager#addTabViewProvider}.
      */
     @Test
     public void testAddTabViewProvider() {
@@ -75,7 +83,7 @@ public class TabViewManagerUnitTest {
         Assert.assertTrue(
                 "TabViewProvider with the highest priority should be shown",
                 mTabViewManager.isShowing(mTabViewProvider1));
-        verify(mTab).setCustomView(mTabView1);
+        verify(mTab).setCustomView(mTabView1, mViewBackground1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider1, 1);
         verifyTabViewProviderOnHiddenCalled(mTabViewProvider1, 0);
 
@@ -83,7 +91,7 @@ public class TabViewManagerUnitTest {
         Assert.assertTrue(
                 "TabViewProvider with the highest priority should be shown",
                 mTabViewManager.isShowing(mTabViewProvider1));
-        verify(mTab).setCustomView(mTabView1);
+        verify(mTab).setCustomView(mTabView1, mViewBackground1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider1, 1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider2, 0);
         verifyTabViewProviderOnHiddenCalled(mTabViewProvider1, 0);
@@ -93,7 +101,7 @@ public class TabViewManagerUnitTest {
         Assert.assertTrue(
                 "TabViewProvider with the highest priority should be shown",
                 mTabViewManager.isShowing(mTabViewProvider0));
-        verify(mTab).setCustomView(mTabView0);
+        verify(mTab).setCustomView(mTabView0, mViewBackground0);
         verifyTabViewProviderOnShownCalled(mTabViewProvider0, 1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider1, 1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider2, 0);
@@ -119,7 +127,7 @@ public class TabViewManagerUnitTest {
         Assert.assertTrue(
                 "TabViewProvider with the highest priority should be shown",
                 mTabViewManager.isShowing(mTabViewProvider1));
-        verify(mTab).setCustomView(mTabView1);
+        verify(mTab).setCustomView(mTabView1, mViewBackground1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider0, 1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider1, 1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider2, 0);
@@ -131,7 +139,7 @@ public class TabViewManagerUnitTest {
         Assert.assertTrue(
                 "TabViewProvider with the highest priority should be shown",
                 mTabViewManager.isShowing(mTabViewProvider1));
-        verify(mTab).setCustomView(mTabView1);
+        verify(mTab).setCustomView(mTabView1, mViewBackground1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider1, 1);
         verifyTabViewProviderOnShownCalled(mTabViewProvider2, 0);
         verifyTabViewProviderOnHiddenCalled(mTabViewProvider1, 0);
@@ -144,7 +152,7 @@ public class TabViewManagerUnitTest {
                 "No TabViewProvider should be shown", mTabViewManager.isShowing(mTabViewProvider1));
         Assert.assertFalse(
                 "No TabViewProvider should be shown", mTabViewManager.isShowing(mTabViewProvider2));
-        verify(mTab).setCustomView(null);
+        verify(mTab).setCustomView(null, null);
         verifyTabViewProviderOnShownCalled(mTabViewProvider1, 1);
         verifyTabViewProviderOnHiddenCalled(mTabViewProvider1, 1);
     }
