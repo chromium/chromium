@@ -112,13 +112,9 @@ class CalendarViewTest : public AshTestBase {
   }
 
   void TearDown() override {
-    calendar_view_ = nullptr;
-
-    widget_.reset();
-
+    DestroyCalendarViewWidget();
     Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
                                                                nullptr);
-
     AshTestBase::TearDown();
   }
 
@@ -168,7 +164,10 @@ class CalendarViewTest : public AshTestBase {
 
   void CloseEventList() { calendar_view_->CloseEventList(); }
 
-  void DestroyCalendarViewWidget() { widget_.reset(); }
+  void DestroyCalendarViewWidget() {
+    calendar_view_ = nullptr;
+    widget_.reset();
+  }
 
   // Calendar has some arbitrary delays to allow itself to load, otherwise the
   // test assertions run too early and fail. We hook into the `OnCalendarLoaded`
