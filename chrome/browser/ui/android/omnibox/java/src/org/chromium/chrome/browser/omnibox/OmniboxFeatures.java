@@ -55,6 +55,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sGroupingFrameworkForNonZPS =
             newFlag(OmniboxFeatureList.GROUPING_FRAMEWORK_FOR_NON_ZPS, false);
 
+    public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
+            newFlag(OmniboxFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
+
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             newBooleanParam(
                     OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP,
@@ -111,7 +114,7 @@ public class OmniboxFeatures {
 
     /** Returns whether the toolbar and status bar color should be matched. */
     public static boolean shouldMatchToolbarAndStatusBarColor() {
-        return ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled();
+        return sOmniboxMatchToolbarAndStatusBarColor.isEnabled();
     }
 
     /**

@@ -336,8 +336,6 @@ public abstract class ChromeFeatureList {
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
             "OmniboxCacheSuggestionResources";
-    public static final String OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR =
-            "OmniboxMatchToolbarAndStatusBarColor";
     public static final String OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS =
             "OmniboxNoopEditUrlSuggestionClicks";
     public static final String AVOID_RELAYOUT_DURING_FOCUS_ANIMATION =
@@ -590,8 +588,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(PRIVACY_GUIDE_ANDROID_3, false);
     public static final CachedFlag sPrivacyGuidePreloadAndroid =
             newCachedFlag(PRIVACY_GUIDE_PRELOAD_ANDROID, false);
-    public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
-            newCachedFlag(OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
             newCachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
@@ -707,7 +703,6 @@ public abstract class ChromeFeatureList {
                     sPriceChangeModule,
                     sPrivacyGuideAndroid3,
                     sPrivacyGuidePreloadAndroid,
-                    sOmniboxMatchToolbarAndStatusBarColor,
                     sOptimizationGuidePushNotifications,
                     sPaintPreviewDemo,
                     sQueryTiles,

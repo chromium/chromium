@@ -302,7 +302,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
     &messages::kMessagesForAndroidSaveCard,
-    &omnibox::kOmniboxMatchToolbarAndStatusBarColor,
     &omnibox::kSuggestionAnswersColorReverse,
     &omnibox::kUpdatedConnectionSecurityIndicators,
     &omnibox::kOmniboxTouchDownTriggerForPrefetch,
