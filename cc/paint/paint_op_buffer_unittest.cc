@@ -5,7 +5,9 @@
 #include "cc/paint/paint_op_buffer.h"
 
 #include <algorithm>
+#include <array>
 #include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +19,7 @@
 #include "cc/paint/draw_looper.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
+#include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
@@ -51,6 +54,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -307,6 +311,27 @@ TEST(PaintOpBufferTest, SaveDrawTextBlobRestore) {
 
   EXPECT_EQ(1, canvas.save_count_);
   EXPECT_EQ(1, canvas.restore_count_);
+}
+
+// Verify that we don't optimize kSaveLayerAlpha / kSaveLayerFilters / kRestore.
+TEST(PaintOpBufferTest, SaveSaveLayerFiltersRestore) {
+  PaintOpBuffer buffer;
+
+  float alpha = 0.4f;
+  buffer.push<SaveLayerAlphaOp>(alpha);
+
+  PaintFlags paint_flags;
+  EXPECT_TRUE(paint_flags.SupportsFoldingAlpha());
+  buffer.push<SaveLayerFiltersOp>(std::vector<sk_sp<PaintFilter>>{},
+                                  paint_flags);
+  buffer.push<RestoreOp>();
+  buffer.push<RestoreOp>();
+
+  SaveCountingCanvas canvas;
+  buffer.Playback(&canvas);
+
+  EXPECT_EQ(2, canvas.save_count_);
+  EXPECT_EQ(2, canvas.restore_count_);
 }
 
 // The same as SaveDrawRestore, but test that the optimization doesn't apply
@@ -1821,6 +1846,17 @@ void PushSaveLayerAlphaOps(PaintOpBuffer* buffer) {
   EXPECT_THAT(*buffer, Each(PaintOpIs<SaveLayerAlphaOp>()));
 }
 
+void PushSaveLayerFiltersOps(PaintOpBuffer* buffer) {
+  size_t len = std::min(test_flags.size(), test_rects.size());
+  for (size_t i = 0; i < len; ++i) {
+    sk_sp<PaintFilter> filter =
+        sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
+    buffer->push<SaveLayerFiltersOp>(std::array{filter}, test_flags[i]);
+  }
+
+  EXPECT_THAT(*buffer, Each(PaintOpIs<SaveLayerFiltersOp>()));
+}
+
 void PushScaleOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < test_floats.size() - 1; i += 2)
     buffer->push<ScaleOp>(test_floats[i], test_floats[i + 1]);
@@ -1940,6 +1976,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         break;
       case PaintOpType::kSaveLayerAlpha:
         PushSaveLayerAlphaOps(&buffer_);
+        break;
+      case PaintOpType::kSaveLayerFilters:
+        PushSaveLayerFiltersOps(&buffer_);
         break;
       case PaintOpType::kScale:
         PushScaleOps(&buffer_);

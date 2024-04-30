@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/values_equivalent.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -26,6 +27,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkString.h"
@@ -234,6 +236,16 @@ bool PaintFilter::EqualsForTesting(const PaintFilter& other) const {
   }
   NOTREACHED();
   return true;
+}
+
+std::vector<sk_sp<SkImageFilter>> PaintFilter::ToSkImageFilters(
+    base::span<const sk_sp<PaintFilter>> filters) {
+  std::vector<sk_sp<SkImageFilter>> sk_filters;
+  sk_filters.reserve(filters.size());
+  for (const sk_sp<PaintFilter>& filter : filters) {
+    sk_filters.push_back(GetSkFilter(filter.get()));
+  }
+  return sk_filters;
 }
 
 ColorFilterPaintFilter::ColorFilterPaintFilter(sk_sp<ColorFilter> color_filter,

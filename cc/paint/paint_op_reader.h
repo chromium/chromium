@@ -6,6 +6,7 @@
 #define CC_PAINT_PAINT_OP_READER_H_
 
 #include <optional>
+#include <type_traits>
 #include <vector>
 
 #include "base/bits.h"
@@ -151,8 +152,7 @@ class CC_PAINT_EXPORT PaintOpReader {
       return;
     }
 
-    vec->resize(size);
-    ReadData(size * sizeof(T), vec->data());
+    ReadVectorContent(size, vec);
   }
 
   // Returns a pointer to the next block of memory of size |bytes|, and treats
@@ -336,6 +336,22 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkRegion* region);
   uint8_t* CopyScratchSpace(size_t bytes);
   void DidRead(size_t bytes_read);
+
+  template <typename T>
+    requires(std::is_trivially_copyable_v<T>)
+  void ReadVectorContent(size_t size, std::vector<T>* vec) {
+    vec->resize(size);
+    ReadData(size * sizeof(T), vec->data());
+  }
+
+  template <typename T>
+    requires(!std::is_trivially_copyable_v<T>)
+  void ReadVectorContent(size_t size, std::vector<T>* vec) {
+    vec->resize(size);
+    for (size_t i = 0; i < size; ++i) {
+      Read(&(*vec)[i]);
+    }
+  }
 
   const volatile char* memory_ = nullptr;
   size_t remaining_bytes_ = 0u;

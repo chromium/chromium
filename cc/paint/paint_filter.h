@@ -7,8 +7,10 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "cc/paint/color_filter.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
@@ -122,6 +124,9 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   // images, rather only its existence. This is meant to be used only by tests
   // and fuzzers.
   bool EqualsForTesting(const PaintFilter& other) const;
+
+  static std::vector<sk_sp<SkImageFilter>> ToSkImageFilters(
+      base::span<const sk_sp<PaintFilter>> filters);
 
  protected:
   PaintFilter(Type type,

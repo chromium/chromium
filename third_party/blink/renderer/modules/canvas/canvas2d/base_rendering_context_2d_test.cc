@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
+#include <array>
 #include <cstdint>
 #include <optional>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_canvas.h"
@@ -41,6 +43,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 namespace {
@@ -60,6 +63,7 @@ using ::cc::PaintOpEq;
 using ::cc::PaintShader;
 using ::cc::RestoreOp;
 using ::cc::SaveLayerAlphaOp;
+using ::cc::SaveLayerFiltersOp;
 using ::cc::SaveLayerOp;
 using ::cc::SaveOp;
 using ::cc::SetMatrixOp;
@@ -528,17 +532,22 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaBlendingAndShadow) {
                       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
-      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
-  shadow_flags.setBlendMode(SkBlendMode::kMultiply);
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kMultiply);
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<SaveLayerOp>(shadow_flags),
-                  PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
-                  PaintOpEq<RestoreOp>())));
+  cc::PaintFlags shadow_flags;
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
+      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{shadow_filter, foreground_filter}, composite_flags),
+          PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaCompositeAndShadow) {
@@ -556,17 +565,21 @@ TEST(BaseRenderingContextLayerGlobalStateTests, GlobalAlphaCompositeAndShadow) {
                       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
-      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
-  shadow_flags.setBlendMode(SkBlendMode::kSrcIn);
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<SaveLayerOp>(shadow_flags),
-                  PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
-                  PaintOpEq<RestoreOp>())));
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
+      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
+
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{shadow_filter, foreground_filter}, composite_flags),
+          PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, BlendingAndShadow) {
@@ -583,16 +596,20 @@ TEST(BaseRenderingContextLayerGlobalStateTests, BlendingAndShadow) {
                       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kMultiply);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
-  shadow_flags.setBlendMode(SkBlendMode::kMultiply);
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
   EXPECT_THAT(
       context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(PaintOpEq<SaveLayerOp>(shadow_flags),
-                                    PaintOpEq<RestoreOp>())));
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{shadow_filter, foreground_filter}, composite_flags),
+          PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, CompositeAndShadow) {
@@ -609,16 +626,20 @@ TEST(BaseRenderingContextLayerGlobalStateTests, CompositeAndShadow) {
                       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
-  shadow_flags.setBlendMode(SkBlendMode::kSrcIn);
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
   EXPECT_THAT(
       context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(PaintOpEq<SaveLayerOp>(shadow_flags),
-                                    PaintOpEq<RestoreOp>())));
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{shadow_filter, foreground_filter}, composite_flags),
+          PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, Filter) {
@@ -853,22 +874,26 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setBlendMode(SkBlendMode::kMultiply);
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kMultiply);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
   cc::PaintFlags filter_flags;
   filter_flags.setAlphaf(0.4f);
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<SaveLayerOp>(shadow_flags),
-                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
-                  PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{shadow_filter, foreground_filter}, composite_flags),
+          PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests,
@@ -889,22 +914,26 @@ TEST(BaseRenderingContextLayerGlobalStateTests,
       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setBlendMode(SkBlendMode::kSrcIn);
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
   cc::PaintFlags filter_flags;
   filter_flags.setAlphaf(0.4f);
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<SaveLayerOp>(shadow_flags),
-                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
-                  PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{shadow_filter, foreground_filter}, composite_flags),
+          PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterBlendingAndShadow) {
@@ -923,21 +952,25 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterBlendingAndShadow) {
       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setBlendMode(SkBlendMode::kMultiply);
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kMultiply);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
   cc::PaintFlags filter_flags;
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<SaveLayerOp>(shadow_flags),
-                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
-                  PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{shadow_filter, foreground_filter}, composite_flags),
+          PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, FilterCompositeAndShadow) {
@@ -956,21 +989,25 @@ TEST(BaseRenderingContextLayerGlobalStateTests, FilterCompositeAndShadow) {
       exception_state);
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setBlendMode(SkBlendMode::kSrcIn);
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
   cc::PaintFlags filter_flags;
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->FlushRecorder(),
-              RecordedOpsAre(DrawRecordOpEq(
-                  PaintOpEq<SaveLayerOp>(shadow_flags),
-                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
-                  PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(DrawRecordOpEq(
+          PaintOpEq<SaveLayerFiltersOp>(
+              std::array{shadow_filter, foreground_filter}, composite_flags),
+          PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+          PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextLayerGlobalStateTests, BeginLayerIgnoresGlobalFilter) {
@@ -1329,11 +1366,13 @@ TEST(BaseRenderingContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
 
   context->endLayer(exception_state);
 
-  cc::PaintFlags shadow_flags;
-  shadow_flags.setBlendMode(SkBlendMode::kSrcIn);
-  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+  cc::PaintFlags composite_flags;
+  composite_flags.setBlendMode(SkBlendMode::kSrcIn);
+
+  sk_sp<cc::PaintFilter> shadow_filter = sk_make_sp<DropShadowPaintFilter>(
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
-      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+      DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
+  sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
   cc::PaintFlags filter_flags;
   filter_flags.setAlphaf(0.4f);
@@ -1359,7 +1398,9 @@ TEST(BaseRenderingContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
                                            0, 1, 0, 0,  //
                                            0, 0, 1, 0,  //
                                            0, 0, 0, 1)),
-              PaintOpEq<SaveLayerOp>(shadow_flags),
+              PaintOpEq<SaveLayerFiltersOp>(
+                  std::array{shadow_filter, foreground_filter},
+                  composite_flags),
               PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
                                            0, 1, 0, 6,  //
                                            0, 0, 1, 0,  //

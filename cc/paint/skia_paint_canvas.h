@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
@@ -35,6 +36,7 @@ struct SkRect;
 
 namespace cc {
 class ImageProvider;
+class PaintFilter;
 class PaintFlags;
 
 // A PaintCanvas derived class that passes PaintCanvas APIs through to
@@ -76,6 +78,8 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   int saveLayer(const SkRect& bounds, const PaintFlags& flags) override;
   int saveLayerAlphaf(float alpha) override;
   int saveLayerAlphaf(const SkRect& bounds, float alpha) override;
+  int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+                       const PaintFlags& flags) override;
 
   void restore() override;
   int getSaveCount() const override;

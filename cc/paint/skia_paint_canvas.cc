@@ -8,10 +8,13 @@
 #include <cstring>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_filter.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_recorder.h"
@@ -21,11 +24,14 @@
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPoint.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/src/core/SkCanvasPriv.h"
 
 namespace cc {
 SkiaPaintCanvas::ContextFlushes::ContextFlushes()
@@ -97,6 +103,14 @@ int SkiaPaintCanvas::saveLayerAlphaf(float alpha) {
 
 int SkiaPaintCanvas::saveLayerAlphaf(const SkRect& bounds, float alpha) {
   return canvas_->saveLayerAlphaf(&bounds, alpha);
+}
+
+int SkiaPaintCanvas::saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+                                      const PaintFlags& flags) {
+  SkPaint paint = flags.ToSkPaint();
+  return canvas_->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
+      /*bounds=*/nullptr, &paint, /*backdrop=*/nullptr, /*backdropScale=*/1.0f,
+      /*saveLayerFlags=*/0, PaintFilter::ToSkImageFilters(filters)));
 }
 
 void SkiaPaintCanvas::restore() {

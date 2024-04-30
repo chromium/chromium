@@ -7,6 +7,7 @@
 
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "base/strings/stringprintf.h"
 #include "cc/paint/draw_looper.h"
@@ -42,6 +43,22 @@ class PaintOpHelper {
   template <typename T>
   static std::string ToString(const std::optional<T>& opt) {
     return opt.has_value() ? ToString(*opt) : "(nil)";
+  }
+
+  template <typename T>
+  static std::string ToString(const std::vector<T>& vec) {
+    std::ostringstream str;
+    str << "{";
+    bool is_first = true;
+    for (const T& element : vec) {
+      if (!is_first) {
+        str << ", ";
+      }
+      str << ToString(element);
+      is_first = false;
+    }
+    str << "}";
+    return str.str();
   }
 
   static std::string ToString(const PaintOp& base_op) {
@@ -206,6 +223,12 @@ class PaintOpHelper {
         const auto& op = static_cast<const SaveLayerAlphaOp&>(base_op);
         str << "bounds=" << ToString(op.bounds)
             << ", alpha=" << ToString(op.alpha);
+        break;
+      }
+      case PaintOpType::kSaveLayerFilters: {
+        const auto& op = static_cast<const SaveLayerFiltersOp&>(base_op);
+        str << "flags=" << ToString(op.flags)
+            << ", filters=" << ToString(op.filters);
         break;
       }
       case PaintOpType::kScale: {

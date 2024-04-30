@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstring>
+#include <initializer_list>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -20,6 +22,8 @@
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/paint/paint_filter.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/refcounted_buffer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
@@ -82,6 +86,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -350,18 +355,36 @@ BaseRenderingContext2D::SaveLayerForState(
   if (state.GlobalComposite() == SkBlendMode::kSrc) {
     canvas.clear(HasAlpha() ? SkColors::kTransparent : SkColors::kBlack);
     needs_compositing = false;
-  } else if (state.ShouldDrawShadows()) {
-    ScopedResetCtm scoped_reset_ctm(state, canvas);
-    cc::PaintFlags flags;
-    flags.setImageFilter(state.ShadowAndForegroundImageFilter());
-    flags.setBlendMode(state.GlobalComposite());
+  } else if (bool should_draw_shadow = state.ShouldDrawShadows(),
+             needs_composited_draw = BlendModeRequiresCompositedDraw(state);
+             should_draw_shadow || needs_composited_draw) {
+    if (should_draw_shadow && needs_composited_draw) {
+      ScopedResetCtm scoped_reset_ctm(state, canvas);
+      // According to the WHATWG spec, the shadow and foreground need to be
+      // composited independently to the canvas, one after the other
+      // (https://html.spec.whatwg.org/multipage/canvas.html#drawing-model).
+      // This is done by drawing twice, once for the background and once more
+      // for the foreground. For layers, we can do this by passing two filters
+      // that will each do a composite pass of the input to the destination.
+      // Passing `nullptr` for the second pass means no filter is applied to the
+      // foreground.
+      cc::PaintFlags flags;
+      flags.setBlendMode(state.GlobalComposite());
+      sk_sp<PaintFilter> foreground_filter;  // nullptr means no filter.
+      canvas.saveLayerFilters(
+          std::array{state.ShadowOnlyImageFilter(), foreground_filter}, flags);
+    } else if (should_draw_shadow) {
+      ScopedResetCtm scoped_reset_ctm(state, canvas);
+      cc::PaintFlags flags;
+      flags.setImageFilter(state.ShadowAndForegroundImageFilter());
+      flags.setBlendMode(state.GlobalComposite());
+      canvas.saveLayer(flags);
+    } else {
+      cc::PaintFlags flags;
+      flags.setBlendMode(state.GlobalComposite());
+      canvas.saveLayer(flags);
+    }
     needs_compositing = false;
-    canvas.saveLayer(flags);
-  } else if (BlendModeRequiresCompositedDraw(state)) {
-    cc::PaintFlags flags;
-    flags.setBlendMode(state.GlobalComposite());
-    needs_compositing = false;
-    canvas.saveLayer(flags);
   }
 
   if (filter || needs_compositing) {

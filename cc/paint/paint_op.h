@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -26,6 +27,7 @@
 #include "cc/paint/node_id.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
+#include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/refcounted_buffer.h"
@@ -106,6 +108,7 @@ enum class PaintOpType : uint8_t {
   kSave,
   kSaveLayer,
   kSaveLayerAlpha,
+  kSaveLayerFilters,
   kScale,
   kSetMatrix,
   kSetNodeId,
@@ -1047,6 +1050,27 @@ class CC_PAINT_EXPORT SaveLayerAlphaOp final : public PaintOp {
 
  private:
   SaveLayerAlphaOp() : PaintOp(kType) {}
+};
+
+class CC_PAINT_EXPORT SaveLayerFiltersOp final : public PaintOpWithFlags {
+ public:
+  static constexpr PaintOpType kType = PaintOpType::kSaveLayerFilters;
+  explicit SaveLayerFiltersOp(base::span<sk_sp<PaintFilter>> filters,
+                              const PaintFlags& flags);
+  ~SaveLayerFiltersOp();
+  static void RasterWithFlags(const SaveLayerFiltersOp* op,
+                              const PaintFlags* flags,
+                              SkCanvas* canvas,
+                              const PlaybackParams& params);
+  bool IsValid() const { return true; }
+  bool EqualsForTesting(const SaveLayerFiltersOp& other) const;
+  bool HasSaveLayerOps() const { return true; }
+  HAS_SERIALIZATION_FUNCTIONS();
+
+  std::vector<sk_sp<PaintFilter>> filters;
+
+ private:
+  SaveLayerFiltersOp();
 };
 
 class CC_PAINT_EXPORT ScaleOp final : public PaintOp {

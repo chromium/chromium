@@ -6,6 +6,7 @@
 #define CC_PAINT_PAINT_CANVAS_H_
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -17,6 +18,7 @@
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_text_property_value.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkTextBlob;
 
@@ -30,6 +32,7 @@ class PaintPreviewTracker;
 
 namespace cc {
 class SkottieWrapper;
+class PaintFilter;
 class PaintFlags;
 class PaintRecord;
 
@@ -77,6 +80,11 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual int saveLayer(const SkRect& bounds, const PaintFlags& flags) = 0;
   virtual int saveLayerAlphaf(float alpha) = 0;
   virtual int saveLayerAlphaf(const SkRect& bounds, float alpha) = 0;
+  // Opens a layer whose output texture is composited multiple times to the
+  // canvas, once for every filter in `filters`. Useful to draw a foreground and
+  // its shadow. Implementations may consume `filters` by moving the `sk_sp`.
+  virtual int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+                               const PaintFlags& flags) = 0;
 
   virtual void restore() = 0;
   virtual int getSaveCount() const = 0;

@@ -308,6 +308,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
         static_cast<int>(SaveType::kBeginEndLayerOneSave) + save_count - 1);
   }
 
+  sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
  private:
@@ -318,7 +319,6 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   sk_sp<cc::DrawLooper>& EmptyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowOnlyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowAndForegroundDrawLooper() const;
-  sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
 
   String unparsed_stroke_color_;
   String unparsed_fill_color_;

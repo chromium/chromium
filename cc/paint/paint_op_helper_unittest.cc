@@ -3,11 +3,19 @@
 // found in the LICENSE file.
 
 #include "cc/test/paint_op_helper.h"
+
+#include <array>
+
 #include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_filter.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/test/skia_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/core/SkTileMode.h"
 #include "third_party/skia/include/effects/SkLumaColorFilter.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
 
@@ -353,6 +361,27 @@ TEST(PaintOpHelper, SaveLayerAlphaToString) {
   std::string str = PaintOpHelper::ToString(op);
   EXPECT_EQ(str,
             "SaveLayerAlphaOp(bounds=[1.000,2.000 3.000x4.000], alpha=1.000)");
+}
+
+TEST(PaintOpHelper, SaveLayerFiltersToString) {
+  PaintFlags flags;
+  SaveLayerFiltersOp op(
+      std::array<sk_sp<PaintFilter>, 2>{
+          sk_make_sp<BlurPaintFilter>(1.0f, 2.0f, SkTileMode::kRepeat,
+                                      /*input=*/nullptr),
+          nullptr},
+      flags);
+  EXPECT_EQ(PaintOpHelper::ToString(op),
+            "SaveLayerFiltersOp(flags=[color=rgba(0, 0, 0, 255), "
+            "blendMode=kSrcOver, isAntiAlias=false, isDither=false, "
+            "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
+            "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
+            "colorFilter=(nil), shader=(nil), hasShader=false, "
+            "shaderIsOpaque=false, pathEffect=(nil), imageFilter=(nil), "
+            "drawLooper=(nil), supportsFoldingAlpha=true, isValid=true, "
+            "hasDiscardableImages=false], "
+            "filters={BlurPaintFilter(sigma_x=1.000, sigma_y=2.000, "
+            "tile_mode=kRepeat, input=(nil), crop_rect=(nil)), (nil)})");
 }
 
 TEST(PaintOpHelper, ScaleToString) {

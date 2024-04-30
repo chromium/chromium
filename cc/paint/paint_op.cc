@@ -5,6 +5,7 @@
 #include "cc/paint/paint_op.h"
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <type_traits>
@@ -12,14 +13,17 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
+#include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_reader.h"
@@ -32,6 +36,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -39,6 +44,7 @@
 #include "third_party/skia/include/core/SkVertices.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
+#include "third_party/skia/src/core/SkCanvasPriv.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -146,6 +152,7 @@ void DrawImageRect(SkCanvas* canvas,
   M(SaveOp)                  \
   M(SaveLayerOp)             \
   M(SaveLayerAlphaOp)        \
+  M(SaveLayerFiltersOp)      \
   M(ScaleOp)                 \
   M(SetMatrixOp)             \
   M(SetNodeIdOp)             \
@@ -684,6 +691,14 @@ void SaveLayerAlphaOp::Serialize(PaintOpWriter& writer,
   writer.Write(alpha);
 }
 
+void SaveLayerFiltersOp::Serialize(PaintOpWriter& writer,
+                                   const PaintFlags* flags_to_serialize,
+                                   const SkM44& current_ctm,
+                                   const SkM44& original_ctm) const {
+  writer.Write(*flags_to_serialize, current_ctm);
+  writer.Write(filters, current_ctm);
+}
+
 void ScaleOp::Serialize(PaintOpWriter& writer,
                         const PaintFlags* flags_to_serialize,
                         const SkM44& current_ctm,
@@ -1040,6 +1055,13 @@ PaintOp* SaveLayerAlphaOp::Deserialize(PaintOpReader& reader, void* output) {
   SaveLayerAlphaOp* op = new (output) SaveLayerAlphaOp;
   reader.Read(&op->bounds);
   reader.Read(&op->alpha);
+  return op;
+}
+
+PaintOp* SaveLayerFiltersOp::Deserialize(PaintOpReader& reader, void* output) {
+  SaveLayerFiltersOp* op = new (output) SaveLayerFiltersOp;
+  reader.Read(&op->flags);
+  reader.Read(&op->filters);
   return op;
 }
 
@@ -1636,6 +1658,16 @@ void SaveLayerAlphaOp::Raster(const SaveLayerAlphaOp* op,
   canvas->saveLayer(rec);
 }
 
+void SaveLayerFiltersOp::RasterWithFlags(const SaveLayerFiltersOp* op,
+                                         const PaintFlags* flags,
+                                         SkCanvas* canvas,
+                                         const PlaybackParams& params) {
+  SkPaint paint = flags->ToSkPaint();
+  canvas->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
+      /*bounds=*/nullptr, &paint, /*backdrop=*/nullptr, /*backdropScale=*/1.0f,
+      /*saveLayerFlags=*/0, PaintFilter::ToSkImageFilters(op->filters)));
+}
+
 void ScaleOp::Raster(const ScaleOp* op,
                      SkCanvas* canvas,
                      const PlaybackParams& params) {
@@ -1814,6 +1846,19 @@ bool SaveLayerOp::EqualsForTesting(const SaveLayerOp& other) const {
 
 bool SaveLayerAlphaOp::EqualsForTesting(const SaveLayerAlphaOp& other) const {
   return bounds == other.bounds && alpha == other.alpha;
+}
+
+bool SaveLayerFiltersOp::EqualsForTesting(
+    const SaveLayerFiltersOp& other) const {
+  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
+         base::ranges::equal(
+             filters, other.filters,
+             [](const sk_sp<PaintFilter>& lhs, const sk_sp<PaintFilter>& rhs) {
+               return base::ValuesEquivalent(
+                   lhs, rhs, [](const PaintFilter& x, const PaintFilter& y) {
+                     return x.EqualsForTesting(y);  // IN-TEST
+                   });
+             });
 }
 
 bool ScaleOp::EqualsForTesting(const ScaleOp& other) const {
@@ -2393,5 +2438,15 @@ DrawSlugOp::DrawSlugOp(sk_sp<sktext::gpu::Slug> slug, const PaintFlags& flags)
     : PaintOpWithFlags(kType, flags), slug(std::move(slug)) {}
 
 DrawSlugOp::~DrawSlugOp() = default;
+
+SaveLayerFiltersOp::SaveLayerFiltersOp(base::span<sk_sp<PaintFilter>> filters,
+                                       const PaintFlags& flags)
+    : PaintOpWithFlags(kType, flags),
+      filters(std::make_move_iterator(filters.begin()),
+              std::make_move_iterator(filters.end())) {}
+
+SaveLayerFiltersOp::SaveLayerFiltersOp() : PaintOpWithFlags(kType) {}
+
+SaveLayerFiltersOp::~SaveLayerFiltersOp() = default;
 
 }  // namespace cc

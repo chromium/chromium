@@ -304,6 +304,7 @@ std::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       // TODO(vmpstr): We could investigate handling these.
       case PaintOpType::kSaveLayer:
       case PaintOpType::kSaveLayerAlpha:
+      case PaintOpType::kSaveLayerFilters:
       // Complex clips will probably result in non solid color as it might not
       // cover the canvas.
       // TODO(vmpstr): We could investigate handling these.

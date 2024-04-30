@@ -6,6 +6,7 @@
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include "base/bits.h"
@@ -18,12 +19,14 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 
 struct SkGainmapInfo;
 struct SkHighContrastConfig;
 struct SkRect;
 struct SkIRect;
+class SkM44;
 class SkRRect;
 namespace sktext::gpu {
 class Slug;
@@ -243,6 +246,9 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const ColorFilter* filter);
   void Write(const DrawLooper* looper);
   void Write(const PaintFilter* filter, const SkM44& current_ctm);
+  void Write(const sk_sp<PaintFilter> filter, const SkM44& current_ctm) {
+    Write(filter.get(), current_ctm);
+  }
   void Write(const PathEffect* effect);
   void Write(const gfx::HDRMetadata& hdr_metadata);
 
@@ -339,9 +345,19 @@ class CC_PAINT_EXPORT PaintOpWriter {
   }
 
   template <typename T>
+    requires(std::is_trivially_copyable_v<T>)
   void Write(const std::vector<T>& vec) {
     WriteSize(vec.size());
     WriteData(vec.size() * sizeof(T), vec.data());
+  }
+
+  template <typename T, typename... Args>
+    requires(!std::is_trivially_copyable_v<T>)
+  void Write(const std::vector<T>& vec, const Args&... args) {
+    WriteSize(vec.size());
+    for (const T& t : vec) {
+      Write(t, args...);
+    }
   }
 
  private:
