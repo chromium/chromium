@@ -11141,23 +11141,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_FAILURE_TITLE_GROUPING" desc="The header text for the grouping failure state in the tab organization UI">
         No groups found
       </message>
-      <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_PRE_LINK" desc="The pre-link body text for the generic failure state in the tab organization UI. This should form a sentence when followed by IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_LINK and IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_POST_LINK.">
-        Tab group suggestions are currently unavailable. You can
+      <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC" desc="The body text for the generic failure state in the tab organization UI.">
+        Tab group suggestions are currently unavailable. You can <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>refresh now<ph name="END_LINK">&lt;/a&gt;</ph> or try again later
       </message>
-      <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_LINK" desc="The link body text for the generic failure state in the tab organization UI. This should form a sentence when preceded by IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_PRE_LINK and followed by IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_POST_LINK.">
-        refresh now
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_POST_LINK" desc="The post-link body text for the generic failure state in the tab organization UI. This should form a sentence when preceded by IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_PRE_LINK and IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_LINK.">
-        or try again later
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_PRE_LINK" desc="The pre-link body text for the grouping failure state in the tab organization UI. This should form a sentence when followed by IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_LINK and IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_POST_LINK.">
-        You can
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_LINK" desc="The link body text for the grouping failure state in the tab organization UI. This should form a sentence when preceded by IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_PRE_LINK and followed by IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_POST_LINK.">
-         refresh now
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_POST_LINK" desc="The post-link body text for the grouping failure state in the tab organization UI. This should form a sentence when preceded by IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_PRE_LINK and IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_LINK.">
-         or try again later after you open new similar tabs
+      <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING" desc="The body text for the grouping failure state in the tab organization UI.">
+        You can <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>refresh now<ph name="END_LINK">&lt;/a&gt;</ph> or try again later after you open new similar tabs
       </message>
       <message name="IDS_TAB_ORGANIZATION_TIP_TITLE" desc="The bolded text at the start of the tip in the tab organization UI">
         Tip:

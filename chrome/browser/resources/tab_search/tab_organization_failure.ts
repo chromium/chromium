@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
+
 import './strings.m.js';
 import './tab_organization_shared_style.css.js';
 
@@ -52,50 +54,26 @@ export class TabOrganizationFailureElement extends PolymerElement {
     }
   }
 
-  private getBodyPreLink_(): string {
+  private getBody_(): string {
     switch (this.error) {
       case TabOrganizationError.kGrouping:
-        return loadTimeData.getString('failureBodyGroupingPreLink');
+        return loadTimeData.getString('failureBodyGrouping');
       case TabOrganizationError.kGeneric:
-        return loadTimeData.getString('failureBodyGenericPreLink');
+        return loadTimeData.getString('failureBodyGeneric');
       default:
         return '';
     }
   }
 
-  private getBodyLink_(): string {
-    switch (this.error) {
-      case TabOrganizationError.kGrouping:
-        return loadTimeData.getString('failureBodyGroupingLink');
-      case TabOrganizationError.kGeneric:
-        return loadTimeData.getString('failureBodyGenericLink');
-      default:
-        return '';
-    }
-  }
-
-  private getBodyPostLink_(): string {
-    switch (this.error) {
-      case TabOrganizationError.kGrouping:
-        return loadTimeData.getString('failureBodyGroupingPostLink');
-      case TabOrganizationError.kGeneric:
-        return loadTimeData.getString('failureBodyGenericPostLink');
-      default:
-        return '';
-    }
-  }
-
-  private onCheckNow_() {
+  private onCheckNow_(e: CustomEvent<{event: Event}>) {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#"
+    e.detail.event.preventDefault();
+    e.stopPropagation();
     this.dispatchEvent(new CustomEvent('check-now', {
       bubbles: true,
       composed: true,
     }));
-  }
-
-  private onCheckNowKeyDown_(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      this.onCheckNow_();
-    }
   }
 
   private onTipClick_() {

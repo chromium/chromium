@@ -25,15 +25,8 @@
       [[getTitle_(error)]]
     </div>
     <div class="tab-organization-body">
-      [[getBodyPreLink_(error)]]
-      <div class="tab-organization-link"
-          role="link"
-          tabindex="0"
-          on-click="onCheckNow_"
-          on-keydown="onCheckNowKeyDown_">
-        [[getBodyLink_(error)]]
-      </div>
-      [[getBodyPostLink_(error)]]
+      <localized-link localized-string="[[getBody_(error)]]"
+          on-link-clicked="onCheckNow_"></localized-link>
     </div>
   </div>
   <template is="dom-if" if="[[showFre]]">
