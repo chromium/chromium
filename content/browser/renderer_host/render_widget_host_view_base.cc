@@ -980,7 +980,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
   target_ancestors.push_back(target_view->GetFrameSinkId());
 
   RenderWidgetHostViewInput* cur_view = target_view;
-  while (cur_view->IsRenderWidgetHostViewChildFrame()) {
+  while (cur_view->GetParentViewInput()) {
     cur_view = cur_view->GetParentViewInput();
     if (!cur_view)
       return false;

@@ -473,8 +473,7 @@ void RenderWidgetHostViewChildFrame::ClearKeyboardTriggeredTooltip() {
   root_view->ClearKeyboardTriggeredTooltip();
 }
 
-RenderWidgetHostViewInput*
-RenderWidgetHostViewChildFrame::GetParentViewInput() {
+RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetParentViewInput() {
   if (!frame_connector_)
     return nullptr;
   return frame_connector_->GetParentRenderWidgetHostView();
@@ -759,7 +758,7 @@ bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableFor(
       screen_rect_stable_since_) {
     return true;
   }
-  if (RenderWidgetHostViewInput* parent = GetParentViewInput()) {
+  if (RenderWidgetHostViewBase* parent = GetParentViewInput()) {
     return parent->ScreenRectIsUnstableFor(event);
   }
   return false;
@@ -777,7 +776,7 @@ bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableForIOv2For(
       screen_rect_stable_since_for_iov2_) {
     return true;
   }
-  if (RenderWidgetHostViewInput* parent = GetParentViewInput()) {
+  if (RenderWidgetHostViewBase* parent = GetParentViewInput()) {
     return parent->ScreenRectIsUnstableForIOv2For(event);
   }
   return false;
@@ -1108,7 +1107,7 @@ bool RenderWidgetHostViewChildFrame::CanBecomeVisible() {
   if (frame_connector_->IsHidden())
     return false;
 
-  RenderWidgetHostViewInput* parent_view = GetParentViewInput();
+  RenderWidgetHostViewBase* parent_view = GetParentViewInput();
   if (!parent_view || !parent_view->IsRenderWidgetHostViewChildFrame()) {
     // Root frame does not have a CSS visibility property.
     return true;

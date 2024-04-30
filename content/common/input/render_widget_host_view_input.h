@@ -68,15 +68,6 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public StylusInterface {
   virtual void ProcessGestureEvent(const blink::WebGestureEvent& event,
                                    const ui::LatencyInfo& latency) = 0;
 
-  // Subclass identifier for RenderWidgetHostViewChildFrames. This is useful
-  // to be able to know if this RWHV is embedded within another RWHV. If
-  // other kinds of embeddable RWHVs are created, this should be renamed to
-  // a more generic term -- in which case, static casts to RWHVChildFrame will
-  // need to also be resolved.
-  // TODO(amanvr): Rename this method to IsRenderWidgetHostViewInputEmbedded()
-  // when we update classes to use RenderWidgetHostViewInput.
-  virtual bool IsRenderWidgetHostViewChildFrame() = 0;
-
   // Because the associated remote WebKit instance can asynchronously
   // prevent-default on a dispatched touch event, the touch events are queued in
   // the GestureRecognizer until invocation of ProcessAckedTouchEvent releases

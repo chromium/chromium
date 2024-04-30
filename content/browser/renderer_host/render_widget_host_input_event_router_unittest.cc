@@ -739,7 +739,7 @@ void RenderWidgetHostInputEventRouterTest::TestSendNewGestureWhileBubbling(
           delta.x(), delta.y(), blink::WebGestureDevice::kTouchscreen);
 
   TestRenderWidgetHostViewChildFrame* cur_target = bubbling_origin;
-  RenderWidgetHostViewInput* parent = bubbling_origin->GetParentViewInput();
+  RenderWidgetHostViewBase* parent = bubbling_origin->GetParentViewInput();
   while (parent) {
     ASSERT_TRUE(rwhier()->BubbleScrollEvent(parent, cur_target, scroll_begin));
     EXPECT_EQ(bubbling_origin, bubbling_gesture_scroll_origin());

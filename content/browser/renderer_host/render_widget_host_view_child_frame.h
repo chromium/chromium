@@ -202,7 +202,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
     return frame_connector_;
   }
 
-  RenderWidgetHostViewInput* GetParentViewInput() override;
+  RenderWidgetHostViewBase* GetParentViewInput() override;
 
   void RegisterFrameSinkId();
   void UnregisterFrameSinkId();
