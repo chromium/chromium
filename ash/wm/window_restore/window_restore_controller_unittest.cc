@@ -67,7 +67,7 @@ class WindowRestoreControllerTest : public AshTestBase,
   // Struct which is the data in our fake window restore file.
   struct WindowInfo {
     int call_count = 0;
-    std::unique_ptr<app_restore::WindowInfo> info;
+    app_restore::WindowInfo info;
   };
 
   WindowRestoreControllerTest() {
@@ -108,17 +108,19 @@ class WindowRestoreControllerTest : public AshTestBase,
   }
 
   // Returns window info for `window`.
-  app_restore::WindowInfo* GetWindowInfo(aura::Window* window) const {
+  std::optional<app_restore::WindowInfo> GetWindowInfo(
+      aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!base::Contains(fake_window_restore_file_, restore_window_id))
-      return nullptr;
-    return fake_window_restore_file_.at(restore_window_id).info.get();
+    if (!base::Contains(fake_window_restore_file_, restore_window_id)) {
+      return std::nullopt;
+    }
+    return fake_window_restore_file_.at(restore_window_id).info;
   }
 
-  // Returns the stored activation index for |window|.
+  // Returns the stored activation index for `window`.
   int GetActivationIndex(aura::Window* window) const {
-    app_restore::WindowInfo* window_info = GetWindowInfo(window);
+    std::optional<app_restore::WindowInfo> window_info = GetWindowInfo(window);
     return window_info ? window_info->activation_index.value_or(-1) : -1;
   }
 
@@ -157,15 +159,14 @@ class WindowRestoreControllerTest : public AshTestBase,
     if (!fake_window_restore_file_.contains(restore_window_id))
       return nullptr;
 
-    app_restore::WindowInfo* info =
-        fake_window_restore_file_[restore_window_id].info.get();
-    DCHECK(info);
-    DCHECK(info->current_bounds);
-    DCHECK(info->window_state_type);
-    DCHECK(info->activation_index);
-    DCHECK(info->display_id);
+    app_restore::WindowInfo info =
+        fake_window_restore_file_[restore_window_id].info;
+    DCHECK(info.current_bounds);
+    DCHECK(info.window_state_type);
+    DCHECK(info.activation_index);
+    DCHECK(info.display_id);
 
-    aura::Window* context = Shell::GetRootWindowForDisplayId(*info->display_id);
+    aura::Window* context = Shell::GetRootWindowForDisplayId(*info.display_id);
     // The display may have been disconnected.
     if (!context)
       context = Shell::GetPrimaryRootWindow();
@@ -176,14 +177,14 @@ class WindowRestoreControllerTest : public AshTestBase,
     // them in a certain order.
     TestWidgetBuilder widget_builder;
     widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
-        .SetBounds(*info->current_bounds)
+        .SetBounds(*info.current_bounds)
         .SetShow(false)
         .SetContext(context)
-        .SetShowState(chromeos::ToWindowShowState(*info->window_state_type))
+        .SetShowState(chromeos::ToWindowShowState(*info.window_state_type))
         .SetWindowProperty(app_restore::kWindowInfoKey,
-                           new app_restore::WindowInfo(*info))
+                           new app_restore::WindowInfo(info))
         .SetWindowProperty(app_restore::kActivationIndexKey,
-                           new int32_t(*info->activation_index))
+                           new int32_t(*info.activation_index))
         .SetWindowProperty(app_restore::kLaunchedFromAppRestoreKey, true)
         .SetWindowProperty(app_restore::kRestoreWindowIdKey, restore_window_id)
         .SetWindowProperty(aura::client::kAppType, static_cast<int>(app_type))
@@ -194,8 +195,9 @@ class WindowRestoreControllerTest : public AshTestBase,
     SetResizable(widget);
     if (!is_taskless_arc_app)
       WindowRestoreController::Get()->OnWidgetInitialized(widget);
-    if (info->window_state_type != chromeos::WindowStateType::kMinimized)
+    if (*info.window_state_type != chromeos::WindowStateType::kMinimized) {
       widget->Show();
+    }
     return widget;
   }
 
@@ -216,13 +218,13 @@ class WindowRestoreControllerTest : public AshTestBase,
                           int64_t display_id,
                           int32_t desk_id) {
     DCHECK(!fake_window_restore_file_.contains(restore_window_id));
-    auto window_info = std::make_unique<app_restore::WindowInfo>();
-    window_info->current_bounds = bounds;
-    window_info->window_state_type = window_state_type;
-    window_info->activation_index = activation_index;
-    window_info->display_id = display_id;
-    window_info->desk_id = desk_id;
-    fake_window_restore_file_[restore_window_id].info = std::move(window_info);
+    WindowInfo window_info;
+    window_info.info.current_bounds = bounds;
+    window_info.info.window_state_type = window_state_type;
+    window_info.info.activation_index = activation_index;
+    window_info.info.display_id = display_id;
+    window_info.info.desk_id = desk_id;
+    fake_window_restore_file_[restore_window_id] = std::move(window_info);
   }
 
   void AddEntryToFakeFile(int restore_window_id,
@@ -303,25 +305,10 @@ class WindowRestoreControllerTest : public AshTestBase,
     if (fake_window_restore_file_.contains(restore_window_id)) {
       fake_window_restore_file_[restore_window_id].call_count++;
     } else {
-      fake_window_restore_file_[restore_window_id].info =
-          std::make_unique<app_restore::WindowInfo>();
+      fake_window_restore_file_[restore_window_id] = WindowInfo();
     }
 
-    CopyWindowInfo(window_info,
-                   fake_window_restore_file_[restore_window_id].info.get());
-  }
-
-  // TODO(http://b/337031769): Use the copy/move constructor/assignment for
-  // `app_restore::WindowInfo`.
-  void CopyWindowInfo(const app_restore::WindowInfo& src,
-                      app_restore::WindowInfo* out_dst) {
-    out_dst->window = src.window;
-    out_dst->activation_index = src.activation_index;
-    out_dst->desk_id = src.desk_id;
-    out_dst->current_bounds = src.current_bounds;
-    out_dst->window_state_type = src.window_state_type;
-    out_dst->display_id = src.display_id;
-    out_dst->arc_extra_info = src.arc_extra_info;
+    fake_window_restore_file_[restore_window_id].info = window_info;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -425,7 +412,8 @@ TEST_F(WindowRestoreControllerTest, AssignToAllDesks) {
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
 
   // An all desks window should have a populated `desk_id` but not `desk_guid`.
-  app_restore::WindowInfo* window_info = GetWindowInfo(window.get());
+  std::optional<app_restore::WindowInfo> window_info =
+      GetWindowInfo(window.get());
   ASSERT_TRUE(window_info);
   EXPECT_EQ(aura::client::kWindowWorkspaceVisibleOnAllWorkspaces,
             window_info->desk_id);
@@ -437,7 +425,8 @@ TEST_F(WindowRestoreControllerTest, AssignToAllDesks) {
   EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
 
   // A non-all desks window should not have a populated `desk_id`.
-  app_restore::WindowInfo* window_info2 = GetWindowInfo(window.get());
+  std::optional<app_restore::WindowInfo> window_info2 =
+      GetWindowInfo(window.get());
   ASSERT_TRUE(window_info2);
   EXPECT_FALSE(window_info2->desk_id);
 }
@@ -858,8 +847,10 @@ TEST_F(WindowRestoreControllerTest, TabletSplitviewWindow) {
   split_view_controller->SnapWindow(window1.get(), SnapPosition::kPrimary);
   split_view_controller->SnapWindow(window2.get(), SnapPosition::kSecondary);
 
-  app_restore::WindowInfo* window1_info = GetWindowInfo(window1.get());
-  app_restore::WindowInfo* window2_info = GetWindowInfo(window2.get());
+  std::optional<app_restore::WindowInfo> window1_info =
+      GetWindowInfo(window1.get());
+  std::optional<app_restore::WindowInfo> window2_info =
+      GetWindowInfo(window2.get());
   ASSERT_TRUE(window1_info);
   ASSERT_TRUE(window2_info);
   ASSERT_TRUE(window1_info->window_state_type);
@@ -997,7 +988,7 @@ TEST_F(WindowRestoreControllerTest, TabletToClamshell) {
             window->GetBoundsInScreen());
 
   // Check that the values in the fake file can be restored in clamshell mode.
-  app_restore::WindowInfo* window_info = GetWindowInfo(window);
+  std::optional<app_restore::WindowInfo> window_info = GetWindowInfo(window);
   ASSERT_TRUE(window_info);
   ASSERT_TRUE(window_info->activation_index);
   ASSERT_TRUE(window_info->current_bounds);
@@ -1390,12 +1381,13 @@ TEST_F(WindowRestoreControllerTest, WindowsSavedInOverview) {
   EXPECT_NE(window_bounds, browser_window->GetBoundsInScreen());
   EXPECT_NE(window_bounds, arc_window->GetBoundsInRootWindow());
 
-  app_restore::WindowInfo* browser_window_info =
+  std::optional<app_restore::WindowInfo> browser_window_info =
       GetWindowInfo(browser_window.get());
   ASSERT_TRUE(browser_window_info);
   EXPECT_EQ(window_bounds, browser_window_info->current_bounds);
 
-  app_restore::WindowInfo* arc_window_info = GetWindowInfo(arc_window.get());
+  std::optional<app_restore::WindowInfo> arc_window_info =
+      GetWindowInfo(arc_window.get());
   ASSERT_TRUE(arc_window_info);
   EXPECT_EQ(window_bounds, arc_window_info->arc_extra_info->bounds_in_root);
 }
