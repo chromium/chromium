@@ -47,6 +47,10 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class TabGroupTabCollection;
+}
+
 class TabGroupModelFactory {
  public:
   TabGroupModelFactory();
@@ -501,7 +505,7 @@ class TabStripModel : public TabGroupController {
   // Removes the set of tabs pointed to by |indices| from the the groups they
   // are in, if any. The tabs are moved out of the group if necessary. |indices|
   // must be sorted in ascending order.
-  void RemoveFromGroup(const std::vector<int>& indices);
+  void RemoveFromGroup(std::vector<int> indices);
 
   TabGroupModel* group_model() const { return group_model_.get(); }
 
@@ -810,8 +814,20 @@ class TabStripModel : public TabGroupController {
 
   // Adds tabs to newly-allocated group id |new_group|. This group must be new
   // and have no tabs in it.
-  void AddToNewGroupImpl(const std::vector<int>& indices,
-                         const tab_groups::TabGroupId& new_group);
+  void AddToNewGroupImpl(std::vector<int> indices,
+                         tab_groups::TabGroupId new_group);
+
+  void AddToNewGroupWithCollectionImpl(std::vector<int> indices,
+                                       const tab_groups::TabGroupId new_group);
+
+  void AddTabsToGroupCollection(std::vector<tabs::TabModel*> tabs,
+                                tabs::TabGroupTabCollection* group_collection,
+                                bool start_of_group = false);
+
+  void RemoveTabsFromGroupCollection(
+      std::vector<tabs::TabModel*> tabs,
+      tabs::TabGroupTabCollection* group_collection,
+      bool move_to_left);
 
   // Adds tabs to existing group |group|. This group must have been initialized
   // by a previous call to |AddToNewGroupImpl()|.

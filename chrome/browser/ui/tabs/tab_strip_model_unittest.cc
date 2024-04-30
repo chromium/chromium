@@ -1246,10 +1246,6 @@ TEST_P(TabStripModelTest, CloseActiveTabShiftsSelectionRight) {
 // If the tab doesn't have an opener but is in a group, selection shifts to
 // another tab in the same group.
 TEST_P(TabStripModelTest, CloseGroupedTabShiftsSelectionWithinGroup) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1282,10 +1278,6 @@ TEST_P(TabStripModelTest, CloseGroupedTabShiftsSelectionWithinGroup) {
 // Tests that the active selection will change to another non collapsed tab when
 // the active index is in the collapsing group.
 TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_SuccessNextTab) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1316,10 +1308,6 @@ TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_SuccessNextTab) {
 // Tests that the active selection will change to another non collapsed tab when
 // the active index is in the collapsing group.
 TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_SuccessPreviousTab) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -1350,10 +1338,6 @@ TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_SuccessPreviousTab) {
 // Tests that there is no valid selection to shift to when the active tab is in
 // the group that will be collapsed.
 TEST_P(TabStripModelTest, CollapseGroupShiftsSelection_NoAvailableTabs) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
   ASSERT_TRUE(tabstrip.empty());
@@ -3795,10 +3779,6 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupNoopForUngroupedTab) {
 }
 
 TEST_P(TabStripModelTest, RemoveTabFromGroup) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -3812,10 +3792,6 @@ TEST_P(TabStripModelTest, RemoveTabFromGroup) {
 }
 
 TEST_P(TabStripModelTest, RemoveTabFromGroupUpdatesObservers) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   MockTabStripModelObserver observer;
@@ -3835,10 +3811,6 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupUpdatesObservers) {
 }
 
 TEST_P(TabStripModelTest, RemoveTabFromGroupMaintainsOrder) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 2);
@@ -3854,10 +3826,6 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupMaintainsOrder) {
 }
 
 TEST_P(TabStripModelTest, RemoveTabFromGroupDoesntReorderIfNoGroup) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 3);
@@ -3871,10 +3839,6 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupDoesntReorderIfNoGroup) {
 
 TEST_P(TabStripModelTest,
        RemoveTabFromGroupMaintainsRelativeOrderOfSelectedTabs) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 4);
@@ -3892,10 +3856,6 @@ TEST_P(TabStripModelTest,
 }
 
 TEST_P(TabStripModelTest, RemoveTabFromGroupMixtureOfGroups) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   PrepareTabs(&strip, 5);
@@ -3915,10 +3875,6 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupMixtureOfGroups) {
 }
 
 TEST_P(TabStripModelTest, RemoveTabFromGroupDeletesGroup) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);
@@ -3933,10 +3889,6 @@ TEST_P(TabStripModelTest, RemoveTabFromGroupDeletesGroup) {
 }
 
 TEST_P(TabStripModelTest, AddToNewGroupDeletesGroup) {
-  if (GetParam()) {
-    GTEST_SKIP();
-  }
-
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
   strip.AppendWebContents(CreateWebContents(), true);

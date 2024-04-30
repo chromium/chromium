@@ -131,4 +131,20 @@ size_t TabStripCollection::TabCountRecursive() const {
          unpinned_collection_->TabCountRecursive();
 }
 
+TabGroupTabCollection* TabStripCollection::CreateNewGroupCollectionForTab(
+    const TabModel* tab_model,
+    const tab_groups::TabGroupId& new_group) {
+  if (tab_model->GetParentCollection(GetPassKey()) == pinned_collection_) {
+    return unpinned_collection_->AddTabGroup(
+        std::make_unique<TabGroupTabCollection>(new_group), 0);
+  } else {
+    return unpinned_collection_->AddTabGroup(
+        std::make_unique<TabGroupTabCollection>(new_group),
+        unpinned_collection_
+                ->GetDirectChildIndexOfCollectionContainingTab(tab_model)
+                .value() +
+            1);
+  }
+}
+
 }  // namespace tabs

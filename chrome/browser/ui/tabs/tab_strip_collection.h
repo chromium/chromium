@@ -21,6 +21,7 @@ class TabModel;
 class TabCollectionStorage;
 class UnpinnedTabCollection;
 class PinnedTabCollection;
+class TabGroupTabCollection;
 
 // TabStripCollection is the storage representation of a tabstrip
 // in a browser. This contains a pinned collection and an unpinned
@@ -74,6 +75,12 @@ class TabStripCollection : public TabCollection {
       TabCollection* collection) override;
   size_t ChildCount() const override;
   size_t TabCountRecursive() const override;
+
+  // Creates a new group collection with respect to a tab based on the
+  // position of the tab in the collection.
+  TabGroupTabCollection* CreateNewGroupCollectionForTab(
+      const TabModel* tab_model,
+      const tab_groups::TabGroupId& new_group);
 
   TabCollectionStorage* GetTabCollectionStorageForTesting() {
     return impl_.get();
