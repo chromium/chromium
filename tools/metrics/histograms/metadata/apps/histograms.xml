@@ -43,6 +43,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".AppInstallUriUnknown" summary="URI navigation from unknown"/>
   <variant name=".AppPreloadServiceDefault" summary="Default preload"/>
   <variant name=".AppPreloadServiceOem" summary="OEM preload"/>
+  <variant name=".OobeAppRecommendations" summary="OOBE app recommendations"/>
 </variants>
 
 <variants name="AppType">

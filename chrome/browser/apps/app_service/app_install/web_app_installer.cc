@@ -209,6 +209,8 @@ void WebAppInstaller::OnManifestRetrieved(
           return crosapi::mojom::WebAppInstallSource::kOemPreload;
         case AppInstallSurface::kAppPreloadServiceDefault:
           return crosapi::mojom::WebAppInstallSource::kDefaultPreload;
+        case AppInstallSurface::kOobeAppRecommendations:
+          return crosapi::mojom::WebAppInstallSource::kOobeAppRecommendations;
       }
     }();
 
@@ -233,6 +235,8 @@ void WebAppInstaller::OnManifestRetrieved(
           return webapps::WebappInstallSource::PRELOADED_OEM;
         case AppInstallSurface::kAppPreloadServiceDefault:
           return webapps::WebappInstallSource::PRELOADED_DEFAULT;
+        case AppInstallSurface::kOobeAppRecommendations:
+          return webapps::WebappInstallSource::OOBE_APP_RECOMMENDATIONS;
       }
     }();
 

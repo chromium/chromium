@@ -65,7 +65,7 @@ struct ArcWebAppInstallInfo {
   [MinVersion=1] array<string>? additional_policy_ids@5;
 };
 
-// Next version: 2
+// Next version: 3
 [Stable, Extensible, RenamedFrom="crosapi.mojom.PreloadWebAppInstallSource"]
 enum WebAppInstallSource {
   // The app is preloaded by the device OEM.
@@ -74,6 +74,8 @@ enum WebAppInstallSource {
   kDefaultPreload,
   // The app was installed via an almanac://install-app URI navigation.
   [MinVersion=1] kAlmanacInstallAppUri,
+  // The app was installed from the recommended apps screen in OOBE.
+  [MinVersion=2] kOobeAppRecommendations,
 };
 
 // The set of information necessary to install a web app in Lacros using

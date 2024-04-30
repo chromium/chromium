@@ -34862,6 +34862,8 @@ others/histograms.xml -->
   <int value="31" label="Isolated Web App: from graphical installer"/>
   <int value="32" label="Isolated Web App: from dev UI"/>
   <int value="33" label="almanac://install-app navigation"/>
+  <int value="34" label="WebAPK Backup and restore"/>
+  <int value="35" label="OOBE Recommended Apps screen on ChromeOS"/>
 </enum>
 
 <enum name="WebAppPreinstalledWindowExperimentUserGroup">

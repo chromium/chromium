@@ -22,6 +22,7 @@ namespace apps {
 enum class AppInstallSurface {
   kAppPreloadServiceOem,
   kAppPreloadServiceDefault,
+  kOobeAppRecommendations,
 
   // kAppInstallUri* values are not trustworthy, no decision making should
   // depend on these values.

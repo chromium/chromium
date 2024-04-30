@@ -154,6 +154,9 @@ enum class WebappInstallSource {
   // WebAPK Backup and restore.
   WEBAPK_RESTORE = 34,
 
+  // Recommended apps screen in the ChromeOS Out Of Box Experience.
+  OOBE_APP_RECOMMENDATIONS = 35,
+
   // Add any new values above this one.
   COUNT,
 };

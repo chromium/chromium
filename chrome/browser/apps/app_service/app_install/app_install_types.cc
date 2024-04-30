@@ -16,6 +16,8 @@ std::ostream& operator<<(std::ostream& out, AppInstallSurface surface) {
       return out << "AppPreloadServiceOem";
     case AppInstallSurface::kAppPreloadServiceDefault:
       return out << "AppPreloadServiceDefault";
+    case AppInstallSurface::kOobeAppRecommendations:
+      return out << "OobeAppRecommendations";
     case AppInstallSurface::kAppInstallUriUnknown:
       return out << "AppInstallUriUnknown";
     case AppInstallSurface::kAppInstallUriShowoff:

@@ -42,7 +42,8 @@ void AppInstallServiceLacros::InstallApp(
         return Surface::kAppInstallUriPeripherals;
       case AppInstallSurface::kAppPreloadServiceOem:
       case AppInstallSurface::kAppPreloadServiceDefault:
-        // Preloads should be installed from Ash, not Lacros.
+      case AppInstallSurface::kOobeAppRecommendations:
+        // These surfaces are triggered from Ash, not Lacros.
         NOTREACHED();
         return Surface::kUnknown;
     }

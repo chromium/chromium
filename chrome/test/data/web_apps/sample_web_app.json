@@ -193,7 +193,7 @@
    },
    "last_badging_time": "1970-01-28 05:07:28.623000 UTC",
    "last_launch_time": "1970-01-27 09:52:51.713000 UTC",
-   "latest_install_source": "isolated web app: graphical installer",
+   "latest_install_source": "isolated web app: shimless RMA",
    "latest_install_time": "1970-02-08 13:02:14.367000 UTC",
    "launch_handler": {
       "client_mode": "kNavigateExisting"

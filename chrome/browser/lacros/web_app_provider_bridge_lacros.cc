@@ -46,6 +46,8 @@ webapps::WebappInstallSource ConvertInstallSourceFromMojom(
       return webapps::WebappInstallSource::PRELOADED_DEFAULT;
     case mojom::WebAppInstallSource::kAlmanacInstallAppUri:
       return webapps::WebappInstallSource::ALMANAC_INSTALL_APP_URI;
+    case mojom::WebAppInstallSource::kOobeAppRecommendations:
+      return webapps::WebappInstallSource::OOBE_APP_RECOMMENDATIONS;
   }
 }
 
