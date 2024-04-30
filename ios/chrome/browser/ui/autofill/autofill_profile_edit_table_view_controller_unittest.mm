@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_profile_edit_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
@@ -346,5 +347,54 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
             [[controller() tableViewModel] footerForSectionIndex:1]);
     // Check that the error message has been updated.
     EXPECT_NSEQ(GetErrorFooterString(2), footer.attributedString);
+  }
+}
+
+// Tests the items in the view when the country value changes.
+TEST_P(AutofillProfileEditTableViewControllerTest,
+       TestItemsOnCountrySelection) {
+  auto test_case = GetParam();
+  TableViewTextEditItem* city_item =
+      static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 4));
+  // Remove the city field value.
+  city_item.textFieldValue = @"";
+  [autofill_profile_edit_table_view_controller_
+      tableViewItemDidChange:city_item];
+
+  // Check the error message is shown.
+  if (test_case.is_settings && test_case.account_profile) {
+    TableViewAttributedStringHeaderFooterItem* footer =
+        static_cast<TableViewAttributedStringHeaderFooterItem*>(
+            [[controller() tableViewModel] footerForSectionIndex:1]);
+    // Check that the error message has been updated.
+    EXPECT_NSEQ(GetErrorFooterString(1), footer.attributedString);
+  }
+
+  [autofill_profile_edit_table_view_controller_
+      tableViewItemDidEndEditing:city_item];
+
+  CountryItem* countryItem =
+      [[CountryItem alloc] initWithType:kItemTypeEnumZero];
+  countryItem.countryCode = @"DE";
+  countryItem.text = @"Germany";
+
+  [autofill_profile_edit_mediator_ didSelectCountry:countryItem];
+
+  bool multiple_sections = (test_case.is_settings && test_case.account_profile);
+  EXPECT_EQ(NumberOfSections(), multiple_sections ? 2 : 1);
+  if (test_case.account_profile ||
+      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
+    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 10 : 12);
+  } else {
+    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 10 : 11);
+  }
+
+  // Check the error message persists.
+  if (test_case.is_settings && test_case.account_profile) {
+    TableViewAttributedStringHeaderFooterItem* footer =
+        static_cast<TableViewAttributedStringHeaderFooterItem*>(
+            [[controller() tableViewModel] footerForSectionIndex:1]);
+    // Check that the error message has been updated.
+    EXPECT_NSEQ(GetErrorFooterString(1), footer.attributedString);
   }
 }

@@ -152,8 +152,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   TableViewModel* model = _controller.tableViewModel;
 
-  [model
-      addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+  if (![model hasSectionForSectionIdentifier:
+                  AutofillProfileDetailsSectionIdentifierFields]) {
+    [model
+        addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+  }
 
   [model addItem:[self nameItem]
       toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
@@ -310,7 +313,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
   if ((self.accountProfile || self.migrationPrompt ||
        _moveToAccountFromSettings)) {
-    [self computeErrorIfRequiredTextField:tableViewItem];
+    [self computeErrorIfRequiredTextField:base::apple::ObjCCastStrict<
+                                              AutofillProfileEditItem>(
+                                              tableViewItem)];
     if (_settingsView) {
       [self updateDoneButtonStatus];
     } else {
@@ -333,7 +338,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)didSelectCountry:(NSString*)country {
   // Remove the previously inserted fields.
   TableViewModel* model = _controller.tableViewModel;
-  [model removeSectionWithIdentifier:
+  [model deleteAllItemsFromSectionWithIdentifier:
              AutofillProfileDetailsSectionIdentifierFields];
 
   // Re-insert the fields based on the new country.
@@ -522,11 +527,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 #pragma mark - Private
 
-// Computes whether the `tableViewItem` is a required field and empty.
-- (void)computeErrorIfRequiredTextField:(TableViewTextEditItem*)tableViewItem {
-  AutofillProfileEditItem* profileItem =
-      static_cast<AutofillProfileEditItem*>(tableViewItem);
-  tableViewItem.hasValidText = [_delegate
+// Computes whether the `profileItem` is a required field and empty.
+- (void)computeErrorIfRequiredTextField:(AutofillProfileEditItem*)profileItem {
+  profileItem.hasValidText = [_delegate
         fieldContainsValidValue:profileItem.autofillFieldType
                   hasEmptyValue:(profileItem.textFieldValue.length == 0)
       moveToAccountFromSettings:_moveToAccountFromSettings];
@@ -709,9 +712,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       // No requirement checks for local profiles.
       if (self.accountProfile || self.migrationPrompt ||
           _moveToAccountFromSettings) {
-        TableViewTextEditItem* tableViewTextEditItem =
-            base::apple::ObjCCastStrict<TableViewTextEditItem>(item);
-        [self computeErrorIfRequiredTextField:tableViewTextEditItem];
+        [self
+            computeErrorIfRequiredTextField:base::apple::ObjCCastStrict<
+                                                AutofillProfileEditItem>(item)];
       }
     }
   }

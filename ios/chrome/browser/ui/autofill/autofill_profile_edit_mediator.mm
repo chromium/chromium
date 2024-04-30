@@ -198,7 +198,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return NO;
   }
 
-  return hasEmptyValue;
+  return !hasEmptyValue;
 }
 
 - (void)viewDidDisappear {
