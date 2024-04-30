@@ -92,7 +92,7 @@ PolicyService::PolicyManagerVector CreatePolicyManagerVector(
   //    has a higher priority than the group policy manger.
   PolicyService::PolicyManagerVector managers;
   if (dm_policy_manager) {
-    managers.push_back(std::move(dm_policy_manager));
+    managers.push_back(dm_policy_manager);
   }
   scoped_refptr<PolicyManagerInterface> external_constants_policy_manager =
       external_constants ? base::MakeRefCounted<PolicyManager>(

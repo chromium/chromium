@@ -2671,8 +2671,11 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
-  ASSERT_NO_FATAL_FAILURE(SetCloudPolicyOverridesPlatformPolicy());
+class IntegrationTestCloudPolicyOverridesPlatformPolicy
+    : public ::testing::WithParamInterface<bool>,
+      public IntegrationTestDeviceManagement {};
+
+TEST_P(IntegrationTestCloudPolicyOverridesPlatformPolicy, UseCloudPolicy) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
@@ -2706,9 +2709,14 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   app2.set_app_guid(kApp2.appid);
   app2.set_update(enterprise_management::MANUAL_UPDATES_ONLY);
   omaha_settings.mutable_application_settings()->Add(std::move(app2));
+  if (GetParam()) {
+    omaha_settings.set_cloud_policy_overrides_platform_policy(true);
+  } else {
+    ASSERT_NO_FATAL_FAILURE(SetCloudPolicyOverridesPlatformPolicy());
+  }
+
   ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
                                            omaha_settings);
-
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       /*request_attributes=*/base::Value::Dict().Set("dlpref", "cacheable"),
@@ -2743,6 +2751,11 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp3.appid));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    IntegrationTestCloudPolicyOverridesPlatformPolicyTestCases,
+    IntegrationTestCloudPolicyOverridesPlatformPolicy,
+    ::testing::Bool());
 
 TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   constexpr char kTargetVersionPrefix[] = "1.0.";
