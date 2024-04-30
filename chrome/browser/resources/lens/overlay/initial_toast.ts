@@ -44,6 +44,12 @@ export class InitialToastElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+
+      shouldHideElements: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -52,6 +58,11 @@ export class InitialToastElement extends PolymerElement {
 
   // Whether or not the toast scrim is visible.
   private scrimVisible: boolean;
+
+  // Whether or not to prevent rendering the scrim and message. This is
+  // required because transitioning the opacity to 0 does not always
+  // completely fade out the toast.
+  private shouldHideElements: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -67,6 +78,7 @@ export class InitialToastElement extends PolymerElement {
   triggerHideAnimation() {
     this.messageVisible = false;
     this.scrimVisible = false;
+    this.shouldHideElements = true;
   }
 }
 

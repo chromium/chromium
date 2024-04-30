@@ -10,7 +10,7 @@
     position: absolute;
     top: 34px;
     transform: translateX(-50%) translateY(-10%) scaleX(80%);
-    transition: opacity .2s ease-out, transform .4s ease-out;
+    transition: opacity 200ms ease-out, transform 400ms ease-out;
   }
 
   :host([message-visible]) #initialToast {
@@ -26,7 +26,7 @@
     opacity: 0;
     position: absolute;
     top: 0;
-    transition: opacity .3s ease-in-out;
+    transition: opacity 300ms ease-in-out;
     width: 100%;
   }
 
@@ -39,6 +39,12 @@
     font-size: 14px;
     line-height: 20px;
     vertical-align: middle;
+  }
+
+  :host([should-hide-elements]) {
+    transition: visibility 0s;
+    transition-delay: 300ms;
+    visibility: hidden;
   }
 </style>
 <div id="initialToastScrim"></div>
