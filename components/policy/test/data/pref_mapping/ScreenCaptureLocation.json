@@ -1,5 +1,28 @@
 [
   {
-    "reason_for_missing_test": "Mapping not yet implemented. b/323146997"
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ScreenCaptureLocation": "${google_drive}/test"
+        },
+        "prefs": {
+          "ash.capture_mode.policy_save_path": {
+            "value": "${google_drive}/test"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "ash.capture_mode.policy_save_path": {
+            "default_value": ""
+          }
+        }
+      }
+    ]
   }
 ]
