@@ -990,7 +990,7 @@ template("test_runner_script") {
       executable_args += [ "--fast-local-dev" ]
     }
     if (_device_test && is_asan) {
-      executable_args += [ "--tool=asan" ]
+      executable_args += [ "--timeout-scale=4" ]
     }
 
     if (defined(invoker.modules)) {
@@ -2907,6 +2907,7 @@ if (enable_java_templates) {
       ]
     }
     if (defined(invoker.secondary_abi_loadable_modules)) {
+      _inputs += invoker.secondary_abi_loadable_modules
       _rebased_secondary_abi_loadable_modules =
           rebase_path(invoker.secondary_abi_loadable_modules, root_build_dir)
       _args +=

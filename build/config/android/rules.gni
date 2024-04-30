@@ -33,6 +33,9 @@ if (is_robolectric) {
   if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
     _sanitizer_runtimes += [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.ubsan_standalone-$sanitizer_arch-android.so" ]
   }
+  if (is_asan) {
+    _sanitizer_runtimes += [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.asan-$sanitizer_arch-android.so" ]
+  }
 
   # Creates a dist directory for a native executable.
   #
@@ -2103,6 +2106,9 @@ if (is_robolectric) {
     if (defined(invoker.min_sdk_version)) {
       _min_sdk_version = invoker.min_sdk_version
     }
+    if (is_asan && _min_sdk_version < min_supported_sdk_version) {
+      _min_sdk_version = min_supported_sdk_version
+    }
     if (defined(invoker.target_sdk_version)) {
       _target_sdk_version = invoker.target_sdk_version
     }
@@ -2580,9 +2586,16 @@ if (is_robolectric) {
     if (defined(invoker.loadable_modules)) {
       _loadable_modules = invoker.loadable_modules
     }
-
-    if (_native_libs_deps != []) {
-      _loadable_modules += _sanitizer_runtimes
+    _sanitizer_loadable_modules = []
+    _sanitizer_deps = []
+    if (_is_base_module && _native_libs_deps != [] && !_uses_static_library) {
+      _sanitizer_loadable_modules += _sanitizer_runtimes
+    }
+    if (is_asan && _is_base_module &&
+        (_uses_static_library || _native_libs_deps != [])) {
+      _sanitizer_loadable_modules +=
+          [ "$root_gen_dir/build/android/generate_wrap_sh/wrap.sh" ]
+      _sanitizer_deps += [ "//build/android:generate_wrap_sh" ]
     }
 
     _assertions_implicitly_enabled = defined(invoker.custom_assertion_handler)
@@ -2731,7 +2744,11 @@ if (is_robolectric) {
             _secondary_abi_shared_library_list_file
       }
 
-      loadable_modules = _loadable_modules
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += _sanitizer_deps
+      loadable_modules = _loadable_modules + _sanitizer_loadable_modules
 
       if (defined(_allowlist_r_txt_path) && _is_bundle_module) {
         # Used to write the file path to the target's .build_config.json only.
@@ -2940,7 +2957,7 @@ if (is_robolectric) {
 
         # Need full deps rather than _non_java_deps, because loadable_modules
         # may include .so files extracted by __unpack_aar targets.
-        deps = _invoker_deps + [ ":$_build_config_target" ]
+        deps = _invoker_deps + _sanitizer_deps + [ ":$_build_config_target" ]
         if (defined(invoker.asset_deps)) {
           deps += invoker.asset_deps
         }
@@ -2959,15 +2976,19 @@ if (is_robolectric) {
           # should be clearly named/labeled "incremental".
           output_apk_path = _incremental_apk_path
 
+          loadable_modules = _sanitizer_loadable_modules
+
           # All native libraries are side-loaded, so use a placeholder to force
           # the proper bitness for the app.
           _has_native_libs =
-              defined(_native_libs_filearg) || _loadable_modules != []
-          if (_has_native_libs && !defined(native_lib_placeholders)) {
+              defined(_native_libs_filearg) || _loadable_modules != [] ||
+              _sanitizer_loadable_modules != []
+          if (_has_native_libs && loadable_modules == [] &&
+              !defined(native_lib_placeholders)) {
             native_lib_placeholders = [ "libfix.crbug.384638.so" ]
           }
         } else {
-          loadable_modules = _loadable_modules
+          loadable_modules = _loadable_modules + _sanitizer_loadable_modules
           deps += _all_native_libs_deps + [
                     ":$_compile_resources_target",
                     ":$_merge_manifest_target",
@@ -4494,6 +4515,9 @@ if (is_robolectric) {
     _min_sdk_version = default_min_sdk_version
     if (defined(invoker.min_sdk_version)) {
       _min_sdk_version = invoker.min_sdk_version
+    }
+    if (is_asan && _min_sdk_version < min_supported_sdk_version) {
+      _min_sdk_version = min_supported_sdk_version
     }
 
     _bundle_base_path = "$root_build_dir/apks"

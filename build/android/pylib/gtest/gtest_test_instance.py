@@ -384,6 +384,9 @@ class GtestTestInstance(test_instance.TestInstance):
       self._extras = {
           _EXTRA_NATIVE_TEST_ACTIVITY: self._apk_helper.GetActivityName(),
       }
+      if args.timeout_scale and args.timeout_scale != 1:
+        self._extras[_EXTRA_RUN_IN_SUB_THREAD] = 1
+
       if self._suite in RUN_IN_SUB_THREAD_TEST_SUITES:
         self._extras[_EXTRA_RUN_IN_SUB_THREAD] = 1
       if self._suite in BROWSER_TEST_SUITES:

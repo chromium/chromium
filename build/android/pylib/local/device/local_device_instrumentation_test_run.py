@@ -30,7 +30,6 @@ from devil.android.tools import webview_app
 from devil.utils import reraiser_thread
 from incremental_install import installer
 from pylib import constants
-from pylib import valgrind_tools
 from pylib.base import base_test_result
 from pylib.base import output_manager
 from pylib.constants import host_paths
@@ -70,7 +69,7 @@ _WPR_GO_LINUX_X86_64_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT,
 _TAG = 'test_runner_py'
 
 TIMEOUT_ANNOTATIONS = [
-    ('Manual', 10 * 60 * 60),
+    ('Manual', 1000 * 60 * 60),
     ('IntegrationTest', 10 * 60),
     ('External', 10 * 60),
     ('EnormousTest', 5 * 60),
@@ -95,6 +94,8 @@ EXTRA_CLANG_COVERAGE_DEVICE_FILE = (
 
 EXTRA_SCREENSHOT_FILE = (
     'org.chromium.base.test.ScreenshotOnFailureStatement.ScreenshotFile')
+
+EXTRA_TIMEOUT_SCALE = 'BaseChromiumAndroidJUnitRunner.TimeoutScale'
 
 EXTRA_UI_CAPTURE_DIR = (
     'org.chromium.base.test.util.Screenshooter.ScreenshotDir')
@@ -598,9 +599,6 @@ class LocalDeviceInstrumentationTestRun(
           logging.debug('Attempting to set WebView flags: %r', webview_flags)
           self._webview_flag_changers[str(dev)].AddFlags(webview_flags)
 
-        valgrind_tools.SetChromeTimeoutScale(
-            dev, self._test_instance.timeout_scale)
-
       install_steps += [push_test_data, create_flag_changer]
       post_install_steps += [
           set_debug_app, approve_app_links, set_vega_permissions,
@@ -688,8 +686,6 @@ class LocalDeviceInstrumentationTestRun(
       for cmd in self._test_instance.run_teardown_commands:
         logging.info('Running custom teardown shell command: %s', cmd)
         dev.RunShellCommand(cmd, shell=True, check_return=True)
-
-      valgrind_tools.SetChromeTimeoutScale(dev, None)
 
       # If we've force approved app links for a package, undo that now.
       self._ToggleAppLinks(dev, 'STATE_NO_RESPONSE')
@@ -910,7 +906,6 @@ class LocalDeviceInstrumentationTestRun(
       extras[_EXTRA_PACKAGE_UNDER_TEST] = package_name
 
     flags_to_add = []
-    test_timeout_scale = None
     if self._test_instance.coverage_directory:
       coverage_basename = '%s' % ('%s_%s_group' %
                                   (test[0]['class'], test[0]['method'])
@@ -1019,11 +1014,10 @@ class LocalDeviceInstrumentationTestRun(
       timeout = FIXED_TEST_TIMEOUT_OVERHEAD + self._GetTimeoutFromAnnotations(
           test['annotations'], test_display_name)
 
-      test_timeout_scale = self._GetTimeoutScaleFromAnnotations(
-          test['annotations'])
-      if test_timeout_scale and test_timeout_scale != 1:
-        valgrind_tools.SetChromeTimeoutScale(
-            device, test_timeout_scale * self._test_instance.timeout_scale)
+      timeout_scale = self._test_instance.timeout_scale * (
+          self._GetTimeoutScaleFromAnnotations(test['annotations']))
+      if timeout_scale != 1:
+        extras[EXTRA_TIMEOUT_SCALE] = str(self._test_instance.timeout_scale)
 
     if self._test_instance.wait_for_java_debugger:
       timeout = None
@@ -1105,11 +1099,6 @@ class LocalDeviceInstrumentationTestRun(
       def restore_flags():
         if flags_to_add:
           self._flag_changers[str(device)].Restore()
-
-      def restore_timeout_scale():
-        if test_timeout_scale:
-          valgrind_tools.SetChromeTimeoutScale(
-              device, self._test_instance.timeout_scale)
 
       def handle_coverage_data():
         if self._test_instance.coverage_directory:
@@ -1225,9 +1214,9 @@ class LocalDeviceInstrumentationTestRun(
       # the results! Things such as whether the test CRASHED have not yet been
       # determined.
       post_test_steps = [
-          restore_flags, restore_timeout_scale, stop_chrome_proxy,
-          handle_coverage_data, handle_render_test_data,
-          pull_ui_screen_captures, pull_baseline_profile
+          restore_flags, stop_chrome_proxy, handle_coverage_data,
+          handle_render_test_data, pull_ui_screen_captures,
+          pull_baseline_profile
       ]
       if self._env.concurrent_adb:
         reraiser_thread.RunAsync(post_test_steps)
@@ -1391,6 +1380,9 @@ class LocalDeviceInstrumentationTestRun(
             # Workaround for https://github.com/mockito/mockito/issues/922
             'notPackage': 'net.bytebuddy',
         }
+        if self._test_instance.timeout_scale != 1:
+          extras[EXTRA_TIMEOUT_SCALE] = str(self._test_instance.timeout_scale)
+
         # BaseChromiumAndroidJUnitRunner ignores this bundle value (and always
         # adds the listener). This is needed to enable the the listener when
         # using AndroidJUnitRunner directly.

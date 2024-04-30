@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//base/allocator/partition_allocator/partition_alloc.gni")
-import("//build/config/sanitizers/sanitizers.gni")
 
 # Intermediate target grouping the android tools needed to run native
 # unittests and instrumentation test apks.
@@ -19,9 +18,6 @@ group("android_tools") {
     "//tools/perf:run_benchmark_wrapper",
     "//tools/perf/clear_system_cache",
   ]
-  if (is_asan) {
-    deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
-  }
   if (use_full_mte) {
     deps += [ "//tools/android/mte:mte_device_setup" ]
   }

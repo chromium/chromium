@@ -200,31 +200,6 @@ is_asan=true
 is_debug=false
 ```
 
-Running ASan applications on Android requires additional device setup. Chromium
-testing scripts take care of this, so testing works as expected:
-```shell
-build/android/test_runner.py instrumentation --test-apk ContentShellTest \
-    --test_data content:content/test/data/android/device_files -v -v -v \
-    --tool=asan --release
-```
-
-If the above step fails or to run stuff without Chromium testing script (ex.
-ContentShell.apk, or any third party apk or binary), device setup is needed:
-```shell
-tools/android/asan/third_party/asan_device_setup.sh \
-    --lib third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/*/lib/linux
-# wait a few seconds for the device to reload
-```
-It only needs to be run once per device. It is safe to run it multiple times.
-Examine the output to ensure that setup was successful (you may need to run
-`adb disable-verity` and restart the device first). When this is done, the
-device will run ASan apks as well as normal apks without any further setup.
-
-To run command-line tools (i.e. binaries), prefix them with `asanwrapper`:
-```shell
-adb shell /system/bin/asanwrapper /path/to/binary
-```
-
 Use `build/android/asan_symbolize.py` to symbolize stack from `adb logcat`. It
 needs the `--output-directory` argument and takes care of translating the device
 path to the unstripped binary in the output directory.

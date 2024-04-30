@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.build.BuildConfig;
 import org.chromium.testing.TestListInstrumentationRunListener;
 
@@ -67,6 +68,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static final String IS_UNIT_TEST_FLAG = "BaseChromiumAndroidJUnitRunner.IsUnitTest";
     private static final String EXTRA_CLANG_COVERAGE_DEVICE_FILE =
             "BaseChromiumAndroidJUnitRunner.ClangCoverageDeviceFile";
+    private static final String EXTRA_TIMEOUT_SCALE = "BaseChromiumAndroidJUnitRunner.TimeoutScale";
     private static final String EXTRA_TRACE_FILE = "BaseChromiumAndroidJUnitRunner.TraceFile";
 
     private static final String ARGUMENT_LOG_ONLY = "log";
@@ -149,6 +151,10 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void onStart() {
         Bundle arguments = InstrumentationRegistry.getArguments();
+        String timeoutScale = arguments.getString(EXTRA_TIMEOUT_SCALE);
+        if (timeoutScale != null) {
+            ScalableTimeout.setScale(Float.valueOf(timeoutScale));
+        }
         if (sTestListMode) {
             Log.w(
                     TAG,

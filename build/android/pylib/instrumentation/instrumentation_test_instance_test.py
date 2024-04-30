@@ -22,10 +22,6 @@ _INSTRUMENTATION_TEST_INSTANCE_PATH = (
 
 class InstrumentationTestInstanceTest(unittest.TestCase):
 
-  def setUp(self):
-    options = mock.Mock()
-    options.tool = ''
-
   @staticmethod
   def createTestInstance():
     c = _INSTRUMENTATION_TEST_INSTANCE_PATH % 'InstrumentationTestInstance'
