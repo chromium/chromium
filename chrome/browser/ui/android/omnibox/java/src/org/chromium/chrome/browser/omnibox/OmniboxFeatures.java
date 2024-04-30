@@ -58,8 +58,6 @@ public class OmniboxFeatures {
     /**
      * Create an instance of a CachedFeatureFlag.
      *
-     * <p>Newly created flag will be automatically added to list of persisted feature flags.
-     *
      * @param featureName the name of the feature flag
      * @param defaultValue the default value to return if the feature state is unknown
      */
@@ -108,11 +106,6 @@ public class OmniboxFeatures {
     /** Returns whether the toolbar and status bar color should be matched. */
     public static boolean shouldMatchToolbarAndStatusBarColor() {
         return ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled();
-    }
-
-    /** Whether Journeys suggestions should be shown in a dedicated row. */
-    public static boolean isJourneysRowUiEnabled() {
-        return ChromeFeatureList.sOmniboxHistoryClusterProvider.isEnabled();
     }
 
     /**

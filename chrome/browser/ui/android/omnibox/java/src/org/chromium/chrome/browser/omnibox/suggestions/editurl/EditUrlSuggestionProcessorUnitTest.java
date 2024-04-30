@@ -258,21 +258,6 @@ public final class EditUrlSuggestionProcessorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT})
-    public void editButton_click() {
-        mProcessor.populateModel(mMatch, mModel, 0);
-
-        var monitor = new UserActionTester();
-        mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
-        verify(mSuggestionHost).onRefineSuggestion(mMatch);
-        verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
-
-        assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Edit"));
-        assertEquals(1, monitor.getActions().size());
-        monitor.tearDown();
-    }
-
-    @Test
     public void shareButton_click() {
         mProcessor.populateModel(mMatch, mModel, 0);
 
