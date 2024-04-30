@@ -39,6 +39,23 @@ source_set("lib") {
   ]
 }
 
+source_set("pdf_searchifier_test") {
+  testonly = true
+  sources = [ "pdf_searchifier_unittest.cc" ]
+
+  deps = [
+    ":lib",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/common:constants",
+    "//chrome/services/pdf/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/screen_ai/public/mojom",
+    "//skia",
+    "//testing/gtest",
+  ]
+}
+
 source_set("pdf_thumbnailer_test") {
   testonly = true
   sources = [ "pdf_thumbnailer_unittest.cc" ]
