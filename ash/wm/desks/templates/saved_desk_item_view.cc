@@ -121,7 +121,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   views::Builder<SavedDeskItemView>(this)
       .SetPreferredSize(kPreferredSize)
       .SetUseDefaultFillLayout(true)
-      .SetAccessibleName(saved_desk_name)
+      .SetAccessibleName(ComputeAccessibleName())
       .SetCallback(std::move(launch_template_callback))
       .AddChildren(
           views::Builder<View>()
@@ -387,7 +387,7 @@ void SavedDeskItemView::UpdateSavedDesk(
   auto new_name = saved_desk_->template_name();
   DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
-  SetAccessibleName(new_name);
+  SetAccessibleName(ComputeAccessibleName());
 
   // This will trigger `name_view_` to compute its new preferred bounds and
   // invalidate the layout for `this`
@@ -395,17 +395,8 @@ void SavedDeskItemView::UpdateSavedDesk(
 }
 
 void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  int accessible_text_id =
-      saved_desk_->type() == DeskTemplateType::kTemplate
-          ? IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_ITEM_ACCESSIBLE_NAME
-          : IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_ITEM_ACCESSIBLE_NAME;
-
   node_data->role = ax::mojom::Role::kButton;
-
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kName,
-      l10n_util::GetStringFUTF8(accessible_text_id,
-                                saved_desk_->template_name()));
+  node_data->SetName(ComputeAccessibleName());
 
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kDescription,
@@ -577,6 +568,16 @@ void SavedDeskItemView::UpdateSavedDeskName() {
   }
 }
 
+std::u16string SavedDeskItemView::ComputeAccessibleName() const {
+  int accessible_text_id =
+      saved_desk_->type() == DeskTemplateType::kTemplate
+          ? IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_ITEM_ACCESSIBLE_NAME
+          : IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_ITEM_ACCESSIBLE_NAME;
+
+  return l10n_util::GetStringFUTF16(accessible_text_id,
+                                    saved_desk_->template_name());
+}
+
 void SavedDeskItemView::AnimateHover(ui::Layer* layer_to_show,
                                      ui::Layer* layer_to_hide) {
   views::AnimationBuilder()
@@ -734,7 +735,7 @@ void SavedDeskItemView::OnSavedDeskNameChanged(const std::u16string& new_name) {
   DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
   name_view_->ResetTemporaryName();
-  SetAccessibleName(new_name);
+  SetAccessibleName(ComputeAccessibleName());
 
   // This will trigger `name_view_` to compute its new preferred bounds and
   // invalidate the layout for `this`.

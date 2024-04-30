@@ -153,6 +153,8 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   // Update saved desk name based on `name_view_` string.
   void UpdateSavedDeskName();
 
+  std::u16string ComputeAccessibleName() const;
+
   // OverviewFocusableView:
   views::View* GetView() override;
   void MaybeActivateFocusedView() override;
