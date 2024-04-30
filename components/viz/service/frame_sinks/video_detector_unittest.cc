@@ -258,13 +258,6 @@ class VideoDetectorTest : public testing::Test {
   raw_ptr<VideoDetector> detector_;
 };
 
-class VideoDetectorIncludeNonVideoTest : public VideoDetectorTest {
- public:
-  VideoDetectorIncludeNonVideoTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kVideoDetectorIgnoreNonVideos);
-  }
-};
 
 constexpr gfx::Rect VideoDetectorTest::kMinRect;
 constexpr base::TimeDelta VideoDetectorTest::kMinDuration;
@@ -346,15 +339,6 @@ TEST_F(VideoDetectorTest, DoesNotReportNonVideoFrames) {
   SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/false,
               /*use_per_quad_damage=*/false, kMinFps + 5, kDuration);
   EXPECT_TRUE(observer_.IsEmpty());
-}
-
-TEST_F(VideoDetectorIncludeNonVideoTest, ReportNonVideoFramesWhenFeatureIsOff) {
-  const base::TimeDelta kDuration = kMinDuration + base::Milliseconds(100);
-  std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
-  EmbedClient(frame_sink.get());
-  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/false,
-              /*use_per_quad_damage=*/false, kMinFps + 5, kDuration);
-  EXPECT_FALSE(observer_.IsEmpty());
 }
 
 // Turn video activity on and off. Make sure the observers are notified

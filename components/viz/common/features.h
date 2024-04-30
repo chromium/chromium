@@ -128,7 +128,6 @@ VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
 VIZ_COMMON_EXPORT std::optional<double> IsDynamicSchedulerEnabledForDraw();
 VIZ_COMMON_EXPORT std::optional<double> IsDynamicSchedulerEnabledForClients();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
-VIZ_COMMON_EXPORT bool ShouldVideoDetectorIgnoreNonVideoFrames();
 VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 VIZ_COMMON_EXPORT bool ShouldRendererAllocateImages();

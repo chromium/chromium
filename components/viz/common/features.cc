@@ -85,10 +85,6 @@ BASE_FEATURE(kRenderPassDrawnRect,
 #endif
 );
 
-BASE_FEATURE(kVideoDetectorIgnoreNonVideos,
-             "VideoDetectorIgnoreNonVideos",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
 // display to wide color gamut if supported.
@@ -500,10 +496,6 @@ int MaxOverlaysConsidered() {
 
   return base::GetFieldTrialParamByFeatureAsInt(kUseMultipleOverlays,
                                                 kMaxOverlaysParam, 8);
-}
-
-bool ShouldVideoDetectorIgnoreNonVideoFrames() {
-  return base::FeatureList::IsEnabled(kVideoDetectorIgnoreNonVideos);
 }
 
 bool ShouldOnBeginFrameThrottleVideo() {
