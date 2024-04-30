@@ -71,6 +71,7 @@ public class CustomTabBottomBarDelegate
     private int[] mClickableIDs;
     private boolean mShowShadow = true;
     private @Nullable PendingIntent mSwipeUpPendingIntent;
+    private boolean mKeepContentView;
 
     /**
      * The override height in pixels. A value of -1 is interpreted as "not set" and means it should
@@ -109,7 +110,7 @@ public class CustomTabBottomBarDelegate
         mSystemNightModeMonitor = systemNightModeMonitor;
         mTabProvider = () -> tabProvider.getTab();
         browserControlsSizer.addObserver(this);
-
+        mKeepContentView = false;
         compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);
 
         Callback<ViewportInsets> insetObserver = this::onViewportInsetChange;
@@ -193,6 +194,7 @@ public class CustomTabBottomBarDelegate
     /**
      * Updates the RemoteViews on the bottom bar. If the given remote view is null, animates the
      * bottom bar out.
+     *
      * @param remoteViews The new remote view hierarchy sent from the client.
      * @param clickableIDs Array of view ids, the onclick event of which is intercepcted by chrome.
      * @param pendingIntent The {@link PendingIntent} that will be sent on clicking event.
@@ -200,6 +202,11 @@ public class CustomTabBottomBarDelegate
      */
     public boolean updateRemoteViews(
             RemoteViews remoteViews, int[] clickableIDs, PendingIntent pendingIntent) {
+        // If the contentView is already set, it should have priority to keep being displayed over
+        // any remote views that are trying to be updated.
+        if (mBottomBarContentView != null && mKeepContentView) {
+            return false;
+        }
         RecordUserAction.record("CustomTabsRemoteViewsUpdated");
         if (remoteViews == null) {
             if (mBottomBarView == null) return false;
@@ -239,6 +246,20 @@ public class CustomTabBottomBarDelegate
     /** Sets the visibility of the bottom bar shadow. */
     public void setShowShadow(boolean show) {
         mShowShadow = show;
+    }
+
+    /**
+     * Determines the behavior of the bottom bar content view when using RemoteViews.
+     *
+     * By default, RemoteViews may replace the bottom bar content view. If the bottom bar view
+     * set with {@link #setBottomBarContentView} should always displayed, set this value to {@code
+     * true}.
+     *
+     * **Important Note:** Enabling this feature will prevent RemoteViews from being used via
+     * {@link #updateRemoteViews}.
+     */
+    public void setKeepContentView(boolean keep) {
+        mKeepContentView = keep;
     }
 
     /**
