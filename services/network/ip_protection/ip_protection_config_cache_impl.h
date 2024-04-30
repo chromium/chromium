@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
@@ -25,7 +26,8 @@ namespace network {
 // An implementation of IpProtectionConfigCache that fills itself by making
 // IPC calls to the IpProtectionConfigGetter in the browser process.
 class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
-    : public IpProtectionConfigCache {
+    : public IpProtectionConfigCache,
+      net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   // If `config_getter` is unbound, no tokens will be provided.
   explicit IpProtectionConfigCacheImpl(
@@ -52,6 +54,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
 
+  // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+
  private:
   // Source of auth tokens and proxy list, when needed.
   mojo::Remote<network::mojom::IpProtectionConfigGetter> config_getter_;
@@ -67,7 +73,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   // If true, this class will try to connect to IP Protection proxies via QUIC.
   // Once this value becomes false, it stays false until a network change or
   // browser restart.
-  // TODO(crbug.com/330093343): re-evaluate on network change
   bool ipp_over_quic_;
 
   base::WeakPtrFactory<IpProtectionConfigCacheImpl> weak_ptr_factory_{this};

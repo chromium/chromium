@@ -11,8 +11,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/network_change_notifier.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/public/mojom/network_context.mojom-shared.h"
@@ -178,6 +180,76 @@ TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManager) {
 
   ASSERT_TRUE(ipp_config_cache_->IsProxyListAvailable());
   EXPECT_EQ(ipp_config_cache_->GetProxyChainList(), proxy_chain_list);
+}
+
+// When QUIC proxies are enabled, the proxy list has both QUIC and HTTPS
+// proxies, and falls back properly when a QUIC proxy fails.
+TEST_F(IpProtectionConfigCacheImplTest, GetProxyListFromManagerWithQuic) {
+  std::map<std::string, std::string> parameters;
+  parameters[net::features::kIpPrivacyUseQuicProxies.name] = "true";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
+
+  std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier =
+      net::NetworkChangeNotifier::CreateMockIfNeeded();
+
+  ipp_config_cache_ =
+      std::make_unique<IpProtectionConfigCacheImpl>(mojo::NullRemote());
+
+  auto ipp_proxy_list_manager_ =
+      std::make_unique<MockIpProtectionProxyListManager>();
+  ipp_proxy_list_manager_->SetProxyList({MakeChain({"a-proxy1", "b-proxy1"}),
+                                         MakeChain({"a-proxy2", "b-proxy2"})});
+  ipp_config_cache_->SetIpProtectionProxyListManagerForTesting(
+      std::move(ipp_proxy_list_manager_));
+
+  const std::vector<net::ProxyChain> proxy_chain_list_with_quic = {
+      net::ProxyChain::ForIpProtection({
+          net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_QUIC,
+                                                  "a-proxy1", std::nullopt),
+          net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_QUIC,
+                                                  "b-proxy1", std::nullopt),
+      }),
+      net::ProxyChain::ForIpProtection({
+          net::ProxyServer::FromSchemeHostAndPort(
+              net::ProxyServer::SCHEME_HTTPS, "a-proxy1", std::nullopt),
+          net::ProxyServer::FromSchemeHostAndPort(
+              net::ProxyServer::SCHEME_HTTPS, "b-proxy1", std::nullopt),
+      }),
+      net::ProxyChain::ForIpProtection({
+          net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_QUIC,
+                                                  "a-proxy2", std::nullopt),
+          net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_QUIC,
+                                                  "b-proxy2", std::nullopt),
+      })};
+
+  const std::vector<net::ProxyChain> proxy_chain_list_without_quic = {
+      net::ProxyChain::ForIpProtection({
+          net::ProxyServer::FromSchemeHostAndPort(
+              net::ProxyServer::SCHEME_HTTPS, "a-proxy1", std::nullopt),
+          net::ProxyServer::FromSchemeHostAndPort(
+              net::ProxyServer::SCHEME_HTTPS, "b-proxy1", std::nullopt),
+      }),
+      net::ProxyChain::ForIpProtection({
+          net::ProxyServer::FromSchemeHostAndPort(
+              net::ProxyServer::SCHEME_HTTPS, "a-proxy2", std::nullopt),
+          net::ProxyServer::FromSchemeHostAndPort(
+              net::ProxyServer::SCHEME_HTTPS, "b-proxy2", std::nullopt),
+      })};
+  ASSERT_TRUE(ipp_config_cache_->IsProxyListAvailable());
+  EXPECT_EQ(ipp_config_cache_->GetProxyChainList(), proxy_chain_list_with_quic);
+
+  ipp_config_cache_->QuicProxiesFailed();
+
+  EXPECT_EQ(ipp_config_cache_->GetProxyChainList(),
+            proxy_chain_list_without_quic);
+
+  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(ipp_config_cache_->GetProxyChainList(), proxy_chain_list_with_quic);
 }
 
 }  // namespace network

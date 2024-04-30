@@ -10,6 +10,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -84,9 +85,13 @@ IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
             &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyB);
   }
+
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 
-IpProtectionConfigCacheImpl::~IpProtectionConfigCacheImpl() = default;
+IpProtectionConfigCacheImpl::~IpProtectionConfigCacheImpl() {
+  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+}
 
 bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
   // Verify there is at least one cache manager and all have available tokens.
@@ -166,6 +171,15 @@ std::vector<net::ProxyChain> IpProtectionConfigCacheImpl::GetProxyChainList() {
 void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {
   if (ipp_proxy_list_manager_ != nullptr) {
     ipp_proxy_list_manager_->RequestRefreshProxyList();
+  }
+}
+
+void IpProtectionConfigCacheImpl::OnNetworkChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  // When the network changes, but there is still a network, reset the
+  // tracking of whether QUIC proxies work.
+  if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE) {
+    ipp_over_quic_ = net::features::kIpPrivacyUseQuicProxies.Get();
   }
 }
 
