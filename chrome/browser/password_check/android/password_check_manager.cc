@@ -4,8 +4,9 @@
 
 #include "chrome/browser/password_check/android/password_check_manager.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_check/android/password_check_bridge.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -115,7 +116,7 @@ PasswordCheckManager::GetCompromisedCredentials() const {
 
 void PasswordCheckManager::UpdateCredential(
     const password_manager::CredentialUIEntry& credential,
-    base::StringPiece new_password) {
+    std::string_view new_password) {
   CredentialUIEntry updated_credential = credential;
   updated_credential.password = base::UTF8ToUTF16(new_password);
   saved_passwords_presenter_.EditSavedCredentials(credential,

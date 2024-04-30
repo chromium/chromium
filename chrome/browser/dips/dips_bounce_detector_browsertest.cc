@@ -3190,12 +3190,12 @@ class DIPSPrivacySandboxApiInteractionTest : public PlatformBrowserTest {
   }
 
   void ProvideRequestHandlerKeyCommitmentsToNetworkService(
-      std::vector<base::StringPiece> hosts) {
-    base::flat_map<url::Origin, base::StringPiece> origins_and_commitments;
+      std::vector<std::string_view> hosts) {
+    base::flat_map<url::Origin, std::string_view> origins_and_commitments;
     std::string key_commitments =
         trust_token_request_handler_.GetKeyCommitmentRecord();
 
-    for (base::StringPiece host : hosts) {
+    for (std::string_view host : hosts) {
       origins_and_commitments.insert_or_assign(
           embedded_https_test_server_.GetOrigin(std::string(host)),
           key_commitments);
@@ -3689,7 +3689,7 @@ class SiteStorage {
   virtual base::expected<std::string, std::string> ReadValue(
       content::RenderFrameHost* frame) const = 0;
   virtual testing::AssertionResult WriteValue(content::RenderFrameHost* frame,
-                                              base::StringPiece value,
+                                              std::string_view value,
                                               bool partitioned) const = 0;
 
   virtual std::string_view name() const = 0;
@@ -3707,7 +3707,7 @@ class CookieStorage : public SiteStorage {
   }
 
   testing::AssertionResult WriteValue(content::RenderFrameHost* frame,
-                                      base::StringPiece cookie,
+                                      std::string_view cookie,
                                       bool partitioned) const override {
     std::string value(cookie);
     if (partitioned) {
@@ -3744,7 +3744,7 @@ class LocalStorage : public SiteStorage {
   }
 
   testing::AssertionResult WriteValue(content::RenderFrameHost* frame,
-                                      base::StringPiece value,
+                                      std::string_view value,
                                       bool partitioned) const override {
     return content::ExecJs(
         frame, content::JsReplace("localStorage.setItem('value', $1);", value),
@@ -3781,9 +3781,9 @@ class DIPSDataDeletionBrowserTest
   const net::EmbeddedTestServer& https_server() const { return https_server_; }
 
   [[nodiscard]] testing::AssertionResult WriteToPartitionedStorage(
-      base::StringPiece first_party_hostname,
-      base::StringPiece third_party_hostname,
-      base::StringPiece value) {
+      std::string_view first_party_hostname,
+      std::string_view third_party_hostname,
+      std::string_view value) {
     content::WebContents* web_contents = GetActiveWebContents();
 
     if (!content::NavigateToURL(web_contents,
@@ -3792,7 +3792,7 @@ class DIPSDataDeletionBrowserTest
       return testing::AssertionFailure() << "Failed to navigate top-level";
     }
 
-    const base::StringPiece kIframeId = "test";
+    const std::string_view kIframeId = "test";
     if (!content::NavigateIframeToURL(
             web_contents, kIframeId,
             https_server().GetURL(third_party_hostname, "/title1.html"))) {
@@ -3807,8 +3807,8 @@ class DIPSDataDeletionBrowserTest
   }
 
   [[nodiscard]] base::expected<std::string, std::string>
-  ReadFromPartitionedStorage(base::StringPiece first_party_hostname,
-                             base::StringPiece third_party_hostname) {
+  ReadFromPartitionedStorage(std::string_view first_party_hostname,
+                             std::string_view third_party_hostname) {
     content::WebContents* web_contents = GetActiveWebContents();
 
     if (!content::NavigateToURL(web_contents,
@@ -3817,7 +3817,7 @@ class DIPSDataDeletionBrowserTest
       return base::unexpected("Failed to navigate top-level");
     }
 
-    const base::StringPiece kIframeId = "test";
+    const std::string_view kIframeId = "test";
     if (!content::NavigateIframeToURL(
             web_contents, kIframeId,
             https_server().GetURL(third_party_hostname, "/title1.html"))) {
@@ -3832,7 +3832,7 @@ class DIPSDataDeletionBrowserTest
   }
 
   [[nodiscard]] base::expected<std::string, std::string> ReadFromStorage(
-      base::StringPiece hostname) {
+      std::string_view hostname) {
     content::WebContents* web_contents = GetActiveWebContents();
 
     if (!content::NavigateToURL(
@@ -3844,8 +3844,8 @@ class DIPSDataDeletionBrowserTest
   }
 
   [[nodiscard]] testing::AssertionResult WriteToStorage(
-      base::StringPiece hostname,
-      base::StringPiece value) {
+      std::string_view hostname,
+      std::string_view value) {
     content::WebContents* web_contents = GetActiveWebContents();
 
     if (!content::NavigateToURL(
@@ -3858,9 +3858,9 @@ class DIPSDataDeletionBrowserTest
 
   // Navigates to host1, then performs a stateful bounce on host2 to host3.
   [[nodiscard]] testing::AssertionResult DoStatefulBounce(
-      base::StringPiece host1,
-      base::StringPiece host2,
-      base::StringPiece host3) {
+      std::string_view host1,
+      std::string_view host2,
+      std::string_view host3) {
     content::WebContents* web_contents = GetActiveWebContents();
 
     if (!content::NavigateToURL(web_contents,
@@ -3898,7 +3898,7 @@ class DIPSDataDeletionBrowserTest
 
   [[nodiscard]] testing::AssertionResult WriteValue(
       const content::ToRenderFrameHost& frame,
-      base::StringPiece value,
+      std::string_view value,
       bool partitioned = false) {
     return storage()->WriteValue(frame.render_frame_host(), value, partitioned);
   }

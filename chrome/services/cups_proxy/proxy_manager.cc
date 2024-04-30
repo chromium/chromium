@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -320,7 +321,7 @@ void ProxyManagerImpl::ProxyResponseToCaller(
                 HTTP_STATUS_SERVER_ERROR);
   }
 
-  base::StringPiece headers_slice(response_str.data(), end_of_headers);
+  std::string_view headers_slice(response_str.data(), end_of_headers);
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       net::HttpResponseHeaders::TryToCreate(headers_slice);
   if (!response_headers) {

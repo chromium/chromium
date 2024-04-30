@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -47,7 +48,7 @@ bool FinishedReadingResponse(const std::vector<uint8_t>& response_buffer) {
   }
 
   std::string raw_headers = net::HttpUtil::AssembleRawHeaders(
-      base::StringPiece(response.data(), end_of_headers));
+      std::string_view(response.data(), end_of_headers));
   auto parsed_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>(raw_headers);
 

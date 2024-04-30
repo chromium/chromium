@@ -5,6 +5,7 @@
 #include "chrome/credential_provider/gaiacp/scoped_user_profile.h"
 
 #include <Windows.h>
+
 #include <aclapi.h>
 #include <atlcomcli.h>
 #include <atlconv.h>
@@ -15,6 +16,7 @@
 #include <userenv.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -359,10 +361,9 @@ HRESULT UpdateProfilePictures(const std::wstring& sid,
                  const base::FilePath& picture_path,
                  const std::vector<char>& picture_buffer) {
                 HRESULT hr = S_OK;
-                if (!base::WriteFile(
-                        picture_path,
-                        base::StringPiece(picture_buffer.data(),
-                                          picture_buffer.size()))) {
+                if (!base::WriteFile(picture_path,
+                                     std::string_view(picture_buffer.data(),
+                                                      picture_buffer.size()))) {
                   LOGFN(ERROR) << "Failed to write profile picture to file="
                                << picture_path;
                   hr = HRESULT_FROM_WIN32(::GetLastError());

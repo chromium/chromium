@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/services/file_util/public/mojom/safe_document_analyzer_mojom_traits.h"
+
+#include <string_view>
+
 #include "base/notreached.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
@@ -284,7 +287,7 @@ bool StructTraits<chrome::mojom::SafeDocumentAnalyzerResultsDataView,
                   safe_browsing::DocumentAnalyzerResults>::
     Read(chrome::mojom::SafeDocumentAnalyzerResultsDataView data,
          safe_browsing::DocumentAnalyzerResults* out_results) {
-  base::StringPiece error_message;
+  std::string_view error_message;
   MojomMaldocaErrorType error_code;
   if (!data.ReadErrorCode(&error_code))
     return false;

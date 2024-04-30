@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -1168,7 +1169,7 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   void SetUpTestDir(extensions::TestExtensionDir& test_dir,
-                    base::StringPiece background_js) {
+                    std::string_view background_js) {
     test_dir.WriteManifest(base::StringPrintf(
         R"({
           "name": "Test Extension",
@@ -1183,7 +1184,7 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_js);
   }
 
-  const Extension* LoadExtensionAndRunTest(base::StringPiece background_js) {
+  const Extension* LoadExtensionAndRunTest(std::string_view background_js) {
     extensions::TestExtensionDir test_dir;
     SetUpTestDir(test_dir, background_js);
 
@@ -1305,7 +1306,7 @@ class WebUsbExtensionFeatureDisabledBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
                        MAYBE_FeatureDisabled) {
-  constexpr base::StringPiece kBackgroundJs = R"(
+  constexpr std::string_view kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
         chrome.test.assertEq(navigator.usb, undefined);
@@ -1325,7 +1326,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
 #define MAYBE_GetDevices GetDevices
 #endif
 IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_GetDevices) {
-  constexpr base::StringPiece kBackgroundJs = R"(
+  constexpr std::string_view kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
         const devices = await navigator.usb.getDevices();
@@ -1347,7 +1348,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_GetDevices) {
 #define MAYBE_RequestDevice RequestDevice
 #endif
 IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_RequestDevice) {
-  constexpr base::StringPiece kBackgroundJs = R"(
+  constexpr std::string_view kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
         chrome.test.assertEq(navigator.usb.requestDevice, undefined);

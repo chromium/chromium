@@ -10,7 +10,8 @@
 
 #include <stddef.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -404,7 +405,7 @@ extern const char kChromeUIVmUrl[];
 // Returns true if this web UI is part of the "system UI". Generally this is
 // UI that opens in a window (not a browser tab) and that on other operating
 // systems would be considered part of the OS or window manager.
-bool IsSystemWebUIHost(base::StringPiece host);
+bool IsSystemWebUIHost(std::string_view host);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

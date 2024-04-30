@@ -4,6 +4,8 @@
 
 #include "chrome/browser/startup_data.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -82,7 +84,7 @@ void StartupData::RecordCoreSystemProfile() {
   // |field_trial_provider|.
   delegating_provider.RegisterMetricsProvider(
       std::make_unique<variations::FieldTrialsProvider>(nullptr,
-                                                        base::StringPiece()));
+                                                        std::string_view()));
 
   // Persists low entropy source values.
   delegating_provider.RegisterMetricsProvider(

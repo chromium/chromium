@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
+#include <string_view>
+
 #include "base/cfi_buildflags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1163,7 +1165,7 @@ TEST_F(CommerceHintAgentUnitTest, ShouldSkipAddToCartFromResource) {
   }
 }
 
-float BenchmarkIsAddToCart(base::StringPiece str) {
+float BenchmarkIsAddToCart(std::string_view str) {
   const base::TimeTicks now = base::TimeTicks::Now();
   for (int i = 0; i < kTestIterations; ++i) {
     CommerceHintAgent::IsAddToCart(str);
@@ -1202,7 +1204,7 @@ float BenchmarkIsVisitCheckout(const GURL& url) {
   return elapsed_us;
 }
 
-float BenchmarkIsPurchase(const GURL& url, base::StringPiece str) {
+float BenchmarkIsPurchase(const GURL& url, std::string_view str) {
   const base::TimeTicks now = base::TimeTicks::Now();
   for (int i = 0; i < kTestIterations; ++i) {
     CommerceHintAgent::IsPurchase(url, str);
@@ -1215,7 +1217,7 @@ float BenchmarkIsPurchase(const GURL& url, base::StringPiece str) {
   return elapsed_us;
 }
 
-float BenchmarkShouldSkip(base::StringPiece str) {
+float BenchmarkShouldSkip(std::string_view str) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
 #if !BUILDFLAG(IS_ANDROID)

@@ -8,9 +8,9 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
@@ -36,9 +36,9 @@ class IppValidator {
 
  private:
   std::optional<HttpRequestLine> ValidateHttpRequestLine(
-      base::StringPiece method,
-      base::StringPiece endpoint,
-      base::StringPiece http_version);
+      std::string_view method,
+      std::string_view endpoint,
+      std::string_view http_version);
 
   std::optional<std::vector<ipp_converter::HttpHeader>> ValidateHttpHeaders(
       const size_t http_content_length,

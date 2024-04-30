@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/command_line.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
@@ -119,7 +120,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
   // Fetch the |histogram|'s |bucket| in every renderer process until reaching,
   // but not exceeding, |expected_count|.
   template <typename T>
-  void CheckHistogramCount(base::StringPiece histogram,
+  void CheckHistogramCount(std::string_view histogram,
                            T bucket,
                            int expected_count) {
     while (true) {
@@ -409,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                                       "/private_network_access/"
                                                       "no-favicon.html")));
 
-  base::StringPiece kScriptTemplate = R"(
+  std::string_view kScriptTemplate = R"(
     (async () => {
       const worker = new Worker("/workers/fetcher_treat_as_public.js");
 
@@ -493,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                                       "/private_network_access/"
                                                       "no-favicon.html")));
 
-  base::StringPiece kScriptTemplate = R"(
+  std::string_view kScriptTemplate = R"(
     (async () => {
       const worker = await new Promise((resolve, reject) => {
         const worker =

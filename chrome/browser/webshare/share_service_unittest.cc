@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -11,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -68,7 +68,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 #endif
   }
 
-  ShareError ShareGeneratedFileData(base::StringPiece extension,
+  ShareError ShareGeneratedFileData(std::string_view extension,
                                     const std::string& content_type,
                                     unsigned file_length = 100,
                                     unsigned file_count = 1) {

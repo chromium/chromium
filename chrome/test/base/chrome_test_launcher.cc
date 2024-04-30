@@ -5,6 +5,7 @@
 #include "chrome/test/base/chrome_test_launcher.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -186,7 +187,7 @@ ChromeTestLauncherDelegate::GetUserDataDirectoryCommandLineSwitch() {
 class BrowserTestChromeContentBrowserClient
     : public ChromeContentBrowserClient {
  public:
-  bool CreateThreadPool(base::StringPiece name) override {
+  bool CreateThreadPool(std::string_view name) override {
     base::test::TaskEnvironment::CreateThreadPool();
     return true;
   }

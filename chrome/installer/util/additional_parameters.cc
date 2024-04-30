@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "build/branding_buildflags.h"
@@ -88,7 +87,7 @@ bool HasFullSuffix(const std::optional<std::wstring>& value) {
 
 // Expands `channel` to include an optional -arch_FOO suffix, returning true
 // if one is found. Returns false without modifying `channel` if none is found.
-// `channel` must be a sub-StringPiece of `ap`.
+// `channel` must be a sub-std::string_view of `ap`.
 bool SwallowArchSufix(std::wstring_view ap, std::wstring_view& channel) {
   DCHECK_LE(channel.size(), ap.size());
   DCHECK_GE(channel.data(), ap.data());

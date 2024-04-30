@@ -7,11 +7,11 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"
 #include "printing/backend/cups_ipp_helper.h"
 
@@ -38,20 +38,20 @@ const char kIppSentinel[] = "\x03";
 // Parses |status_line| into vector of 3, individual terms, returns empty
 // Optional on failure.
 std::optional<std::vector<std::string>> ParseRequestLine(
-    base::StringPiece status_line);
+    std::string_view status_line);
 
 // Builds valid HTTP Request line from input span of 3 |terms|, returns empty
 // Optional on failure.
 std::optional<std::vector<uint8_t>> BuildRequestLine(
-    base::StringPiece method,
-    base::StringPiece endpoint,
-    base::StringPiece http_version);
+    std::string_view method,
+    std::string_view endpoint,
+    std::string_view http_version);
 
 // Headers converters
 // Parsed |headers_slice| into vector of HTTP header name/value pairs.
 // Returns empty Optional on failure.
 std::optional<std::vector<HttpHeader>> ParseHeaders(
-    base::StringPiece headers_slice);
+    std::string_view headers_slice);
 
 // Builds valid HTTP headers from input vector of header name/value pairs.
 // Returns empty Optional on failure.
@@ -71,16 +71,16 @@ std::optional<std::vector<uint8_t>> BuildIppMessage(ipp_t* ipp);
 // request. Overloaded for cases without ipp_data.
 // Returns empty Optional on any failure.
 std::optional<std::vector<uint8_t>> BuildIppRequest(
-    base::StringPiece method,
-    base::StringPiece endpoint,
-    base::StringPiece http_version,
+    std::string_view method,
+    std::string_view endpoint,
+    std::string_view http_version,
     std::vector<HttpHeader> terms,
     ipp_t* ipp,
     std::vector<uint8_t> ipp_data);
 std::optional<std::vector<uint8_t>> BuildIppRequest(
-    base::StringPiece method,
-    base::StringPiece endpoint,
-    base::StringPiece http_version,
+    std::string_view method,
+    std::string_view endpoint,
+    std::string_view http_version,
     std::vector<HttpHeader> terms,
     ipp_t* ipp);
 

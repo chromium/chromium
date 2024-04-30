@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 
+#include <string_view>
+
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
@@ -131,7 +133,7 @@ RequestResult ExtensionHooksDelegate::HandleRequest(
       ScriptContext*, const APISignature::V8ParseResult&);
   static struct {
     Handler handler;
-    base::StringPiece method;
+    std::string_view method;
   } kHandlers[] = {
       {&ExtensionHooksDelegate::HandleSendRequest, kSendExtensionRequest},
       {&ExtensionHooksDelegate::HandleGetURL, kGetURL},

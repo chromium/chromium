@@ -11,6 +11,8 @@
 #include <winbase.h>
 #include <wrl/client.h>
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -128,7 +130,7 @@ void RecordCetAvailability() {
   }
 }
 
-void RecordEnclaveAvailabilityInternal(base::StringPiece type,
+void RecordEnclaveAvailabilityInternal(std::string_view type,
                                        DWORD enclave_type) {
   // This API does not appear to be exported from kernel32.dll on
   // Windows 10.0.10240.

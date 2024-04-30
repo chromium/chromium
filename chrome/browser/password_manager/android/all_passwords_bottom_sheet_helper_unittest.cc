@@ -4,7 +4,8 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
@@ -25,8 +26,8 @@ constexpr char16_t kPassword[] = u"password123";
 
 namespace {
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 username) {
+PasswordForm MakeSavedPassword(std::string_view signon_realm,
+                               std::u16string_view username) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);

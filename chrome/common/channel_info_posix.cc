@@ -7,10 +7,10 @@
 #include <stdlib.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/environment.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -35,8 +35,8 @@ struct ChannelState {
 ChannelState GetChannelImpl() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const char* const env = getenv("CHROME_VERSION_EXTRA");
-  const base::StringPiece env_str =
-      env ? base::StringPiece(env) : base::StringPiece();
+  const std::string_view env_str =
+      env ? std::string_view(env) : std::string_view();
 
   // Ordered by decreasing expected population size.
   if (env_str == "stable")
@@ -76,7 +76,7 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
   }
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const char* const env = getenv("CHROME_VERSION_EXTRA");
-  return env ? std::string(base::StringPiece(env)) : std::string();
+  return env ? std::string(std::string_view(env)) : std::string();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
@@ -113,7 +113,7 @@ std::string GetChannelSuffixForExtraFlagsEnvVarName() {
   const char* const channel_name = getenv("CHROME_VERSION_EXTRA");
   return channel_name
              ? base::StrCat(
-                   {"_", base::ToUpperASCII(base::StringPiece(channel_name))})
+                   {"_", base::ToUpperASCII(std::string_view(channel_name))})
              : std::string();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }

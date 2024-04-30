@@ -60,7 +60,7 @@ int JsInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   bool valid_input = true;
   base::RepeatingCallback<void()> run_fuzz_case_lambda =
       base::BindLambdaForTesting([&]() {
-        std::u16string js_str16 = base::UTF8ToUTF16(base::StringPiece(js_str));
+        std::u16string js_str16 = base::UTF8ToUTF16(std::string_view(js_str));
         // End the run loop either when the JS finishes or 2 seconds expires
         timer.Start(FROM_HERE, kJsExecutionTimeout,
                     base::BindLambdaForTesting([&]() {

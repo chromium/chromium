@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -637,7 +638,7 @@ void FirefoxImporter::LoadFavicons(
 }
 
 base::FilePath FirefoxImporter::GetCopiedSourcePath(
-    base::StringPiece base_file_name) {
+    std::string_view base_file_name) {
   const base::FilePath file = source_path_.AppendASCII(base_file_name);
   if (!base::PathExists(file))
     return {};

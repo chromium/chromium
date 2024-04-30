@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -392,7 +394,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
   }
 #endif
 
-  void ExpectUKMCount(base::StringPiece entry_name,
+  void ExpectUKMCount(std::string_view entry_name,
                       const std::string& metric_name,
                       int expected_count) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
@@ -407,7 +409,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
-  void WaitForUmaCount(base::StringPiece name,
+  void WaitForUmaCount(std::string_view name,
                        base::HistogramBase::Count expected_count) {
     while (true) {
       base::RunLoop().RunUntilIdle();
@@ -425,7 +427,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     }
   }
 
-  void WaitForUmaBucketCount(base::StringPiece name,
+  void WaitForUmaBucketCount(std::string_view name,
                              base::HistogramBase::Sample sample,
                              base::HistogramBase::Count expected_count) {
     while (true) {

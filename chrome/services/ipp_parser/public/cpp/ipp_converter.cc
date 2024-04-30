@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "net/http/http_util.h"
@@ -59,7 +59,7 @@ ssize_t IppWrite(base::span<uint8_t>* dst, ipp_uchar_t* source, size_t bytes) {
 }
 
 // Returns a parsed HttpHeader on success, empty Optional on failure.
-std::optional<HttpHeader> ParseHeader(base::StringPiece header) {
+std::optional<HttpHeader> ParseHeader(std::string_view header) {
   if (base::Contains(header, kCarriage)) {
     return std::nullopt;
   }
@@ -70,7 +70,7 @@ std::optional<HttpHeader> ParseHeader(base::StringPiece header) {
     return std::nullopt;
   }
 
-  const base::StringPiece key = header.substr(0, key_end_index);
+  const std::string_view key = header.substr(0, key_end_index);
 
   // Parse value
   const size_t value_begin_index = key_end_index + 1;
@@ -79,7 +79,7 @@ std::optional<HttpHeader> ParseHeader(base::StringPiece header) {
     return HttpHeader{std::string(key), ""};
   }
 
-  base::StringPiece value = header.substr(value_begin_index);
+  std::string_view value = header.substr(value_begin_index);
   value = net::HttpUtil::TrimLWS(value);
   return HttpHeader{std::string(key), std::string(value)};
 }
@@ -209,7 +209,7 @@ std::optional<std::vector<ipp_parser::mojom::ResolutionPtr>> IppGetResolutions(
 }  // namespace
 
 std::optional<std::vector<std::string>> ParseRequestLine(
-    base::StringPiece status_line) {
+    std::string_view status_line) {
   // Split |status_slice| into triple method-endpoint-httpversion
   std::vector<std::string> terms =
       base::SplitString(status_line, kStatusDelimiter, base::KEEP_WHITESPACE,
@@ -224,9 +224,9 @@ std::optional<std::vector<std::string>> ParseRequestLine(
 
 // Implicit conversion is safe since the conversion preserves memory layout.
 std::optional<std::vector<uint8_t>> BuildRequestLine(
-    base::StringPiece method,
-    base::StringPiece endpoint,
-    base::StringPiece http_version) {
+    std::string_view method,
+    std::string_view endpoint,
+    std::string_view http_version) {
   std::string status_line =
       base::StrCat({method, kStatusDelimiter, endpoint, kStatusDelimiter,
                     http_version, kCarriage});
@@ -235,7 +235,7 @@ std::optional<std::vector<uint8_t>> BuildRequestLine(
 }
 
 std::optional<std::vector<HttpHeader>> ParseHeaders(
-    base::StringPiece headers_slice) {
+    std::string_view headers_slice) {
   auto raw_headers = base::SplitStringPieceUsingSubstr(
       headers_slice, kCarriage, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
@@ -311,9 +311,9 @@ std::optional<std::vector<uint8_t>> BuildIppMessage(ipp_t* ipp) {
 }
 
 std::optional<std::vector<uint8_t>> BuildIppRequest(
-    base::StringPiece method,
-    base::StringPiece endpoint,
-    base::StringPiece http_version,
+    std::string_view method,
+    std::string_view endpoint,
+    std::string_view http_version,
     std::vector<HttpHeader> terms,
     ipp_t* ipp,
     std::vector<uint8_t> ipp_data) {
@@ -351,9 +351,9 @@ std::optional<std::vector<uint8_t>> BuildIppRequest(
 
 // If no |ipp_data| is passed in, default to empty data portion.
 std::optional<std::vector<uint8_t>> BuildIppRequest(
-    base::StringPiece method,
-    base::StringPiece endpoint,
-    base::StringPiece http_version,
+    std::string_view method,
+    std::string_view endpoint,
+    std::string_view http_version,
     std::vector<HttpHeader> terms,
     ipp_t* ipp) {
   return BuildIppRequest(method, endpoint, http_version, std::move(terms), ipp,

@@ -200,7 +200,7 @@ gfx::Size ParseWindowPolicyResponse(const std::string& response) {
   for (std::string_view line : base::SplitStringPiece(
            response, "\r", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     size_t pos = line.find(kScreenSizePrefix);
-    if (pos != base::StringPiece::npos) {
+    if (pos != std::string_view::npos) {
       return ParseScreenSize(
           line.substr(pos + strlen(kScreenSizePrefix)));
     }

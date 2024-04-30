@@ -5,6 +5,7 @@
 #include "chrome/common/crash_keys.h"
 
 #include <deque>
+#include <string_view>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -47,7 +48,7 @@ class CrashKeyWithName {
   ~CrashKeyWithName() = delete;
 
   void Clear() { crash_key_.Clear(); }
-  void Set(base::StringPiece value) { crash_key_.Set(value); }
+  void Set(std::string_view value) { crash_key_.Set(value); }
 
  private:
   std::string name_;
@@ -55,7 +56,7 @@ class CrashKeyWithName {
 };
 
 void SplitAndPopulateCrashKeys(std::deque<CrashKeyWithName>& crash_keys,
-                               base::StringPiece comma_separated_feature_list,
+                               std::string_view comma_separated_feature_list,
                                std::string crash_key_name_prefix) {
   // Crash keys are indestructable so we can not simply empty the deque.
   // Instead we must keep the previous crash keys alive and clear their values.

@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -44,7 +44,7 @@ void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
 
 bool IdentityManagerAlreadyHasPrimaryAccount(
     signin::IdentityManager* identity_manager,
-    base::StringPiece email,
+    std::string_view email,
     signin::ConsentLevel consent_level) {
   if (!identity_manager->HasPrimaryAccount(consent_level)) {
     return false;

@@ -10,6 +10,8 @@
 #include <process.h>
 #include <winternl.h>
 
+#include <string_view>
+
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <ntsecapi.h>  // For POLICY_ALL_ACCESS types
 
@@ -98,7 +100,7 @@ bool Base64DecodeCryptographicKey(const std::string& cryptographic_key,
 
 // Callback to log password encryption/decryption errors.
 static int LogBoringSSLError(const char* str, size_t len, void* ctx) {
-  LOGFN(ERROR) << base::StringPiece(str, len);
+  LOGFN(ERROR) << std::string_view(str, len);
   return 1;
 }
 
@@ -191,9 +193,9 @@ std::optional<std::vector<uint8_t>> PublicKeyEncrypt(
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
   aead.Init(&session_key);
   aead.Seal(secret,
-            base::StringPiece(reinterpret_cast<const char*>(
-                                  &session_key_with_nonce[kSessionKeyLength]),
-                              kNonceLength),
+            std::string_view(reinterpret_cast<const char*>(
+                                 &session_key_with_nonce[kSessionKeyLength]),
+                             kNonceLength),
             /*ad=*/"", &sealed_secret);
 
   ciphertext.insert(ciphertext.end(), sealed_secret.data(),
@@ -244,11 +246,11 @@ std::optional<std::string> PrivateKeyDecrypt(
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
   aead.Init(&session_key);
   aead.Open(
-      base::StringPiece(reinterpret_cast<const char*>(&ciphertext[rsa_size]),
-                        ciphertext.size() - rsa_size),
-      base::StringPiece(reinterpret_cast<const char*>(
-                            &session_key_with_nonce[kSessionKeyLength]),
-                        kNonceLength),
+      std::string_view(reinterpret_cast<const char*>(&ciphertext[rsa_size]),
+                       ciphertext.size() - rsa_size),
+      std::string_view(reinterpret_cast<const char*>(
+                           &session_key_with_nonce[kSessionKeyLength]),
+                       kNonceLength),
       /*ad=*/"", &plaintext);
 
   return plaintext;

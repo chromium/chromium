@@ -9,10 +9,10 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
 #include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"
 
 namespace cups_proxy {
@@ -37,7 +37,7 @@ ValidateAttributeResult ValidateAttribute(ipp_op_t ipp_oper_id,
                                           size_t values_count) {
   // Definitions of attributes used in IPP requests.
   static constexpr auto kAttributeDefinitions =
-      base::MakeFixedFlatMap<base::StringPiece, AttributeDefinition>(
+      base::MakeFixedFlatMap<std::string_view, AttributeDefinition>(
           {{"attributes-charset", {false, ValueType::kStrings}},
            {"attributes-natural-language", {false, ValueType::kStrings}},
            {"auth-info", {true, ValueType::kStrings}},

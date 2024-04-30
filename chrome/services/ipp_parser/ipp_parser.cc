@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -32,7 +33,7 @@ void Fail(const std::string& error_log, IppParser::ParseIppCallback cb) {
 }
 
 // Returns the starting index of the request-line-delimiter, -1 on failure.
-int LocateEndOfRequestLine(base::StringPiece request) {
+int LocateEndOfRequestLine(std::string_view request) {
   auto end_of_request_line = request.find(kCarriage);
   if (end_of_request_line == std::string::npos) {
     return -1;
@@ -42,7 +43,7 @@ int LocateEndOfRequestLine(base::StringPiece request) {
 }
 
 // Returns the starting index of the first HTTP header, -1 on failure.
-int LocateStartOfHeaders(base::StringPiece request) {
+int LocateStartOfHeaders(std::string_view request) {
   auto idx = LocateEndOfRequestLine(request);
   if (idx < 0) {
     return -1;
@@ -54,7 +55,7 @@ int LocateStartOfHeaders(base::StringPiece request) {
 }
 
 // Returns the starting index of the end-of-headers-delimiter, -1 on failure.
-int LocateEndOfHeaders(base::StringPiece request) {
+int LocateEndOfHeaders(std::string_view request) {
   auto idx = net::HttpUtil::LocateEndOfHeaders(request.data(), request.size());
   if (idx < 0) {
     return -1;
@@ -88,19 +89,19 @@ bool SplitRequestMetadata(base::span<const uint8_t> request,
 }
 
 std::optional<std::vector<std::string>> ExtractHttpRequestLine(
-    base::StringPiece request) {
+    std::string_view request) {
   size_t end_of_request_line = LocateEndOfRequestLine(request);
   if (end_of_request_line < 0) {
     return std::nullopt;
   }
 
-  const base::StringPiece request_line_slice =
+  const std::string_view request_line_slice =
       request.substr(0, end_of_request_line);
   return ipp_converter::ParseRequestLine(request_line_slice);
 }
 
 std::optional<std::vector<HttpHeader>> ExtractHttpHeaders(
-    base::StringPiece request) {
+    std::string_view request) {
   size_t start_of_headers = LocateStartOfHeaders(request);
   if (start_of_headers < 0) {
     return std::nullopt;
@@ -111,7 +112,7 @@ std::optional<std::vector<HttpHeader>> ExtractHttpHeaders(
     return std::nullopt;
   }
 
-  const base::StringPiece headers_slice =
+  const std::string_view headers_slice =
       request.substr(start_of_headers, end_of_headers - start_of_headers);
   return ipp_converter::ParseHeaders(headers_slice);
 }

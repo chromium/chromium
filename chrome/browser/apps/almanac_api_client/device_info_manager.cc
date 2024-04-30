@@ -5,10 +5,10 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -165,7 +165,7 @@ void DeviceInfoManager::GetDeviceInfo(
 
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
-  std::optional<base::StringPiece> hwid =
+  std::optional<std::string_view> hwid =
       provider->GetMachineStatistic(ash::system::kHardwareClassKey);
   device_info.hardware_id = std::string(hwid.value_or(""));
 

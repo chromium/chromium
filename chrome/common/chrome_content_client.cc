@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -314,7 +315,7 @@ std::u16string ChromeContentClient::GetLocalizedString(
   return l10n_util::GetStringFUTF16(message_id, replacement);
 }
 
-base::StringPiece ChromeContentClient::GetDataResource(
+std::string_view ChromeContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

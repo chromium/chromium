@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/capabilities.h"
 
 #include <map>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -14,7 +15,6 @@
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -164,8 +164,8 @@ Status ParseMobileEmulation(const base::Value& option,
     }
     mobile_device.user_agent = *user_agent;
 
-    mobile_ua = base::StringPiece{*user_agent}.find("Mobile") !=
-                base::StringPiece::npos;
+    mobile_ua =
+        std::string_view{*user_agent}.find("Mobile") != std::string_view::npos;
   }
 
   if (mobile_emulation->Find("deviceMetrics")) {
@@ -997,7 +997,7 @@ void Switches::SetFromSwitches(const Switches& switches) {
 }
 
 namespace {
-constexpr auto kMultivaluedSwitches = base::MakeFixedFlatSet<base::StringPiece>(
+constexpr auto kMultivaluedSwitches = base::MakeFixedFlatSet<std::string_view>(
     {"enable-blink-features", "disable-blink-features", "enable-features",
      "disable-features"});
 }  // namespace

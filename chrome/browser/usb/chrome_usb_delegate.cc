@@ -4,6 +4,7 @@
 
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -65,7 +66,7 @@ UsbConnectionTracker* GetConnectionTracker(
 // These extensions can claim the smart card USB class and automatically gain
 // permissions for devices that have an interface with this class.
 constexpr auto kSmartCardPrivilegedExtensionIds =
-    base::MakeFixedFlatSet<base::StringPiece>({
+    base::MakeFixedFlatSet<std::string_view>({
         // Smart Card Connector Extension and its Beta version, see
         // crbug.com/1233881.
         "khpfeaanjngmcnplbdlpegiifgpfgdco",
@@ -204,47 +205,47 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
 #if BUILDFLAG(IS_CHROMEOS)
   // These extensions can claim the protected HID interface class (example: used
   // as badge readers)
-  static constexpr auto kHidPrivilegedExtensionIds =
-      base::MakeFixedFlatSet<base::StringPiece>({
-          // Imprivata Extensions, see crbug.com/1065112 and crbug.com/995294.
-          "baobpecgllpajfeojepgedjdlnlfffde",
-          "bnfoibgpjolimhppjmligmcgklpboloj",
-          "cdgickkdpbekbnalbmpgochbninibkko",
-          "cjakdianfealdjlapagfagpdpemoppba",
-          "cokoeepjbmmnhgdhlkpahohdaiedfjgn",
-          "dahgfgiifpnaoajmloofonkndaaafacp",
-          "dbknmmkopacopifbkgookcdbhfnggjjh",
-          "ddcjglpbfbibgepfffpklmpihphbcdco",
-          "dhodapiemamlmhlhblgcibabhdkohlen",
-          "dlahpllbhpbkfnoiedkgombmegnnjopi",
-          "egfpnfjeaopimgpiioeedbpmojdapaip",
-          "fnbibocngjnefolmcodjkkghijpdlnfm",
-          "jcnflhjcfjkplgkcinikhbgbhfldkadl",
-          "jkfjfbelolphkjckiolfcakgalloegek",
-          "kmhpgpnbglclbaccjjgoioogjlnfgbne",
-          "lpimkpkllnkdlcigdbgmabfplniahkgm",
-          "odehonhhkcjnbeaomlodfkjaecbmhklm",
-          "olnmflhcfkifkgbiegcoabineoknmbjc",
-          "omificdfgpipkkpdhbjmefgfgbppehke",
-          "phjobickjiififdadeoepbdaciefacfj",
-          "pkeacbojooejnjolgjdecbpnloibpafm",
-          "pllbepacblmgialkkpcceohmjakafnbb",
-          "plpogimmgnkkiflhpidbibfmgpkaofec",
-          "pmhiabnkkchjeaehcodceadhdpfejmmd",
+    static constexpr auto kHidPrivilegedExtensionIds =
+        base::MakeFixedFlatSet<std::string_view>({
+            // Imprivata Extensions, see crbug.com/1065112 and crbug.com/995294.
+            "baobpecgllpajfeojepgedjdlnlfffde",
+            "bnfoibgpjolimhppjmligmcgklpboloj",
+            "cdgickkdpbekbnalbmpgochbninibkko",
+            "cjakdianfealdjlapagfagpdpemoppba",
+            "cokoeepjbmmnhgdhlkpahohdaiedfjgn",
+            "dahgfgiifpnaoajmloofonkndaaafacp",
+            "dbknmmkopacopifbkgookcdbhfnggjjh",
+            "ddcjglpbfbibgepfffpklmpihphbcdco",
+            "dhodapiemamlmhlhblgcibabhdkohlen",
+            "dlahpllbhpbkfnoiedkgombmegnnjopi",
+            "egfpnfjeaopimgpiioeedbpmojdapaip",
+            "fnbibocngjnefolmcodjkkghijpdlnfm",
+            "jcnflhjcfjkplgkcinikhbgbhfldkadl",
+            "jkfjfbelolphkjckiolfcakgalloegek",
+            "kmhpgpnbglclbaccjjgoioogjlnfgbne",
+            "lpimkpkllnkdlcigdbgmabfplniahkgm",
+            "odehonhhkcjnbeaomlodfkjaecbmhklm",
+            "olnmflhcfkifkgbiegcoabineoknmbjc",
+            "omificdfgpipkkpdhbjmefgfgbppehke",
+            "phjobickjiififdadeoepbdaciefacfj",
+            "pkeacbojooejnjolgjdecbpnloibpafm",
+            "pllbepacblmgialkkpcceohmjakafnbb",
+            "plpogimmgnkkiflhpidbibfmgpkaofec",
+            "pmhiabnkkchjeaehcodceadhdpfejmmd",
 
-          // Hotrod Extensions, see crbug.com/1220165
-          "acdafoiapclbpdkhnighhilgampkglpc",
-          "denipklgekfpcdmbahmbpnmokgajnhma",
-          "hkamnlhnogggfddmjomgbdokdkgfelgg",
-          "ikfcpmgefdpheiiomgmhlmmkihchmdlj",
-          "jlgegmdnodfhciolbdjciihnlaljdbjo",
-          "ldmpofkllgeicjiihkimgeccbhghhmfj",
-          "lkbhffjfgpmpeppncnimiiikojibkhnm",
-          "moklfjoegmpoolceggbebbmgbddlhdgp",
-      });
+            // Hotrod Extensions, see crbug.com/1220165
+            "acdafoiapclbpdkhnighhilgampkglpc",
+            "denipklgekfpcdmbahmbpnmokgajnhma",
+            "hkamnlhnogggfddmjomgbdokdkgfelgg",
+            "ikfcpmgefdpheiiomgmhlmmkihchmdlj",
+            "jlgegmdnodfhciolbdjciihnlaljdbjo",
+            "ldmpofkllgeicjiihkimgeccbhghhmfj",
+            "lkbhffjfgpmpeppncnimiiikojibkhnm",
+            "moklfjoegmpoolceggbebbmgbddlhdgp",
+        });
 
-  if (base::Contains(kHidPrivilegedExtensionIds, origin.host())) {
-    std::erase(classes, device::mojom::kUsbHidClass);
+    if (base::Contains(kHidPrivilegedExtensionIds, origin.host())) {
+      std::erase(classes, device::mojom::kUsbHidClass);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

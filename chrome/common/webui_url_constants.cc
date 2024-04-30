@@ -4,7 +4,8 @@
 
 #include "chrome/common/webui_url_constants.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/commerce/core/commerce_constants.h"
@@ -440,7 +441,7 @@ const char kChromeUIUrgentPasswordExpiryNotificationUrl[] =
 
 // Keep alphabetized.
 
-bool IsSystemWebUIHost(base::StringPiece host) {
+bool IsSystemWebUIHost(std::string_view host) {
   // Compares host instead of full URL for performance (the strings are
   // shorter).
   static const char* const kHosts[] = {

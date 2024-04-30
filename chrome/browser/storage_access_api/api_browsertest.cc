@@ -2474,7 +2474,7 @@ class StorageAccessAPIAutograntsWithFedCMBrowserTest
   }
 
   void NavigateToPageWithPermissionsPolicyIframes(
-      std::initializer_list<const base::StringPiece> hosts_list) {
+      std::initializer_list<const std::string_view> hosts_list) {
     base::span hosts(hosts_list);
     ASSERT_GT(hosts.size(), 0U);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -2489,7 +2489,7 @@ class StorageAccessAPIAutograntsWithFedCMBrowserTest
   }
 
  private:
-  std::string MakeNonRootFrameNodes(base::span<const base::StringPiece> hosts) {
+  std::string MakeNonRootFrameNodes(base::span<const std::string_view> hosts) {
     std::string tree;
     for (const auto& host : hosts) {
       base::StrAppend(&tree, {host, "{allow-identity-credentials-get}("});

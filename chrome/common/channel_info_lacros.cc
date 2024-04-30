@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/channel_info.h"
-
 #include <stdlib.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/environment.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
 
 namespace chrome {
@@ -33,8 +32,8 @@ struct ChannelState {
 ChannelState GetChannelImpl() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const char* const env = getenv("CHROME_VERSION_EXTRA");
-  const base::StringPiece env_str =
-      env ? base::StringPiece(env) : base::StringPiece();
+  const std::string_view env_str =
+      env ? std::string_view(env) : std::string_view();
 
   // Ordered by decreasing expected population size.
   if (env_str == "stable")
@@ -73,7 +72,7 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
   }
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const char* const env = getenv("CHROME_VERSION_EXTRA");
-  return env ? std::string(base::StringPiece(env)) : std::string();
+  return env ? std::string(std::string_view(env)) : std::string();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

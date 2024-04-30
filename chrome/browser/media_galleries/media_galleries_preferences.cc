@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths_posix.h"
@@ -199,7 +200,7 @@ const char* DefaultGalleryTypeToStringValue(
 // to `out` as a std::u16string. Returns false if no such string is found in
 // `dict`.
 bool FindU16StringInDict(const base::Value::Dict& dict,
-                         base::StringPiece key,
+                         std::string_view key,
                          std::u16string& out) {
   const std::string* string = dict.FindString(key);
   if (!string)

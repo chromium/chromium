@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/chromedriver/util.h"
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -11,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/test/chromedriver/chrome/status.h"
-#include "chrome/test/chromedriver/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(UnzipSoleFile, Entry) {
@@ -53,7 +55,7 @@ TEST(UnzipSoleFile, Archive) {
 
 namespace {
 
-const base::StringPiece key = "key";
+const std::string_view key = "key";
 const int64_t max_safe_int = (1ll << 53) - 1;
 
 void DictNoInit(base::Value::Dict* dict) {}
@@ -96,7 +98,7 @@ class DictInitString {
 
 template <typename ResultType, typename DictInitFunc>
 void TestGetOptionalValue(bool (*func_to_test)(const base::Value::Dict&,
-                                               base::StringPiece,
+                                               std::string_view,
                                                ResultType*,
                                                bool*),
                           DictInitFunc dict_init_func,

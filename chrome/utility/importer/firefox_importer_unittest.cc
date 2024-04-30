@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/utility/importer/firefox_importer.h"
+
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -16,7 +19,6 @@
 #include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/importer_url_row.h"
 #include "chrome/common/importer/mock_importer_bridge.h"
-#include "chrome/utility/importer/firefox_importer.h"
 #include "chrome/utility/importer/nss_decryptor.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "sql/database.h"
@@ -27,7 +29,7 @@ namespace {
 // Imports bookmarks from Firefox profile files into |bookmarks| and |favicons|
 // containers. |firefox_version| must match the name of subdirectory where test
 // files are stored.
-void ImportBookmarksFromVersion(base::StringPiece firefox_version,
+void ImportBookmarksFromVersion(std::string_view firefox_version,
                                 std::vector<ImportedBookmarkEntry>* bookmarks,
                                 favicon_base::FaviconUsageDataList* favicons) {
   using ::testing::_;

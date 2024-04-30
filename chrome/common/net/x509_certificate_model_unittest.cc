@@ -4,6 +4,8 @@
 
 #include "chrome/common/net/x509_certificate_model.h"
 
+#include <string_view>
+
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
@@ -21,7 +23,7 @@ namespace {
 
 std::optional<std::string> FindExtension(
     const std::vector<x509_certificate_model::Extension>& extensions,
-    base::StringPiece name) {
+    std::string_view name) {
   for (const auto& extension : extensions) {
     if (extension.name == name) {
       return extension.value;

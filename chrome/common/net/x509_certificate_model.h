@@ -6,10 +6,10 @@
 #define CHROME_COMMON_NET_X509_CERTIFICATE_MODEL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -99,8 +99,8 @@ class X509CertificateModel {
   // extension.value fields to describe extensions that are critical or
   // non-critical.
   std::vector<Extension> GetExtensions(
-      base::StringPiece critical_label,
-      base::StringPiece non_critical_label) const;
+      std::string_view critical_label,
+      std::string_view non_critical_label) const;
 
   std::string ProcessSecAlgorithmSignature() const;
   std::string ProcessSecAlgorithmSubjectPublicKey() const;
@@ -112,8 +112,8 @@ class X509CertificateModel {
 
  private:
   bool ParseExtensions(const bssl::der::Input& extensions_tlv);
-  std::string ProcessExtension(base::StringPiece critical_label,
-                               base::StringPiece non_critical_label,
+  std::string ProcessExtension(std::string_view critical_label,
+                               std::string_view non_critical_label,
                                const bssl::ParsedExtension& extension) const;
   std::optional<std::string> ProcessExtensionData(
       const bssl::ParsedExtension& extension) const;

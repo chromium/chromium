@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_PASSWORD_CHECK_ANDROID_PASSWORD_CHECK_MANAGER_H_
 #define CHROME_BROWSER_PASSWORD_CHECK_ANDROID_PASSWORD_CHECK_MANAGER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_check/android/password_check_ui_status.h"
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
@@ -84,7 +85,7 @@ class PasswordCheckManager
   // Called by java to update the given compromised `credential` and set its
   // password to `new_password`.
   void UpdateCredential(const password_manager::CredentialUIEntry& credential,
-                        base::StringPiece new_password);
+                        std::string_view new_password);
 
   // Called by java to launch the edit credential UI for `credential`.
   void OnEditCredential(

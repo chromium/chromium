@@ -5,12 +5,13 @@
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 
 #include <Windows.h>
-#include <winhttp.h>
 
 #include <atlconv.h>
 #include <process.h>
+#include <winhttp.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -108,7 +109,7 @@ class HttpServiceRequest {
     }
 
     result = base::JSONReader::Read(
-        base::StringPiece(response_.data(), response_.size()),
+        std::string_view(response_.data(), response_.size()),
         base::JSON_PARSE_CHROMIUM_EXTENSIONS |
             base::JSON_ALLOW_TRAILING_COMMAS);
     if (!result) {

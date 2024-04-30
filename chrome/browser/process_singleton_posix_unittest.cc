@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -518,7 +519,7 @@ TEST_F(ProcessSingletonPosixTest, CreateRespectsOldMacLock) {
 TEST_F(ProcessSingletonPosixTest, CreateReplacesOldMacLock) {
   std::unique_ptr<TestableProcessSingleton> process_singleton(
       CreateProcessSingleton());
-  EXPECT_TRUE(base::WriteFile(lock_path_, base::StringPiece()));
+  EXPECT_TRUE(base::WriteFile(lock_path_, std::string_view()));
   EXPECT_TRUE(process_singleton->Create());
   VerifyFiles();
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/media_galleries/fileapi/native_media_file_util.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_enumerator.h"
@@ -12,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media_galleries/fileapi/media_path_filter.h"
@@ -39,9 +39,10 @@ base::File::Error IsMediaHeader(const char* buf, size_t length) {
     return base::File::FILE_ERROR_SECURITY;
 
   std::string mime_type;
-  if (!net::SniffMimeTypeFromLocalData(base::StringPiece(buf, length),
-                                       &mime_type))
+  if (!net::SniffMimeTypeFromLocalData(std::string_view(buf, length),
+                                       &mime_type)) {
     return base::File::FILE_ERROR_SECURITY;
+  }
 
   if (base::StartsWith(mime_type, "image/", base::CompareCase::SENSITIVE) ||
       base::StartsWith(mime_type, "audio/", base::CompareCase::SENSITIVE) ||

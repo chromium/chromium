@@ -11,6 +11,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/apple/bridging.h"
@@ -1467,8 +1468,8 @@ bool CopyStagingBundleToDestination(base::FilePath staging_path,
                        options:0
                          error:nullptr];
   command_line.AppendArg(
-      base::StringPiece(static_cast<const char*>(info_plist_xml_data.bytes),
-                        info_plist_xml_data.length));
+      std::string_view(static_cast<const char*>(info_plist_xml_data.bytes),
+                       info_plist_xml_data.length));
 
   // Synchronously wait for the copy to complete to match the semantics of
   // `base::CopyDirectory`.

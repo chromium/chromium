@@ -11,13 +11,13 @@
 #include <unistd.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
 #include "base/i18n/message_formatter.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,8 +44,7 @@ std::string LoadStringFromDataPack(ui::DataPack* data_pack,
                                    const std::string& data_pack_lang,
                                    uint32_t resource_id,
                                    const char* resource_id_str) {
-  std::optional<base::StringPiece> data =
-      data_pack->GetStringPiece(resource_id);
+  std::optional<std::string_view> data = data_pack->GetStringPiece(resource_id);
   CHECK(data.has_value()) << "failed to load string " << resource_id_str
                           << " for lang " << data_pack_lang;
 

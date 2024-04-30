@@ -4,6 +4,8 @@
 
 #include "quick_start_conversions.h"
 
+#include <string_view>
+
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 
 namespace ash::quick_start {
@@ -20,7 +22,7 @@ constexpr char kUnsupported[] = "Unsupported";
 }  // namespace
 
 std::optional<mojom::WifiSecurityType> WifiSecurityTypeFromString(
-    base::StringPiece security_type_string) {
+    std::string_view security_type_string) {
   if (security_type_string == kPSK) {
     return mojom::WifiSecurityType::kPSK;
   }

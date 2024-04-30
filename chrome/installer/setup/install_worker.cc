@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -609,7 +610,7 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
     }
     if (result == ERROR_SUCCESS && dtype == REG_BINARY && size != 0) {
       std::string dmtoken_value(base::TrimWhitespaceASCII(
-          base::StringPiece(raw_value.data(), size), base::TRIM_ALL));
+          std::string_view(raw_value.data(), size), base::TRIM_ALL));
       if (dmtoken_value.compare("INVALID_DM_TOKEN")) {
         has_valid_dm_token = true;
       }

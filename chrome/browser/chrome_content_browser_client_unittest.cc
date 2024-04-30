@@ -7,6 +7,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "base/command_line.h"
@@ -1245,7 +1246,7 @@ class ChromeContentBrowserClientSwitchTest
       : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
  protected:
-  void AppendSwitchInCurrentProcess(const base::StringPiece& switch_string) {
+  void AppendSwitchInCurrentProcess(std::string_view switch_string) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switch_string);
   }
 

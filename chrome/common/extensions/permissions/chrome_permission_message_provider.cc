@@ -4,6 +4,7 @@
 
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -249,11 +250,11 @@ bool ChromePermissionMessageProvider::IsHostPrivilegeIncrease(
   // not exactly the same.
   for (const auto& requested : requested_hosts_only) {
     bool host_matched = false;
-    const base::StringPiece unmatched(requested);
+    const std::string_view unmatched(requested);
     for (const auto& granted : granted_hosts_set) {
       if (granted.size() > 2 && granted[0] == '*' && granted[1] == '.') {
-        const base::StringPiece stripped_granted(granted.data() + 1,
-                                                 granted.length() - 1);
+        const std::string_view stripped_granted(granted.data() + 1,
+                                                granted.length() - 1);
         // If the unmatched host ends with the the granted host,
         // after removing the '*', then it's a match. In addition,
         // because we consider having access to "*.domain.com" as

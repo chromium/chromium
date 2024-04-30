@@ -5,12 +5,12 @@
 #include "chrome/test/supervised_user/api_mock_setup_mixin.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,7 +25,7 @@
 namespace supervised_user {
 
 namespace {
-constexpr base::StringPiece kKidsManagementServiceEndpoint{
+constexpr std::string_view kKidsManagementServiceEndpoint{
     "kidsmanagement.googleapis.com"};
 
 // Self-consistent conditional RAII lock on list family members load.

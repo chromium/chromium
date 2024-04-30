@@ -4,6 +4,8 @@
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.h"
 
+#include <string_view>
+
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/numerics/checked_math.h"
@@ -57,7 +59,7 @@ constexpr net::NetworkTrafficAnnotationTag
 // store it as an int, otherwise it will be stored as a double. Check that the
 // double would fit in a 32 bit integer exactly before returning.
 std::optional<uint32_t> FindUnsignedInt(base::Value::Dict& dict,
-                                        base::StringPiece field) {
+                                        std::string_view field) {
   const base::Value* found = dict.Find(field);
   if (!found) {
     return std::nullopt;

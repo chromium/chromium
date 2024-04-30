@@ -991,7 +991,7 @@ void SecurelyClearBuffer(void* buffer, size_t length) {
 
 std::string SearchForKeyInStringDictUTF8(
     const std::string& json_string,
-    const std::initializer_list<base::StringPiece>& path) {
+    const std::initializer_list<std::string_view>& path) {
   DCHECK_GT(path.size(), 0UL);
 
   std::optional<base::Value::Dict> json_obj =
@@ -1020,7 +1020,7 @@ std::string GetDictStringUTF8(const base::Value::Dict& dict, const char* name) {
 HRESULT SearchForListInStringDictUTF8(
     const std::string& list_key,
     const std::string& json_string,
-    const std::initializer_list<base::StringPiece>& path,
+    const std::initializer_list<std::string_view>& path,
     std::vector<std::string>* output) {
   DCHECK_GT(path.size(), 0UL);
 

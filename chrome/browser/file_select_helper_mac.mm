@@ -7,6 +7,8 @@
 #include <Cocoa/Cocoa.h>
 #include <sys/stat.h>
 
+#include <string_view>
+
 #include "base/apple/foundation_util.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -19,9 +21,9 @@
 
 namespace {
 
-base::StringPiece AsStringPiece(NSString* str) {
+std::string_view AsStringPiece(NSString* str) {
   const char* data = [str fileSystemRepresentation];
-  return data ? base::StringPiece(data) : base::StringPiece();
+  return data ? std::string_view(data) : std::string_view();
 }
 
 // Given the |path| of a package, returns the destination that the package

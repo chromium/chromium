@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -317,7 +318,7 @@ Status MobileDevice::GetReducedUserAgent(
                   "unable to construct userAgent without client hints"};
   }
   for (const Platform* p : kPlatformsWithReducedUserAgentSupport) {
-    if (base::StringPiece(p->name) != client_hints->platform) {
+    if (std::string_view(p->name) != client_hints->platform) {
       continue;
     }
     std::string device_compat =

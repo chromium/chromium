@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <bitset>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -303,7 +304,7 @@ GURL WebAppRegistrar::GetAppLaunchUrl(const webapps::AppId& app_id) const {
   }
 
   if (start_url.query_piece().find(*launch_query_params) !=
-      base::StringPiece::npos) {
+      std::string_view::npos) {
     return start_url;
   }
 

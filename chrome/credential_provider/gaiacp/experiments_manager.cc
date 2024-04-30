@@ -4,6 +4,7 @@
 
 #include "chrome/credential_provider/gaiacp/experiments_manager.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/files/file.h"
@@ -72,7 +73,7 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   experiments_file.reset();
 
   std::optional<base::Value> experiments_data =
-      base::JSONReader::Read(base::StringPiece(buffer.data(), buffer.size()),
+      base::JSONReader::Read(std::string_view(buffer.data(), buffer.size()),
                              base::JSON_ALLOW_TRAILING_COMMAS);
   if (!experiments_data || !experiments_data->is_dict()) {
     LOGFN(ERROR) << "Failed to read experiments data from file!";

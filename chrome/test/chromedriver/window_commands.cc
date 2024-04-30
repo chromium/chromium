@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -628,7 +629,7 @@ Status ParsePageRanges(const base::Value::Dict& params,
 template <typename T>
 std::optional<T> ParseIfInDictionary(
     const base::Value::Dict& dict,
-    base::StringPiece key,
+    std::string_view key,
     T default_value,
     std::optional<T> (base::Value::*getterIfType)() const) {
   const auto* val = dict.Find(key);
@@ -638,14 +639,14 @@ std::optional<T> ParseIfInDictionary(
 }
 
 std::optional<double> ParseDoubleIfInDictionary(const base::Value::Dict& dict,
-                                                base::StringPiece key,
+                                                std::string_view key,
                                                 double default_value) {
   return ParseIfInDictionary(dict, key, default_value,
                              &base::Value::GetIfDouble);
 }
 
 std::optional<int> ParseIntIfInDictionary(const base::Value::Dict& dict,
-                                          base::StringPiece key,
+                                          std::string_view key,
                                           int default_value) {
   return ParseIfInDictionary(dict, key, default_value, &base::Value::GetIfInt);
 }

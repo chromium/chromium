@@ -7,6 +7,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -526,7 +527,7 @@ ViewWaiter::ViewPredicate LabelButtonWithLabel(const std::u16string& label) {
 // Opens the "network detailed view" of the system tray and attempts to press on
 // the entry that is displaying `ssid`. This relies on the fact that the SSID
 // will be on the corresponding UI label verbatim.
-void ConnectToSsidUsingSystemTray(base::StringPiece ssid) {
+void ConnectToSsidUsingSystemTray(std::string_view ssid) {
   auto system_tray = ash::SystemTrayTestApi::Create();
   system_tray->ShowNetworkDetailedView();
 

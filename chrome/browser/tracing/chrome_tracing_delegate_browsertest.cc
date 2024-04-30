@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -92,7 +93,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
 
   bool StartPreemptiveScenario(
       content::BackgroundTracingManager::DataFiltering data_filtering,
-      base::StringPiece scenario_name = "TestScenario",
+      std::string_view scenario_name = "TestScenario",
       bool with_crash_scenario = false) {
     base::Value::Dict dict;
 

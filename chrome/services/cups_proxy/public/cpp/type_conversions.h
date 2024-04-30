@@ -6,15 +6,15 @@
 #define CHROME_SERVICES_CUPS_PROXY_PUBLIC_CPP_TYPE_CONVERSIONS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace ipp_converter {
 
 // Common converters for working with arbitrary byte buffers.
-std::vector<uint8_t> ConvertToByteBuffer(base::StringPiece char_buffer);
+std::vector<uint8_t> ConvertToByteBuffer(std::string_view char_buffer);
 std::vector<char> ConvertToCharBuffer(base::span<const uint8_t> byte_buffer);
 std::string ConvertToString(base::span<const uint8_t> byte_buffer);
 

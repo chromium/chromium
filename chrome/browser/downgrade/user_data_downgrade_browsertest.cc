@@ -55,7 +55,7 @@ class UserDataDowngradeBrowserTestBase : public InProcessBrowserTest {
   static bool IsPreTest() {
     const std::string_view test_name(
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
-    return test_name.find("PRE_") != base::StringPiece::npos;
+    return test_name.find("PRE_") != std::string_view::npos;
   }
 
   // Returns the next Chrome milestone version.

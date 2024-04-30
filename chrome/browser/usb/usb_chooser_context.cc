@@ -5,6 +5,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -200,7 +201,7 @@ base::Value::Dict UsbChooserContext::DeviceInfoToValue(
   base::Value::Dict device_value;
   device_value.Set(kDeviceNameKey, device_info.product_name
                                        ? *device_info.product_name
-                                       : base::StringPiece16());
+                                       : std::u16string_view());
   device_value.Set(kVendorIdKey, device_info.vendor_id);
   device_value.Set(kProductIdKey, device_info.product_id);
 

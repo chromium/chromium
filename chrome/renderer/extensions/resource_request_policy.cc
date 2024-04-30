@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/extensions/resource_request_policy.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
@@ -175,8 +177,8 @@ bool ResourceRequestPolicy::CanRequestResource(
   // hybrid hosted/packaged apps. The one exception is access to icons, since
   // some extensions want to be able to do things like create their own
   // launchers.
-  base::StringPiece resource_root_relative_path =
-      resource_url.path_piece().empty() ? base::StringPiece()
+  std::string_view resource_root_relative_path =
+      resource_url.path_piece().empty() ? std::string_view()
                                         : resource_url.path_piece().substr(1);
   if (extension->is_hosted_app() &&
       !IconsInfo::GetIcons(extension)

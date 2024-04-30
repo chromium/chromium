@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -304,7 +305,7 @@ std::string GetDictStringUTF8(const base::Value::Dict& dict, const char* name);
 // by providing the |path| as {"key1", "key2", "key3"}.
 std::string SearchForKeyInStringDictUTF8(
     const std::string& json_string,
-    const std::initializer_list<base::StringPiece>& path);
+    const std::initializer_list<std::string_view>& path);
 
 // Perform a recursive search on a nested dictionary object. Note that the
 // names provided in the input should be in order. Below is an example : Lets
@@ -316,7 +317,7 @@ std::string SearchForKeyInStringDictUTF8(
 HRESULT SearchForListInStringDictUTF8(
     const std::string& list_key,
     const std::string& json_string,
-    const std::initializer_list<base::StringPiece>& path,
+    const std::initializer_list<std::string_view>& path,
     std::vector<std::string>* output);
 
 // Returns the major build version of Windows by reading the registry.

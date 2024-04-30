@@ -5,6 +5,7 @@
 #include "chrome/common/google_url_loader_throttle.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -54,7 +55,7 @@ class FakeBoundSessionRequestThrottledHandler
 class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
  public:
   MockThrottleDelegate() = default;
-  MOCK_METHOD(void, CancelWithError, (int, base::StringPiece), (override));
+  MOCK_METHOD(void, CancelWithError, (int, std::string_view), (override));
   MOCK_METHOD(void, Resume, (), (override));
 };
 

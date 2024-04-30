@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -141,7 +142,7 @@ v8::Local<v8::Object> GenerateMostVisitedItemData(
 
   gin::DataObjectBuilder builder(isolate);
   builder.Set("title", title)
-      .Set("direction", base::StringPiece(direction))
+      .Set("direction", std::string_view(direction))
       .Set("url", mv_item.url.spec());
 
   // If the suggestion already has a favicon, we populate the element with it.

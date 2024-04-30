@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -53,7 +54,7 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
   const blink::WebCryptoAlgorithmInfo* info =
       blink::WebCryptoAlgorithm::LookupAlgorithmInfo(algorithm.Id());
   gin::DataObjectBuilder builder(isolate);
-  builder.Set("name", base::StringPiece(info->name));
+  builder.Set("name", std::string_view(info->name));
 
   const blink::WebCryptoAlgorithm* hash = nullptr;
 
@@ -87,7 +88,7 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
       const blink::WebCryptoEcKeyGenParams* ec_key_gen =
           algorithm.EcKeyGenParams();
       if (ec_key_gen) {
-        base::StringPiece named_curve;
+        std::string_view named_curve;
         switch (ec_key_gen->NamedCurve()) {
           case blink::kWebCryptoNamedCurveP256:
             named_curve = "P-256";
@@ -120,7 +121,7 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
         blink::WebCryptoAlgorithm::LookupAlgorithmInfo(hash->Id());
 
     builder.Set("hash", gin::DataObjectBuilder(isolate)
-                            .Set("name", base::StringPiece(hash_info->name))
+                            .Set("name", std::string_view(hash_info->name))
                             .Build());
   }
   // Otherwise, |algorithm| is missing support here or no parameters were

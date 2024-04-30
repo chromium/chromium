@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -103,7 +104,7 @@ bool ParseFrameTokenAndRestrictedId(const std::string& id_part,
   DCHECK(frame_token_out);
   DCHECK(rid_out);
   // Check that the path is of Most visited item ID form.
-  std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
       id_part, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (tokens.size() != 2)
     return false;

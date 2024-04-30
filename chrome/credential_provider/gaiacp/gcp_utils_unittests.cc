@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/credential_provider/gaiacp/gcp_utils.h"
+
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/process/launch.h"
@@ -12,7 +16,6 @@
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
-#include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
@@ -509,7 +512,7 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
                         has(is_user_ad_joined);
 
   base::Value::Dict properties;
-  const auto set_property = [&](base::StringPiece key, const char* value) {
+  const auto set_property = [&](std::string_view key, const char* value) {
     if (value) {
       properties.Set(key, value);
     }

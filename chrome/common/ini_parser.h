@@ -6,6 +6,7 @@
 #define CHROME_COMMON_INI_PARSER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 
@@ -33,9 +34,9 @@ class INIParser {
   void Parse(const std::string& content);
 
  private:
-  virtual void HandleTriplet(base::StringPiece section,
-                             base::StringPiece key,
-                             base::StringPiece value) = 0;
+  virtual void HandleTriplet(std::string_view section,
+                             std::string_view key,
+                             std::string_view value) = 0;
 
   bool used_;
 };
@@ -55,9 +56,9 @@ class DictionaryValueINIParser : public INIParser {
 
  private:
   // INIParser implementation.
-  void HandleTriplet(base::StringPiece section,
-                     base::StringPiece key,
-                     base::StringPiece value) override;
+  void HandleTriplet(std::string_view section,
+                     std::string_view key,
+                     std::string_view value) override;
 
   base::Value::Dict root_;
 };

@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -286,7 +287,7 @@ void WebSocket::OnReadDuringHandshake(const char* data, int len) {
       base::Base64Encode(base::SHA1HashString(sec_key_ + kMagicKey));
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(
-          base::StringPiece(handshake_response_.data(), headers_end)));
+          std::string_view(handshake_response_.data(), headers_end)));
   if (headers->response_code() != 101 ||
       !headers->HasHeaderValue("Upgrade", "WebSocket") ||
       !headers->HasHeaderValue("Connection", "Upgrade") ||

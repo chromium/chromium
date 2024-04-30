@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
+#include <string_view>
 
+#include "build/build_config.h"
 // Need to include this before most other files because it defines
 // IPC_MESSAGE_LOG_ENABLED. We need to use it to define
 // IPC_MESSAGE_MACROS_LOG_ENABLED so render_messages.h will generate the
@@ -115,8 +116,8 @@ const GUID kChromeTraceProviderName = {
 // with that error in the str parameter.
 NOINLINE void SilentRuntimeAssertHandler(const char* file,
                                          int line,
-                                         const base::StringPiece message,
-                                         const base::StringPiece stack_trace) {
+                                         const std::string_view message,
+                                         const std::string_view stack_trace) {
   base::debug::BreakDebugger();
 }
 

@@ -5,10 +5,10 @@
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -363,7 +363,7 @@ void NearbyConnections::AcceptConnection(
   // Capturing Core* is safe as Core owns PayloadListener.
   PayloadListener payload_listener = {
       .payload_cb =
-          [&, remote, core = GetCore(service_id)](base::StringPiece endpoint_id,
+          [&, remote, core = GetCore(service_id)](std::string_view endpoint_id,
                                                   Payload payload) {
             if (!remote) {
               return;
@@ -409,7 +409,7 @@ void NearbyConnections::AcceptConnection(
             }
           },
       .payload_progress_cb =
-          [&, remote](base::StringPiece endpoint_id,
+          [&, remote](std::string_view endpoint_id,
                       const PayloadProgressInfo& info) {
             if (!remote) {
               return;

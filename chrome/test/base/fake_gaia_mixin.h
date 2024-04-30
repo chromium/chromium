@@ -8,8 +8,8 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
@@ -29,7 +29,7 @@ class CommandLine;
 //   };
 class FakeGaiaMixin : public InProcessBrowserTestMixin {
  public:
-  using UiPath = std::initializer_list<base::StringPiece>;
+  using UiPath = std::initializer_list<std::string_view>;
 
   // Default fake user email and password, may be used by tests.
   static const char kFakeUserEmail[];

@@ -5,8 +5,9 @@
 #ifndef CHROME_SERVICES_FILE_UTIL_PUBLIC_MOJOM_SAFE_DOCUMENT_ANALYZER_MOJOM_TRAITS_H_
 #define CHROME_SERVICES_FILE_UTIL_PUBLIC_MOJOM_SAFE_DOCUMENT_ANALYZER_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/document_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/safe_document_analyzer.mojom.h"
@@ -158,10 +159,10 @@ struct StructTraits<chrome::mojom::SafeDocumentAnalyzerResultsDataView,
     return results.has_macros;
   }
 
-  static base::StringPiece error_message(
+  static std::string_view error_message(
       const safe_browsing::DocumentAnalyzerResults& results) {
     if (results.error_message.empty()) {
-      return base::StringPiece();
+      return std::string_view();
     }
     return results.error_message;
   }

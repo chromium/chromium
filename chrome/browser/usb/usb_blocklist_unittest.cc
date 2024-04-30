@@ -4,8 +4,9 @@
 
 #include "chrome/browser/usb/usb_blocklist.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "components/variations/variations_params_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,7 +16,7 @@ class UsbBlocklistTest : public testing::Test {
 
   const UsbBlocklist& list() { return *blocklist_; }
 
-  void SetDynamicBlocklist(base::StringPiece list) {
+  void SetDynamicBlocklist(std::string_view list) {
     params_manager_.ClearAllVariationParams();
 
     std::map<std::string, std::string> params;

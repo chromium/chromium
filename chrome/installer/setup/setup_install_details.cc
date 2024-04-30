@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/win/registry.h"
@@ -37,7 +38,7 @@ const install_static::InstallConstants* FindInstallMode(
 // nullopt otherwise.
 std::optional<std::wstring> GetSwitchValue(
     const base::CommandLine& command_line,
-    base::StringPiece switch_name) {
+    std::string_view switch_name) {
   std::optional<std::wstring> result;
   if (command_line.HasSwitch(switch_name))
     result = command_line.GetSwitchValueNative(switch_name);

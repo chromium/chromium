@@ -5,9 +5,9 @@
 #include "chrome/browser/tracing/chrome_background_tracing_metrics_provider.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/tracing/background_tracing_field_trial.h"
@@ -63,7 +63,7 @@ void ChromeBackgroundTracingMetricsProvider::DoInit() {
         g_browser_process->metrics_service()->GetSyntheticTrialRegistry();
     system_profile_providers_.emplace_back(
         std::make_unique<variations::FieldTrialsProvider>(registry,
-                                                          base::StringPiece()));
+                                                          std::string_view()));
   }
 }
 

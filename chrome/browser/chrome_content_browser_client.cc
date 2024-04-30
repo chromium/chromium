@@ -36,7 +36,6 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1022,9 +1021,9 @@ bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
 
 // Returns true if |extension_id| is allowed to run as an Isolated Context,
 // giving it access to additional APIs.
-bool IsExtensionIdAllowedToUseIsolatedContext(base::StringPiece extension_id) {
+bool IsExtensionIdAllowedToUseIsolatedContext(std::string_view extension_id) {
   static constexpr auto kAllowedIsolatedContextExtensionIds =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           "algkcnfjnajfhgimadimbjhmpaeohhln",  // Secure Shell Extension (dev)
           "iodihamcpbpeioajjeobimgagajmlibd",  // Secure Shell Extension
                                                // (stable)
@@ -2012,7 +2011,7 @@ bool ChromeContentBrowserClient::DoesWebUIUrlRequireProcessLock(
 }
 
 bool ChromeContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-    base::StringPiece scheme,
+    std::string_view scheme,
     bool is_embedded_origin_secure) {
   // This is needed to bypass the normal SameSite rules for any chrome:// page
   // embedding a secure origin, regardless of the registrable domains of any
@@ -2030,7 +2029,7 @@ bool ChromeContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
 
 bool ChromeContentBrowserClient::
     ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-        base::StringPiece scheme,
+        std::string_view scheme,
         bool is_embedded_origin_secure) {
   return is_embedded_origin_secure && scheme == content::kChromeUIScheme;
 }

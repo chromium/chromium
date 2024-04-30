@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -101,7 +102,7 @@ class NoBestEffortTasksTest : public InProcessBrowserTest {
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-constexpr base::StringPiece kExtensionId = "ddchlicdkolnonkihahngkmmmjnjlkkf";
+constexpr std::string_view kExtensionId = "ddchlicdkolnonkihahngkmmmjnjlkkf";
 constexpr base::TimeDelta kSendMessageRetryPeriod = base::Milliseconds(250);
 #endif
 

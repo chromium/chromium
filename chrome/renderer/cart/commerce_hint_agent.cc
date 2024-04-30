@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
+#include <string_view>
+
 #include "base/features.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -474,7 +476,7 @@ const re2::RE2& GetPurchaseTextPattern() {
   return *instance;
 }
 
-bool GetProductIdFromRequest(base::StringPiece request,
+bool GetProductIdFromRequest(std::string_view request,
                              std::string* product_id) {
   re2::RE2::Options options;
   options.set_case_sensitive(false);
@@ -590,7 +592,7 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
     // TODO(crbug.com/40165127): this copy is avoidable if element is guaranteed
     // to have contiguous buffer.
     std::vector<uint8_t> buf = element.data.Copy().ReleaseVector();
-    base::StringPiece str(reinterpret_cast<char*>(buf.data()), buf.size());
+    std::string_view str(reinterpret_cast<char*>(buf.data()), buf.size());
 
     // Per-site hard-coded exclusion rules:
     if (navigation_url.DomainIs("groupon.com") && buf.size() > 10000)
@@ -706,15 +708,14 @@ CommerceHintAgent::CommerceHintAgent(content::RenderFrame* render_frame)
 
 CommerceHintAgent::~CommerceHintAgent() = default;
 
-bool CommerceHintAgent::IsAddToCart(base::StringPiece str,
+bool CommerceHintAgent::IsAddToCart(std::string_view str,
                                     bool skip_length_limit) {
   return RE2::PartialMatch(
       skip_length_limit ? str : str.substr(0, kLengthLimit),
       GetAddToCartPattern());
 }
 
-bool CommerceHintAgent::IsAddToCartForDomBasedHeuristics(
-    base::StringPiece str) {
+bool CommerceHintAgent::IsAddToCartForDomBasedHeuristics(std::string_view str) {
   return RE2::PartialMatch(str.substr(0, kLengthLimit),
                            GetDOMBasedAddToCartPattern());
 }
@@ -737,7 +738,7 @@ bool CommerceHintAgent::IsPurchase(const GURL& url) {
 }
 
 bool CommerceHintAgent::IsPurchase(const GURL& url,
-                                   base::StringPiece button_text) {
+                                   std::string_view button_text) {
   const std::map<std::string, std::string>& purchase_string_map =
       GetPurchaseButtonPatternMapping();
   static base::NoDestructor<std::map<std::string, std::unique_ptr<re2::RE2>>>
@@ -756,7 +757,7 @@ bool CommerceHintAgent::IsPurchase(const GURL& url,
   return RE2::PartialMatch(button_text, *purchase_regex_map->at(domain));
 }
 
-bool CommerceHintAgent::ShouldSkip(base::StringPiece product_name) {
+bool CommerceHintAgent::ShouldSkip(std::string_view product_name) {
   return RE2::PartialMatch(product_name.substr(0, kLengthLimit),
                            GetSkipPattern());
 }

@@ -5,6 +5,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include <map>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -731,8 +732,8 @@ void InProcessBrowserTest::TearDown() {
 
 // static
 size_t InProcessBrowserTest::GetTestPreCount() {
-  constexpr base::StringPiece kPreTestPrefix = "PRE_";
-  base::StringPiece test_name =
+  constexpr std::string_view kPreTestPrefix = "PRE_";
+  std::string_view test_name =
       testing::UnitTest::GetInstance()->current_test_info()->name();
   size_t count = 0;
   while (base::StartsWith(test_name, kPreTestPrefix)) {

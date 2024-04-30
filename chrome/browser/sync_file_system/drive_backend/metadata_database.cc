@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -1727,7 +1727,7 @@ base::Value::List MetadataDatabase::DumpMetadata() {
       dict.Set("missing", details.missing() ? "true" : "false");
       dict.Set("change_id", base::NumberToString(details.change_id()));
 
-      std::vector<base::StringPiece> parents;
+      std::vector<std::string_view> parents;
       for (int i = 0; i < details.parent_folder_ids_size(); ++i)
         parents.push_back(details.parent_folder_ids(i));
       dict.Set("parents", base::JoinString(parents, ","));

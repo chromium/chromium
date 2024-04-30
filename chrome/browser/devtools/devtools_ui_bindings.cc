@@ -440,8 +440,9 @@ GURL SanitizeFrontendURL(const GURL& url,
             base::StringPrintf("%s=%s", key.c_str(), value.c_str()));
       }
     }
-    if (url.has_ref() && url.ref_piece().find('\'') == base::StringPiece::npos)
+    if (url.has_ref() && url.ref_piece().find('\'') == std::string_view::npos) {
       fragment = '#' + url.ref();
+    }
   }
   std::string query =
       query_parts.empty() ? "" : "?" + base::JoinString(query_parts, "&");

@@ -4,6 +4,8 @@
 
 #include "chrome/common/net/x509_certificate_model.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
@@ -742,13 +744,13 @@ OptionalStringOrError ProcessNameValue(bssl::der::Input name_value) {
   return RDNSequenceToStringMultiLine(rdns);
 }
 
-std::string FormatGeneralName(std::u16string key, base::StringPiece value) {
+std::string FormatGeneralName(std::u16string key, std::string_view value) {
   return l10n_util::GetStringFUTF8(IDS_CERT_UNKNOWN_OID_INFO_FORMAT, key,
                                    base::UTF8ToUTF16(value)) +
          '\n';
 }
 
-std::string FormatGeneralName(int key_string_id, base::StringPiece value) {
+std::string FormatGeneralName(int key_string_id, std::string_view value) {
   return FormatGeneralName(l10n_util::GetStringUTF16(key_string_id), value);
 }
 
@@ -1385,8 +1387,8 @@ OptionalStringOrError X509CertificateModel::GetSubjectName() const {
 }
 
 std::vector<Extension> X509CertificateModel::GetExtensions(
-    base::StringPiece critical_label,
-    base::StringPiece non_critical_label) const {
+    std::string_view critical_label,
+    std::string_view non_critical_label) const {
   DCHECK(parsed_successfully_);
   std::vector<Extension> extensions;
   for (const auto& extension : extensions_) {
@@ -1443,10 +1445,10 @@ bool X509CertificateModel::ParseExtensions(
 }
 
 std::string X509CertificateModel::ProcessExtension(
-    base::StringPiece critical_label,
-    base::StringPiece non_critical_label,
+    std::string_view critical_label,
+    std::string_view non_critical_label,
     const bssl::ParsedExtension& extension) const {
-  base::StringPiece criticality =
+  std::string_view criticality =
       extension.critical ? critical_label : non_critical_label;
   std::optional<std::string> processed_extension =
       ProcessExtensionData(extension);

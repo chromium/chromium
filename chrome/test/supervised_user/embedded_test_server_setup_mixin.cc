@@ -5,13 +5,13 @@
 #include "chrome/test/supervised_user/embedded_test_server_setup_mixin.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -24,12 +24,11 @@ namespace supervised_user {
 
 namespace {
 
-std::string CreateResolverRule(base::StringPiece host,
-                               base::StringPiece target) {
+std::string CreateResolverRule(std::string_view host, std::string_view target) {
   return base::StrCat({"MAP ", host, " ", target});
 }
 
-std::vector<std::string> SplitHostList(base::StringPiece host_list) {
+std::vector<std::string> SplitHostList(std::string_view host_list) {
   return base::SplitString(host_list, ",", base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);
 }

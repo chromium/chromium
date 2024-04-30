@@ -9,6 +9,7 @@
 #include <locale>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -405,7 +406,7 @@ int main(int argc, char *argv[]) {
     if (!allowlist_ip_strs.empty()) {
       // Convert IP address strings into net::IPAddress objects.
       for (const auto& ip_str : allowlist_ip_strs) {
-        base::StringPiece ip_str_piece(ip_str);
+        std::string_view ip_str_piece(ip_str);
         if (ip_str_piece.size() >= 2 && ip_str_piece.front() == '[' &&
             ip_str_piece.back() == ']') {
           ip_str_piece.remove_prefix(1);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <bitset>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -93,7 +94,7 @@ class ChromeOriginTrialsTest : public InProcessBrowserTest {
  protected:
   ChromeOriginTrialsTest() {}
 
-  std::string GetCommandLineSwitch(const base::StringPiece& switch_name) {
+  std::string GetCommandLineSwitch(std::string_view switch_name) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     EXPECT_TRUE(command_line->HasSwitch(switch_name));
     return command_line->GetSwitchValueASCII(switch_name);
