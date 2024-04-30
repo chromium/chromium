@@ -127,6 +127,7 @@ public class ChromeCachedFlags {
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS,
+                        TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,
                         TabResumptionModuleUtils.TAB_RESUMPTION_V2,
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,

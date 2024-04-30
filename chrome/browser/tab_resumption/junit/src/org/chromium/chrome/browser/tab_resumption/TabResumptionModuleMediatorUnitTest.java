@@ -443,6 +443,37 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                 /* expectRemoveModuleCalls= */ 1);
     }
 
+    @Test
+    @SmallTest
+    public void testMaxTilesNumber_Single() {
+        testMaxTilesNumberImpl(1);
+    }
+
+    @Test
+    @SmallTest
+    public void testMaxTilesNumber_Double() {
+        testMaxTilesNumberImpl(2);
+    }
+
+    private void testMaxTilesNumberImpl(int maxTilesNumber) {
+        TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER.setForTesting(maxTilesNumber);
+        List<SuggestionEntry> suggestions =
+                Arrays.asList(makeForeignSessionSuggestion(1), makeForeignSessionSuggestion(0));
+
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor
+                .getAllValues()
+                .get(0)
+                .onResult(new SuggestionsResult(ResultStrength.STABLE, suggestions));
+        checkModuleState(
+                /* isVisible= */ true,
+                /* expectOnDataReadyCalls= */ 1,
+                /* expectOnDataFetchFailedCalls= */ 0,
+                /* expectRemoveModuleCalls= */ 0);
+        Assert.assertEquals(maxTilesNumber, getSuggestionBundle().entries.size());
+    }
+
     private void checkModuleState(
             boolean isVisible,
             int expectOnDataReadyCalls,

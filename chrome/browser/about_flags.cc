@@ -2591,9 +2591,15 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2[] = {
     {"enable_v2", "true"}};
+const FeatureEntry::FeatureParam kTabResumptionModule_single_tile[] = {
+    {"enable_v2", "true"},
+    {"max_tiles_number", "1"},
+};
 const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
-    {"V2", kTabResumptionModule_enable_v2,
+    {"Arm 1 V2", kTabResumptionModule_enable_v2,
      std::size(kTabResumptionModule_enable_v2), nullptr},
+    {"Arm 3 Single tile", kTabResumptionModule_single_tile,
+     std::size(kTabResumptionModule_single_tile), nullptr},
 };
 const FeatureEntry::FeatureParam
     kNotificationPermissionRationale_show_dialog_next_start[] = {

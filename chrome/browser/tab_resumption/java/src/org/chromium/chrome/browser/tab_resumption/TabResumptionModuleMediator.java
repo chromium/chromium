@@ -281,8 +281,6 @@ public class TabResumptionModuleMediator {
         }
     }
 
-    private static final int MAX_TILES_NUMBER = 2;
-
     // If TENTATIVE suggestions were received, and the following duration has elapsed without
     // receiving a STABLE suggestion, then consider the results stable and log accordingly.
     private static final long STABILITY_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(7);
@@ -371,10 +369,11 @@ public class TabResumptionModuleMediator {
     private SuggestionBundle makeSuggestionBundle(List<SuggestionEntry> suggestions) {
         long currentTimeMs = getCurrentTimeMs();
         SuggestionBundle bundle = new SuggestionBundle(currentTimeMs);
+        int maxTilesNumber = TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER.getValue();
         for (SuggestionEntry entry : suggestions) {
             if (isSuggestionValid(entry)) {
                 bundle.entries.add(entry);
-                if (bundle.entries.size() >= MAX_TILES_NUMBER) {
+                if (bundle.entries.size() >= maxTilesNumber) {
                     break;
                 }
             }
