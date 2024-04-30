@@ -36,12 +36,15 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -60,6 +63,10 @@ import java.util.function.BiConsumer;
 public class TabGroupListMediatorUnitTest {
     private static final String SYNC_GROUP_ID1 = "remote one";
     private static final String SYNC_GROUP_ID2 = "remote two";
+    private static final String SYNC_GROUP_ID3 = "remote three";
+
+    private static final Token LOCAL_GROUP_ID1 = new Token(1, 1);
+    private static final Token LOCAL_GROUP_ID2 = new Token(2, 2);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -342,5 +349,45 @@ public class TabGroupListMediatorUnitTest {
         verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_1), eq(mFaviconCallback1));
         verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_2), eq(mFaviconCallback2));
         verify(mFaviconResolver).accept(eq(JUnitTestGURLs.URL_3), eq(mFaviconCallback3));
+    }
+
+    @Test
+    @SmallTest
+    public void testFilterOutOtherTabGroups() {
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.syncId = SYNC_GROUP_ID1;
+        group1.title = "in current";
+        group1.savedTabs = Arrays.asList(new SavedTabGroupTab());
+        group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
+
+        SavedTabGroup group2 = new SavedTabGroup();
+        group2.syncId = SYNC_GROUP_ID2;
+        group2.title = "in another";
+        group2.savedTabs = Arrays.asList(new SavedTabGroupTab());
+        group2.localId = new LocalTabGroupId(LOCAL_GROUP_ID2);
+
+        SavedTabGroup group3 = new SavedTabGroup();
+        group3.syncId = SYNC_GROUP_ID3;
+        group3.title = "hidden";
+        group3.savedTabs = Arrays.asList(new SavedTabGroupTab());
+        group3.localId = null;
+
+        when(mTabGroupSyncService.getAllGroupIds())
+                .thenReturn(new String[] {SYNC_GROUP_ID1, SYNC_GROUP_ID2, SYNC_GROUP_ID3});
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group1);
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID2)).thenReturn(group2);
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID3)).thenReturn(group3);
+        when(mTabGroupModelFilter.getRootIdFromStableId(LOCAL_GROUP_ID1)).thenReturn(1);
+        when(mTabGroupModelFilter.getRootIdFromStableId(LOCAL_GROUP_ID2))
+                .thenReturn(Tab.INVALID_TAB_ID);
+
+        new TabGroupListMediator(
+                mModelList, mTabGroupModelFilter, mFaviconResolver, mTabGroupSyncService);
+
+        assertEquals(2, mModelList.size());
+        PropertyModel model1 = mModelList.get(0).model;
+        assertEquals(new Pair<>("in current", 1), model1.get(TITLE_DATA));
+        PropertyModel model2 = mModelList.get(1).model;
+        assertEquals(new Pair<>("hidden", 1), model2.get(TITLE_DATA));
     }
 }

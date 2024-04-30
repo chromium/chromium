@@ -16,13 +16,16 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.IntDef;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.Token;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.AsyncDrawable;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -36,10 +39,28 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.function.BiConsumer;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
 public class TabGroupListMediator {
+    // Internal tri-state enum to track where a group lives. It can either be in the current tab
+    // model/window/activity, in another one, or hidden. Hidden means only the sync side know about
+    // it. Everything is assumed to be non-incognito. In other tab models is difficult to work with,
+    // since often tha tab model is not even loaded into memory.
+    @IntDef({
+        TabGroupState.IN_CURRENT,
+        TabGroupState.IN_ANOTHER,
+        TabGroupState.HIDDEN,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface TabGroupState {
+        int IN_CURRENT = 0;
+        int IN_ANOTHER = 1;
+        int HIDDEN = 2;
+    }
+
     private static final WritableObjectPropertyKey[] FAVICON_ORDER = {
         ASYNC_FAVICON_TOP_LEFT,
         ASYNC_FAVICON_TOP_RIGHT,
@@ -110,11 +131,25 @@ public class TabGroupListMediator {
         mCallbackController.destroy();
     }
 
+    private @TabGroupState int getState(SavedTabGroup savedTabGroup) {
+        if (savedTabGroup.localId == null) {
+            return TabGroupState.HIDDEN;
+        }
+        Token groupId = savedTabGroup.localId.tabGroupId;
+        int rootId = mFilter.getRootIdFromStableId(groupId);
+        return rootId == Tab.INVALID_TAB_ID ? TabGroupState.IN_ANOTHER : TabGroupState.IN_CURRENT;
+    }
+
     private void repopulateModelList() {
         mModelList.clear();
 
-        for (String groupId : mSyncService.getAllGroupIds()) {
-            SavedTabGroup savedTabGroup = mSyncService.getGroup(groupId);
+        for (String syncGroupId : mSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
+
+            // To simplify interactions, filter out any groups currently open in other windows.
+            @TabGroupState int state = getState(savedTabGroup);
+            if (state == TabGroupState.IN_ANOTHER) continue;
+
             PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
 
             int numberOfTabs = savedTabGroup.savedTabs.size();
