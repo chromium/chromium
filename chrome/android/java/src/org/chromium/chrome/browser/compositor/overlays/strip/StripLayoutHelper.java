@@ -401,6 +401,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private boolean mMultiStepTabCloseAnimRunning;
     private boolean mTabGroupMarginAnimRunning;
     private boolean mTabResizeAnimRunning;
+    private boolean mGroupCollapsingOrExpanding;
     private boolean mGroupTitleSliding;
     private boolean mTabCreating;
 
@@ -2153,16 +2154,21 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             return;
         }
 
-        final StripLayoutTab clickedTab = getTabAtPosition(x);
-        if (clickedTab == null || clickedTab.isDying()) return;
-        if (clickedTab.checkCloseHitTest(x, y)
-                || (fromMouse && (buttons & MotionEvent.BUTTON_TERTIARY) != 0)) {
-            RecordUserAction.record("MobileToolbarCloseTab");
-            clickedTab.getCloseButton().handleClick(time);
-        } else {
-            RecordUserAction.record("MobileTabSwitched.TabletTabStrip");
-            recordTabSwitchTimeHistogram();
-            clickedTab.handleClick(time);
+        final StripLayoutView clickedView = getViewAtPositionX(x, true);
+        if (clickedView == null) return;
+        if (clickedView instanceof StripLayoutTab clickedTab) {
+            if (clickedTab.isDying()) return;
+            if (clickedTab.checkCloseHitTest(x, y)
+                    || (fromMouse && (buttons & MotionEvent.BUTTON_TERTIARY) != 0)) {
+                RecordUserAction.record("MobileToolbarCloseTab");
+                clickedTab.getCloseButton().handleClick(time);
+            } else {
+                RecordUserAction.record("MobileTabSwitched.TabletTabStrip");
+                recordTabSwitchTimeHistogram();
+                clickedTab.handleClick(time);
+            }
+        } else if (clickedView instanceof StripLayoutGroupTitle clickedGroupTitle) {
+            clickedGroupTitle.handleClick(time);
         }
     }
 
@@ -2437,6 +2443,74 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     @Override
     public void releaseResourcesForGroupTitle(int rootId) {
         mLayerTitleCache.removeGroupTitle(rootId);
+    }
+
+    private AnimatorListener getCollapseAnimatorListener() {
+        return new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mGroupCollapsingOrExpanding = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mGroupCollapsingOrExpanding = false;
+            }
+        };
+    }
+
+    private ArrayList<StripLayoutTab> getGroupedTabs(int rootId) {
+        ArrayList<StripLayoutTab> groupedTabs = new ArrayList<>();
+        for (int i = 0; i < mStripTabs.length; ++i) {
+            final StripLayoutTab stripTab = mStripTabs[i];
+            final Tab tab = getTabById(stripTab.getId());
+            if (tab.getRootId() == rootId) groupedTabs.add(stripTab);
+        }
+        return groupedTabs;
+    }
+
+    @Override
+    public void handleGroupTitleClick(StripLayoutGroupTitle groupTitle) {
+        if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
+
+        List<Animator> collapseAnimationList = null;
+        boolean animate = !mAnimationsDisabledForTesting;
+        if (animate) collapseAnimationList = new ArrayList<>();
+
+        finishAnimations();
+
+        boolean collapsing = !groupTitle.isCollapsed();
+        groupTitle.setCollapsed(collapsing);
+        for (StripLayoutTab tab : getGroupedTabs(groupTitle.getRootId())) {
+            tab.setCollapsed(collapsing);
+            if (collapsing) {
+                // The expand animation will be handled by the resize call below, since we'll need
+                // to first update mCachedTabWidth.
+                if (collapseAnimationList != null) {
+                    // Animate to the tab overlap width so the tab effectively takes up no space. If
+                    // we instead animate to 0, the following tabs will unexpectedly be shifted as
+                    // this tab takes up "negative" space.
+                    CompositorAnimator animator =
+                            CompositorAnimator.ofFloatProperty(
+                                    mUpdateHost.getAnimationHandler(),
+                                    tab,
+                                    StripLayoutTab.WIDTH,
+                                    tab.getWidth(),
+                                    mTabOverlapWidth,
+                                    ANIM_TAB_RESIZE_MS);
+                    collapseAnimationList.add(animator);
+                } else {
+                    tab.setWidth(mTabOverlapWidth);
+                }
+            }
+        }
+
+        List<Animator> resizeAnimationList = resizeTabStrip(animate, false, animate);
+        if (animate) {
+            if (resizeAnimationList != null) collapseAnimationList.addAll(resizeAnimationList);
+            AnimatorListener listener = getCollapseAnimatorListener();
+            startAnimationList(collapseAnimationList, listener);
+        }
     }
 
     private void updateGroupTitle(StripLayoutGroupTitle groupTitle, String title, int widthPx) {
@@ -2729,12 +2803,12 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         return TabModel.INVALID_TAB_INDEX;
     }
 
-    int getNumLiveTabs() {
+    private int getNumLiveTabs() {
         int numLiveTabs = 0;
 
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab tab = mStripTabs[i];
-            if (!tab.isDying() && !tab.isDraggedOffStrip()) numLiveTabs++;
+            if (!tab.isDying() && !tab.isDraggedOffStrip() && !tab.isCollapsed()) numLiveTabs++;
         }
 
         return numLiveTabs;
@@ -2782,7 +2856,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         for (int i = 0; i < mStripTabs.length; i++) {
             StripLayoutTab tab = mStripTabs[i];
-            if (tab.isDying()) continue;
+            if (tab.isDying() || tab.isCollapsed()) continue;
             if (resizeAnimationList != null) {
                 CompositorAnimator animator =
                         CompositorAnimator.ofFloatProperty(
@@ -2873,6 +2947,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 mMultiStepTabCloseAnimRunning,
                 mTabCreating,
                 mGroupTitleSliding,
+                mGroupCollapsingOrExpanding,
                 mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
@@ -3127,25 +3202,37 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     StripLayoutTab getTabAtPosition(float x) {
+        return (StripLayoutTab) getViewAtPositionX(x, false);
+    }
+
+    StripLayoutView getViewAtPositionX(float x, boolean includeGroupTitles) {
         if (mTabAtPositionForTesting != null) {
             return mTabAtPositionForTesting;
         }
 
-        for (int i = mStripTabsVisuallyOrdered.length - 1; i >= 0; i--) {
-            final StripLayoutTab tab = mStripTabsVisuallyOrdered[i];
+        for (int i = 0; i < mStripViews.length; ++i) {
+            final StripLayoutView view = mStripViews[i];
 
-            float leftEdge = tab.getTouchTargetLeft();
-            float rightEdge = tab.getTouchTargetRight();
-            if (mInReorderMode) {
-                if (LocalizationUtils.isLayoutRtl()) {
-                    leftEdge -= tab.getTrailingMargin();
-                } else {
-                    rightEdge += tab.getTrailingMargin();
+            float leftEdge;
+            float rightEdge;
+            if (view instanceof StripLayoutTab tab) {
+                leftEdge = tab.getTouchTargetLeft();
+                rightEdge = tab.getTouchTargetRight();
+                if (mInReorderMode) {
+                    if (LocalizationUtils.isLayoutRtl()) {
+                        leftEdge -= tab.getTrailingMargin();
+                    } else {
+                        rightEdge += tab.getTrailingMargin();
+                    }
                 }
+            } else {
+                if (!includeGroupTitles) continue;
+                leftEdge = view.getDrawX();
+                rightEdge = leftEdge + view.getWidth();
             }
 
-            if (tab.isVisible() && leftEdge <= x && x <= rightEdge) {
-                return tab;
+            if (view.isVisible() && leftEdge <= x && x <= rightEdge) {
+                return view;
             }
         }
 

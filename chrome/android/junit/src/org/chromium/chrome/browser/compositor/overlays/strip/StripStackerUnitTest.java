@@ -113,6 +113,7 @@ public class StripStackerUnitTest {
                 boolean tabClosing,
                 boolean tabCreating,
                 boolean mGroupTitleSliding,
+                boolean groupCollapsingOrExpanding,
                 float cachedTabWidth) {}
 
         @Override

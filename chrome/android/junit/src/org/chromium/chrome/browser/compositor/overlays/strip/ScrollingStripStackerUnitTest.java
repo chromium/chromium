@@ -20,7 +20,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class ScrollingStripStackerUnitTest {
     private static final float TAB_OFFSET_Y = 2;
-    private static final float TAB_WIDTH = 25;
+    private static final float TAB_WIDTH = 100;
     private static final float CACHED_TAB_WIDTH = 30;
 
     private ScrollingStripStacker mTarget = new ScrollingStripStacker();
@@ -50,7 +50,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testSetTabOffsets_tabNotClosing() {
-        mTarget.setViewOffsets(mInput, false, false, false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, false, false, false, false, CACHED_TAB_WIDTH);
 
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {
@@ -63,7 +63,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testSetTabOffsets_tabClosing() {
-        mTarget.setViewOffsets(mInput, true, false, false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, true, false, false, false, CACHED_TAB_WIDTH);
 
         for (StripLayoutTab tab : mInput) {
             verify(tab).setDrawY(TAB_OFFSET_Y);
@@ -74,7 +74,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testSetTabOffsets_tabCreating() {
-        mTarget.setViewOffsets(mInput, false, true, false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, false, true, false, false, CACHED_TAB_WIDTH);
 
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {

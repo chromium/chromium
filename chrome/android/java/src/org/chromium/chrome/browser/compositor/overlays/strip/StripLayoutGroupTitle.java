@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -22,14 +23,19 @@ import org.chromium.ui.base.LocalizationUtils;
 public class StripLayoutGroupTitle extends StripLayoutView {
     /** Delegate for additional group title functionality. */
     public interface StripLayoutGroupTitleDelegate {
-        // TODO(https://crbug.com/326492955): Implement click to collapse/expand.
-
         /**
          * Releases the resources associated with this group indicator.
          *
          * @param rootId The root ID of the given group indicator.
          */
         void releaseResourcesForGroupTitle(int rootId);
+
+        /**
+         * Handles group title click action.
+         *
+         * @param groupTitle The group title that was clicked.
+         */
+        void handleGroupTitleClick(StripLayoutGroupTitle groupTitle);
     }
 
     /** A property for animations to use for changing the width of the bottom indicator. */
@@ -187,8 +193,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public boolean hasClickAction() {
-        // TODO(https://crbug.com/326492955): Implement click to collapse/expand.
-        return false;
+        return ChromeFeatureList.sTabStripGroupCollapse.isEnabled();
     }
 
     @Override
@@ -199,7 +204,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public void handleClick(long time) {
-        // TODO(crbug.com/326492955): Implement click to collapse/expand.
+        mDelegate.handleGroupTitleClick(this);
     }
 
     /**

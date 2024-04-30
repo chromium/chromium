@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -116,6 +117,7 @@ public class StripLayoutHelperTest {
     private boolean mIncognito;
 
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
+    private static final String TEST_GROUP_TITLE = "Group";
     private static final String EXPECTED_MARGIN = "The tab should have a trailing margin.";
     private static final String EXPECTED_NO_MARGIN = "The tab should not have a trailing margin.";
     private static final String EXPECTED_TAB = "The view should be a tab.";
@@ -3497,7 +3499,7 @@ public class StripLayoutHelperTest {
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_DragActiveClickedTabOntoStrip() {
         // Setup and mark the active clicked tab.
-        initializeTest(false, false, false, 1, 5);
+        initializeTest(false, false, false, 0, 5);
 
         // Drag tab back onto strip.
         float expectedOffsetX = 123.45f;
@@ -3562,13 +3564,11 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 
         // Drag tab out of strip.
-        float expectedOffsetX = 123.45f;
-        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
-        StripLayoutTab draggedTab = mStripLayoutHelper.getInteractingTabForTesting();
-        draggedTab.setOffsetX(expectedOffsetX);
-        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
-        mStripLayoutHelper.startReorderModeAtIndexForTesting(1);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
+        mStripLayoutHelper.prepareForTabDrop(TIMESTAMP, 0f, 0f, true, false);
+        mStripLayoutHelper.clearForTabDrop(TIMESTAMP, true, false);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Verify 3rd, 4th and 5th tab's start divider is visible.
         assertFalse("Start divider should be hidden.", tabs[0].isStartDividerVisible());
@@ -3879,6 +3879,79 @@ public class StripLayoutHelperTest {
                 expectedWidth1, ((StripLayoutGroupTitle) views[1]).getBottomIndicatorWidth(), 0.f);
         assertEquals(
                 expectedWidth2, ((StripLayoutGroupTitle) views[5]).getBottomIndicatorWidth(), 0.f);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testHandleGroupTitleClick_Collapse() {
+        // Initialize with 4 tabs. Group first three tabs.
+        initializeTest(false, false, true, 3, 4);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        groupTabs(0, 3);
+
+        // Verify initial dimensions.
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // - groupTitleWidth(46) = 684.
+        // tabWidth = (availableSize(684) + 3 * overlap(28)) / 4 = 192.f
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        float initialTabWidth = 192.f;
+        assertEquals("Tab width is incorrect.", initialTabWidth, views[1].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", initialTabWidth, views[2].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", initialTabWidth, views[3].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", initialTabWidth, views[4].getWidth(), EPSILON);
+
+        // Fake a click on the tab group to collapse.
+        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+
+        // Verify final dimensions.
+        float collapsedWidth = TAB_OVERLAP_WIDTH;
+        float endTabWidth = TabUiThemeUtil.getMaxTabStripTabWidthDp();
+        assertEquals("Tab width is incorrect.", collapsedWidth, views[1].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", collapsedWidth, views[2].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", collapsedWidth, views[3].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", endTabWidth, views[4].getWidth(), EPSILON);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testHandleGroupTitleClick_Expand() {
+        // Initialize with 4 tabs. Group first three tabs.
+        initializeTest(false, false, true, 3, 4);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        groupTabs(0, 3);
+
+        // Fake a click on the tab group to collapse.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+
+        // Verify initial dimensions.
+        float collapsedWidth = TAB_OVERLAP_WIDTH;
+        float initialTabWidth = TabUiThemeUtil.getMaxTabStripTabWidthDp();
+        assertEquals("Tab width is incorrect.", collapsedWidth, views[1].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", collapsedWidth, views[2].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", collapsedWidth, views[3].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", initialTabWidth, views[4].getWidth(), EPSILON);
+
+        // Fake a click on the tab group to expand.
+        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+
+        // Verify final dimensions.
+        // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
+        // - groupTitleWidth(46) = 684.
+        // tabWidth = (availableSize(684) + 3 * overlap(28)) / 4 = 192.f
+        float endTabWidth = 192.f;
+        assertEquals("Tab width is incorrect.", endTabWidth, views[1].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", endTabWidth, views[2].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", endTabWidth, views[3].getWidth(), EPSILON);
+        assertEquals("Tab width is incorrect.", endTabWidth, views[4].getWidth(), EPSILON);
     }
 
     @Test

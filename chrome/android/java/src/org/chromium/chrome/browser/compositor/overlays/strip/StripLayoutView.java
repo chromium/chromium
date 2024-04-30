@@ -31,7 +31,7 @@ public abstract class StripLayoutView implements VirtualView {
                 }
             };
 
-    /** A property for animations to use for changing the X offset of the tab. */
+    /** A property for animations to use for changing the X offset of the view. */
     public static final FloatProperty<StripLayoutView> X_OFFSET =
             new FloatProperty<>("offsetX") {
                 @Override
@@ -48,6 +48,7 @@ public abstract class StripLayoutView implements VirtualView {
     private float mIdealX;
     private float mOffsetX;
     private boolean mVisible = true;
+    private boolean mCollapsed;
 
     /**
      * This is used to help calculate the view's position and is not used for rendering.
@@ -137,6 +138,20 @@ public abstract class StripLayoutView implements VirtualView {
      */
     public void setVisible(boolean visible) {
         mVisible = visible;
+    }
+
+    /**
+     * @return Whether or not this {@link StripLayoutView} is collapsed.
+     */
+    public boolean isCollapsed() {
+        return mCollapsed;
+    }
+
+    /**
+     * @param collapsed Whether or not this {@link StripLayoutView} is collapsed.
+     */
+    public void setCollapsed(boolean collapsed) {
+        mCollapsed = collapsed;
     }
 
     /**

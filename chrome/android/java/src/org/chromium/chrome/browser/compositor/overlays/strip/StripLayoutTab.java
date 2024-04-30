@@ -147,6 +147,10 @@ public class StripLayoutTab extends StripLayoutView {
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
     protected static final float FOLIO_FOOT_LENGTH_DP = 16.f;
 
+    // Visibility Constants.
+    private static final float FAVICON_WIDTH = 16.f;
+    protected static final float MIN_WIDTH = FAVICON_WIDTH + (FOLIO_FOOT_LENGTH_DP * 2);
+
     // Divider Constants
     private static final int DIVIDER_OFFSET_X = 13;
 
@@ -486,6 +490,7 @@ public class StripLayoutTab extends StripLayoutView {
 
     @Override
     public void setVisible(boolean visible) {
+        if (isVisible() == visible) return;
         super.setVisible(visible);
         if (!visible) {
             mUpdateHost.releaseResourcesForTab(mId);

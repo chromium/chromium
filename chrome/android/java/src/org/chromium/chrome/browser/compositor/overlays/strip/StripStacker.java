@@ -56,6 +56,7 @@ public abstract class StripStacker {
             boolean tabClosing,
             boolean tabCreating,
             boolean groupTitleSlidingAnimRunning,
+            boolean groupCollapsingOrExpanding,
             float cachedTabWidth);
 
     /**
