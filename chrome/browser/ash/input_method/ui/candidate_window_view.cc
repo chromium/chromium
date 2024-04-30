@@ -173,8 +173,9 @@ class InformationTextArea : public views::View {
   }
 
  protected:
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size size = views::View::CalculatePreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size size = views::View::CalculatePreferredSize(available_size);
     size.SetToMax(gfx::Size(min_width_, 0));
     return size;
   }

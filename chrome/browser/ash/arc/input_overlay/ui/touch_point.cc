@@ -234,7 +234,8 @@ class CrossTouchPoint : public TouchPoint {
   }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return GetSize(ActionType::MOVE);
   }
 
@@ -260,7 +261,8 @@ class DotTouchPoint : public TouchPoint {
   }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return GetSize(ActionType::TAP);
   }
 

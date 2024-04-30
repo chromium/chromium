@@ -80,7 +80,8 @@ int ActionHighlight::GetOverallRadius() const {
   return GetCircleRadius() + kCircleStrokeThickness;
 }
 
-gfx::Size ActionHighlight::CalculatePreferredSize() const {
+gfx::Size ActionHighlight::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int side = 2 * GetOverallRadius();
   return gfx::Size(side, side);
 }

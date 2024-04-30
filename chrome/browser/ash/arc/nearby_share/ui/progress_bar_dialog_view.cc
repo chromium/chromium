@@ -73,12 +73,14 @@ ProgressBarDialogView::~ProgressBarDialogView() {
   RemoveAllChildViews();
 }
 
-gfx::Size ProgressBarDialogView::CalculatePreferredSize() const {
+gfx::Size ProgressBarDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
 
   auto width = provider->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 void ProgressBarDialogView::AddedToWidget() {

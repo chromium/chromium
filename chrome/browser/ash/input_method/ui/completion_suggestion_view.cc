@@ -208,15 +208,19 @@ void CompletionSuggestionView::Layout(PassKey) {
   }
 }
 
-gfx::Size CompletionSuggestionView::CalculatePreferredSize() const {
+gfx::Size CompletionSuggestionView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size size;
   gfx::Size suggestion_size = suggestion_label_->GetPreferredSize(
-      views::SizeBounds(suggestion_label_->width(), {}));
+      views::SizeBounds(suggestion_width_, {}));
   suggestion_size.SetToMax(gfx::Size(suggestion_width_, 0));
   size.Enlarge(suggestion_size.width() + 2 * kPadding, 0);
   size.SetToMax(suggestion_size);
   if (annotation_container_->GetVisible()) {
-    gfx::Size annotation_size = annotation_container_->GetPreferredSize();
+    views::SizeBound available_width =
+        std::max<views::SizeBound>(0, available_size.width() - size.width());
+    gfx::Size annotation_size = annotation_container_->GetPreferredSize(
+        views::SizeBounds(available_width, {}));
     size.Enlarge(annotation_size.width(), 0);
   }
   if (min_width_ > size.width()) {

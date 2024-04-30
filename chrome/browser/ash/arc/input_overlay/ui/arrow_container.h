@@ -42,7 +42,8 @@ class ArrowContainer : public views::View {
 
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   std::unique_ptr<ShadowLayer> shadow_layer_;
 

@@ -585,8 +585,11 @@ void EditingList::ClipScrollViewHeight(bool is_outside) {
   scroll_view_->ClipHeightTo(/*min_height=*/0, /*max_height=*/max_height);
 }
 
-gfx::Size EditingList::CalculatePreferredSize() const {
-  return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
+gfx::Size EditingList::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(kMainContainerWidth,
+                   GetLayoutManager()->GetPreferredHeightForWidth(
+                       this, kMainContainerWidth));
 }
 
 bool EditingList::OnMousePressed(const ui::MouseEvent& event) {

@@ -60,7 +60,8 @@ class SigninDialog : public views::DialogDelegateView,
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   ui::ModalType GetModalType() const override;
   views::View* GetInitiallyFocusedView() override;
 

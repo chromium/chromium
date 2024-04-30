@@ -278,31 +278,35 @@ void CandidateView::Layout(PassKey) {
   annotation_label_->SetBounds(x, 0, right - x, height());
 }
 
-gfx::Size CandidateView::CalculatePreferredSize() const {
+gfx::Size CandidateView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int padding_width =
       orientation_ == ui::CandidateWindow::VERTICAL ? 4 : 6;
   gfx::Size size;
   if (shortcut_label_->GetVisible()) {
     size = shortcut_label_->GetPreferredSize(
-        views::SizeBounds(shortcut_label_->width(), {}));
+        views::SizeBounds(shortcut_width_, {}));
     size.SetToMax(gfx::Size(shortcut_width_, 0));
     size.Enlarge(padding_width, 0);
   }
   gfx::Size candidate_size = candidate_label_->GetPreferredSize(
-      views::SizeBounds(candidate_label_->width(), {}));
+      views::SizeBounds(candidate_width_, {}));
   candidate_size.SetToMax(gfx::Size(candidate_width_, 0));
   size.Enlarge(candidate_size.width() + padding_width, 0);
   size.SetToMax(candidate_size);
+  int reserve_margin =
+      kInfolistIndicatorIconWidth + kInfolistIndicatorIconPadding * 2;
   if (annotation_label_->GetVisible()) {
+    views::SizeBound available_width = std::max<views::SizeBound>(
+        0, available_size.width() - size.width() - reserve_margin);
     gfx::Size annotation_size = annotation_label_->GetPreferredSize(
-        views::SizeBounds(annotation_label_->width(), {}));
+        views::SizeBounds(available_width, {}));
     size.Enlarge(annotation_size.width() + padding_width, 0);
     size.SetToMax(annotation_size);
   }
 
   // Reserves the margin for infolist_icon even if it's not visible.
-  size.Enlarge(kInfolistIndicatorIconWidth + kInfolistIndicatorIconPadding * 2,
-               0);
+  size.Enlarge(reserve_margin, 0);
   return size;
 }
 

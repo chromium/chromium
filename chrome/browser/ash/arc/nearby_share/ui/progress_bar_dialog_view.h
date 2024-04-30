@@ -38,7 +38,8 @@ class ProgressBarDialogView : public views::BoxLayoutView {
   void UpdateInterpolatedProgressBarValue();
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
 

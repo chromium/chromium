@@ -298,8 +298,10 @@ void ArrowContainer::OnPaintBackground(gfx::Canvas* canvas) {
       flags);
 }
 
-gfx::Size ArrowContainer::CalculatePreferredSize() const {
-  return gfx::Size(kMenuWidth, GetHeightForWidth(kMenuWidth));
+gfx::Size ArrowContainer::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(kMenuWidth, GetLayoutManager()->GetPreferredHeightForWidth(
+                                   this, kMenuWidth));
 }
 
 BEGIN_METADATA(ArrowContainer)

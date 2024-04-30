@@ -72,7 +72,8 @@ class UI_CHROMEOS_EXPORT CompletionSuggestionView : public views::Button {
   FRIEND_TEST_ALL_PREFIXES(SuggestionWindowViewTest, ShortcutSettingTest);
 
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
 
   std::unique_ptr<views::View> CreateAnnotationContainer();

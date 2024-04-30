@@ -79,7 +79,8 @@ void SigninDialog::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {}
 
 // views::DialogDelegate:
-gfx::Size SigninDialog::CalculatePreferredSize() const {
+gfx::Size SigninDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // TODO(https://crbug.com/1223535): need to tweak this.
   // Or remove this whole class if not needed anymore.
   return gfx::Size(800, 640);
