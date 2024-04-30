@@ -77,6 +77,10 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       model_type_store_->CreateWriteBatch();
 
+  std::vector<std::string> added_ids;
+  std::vector<std::string> updated_ids;
+  std::vector<std::string> deleted_ids;
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const std::string& collaboration_id = change->storage_key();
     switch (change->type()) {
@@ -100,6 +104,17 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
         batch->DeleteData(collaboration_id);
         break;
     }
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD:
+        added_ids.push_back(collaboration_id);
+        break;
+      case syncer::EntityChange::ACTION_UPDATE:
+        updated_ids.push_back(collaboration_id);
+        break;
+      case syncer::EntityChange::ACTION_DELETE:
+        deleted_ids.push_back(collaboration_id);
+        break;
+    }
   }
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
@@ -108,8 +123,10 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
       base::BindOnce(&CollaborationGroupSyncBridge::OnModelTypeStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // TODO(crbug.com/301389859): introduce observing mechanism and notify
-  // observers here.
+  for (auto& observer : observers_) {
+    observer.OnGroupsUpdated(added_ids, updated_ids, deleted_ids);
+  }
+
   return std::nullopt;
 }
 
@@ -200,8 +217,10 @@ void CollaborationGroupSyncBridge::OnReadAllData(
     }
     ids_to_specifics_[specifics.collaboration_id()] = std::move(specifics);
   }
-  // TODO(crbug.com/301389859): introduce observing mechanism and notify
-  // observers here.
+
+  for (auto& observer : observers_) {
+    observer.OnDataLoaded();
+  }
 
   model_type_store_->ReadAllMetadata(
       base::BindOnce(&CollaborationGroupSyncBridge::OnReadAllMetadata,
@@ -237,6 +256,16 @@ CollaborationGroupSyncBridge::GetCollaborationGroupIds() const {
     ids.push_back(id);
   }
   return ids;
+}
+
+void CollaborationGroupSyncBridge::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void CollaborationGroupSyncBridge::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace data_sharing

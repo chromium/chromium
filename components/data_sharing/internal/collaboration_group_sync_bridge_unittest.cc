@@ -29,6 +29,8 @@ using base::test::EqualsProto;
 using syncer::HasInitialSyncDone;
 using syncer::IsEmptyMetadataBatch;
 using syncer::NoModelError;
+using testing::_;
+using testing::ElementsAre;
 using testing::Eq;
 using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
@@ -81,12 +83,28 @@ std::vector<sync_pb::CollaborationGroupSpecifics> ExtractSpecificsFromDataBatch(
   return result;
 }
 
+class MockObserver : public CollaborationGroupSyncBridge::Observer {
+ public:
+  MockObserver() = default;
+  ~MockObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnGroupsUpdated,
+              (const std::vector<std::string>&,
+               const std::vector<std::string>&,
+               const std::vector<std::string>&),
+              (override));
+  MOCK_METHOD(void, OnDataLoaded, (), (override));
+};
+
 class CollaborationGroupSyncBridgeTest : public testing::Test {
  public:
   CollaborationGroupSyncBridgeTest()
       : model_type_store_(
             syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
   ~CollaborationGroupSyncBridgeTest() override = default;
+
+  void TearDown() override { bridge_->RemoveObserver(&observer_); }
 
   void CreateBridgeAndWaitForReadyToSync() {
     base::RunLoop run_loop;
@@ -98,8 +116,15 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
             model_type_store_.get()));
 
+    bridge_->AddObserver(&observer_);
+
     // Wait for ready to sync.
     run_loop.Run();
+  }
+
+  void RestartBridgeAndWaitForReadyToSync() {
+    bridge_->RemoveObserver(&observer_);
+    CreateBridgeAndWaitForReadyToSync();
   }
 
   CollaborationGroupSyncBridge& bridge() { return *bridge_; }
@@ -107,6 +132,8 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
   testing::NiceMock<syncer::MockModelTypeChangeProcessor>& mock_processor() {
     return mock_processor_;
   }
+
+  testing::NiceMock<MockObserver>& observer() { return observer_; }
 
   syncer::ModelTypeStore& model_type_store() { return *model_type_store_; }
 
@@ -129,6 +156,7 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
 
   std::unique_ptr<syncer::ModelTypeStore> model_type_store_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockObserver> observer_;
   std::unique_ptr<CollaborationGroupSyncBridge> bridge_;
 };
 
@@ -182,8 +210,11 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldMergeFullSyncData) {
               UnorderedElementsAre("id1", "id2"));
 }
 
-TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyIncrementalSyncChanges) {
+TEST_F(CollaborationGroupSyncBridgeTest,
+       ShouldApplyIncrementalSyncChangesAndNotifyObserver) {
+  EXPECT_CALL(observer(), OnDataLoaded);
   CreateBridgeAndWaitForReadyToSync();
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   const sync_pb::CollaborationGroupSpecifics specifics1 =
       MakeSpecifics("id1", base::Time::FromMillisecondsSinceUnixEpoch(1000));
@@ -195,8 +226,13 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyIncrementalSyncChanges) {
   intitial_entity_changes.push_back(EntityChangeAddFromSpecifics(specifics2));
 
   // Mimics initial sync with two entities described above.
+  EXPECT_CALL(
+      observer(),
+      OnGroupsUpdated(/*added_group_ids*/ UnorderedElementsAre("id1", "id2"), _,
+                      _));
   bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
                              std::move(intitial_entity_changes));
+  testing::Mock::VerifyAndClearExpectations(&observer());
 
   // Verify that bridge stores these two entities and nothing else.
   EXPECT_THAT(
@@ -214,6 +250,10 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyIncrementalSyncChanges) {
   incremental_changes.push_back(EntityChangeUpdateFromSpecifics(specifics2));
   incremental_changes.push_back(EntityChangeAddFromSpecifics(specifics3));
 
+  EXPECT_CALL(observer(),
+              OnGroupsUpdated(/*added_group_ids*/ ElementsAre("id3"),
+                              /*updated_group_ids*/ ElementsAre("id2"),
+                              /*deleted_group_ids*/ ElementsAre("id1")));
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(incremental_changes));
 
@@ -269,7 +309,7 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadData) {
                              std::move(intitial_entity_changes));
 
   // Simulate restarting the sync bridge.
-  CreateBridgeAndWaitForReadyToSync();
+  RestartBridgeAndWaitForReadyToSync();
 
   // Verify that bridge still stores these two entities.
   EXPECT_THAT(

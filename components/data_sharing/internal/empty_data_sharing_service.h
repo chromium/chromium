@@ -23,6 +23,8 @@ class EmptyDataSharingService : public DataSharingService {
 
   // DataSharingService implementation.
   bool IsEmptyService() override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() override;

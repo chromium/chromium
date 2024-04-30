@@ -31,11 +31,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     Observer& operator=(const Observer&) = delete;
     ~Observer() override = default;
 
-    void OnGroupChanged(const GroupData& group_data);
+    virtual void OnGroupChanged(const GroupData& group_data) {}
     // User either created a new group or has been invited to the existing one.
-    void OnGroupAdded(const GroupData& group_data);
+    virtual void OnGroupAdded(const GroupData& group_data) {}
     // Either group has been deleted or user has been removed from the group.
-    void OnGroupRemoved(const std::string& group_id);
+    virtual void OnGroupRemoved(const std::string& group_id) {}
   };
 
   enum class PeopleGroupActionFailure { kTransientFailure, kPersistentFailure };
@@ -69,6 +69,9 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Chromium build disables RTTI, and we need to be able to verify that we are
   // using an empty service from the Chrome embedder.
   virtual bool IsEmptyService() = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns the network loader for fetching data.
   virtual DataSharingNetworkLoader* GetDataSharingNetworkLoader() = 0;

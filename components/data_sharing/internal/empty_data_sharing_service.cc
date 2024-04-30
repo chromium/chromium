@@ -26,6 +26,10 @@ EmptyDataSharingService::GetCollaborationGroupControllerDelegate() {
   return nullptr;
 }
 
+void EmptyDataSharingService::AddObserver(Observer* observer) {}
+
+void EmptyDataSharingService::RemoveObserver(Observer* observer) {}
+
 void EmptyDataSharingService::ReadAllGroups(
     base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {}
 

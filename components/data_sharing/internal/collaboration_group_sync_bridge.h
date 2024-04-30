@@ -10,6 +10,8 @@
 #include <unordered_map>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
@@ -25,6 +27,18 @@ namespace data_sharing {
 // Sync bridge implementation for COLLABORATION_GROUP model type.
 class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer() = default;
+    ~Observer() override = default;
+
+    virtual void OnGroupsUpdated(
+        const std::vector<std::string>& added_group_ids,
+        const std::vector<std::string>& updated_group_ids,
+        const std::vector<std::string>& deleted_group_ids) = 0;
+    virtual void OnDataLoaded() = 0;
+  };
+
   CollaborationGroupSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory store_factory);
@@ -58,6 +72,8 @@ class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
   // Own methods.
   // Returns ids of all synced (not deleted) collaboration groups.
   std::vector<std::string> GetCollaborationGroupIds() const;
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -79,6 +95,8 @@ class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
   // in-memory cache of the data.
   std::unordered_map<std::string, sync_pb::CollaborationGroupSpecifics>
       ids_to_specifics_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<CollaborationGroupSyncBridge> weak_ptr_factory_{this};
 };

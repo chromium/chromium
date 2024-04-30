@@ -59,6 +59,31 @@ std::unique_ptr<syncer::EntityChange> EntityChangeAddFromSpecifics(
                                          EntityDataFromSpecifics(specifics));
 }
 
+std::unique_ptr<syncer::EntityChange> EntityChangeUpdateFromSpecifics(
+    const sync_pb::CollaborationGroupSpecifics& specifics) {
+  return syncer::EntityChange::CreateUpdate(specifics.collaboration_id(),
+                                            EntityDataFromSpecifics(specifics));
+}
+
+std::unique_ptr<syncer::EntityChange> EntityChangeDeleteFromSpecifics(
+    const sync_pb::CollaborationGroupSpecifics& specifics) {
+  return syncer::EntityChange::CreateDelete(specifics.collaboration_id());
+}
+
+MATCHER_P(HasDisplayName, expected_name, "") {
+  return arg.display_name == expected_name;
+}
+
+class MockObserver : public DataSharingService::Observer {
+ public:
+  MockObserver() = default;
+  ~MockObserver() override = default;
+
+  MOCK_METHOD(void, OnGroupChanged, (const GroupData&), (override));
+  MOCK_METHOD(void, OnGroupAdded, (const GroupData&), (override));
+  MOCK_METHOD(void, OnGroupRemoved, (const std::string&), (override));
+};
+
 class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
  public:
   FakeDataSharingSDKDelegate() = default;
@@ -72,6 +97,16 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
       return it->second;
     }
     return std::nullopt;
+  }
+
+  void RemoveGroup(const std::string& group_id) { groups_.erase(group_id); }
+
+  void UpdateGroup(const std::string& group_id,
+                   const std::string& new_display_name) {
+    auto it = groups_.find(group_id);
+    ASSERT_TRUE(it != groups_.end());
+
+    it->second.set_display_name(new_display_name);
   }
 
   std::string AddGroupAndReturnId(const std::string& display_name) {
@@ -342,15 +377,8 @@ TEST_F(DataSharingServiceImplTest, ShouldReadAllGroups) {
 
   // Mimics initial sync for collaboration group datatype with the same two
   // groups.
-  // TODO(crbug.com/301390275): consider faking CollaborationGroupSyncBridge
-  // instead.
-  std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
-      data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting()
-          ->CreateMetadataChangeList();
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
-  metadata_changes->UpdateModelTypeState(model_type_state);
+  auto* collaboration_group_bridge =
+      data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();
 
   syncer::EntityChangeList entity_changes;
   entity_changes.push_back(
@@ -358,9 +386,9 @@ TEST_F(DataSharingServiceImplTest, ShouldReadAllGroups) {
   entity_changes.push_back(
       EntityChangeAddFromSpecifics(MakeCollaborationGroupSpecifics(group_id2)));
 
-  data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting()
-      ->MergeFullSyncData(std::move(metadata_changes),
-                          std::move(entity_changes));
+  collaboration_group_bridge->MergeFullSyncData(
+      collaboration_group_bridge->CreateMetadataChangeList(),
+      std::move(entity_changes));
 
   // Verify that DataSharingService reads the same groups.
   DataSharingService::GroupsDataSetOrFailureOutcome outcome;
@@ -431,6 +459,105 @@ TEST_F(DataSharingServiceImplTest, ShouldRemoveMember) {
   auto group = not_owned_sdk_delegate_->GetGroup(group_id);
   ASSERT_TRUE(group.has_value());
   EXPECT_TRUE(group->members().empty());
+}
+
+TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupAddition) {
+  const std::string display_name = "display_name";
+  const std::string group_id =
+      not_owned_sdk_delegate_->AddGroupAndReturnId(display_name);
+
+  base::RunLoop run_loop;
+  testing::NiceMock<MockObserver> observer;
+  data_sharing_service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnGroupAdded(HasDisplayName(display_name)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  // Mimics initial sync for collaboration group datatype, this should trigger
+  // OnGroupAdded() notification.
+  auto* collaboration_group_bridge =
+      data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();
+
+  syncer::EntityChangeList entity_changes;
+  entity_changes.push_back(
+      EntityChangeAddFromSpecifics(MakeCollaborationGroupSpecifics(group_id)));
+
+  collaboration_group_bridge->MergeFullSyncData(
+      collaboration_group_bridge->CreateMetadataChangeList(),
+      std::move(entity_changes));
+
+  run_loop.Run();
+}
+
+TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupRemoval) {
+  const std::string group_id =
+      not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
+  auto* collaboration_group_bridge =
+      data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();
+  // Mimics initial sync for collaboration group datatype.
+  {
+    syncer::EntityChangeList entity_changes;
+    entity_changes.push_back(EntityChangeAddFromSpecifics(
+        MakeCollaborationGroupSpecifics(group_id)));
+
+    collaboration_group_bridge->MergeFullSyncData(
+        collaboration_group_bridge->CreateMetadataChangeList(),
+        std::move(entity_changes));
+  }
+
+  // Mimics group removal.
+  testing::NiceMock<MockObserver> observer;
+  data_sharing_service_->AddObserver(&observer);
+  EXPECT_CALL(observer, OnGroupRemoved(group_id));
+
+  not_owned_sdk_delegate_->RemoveGroup(group_id);
+  {
+    syncer::EntityChangeList entity_changes;
+    entity_changes.push_back(EntityChangeDeleteFromSpecifics(
+        MakeCollaborationGroupSpecifics(group_id)));
+
+    collaboration_group_bridge->ApplyIncrementalSyncChanges(
+        collaboration_group_bridge->CreateMetadataChangeList(),
+        std::move(entity_changes));
+  }
+}
+
+TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupChange) {
+  const std::string group_id =
+      not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
+  auto* collaboration_group_bridge =
+      data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();
+  // Mimics initial sync for collaboration group datatype.
+  {
+    syncer::EntityChangeList entity_changes;
+    entity_changes.push_back(EntityChangeAddFromSpecifics(
+        MakeCollaborationGroupSpecifics(group_id)));
+
+    collaboration_group_bridge->MergeFullSyncData(
+        collaboration_group_bridge->CreateMetadataChangeList(),
+        std::move(entity_changes));
+  }
+
+  // Mimics group update.
+  base::RunLoop run_loop;
+  testing::NiceMock<MockObserver> observer;
+  data_sharing_service_->AddObserver(&observer);
+
+  const std::string new_display_name = "new_display_name";
+  EXPECT_CALL(observer, OnGroupChanged(HasDisplayName(new_display_name)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  not_owned_sdk_delegate_->UpdateGroup(group_id, new_display_name);
+  {
+    syncer::EntityChangeList entity_changes;
+    entity_changes.push_back(EntityChangeUpdateFromSpecifics(
+        MakeCollaborationGroupSpecifics(group_id)));
+
+    collaboration_group_bridge->ApplyIncrementalSyncChanges(
+        collaboration_group_bridge->CreateMetadataChangeList(),
+        std::move(entity_changes));
+  }
+  run_loop.Run();
 }
 
 }  // namespace data_sharing

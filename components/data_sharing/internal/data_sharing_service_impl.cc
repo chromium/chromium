@@ -93,12 +93,25 @@ DataSharingServiceImpl::DataSharingServiceImpl(
   collaboration_group_sync_bridge_ =
       std::make_unique<CollaborationGroupSyncBridge>(
           std::move(change_processor), std::move(model_type_store_factory));
+  collaboration_group_sync_bridge_->AddObserver(this);
 }
 
-DataSharingServiceImpl::~DataSharingServiceImpl() = default;
+DataSharingServiceImpl::~DataSharingServiceImpl() {
+  collaboration_group_sync_bridge_->RemoveObserver(this);
+}
 
 bool DataSharingServiceImpl::IsEmptyService() {
   return false;
+}
+
+void DataSharingServiceImpl::AddObserver(
+    DataSharingService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DataSharingServiceImpl::RemoveObserver(
+    DataSharingService::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 DataSharingNetworkLoader*
@@ -252,6 +265,79 @@ void DataSharingServiceImpl::RemoveMember(
           weak_ptr_factory_.GetWeakPtr(), group_id, std::move(callback)));
 }
 
+void DataSharingServiceImpl::OnGroupsUpdated(
+    const std::vector<std::string>& added_group_ids,
+    const std::vector<std::string>& updated_group_ids,
+    const std::vector<std::string>& deleted_group_ids) {
+  // TODO(crbug.com/301390275): get rid of this method and corresponding
+  // asynchronous logic. Once caching is supported, observers should be notified
+  // upon cache updates instead.
+  if (!sdk_delegate_) {
+    return;
+  }
+
+  // Deletions could be notified immediately.
+  for (const std::string& group_id : deleted_group_ids) {
+    for (auto& observer : observers_) {
+      observer.OnGroupRemoved(group_id);
+    }
+  }
+
+  // Fetch added and updated groups.
+  data_sharing_pb::ReadGroupsParams params;
+  for (const std::string& group_id : added_group_ids) {
+    params.add_group_ids(group_id);
+  }
+  for (const std::string& group_id : updated_group_ids) {
+    params.add_group_ids(group_id);
+  }
+  if (params.group_ids().empty()) {
+    // No groups to read.
+    return;
+  }
+
+  sdk_delegate_->ReadGroups(
+      params,
+      base::BindOnce(
+          &DataSharingServiceImpl::OnReadGroupsToNotifyObserversCompleted,
+          weak_ptr_factory_.GetWeakPtr(),
+          /*added_group_ids=*/
+          std::set<std::string>(added_group_ids.begin(), added_group_ids.end()),
+          /*updated_group_ids=*/
+          std::set<std::string>(updated_group_ids.begin(),
+                                updated_group_ids.end())));
+}
+
+void DataSharingServiceImpl::OnDataLoaded() {
+  // TODO(crbug.com/301390275): once caching is supported, this method should be
+  // removed and ReadAllGroups() should read cached groups instead. Right now it
+  // will read no groups before collaboration group data is loaded and we need
+  // to issue another read afterwards and notify observers.
+  if (!sdk_delegate_) {
+    return;
+  }
+
+  data_sharing_pb::ReadGroupsParams params;
+  std::vector<std::string> group_ids =
+      collaboration_group_sync_bridge_->GetCollaborationGroupIds();
+  for (const std::string& group_id : group_ids) {
+    params.add_group_ids(group_id);
+  }
+
+  if (params.group_ids().empty()) {
+    // No groups to read.
+    return;
+  }
+
+  sdk_delegate_->ReadGroups(
+      params,
+      base::BindOnce(
+          &DataSharingServiceImpl::OnReadGroupsToNotifyObserversCompleted,
+          weak_ptr_factory_.GetWeakPtr(), /*added_group_ids=*/
+          std::set<std::string>(group_ids.begin(), group_ids.end()),
+          /*updated_group_ids=*/std::set<std::string>()));
+}
+
 void DataSharingServiceImpl::OnReadSingleGroupCompleted(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback,
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
@@ -340,6 +426,35 @@ void DataSharingServiceImpl::OnGaiaIdLookupForRemoveMemberCompleted(
       params,
       base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DataSharingServiceImpl::OnReadGroupsToNotifyObserversCompleted(
+    const std::set<std::string>& added_group_ids,
+    const std::set<std::string>& updated_group_ids,
+    const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
+        read_groups_result) {
+  if (!read_groups_result.has_value()) {
+    // TODO(crbug.com/301390275): remove this method or add error handling
+    // (retries).
+    return;
+  }
+
+  for (const data_sharing_pb::GroupData& group_data_proto :
+       read_groups_result.value().group_data()) {
+    GroupData group_data = GroupDataFromProto(group_data_proto);
+
+    if (added_group_ids.count(group_data.group_id) > 0) {
+      for (auto& observer : observers_) {
+        observer.OnGroupAdded(group_data);
+      }
+    }
+
+    if (updated_group_ids.count(group_data.group_id) > 0) {
+      for (auto& observer : observers_) {
+        observer.OnGroupChanged(group_data);
+      }
+    }
+  }
 }
 
 void DataSharingServiceImpl::OnSimpleGroupActionCompleted(

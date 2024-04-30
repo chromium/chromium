@@ -35,7 +35,8 @@ namespace data_sharing {
 class DataSharingNetworkLoader;
 
 // The internal implementation of the DataSharingService.
-class DataSharingServiceImpl : public DataSharingService {
+class DataSharingServiceImpl : public DataSharingService,
+                               public CollaborationGroupSyncBridge::Observer {
  public:
   // `identity_manager` must not be null and must outlive this object.
   // `sdk_delegate` is nullable, indicating that SDK is not available.
@@ -53,6 +54,8 @@ class DataSharingServiceImpl : public DataSharingService {
 
   // DataSharingService implementation.
   bool IsEmptyService() override;
+  void AddObserver(DataSharingService::Observer* observer) override;
+  void RemoveObserver(DataSharingService::Observer* observer) override;
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() override;
@@ -76,6 +79,13 @@ class DataSharingServiceImpl : public DataSharingService {
       const std::string& group_id,
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
+
+  // CollaborationGroupSyncBridge::Observer implementation.
+  void OnGroupsUpdated(
+      const std::vector<std::string>& added_group_ids,
+      const std::vector<std::string>& updated_group_ids,
+      const std::vector<std::string>& deleted_group_ids) override;
+  void OnDataLoaded() override;
 
   CollaborationGroupSyncBridge* GetCollaborationGroupSyncBridgeForTesting();
 
@@ -102,6 +112,11 @@ class DataSharingServiceImpl : public DataSharingService {
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
       const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
                            absl::Status>& result);
+  void OnReadGroupsToNotifyObserversCompleted(
+      const std::set<std::string>& added_group_ids,
+      const std::set<std::string>& updated_group_ids,
+      const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
+          read_groups_result);
 
   // Converts absl::Status to PeopleGroupActionOutcome and passes it to
   // `callback`, used by DeleteGroup(), InviteMember(), and RemoveMember()
@@ -115,6 +130,8 @@ class DataSharingServiceImpl : public DataSharingService {
       collaboration_group_sync_bridge_;
   // Nullable.
   std::unique_ptr<DataSharingSDKDelegate> sdk_delegate_;
+
+  base::ObserverList<DataSharingService::Observer> observers_;
 
   base::WeakPtrFactory<DataSharingServiceImpl> weak_ptr_factory_{this};
 };
