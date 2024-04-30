@@ -210,6 +210,10 @@ void HatsNextWebDialog::OnSurveyLoaded() {
   std::move(success_callback_).Run();
 }
 
+void HatsNextWebDialog::OnSurveyCompleted() {
+  base::UmaHistogramBoolean(kHatsSurveyCompletedHistogram, true);
+}
+
 void HatsNextWebDialog::OnSurveyClosed() {
   loading_timer_.Stop();
   if (!received_survey_loaded_) {
@@ -365,7 +369,7 @@ void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
   } else if (state == "close") {
     OnSurveyClosed();
   } else if (state == "completed") {
-    base::UmaHistogramBoolean(kHatsSurveyCompletedHistogram, true);
+    OnSurveyCompleted();
   } else {
     LOG(ERROR) << "Unknown state provided in URL fragment by HaTS survey:"
                << state;

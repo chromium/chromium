@@ -47,9 +47,12 @@ async function requestSurvey(
   let loadedSent = false;
 
   const surveyListener = {
-    // Provide survey state to the WebContentsObserver via URL fragments.
     surveyClosed: function() {
       browserProxy!.handler.onSurveyClosed();
+    },
+
+    surveyCompleted: function() {
+      browserProxy!.handler.onSurveyCompleted();
     },
 
     surveyPositioning: function(_: any, size: any, animationSpec: any) {

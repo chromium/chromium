@@ -30,6 +30,10 @@ HatsPageHandler::HatsPageHandler(
 void HatsPageHandler::OnSurveyLoaded() {
   delegate_->OnSurveyLoaded();
 }
+// Triggered by onSurveyCompleted() call in TS.
+void HatsPageHandler::OnSurveyCompleted() {
+  delegate_->OnSurveyCompleted();
+}
 
 // Triggered by onSurveyClosed() call in TS.
 void HatsPageHandler::OnSurveyClosed() {

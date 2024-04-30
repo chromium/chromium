@@ -22,6 +22,7 @@ class HatsPageHandlerDelegate {
   // Returns the product specific data associated with this survey.
   virtual base::Value::Dict GetProductSpecificDataJson() = 0;
   virtual void OnSurveyLoaded() = 0;
+  virtual void OnSurveyCompleted() = 0;
   virtual void OnSurveyClosed() = 0;
 };
 
@@ -38,6 +39,7 @@ class HatsPageHandler : public hats::mojom::PageHandler {
 
   // hats::mojom::PageHandler:
   void OnSurveyLoaded() override;
+  void OnSurveyCompleted() override;
   void OnSurveyClosed() override;
 
  private:
