@@ -421,7 +421,8 @@ public class AwSettings {
 
     private void flushBackForwardCacheOnUiThreadLocked() {
         synchronized (mAwSettingsLock) {
-            mEventHandler.maybePostOnUiThread(() -> flushBackForwardCache(mWebContents));
+            WebContents contents = mWebContents;
+            mEventHandler.maybePostOnUiThread(() -> flushBackForwardCache(contents));
         }
     }
 
