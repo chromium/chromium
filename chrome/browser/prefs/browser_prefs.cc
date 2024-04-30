@@ -1011,6 +1011,12 @@ constexpr char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 constexpr char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 04/2024
+constexpr char kLastUploadedEuiccStatusPrefLegacy[] =
+    "esim.last_upload_euicc_status";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Deprecated 03/2024.
 constexpr char kShowInternalAccessibilityTree[] =
     "accessibility.show_internal_accessibility_tree";
@@ -1169,6 +1175,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Deprecated 03/2024.
   registry->RegisterBooleanPref(kOobeGuestAcceptedTos, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 04/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDictionaryPref(kLastUploadedEuiccStatusPrefLegacy);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -2398,6 +2409,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 03/2024.
   local_state->ClearPref(kOobeGuestAcceptedTos);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 04/2024 .
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kLastUploadedEuiccStatusPrefLegacy);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

@@ -53,23 +53,6 @@ class EuiccStatusUploader : public ash::NetworkPolicyObserver,
                       PrefService* local_state,
                       IsDeviceActiveCallback is_device_managed_callback);
 
-  // TODO(b/281904820): Remove once the SM-DS Support feature is fully launched.
-  //
-  // WARNING: This format is deprecated as part of the SM-DS Support feature and
-  // is being replaced with |kLastUploadedEuiccStatusPref|.
-  //
-  // A local state preference that stores the last uploaded Euicc status in such
-  // format:
-  // {
-  //    euicc_count: integer
-  //    esim_profiles: [
-  //      iccid : string,
-  //      smdp_address : string
-  //    ]
-  // }
-  //
-  static const char kLastUploadedEuiccStatusPrefLegacy[];
-
   // A local state preference that stores the last uploaded Euicc status in the
   // following format:
   // {

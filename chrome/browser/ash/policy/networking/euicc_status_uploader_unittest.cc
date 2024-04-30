@@ -327,9 +327,7 @@ class EuiccStatusUploaderTest : public testing::Test {
 
   const base::Value& GetStoredPref() {
     return local_state_.GetValue(
-        ash::features::IsSmdsSupportEnabled()
-            ? EuiccStatusUploader::kLastUploadedEuiccStatusPref
-            : EuiccStatusUploader::kLastUploadedEuiccStatusPrefLegacy);
+        EuiccStatusUploader::kLastUploadedEuiccStatusPref);
   }
 
   std::string GetStoredPrefString() {
@@ -439,12 +437,6 @@ class EuiccStatusUploaderTest : public testing::Test {
         RequestsAreEqual(*EuiccStatusUploader::ConstructRequestFromStatus(
                              expected_status.GetDict(), clear_profile_list),
                          *cloud_policy_client_.GetLastRequest()));
-  }
-
-  void SetLastUploadedValueLegacy(const std::string& last_value) {
-    DCHECK(!ash::features::IsSmdsSupportEnabled());
-    local_state_.Set(EuiccStatusUploader::kLastUploadedEuiccStatusPrefLegacy,
-                     base::test::ParseJson(last_value));
   }
 
   void SetLastUploadedValue(const std::string& last_value) {
@@ -654,62 +646,6 @@ TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, TwoProfiles) {
   ValidateUploadedStatus(kEuiccStatus_TwoProfiles_Legacy,
                          /*clear_profile_list=*/false);
   CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
-}
-
-TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, SameValueAsBefore) {
-  // Make server accept requests.
-  SetServerSuccessStatus(true);
-  // Mark the current state as already uploaded.
-  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
-  SetLastUploadedValueLegacy(kEuiccStatus_OneProfile_Legacy);
-
-  auto status_uploader = CreateStatusUploader();
-  // No value is uploaded since it has been previously sent.
-  EXPECT_EQ(GetRequestCount(), 0);
-  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
-}
-
-TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, NewValue) {
-  // Make server accept requests.
-  SetServerSuccessStatus(true);
-  // Set up a value different from one that was previously uploaded.
-  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
-  SetLastUploadedValueLegacy(kEuiccStatus_Empty);
-
-  auto status_uploader = CreateStatusUploader();
-  // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatus_OneProfile_Legacy,
-                         /*clear_profile_list=*/false);
-  CheckHistogram(/*total_count=*/1, /*success_count=*/1, /*failed_count=*/0);
-}
-
-TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled, ResetRequest) {
-  // Make server accept requests.
-  SetServerSuccessStatus(true);
-  // Set up a value different from one that was previously uploaded.
-  SetUpDeviceProfilesLegacy(kEuiccTestData_OneProfile);
-  SetLastUploadedValueLegacy(kEuiccStatus_Empty);
-
-  auto status_uploader = CreateStatusUploader();
-  // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatus_OneProfile_Legacy,
-                         /*clear_profile_list=*/false);
-
-  // Reset remote command was received and executed.
-  ExecuteResetCommandLegacy(status_uploader.get());
-  // Request has been sent.
-  EXPECT_EQ(GetRequestCount(), 3);
-
-  ValidateUploadedStatus(kEuiccStatus_AfterReset,
-                         /*clear_profile_list=*/true);
-
-  // Send the reset command again.
-  ExecuteResetCommandLegacy(status_uploader.get());
-  // Request will be force-sent again because we've received a reset command.
-  EXPECT_EQ(GetRequestCount(), 4);
-
-  ValidateUploadedStatus(kEuiccStatus_AfterReset,
-                         /*clear_profile_list=*/true);
 }
 
 TEST_F(EuiccStatusUploaderTest_SmdsSupportDisabled,
