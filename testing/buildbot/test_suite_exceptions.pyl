@@ -2189,6 +2189,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.content_unittests.filter',
         ],
       },
+      'win-rel-cft': {
+        # crbug.com/337984655
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.content_unittests.filter',
+        ],
+      },
       'win10-code-coverage': {
         'swarming': {
           'shards': 2,

@@ -218,6 +218,7 @@ source_set("content_unittests_filters") {
     "//testing/buildbot/filters/android.mte.content_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.content_unittests.filter",
     "//testing/buildbot/filters/webrtc.content_unittests.filter",
+    "//testing/buildbot/filters/win.win-rel-cft.content_unittests.filter",
   ]
 }
 
