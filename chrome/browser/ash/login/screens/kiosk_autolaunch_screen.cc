@@ -20,12 +20,14 @@ namespace ash {
 
 // static
 std::string KioskAutolaunchScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::COMPLETED:
       return "Completed";
     case Result::CANCELED:
       return "Canceled";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 KioskAutolaunchScreen::KioskAutolaunchScreen(

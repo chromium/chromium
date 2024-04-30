@@ -74,12 +74,14 @@ bool IsInputConnected(
 
 // static
 std::string HIDDetectionScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NEXT:
       return "Next";
     case Result::SKIPPED_FOR_TESTS:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 bool HIDDetectionScreen::CanShowScreen() {

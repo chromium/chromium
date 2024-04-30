@@ -30,6 +30,7 @@ namespace ash {
 
 // static
 std::string ApplyOnlinePasswordScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
@@ -38,6 +39,7 @@ std::string ApplyOnlinePasswordScreen::GetResultString(Result result) {
     case Result::kError:
       return "Error";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 ApplyOnlinePasswordScreen::ApplyOnlinePasswordScreen(

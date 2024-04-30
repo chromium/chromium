@@ -46,9 +46,10 @@ bool isOwner(const AccountId& account_id) {
 
 // static
 std::string LocalDataLossWarningScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kRemoveUser:
-      return "removeUser";
+      return "RemoveUser";
     case Result::kBackToLocalAuth:
       return "Back";
     case Result::kBackToOnlineAuth:
@@ -58,6 +59,7 @@ std::string LocalDataLossWarningScreen::GetResultString(Result result) {
     case Result::kCancel:
       return "Cancel";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 LocalDataLossWarningScreen::LocalDataLossWarningScreen(

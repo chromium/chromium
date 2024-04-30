@@ -131,6 +131,7 @@ base::TimeDelta GetWaitTimeout() {
 
 // static
 std::string SyncConsentScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NEXT:
       return "Next";
@@ -139,6 +140,7 @@ std::string SyncConsentScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 // static

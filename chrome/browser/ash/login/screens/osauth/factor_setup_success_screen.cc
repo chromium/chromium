@@ -65,6 +65,7 @@ const base::TimeDelta kTimeoutDiff = base::Seconds(10);
 
 // static
 std::string FactorSetupSuccessScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
@@ -73,6 +74,7 @@ std::string FactorSetupSuccessScreen::GetResultString(Result result) {
     case Result::kTimedOut:
       return "TimedOut";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 FactorSetupSuccessScreen::FactorSetupSuccessScreen(

@@ -73,6 +73,7 @@ void RecordUserAction(const std::string& action_id) {
 
 // static
 std::string PinSetupScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::DONE:
       return "Done";
@@ -83,6 +84,7 @@ std::string PinSetupScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,

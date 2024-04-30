@@ -36,12 +36,14 @@ constexpr const char kDeclinedSetupUserAction[] = "setup-declined";
 
 // static
 std::string MultiDeviceSetupScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NEXT:
       return "Next";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 MultiDeviceSetupScreen::MultiDeviceSetupScreen(

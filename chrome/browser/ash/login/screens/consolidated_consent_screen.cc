@@ -124,6 +124,7 @@ void RecordRecoveryOptinResult(
 }  // namespace
 
 std::string ConsolidatedConsentScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::ACCEPTED:
       return "AcceptedRegular";
@@ -134,6 +135,7 @@ std::string ConsolidatedConsentScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 ConsolidatedConsentScreen::ConsolidatedConsentScreen(

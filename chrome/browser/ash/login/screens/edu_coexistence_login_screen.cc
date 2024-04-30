@@ -35,12 +35,14 @@ EduCoexistenceLoginScreen* EduCoexistenceLoginScreen::Get(
 
 // static
 std::string EduCoexistenceLoginScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::DONE:
       return "Done";
     case Result::SKIPPED:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 EduCoexistenceLoginScreen::EduCoexistenceLoginScreen(

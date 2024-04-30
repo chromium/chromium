@@ -18,8 +18,10 @@ class PlaceholderScreen;
 // WebUI representation.
 class PlaceholderScreenView {
  public:
+  // LINT.IfChange(UsageMetrics)
   inline constexpr static StaticOobeScreenId kScreenId{"placeholder",
                                                        "PlaceholderScreen"};
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 
   virtual ~PlaceholderScreenView() = default;
 

@@ -38,6 +38,7 @@ constexpr char kUserActionRetry[] = "retry";
 
 // static
 std::string CryptohomeRecoverySetupScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
@@ -46,6 +47,7 @@ std::string CryptohomeRecoverySetupScreen::GetResultString(Result result) {
     case Result::SKIPPED:
       return "Skipped";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 CryptohomeRecoverySetupScreen::CryptohomeRecoverySetupScreen(

@@ -84,12 +84,14 @@ void RecordGeolocationResolve(MarketingOptInScreen::GeolocationEvent event) {
 
 // static
 std::string MarketingOptInScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NEXT:
       return "Next";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 MarketingOptInScreen::MarketingOptInScreen(

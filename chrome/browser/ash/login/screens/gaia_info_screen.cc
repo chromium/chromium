@@ -17,11 +17,12 @@ namespace ash {
 
 // static
 std::string GaiaInfoScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kManual:
       return "Manual";
     case Result::kEnterQuickStart:
-      return "Enter Quick Start";
+      return "EnterQuickStart";
     case Result::kQuickStartOngoing:
       return BaseScreen::kNotApplicable;
     case Result::kBack:
@@ -29,6 +30,7 @@ std::string GaiaInfoScreen::GetResultString(Result result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 GaiaInfoScreen::GaiaInfoScreen(base::WeakPtr<GaiaInfoScreenView> view,

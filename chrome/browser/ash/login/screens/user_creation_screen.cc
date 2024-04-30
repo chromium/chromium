@@ -37,6 +37,7 @@ UserCreationScreen::UserCreationScreenExitTestDelegate* test_exit_delegate =
 
 // static
 std::string UserCreationScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::SIGNIN:
       return "SignIn";
@@ -57,6 +58,7 @@ std::string UserCreationScreen::GetResultString(Result result) {
     case Result::SKIPPED:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 UserCreationScreen::UserCreationScreen(base::WeakPtr<UserCreationView> view,

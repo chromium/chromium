@@ -22,12 +22,14 @@ namespace ash {
 
 // static
 std::string DemoSetupScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kCompleted:
       return "Completed";
     case Result::kCanceled:
       return "Canceled";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 DemoSetupScreen::DemoSetupScreen(base::WeakPtr<DemoSetupScreenView> view,

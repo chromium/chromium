@@ -17,10 +17,12 @@ constexpr char kUserActionBack[] = "back";
 
 // static
 std::string OnlineAuthenticationScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::BACK:
       return "Back";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 OnlineAuthenticationScreen::OnlineAuthenticationScreen(

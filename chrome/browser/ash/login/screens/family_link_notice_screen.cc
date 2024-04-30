@@ -22,12 +22,14 @@ constexpr char kUserActionContinue[] = "continue";
 }  // namespace
 
 std::string FamilyLinkNoticeScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kDone:
       return "Done";
     case Result::kSkipped:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 FamilyLinkNoticeScreen::FamilyLinkNoticeScreen(

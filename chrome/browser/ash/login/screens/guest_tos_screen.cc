@@ -47,6 +47,7 @@ std::string GetCrosEulaOnlineUrl() {
 
 // static
 std::string GuestTosScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::ACCEPT:
       return "Accept";
@@ -55,6 +56,7 @@ std::string GuestTosScreen::GetResultString(Result result) {
     case Result::CANCEL:
       return "Cancel";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 GuestTosScreen::GuestTosScreen(base::WeakPtr<GuestTosScreenView> view,

@@ -105,6 +105,7 @@ void RecordUpdateCheckTimeout(bool timeout) {
 
 // static
 std::string UpdateScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::UPDATE_NOT_REQUIRED:
       return "UpdateNotRequired";
@@ -117,6 +118,7 @@ std::string UpdateScreen::GetResultString(Result result) {
     case Result::UPDATE_CHECK_TIMEOUT:
       return "UpdateCheckTimeout";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 UpdateScreen::UpdateScreen(base::WeakPtr<UpdateView> view,

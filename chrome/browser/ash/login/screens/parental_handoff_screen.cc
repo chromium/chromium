@@ -38,12 +38,14 @@ std::u16string GetActiveUserName() {
 // static
 std::string ParentalHandoffScreen::GetResultString(
     ParentalHandoffScreen::Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case ParentalHandoffScreen::Result::kDone:
       return "Done";
     case ParentalHandoffScreen::Result::kSkipped:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 ParentalHandoffScreen::ParentalHandoffScreen(

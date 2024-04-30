@@ -28,6 +28,7 @@ constexpr char kUserActionNextButtonClicked[] = "next";
 
 // static
 std::string TunaScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kNext:
       return "Next";
@@ -36,6 +37,7 @@ std::string TunaScreen::GetResultString(Result result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 // static

@@ -45,6 +45,7 @@ bool IsUserEnterpriseManaged() {
 
 // static
 std::string PasswordSelectionScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
@@ -61,6 +62,7 @@ std::string PasswordSelectionScreen::GetResultString(Result result) {
     case Result::GAIA_PASSWORD_ENTERPRISE:
       return "GaiaPasswordEnterprise";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 PasswordSelectionScreen::PasswordSelectionScreen(

@@ -173,6 +173,7 @@ std::string GetApplicationLocale() {
 
 // static
 std::string WelcomeScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kNext:
       return "Next";
@@ -185,6 +186,7 @@ std::string WelcomeScreen::GetResultString(Result result) {
     case Result::kQuickStart:
       return "QuickStart";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 WelcomeScreen::WelcomeScreen(base::WeakPtr<WelcomeView> view,

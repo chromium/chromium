@@ -56,6 +56,7 @@ void RecordScreenAction(GaiaPasswordChangedScreen::UserAction value) {
 
 // static
 std::string GaiaPasswordChangedScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::CANCEL:
       return "Cancel";
@@ -66,6 +67,7 @@ std::string GaiaPasswordChangedScreen::GetResultString(Result result) {
     case Result::CRYPTOHOME_ERROR:
       return "CryptohomeError";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 GaiaPasswordChangedScreen::GaiaPasswordChangedScreen(

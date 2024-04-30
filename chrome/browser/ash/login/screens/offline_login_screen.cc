@@ -63,12 +63,14 @@ void RecordEvent(OfflineLoginEvent event) {
 
 // static
 std::string OfflineLoginScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::BACK:
       return "Back";
     case Result::RELOAD_ONLINE_LOGIN:
       return "ReloadOnlineLogin";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 OfflineLoginScreen::OfflineLoginScreen(base::WeakPtr<OfflineLoginView> view,

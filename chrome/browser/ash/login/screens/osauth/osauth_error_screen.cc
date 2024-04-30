@@ -33,6 +33,7 @@ constexpr const char kUserActionCanel[] = "cancelLoginFlow";
 
 // static
 std::string OSAuthErrorScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kAbortSignin:
       return "AbortSignin";
@@ -43,6 +44,7 @@ std::string OSAuthErrorScreen::GetResultString(Result result) {
     case Result::kProceedAuthenticated:
       return "ProceedAuthenticated";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 OSAuthErrorScreen::OSAuthErrorScreen(base::WeakPtr<OSAuthErrorScreenView> view,

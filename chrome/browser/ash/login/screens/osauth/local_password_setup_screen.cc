@@ -37,6 +37,7 @@ constexpr const char kUserActionBack[] = "back";
 
 // static
 std::string LocalPasswordSetupScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kDone:
       return "Done";
@@ -45,6 +46,7 @@ std::string LocalPasswordSetupScreen::GetResultString(Result result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 LocalPasswordSetupScreen::LocalPasswordSetupScreen(

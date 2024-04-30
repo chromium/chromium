@@ -53,6 +53,7 @@ namespace ash {
 
 // static
 std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kObsoleteSucceeded:
       return "Succeeded";
@@ -75,6 +76,7 @@ std::string CryptohomeRecoveryScreen::GetResultString(Result result) {
     case Result::kFallbackOnline:
       return "FallbackOnline";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 CryptohomeRecoveryScreen::CryptohomeRecoveryScreen(

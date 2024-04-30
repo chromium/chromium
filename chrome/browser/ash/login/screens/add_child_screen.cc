@@ -26,6 +26,7 @@ constexpr char kUserActionChildAccountCreate[] = "child-account-create";
 
 // static
 std::string AddChildScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::CHILD_SIGNIN:
       return "SignInAsChild";
@@ -40,6 +41,7 @@ std::string AddChildScreen::GetResultString(Result result) {
     case Result::SKIPPED:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 AddChildScreen::AddChildScreen(base::WeakPtr<AddChildScreenView> view,

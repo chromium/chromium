@@ -85,6 +85,7 @@ void RecordOobeConsumerUpdateAvailableHistogram() {
 
 // static
 std::string ConsumerUpdateScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::BACK:
       return "Back";
@@ -103,6 +104,7 @@ std::string ConsumerUpdateScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 ConsumerUpdateScreen::ConsumerUpdateScreen(

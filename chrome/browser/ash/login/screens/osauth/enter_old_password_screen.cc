@@ -37,6 +37,7 @@ constexpr const char kUserActionSubmitOldPassword[] = "submit";
 
 // static
 std::string EnterOldPasswordScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kForgotOldPassword:
       return "ForgotOldPassword";
@@ -45,6 +46,7 @@ std::string EnterOldPasswordScreen::GetResultString(Result result) {
     case Result::kAuthenticated:
       return "Authenticated";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 EnterOldPasswordScreen::EnterOldPasswordScreen(

@@ -84,6 +84,7 @@ chromeos::network_config::mojom::ConfigPropertiesPtr CreateNetworkConfig(
 
 // static
 std::string NetworkScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::CONNECTED:
       return "Connected";
@@ -94,6 +95,7 @@ std::string NetworkScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 NetworkScreen::NetworkScreen(base::WeakPtr<NetworkScreenView> view,

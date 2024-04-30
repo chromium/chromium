@@ -17,6 +17,7 @@ namespace ash {
 
 // static
 std::string PackagedLicenseScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::DONT_ENROLL:
       return "DontEnroll";
@@ -27,6 +28,7 @@ std::string PackagedLicenseScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE_SKIP_TO_ENROLL:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 PackagedLicenseScreen::PackagedLicenseScreen(

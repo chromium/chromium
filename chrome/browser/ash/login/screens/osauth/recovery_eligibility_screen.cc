@@ -35,12 +35,14 @@ bool IsUserEnterpriseManaged() {
 
 // static
 std::string RecoveryEligibilityScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::PROCEED:
       return "Proceed";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 // static

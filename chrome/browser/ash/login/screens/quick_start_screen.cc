@@ -32,6 +32,7 @@ base::Value::List ConvertQrCode(quick_start::QRCode::PixelData qr_code) {
 
 // static
 std::string QuickStartScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::CANCEL_AND_RETURN_TO_WELCOME:
       return "CancelAndReturnToWelcome";
@@ -48,6 +49,7 @@ std::string QuickStartScreen::GetResultString(Result result) {
     case Result::FALLBACK_URL_ON_GAIA:
       return "FallbackUrlOnGaia";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 QuickStartScreen::QuickStartScreen(

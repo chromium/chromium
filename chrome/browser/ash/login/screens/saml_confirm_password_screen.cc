@@ -19,12 +19,14 @@ namespace ash {
 
 // static
 std::string SamlConfirmPasswordScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kCancel:
       return "Cancel";
     case Result::kTooManyAttempts:
       return "TooManyAttempts";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 SamlConfirmPasswordScreen::SamlConfirmPasswordScreen(

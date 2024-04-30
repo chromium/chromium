@@ -19,10 +19,12 @@ constexpr char kUserActionRetry[] = "retry";
 
 // static
 std::string UserAllowlistCheckScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::RETRY:
       return "Retry";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 UserAllowlistCheckScreen::UserAllowlistCheckScreen(

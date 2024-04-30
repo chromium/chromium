@@ -41,6 +41,7 @@ bool IsAllInfoFetched(const AccountInfo& info) {
 
 // static
 std::string LocaleSwitchScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kLocaleFetchFailed:
       return "LocaleFetchFailed";
@@ -57,6 +58,7 @@ std::string LocaleSwitchScreen::GetResultString(Result result) {
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 LocaleSwitchScreen::LocaleSwitchScreen(base::WeakPtr<LocaleSwitchView> view,

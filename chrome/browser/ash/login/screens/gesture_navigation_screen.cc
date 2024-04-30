@@ -34,6 +34,7 @@ constexpr const char kGestureBackPage[] = "gestureBack";
 
 // static
 std::string GestureNavigationScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NEXT:
       return "Next";
@@ -42,6 +43,7 @@ std::string GestureNavigationScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 GestureNavigationScreen::GestureNavigationScreen(
