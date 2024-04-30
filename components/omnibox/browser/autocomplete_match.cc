@@ -576,6 +576,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TILE_MOST_VISITED_SITE:
     case Type::OPEN_TAB:
     case Type::HISTORY_EMBEDDINGS:
+    case Type::FEATURED_ENTERPRISE_SEARCH:
       return use_chrome_refresh_icons ? omnibox::kPageChromeRefreshIcon
                                       : omnibox::kPageIcon;
 
@@ -604,9 +605,6 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::CLIPBOARD_IMAGE:
     case Type::TILE_SUGGESTION:
     case Type::TILE_REPEATABLE_QUERY:
-    case Type::FEATURED_ENTERPRISE_SEARCH:
-      // TODO(b/308934968): Use favicon for featured enterprise search. The
-      //                    search icon used here is only a placeholder.
       return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
                                       : vector_icons::kSearchIcon;
 
