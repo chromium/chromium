@@ -196,6 +196,9 @@ class EnclaveManager : public KeyedService {
     kUsesChromeUI,
   };
   UvKeyState uv_key_state() const;
+  // Calls the given callback with `true` if the current platform supports
+  // making user-verifying keys.
+  static void AreUserVerifyingKeysSupported(Callback callback);
 
   // Get an access token for contacting the enclave.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> GetAccessToken(

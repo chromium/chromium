@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -73,6 +74,10 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   GPMEnclaveController& operator=(GPMEnclaveController&&) = delete;
   ~GPMEnclaveController() override;
 
+  // Returns true if the enclave is active for this request. Crashes the address
+  // space if this hasn't yet been resolved.
+  bool is_active() const;
+
   // Returns true if the enclave state is loaded to the point where the UI
   // can be shown. If false, then the `OnReadyForUI` event will be triggered
   // on the model when ready.
@@ -96,19 +101,28 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
  private:
   Profile* GetProfile() const;
 
+  void OnUVCapabilityKnown(bool can_create_uv_keys);
+
   // Called when the EnclaveManager has finished loading its state from the
   // disk.
   void OnEnclaveLoaded();
 
   // Starts downloading the state of the account from the security domain
   // service.
-  void DownloadAccountState(Profile* profile);
+  void DownloadAccountState();
+
+  // Called when fetching the account state took too long.
+  void OnAccountStateTimeOut();
 
   // Called when the account state has finished downloading.
   void OnAccountStateDownloaded(
       std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
+
+  // Called when enough state has been loaded that the initial UI can be shown.
+  // If `active` then the enclave will be a valid mechanism.
+  void SetActive(bool active);
 
   // EnclaveManager::Observer:
   void OnKeysStored() override;
@@ -125,7 +139,7 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   void OnGPMSelected() override;
 
   // Called when a GPM passkey is selected from a list of credentials.
-  void OnGPMPasskeySelected(base::span<const uint8_t> credential_id) override;
+  void OnGPMPasskeySelected(std::vector<uint8_t> credential_id) override;
 
   // Sets the UI to the correct PIN prompt for the type of PIN configured.
   void PromptForPin();
@@ -192,6 +206,11 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   std::optional<std::string> pin_;
   std::vector<sync_pb::WebauthnCredentialSpecifics> creds_;
 
+  std::optional<bool> is_active_ = false;
+
+  // Whether the system can make UV keys.
+  std::optional<bool> can_make_uv_keys_;
+
   // have_added_device_ is set to true if the local device was added to the
   // security domain during this transaction. In this case, the security domain
   // secret is available and can be used to satisfy user verification.
@@ -221,13 +240,19 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   std::unique_ptr<trusted_vault::TrustedVaultConnection>
       vault_connection_override_;
 
+  // Whether the initial UI is being blocked while enclave state is loaded.
+  bool ready_for_ui_ = false;
+
   // Whether showing the UI was delayed because the result from the security
   // domain service is needed.
-  bool waiting_for_account_state_to_start_enclave_ = false;
+  base::OnceClosure waiting_for_account_state_;
 
   // If changing a GPM PIN, this holds a ReAuthentication Proof Token (RAPT), if
   // the user is authenticating the request via doing a GAIA reauth.
   std::optional<std::string> rapt_ = std::nullopt;
+
+  // A timeout to prevent waiting for the security domain service forever.
+  std::unique_ptr<base::OneShotTimer> account_state_timeout_;
 
   // Set to true when the user initiates reset GPM pin flow during UV.
   bool changing_gpm_pin_ = false;

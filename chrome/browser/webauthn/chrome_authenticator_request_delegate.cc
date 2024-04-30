@@ -846,7 +846,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
         enclave_controller_->SetTrustedVaultConnectionForTesting(
             std::move(pending_trusted_vault_connection_));
       }
-      dialog_controller_->set_enclave_enabled(true);
     }
   }
 
@@ -1084,61 +1083,14 @@ void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
 
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnFilterGooglePasskeys) &&
-      dialog_model()->relying_party_id == kGoogleRpId &&
-      base::ranges::any_of(data.recognized_credentials,
-                           IsCredentialFromPlatformAuthenticator)) {
-    // Regrettably, Chrome will create webauthn credentials for things other
-    // than authentication (e.g. credit card autofill auth) under the rp id
-    // "google.com". To differentiate those credentials from actual passkeys you
-    // can use to sign in, Google adds a prefix to the user id.
-    // This code filter passkeys that do not match that prefix.
-    FilterGoogleAuthPasskeys(&data.recognized_credentials);
-    if (data.has_platform_authenticator_credential ==
-            device::FidoRequestHandlerBase::RecognizedCredential::
-                kHasRecognizedCredential &&
-        base::ranges::none_of(data.recognized_credentials,
-                              IsCredentialFromPlatformAuthenticator)) {
-      data.has_platform_authenticator_credential = device::
-          FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
-    }
-  }
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
-      (can_use_synced_phone_passkeys_ || enclave_controller_) &&
-      !IsVirtualEnvironmentEnabled()) {
-    GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
-  }
-  if (!credential_filter_.empty()) {
-    std::vector<device::DiscoverableCredentialMetadata> filtered_list;
-    for (auto& platform_credential : data.recognized_credentials) {
-      for (auto& filter_credential : credential_filter_) {
-        if (platform_credential.cred_id == filter_credential.id) {
-          filtered_list.push_back(platform_credential);
-          break;
-        }
-      }
-    }
-    data.recognized_credentials = std::move(filtered_list);
-  }
-
-  if (g_observer) {
-    g_observer->OnTransportAvailabilityEnumerated(this, &data);
-  }
-
   if (disable_ui_) {
     return;
   }
 
-  if (dialog_model_->step() !=
-      AuthenticatorRequestDialogModel::Step::kNotStarted) {
-    dialog_controller_->OnTransportAvailabilityChanged(std::move(data));
-    return;
-  }
-
   if (enclave_controller_ && !enclave_controller_->ready_for_ui()) {
-    // Delay showing UI until the enclave state is loaded. This avoids some
-    // complexity later that would other come from dealing with this case.
-    // Showing the UI is handled in `OnReadyForUI`.
+    // Delay showing UI until the enclave state is loaded. It's only
+    // after this point that we know whether the enclave will be active
+    // for this request or not.
     pending_transport_availability_info_ = std::make_unique<
         device::FidoRequestHandlerBase::TransportAvailabilityInfo>(
         std::move(data));
@@ -1289,8 +1241,26 @@ content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
 }
 
 void ChromeAuthenticatorRequestDelegate::ShowUI(
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
-  dialog_controller_->StartFlow(std::move(data), is_conditional_);
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+      (can_use_synced_phone_passkeys_ ||
+       (enclave_controller_ && enclave_controller_->is_active())) &&
+      !IsVirtualEnvironmentEnabled()) {
+    GetPhoneContactableGpmPasskeysForRpId(&tai.recognized_credentials);
+  }
+  FilterRecognizedCredentials(&tai);
+
+  if (g_observer) {
+    g_observer->OnTransportAvailabilityEnumerated(this, &tai);
+  }
+
+  if (dialog_model_->step() !=
+      AuthenticatorRequestDialogModel::Step::kNotStarted) {
+    dialog_controller_->OnTransportAvailabilityChanged(std::move(tai));
+    return;
+  }
+
+  dialog_controller_->StartFlow(std::move(tai), is_conditional_);
 
   if (g_observer) {
     g_observer->UIShown(this);
@@ -1354,7 +1324,7 @@ void ChromeAuthenticatorRequestDelegate::OnCableEvent(
 
 void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
     std::vector<device::DiscoverableCredentialMetadata>* passkeys) {
-  // If `gpm_credentials_` is set then the sync entities have already been
+  // If `enclave_controller_` is set then the sync entities have already been
   // fetched and should be reused so that a consistent set of entities is used
   // throughout.
   std::vector<sync_pb::WebauthnCredentialSpecifics> credentials_vec;
@@ -1381,6 +1351,42 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
             std::vector<uint8_t>(passkey.user_id().begin(),
                                  passkey.user_id().end()),
             passkey.user_name(), passkey.user_display_name()));
+  }
+}
+
+void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthnFilterGooglePasskeys) &&
+      dialog_model()->relying_party_id == kGoogleRpId &&
+      base::ranges::any_of(tai->recognized_credentials,
+                           IsCredentialFromPlatformAuthenticator)) {
+    // Regrettably, Chrome will create webauthn credentials for things other
+    // than authentication (e.g. credit card autofill auth) under the rp id
+    // "google.com". To differentiate those credentials from actual passkeys you
+    // can use to sign in, Google adds a prefix to the user id.
+    // This code filter passkeys that do not match that prefix.
+    FilterGoogleAuthPasskeys(&tai->recognized_credentials);
+    if (tai->has_platform_authenticator_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential &&
+        base::ranges::none_of(tai->recognized_credentials,
+                              IsCredentialFromPlatformAuthenticator)) {
+      tai->has_platform_authenticator_credential = device::
+          FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
+    }
+  }
+
+  if (!credential_filter_.empty()) {
+    std::vector<device::DiscoverableCredentialMetadata> filtered_list;
+    for (auto& platform_credential : tai->recognized_credentials) {
+      for (auto& filter_credential : credential_filter_) {
+        if (platform_credential.cred_id == filter_credential.id) {
+          filtered_list.push_back(platform_credential);
+          break;
+        }
+      }
+    }
+    tai->recognized_credentials = std::move(filtered_list);
   }
 }
 

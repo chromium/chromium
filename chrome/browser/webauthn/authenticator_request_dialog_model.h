@@ -98,6 +98,8 @@ class AuthenticatorRequestDialogController;
   /* powered. Valid action when at step: kBlePowerOnManual, */                \
   /* kBlePowerOnAutomatic. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(ContinueWithFlowAfterBleAdapterPowered)       \
+  /* Called when the enclave authenticator is available for a request */      \
+  AUTHENTICATOR_REQUEST_EVENT_0(EnclaveEnabled)                               \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBioEnrollmentDone)                          \
   /* Called when the power state of the Bluetooth adapter has changed. */     \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBluetoothPoweredStateChanged)               \
@@ -169,8 +171,7 @@ class AuthenticatorRequestDialogController;
   /* allows or disallows an attestation permission request. */                \
   AUTHENTICATOR_REQUEST_EVENT_1(OnAttestationPermissionResponse, bool)        \
   /* Called when the user selects a GPM passkey. */                           \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPasskeySelected,                         \
-                                base::span<const uint8_t>)                    \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPasskeySelected, std::vector<uint8_t>)   \
   /* Called when the user enters the GPM pin in the UI (during initial */     \
   /* setup or authentication). */                                             \
   AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPinEntered, const std::u16string&)       \
@@ -600,6 +601,8 @@ class AuthenticatorRequestDialogController
   void HideDialogAndDispatchToPlatformAuthenticator(
       std::optional<device::AuthenticatorType> type = std::nullopt);
 
+  void EnclaveEnabled() override;
+
   void OnCreatePasskeyAccepted() override;
 
   // Called when the transport availability info changes.
@@ -837,7 +840,6 @@ class AuthenticatorRequestDialogController
 
   void set_allow_icloud_keychain(bool);
   void set_should_create_in_icloud_keychain(bool);
-  void set_enclave_enabled(bool);
 
 #if BUILDFLAG(IS_MAC)
   void RecordMacOsStartedHistogram();

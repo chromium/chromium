@@ -615,7 +615,7 @@ std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return label;
 #else
-  return std::string();
+  return std::string("placeholder");
 #endif
 }
 
@@ -2691,6 +2691,18 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
 #else
   return UvKeyState::kNone;
 #endif
+}
+
+// static
+void EnclaveManager::AreUserVerifyingKeysSupported(Callback callback) {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnUseInsecureSoftwareUnexportableKeys)) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return;
+  }
+  crypto::AreUserVerifyingKeysSupported(
+      MakeUserVerifyingKeyConfig(/*options=*/{}), std::move(callback));
 }
 
 std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>

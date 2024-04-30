@@ -91,6 +91,11 @@ BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              "WebAuthenticationEnclaveAuthenticator",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnGpmPin,
+             "WebAuthenticationGpmPin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
 // ChromeOS. Remove in or after M124.
 BASE_FEATURE(kWebAuthnFilterGooglePasskeys,

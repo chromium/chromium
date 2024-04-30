@@ -1601,11 +1601,6 @@ void AuthenticatorRequestDialogController::set_should_create_in_icloud_keychain(
   should_create_in_icloud_keychain_ = is_enabled;
 }
 
-void AuthenticatorRequestDialogController::set_enclave_enabled(
-    bool is_enabled) {
-  enclave_enabled_ = is_enabled;
-}
-
 #if BUILDFLAG(IS_MAC)
 
 // This enum is used in a histogram. Never change assigned values and only add
@@ -1902,6 +1897,10 @@ void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
     for (const auto& credential : model_->creds) {
       if (credential.source == device::AuthenticatorType::kPhone &&
           !priority_phone_index) {
+        continue;
+      }
+      if (credential.source == device::AuthenticatorType::kEnclave &&
+          !enclave_enabled_) {
         continue;
       }
       password_manager::PasskeyCredential& passkey = credentials.emplace_back(
@@ -2592,6 +2591,10 @@ void AuthenticatorRequestDialogController::
 
 void AuthenticatorRequestDialogController::OnCreatePasskeyAccepted() {
   HideDialogAndDispatchToPlatformAuthenticator();
+}
+
+void AuthenticatorRequestDialogController::EnclaveEnabled() {
+  enclave_enabled_ = true;
 }
 
 void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(

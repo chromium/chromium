@@ -287,6 +287,10 @@ class ChromeAuthenticatorRequestDelegate
   void GetPhoneContactableGpmPasskeysForRpId(
       std::vector<device::DiscoverableCredentialMetadata>* passkeys);
 
+  // Update `tai` to remove credentials that aren't applicable to this request.
+  void FilterRecognizedCredentials(
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai);
+
 #if BUILDFLAG(IS_MAC)
   // DaysSinceDate returns the number of days between `formatted_date` (in ISO
   // 8601 format) and `now`. It returns `nullopt` if `formatted_date` cannot be

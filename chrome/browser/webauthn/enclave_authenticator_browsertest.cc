@@ -426,6 +426,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
                                             response->first);
           }
         }));
+
+    fake_uv_provider_.emplace<crypto::ScopedNullUserVerifyingKeyProvider>();
   }
 
   ~EnclaveAuthenticatorBrowserTest() override {
@@ -599,8 +601,20 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   absl::variant<crypto::ScopedNullUserVerifyingKeyProvider,
                 crypto::ScopedFakeUserVerifyingKeyProvider>
       fake_uv_provider_;
-  const base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnEnclaveAuthenticator};
+};
+
+class EnclaveAuthenticatorWithPinBrowserTest
+    : public EnclaveAuthenticatorBrowserTest {
+ public:
+  EnclaveAuthenticatorWithPinBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnEnclaveAuthenticator, device::kWebAuthnGpmPin},
+        /*disabled_features=*/{
+            device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Parses the string resulting from the Javascript snippets that exercise the
@@ -642,7 +656,7 @@ std::tuple<bool, std::string, std::string> ParsePrfResult(
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        RegisterDeviceWithGpmPin_MakeCredential_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -690,7 +704,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, MakeCredentialWithPrf) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       MakeCredentialWithPrf) {
   /* Test script:
    *  - Prerequisites:
    *       Enclave not registered
@@ -772,7 +787,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, MakeCredentialWithPrf) {
   EXPECT_EQ(second, "none");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, GetAssertionWithPrf) {
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       GetAssertionWithPrf) {
   /* Test script:
    *  - Prerequisites:
    *       Enclave not registered
@@ -838,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, GetAssertionWithPrf) {
   EXPECT_EQ(second, "zx7riv8qxdelsyWdRRSZSrzFji35j4fZFnr30gKf8r8=");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        RegisterDeviceWithGpmPin_MakeCredentialWithUV_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -888,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        MakeCredential_RecoverWithGPMPIN_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -952,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        MakeCredential_RecoverWithLSKF_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -1017,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        RecoverWithLSKF_GetAssertion_Success) {
   /* Test script:
    *  - Prerequisites:
@@ -1075,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        RegisterDeviceWithGpmPin_UVRequestsWithWrongPIN) {
   /* Test script:
    *  - Prerequisites:
@@ -1194,7 +1210,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
             0);
 }
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        GpmPinRegistrationPersistAcrossRestart) {
   /* Test script:
    *  - Prerequisites:
@@ -1259,6 +1275,124 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kReady);
+}
+
+class EnclaveAuthenticatorWithoutPinBrowserTest
+    : public EnclaveAuthenticatorBrowserTest {
+ public:
+  EnclaveAuthenticatorWithoutPinBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnEnclaveAuthenticator},
+        /*disabled_features=*/{
+            device::kWebAuthnGpmPin,
+            device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       NotAvailableWithoutUV) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+  EXPECT_FALSE(
+      request_delegate()->enclave_controller_for_testing()->is_active());
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       NotAvailableForEmptyAccounts) {
+  EnableUVKeySupport();
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+  EXPECT_FALSE(
+      request_delegate()->enclave_controller_for_testing()->is_active());
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       NoGpmCredentialsIfDeviceCannotBeEnrolled) {
+  AddTestPasskeyToModel();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Credential>(m.type);
+      }));
+  EXPECT_FALSE(
+      request_delegate()->enclave_controller_for_testing()->is_active());
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       EnrollAndCreate) {
+  EnableUVKeySupport();
+  security_domain_service_->pretend_there_are_members();
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  EXPECT_TRUE(
+      request_delegate()->enclave_controller_for_testing()->is_active());
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+  dialog_model()->OnTrustThisComputer();
+  model_observer()->WaitForStep();
+
+  EnclaveManagerFactory::GetForProfile(browser()->profile())
+      ->StoreKeys("gaia_id_for_test_gmail.com",
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
 #endif  // !defined(MEMORY_SANITIZER)
