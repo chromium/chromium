@@ -14,11 +14,17 @@ source_set("shortcuts") {
     "document_icon_fetcher.h",
     "fetch_icons_from_document_task.cc",
     "fetch_icons_from_document_task.h",
+    "icon_badging.cc",
+    "icon_badging.h",
     "shortcut_creator.h",
   ]
 
   deps = [
     "//base",
+    "//base/version_info:channel",
+    "//build:branding_buildflags",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/common:channel_info",
     "//components/webapps/common",
     "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
@@ -40,6 +46,20 @@ source_set("shortcuts") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+
+  public = [ "image_test_utils.h" ]
+  sources = [ "image_test_utils.cc" ]
+  public_deps = [
+    ":shortcuts",
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+  ]
+  deps = [ "//ui/gfx/codec" ]
+}
+
 source_set("browser_tests") {
   testonly = true
 
@@ -49,6 +69,7 @@ source_set("browser_tests") {
 
   deps = [
     ":shortcuts",
+    ":test_support",
     "//base",
     "//chrome/browser/ui:ui",
     "//chrome/test:test_support_ui",
@@ -63,13 +84,17 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = []
+  sources = [ "icon_badging_unittest.cc" ]
 
   deps = [
     ":shortcuts",
+    ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx:test_support",
     "//url",
   ]

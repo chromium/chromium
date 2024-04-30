@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/shortcuts/fetch_icons_from_document_task.h"
+#include "chrome/browser/shortcuts/image_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -22,7 +23,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/test/sk_gmock_support.h"
 
@@ -42,37 +42,6 @@ class DocumentIconFetcherTest : public InProcessBrowserTest {
 
   GURL GetPageWithDefaultFavicon() {
     return default_favicon_server_.GetURL("/index.html");
-  }
-
-  base::expected<SkBitmap, std::string> LoadImageFromTestFile(
-      const base::FilePath& relative_path_from_chrome_data) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    // Load image data from test directory.
-    base::FilePath chrome_src_dir;
-    if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
-                                &chrome_src_dir)) {
-      return base::unexpected("Could not find src directory.");
-    }
-
-    base::FilePath image_path =
-        chrome_src_dir.Append(FILE_PATH_LITERAL("chrome/test/data"))
-            .Append(relative_path_from_chrome_data);
-    if (!base::PathExists(image_path)) {
-      return base::unexpected(
-          base::StrCat({"Path does not exist: ", image_path.AsUTF8Unsafe()}));
-    }
-    std::string image_data;
-    if (!base::ReadFileToString(image_path, &image_data)) {
-      return base::unexpected("Could not read file.");
-    }
-
-    SkBitmap image;
-    if (!gfx::PNGCodec::Decode(
-            reinterpret_cast<const uint8_t*>(image_data.data()),
-            image_data.size(), &image)) {
-      return base::unexpected("Could not decode file.");
-    }
-    return image;
   }
 
  private:
