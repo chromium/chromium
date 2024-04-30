@@ -99,9 +99,7 @@ AttributionVerificationMediator CreateDefaultMediator(
 }  // namespace
 
 struct AttributionRequestHelper::VerificationOperation {
-  explicit VerificationOperation(
-      const base::RepeatingCallback<AttributionVerificationMediator()>&
-          create_mediator)
+  explicit VerificationOperation(const MediatorCreator& create_mediator)
       : mediator(create_mediator.Run()) {
     aggregatable_report_ids.reserve(kVerificationTokensPerTrigger);
     for (size_t i = 0; i < kVerificationTokensPerTrigger; ++i) {
@@ -159,8 +157,7 @@ AttributionRequestHelper::CreateIfNeeded(
 std::unique_ptr<AttributionRequestHelper>
 AttributionRequestHelper::CreateForTesting(
     AttributionReportingEligibility eligibility,
-    base::RepeatingCallback<AttributionVerificationMediator()>
-        create_mediator) {
+    MediatorCreator create_mediator) {
   if (!IsNeededForRequest(eligibility)) {
     return nullptr;
   }
@@ -170,7 +167,7 @@ AttributionRequestHelper::CreateForTesting(
 }
 
 AttributionRequestHelper::AttributionRequestHelper(
-    base::RepeatingCallback<AttributionVerificationMediator()> create_mediator)
+    MediatorCreator create_mediator)
     : create_mediator_(std::move(create_mediator)) {}
 
 AttributionRequestHelper::~AttributionRequestHelper() = default;
@@ -199,11 +196,18 @@ void AttributionRequestHelper::Begin(net::URLRequest& request,
     return;
   }
 
+  StartVerificationOperation(request, request.url(), std::move(done));
+}
+
+void AttributionRequestHelper::StartVerificationOperation(
+    net::URLRequest& request,
+    const GURL& url,
+    base::OnceClosure done) {
   verification_operation_ =
       std::make_unique<VerificationOperation>(create_mediator_);
 
   verification_operation_->mediator.GetHeadersForVerification(
-      request.url(),
+      url,
       verification_operation_->Messages(
           /*destination_origin=*/request.isolation_info()
               .top_frame_origin()
@@ -265,18 +269,7 @@ void AttributionRequestHelper::OnDoneFinalizingResponseFromRedirect(
 
   // Now that we've finalized the previous operation, we create a new one for
   // the redirect.
-  verification_operation_ =
-      std::make_unique<VerificationOperation>(create_mediator_);
-
-  verification_operation_->mediator.GetHeadersForVerification(
-      new_url,
-      verification_operation_->Messages(
-          /*destination_origin=*/request.isolation_info()
-              .top_frame_origin()
-              .value()),
-      base::BindOnce(&AttributionRequestHelper::OnDoneGettingHeaders,
-                     weak_ptr_factory_.GetWeakPtr(), std::ref(request),
-                     std::move(done)));
+  StartVerificationOperation(request, new_url, std::move(done));
 }
 
 void AttributionRequestHelper::Finalize(mojom::URLResponseHead& response,

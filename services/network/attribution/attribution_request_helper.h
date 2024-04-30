@@ -39,6 +39,9 @@ struct ResourceRequest;
 // url_loader instance.
 class AttributionRequestHelper {
  public:
+  using MediatorCreator =
+      base::RepeatingCallback<AttributionVerificationMediator()>;
+
   // In the context of an attribution trigger registration request. The
   // destination origin corresponds to the top_frame origin where the trigger is
   // registered. We use this enum to log the status of this value. We can only
@@ -71,8 +74,7 @@ class AttributionRequestHelper {
   // method receives it).
   static std::unique_ptr<AttributionRequestHelper> CreateForTesting(
       mojom::AttributionReportingEligibility,
-      base::RepeatingCallback<AttributionVerificationMediator()>
-          create_mediator);
+      MediatorCreator create_mediator);
 
   ~AttributionRequestHelper();
   AttributionRequestHelper(const AttributionRequestHelper&) = delete;
@@ -106,9 +108,14 @@ class AttributionRequestHelper {
  private:
   struct VerificationOperation;
 
-  explicit AttributionRequestHelper(
-      base::RepeatingCallback<AttributionVerificationMediator()>
-          create_mediator);
+  explicit AttributionRequestHelper(MediatorCreator create_mediator);
+
+  // Orchestrates report verification by calling the attribution verification
+  // mediator and optionally adding headers on the `request`. Called by
+  // `Begin()` and `OnDoneFinalizingResponseFromRedirect()`.
+  void StartVerificationOperation(net::URLRequest& request,
+                                  const GURL& url,
+                                  base::OnceClosure done);
 
   // Continuation of `Begin` after asynchronous
   // mediator_::GetHeadersForVerification concludes.
@@ -140,7 +147,7 @@ class AttributionRequestHelper {
   // A mediator can perform a single verification operation. Each redirect does
   // a verification. We use this callback to generate a new mediator instance
   // per verification operation.
-  base::RepeatingCallback<AttributionVerificationMediator()> create_mediator_;
+  MediatorCreator create_mediator_;
 
   // One request can lead to multiple report verification operations as each
   // redirect requires a distinct operation. `verification_operation_`
