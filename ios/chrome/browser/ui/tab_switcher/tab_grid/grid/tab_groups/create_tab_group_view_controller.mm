@@ -27,6 +27,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+// All elements.
+const CGFloat kMaxHeight = 600;
 
 // View constants.
 const CGFloat kBackgroundAlpha = 0.6;
@@ -557,29 +559,34 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   _creationButtonCompact = [self configuredCreateGroupButtonCompacted:YES];
   _cancelButtonCompact = [self configuredCancelButtonCompacted:YES];
 
-  [self.view addSubview:dotAndFieldContainer];
-  [self.view addSubview:_snapshotsContainer];
-  [self.view addLayoutGuide:snapshotsContainerLayoutGuide];
-  [self.view addSubview:_colorsScrollView];
-  [self.view addSubview:_cancelButtonCompact];
-  [self.view addSubview:_creationButtonCompact];
-  [self.view addSubview:_cancelButton];
-  [self.view addSubview:_creationButton];
+  UIView* container = [[UIView alloc] init];
+  container.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [container addSubview:dotAndFieldContainer];
+  [container addSubview:_snapshotsContainer];
+  [container addLayoutGuide:snapshotsContainerLayoutGuide];
+  [container addSubview:_colorsScrollView];
+  [container addSubview:_cancelButtonCompact];
+  [container addSubview:_creationButtonCompact];
+  [container addSubview:_cancelButton];
+  [container addSubview:_creationButton];
+  [self.view addSubview:container];
+
+  NSLayoutConstraint* keyboardConstraint = [container.bottomAnchor
+      constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor];
+  keyboardConstraint.priority = UILayoutPriorityDefaultLow;
 
   _regularConstraints = @[
     [dotAndFieldContainer.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                                 .leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:container.leadingAnchor
                                     constant:kHorizontalMargin],
     [dotAndFieldContainer.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                              .trailingAnchor
+        constraintLessThanOrEqualToAnchor:container.trailingAnchor
                                  constant:-kHorizontalMargin],
     [_creationButton.bottomAnchor
         constraintEqualToAnchor:_cancelButton.topAnchor],
-    [_cancelButton.bottomAnchor
-        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
-                       constant:-kButtonsMargin],
+    [_cancelButton.bottomAnchor constraintEqualToAnchor:container.bottomAnchor
+                                               constant:-kButtonsMargin],
     [_creationButton.topAnchor
         constraintEqualToAnchor:_colorsScrollView.bottomAnchor
                        constant:kColorListBottomMargin],
@@ -618,29 +625,29 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
 
   _compactConstraints = @[
     [_cancelButtonCompact.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+        constraintEqualToAnchor:container.leadingAnchor
                        constant:kHorizontalMargin],
     [_cancelButtonCompact.trailingAnchor
         constraintLessThanOrEqualToAnchor:dotAndFieldContainer.leadingAnchor],
     [_cancelButtonCompact.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor:container.topAnchor
                        constant:kdotAndFieldContainerMargin],
     [_creationButtonCompact.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:dotAndFieldContainer
                                                  .trailingAnchor],
     [_creationButtonCompact.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:container.trailingAnchor
                        constant:-kHorizontalMargin],
     [_creationButtonCompact.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor:container.topAnchor
                        constant:kdotAndFieldContainerMargin],
     [_colorsScrollView.bottomAnchor
-        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor],
+        constraintEqualToAnchor:container.bottomAnchor],
   ];
 
   [NSLayoutConstraint activateConstraints:@[
     [dotAndFieldContainer.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+        constraintEqualToAnchor:container.topAnchor
                        constant:kdotAndFieldContainerMargin],
     [dotAndFieldContainer.heightAnchor
         constraintGreaterThanOrEqualToConstant:kButtonsHeight],
@@ -649,13 +656,22 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
     [dotAndFieldContainer.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [_colorsScrollView.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                                 .leadingAnchor],
+        constraintGreaterThanOrEqualToAnchor:container.leadingAnchor],
     [_colorsScrollView.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                              .trailingAnchor],
+        constraintLessThanOrEqualToAnchor:container.trailingAnchor],
     [_colorsScrollView.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
+
+    [container.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+    [container.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                                 .leadingAnchor],
+    [container.trailingAnchor
+        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                              .trailingAnchor],
+    [container.heightAnchor constraintLessThanOrEqualToConstant:kMaxHeight],
+    keyboardConstraint,
   ]];
 }
 
