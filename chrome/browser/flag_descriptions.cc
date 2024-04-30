@@ -5912,11 +5912,6 @@ const char kCellularBypassESimInstallationConnectivityCheckDescription[] =
     "Bypass the non-cellular internet connectivity check during eSIM "
     "installation.";
 
-const char kCellularCarrierLockName[] =
-    "Cellular Carrier Lock provisioning manager";
-const char kCellularCarrierLockDescription[] =
-    "Enable support for Carrier Lock configuration on cellular device.";
-
 const char kCellularUseSecondEuiccName[] = "Use second Euicc";
 const char kCellularUseSecondEuiccDescription[] =
     "When enabled Cellular Setup and Settings UI will use the second available "

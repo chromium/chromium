@@ -4228,9 +4228,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kCellularBypassESimInstallationConnectivityCheck)},
-    {"cellular-carrier-lock", flag_descriptions::kCellularCarrierLockName,
-     flag_descriptions::kCellularCarrierLockDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kCellularCarrierLock)},
     {"cellular-use-second-euicc",
      flag_descriptions::kCellularUseSecondEuiccName,
      flag_descriptions::kCellularUseSecondEuiccDescription, kOsCrOS,

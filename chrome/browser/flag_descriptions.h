@@ -3441,9 +3441,6 @@ extern const char kForceControlFaceAeDescription[];
 extern const char kCellularBypassESimInstallationConnectivityCheckName[];
 extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
 
-extern const char kCellularCarrierLockName[];
-extern const char kCellularCarrierLockDescription[];
-
 extern const char kCellularUseSecondEuiccName[];
 extern const char kCellularUseSecondEuiccDescription[];
 

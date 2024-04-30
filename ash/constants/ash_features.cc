@@ -432,7 +432,7 @@ BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
 // This flag will be removed before launch (http://launch/4211912).
 BASE_FEATURE(kCellularCarrierLock,
              "CellularCarrierLock",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kCellularCarrierLockLastConfig{
     &kCellularCarrierLock, "LastConfigDateDelta", -2};
