@@ -32,6 +32,7 @@ extern NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage;
 extern NSString* const kLensKeyboardAccessoryImage;
 extern NSString* const kMulticolorChromeballSymbol;
 extern NSString* const kPageInsightsSymbol;
+extern NSString* const kFedexCarrierImage;
 extern NSString* const kUPSCarrierImage;
 extern NSString* const kUSPSCarrierImage;
 #else
