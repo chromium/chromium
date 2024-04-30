@@ -5,25 +5,18 @@
 #ifndef ASH_APP_LIST_VIEWS_REMOVE_QUERY_CONFIRMATION_DIALOG_H_
 #define ASH_APP_LIST_VIEWS_REMOVE_QUERY_CONFIRMATION_DIALOG_H_
 
-#include <memory>
+#include <string>
 
+#include "ash/style/system_dialog_delegate_view.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/widget/widget_delegate.h"
-
-namespace views {
-class Button;
-class Label;
-class ViewShadow;
-}  // namespace views
 
 namespace ash {
 
 // RemoveQueryConfirmationDialog displays the confirmation dialog for removing
 // a recent query suggestion.
-class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
-  METADATA_HEADER(RemoveQueryConfirmationDialog, views::WidgetDelegateView)
+class RemoveQueryConfirmationDialog : public ash::SystemDialogDelegateView {
+  METADATA_HEADER(RemoveQueryConfirmationDialog, ash::SystemDialogDelegateView)
 
  public:
   // Callback to notify user's confirmation for removing the zero state
@@ -42,25 +35,8 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
 
   ~RemoveQueryConfirmationDialog() override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  views::Button* cancel_button_for_test() { return cancel_button_; }
-  views::Button* accept_button_for_test() { return accept_button_; }
-
  private:
   RemovalConfirmationCallback confirm_callback_;
-  std::unique_ptr<views::ViewShadow> view_shadow_;
-
-  // Whether Jelly style feature is enabled.
-  bool is_jellyroll_enabled_ = false;
-
-  raw_ptr<views::Label> title_ = nullptr;
-  raw_ptr<views::Label> body_ = nullptr;
-  raw_ptr<views::Button> cancel_button_ = nullptr;
-  raw_ptr<views::Button> accept_button_ = nullptr;
 };
 
 }  // namespace ash

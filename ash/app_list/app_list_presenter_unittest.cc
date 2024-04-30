@@ -437,7 +437,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
     views::WidgetDelegate* widget_delegate = widget->widget_delegate();
     views::test::WidgetDestroyedWaiter widget_waiter(widget);
     GestureTapOn(static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
-                     ->cancel_button_for_test());
+                     ->GetCancelButtonForTesting());
     widget_waiter.Wait();
   }
 
@@ -446,7 +446,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
     views::WidgetDelegate* widget_delegate = widget->widget_delegate();
     views::test::WidgetDestroyedWaiter widget_waiter(widget);
     GestureTapOn(static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
-                     ->accept_button_for_test());
+                     ->GetAcceptButtonForTesting());
     widget_waiter.Wait();
   }
 
