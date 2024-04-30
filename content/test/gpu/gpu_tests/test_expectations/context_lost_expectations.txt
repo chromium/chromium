@@ -210,6 +210,9 @@ crbug.com/329145823 [ win release qualcomm ] GpuCrash_InfoForHardwareGpu [ Failu
 crbug.com/329145823 [ mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
+# Flaky driver failure to create device
+crbug.com/329145623 [ linux angle-vulkan graphite-disabled nvidia-0x2184 passthrough release ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
