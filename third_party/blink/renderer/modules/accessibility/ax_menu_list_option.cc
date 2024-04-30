@@ -189,26 +189,25 @@ void AXMenuListOption::GetRelativeBounds(
   if (!ax_menu_list)
     return;
   DCHECK(ax_menu_list->IsMenuList());
-  WTF::Vector<gfx::Rect> options_bounds =
-      To<AXMenuList>(ax_menu_list)->GetOptionsBounds();
-  // TODO(lusanpad): Update fix once we figure out what is causing
-  // https://crbug.com/1429881.
-  unsigned int index =
-      static_cast<unsigned int>(To<HTMLOptionElement>(GetNode())->index());
-  if (options_bounds.size() && index < options_bounds.size()) {
-    out_bounds_in_container = gfx::RectF(options_bounds.at(index));
-  } else {
-#if defined(ADDRESS_SANITIZER)
-    if (options_bounds.size() && index >= options_bounds.size()) {
-      LOG(FATAL) << "Out of bounds option index=" << index
-                 << " should be less than " << options_bounds.size()
-                 << "\n* Object = " << this;
+  if (ax_menu_list->IsExpanded() == kExpandedExpanded) {
+    WTF::Vector<gfx::Rect> options_bounds =
+        AXObjectCache().GetOptionsBounds(*ax_menu_list);
+    if (options_bounds.size()) {
+      unsigned int index =
+          static_cast<unsigned int>(To<HTMLOptionElement>(GetNode())->index());
+      if (index < options_bounds.size()) {
+        out_bounds_in_container = gfx::RectF(options_bounds.at(index));
+        return;
+      }
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Out of bounds option index=" << index << " should be less than "
+          << options_bounds.size() << "\n* Object = " << this;
     }
-#endif
-    if (ax_menu_list->GetLayoutObject()) {
-      ax_menu_list->GetRelativeBounds(out_container, out_bounds_in_container,
-                                      out_container_transform, clips_children);
-    }
+  }
+
+  if (ax_menu_list->GetLayoutObject()) {
+    ax_menu_list->GetRelativeBounds(out_container, out_bounds_in_container,
+                                    out_container_transform, clips_children);
   }
 }
 

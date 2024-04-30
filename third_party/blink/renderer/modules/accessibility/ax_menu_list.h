@@ -56,14 +56,6 @@ class AXMenuList final : public AXNodeObject {
 
   AXObject* GetOrCreateMockPopupChild();
 
-  const WTF::Vector<gfx::Rect>& GetOptionsBounds() const {
-    return options_bounds_;
-  }
-
-  void SetOptionsBounds(const WTF::Vector<gfx::Rect>& options_bounds) {
-    options_bounds_ = options_bounds;
-  }
-
  private:
   friend class AXMenuListOption;
 
@@ -73,8 +65,6 @@ class AXMenuList final : public AXNodeObject {
   void AddChildren() override;
 
   bool IsCollapsed() const;
-
-  WTF::Vector<gfx::Rect> options_bounds_;
 
   Member<AXObject> popup_;
 };
