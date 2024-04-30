@@ -1462,11 +1462,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private void handleDebugIntent(Intent intent) {
         if (ACTION_CLOSE_TABS.equals(intent.getAction())) {
-            getTabModelSelector().closeAllTabs();
+            closeAllTabsHidingTabGroups();
         } else if (MemoryPressureListener.handleDebugIntent(
                 ChromeTabbedActivity.this, intent.getAction())) {
             // Handled.
         }
+    }
+
+    private void closeAllTabsHidingTabGroups() {
+        var selector = getTabModelSelector();
+        var filterProvider = selector.getTabModelFilterProvider();
+        ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
+                .closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
+        ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
+                .closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
     }
 
     private void disablePaintPreviewOnRestore() {
@@ -2933,7 +2942,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     this,
                     getModalDialogManagerSupplier(),
                     getTabModelSelectorSupplier().get(),
-                    () -> getTabModelSelector().closeAllTabs());
+                    this::closeAllTabsHidingTabGroups);
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
             // Close only incognito tabs

@@ -167,7 +167,7 @@ public class TabSuggestionMessageServiceUnitTest {
                 /* editorSupportsActionOnRelatedTabs= */ false);
         action.perform();
 
-        verify(mTabModel).closeMultipleTabs(eq(suggestedTabs), eq(true));
+        verify(mTabGroupModelFilter).closeMultipleTabs(eq(suggestedTabs), eq(true), eq(false));
         verify(mTabSuggestionFeedbackCallback)
                 .onResult(mTabSuggestionFeedbackCallbackArgumentCaptor.capture());
 

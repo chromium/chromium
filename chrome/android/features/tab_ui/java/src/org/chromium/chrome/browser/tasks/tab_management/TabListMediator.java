@@ -1027,7 +1027,9 @@ class TabListMediator {
                         // animation.
                         if (mModel.indexFromId(tabId) == TabModel.INVALID_TAB_INDEX) return;
 
-                        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+                        TabGroupModelFilter filter =
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                        TabModel tabModel = filter.getTabModel();
                         Tab closingTab = TabModelUtils.getTabById(tabModel, tabId);
                         if (closingTab == null) return;
 
@@ -1037,7 +1039,8 @@ class TabListMediator {
                             List<Tab> related = getRelatedTabsForId(tabId);
                             if (related.size() > 1) {
                                 onGroupClosedFrom(tabId);
-                                tabModel.closeMultipleTabs(related, true);
+                                filter.closeMultipleTabs(
+                                        related, /* canUndo= */ true, /* hideTabGroups= */ true);
                                 return;
                             }
                         }
@@ -2557,20 +2560,21 @@ class TabListMediator {
     private void onMenuItemClicked(@IdRes int menuId, int tabId) {
         // TODO(b/337866283): Update the overflow tab group menu action for delete tab group when
         // the associated helper is implemented on the TabGroupModelFilter.
-        if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
-            closeTabGroup(tabId);
+        if (menuId == R.id.close_tab) {
+            closeTabGroup(tabId, /* hideTabGroups= */ true);
+        } else if (menuId == R.id.delete_tab) {
+            closeTabGroup(tabId, /* hideTabGroups= */ false);
         } else if (menuId == R.id.ungroup_tab) {
             ungroupTabGroup(tabId);
         }
     }
 
-    private void closeTabGroup(int tabId) {
-        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+    private void closeTabGroup(int tabId, boolean hideTabGroups) {
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabModel tabModel = filter.getTabModel();
         int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
-        List<Tab> tabs =
-                ((TabGroupModelFilter) mCurrentTabModelFilterSupplier.get())
-                        .getRelatedTabListForRootId(rootId);
-        tabModel.closeMultipleTabs(tabs, false);
+        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
+        filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
     }
 
     private void ungroupTabGroup(int tabId) {

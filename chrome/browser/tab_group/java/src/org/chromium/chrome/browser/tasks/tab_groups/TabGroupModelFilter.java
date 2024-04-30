@@ -1555,7 +1555,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     private boolean canHideTabGroups() {
         Profile profile = getTabModel().getProfile();
-        if (!profile.isNativeInitialized()) return false;
+        if (profile == null || !profile.isNativeInitialized()) return false;
 
         SyncService syncService = SyncServiceFactory.getForProfile(getTabModel().getProfile());
         return !isIncognito()

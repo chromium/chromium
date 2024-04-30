@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 
@@ -62,13 +61,12 @@ public class TabListEditorCloseAction extends TabListEditorAction {
     public boolean performAction(List<Tab> tabs) {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
 
-        TabModel model = getTabGroupModelFilter().getTabModel();
-        if (tabs.size() == 1) {
-            model.closeTab(
-                    tabs.get(0), /* animate= */ false, /* uponExit= */ false, /* canUndo= */ true);
-        } else {
-            model.closeMultipleTabs(tabs, true);
-        }
+        getTabGroupModelFilter()
+                .closeMultipleTabs(
+                        tabs,
+                        /* canUndo= */ true,
+                        /* hideTabGroups= */ editorSupportsActionOnRelatedTabs());
+
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                 TabListEditorActionMetricGroups.CLOSE);
         return true;

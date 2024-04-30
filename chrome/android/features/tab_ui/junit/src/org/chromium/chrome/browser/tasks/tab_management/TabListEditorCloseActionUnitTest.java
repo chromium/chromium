@@ -131,7 +131,9 @@ public class TabListEditorCloseActionUnitTest {
                 1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         Assert.assertTrue(mAction.perform());
-        verify(mTabModel).closeTab(tabs.get(1), false, false, true);
+        verify(mGroupFilter)
+                .closeMultipleTabs(
+                        List.of(tabs.get(1)), /* canUndo= */ true, /* hideTabGroups= */ false);
         verify(mDelegate).hideByAction();
     }
 
@@ -167,14 +169,16 @@ public class TabListEditorCloseActionUnitTest {
         mAction.addActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
-        verify(mTabModel).closeMultipleTabs(tabs, true);
+        verify(mGroupFilter)
+                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ false);
         verify(mDelegate).hideByAction();
 
         helper.waitForFirst();
         mAction.removeActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
-        verify(mTabModel, times(2)).closeMultipleTabs(tabs, true);
+        verify(mGroupFilter, times(2))
+                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ false);
         verify(mDelegate, times(2)).hideByAction();
         Assert.assertEquals(1, helper.getCallCount());
     }
@@ -212,7 +216,11 @@ public class TabListEditorCloseActionUnitTest {
         Assert.assertEquals(6, holder.getSelectedAndRelatedTabs().get(4).getId());
         Assert.assertEquals(1, holder.getSelectedAndRelatedTabs().get(5).getId());
         Assert.assertTrue(mAction.perform());
-        verify(mTabModel).closeMultipleTabs(holder.getSelectedAndRelatedTabs(), true);
+        verify(mGroupFilter)
+                .closeMultipleTabs(
+                        holder.getSelectedAndRelatedTabs(),
+                        /* canUndo= */ true,
+                        /* hideTabGroups= */ true);
         verify(mDelegate).hideByAction();
     }
 
@@ -242,7 +250,9 @@ public class TabListEditorCloseActionUnitTest {
                 3, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         Assert.assertTrue(mAction.perform());
-        verify(mTabModel).closeMultipleTabs(holder.getSelectedTabs(), true);
+        verify(mGroupFilter)
+                .closeMultipleTabs(
+                        holder.getSelectedTabs(), /* canUndo= */ true, /* hideTabGroups= */ false);
         verify(mDelegate).hideByAction();
     }
 }

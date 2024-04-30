@@ -3400,7 +3400,8 @@ public class TabListMediatorUnitTest {
                 .model
                 .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
                 .onClick(R.id.close_tab, TAB1_ID);
-        verify(mTabModel).closeMultipleTabs(tabs, false);
+        verify(mTabGroupModelFilter)
+                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ true);
     }
 
     @Test
@@ -3448,7 +3449,8 @@ public class TabListMediatorUnitTest {
                 .model
                 .get(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK)
                 .onClick(R.id.delete_tab, TAB1_ID);
-        verify(mTabModel).closeMultipleTabs(tabs, false);
+        verify(mTabGroupModelFilter)
+                .closeMultipleTabs(tabs, /* canUndo= */ true, /* hideTabGroups= */ false);
     }
 
     @Test
