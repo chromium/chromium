@@ -23,7 +23,9 @@
 #include "chrome/browser/extensions/pref_transformer_interface.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/extension_pref_value_map.h"
@@ -705,6 +707,14 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
     prefs_helper->SetExtensionControlledPref(extension_id(),
                                              prefs::kSafeBrowsingEnhanced,
                                              scope, base::Value(false));
+  }
+
+  // TODO(https://b/333527273): Remove this logic &
+  // CookieControlsModeTransformer and replace with a transformer for this pref.
+  if (prefs::kCookieControlsMode == browser_pref && !value->GetBool()) {
+    prefs_helper->SetExtensionControlledPref(extension_id(),
+                                             prefs::kBlockAll3pcToggleEnabled,
+                                             scope, base::Value(true));
   }
 
   prefs_helper->SetExtensionControlledPref(extension_id(), browser_pref, scope,
