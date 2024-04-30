@@ -33,7 +33,7 @@ enum PressureSource {
   [
     SameObject,
     SaveSameObject
-  ] static readonly attribute FrozenArray<PressureSource> supportedSources;
+  ] static readonly attribute FrozenArray<PressureSource> knownSources;
 
   [
     MeasureAs=PressureObserver_TakeRecords

@@ -55,7 +55,7 @@ class MODULES_EXPORT PressureObserver final : public ScriptWrappable {
   void unobserve(V8PressureSource);
   void disconnect();
   HeapVector<Member<PressureRecord>> takeRecords();
-  static Vector<V8PressureSource> supportedSources();
+  static Vector<V8PressureSource> knownSources();
 
   PressureObserver(const PressureObserver&) = delete;
   PressureObserver operator=(const PressureObserver&) = delete;

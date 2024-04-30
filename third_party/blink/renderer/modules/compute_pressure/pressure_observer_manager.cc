@@ -50,7 +50,7 @@ PressureObserverManager::PressureObserverManager(ExecutionContext* context)
       Supplement<ExecutionContext>(*context),
       pressure_manager_(context) {
   UpdateStateIfNeeded();
-  for (const auto& source : PressureObserver::supportedSources()) {
+  for (const auto& source : PressureObserver::knownSources()) {
     source_to_client_.insert(
         source.AsEnum(),
         MakeGarbageCollected<PressureClientImpl>(context, this));
