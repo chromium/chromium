@@ -7285,6 +7285,8 @@ crbug.com/325441197 http/tests/devtools/security/origin-view-noncryptographic-se
 crbug.com/325441197 http/tests/devtools/security/origin-view-then-interstitial.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/security/security-explanation-ordering.js [ Failure Pass ]
+crbug.com/325441197 http/tests/devtools/service-workers/service-workers-redundant.js [ Failure Pass ]
+crbug.com/325441197 http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
 
 # Gardener 2024-04-11
 crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
