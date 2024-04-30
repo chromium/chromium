@@ -560,7 +560,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE)
                 action:^{
-                  [weakSelf handleRemoveSecondaryAccountWithIdentity:identity];
+                  [weakSelf handleRemoveAccountWithIdentity:identity];
                   [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
                  style:UIAlertActionStyleDestructive];
@@ -589,10 +589,10 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                                             /*animated=*/YES);
 }
 
-// Handles the secondary account remove action from
+// Handles the account remove action from
 // `self.removeOrMyGoogleChooserAlertCoordinator`. Action sheet created in
 // `showAccountDetails:itemView:`
-- (void)handleRemoveSecondaryAccountWithIdentity:(id<SystemIdentity>)identity {
+- (void)handleRemoveAccountWithIdentity:(id<SystemIdentity>)identity {
   DCHECK(self.removeOrMyGoogleChooserAlertCoordinator);
   // `self.removeOrMyGoogleChooserAlertCoordinator` should not be stopped, since
   // the coordinator has been confirmed.
