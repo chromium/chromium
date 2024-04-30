@@ -509,7 +509,10 @@ void DelegatedFrameHost::ContinueDelegatedFrameEviction(
   // Ensure the list is not empty, otherwise we are silently disconnecting our
   // FrameTree. This prevents the eviction of viz::Surfaces, leading to GPU
   // memory staying allocated.
-  CHECK(!surface_ids.empty());
+  //
+  // TODO(b/337467299): determine why we are evicting without finding valid
+  // surfaces.
+  DCHECK(!surface_ids.empty());
   if (!surface_ids.empty()) {
     CHECK(host_frame_sink_manager_);
     host_frame_sink_manager_->EvictSurfaces(surface_ids);
