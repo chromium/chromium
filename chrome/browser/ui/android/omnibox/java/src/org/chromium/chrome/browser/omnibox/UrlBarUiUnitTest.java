@@ -140,20 +140,20 @@ public class UrlBarUiUnitTest {
                             Matchers.greaterThan((float) mUrlBar.getMeasuredWidth()));
                 });
 
-        final CharSequence prefixHint = getVisibleTextPrefixHint();
         CharSequence urlText = getUrlText();
-        Assert.assertNotNull(prefixHint);
-        Assert.assertTrue(
-                "Expected url text: '" + urlText + "' starts with " + prefixHint,
-                TextUtils.indexOf(urlText, prefixHint) == 0);
-        assertThat(prefixHint.length(), Matchers.lessThan(urlText.length()));
+        Assert.assertNull(getVisibleTextPrefixHint());
 
         // Append a string to the already long initial text and validate the prefix doesn't change.
         updateUrlBarText(
                 getUrlText() + "bbbbbbbbbbbbbbbbbbbbbbb",
                 UrlBar.ScrollType.SCROLL_TO_TLD,
                 domain.length());
-        assertTextEquals(prefixHint, getVisibleTextPrefixHint());
+        final CharSequence prefixHint = getVisibleTextPrefixHint();
+        Assert.assertNotNull(prefixHint);
+        Assert.assertTrue(
+                "Expected url text: '" + urlText + "' starts with " + prefixHint,
+                TextUtils.indexOf(urlText, prefixHint) == 0);
+        assertThat(prefixHint.length(), Matchers.lessThan(urlText.length()));
 
         // Append a character to just the hint prefix text and validate the prefix doesn't change.
         updateUrlBarText(prefixHint + "a", UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
