@@ -62,6 +62,10 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   return _viewController;
 }
 
+- (void)stopChildCoordinators {
+  [_viewController.gridViewController dismissModals];
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

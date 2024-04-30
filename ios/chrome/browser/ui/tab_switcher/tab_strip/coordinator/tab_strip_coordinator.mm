@@ -14,15 +14,13 @@
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 
-@interface TabStripCoordinator () <CreateOrEditTabGroupCoordinatorDelegate,
-                                   TabStripCommands>
+@interface TabStripCoordinator () <TabStripCommands>
 
 // Mediator for updating the TabStrip when the WebStateList changes.
 @property(nonatomic, strong) TabStripMediator* mediator;
@@ -115,7 +113,6 @@
       initTabGroupCreationWithBaseViewController:self.baseViewController
                                          browser:self.browser
                                     selectedTabs:identifiers];
-  _createTabGroupCoordinator.delegate = self;
   [_createTabGroupCoordinator start];
 }
 
@@ -125,7 +122,6 @@
       initTabGroupEditionWithBaseViewController:self.baseViewController
                                         browser:self.browser
                                        tabGroup:tabGroup];
-  _createTabGroupCoordinator.delegate = self;
   [_createTabGroupCoordinator start];
 }
 
@@ -145,15 +141,6 @@
                           params:params
                       originView:originView];
   [_sharingCoordinator start];
-}
-
-#pragma mark - CreateOrEditTabGroupCoordinatorDelegate
-
-- (void)createOrEditTabGroupCoordinatorDidDismiss:
-    (CreateTabGroupCoordinator*)coordinator {
-  id<TabStripCommands> tabStripHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabStripCommands);
-  [tabStripHandler hideTabStripGroupCreation];
 }
 
 #pragma mark - Properties

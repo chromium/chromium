@@ -180,6 +180,8 @@
 #pragma mark - Public
 
 - (void)stopChildCoordinators {
+  [self hideTabGroupCreationAnimated:NO];
+  [self.tabGroupCoordinator stopChildCoordinators];
   [self.gridViewController dismissModals];
   [self.pinnedTabsViewController dismissModals];
 }

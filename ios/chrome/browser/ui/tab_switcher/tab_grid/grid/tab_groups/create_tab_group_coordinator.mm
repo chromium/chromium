@@ -9,15 +9,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/web/public/web_state_id.h"
-
-@interface CreateTabGroupCoordinator () <
-    CreateOrEditTabGroupViewControllerDelegate>
-@end
 
 @implementation CreateTabGroupCoordinator {
   // Mediator for tab groups creation.
@@ -45,6 +40,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _identifiers = identifiers;
+    _animatedDismissal = YES;
   }
   return self;
 }
@@ -62,13 +58,6 @@
     _tabGroup = tabGroup;
   }
   return self;
-}
-
-#pragma mark - CreateOrEditTabGroupViewControllerDelegate
-
-- (void)createOrEditTabGroupViewControllerDidDismiss:
-    (CreateTabGroupViewController*)viewController {
-  [self.delegate createOrEditTabGroupCoordinatorDidDismiss:self];
 }
 
 #pragma mark - ChromeCoordinator
@@ -89,7 +78,9 @@
                             webStateList:self.browser->GetWebStateList()];
   }
   _viewController.mutator = _mediator;
-  _viewController.delegate = self;
+  _viewController.tabGroupsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  ;
 
   // TODO(crbug.com/40942154): Add the create tab group animation.
   _viewController.modalPresentationStyle =
@@ -103,7 +94,9 @@
   _mediator = nil;
 
   // TODO(crbug.com/40942154): Make the created tab group animation.
-  [_viewController dismissViewControllerAnimated:YES completion:nil];
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:self.animatedDismissal
+                         completion:nil];
   _viewController = nil;
 }
 

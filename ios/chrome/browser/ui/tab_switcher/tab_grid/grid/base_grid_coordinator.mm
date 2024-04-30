@@ -12,16 +12,12 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/web/public/web_state.h"
-
-@interface BaseGridCoordinator () <CreateOrEditTabGroupCoordinatorDelegate>
-@end
 
 @implementation BaseGridCoordinator {
   // Mutator that handle toolbars changes.
@@ -191,11 +187,11 @@
       initTabGroupCreationWithBaseViewController:self.baseViewController
                                          browser:self.browser
                                     selectedTabs:identifiers];
-  _tabGroupCreator.delegate = self;
   [_tabGroupCreator start];
 }
 
-- (void)hideTabGroupCreation {
+- (void)hideTabGroupCreationAnimated:(BOOL)animated {
+  _tabGroupCreator.animatedDismissal = animated;
   [_tabGroupCreator stop];
   _tabGroupCreator = nil;
 }
@@ -215,22 +211,11 @@
       initTabGroupEditionWithBaseViewController:backgroundView
                                         browser:self.browser
                                        tabGroup:tabGroup];
-  _tabGroupCreator.delegate = self;
   [_tabGroupCreator start];
 }
 
 - (void)showActiveTab {
   [self.mediator displayActiveTab];
-}
-
-#pragma mark - CreateOrEditTabGroupCoordinatorDelegate
-
-- (void)createOrEditTabGroupCoordinatorDidDismiss:
-    (CreateTabGroupCoordinator*)coordinator {
-  CHECK(coordinator == _tabGroupCreator);
-  id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabGroupsCommands);
-  [tabGroupsHandler hideTabGroupCreation];
 }
 
 #pragma mark - Private

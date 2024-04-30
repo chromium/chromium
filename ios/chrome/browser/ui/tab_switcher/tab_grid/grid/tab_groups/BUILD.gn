@@ -44,7 +44,6 @@ source_set("tab_groups") {
 
 source_set("tab_group_creation") {
   sources = [
-    "create_or_edit_tab_group_coordinator_delegate.h",
     "create_tab_group_coordinator.h",
     "create_tab_group_coordinator.mm",
     "create_tab_group_mediator.h",
@@ -106,7 +105,6 @@ source_set("tab_groups_ui") {
 
 source_set("tab_group_creation_ui") {
   sources = [
-    "create_or_edit_tab_group_view_controller_delegate.h",
     "create_tab_group_view_controller.h",
     "create_tab_group_view_controller.mm",
   ]
@@ -114,6 +112,7 @@ source_set("tab_group_creation_ui") {
     ":snapshots_view",
     ":tab_group_consumer",
     ":tab_group_mutator",
+    ":tab_groups_commands",
     ":tab_groups_constant",
     ":tab_groups_ui",
     "//base",
