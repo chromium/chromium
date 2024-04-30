@@ -199,19 +199,19 @@ AutofillProfile GetFullValidProfileForCanada() {
   return profile;
 }
 
-AutofillProfile GetFullProfile() {
-  AutofillProfile profile(AddressCountryCode("US"));
+AutofillProfile GetFullProfile(AddressCountryCode country_code) {
+  AutofillProfile profile(country_code);
   SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
                  "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
-                 "91111", "US", "16502111111");
+                 "91111", country_code->c_str(), "16502111111");
   return profile;
 }
 
-AutofillProfile GetFullProfile2() {
-  AutofillProfile profile(AddressCountryCode("US"));
+AutofillProfile GetFullProfile2(AddressCountryCode country_code) {
+  AutofillProfile profile(country_code);
   SetProfileInfo(&profile, "Jane", "A.", "Smith", "jsmith@example.com", "ACME",
-                 "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
-                 "13105557889");
+                 "123 Main Street", "Unit 1", "Greensdale", "MI", "48838",
+                 country_code->c_str(), "13105557889");
   return profile;
 }
 

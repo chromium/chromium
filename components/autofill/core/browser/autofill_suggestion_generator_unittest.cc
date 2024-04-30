@@ -1246,8 +1246,10 @@ class AutofillChildrenSuggestionGeneratorTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAutofillGranularFillingAvailable};
-  // The default profile used to generate suggestions.
-  const AutofillProfile profile_ = test::GetFullProfile();
+  // The default profile used to generate suggestions. Uses a country with an
+  // address model that contains all the field types required by the tests.
+  const AutofillProfile profile_ =
+      test::GetFullProfile(AddressCountryCode("AT"));
 };
 
 // Test that only "Fill address" is added when the target field is

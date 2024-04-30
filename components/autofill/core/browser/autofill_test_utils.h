@@ -100,10 +100,12 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 AutofillProfile GetFullValidProfileForCanada();
 
 // Returns a profile full of dummy info.
-AutofillProfile GetFullProfile();
+AutofillProfile GetFullProfile(
+    AddressCountryCode country_code = AddressCountryCode("US"));
 
 // Returns a profile full of dummy info, different to the above.
-AutofillProfile GetFullProfile2();
+AutofillProfile GetFullProfile2(
+    AddressCountryCode country_code = AddressCountryCode("US"));
 
 // Returns a profile full of dummy info, different to the above.
 AutofillProfile GetFullCanadianProfile();
