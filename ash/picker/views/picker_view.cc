@@ -224,6 +224,10 @@ void PickerView::GetSuggestedZeroStateEditorResults(
   delegate_->GetSuggestedEditorResults(std::move(callback));
 }
 
+void PickerView::NotifyPseudoFocusChanged(views::View* view) {
+  search_field_view_->SetTextfieldActiveDescendant(view);
+}
+
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                       PickerLayoutType layout_type) {
   return GetPickerViewBounds(anchor_bounds, layout_type, size(),

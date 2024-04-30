@@ -283,6 +283,7 @@ void PickerZeroStateView::SetPseudoFocusedView(views::View* view) {
   pseudo_focused_view_ = view;
   ApplyPickerPseudoFocusToView(pseudo_focused_view_);
   ScrollPseudoFocusedViewToVisible();
+  delegate_->NotifyPseudoFocusChanged(view);
 }
 
 void PickerZeroStateView::ScrollPseudoFocusedViewToVisible() {

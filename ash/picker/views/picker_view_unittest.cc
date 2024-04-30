@@ -40,10 +40,12 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -1086,6 +1088,22 @@ TEST_F(PickerViewTest, CategoryOnlySearchShowsNoResultsPage) {
   EXPECT_TRUE(picker_view->search_results_view_for_testing()
                   .no_results_view_for_testing()
                   ->GetVisible());
+}
+
+TEST_F(PickerViewTest,
+       ChangingPseudoFocusOnZeroStateNotifiesActiveDescendantChange) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks,
+                               PickerCategory::kExpressions},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
+
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 2);
 }
 
 }  // namespace

@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -187,6 +188,17 @@ void PickerSearchFieldView::OnDidChangeFocus(View* focused_before,
 void PickerSearchFieldView::SetPlaceholderText(
     std::u16string_view new_placeholder_text) {
   textfield_->SetPlaceholderText(std::u16string(new_placeholder_text));
+}
+
+void PickerSearchFieldView::SetTextfieldActiveDescendant(views::View* view) {
+  if (view) {
+    textfield_->GetViewAccessibility().SetActiveDescendant(*view);
+  } else {
+    textfield_->GetViewAccessibility().ClearActiveDescendant();
+  }
+
+  textfield_->NotifyAccessibilityEvent(
+      ax::mojom::Event::kActiveDescendantChanged, true);
 }
 
 std::u16string_view PickerSearchFieldView::GetQueryText() const {

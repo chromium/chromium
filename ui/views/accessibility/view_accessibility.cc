@@ -536,6 +536,15 @@ void ViewAccessibility::ClearSetSize() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
 }
 
+void ViewAccessibility::SetActiveDescendant(views::View& view) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                        view.GetViewAccessibility().GetUniqueId().Get());
+}
+
+void ViewAccessibility::ClearActiveDescendant() {
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
+}
+
 void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   if (is_enabled == GetIsEnabled()) {
     return;

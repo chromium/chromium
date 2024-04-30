@@ -78,6 +78,7 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
               GetSuggestedZeroStateEditorResults,
               (SuggestedEditorResultsCallback),
               (override));
+  MOCK_METHOD(void, NotifyPseudoFocusChanged, (views::View*), (override));
 };
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {

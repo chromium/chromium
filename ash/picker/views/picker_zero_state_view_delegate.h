@@ -8,6 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
 
+namespace views {
+class View;
+}
+
 namespace ash {
 
 class PickerSearchResult;
@@ -25,6 +29,9 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
 
   virtual void GetSuggestedZeroStateEditorResults(
       SuggestedEditorResultsCallback callback) = 0;
+
+  // `view` may be `nullptr` if there's no pseudo focused view.
+  virtual void NotifyPseudoFocusChanged(views::View* view) = 0;
 };
 
 }  // namespace ash

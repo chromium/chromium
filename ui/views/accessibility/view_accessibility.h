@@ -227,6 +227,9 @@ class VIEWS_EXPORT ViewAccessibility {
   void ClearPosInSet();
   void ClearSetSize();
 
+  void SetActiveDescendant(views::View& view);
+  void ClearActiveDescendant();
+
   // Sets/gets whether or not this view should be marked as "enabled" for the
   // purpose exposing this state in the accessibility tree. As a general rule,
   // it is not advisable to mark a View as enabled in the accessibility tree,
