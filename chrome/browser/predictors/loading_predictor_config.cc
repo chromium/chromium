@@ -58,8 +58,11 @@ LoadingPredictorConfig::LoadingPredictorConfig()
           blink::features::kLCPCriticalPathPredictorHistogramSlidingWindowSize
               .Get()),
       max_lcpp_histogram_buckets(
-          blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get()) {
-}
+          blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get()),
+      lcpp_multiple_key_histogram_sliding_window_size(
+          blink::features::kLcppMultipleKeyHistogramSlidingWindowSize.Get()),
+      lcpp_multiple_key_max_histogram_buckets(
+          blink::features::kLcppMultipleKeyMaxHistogramBuckets.Get()) {}
 
 LoadingPredictorConfig::LoadingPredictorConfig(
     const LoadingPredictorConfig& other) = default;

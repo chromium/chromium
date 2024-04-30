@@ -98,6 +98,13 @@ message LcppStat {
   optional LcppStringFrequencyStatData unused_preload_stat = 6;
 }
 
+// `LcppKeyStat` contains `LcppStat` for each key in `lcpp_stat_map`, where
+// the keys are maintained by the k-top algorithm using `key_frequency_stat`.
+message LcppKeyStat {
+  map<string, LcppStat> lcpp_stat_map = 1;
+  optional LcppStringFrequencyStatData key_frequency_stat = 2;
+}
+
 // [LCP Critical Path Predictor (LCPP)]
 // `LcppData` stores LCP related optimization data.
 // TODO(crbug.com/40063266): This feature is still under development and proto
@@ -109,4 +116,5 @@ message LcppData {
   optional string host = 1;
   optional uint64 last_visit_time = 2;
   optional LcppStat lcpp_stat = 3;
+  optional LcppKeyStat lcpp_key_stat = 4;
 }

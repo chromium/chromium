@@ -100,11 +100,16 @@ bool UpdateLcppStatWithLcppDataInputs(const LoadingPredictorConfig& config,
                                       const LcppDataInputs& inputs,
                                       LcppStat& stat);
 
+// Update `lcpp_stat_data` adding `new_entry` with `sliding_window_size` and
+// `max_histogram_buckets` parameters by the top-k algorithm.
+// See lcp_critical_path_predictor_util.cc for detail.
+// `dropped_entry` is assigned if this updating dropped an existing entry.
 void UpdateLcppStringFrequencyStatData(
     size_t sliding_window_size,
     size_t max_histogram_buckets,
     const std::string& new_entry,
-    LcppStringFrequencyStatData& lcpp_stat_data);
+    LcppStringFrequencyStatData& lcpp_stat_data,
+    std::optional<std::string>& dropped_entry);
 
 // Returns true if the LcppData is valid. i.e. looks not corrupted.
 // Otherwise, data might be corrupted.

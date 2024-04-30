@@ -879,6 +879,25 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPMultipleKey);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPPMultipleKeyMaxPathLength;
 
+// The type of LCPP Multiple Key Database.
+enum class LcppMultipleKeyTypes {
+  kDefault,
+  kLcppKeyStat,
+};
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppMultipleKeyTypes>
+    kLcppMultipleKeyType;
+
+// The virtual sliding window size for LCP critical path predictor (LCPP)
+// histogram for LcppMultipleKeyTypes::kLcppKeyStat option.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLcppMultipleKeyHistogramSlidingWindowSize;
+
+// The max histogram bucket count that can be stored in the LCP critical path
+// predictor (LCPP) database for LcppMultipleKeyTypes::kLcppKeyStat option.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLcppMultipleKeyMaxHistogramBuckets;
+
 // If enabled, prewarm HTTP disk cache based on the previous navigation.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHttpDiskCachePrewarming);
 

@@ -1408,6 +1408,22 @@ BASE_FEATURE(kLCPPMultipleKey,
 const base::FeatureParam<int> kLCPPMultipleKeyMaxPathLength{
     &kLCPPMultipleKey, "lcpp_multiple_key_max_path_length", 15};
 
+const base::FeatureParam<LcppMultipleKeyTypes>::Option
+    lcpp_multiple_key_types[] = {
+        {LcppMultipleKeyTypes::kDefault, "default"},
+        {LcppMultipleKeyTypes::kLcppKeyStat, "lcpp_key_stat"},
+};
+
+const base::FeatureParam<LcppMultipleKeyTypes> kLcppMultipleKeyType{
+    &kLCPPMultipleKey, "lcpp_multiple_key_type", LcppMultipleKeyTypes::kDefault,
+    &lcpp_multiple_key_types};
+
+const base::FeatureParam<int> kLcppMultipleKeyHistogramSlidingWindowSize{
+    &kLCPPMultipleKey, "lcpp_multiple_key_histogram_sliding_window_size", 1000};
+
+const base::FeatureParam<int> kLcppMultipleKeyMaxHistogramBuckets{
+    &kLCPPMultipleKey, "lcpp_multiple_key_max_histogram_buckets", 10};
+
 BASE_FEATURE(kHttpDiskCachePrewarming,
              "HttpDiskCachePrewarming",
              base::FEATURE_DISABLED_BY_DEFAULT);

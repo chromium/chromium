@@ -310,6 +310,7 @@ class LcppFrequencyStatDataUpdater {
                              return lhs.second < rhs.second;
                            });
       other_bucket_frequency_ += least_frequent_bucket->second;
+      dropped_entries_.push_back(least_frequent_bucket->first);
       histogram_.erase(least_frequent_bucket);
     }
     has_updated_ = true;
@@ -341,6 +342,9 @@ class LcppFrequencyStatDataUpdater {
   }
 
   bool has_updated() const { return has_updated_; }
+  const std::vector<std::string>& dropped_entries() const {
+    return dropped_entries_;
+  }
 
   size_t num_matched() const { return num_matched_; }
 
@@ -360,6 +364,7 @@ class LcppFrequencyStatDataUpdater {
   double other_bucket_frequency_;
   bool has_updated_ = false;
   size_t num_matched_ = 0;
+  std::vector<std::string> dropped_entries_;
 };
 
 bool RecordLcpElementLocatorHistogram(const LoadingPredictorConfig& config,
@@ -563,21 +568,63 @@ size_t GetLCPPMultipleKeyMaxPathLength() {
   return max_length;
 }
 
+bool IsKeyLengthValidForMultipleKey(const std::string& host,
+                                    const std::string& first_level_path) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey));
+  // The key must not be longer than `kMaxStringLength`.
+  // Note that we confirmed that url.host() is less than the limit in
+  // `IsURLValidForLcpp()`.
+  return host.length() + first_level_path.length() <=
+         ResourcePrefetchPredictorTables::kMaxStringLength;
+}
+
+bool IsLcppMultipleKeyKeyStatEnabled() {
+  return base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey) &&
+         (blink::features::kLcppMultipleKeyType.Get() ==
+          blink::features::LcppMultipleKeyTypes::kLcppKeyStat);
+}
+
 std::string GetLCPPDatabaseKey(const GURL& url) {
   CHECK(IsURLValidForLcpp(url));
 
-  if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kLCPPMultipleKey) ||
+      IsLcppMultipleKeyKeyStatEnabled()) {
     return url.host();
   }
+
   const std::string first_level_path = GetFirstLevelPath(url);
-  const size_t key_length = url.host().length() + first_level_path.length();
-  if (key_length > ResourcePrefetchPredictorTables::kMaxStringLength) {
-    // The key must not be longer than `kMaxStringLength`.
-    // Note that we confirmed that url.host() is less than the limit in
-    // `IsURLValidForLcpp()`.
+  if (!IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
     return url.host();
   }
   return url.host() + first_level_path;
+}
+
+LcppStat& GetLcppStatToUpdate(const LoadingPredictorConfig& config,
+                              const GURL& url,
+                              LcppData& data) {
+  if (!IsLcppMultipleKeyKeyStatEnabled()) {
+    return *data.mutable_lcpp_stat();
+  }
+
+  const std::string first_level_path = GetFirstLevelPath(url);
+  if (first_level_path.empty() ||
+      !IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
+    return *data.mutable_lcpp_stat();
+  }
+
+  LcppKeyStat& key_stat = *data.mutable_lcpp_key_stat();
+  auto& lcpp_stat_map = *key_stat.mutable_lcpp_stat_map();
+
+  std::optional<std::string> dropped_entry;
+  UpdateLcppStringFrequencyStatData(
+      config.lcpp_multiple_key_histogram_sliding_window_size,
+      config.lcpp_multiple_key_max_histogram_buckets, first_level_path,
+      *key_stat.mutable_key_frequency_stat(), dropped_entry);
+  if (dropped_entry) {
+    CHECK_NE(*dropped_entry, first_level_path);
+    lcpp_stat_map.erase(*dropped_entry);
+  }
+  return lcpp_stat_map[first_level_path];
 }
 
 }  // namespace
@@ -784,12 +831,18 @@ void UpdateLcppStringFrequencyStatData(
     size_t sliding_window_size,
     size_t max_histogram_buckets,
     const std::string& new_entry,
-    LcppStringFrequencyStatData& lcpp_stat_data) {
+    LcppStringFrequencyStatData& lcpp_stat_data,
+    std::optional<std::string>& dropped_entry) {
   std::unique_ptr<LcppFrequencyStatDataUpdater> updater =
       LcppFrequencyStatDataUpdater::FromLcppStringFrequencyStatData(
           sliding_window_size, max_histogram_buckets, lcpp_stat_data);
   updater->Update(new_entry);
   lcpp_stat_data = updater->ToLcppStringFrequencyStatData();
+  if (auto dropped_entries = updater->dropped_entries();
+      !dropped_entries.empty()) {
+    CHECK_EQ(dropped_entries.size(), 1U);
+    dropped_entry = dropped_entries.back();
+  }
 }
 
 bool IsValidLcppStat(const LcppStat& lcpp_stat) {
@@ -868,25 +921,30 @@ bool LearnLcpp(const LoadingPredictorConfig& config,
     return false;
   }
   const std::string key = GetLCPPDatabaseKey(url);
-  LcppData data;
-  bool exists = lcpp_data_map.TryGetData(key, &data);
-  data.set_last_visit_time(
+  LcppData lcpp_data;
+  bool exists = lcpp_data_map.TryGetData(key, &lcpp_data);
+  lcpp_data.set_last_visit_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   if (!exists) {
-    data.set_host(key);
+    lcpp_data.set_host(key);
   }
 
-  if (!IsValidLcppStat(data.lcpp_stat())) {
-    data.clear_lcpp_stat();
+  if (!IsLcppMultipleKeyKeyStatEnabled()) {
+    lcpp_data.mutable_lcpp_key_stat()->Clear();
+  }
+
+  LcppStat& lcpp_stat = GetLcppStatToUpdate(config, url, lcpp_data);
+  if (!IsValidLcppStat(lcpp_stat)) {
+    lcpp_stat.Clear();
     base::UmaHistogramBoolean("LoadingPredictor.LcppStatCorruptedAtLearnTime",
                               true);
   }
-  const bool data_updated = UpdateLcppStatWithLcppDataInputs(
-      config, inputs, *data.mutable_lcpp_stat());
-  DCHECK(IsValidLcppStat(data.lcpp_stat()));
+  const bool data_updated =
+      UpdateLcppStatWithLcppDataInputs(config, inputs, lcpp_stat);
+  DCHECK(IsValidLcppStat(lcpp_stat));
   if (data_updated) {
-    lcpp_data_map.UpdateData(key, data);
+    lcpp_data_map.UpdateData(key, lcpp_data);
   }
   return data_updated;
 }
@@ -901,6 +959,19 @@ std::optional<LcppStat> GetLcppStat(LcppDataMap& lcpp_data_map,
 
   LcppData data;
   if (!lcpp_data_map.TryGetData(key, &data)) {
+    return std::nullopt;
+  }
+  if (IsLcppMultipleKeyKeyStatEnabled()) {
+    const std::string first_level_path = GetFirstLevelPath(url);
+    if (first_level_path.empty() ||
+        !IsKeyLengthValidForMultipleKey(url.host(), first_level_path)) {
+      return data.lcpp_stat();
+    }
+    const auto& lcpp_stat_map = data.lcpp_key_stat().lcpp_stat_map();
+    if (auto flp_stat = lcpp_stat_map.find(first_level_path);
+        flp_stat != lcpp_stat_map.end()) {
+      return flp_stat->second;
+    }
     return std::nullopt;
   }
   return data.lcpp_stat();
