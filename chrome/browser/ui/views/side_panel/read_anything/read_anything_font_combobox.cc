@@ -43,7 +43,7 @@ void ReadAnythingFontCombobox::FontNameChangedCallback() {
 }
 
 gfx::Size ReadAnythingFontCombobox::GetMinimumSize() const {
-  return gfx::Size(kMinimumComboboxWidth, CalculatePreferredSize().height());
+  return gfx::Size(kMinimumComboboxWidth, CalculatePreferredSize({}).height());
 }
 
 void ReadAnythingFontCombobox::SetFocusRingColorId(

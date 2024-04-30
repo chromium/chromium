@@ -221,10 +221,11 @@ void CustomFrameView::Layout(PassKey) {
   LayoutSuperclass<NonClientFrameView>(this);
 }
 
-gfx::Size CustomFrameView::CalculatePreferredSize() const {
+gfx::Size CustomFrameView::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   return frame_->non_client_view()
       ->GetWindowBoundsForClientBounds(
-          gfx::Rect(frame_->client_view()->GetPreferredSize({})))
+          gfx::Rect(frame_->client_view()->GetPreferredSize(available_size)))
       .size();
 }
 

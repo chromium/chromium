@@ -19,7 +19,8 @@ StaticSizedView::StaticSizedView(const gfx::Size& preferred_size)
 
 StaticSizedView::~StaticSizedView() = default;
 
-gfx::Size StaticSizedView::CalculatePreferredSize() const {
+gfx::Size StaticSizedView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   return preferred_size_;
 }
 

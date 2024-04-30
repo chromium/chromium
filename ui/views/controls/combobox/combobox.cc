@@ -351,7 +351,8 @@ base::CallbackListSubscription Combobox::AddMenuWillShowCallback(
 ////////////////////////////////////////////////////////////////////////////////
 // Combobox, View overrides:
 
-gfx::Size Combobox::CalculatePreferredSize() const {
+gfx::Size Combobox::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   // Limit how small a combobox can be.
   constexpr int kMinComboboxWidth = 25;
 

@@ -68,7 +68,8 @@ class MenuScrollButton : public View {
   MenuScrollButton(const MenuScrollButton&) = delete;
   MenuScrollButton& operator=(const MenuScrollButton&) = delete;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override {
     return gfx::Size(MenuConfig::instance().scroll_arrow_height * 2 - 1,
                      pref_height_);
   }
@@ -311,8 +312,10 @@ void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 #endif
 }
 
-gfx::Size MenuScrollViewContainer::CalculatePreferredSize() const {
-  gfx::Size prefsize = scroll_view_->GetContents()->GetPreferredSize({});
+gfx::Size MenuScrollViewContainer::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  gfx::Size prefsize =
+      scroll_view_->GetContents()->GetPreferredSize(available_size);
   const gfx::Insets insets = GetInsets();
   prefsize.Enlarge(insets.width(), insets.height());
   return prefsize;

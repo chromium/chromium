@@ -219,7 +219,8 @@ void SubmenuView::Layout(PassKey) {
   }
 }
 
-gfx::Size SubmenuView::CalculatePreferredSize() const {
+gfx::Size SubmenuView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   if (children().empty()) {
     return gfx::Size();
   }

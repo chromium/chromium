@@ -77,7 +77,10 @@ class VIEWS_EXPORT SubmenuView : public View,
   // Positions and sizes the child views. This tiles the views vertically,
   // giving each child the available width.
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+
+  // TODO(crbug.com/40232718): Respect `available_size`.
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
 
   // Override from View.
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

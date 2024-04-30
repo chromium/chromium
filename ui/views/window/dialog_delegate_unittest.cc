@@ -56,7 +56,8 @@ class TestDialog : public DialogDelegateView {
   bool ShouldShowCloseButton() const override { return show_close_button_; }
 
   // DialogDelegateView overrides:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override {
     return gfx::Size(200, 200);
   }
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {

@@ -76,7 +76,10 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
   // BubbleDialogDelegateView overrides:
   View* GetInitiallyFocusedView() override { return view_; }
-  gfx::Size CalculatePreferredSize() const override { return kContentSize; }
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override {
+    return kContentSize;
+  }
   void AddedToWidget() override {
     if (title_view_)
       GetBubbleFrameView()->SetTitleView(std::move(title_view_));

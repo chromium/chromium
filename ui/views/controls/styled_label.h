@@ -203,9 +203,6 @@ class VIEWS_EXPORT StyledLabel : public View {
   // Gets the first child that is a link. Returns nullptr if there isn't any.
   views::Link* GetFirstLinkForTesting();
 
- protected:
-  gfx::Size CalculatePreferredSize() const final;
-
  private:
   struct StyleRange {
     StyleRange(const gfx::Range& range, const RangeStyleInfo& style_info)

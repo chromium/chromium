@@ -205,7 +205,8 @@ void CocoaScrollBar::Layout(PassKey) {
   }
 }
 
-gfx::Size CocoaScrollBar::CalculatePreferredSize() const {
+gfx::Size CocoaScrollBar::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   return gfx::Size();
 }
 

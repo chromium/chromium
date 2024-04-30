@@ -275,7 +275,8 @@ class CancelMenuOnMousePressView : public View {
 
   // View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
 
  private:
   const base::WeakPtr<MenuController> controller_;
@@ -286,7 +287,8 @@ bool CancelMenuOnMousePressView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
-gfx::Size CancelMenuOnMousePressView::CalculatePreferredSize() const {
+gfx::Size CancelMenuOnMousePressView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   // This is needed to prevent the view from being "squashed" to zero height
   // when the menu which owns it is shown. In such state the logic which
   // determines if the menu contains the mouse press location doesn't work.
@@ -2336,7 +2338,7 @@ TEST_F(MenuControllerTest, MouseAtMenuItemOnShow) {
 
   // Move the mouse to where the first menu item will be shown,
   // and show the menu.
-  const gfx::Size item_size = first_item->CalculatePreferredSize();
+  const gfx::Size item_size = first_item->CalculatePreferredSize({});
   gfx::Point location(item_size.width() / 2, item_size.height() / 2);
   GetRootWindow(owner())->MoveCursorTo(location);
   menu_controller()->Run(owner(), nullptr, menu_item.get(), gfx::Rect(),

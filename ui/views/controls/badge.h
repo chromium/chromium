@@ -28,7 +28,8 @@ class VIEWS_EXPORT Badge : public View {
   void SetText(const std::u16string& text);
 
   // View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:

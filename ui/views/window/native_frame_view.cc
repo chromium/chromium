@@ -69,8 +69,10 @@ void NativeFrameView::SizeConstraintsChanged() {
   // Nothing to do.
 }
 
-gfx::Size NativeFrameView::CalculatePreferredSize() const {
-  gfx::Size client_preferred_size = frame_->client_view()->GetPreferredSize({});
+gfx::Size NativeFrameView::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  gfx::Size client_preferred_size =
+      frame_->client_view()->GetPreferredSize(available_size);
 #if BUILDFLAG(IS_WIN)
   // Returns the client size. On Windows, this is the expected behavior for
   // native frames (see |NativeWidgetWin::WidgetSizeIsClientSize()|), while

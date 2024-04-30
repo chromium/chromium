@@ -260,11 +260,13 @@ bool NonClientView::IsWindowTitleVisible() const {
   return frame_view_->IsWindowTitleVisible();
 }
 
-gfx::Size NonClientView::CalculatePreferredSize() const {
+gfx::Size NonClientView::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   // TODO(pkasting): This should probably be made to look similar to
   // GetMinimumSize() below.  This will require implementing GetPreferredSize()
   // better in the various frame views.
-  gfx::Rect client_bounds(gfx::Point(), client_view_->GetPreferredSize({}));
+  gfx::Rect client_bounds(gfx::Point(),
+                          client_view_->GetPreferredSize(available_size));
   return GetWindowBoundsForClientBounds(client_bounds).size();
 }
 

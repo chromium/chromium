@@ -413,18 +413,20 @@ TabbedPane::TabStripStyle TabbedPaneTabStrip::GetStyle() const {
   return style_;
 }
 
-gfx::Size TabbedPaneTabStrip::CalculatePreferredSize() const {
+gfx::Size TabbedPaneTabStrip::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   // In horizontal mode, use the preferred size as determined by the largest
   // child or the minimum size necessary to display the tab titles, whichever is
   // larger.
   if (GetOrientation() == TabbedPane::Orientation::kHorizontal) {
-    return GetLayoutManager()->GetPreferredSize(this);
+    return GetLayoutManager()->GetPreferredSize(this, available_size);
   }
 
   // In vertical mode, Tabstrips don't require any minimum space along their
   // main axis, and can shrink all the way to zero size.  Only the cross axis
   // thickness matters.
-  const gfx::Size size = GetLayoutManager()->GetPreferredSize(this);
+  const gfx::Size size =
+      GetLayoutManager()->GetPreferredSize(this, available_size);
   return gfx::Size(size.width(), 0);
 }
 

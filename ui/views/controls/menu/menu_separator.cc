@@ -67,7 +67,8 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
                           ui::NativeTheme::ExtraParams(menu_separator));
 }
 
-gfx::Size MenuSeparator::CalculatePreferredSize() const {
+gfx::Size MenuSeparator::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   const MenuConfig& menu_config = MenuConfig::instance();
   int height = menu_config.separator_height;
   switch (type_) {

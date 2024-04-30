@@ -251,7 +251,8 @@ class TabbedPaneTabStrip : public View, public gfx::AnimationDelegate {
 
  protected:
   // View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
 
  private:

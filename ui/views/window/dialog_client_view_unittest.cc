@@ -170,7 +170,8 @@ class DialogClientViewTest : public test::WidgetTest {
         : parent_(parent) {}
 
     // DialogDelegateView:
-    gfx::Size CalculatePreferredSize() const override {
+    gfx::Size CalculatePreferredSize(
+        const SizeBounds& /*available_size*/) const override {
       return parent_->preferred_size_;
     }
     gfx::Size GetMinimumSize() const override { return parent_->min_size_; }

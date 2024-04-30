@@ -333,9 +333,6 @@ class VIEWS_EXPORT Label : public View,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
-  // View:
-  gfx::Size CalculatePreferredSize() const final;
-
   // Create a single RenderText instance to actually be painted.
   virtual std::unique_ptr<gfx::RenderText> CreateRenderText() const;
 

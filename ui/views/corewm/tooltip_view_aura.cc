@@ -88,7 +88,8 @@ void TooltipViewAura::OnPaint(gfx::Canvas* canvas) {
   OnPaintBorder(canvas);
 }
 
-gfx::Size TooltipViewAura::CalculatePreferredSize() const {
+gfx::Size TooltipViewAura::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   gfx::Size view_size = render_text_->GetStringSize();
   gfx::Insets insets = GetInsets();
   view_size.Enlarge(insets.width(), insets.height());

@@ -64,7 +64,8 @@ void Throbber::SetChecked(bool checked) {
   OnPropertyChanged(&checked_, kPropertyEffectsPaint);
 }
 
-gfx::Size Throbber::CalculatePreferredSize() const {
+gfx::Size Throbber::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   return gfx::Size(kDefaultDiameter, kDefaultDiameter);
 }
 

@@ -170,7 +170,8 @@ class VIEWS_EXPORT TreeView : public View,
 
   // View overrides:
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

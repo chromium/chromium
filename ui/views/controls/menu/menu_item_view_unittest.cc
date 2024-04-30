@@ -63,7 +63,11 @@ class SquareView : public views::View {
   ~SquareView() override = default;
 
  private:
-  gfx::Size CalculatePreferredSize() const override { return gfx::Size(1, 1); }
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override {
+    int width = available_size.width().value_or(1);
+    return gfx::Size(width, width);
+  }
   int GetHeightForWidth(int width) const override { return width; }
 };
 

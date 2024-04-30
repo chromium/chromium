@@ -536,7 +536,8 @@ void TableView::Layout(PassKey) {
   views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
 }
 
-gfx::Size TableView::CalculatePreferredSize() const {
+gfx::Size TableView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   int width = 50;
   if (header_ && !visible_columns_.empty())
     width = visible_columns_.back().x + visible_columns_.back().width;

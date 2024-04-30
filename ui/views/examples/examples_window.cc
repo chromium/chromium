@@ -152,7 +152,8 @@ class ExamplesWindowContents : public WidgetDelegateView,
     if (on_close_)
       std::move(on_close_).Run();
   }
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override {
     gfx::Size size(800, 300);
     for (size_t i = 0; i < tabbed_pane_->GetTabCount(); i++) {
       size.set_height(std::max(

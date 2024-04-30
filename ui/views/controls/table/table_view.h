@@ -250,7 +250,8 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // View overrides:
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;

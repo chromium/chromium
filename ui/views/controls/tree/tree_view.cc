@@ -402,7 +402,8 @@ void TreeView::Layout(PassKey) {
   LayoutEditor();
 }
 
-gfx::Size TreeView::CalculatePreferredSize() const {
+gfx::Size TreeView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   return preferred_size_;
 }
 

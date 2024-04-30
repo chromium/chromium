@@ -491,9 +491,11 @@ std::optional<double> BubbleFrameView::GetProgress() const {
   return std::nullopt;
 }
 
-gfx::Size BubbleFrameView::CalculatePreferredSize() const {
+gfx::Size BubbleFrameView::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   // Get the preferred size of the client area.
-  gfx::Size client_size = GetWidget()->client_view()->GetPreferredSize({});
+  gfx::Size client_size =
+      GetWidget()->client_view()->GetPreferredSize(available_size);
   // Expand it to include the bubble border and space for the arrow.
   return GetWindowBoundsForClientBounds(gfx::Rect(client_size)).size();
 }

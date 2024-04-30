@@ -593,7 +593,8 @@ void MenuItemView::OnPaint(gfx::Canvas* canvas) {
   OnPaintImpl(canvas, PaintMode::kNormal);
 }
 
-gfx::Size MenuItemView::CalculatePreferredSize() const {
+gfx::Size MenuItemView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   const MenuItemDimensions& dimensions(GetDimensions());
   return gfx::Size(dimensions.standard_width + dimensions.children_width,
                    dimensions.height);

@@ -33,7 +33,8 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
 
   // View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void AddedToWidget() override;
   void OnPaint(gfx::Canvas* canvas) override;

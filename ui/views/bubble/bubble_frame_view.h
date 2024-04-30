@@ -117,7 +117,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   std::optional<double> GetProgress() const;
 
   // View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void Layout(PassKey) override;

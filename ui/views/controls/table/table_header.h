@@ -43,7 +43,8 @@ class VIEWS_EXPORT TableHeader : public View {
 
   // views::View overrides.
   void OnPaint(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
   void AddedToWidget() override;

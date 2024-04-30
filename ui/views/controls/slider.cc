@@ -251,11 +251,13 @@ void Slider::OnSliderDragEnded() {
     listener_->SliderDragEnded(this);
 }
 
-gfx::Size Slider::CalculatePreferredSize() const {
+gfx::Size Slider::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   constexpr int kSizeMajor = 200;
   constexpr int kSizeMinor = 40;
 
-  return gfx::Size(std::max(width(), kSizeMajor), kSizeMinor);
+  return gfx::Size(std::max(available_size.width().value_or(0), kSizeMajor),
+                   kSizeMinor);
 }
 
 bool Slider::OnMousePressed(const ui::MouseEvent& event) {

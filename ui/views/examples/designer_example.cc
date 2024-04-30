@@ -335,7 +335,8 @@ ui::Cursor DesignerExample::GrabHandle::GetCursor(const ui::MouseEvent& event) {
   }
 }
 
-gfx::Size DesignerExample::GrabHandle::CalculatePreferredSize() const {
+gfx::Size DesignerExample::GrabHandle::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   return gfx::Size(kGrabHandleSize, kGrabHandleSize);
 }
 

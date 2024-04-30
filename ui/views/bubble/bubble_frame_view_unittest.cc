@@ -994,7 +994,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     should_show_close_ = should_show_close;
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override {
     return gfx::Size(200, 200);
   }
 

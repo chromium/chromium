@@ -138,7 +138,8 @@ class VIEWS_EXPORT Combobox : public View,
   bool IsMenuRunning() const;
 
   // Overridden from View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) override;
   bool OnKeyPressed(const ui::KeyEvent& e) override;

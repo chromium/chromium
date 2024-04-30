@@ -159,7 +159,8 @@ class HueView : public LocatedEventHandlerView {
   void ProcessEventAtLocation(const gfx::Point& point) override;
 
   // views::View
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   HueChangedCallback changed_callback_;
@@ -198,7 +199,8 @@ void HueView::ProcessEventAtLocation(const gfx::Point& point) {
   SchedulePaint();
 }
 
-gfx::Size HueView::CalculatePreferredSize() const {
+gfx::Size HueView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   // We put indicators on the both sides of the hue bar.
   return gfx::Size(kHueBarWidth + kHueIndicatorSize * 2 + kBorderWidth * 2,
                    kSaturationValueSize + kBorderWidth * 2);
@@ -280,7 +282,8 @@ class SaturationValueView : public LocatedEventHandlerView {
   void ProcessEventAtLocation(const gfx::Point& point) override;
 
   // views::View
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   void UpdateMarkerColor();
@@ -347,7 +350,8 @@ void SaturationValueView::ProcessEventAtLocation(const gfx::Point& point) {
   changed_callback_.Run(saturation, value);
 }
 
-gfx::Size SaturationValueView::CalculatePreferredSize() const {
+gfx::Size SaturationValueView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   return gfx::Size(kSaturationValueSize + kBorderWidth * 2,
                    kSaturationValueSize + kBorderWidth * 2);
 }

@@ -268,10 +268,6 @@ gfx::Size StyledLabel::GetMinimumSize() const {
       SizeBounds(width() == 0 ? SizeBound() : SizeBound(width()), {}));
 }
 
-gfx::Size StyledLabel::CalculatePreferredSize() const {
-  NOTREACHED_NORETURN() << "Use GetPreferredSize(SizeBounds)";
-}
-
 gfx::Size StyledLabel::CalculatePreferredSize(
     const SizeBounds& available_size) const {
   int width = 0;

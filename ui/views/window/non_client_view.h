@@ -231,7 +231,8 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   ClientView* client_view() const { return client_view_; }
 
   // NonClientView, View overrides:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void Layout(PassKey) override;

@@ -219,11 +219,12 @@ class LayoutConsensusGroup {
   void RemoveView(View* view) { children_.erase(view); }
 
   // Get the union of all preferred sizes within the group.
-  gfx::Size GetMaxPreferredSize() const {
+  gfx::Size GetMaxPreferredSize(const SizeBounds& available_size) const {
     gfx::Size size;
     for (View* child : children_) {
       DCHECK_EQ(1u, child->children().size());
-      size.SetToMax(child->children().front()->GetPreferredSize({}));
+      size.SetToMax(
+          child->children().front()->GetPreferredSize(available_size));
     }
     return size;
   }
@@ -255,10 +256,13 @@ class LayoutConsensusView : public View {
 
   ~LayoutConsensusView() override { group_->RemoveView(this); }
 
-  gfx::Size CalculatePreferredSize() const override {
-    const gfx::Size group_preferred_size = group_->GetMaxPreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override {
+    const gfx::Size group_preferred_size =
+        group_->GetMaxPreferredSize(available_size);
     DCHECK_EQ(1u, children().size());
-    const gfx::Size child_preferred_size = children()[0]->GetPreferredSize({});
+    const gfx::Size child_preferred_size =
+        children()[0]->GetPreferredSize(available_size);
     // TODO(pbos): This uses the max width, but could be configurable to use
     // either direction.
     return gfx::Size(group_preferred_size.width(),
