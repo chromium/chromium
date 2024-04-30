@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/focus_mode/youtube_music_controller.h"
+#include "ash/system/focus_mode/youtube_music/youtube_music_controller.h"
 
 #include "ash/shell.h"
+#include "ash/system/focus_mode/youtube_music/youtube_music_delegate.h"
 #include "base/check.h"
 #include "components/account_id/account_id.h"
 
-namespace ash {
+namespace ash::youtube_music {
 
 YoutubeMusicController::YoutubeMusicController() {
   SessionController* session_controller = SessionController::Get();
@@ -29,4 +30,4 @@ void YoutubeMusicController::OnActiveUserSessionChanged(
   // TODO(yongshun): Notify the delegate to update the client.
 }
 
-}  // namespace ash
+}  // namespace ash::youtube_music

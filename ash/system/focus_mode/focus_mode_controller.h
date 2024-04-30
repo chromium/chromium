@@ -20,8 +20,11 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-class FocusModeSoundsController;
+namespace youtube_music {
 class YoutubeMusicController;
+}  //  namespace youtube_music
+
+class FocusModeSoundsController;
 
 // Controls starting and ending a Focus Mode session and its behavior. Also
 // keeps track of the system state to restore after a Focus Mode session ends.
@@ -94,7 +97,7 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   FocusModeSoundsController* focus_mode_sounds_controller() const {
     return focus_mode_sounds_controller_.get();
   }
-  YoutubeMusicController* youtube_music_controller() const {
+  youtube_music::YoutubeMusicController* youtube_music_controller() const {
     return youtube_music_controller_.get();
   }
 
@@ -222,7 +225,8 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   std::unique_ptr<FocusModeSoundsController> focus_mode_sounds_controller_;
 
   // Controller for youtube music API integration.
-  std::unique_ptr<YoutubeMusicController> youtube_music_controller_;
+  std::unique_ptr<youtube_music::YoutubeMusicController>
+      youtube_music_controller_;
 
   base::ObserverList<Observer> observers_;
 };
