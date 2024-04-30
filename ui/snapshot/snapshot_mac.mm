@@ -19,11 +19,16 @@
 // TODO: Remove when Chromium is built against the macOS 14.4 SDK or newer.
 #if !defined(MAC_OS_VERSION_14_4)
 
-@interface SCShareableContent (APINewIn14Point4)
+@interface SCShareableContent (NewAPI)
 + (void)getCurrentProcessShareableContentWithCompletionHandler:
     (void (^)(SCShareableContent* _Nullable shareableContent,
               NSError* _Nullable error))completionHandler
     API_AVAILABLE(macos(14.4));
+@end
+
+@interface SCStreamConfiguration (NewAPI)
+@property(nonatomic, assign) BOOL includeChildWindows API_AVAILABLE(macos(14.2))
+    ;
 @end
 
 #endif  // !defined(MAC_OS_VERSION_14_4)
@@ -95,6 +100,7 @@ void GrabViewSnapshotScreenCaptureKitImpl(gfx::NativeView native_view,
       config.ignoreShadowsSingleWindow = YES;
       config.captureResolution = SCCaptureResolutionBest;
       config.ignoreGlobalClipSingleWindow = YES;
+      config.includeChildWindows = NO;
 
       [SCScreenshotManager
           captureImageWithFilter:filter
@@ -105,8 +111,11 @@ void GrabViewSnapshotScreenCaptureKitImpl(gfx::NativeView native_view,
                  // enqueuing the block.
                  NSImage* image;
                  if (sample_buffer) {
+                   // Do not correctly size here. Downstream callers are
+                   // assuming that the image returned is scaled by the device
+                   // pixel ratio.
                    image = [[NSImage alloc] initWithCGImage:sample_buffer
-                                                       size:image_size];
+                                                       size:NSZeroSize];
                  }
                  dispatch_async(dispatch_get_main_queue(), ^{
                    if (error2) {
