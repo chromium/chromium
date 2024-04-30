@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -256,7 +257,21 @@ void FedCmAccountSelectionView::Show(
     is_modal_closed_but_accounts_fetch_pending_ = false;
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
-      GetDialogWidget()->Show();
+      // An active widget would steal the focus when displayed, this would lead
+      // to some unexpected consequences. e.g.
+      //   1. links/buttons from the web contents area would require two clicks,
+      //   one to focus on the content area and one to focus on the clickable
+      //   2. user typing will be interrupted because the widget that's not
+      //   gated by user gesture would take the focus
+      // However, from accessibility's perspective, when the widget is
+      // displayed, there would be announcement with it and it would be better
+      // to focus on the widget such that the user could have more context and
+      // interact with it easily.
+      if (accessibility_state_utils::IsScreenReaderEnabled()) {
+        GetDialogWidget()->Show();
+      } else {
+        GetDialogWidget()->ShowInactive();
+      }
       if (accounts_displayed_callback_) {
         std::move(accounts_displayed_callback_).Run();
       }
