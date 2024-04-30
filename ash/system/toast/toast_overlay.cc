@@ -325,17 +325,32 @@ int ToastOverlay::CalculateSliderBubbleOffset() {
     return 0;
   }
 
-  auto* unified_system_tray = RootWindowController::ForWindow(root_window_)
-                                  ->GetStatusAreaWidget()
-                                  ->unified_system_tray();
+  auto* window_controller = RootWindowController::ForWindow(root_window_);
+  if (!window_controller) {
+    return 0;
+  }
+
+  auto* status_area_widget = window_controller->GetStatusAreaWidget();
+  if (!status_area_widget) {
+    return 0;
+  }
+
+  auto* unified_system_tray = status_area_widget->unified_system_tray();
+  if (!unified_system_tray) {
+    return 0;
+  }
 
   // If a slider bubble is visible, the toast baseline will be shifted
   // up by the slider bubble's height + a default spacing offset.
   if (unified_system_tray->IsSliderBubbleShown()) {
     auto* slider_view = unified_system_tray->GetSliderView();
-    DCHECK(slider_view);
+    if (!slider_view) {
+      return 0;
+    }
+
     return slider_view->height() + ToastOverlay::kOffset;
   }
+
   return 0;
 }
 
