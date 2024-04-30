@@ -108,7 +108,8 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (override));
   MOCK_METHOD(bool,
               ShowPixPaymentPrompt,
-              (base::OnceCallback<void(bool, int64_t)>),
+              (base::span<autofill::BankAccount> pix_account_suggestions,
+               base::OnceCallback<void(bool, int64_t)>),
               (override));
 };
 
@@ -789,7 +790,12 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists, Ukm) {
 // show the PIX payment prompt.
 TEST_F(FacilitatedPaymentsManagerTest,
        NoPixPaymentPromptWhenApiClientNotAvailable) {
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::_)).Times(0);
+  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/1));
+  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
+      CreatePixBankAccount(/*instrument_id=*/2));
+
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::_, testing::_)).Times(0);
 
   manager_->OnApiAvailabilityReceived(false);
 }
@@ -798,7 +804,18 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // payment prompt.
 TEST_F(FacilitatedPaymentsManagerTest,
        ShowsPixPaymentPromptWhenApiClientAvailable) {
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::_));
+  autofill::BankAccount pix_account1 =
+      CreatePixBankAccount(/*instrument_id=*/1);
+  autofill::BankAccount pix_account2 =
+      CreatePixBankAccount(/*instrument_id=*/2);
+  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
+      pix_account1);
+  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
+      pix_account2);
+
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::UnorderedElementsAreArray(
+                                                 {pix_account1, pix_account2}),
+                                             testing::_));
 
   manager_->OnApiAvailabilityReceived(true);
 }
@@ -980,14 +997,22 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 // PIX account.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        ValidPixDetectionResultToPixPaymentPromptShown) {
+  autofill::BankAccount pix_account1 =
+      CreatePixBankAccount(/*instrument_id=*/1);
+  autofill::BankAccount pix_account2 =
+      CreatePixBankAccount(/*instrument_id=*/2);
   personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
-      CreatePixBankAccount(1));
+      pix_account1);
+  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
+      pix_account2);
   ON_CALL(*api_client_, IsAvailable)
       .WillByDefault([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
 
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::_));
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::UnorderedElementsAreArray(
+                                                 {pix_account1, pix_account2}),
+                                             testing::_));
 
   manager_->ProcessPixCodeDetectionResult(
       mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());

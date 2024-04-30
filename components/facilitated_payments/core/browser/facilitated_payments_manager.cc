@@ -189,6 +189,9 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
   }
 
   client_->ShowPixPaymentPrompt(
+      client_->GetPersonalDataManager()
+          ->payments_data_manager()
+          .GetMaskedBankAccounts(),
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }

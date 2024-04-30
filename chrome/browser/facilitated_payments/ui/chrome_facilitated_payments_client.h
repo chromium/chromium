@@ -42,8 +42,10 @@ class ChromeFacilitatedPaymentsClient
 
   // FacilitatedPaymentsClient:
   autofill::PersonalDataManager* GetPersonalDataManager() override;
-  bool ShowPixPaymentPrompt(base::OnceCallback<void(bool, int64_t)>
-                                on_user_decision_callback) override;
+  bool ShowPixPaymentPrompt(
+      base::span<autofill::BankAccount> bank_account_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
+      override;
 
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;

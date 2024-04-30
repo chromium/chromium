@@ -7,10 +7,12 @@
 
 #include <cstdint>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 
 namespace autofill {
+class BankAccount;
 class PersonalDataManager;
 }  // namespace autofill
 
@@ -29,9 +31,11 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // If the UI was shown, then returns true and later invokes the
   // `on_user_decision_callback` with the result of user's selection: a boolean
   // for acceptance or cancellation and the selected instrument ID in case of
-  // acceptance. If the UI was not shown, then returns false and does not invoke
-  // the callback.
+  // acceptance. `pix_account_suggestions` is the list of PIX accounts to be
+  // shown to the user for payment. If the UI was not shown, then returns false
+  // and does not invoke the callback.
   virtual bool ShowPixPaymentPrompt(
+      base::span<autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
 };
 

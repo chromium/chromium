@@ -37,6 +37,7 @@ ChromeFacilitatedPaymentsClient::GetPersonalDataManager() {
 }
 
 bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
+    base::span<autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
   return false;
 }
