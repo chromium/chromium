@@ -319,6 +319,7 @@ ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
         ax::mojom::Event::kChildrenChanged, true);
   }
 
+  SetAccessibleRole(ax::mojom::Role::kToolbar);
   RefreshAccessibilityWidgetNextPreviousFocus(shelf->shelf_widget());
 }
 

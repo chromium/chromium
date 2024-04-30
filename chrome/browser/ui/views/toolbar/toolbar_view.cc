@@ -231,6 +231,8 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
 
   container_view_ = AddChildView(std::make_unique<ContainerView>());
 
+  SetAccessibleRole(ax::mojom::Role::kToolbar);
+
   if (display_mode_ == DisplayMode::NORMAL) {
     container_view_->SetBackground(
         std::make_unique<TopContainerBackground>(browser_view));

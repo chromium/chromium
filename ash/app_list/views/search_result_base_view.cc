@@ -26,6 +26,7 @@ SearchResultBaseView::SearchResultBaseView() {
   // all relevant key events (e.g. ENTER key for result activation) to search
   // result views as needed.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  SetAccessibleRole(ax::mojom::Role::kListBoxOption);
 }
 
 SearchResultBaseView::~SearchResultBaseView() {

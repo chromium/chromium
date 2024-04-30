@@ -68,6 +68,7 @@ Checkbox::Checkbox(const std::u16string& label,
     : LabelButton(std::move(callback), label, button_context) {
   SetImageCentered(false);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  SetAccessibleRole(ax::mojom::Role::kCheckBox);
 
   SetRequestFocusOnPress(false);
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);

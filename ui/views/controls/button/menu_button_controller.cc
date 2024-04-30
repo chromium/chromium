@@ -91,6 +91,7 @@ MenuButtonController::MenuButtonController(
   // Triggers on button press by default, unless drag-and-drop is enabled, see
   // MenuButtonController::IsTriggerableEventType.
   set_notify_action(ButtonController::NotifyAction::kOnPress);
+  button->SetAccessibleRole(ax::mojom::Role::kPopUpButton);
 }
 
 MenuButtonController::~MenuButtonController() = default;

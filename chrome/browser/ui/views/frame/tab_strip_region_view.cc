@@ -96,6 +96,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
 
+  SetAccessibleRole(ax::mojom::Role::kTabList);
+
   tab_strip_ = tab_strip.get();
   const Browser* browser = tab_strip_->GetBrowser();
 

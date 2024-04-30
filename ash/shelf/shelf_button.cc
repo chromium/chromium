@@ -32,6 +32,7 @@ ShelfButton::ShelfButton(Shelf* shelf,
       std::make_unique<views::CircleHighlightPathGenerator>(
           gfx::Insets(-views::FocusRing::kDefaultHaloInset)));
   SetFocusPainter(nullptr);
+  SetAccessibleRole(ax::mojom::Role::kButton);
 }
 
 ShelfButton::~ShelfButton() = default;

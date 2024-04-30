@@ -373,6 +373,8 @@ ShelfView::ShelfView(ShelfModel* model,
 
   announcement_view_ = new views::View();
   AddChildView(announcement_view_.get());
+
+  SetAccessibleRole(ax::mojom::Role::kToolbar);
 }
 
 ShelfView::~ShelfView() {
