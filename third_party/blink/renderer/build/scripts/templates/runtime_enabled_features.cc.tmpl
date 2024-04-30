@@ -17,14 +17,22 @@ namespace blink {
 
 RuntimeEnabledFeaturesBase::Backup::Backup()
   : {% for feature in features -%}
+    {%- if feature.is_protected_feature -%}
+    {{feature.data_member_name}}(*RuntimeEnabledFeaturesBase::{{feature.data_member_name}})
+    {%- else -%}
     {{feature.data_member_name}}(RuntimeEnabledFeaturesBase::{{feature.data_member_name}})
+    {%- endif -%}
     {%- if not loop.last %},
     {%+ endif -%}
     {% endfor %} {}
 
 void RuntimeEnabledFeaturesBase::Backup::Restore() {
   {% for feature in features %}
+  {% if feature.is_protected_feature %}
+  RuntimeEnabledFeaturesBase::Set{{feature.name}}Enabled({{feature.data_member_name}});
+  {% else %}
   RuntimeEnabledFeaturesBase::{{feature.data_member_name}} = {{feature.data_member_name}};
+  {% endif %}
   {% endfor %}
 }
 
@@ -68,10 +76,10 @@ void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
     const std::string& name, bool enable) {
   static const struct {
     const char* name;
-    bool* setting;
+    void (*SetFunction)(bool);
   } kFeatures[] = {
   {% for feature in features|sort(attribute='name') %}
-    {"{{feature.name}}", &{{feature.data_member_name}}},
+    {"{{feature.name}}", Set{{feature.name}}Enabled},
   {% endfor %}
   };
 
@@ -80,7 +88,7 @@ void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
   });
 
   if (feature != std::end(kFeatures) && feature->name == name)
-    *feature->setting = enable;
+    feature->SetFunction(enable);
   else
     DLOG(ERROR) << "RuntimeEnabledFeature not recognized: " << name;
 }
@@ -113,6 +121,15 @@ void RuntimeEnabledFeaturesBase::UpdateStatusFromBaseFeatures() {
     }
   }
 }
+
+{% for feature in features %}
+{% if feature.is_protected_feature %}
+void RuntimeEnabledFeaturesBase::Set{{feature.name}}Enabled(bool enabled) {
+  base::AutoWritableMemory protected_memory_writer({{feature.data_member_name}});
+  protected_memory_writer.GetProtectedData() = enabled;
+}
+{% endif %}
+{% endfor %}
 
 {% for feature in features %}
 {%if feature.is_overridable_feature and not feature.in_origin_trial%}
@@ -154,7 +171,11 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
   if (RuntimeEnabledFeaturesBase::{{implied_by}}Enabled(context))
     return true;
   {% endfor %}
+  {% if feature.is_protected_feature %}
+  if (*{{feature.data_member_name}})
+  {% else %}
   if ({{feature.data_member_name}})
+  {% endif %}
     return true;
   {% if not feature.origin_trial_feature_name %}
   // The feature does not have an origin trial name and its runtime flag
@@ -169,7 +190,11 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
 
 {% for feature in features %}
 {% if feature.status_type == 'str' %}
+{% if feature.is_protected_feature %}
+DEFINE_PROTECTED_DATA base::ProtectedMemory<bool> RuntimeEnabledFeaturesBase::{{feature.data_member_name}}({{'true' if feature.status == 'stable' else 'false'}});
+{% else %}
 bool RuntimeEnabledFeaturesBase::{{feature.data_member_name}} = {{'true' if feature.status == 'stable' else 'false'}};
+{% endif %}
 {% endif %}
 {% endfor %}
 

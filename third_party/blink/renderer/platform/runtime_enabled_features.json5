@@ -204,6 +204,14 @@
       default: false,
       value_type: "bool",
     },
+
+    // is_protected_feature indicates whether the feature enablement state should
+    // be tracked using a base::Protected<bool> value or just a regular bool
+    // value.
+    is_protected_feature: {
+      default: false,
+      value_type: "bool",
+    }
   },
 
   data: [
@@ -2441,6 +2449,7 @@
     {
       name: "MojoJS",
       status: "test",
+      is_protected_feature: true,
     },
     // MojoJSTest is used exclusively in testing environments, whereas MojoJS
     // may also be used elsewhere.
@@ -2448,6 +2457,7 @@
       name: "MojoJSTest",
       status: "test",
       base_feature: "none",
+      is_protected_feature: true,
     },
     // crbug.com/269917: Make mouse event targets agnostic to mousedown event
     // cancellation when the pointer is dragged out of an iframe.
@@ -3080,6 +3090,34 @@
       public: true,
       status: "test",
       base_feature: "none",
+    },
+    // Protected memory varariant of the sample API for testing integration with
+    // the Origin Trials Framework. This is used only in unit tests.
+    // Do not change this flag to stable, as it exists
+    // solely to generate code used by the sample API implementation.
+    {
+      name: "ProtectedOriginTrialsSampleAPI",
+      base_feature: "none",
+      origin_trial_feature_name: "Frobulate",
+      is_protected_feature: "true",
+    },
+    // As above. Do not change this flag to stable, as it exists solely to
+    // generate code used by the origin trials sample API implementation.
+    // TODO(yashard): Add tests for this feature.
+    {
+      name: "ProtectedOriginTrialsSampleAPIDependent",
+      depends_on: ["ProtectedOriginTrialsSampleAPI"],
+      base_feature: "none",
+      is_protected_feature: "true",
+    },
+    // As above. Do not change this flag to stable, as it exists solely to
+    // generate code used by the origin trials sample API implementation.
+    {
+      name: "ProtectedOriginTrialsSampleAPIImplied",
+      base_feature: "none",
+      origin_trial_feature_name: "FrobulateImplied",
+      implied_by: ["ProtectedOriginTrialsSampleAPI"],
+      is_protected_feature: "true",
     },
     {
       name: "PushMessaging",
@@ -3765,6 +3803,26 @@
       name: "TestFeatureImplied",
       implied_by: ["TestFeature"],
       base_feature: "none",
+    },
+    // For unit tests.
+    {
+      name: "TestFeatureProtected",
+      base_feature: "none",
+      is_protected_feature: true,
+    },
+    // For unit tests.
+    {
+      name: "TestFeatureProtectedDependent",
+      depends_on: ["TestFeatureProtectedImplied"],
+      base_feature: "none",
+      is_protected_feature: true,
+    },
+    // For unit tests.
+    {
+      name: "TestFeatureProtectedImplied",
+      implied_by: ["TestFeatureProtected"],
+      base_feature: "none",
+      is_protected_feature: true,
     },
     {
       // crbug.com/331680200

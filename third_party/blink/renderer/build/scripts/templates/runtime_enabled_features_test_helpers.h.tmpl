@@ -7,6 +7,7 @@
 #define {{header_guard}}
 
 #include "base/check_op.h"
+#include "base/memory/protected_memory.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -28,9 +29,32 @@ class RuntimeEnabledFeaturesTestHelpers {
     bool original_;
   };
 
+  template <base::ProtectedMemory<bool>& data_member>
+  class ScopedRuntimeEnabledProtectedFeature {
+   public:
+    ScopedRuntimeEnabledProtectedFeature(bool enabled)
+        : enabled_(enabled), original_(*data_member) {
+      base::AutoWritableMemory data_member_writer(data_member);
+      data_member_writer.GetProtectedData() = enabled;
+    }
+    ~ScopedRuntimeEnabledProtectedFeature() {
+      CHECK_EQ(enabled_, *data_member);
+      base::AutoWritableMemory data_member_writer(data_member);
+      data_member_writer.GetProtectedData() = original_;
+    }
+   private:
+    bool enabled_;
+    bool original_;
+  };
+
   {% for feature in features %}
+  {% if feature.is_protected_feature %}
+  using Scoped{{feature.name}} = ScopedRuntimeEnabledProtectedFeature<
+    RuntimeEnabledFeaturesBase::{{feature.data_member_name}}>;
+  {% else %}
   using Scoped{{feature.name}} = ScopedRuntimeEnabledFeature<
       RuntimeEnabledFeaturesBase::{{feature.data_member_name}}>;
+  {% endif %}
   {% endfor %}
 };
 
