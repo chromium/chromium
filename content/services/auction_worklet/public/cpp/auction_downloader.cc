@@ -66,6 +66,19 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 const char kWebAssemblyMime[] = "application/wasm";
 
+// If `url` is too long to reasonably use as part of an error message, returns a
+// truncated copy of it. Otherwise, returns the entire URL as a string.
+std::string TruncateUrlIfNeededForError(const GURL& url) {
+  if (url.spec().size() <= AuctionDownloader::kMaxErrorUrlLength) {
+    // This does duplicate the URL unnecessarily, but since this is only done on
+    // error, not a major concern.
+    return url.spec();
+  }
+
+  return url.spec().substr(0, AuctionDownloader::kMaxErrorUrlLength - 3) +
+         "...";
+}
+
 // Returns the MIME type string to send for the Accept header for `mime_type`.
 // These are the official IANA MIME type strings, though other MIME type strings
 // are allows in the response.
@@ -261,7 +274,12 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
   if (!body) {
     FailRequest(std::move(completion_status),
                 base::StringPrintf(
-                    "Failed to load %s error = %s.", source_url_.spec().c_str(),
+                    "Failed to load %s error = %s.",
+                    // Avoid large error messages. This is actually needed for a
+                    // browser test, since some tests output error messages to
+                    // the console, and tests are reported as failing on the
+                    // bots when they produce too much output.
+                    TruncateUrlIfNeededForError(source_url_).c_str(),
                     net::ErrorToString(simple_url_loader->NetError()).c_str()));
     return;
   }

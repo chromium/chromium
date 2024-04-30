@@ -177,11 +177,21 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
   }
 
   // Attempts to make a request for `request`.
+  //
+  // `expected_isolation_info_origin` is the expected IsolationInfo's top-frame
+  // and frame origins if the ResourceRequest is expected to include
+  // TrustedParams.
   void TryMakeRequest(const network::ResourceRequest& request,
                       ExpectedResponse expected_response,
-                      bool expect_bundle_request = false) {
+                      bool expect_bundle_request = false,
+                      std::optional<url::Origin>
+                          expected_isolation_info_origin = std::nullopt) {
     SCOPED_TRACE(is_for_seller_);
     SCOPED_TRACE(request.url);
+
+    if (!expected_isolation_info_origin) {
+      expected_isolation_info_origin = url::Origin::Create(request.url);
+    }
 
     // Create a new factory if one has not been created yet, or the last test
     // case closed the pipe.
@@ -350,10 +360,10 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
         if (expect_bundle_request) {
           const auto& observed_isolation_info =
               observed_request.trusted_params->isolation_info;
-          url::Origin expected_origin = url::Origin::Create(request.url);
-          EXPECT_EQ(expected_origin,
+          EXPECT_EQ(expected_isolation_info_origin,
                     observed_isolation_info.top_frame_origin());
-          EXPECT_EQ(expected_origin, observed_isolation_info.frame_origin());
+          EXPECT_EQ(expected_isolation_info_origin,
+                    observed_isolation_info.frame_origin());
           EXPECT_TRUE(observed_isolation_info.site_for_cookies().IsNull());
         } else {
           EXPECT_TRUE(observed_request.trusted_params->isolation_info
@@ -382,9 +392,10 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
           observed_request.trusted_params->isolation_info;
       EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
                 observed_isolation_info.request_type());
-      url::Origin expected_origin = url::Origin::Create(request.url);
-      EXPECT_EQ(expected_origin, observed_isolation_info.top_frame_origin());
-      EXPECT_EQ(expected_origin, observed_isolation_info.frame_origin());
+      EXPECT_EQ(expected_isolation_info_origin,
+                observed_isolation_info.top_frame_origin());
+      EXPECT_EQ(expected_isolation_info_origin,
+                observed_isolation_info.frame_origin());
       EXPECT_TRUE(observed_isolation_info.site_for_cookies().IsNull());
 
       ASSERT_TRUE(observed_request.trusted_params->client_security_state);
@@ -393,19 +404,32 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
     }
   }
 
-  void TryMakeRequest(const std::string& url,
+  void TryMakeRequest(const GURL& url,
                       std::optional<std::string> accept_value,
                       ExpectedResponse expected_response,
-                      bool expect_bundle_request = false) {
+                      bool expect_bundle_request = false,
+                      std::optional<url::Origin>
+                          expected_isolation_info_origin = std::nullopt) {
     SCOPED_TRACE(accept_value ? *accept_value : "No accept value");
 
     network::ResourceRequest request;
-    request.url = GURL(url);
+    request.url = url;
     if (accept_value) {
       request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                 *accept_value);
     }
-    TryMakeRequest(request, expected_response, expect_bundle_request);
+    TryMakeRequest(request, expected_response, expect_bundle_request,
+                   expected_isolation_info_origin);
+  }
+
+  void TryMakeRequest(const std::string& url,
+                      std::optional<std::string> accept_value,
+                      ExpectedResponse expected_response,
+                      bool expect_bundle_request = false,
+                      std::optional<url::Origin>
+                          expected_isolation_info_origin = std::nullopt) {
+    TryMakeRequest(GURL(url), accept_value, expected_response,
+                   expect_bundle_request, expected_isolation_info_origin);
   }
 
   void AuthorizeSubresourceUrls(
@@ -474,6 +498,22 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, Basic) {
     TryMakeRequest(kWasmUrl, kAcceptWasm, ExpectedResponse::kAllow);
     TryMakeRequest(kWasmUrl, std::nullopt, ExpectedResponse::kReject);
 
+    // Invalid GURLs are considered matches for the trusted signals URL, when
+    // there is one, since appending to the GURL can result in it exceeding the
+    // max URL size. Passing a GURL that long across Mojo results in an invalid
+    // GURL on the receiving side.
+    //
+    // The proxy then passes the invalid GURL the network service, which will
+    // fail the request. This is how things work for fetch requests for long
+    // GURLs as well.
+    TryMakeRequest(GURL(), kAcceptJavascript, ExpectedResponse::kReject);
+    TryMakeRequest(GURL(), kAcceptJson, ExpectedResponse::kAllow,
+                   /*expect_bundle_request=*/false,
+                   /*expected_isolation_info_origin=*/
+                   url::Origin::Create(GURL(kScriptUrl)));
+    TryMakeRequest(GURL(), kAcceptOther, ExpectedResponse::kReject);
+    TryMakeRequest(GURL(), std::nullopt, ExpectedResponse::kReject);
+
     TryMakeRequest("https://host.test/", kAcceptJavascript,
                    ExpectedResponse::kReject);
     TryMakeRequest("https://host.test/", kAcceptJson,
@@ -525,6 +565,13 @@ TEST_P(AuctionUrlLoaderFactoryProxyTest, NoTrustedSignalsUrl) {
     TryMakeRequest(kTrustedSignalsUrl, kAcceptJson, ExpectedResponse::kReject);
     TryMakeRequest(kTrustedSignalsUrl, kAcceptOther, ExpectedResponse::kReject);
     TryMakeRequest(kTrustedSignalsUrl, std::nullopt, ExpectedResponse::kReject);
+
+    // Invalid GURLs should be rejected without a `trusted_signals_base_url`,
+    // and no matching invalid GURL.
+    TryMakeRequest(GURL(), kAcceptJavascript, ExpectedResponse::kReject);
+    TryMakeRequest(GURL(), kAcceptJson, ExpectedResponse::kReject);
+    TryMakeRequest(GURL(), kAcceptOther, ExpectedResponse::kReject);
+    TryMakeRequest(GURL(), std::nullopt, ExpectedResponse::kReject);
 
     TryMakeRequest(top_frame_origin_.GetURL().spec(), kAcceptJavascript,
                    ExpectedResponse::kReject);

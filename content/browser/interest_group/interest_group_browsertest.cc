@@ -1574,6 +1574,12 @@ function provideAdditionalBids(seller, nonce, bidStringList,
            received_https_test_server_requests_.end();
   }
 
+  // Returns URLs seen by the test server.
+  std::set<GURL> SeenUrls() {
+    base::AutoLock auto_lock(requests_lock_);
+    return received_https_test_server_requests_;
+  }
+
   bool HasServerSeenUrls(const std::vector<GURL>& urls) {
     for (const auto& url : urls) {
       if (!HasServerSeenUrl(url)) {
@@ -5484,17 +5490,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   EXPECT_EQ(url, RunAuctionAndWaitForUrl(
                      JsReplace(R"({
-      seller: $1,
-      decisionLogicURL: $2,
-      interestGroupBuyers: [$1]
-    })",
+                                 seller: $1,
+                                 decisionLogicURL: $2,
+                                 interestGroupBuyers: [$1]
+                               })",
                                origin, almost_too_long_seller_url)));
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(R"({
-      seller: $1,
-      decisionLogicURL: $2,
-      interestGroupBuyers: [$1]
-    })",
+                                                   seller: $1,
+                                                   decisionLogicURL: $2,
+                                                   interestGroupBuyers: [$1]
+                                                 })",
                                                  origin, too_long_seller_url)));
 }
 
@@ -5587,6 +5593,65 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                           "/interest_group/decision_logic.js"),
       too_long_seller_url);
   EXPECT_EQ(url, RunAuctionAndWaitForUrl(auction_config2));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAuctionWithTooLongTrustedSellerSignalsUrl) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  GURL decision_url = embedded_https_test_server().GetURL(
+      origin.host(), "/interest_group/decision_logic.js");
+
+  // Note that the almost-too-long URL will be turned into a too-long URL once
+  // the query param is attached.
+  std::string almost_too_long_url_base = origin.GetURL().spec();
+  GURL almost_too_long_trusted_scoring_signals_url = GURL(
+      almost_too_long_url_base +
+      std::string(url::kMaxURLChars - almost_too_long_url_base.size(), '1'));
+  GURL too_long_trusted_scoring_signals_url =
+      GURL(almost_too_long_trusted_scoring_signals_url.spec() + "2");
+  ASSERT_EQ(too_long_trusted_scoring_signals_url.spec().size(),
+            url::kMaxURLChars + 1);
+
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Join an interest group. All that matters is it will bid, and has an ad.
+  ASSERT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        origin.host(), "/interest_group/bidding_logic.js"))
+                    .SetAds({{{url, /*metadata=*/std::nullopt}}})
+                    .Build()));
+
+  // Using either signals URL should result in a winner.
+  EXPECT_EQ(url, RunAuctionAndWaitForUrl(
+                     JsReplace(R"({
+                                 seller: $1,
+                                 decisionLogicURL: $2,
+                                 trustedScoringSignalsURL: $3,
+                                 interestGroupBuyers: [$1]
+                               })",
+                               origin, decision_url,
+                               almost_too_long_trusted_scoring_signals_url)));
+  EXPECT_EQ(url,
+            RunAuctionAndWaitForUrl(JsReplace(
+                R"({
+                  seller: $1,
+                  decisionLogicURL: $2,
+                  trustedScoringSignalsURL: $3,
+                  interestGroupBuyers: [$1]
+                })",
+                origin, decision_url, too_long_trusted_scoring_signals_url)));
+
+  // No observed requests should start with `almost_too_long_url_base` - all
+  // trusted scoring signals request URLs should exceed the length limit, so
+  // result in fetch failures without being sent over the network.
+  for (const GURL& seen_url : SeenUrls()) {
+    EXPECT_FALSE(base::StartsWith(seen_url.spec(), almost_too_long_url_base));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

@@ -391,6 +391,16 @@ bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
   if (url.has_ref()) {
     return false;
   }
+
+  // GURL's Mojo serialization logic may convert a valid URL that's too long
+  // to an invalid one. Since trusted signals URLs may be appended to, an
+  // invalid URL may have begun life as a valid trusted signals URL, but then
+  // exceeded the max length when appended to. The request for such a URL will
+  // fail, but that's how we normally treat such URLs, so just let it through.
+  if (!url.is_valid()) {
+    return true;
+  }
+
   std::string full_prefix = base::StringPrintf(
       "%s?hostname=%s&", trusted_signals_base_url_->spec().c_str(),
       top_frame_origin_.host().c_str());

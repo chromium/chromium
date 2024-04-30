@@ -150,7 +150,7 @@ class AuctionDownloaderTest
 
   base::test::TaskEnvironment task_environment_;
 
-  const GURL url_ = GURL("https://url.test/script.js");
+  GURL url_ = GURL("https://url.test/script.js");
 
   AuctionDownloader::MimeType mime_type_ =
       AuctionDownloader::MimeType::kJavascript;
@@ -183,6 +183,38 @@ TEST_P(AuctionDownloaderTest, NetworkError) {
   EXPECT_EQ(
       "Failed to load https://url.test/script.js error = net::ERR_FAILED.",
       last_error_msg());
+  EXPECT_EQ(observed_completion_status_.error_code, net::ERR_FAILED);
+}
+
+TEST_P(AuctionDownloaderTest, NetworkErrorTruncatesUrl) {
+  network::URLLoaderCompletionStatus status;
+  status.error_code = net::ERR_FAILED;
+  std::string almost_too_long_url_base = "https://url.test/";
+  almost_too_long_url_base += std::string(
+      AuctionDownloader::kMaxErrorUrlLength - almost_too_long_url_base.size(),
+      '1');
+  GURL almost_too_long_url = GURL(almost_too_long_url_base);
+  GURL too_long_url = GURL(almost_too_long_url_base + "2");
+
+  url_ = almost_too_long_url;
+  url_loader_factory_.AddResponse(url_, /*head=*/nullptr, kAsciiResponseBody,
+                                  status);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(base::StringPrintf("Failed to load %s error = net::ERR_FAILED.",
+                               almost_too_long_url.spec().c_str()),
+            last_error_msg());
+  EXPECT_EQ(observed_completion_status_.error_code, net::ERR_FAILED);
+
+  url_ = too_long_url;
+  url_loader_factory_.AddResponse(url_, /*head=*/nullptr, kAsciiResponseBody,
+                                  status);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(base::StringPrintf(
+                "Failed to load %s... error = net::ERR_FAILED.",
+                too_long_url.spec()
+                    .substr(0, AuctionDownloader::kMaxErrorUrlLength - 3)
+                    .c_str()),
+            last_error_msg());
   EXPECT_EQ(observed_completion_status_.error_code, net::ERR_FAILED);
 }
 

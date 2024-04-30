@@ -402,6 +402,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   if ((out->decision_logic_url && out->decision_logic_url->is_valid() &&
        !out->IsHttpsAndMatchesSellerOrigin(*out->decision_logic_url)) ||
       (out->trusted_scoring_signals_url &&
+       out->trusted_scoring_signals_url->is_valid() &&
        !out->IsValidTrustedScoringSignalsURL(
            *out->trusted_scoring_signals_url))) {
     return false;

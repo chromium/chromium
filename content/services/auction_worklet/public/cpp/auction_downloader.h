@@ -61,6 +61,10 @@ class CONTENT_EXPORT AuctionDownloader {
                               scoped_refptr<net::HttpResponseHeaders> headers,
                               std::optional<std::string> error)>;
 
+  // When a URL appears in a network error message, it's truncated to never be
+  // longed than this length.
+  static constexpr size_t kMaxErrorUrlLength = 10 * 1024;
+
   // This handles how network requests get logged to devtools.
   class CONTENT_EXPORT NetworkEventsDelegate {
    public:
