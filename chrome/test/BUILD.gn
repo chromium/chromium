@@ -1703,6 +1703,7 @@ if (!is_android) {
       "//chrome/browser:buildflags",
       "//chrome/browser:theme_properties",
       "//chrome/browser/accessibility:test_support",
+      "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service:constants",
@@ -2126,7 +2127,10 @@ if (!is_android) {
     }
 
     if (is_chromeos_ash) {
-      deps += [ "//remoting/host/chromeos:features" ]
+      deps += [
+        "//chrome/browser/accessibility/media_app/test:test_support",
+        "//remoting/host/chromeos:features",
+      ]
     }
 
     # Runtime dependencies
@@ -6777,6 +6781,7 @@ test("unit_tests") {
     "//chrome/browser:browser_themes",
     "//chrome/browser:buildflags",
     "//chrome/browser:theme_properties",
+    "//chrome/browser/accessibility:utils",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/autofill",
@@ -8720,6 +8725,7 @@ test("unit_tests") {
       "//ash/webui/scanning",
       "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser/accessibility:test_support",
+      "//chrome/browser/accessibility/media_app/test:test_support",
       "//chrome/browser/apps/almanac_api_client:unit_tests",
       "//chrome/browser/apps/app_deduplication_service:unit_tests",
       "//chrome/browser/apps/app_discovery_service:unit_tests",

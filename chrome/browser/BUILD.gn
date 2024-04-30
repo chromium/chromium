@@ -145,8 +145,6 @@ static_library("browser") {
     "accessibility/accessibility_labels_service.h",
     "accessibility/accessibility_labels_service_factory.cc",
     "accessibility/accessibility_labels_service_factory.h",
-    "accessibility/accessibility_state_utils.cc",
-    "accessibility/accessibility_state_utils.h",
     "accessibility/page_colors.cc",
     "accessibility/page_colors.h",
     "accessibility/page_colors_factory.cc",
@@ -2015,6 +2013,9 @@ static_library("browser") {
   if (!is_chromeos_lacros) {
     allow_circular_includes_from +=
         [ "//chrome/browser/ui/webui/bluetooth_internals" ]
+  } else {
+    # Circular dependency due to `EmbeddedA11yManagerLacros`.
+    allow_circular_includes_from += [ "//chrome/browser/accessibility:utils" ]
   }
 
   public_deps = [
@@ -2081,6 +2082,7 @@ static_library("browser") {
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
+    "//chrome/browser/accessibility:utils",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
