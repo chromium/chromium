@@ -141,10 +141,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   explicit ScreenCaptureKitDeviceMac(const DesktopMediaID& source)
       : source_(source),
         device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-    SampleCallback sample_callback = base::BindPostTask(
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::BindRepeating(&ScreenCaptureKitDeviceMac::OnStreamSample,
-                            weak_factory_.GetWeakPtr()));
+    SampleCallback sample_callback = base::BindRepeating(
+        &ScreenCaptureKitDeviceMac::OnStreamSample, weak_factory_.GetWeakPtr());
     ErrorCallback error_callback = base::BindPostTask(
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindRepeating(&ScreenCaptureKitDeviceMac::OnStreamError,
@@ -159,6 +157,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   ~ScreenCaptureKitDeviceMac() override = default;
 
   void OnShareableContentCreated(SCShareableContent* content) {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
     if (!content) {
       client()->OnError(
           media::VideoCaptureError::kScreenCaptureKitFailedGetShareableContent,
@@ -244,6 +244,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     [stream_ startCaptureWithCompletionHandler:handler];
   }
   void OnStreamStarted(bool error) {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
     if (error) {
       client()->OnError(
           media::VideoCaptureError::kScreenCaptureKitFailedStartCapture,
@@ -257,6 +259,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     }
   }
   void OnStreamStopped(bool error) {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
     if (error) {
       client()->OnError(
           media::VideoCaptureError::kScreenCaptureKitFailedStopCapture,
@@ -267,6 +271,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   void OnStreamSample(gfx::ScopedInUseIOSurface io_surface,
                       std::optional<gfx::Size> content_size,
                       std::optional<gfx::Rect> visible_rect) {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
     if (requested_capture_format_) {
       // Does the size of io_surface match the requested format?
       size_t io_surface_width = IOSurfaceGetWidth(io_surface.get());
@@ -336,6 +342,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
         visible_rect.value_or(gfx::Rect(actual_capture_format_.frame_size)));
   }
   void OnStreamError() {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
     if (is_resetting_ || (fullscreen_module_ &&
                           fullscreen_module_->is_fullscreen_window_active())) {
       // Clear `is_resetting_` because the completion handler in ResetStreamTo()
@@ -355,6 +363,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 
   // IOSurfaceCaptureDeviceBase:
   void OnStart() override {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
     auto content_callback = base::BindPostTask(
         device_task_runner_,
         base::BindRepeating(
@@ -366,13 +376,15 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     [SCShareableContent getShareableContentWithCompletionHandler:handler];
   }
   void OnStop() override {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
     if (stream_) {
-      auto stream_started_callback = base::BindPostTask(
+      auto stream_stopped_callback = base::BindPostTask(
           device_task_runner_,
           base::BindRepeating(&ScreenCaptureKitDeviceMac::OnStreamStopped,
                               weak_factory_.GetWeakPtr()));
       auto handler = ^(NSError* error) {
-        stream_started_callback.Run(!!error);
+        stream_stopped_callback.Run(!!error);
       };
       [stream_ stopCaptureWithCompletionHandler:handler];
 
@@ -391,6 +403,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 
   // ScreenCaptureKitResetStreamInterface.
   void ResetStreamTo(SCWindow* window) override {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+
     if (!window || is_resetting_) {
       client()->OnError(
           media::VideoCaptureError::kScreenCaptureKitResetStreamError,
