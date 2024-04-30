@@ -768,10 +768,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   // the currently hosted SidePanelEntry.
   DCHECK(content_wrapper->children().size() <= 1);
 
-  // Side panel is opened when the `content_container` is made visible for the
-  // first time. The subsequent calls of `PopulateSidePanel()` that have visible
-  // `content_container` is to update the content of the side panel.
-  const bool opening_side_panel = !content_container->GetVisible();
+  const bool opening_side_panel = !IsSidePanelShowing();
 
   content_wrapper->SetVisible(true);
   content_container->SetVisible(true);
@@ -814,7 +811,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   UpdateNewTabButtonState();
   UpdateHeaderPinButtonState();
 
-  // Notify the observers if the side panel is opened (made visible).
+  // Notify the observers when the side panel is opened (made visible). However,
+  // the observers are not renotified when the side panel entry changes.
   if (opening_side_panel) {
     for (SidePanelViewStateObserver& view_state_observer :
          view_state_observers_) {

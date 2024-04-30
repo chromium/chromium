@@ -461,23 +461,10 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
             SidePanel::kAlignLeft);
 }
 
-TEST_F(SidePanelCoordinatorTest,
-       ClosingSidePanelCallsOnSidePanelClosedObserver) {
-  MockSidePanelViewStateObserver view_state_observer;
-  EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(1);
-  coordinator_->AddSidePanelViewStateObserver(&view_state_observer);
-  coordinator_->Show();
-  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
-
-  coordinator_->Close();
-
-  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
-  coordinator_->RemoveSidePanelViewStateObserver(&view_state_observer);
-}
-
-TEST_F(SidePanelCoordinatorTest, OpeningSidePanelCallsOnSidePanelObserver) {
+TEST_F(SidePanelCoordinatorTest, DontNotifySidePanelObserverOfChangingContent) {
   MockSidePanelViewStateObserver view_state_observer;
   EXPECT_CALL(view_state_observer, OnSidePanelDidOpen()).Times(1);
+  EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(0);
 
   coordinator_->AddSidePanelViewStateObserver(&view_state_observer);
 
@@ -494,6 +481,29 @@ TEST_F(SidePanelCoordinatorTest, OpeningSidePanelCallsOnSidePanelObserver) {
   EXPECT_TRUE(GetLastActiveEntryKey().has_value());
   EXPECT_EQ(GetLastActiveEntryKey().value().id(),
             SidePanelEntry::Id::kBookmarks);
+
+  coordinator_->RemoveSidePanelViewStateObserver(&view_state_observer);
+}
+
+TEST_F(SidePanelCoordinatorTest, NotifyingSidePanelObservers) {
+  MockSidePanelViewStateObserver view_state_observer;
+  EXPECT_CALL(view_state_observer, OnSidePanelDidOpen()).Times(3);
+  EXPECT_CALL(view_state_observer, OnSidePanelDidClose()).Times(2);
+
+  coordinator_->AddSidePanelViewStateObserver(&view_state_observer);
+
+  coordinator_->Show();
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  coordinator_->Close();
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+
+  coordinator_->Show();
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+  coordinator_->Close();
+  EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
+
+  coordinator_->Show();
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
 
   coordinator_->RemoveSidePanelViewStateObserver(&view_state_observer);
 }
