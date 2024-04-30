@@ -238,6 +238,8 @@ void QsBatteryLabelView::Update() {
     SetText(status_string);
     SetVisible(!status_string.empty());
   }
+  SetAccessibleName(
+      PowerStatus::Get()->GetAccessibleNameString(/*full_description=*/true));
 }
 
 BEGIN_METADATA(QsBatteryLabelView)
