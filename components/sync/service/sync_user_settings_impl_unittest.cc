@@ -35,9 +35,6 @@ ModelTypeSet GetUserTypes() {
       {APP_LIST, ARC_PACKAGE, OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS,
        PRINTERS_AUTHORIZATION_SERVERS, WIFI_CONFIGURATIONS, WORKSPACE_DESK});
 #endif
-  // TODO(b/318391357): temporary workaround for tests until we implement a
-  // corresponding `UserSelectableType`.
-  user_types.Remove(COOKIES);
   return user_types;
 }
 
@@ -192,12 +189,13 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
       sync_user_settings->GetRegisteredSelectableTypes();
   UserSelectableTypeSet selected_types = sync_user_settings->GetSelectedTypes();
   // History and Tabs require a separate opt-in.
-  // Apps, Extensions, Themes and SavedTabGroups are not supported in
+  // Apps, Extensions, Themes, SavedTabGroups and Cookies are not supported in
   // transport mode.
   UserSelectableTypeSet expected_disabled_types = {
       UserSelectableType::kHistory, UserSelectableType::kTabs,
       UserSelectableType::kApps,    UserSelectableType::kExtensions,
-      UserSelectableType::kThemes,  UserSelectableType::kSavedTabGroups};
+      UserSelectableType::kThemes,  UserSelectableType::kSavedTabGroups,
+      UserSelectableType::kCookies};
   if (!base::FeatureList::IsEnabled(kSyncSharedTabGroupDataInTransportMode)) {
     expected_disabled_types.Put(UserSelectableType::kSharedTabGroupData);
   }

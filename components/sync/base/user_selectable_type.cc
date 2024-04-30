@@ -38,6 +38,7 @@ constexpr char kSavedTabGroupsTypeName[] = "savedTabGroups";
 constexpr char kSharedTabGroupDataTypeName[] = "sharedTabGroupData";
 constexpr char kPaymentsTypeName[] = "payments";
 constexpr char kCompareTypeName[] = "compare";
+constexpr char kCookiesTypeName[] = "cookies";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
   static_assert(52 == syncer::GetNumModelTypes(),
@@ -107,8 +108,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
                AUTOFILL_WALLET_USAGE}};
     case UserSelectableType::kCompare:
       return {kCompareTypeName, COMPARE, {COMPARE}};
-      // TODO(b/318391357) add `UserSelectableType::kCookies` and handle it
-      // under #if BUILDFLAG(IS_CHROMEOS).
+    case UserSelectableType::kCookies:
+      return {kCookiesTypeName, COOKIES, {COOKIES}};
   }
   NOTREACHED();
   return {nullptr, UNSPECIFIED, {}};

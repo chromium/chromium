@@ -83,6 +83,8 @@ inline constexpr char kSyncAppsEnabledByOs[] = "sync.apps_enabled_by_os";
 inline constexpr char kSyncApps[] = "sync.apps";
 inline constexpr char kSyncAutofill[] = "sync.autofill";
 inline constexpr char kSyncBookmarks[] = "sync.bookmarks";
+inline constexpr char kSyncCompare[] = "sync.compare";
+inline constexpr char kSyncCookies[] = "sync.cookies";
 inline constexpr char kSyncExtensions[] = "sync.extensions";
 // Note: The pref for history is called "typed_urls" for historic reasons - not
 // worth the hassle of renaming.
@@ -95,7 +97,6 @@ inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 inline constexpr char kSyncSharedTabGroupData[] = "sync.shared_tab_group_data";
 inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
-inline constexpr char kSyncCompare[] = "sync.compare";
 
 // Boolean used by enterprise configuration management in order to lock down
 // sync.

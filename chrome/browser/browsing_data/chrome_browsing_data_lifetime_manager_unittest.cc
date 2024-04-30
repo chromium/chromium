@@ -254,7 +254,9 @@ TEST(ChromeBrowsingDataLifetimeManager,
   // If required sync types get disabled, the scheduled deletions should proceed
   // as usual.
   sync_service->GetUserSettings()->SetTypeIsManaged(
-      syncer::UserSelectableType::kPreferences, true);
+      syncer::UserSelectableType::kPreferences, /*is_managed=*/true);
+  sync_service->GetUserSettings()->SetTypeIsManaged(
+      syncer::UserSelectableType::kCookies, /*is_managed=*/true);
 
   base::Time current_time = base::Time::Now();
   base::Time delete_start_time = base::Time::Min();

@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
 
 namespace browsing_data {
@@ -56,14 +57,15 @@ void AppendSyncTypesIfRequired(const base::Value& browsing_data_type,
             {syncer::UserSelectableType::kAutofill,
              syncer::UserSelectableType::kPayments}},
            {policy_data_types::kDownloadHistoryName, {}},
-           {policy_data_types::kCookiesAndOtherSiteDataName, {}},
+           {policy_data_types::kCookiesAndOtherSiteDataName,
+            {syncer::UserSelectableType::kCookies}},
            {policy_data_types::kCachedImagesAndFilesName, {}},
            {policy_data_types::kHostedAppDataName, {}}});
 
   // When a new sync type or browsing data type is introduced in the code,
   // kDataToSyncTypesMap should be updated if needed to ensure that browsing
   // data that can be cleared by policy is not already synced across devices.
-  static_assert(static_cast<int>(syncer::UserSelectableType::kLastType) == 13,
+  static_assert(static_cast<int>(syncer::UserSelectableType::kLastType) == 14,
                 "It looks like a sync type was added or removed. Please update "
                 "`kDataToSyncTypesMap` value maps above if it affects any of "
                 "the browsing data types.");

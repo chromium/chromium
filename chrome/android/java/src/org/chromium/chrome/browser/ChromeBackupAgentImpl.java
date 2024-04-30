@@ -231,7 +231,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // When new data type is added, a new case should be added to the switch below and the
         // corresponding sync preference name should be added in BACKUP_NATIVE_SYNC_TYPE_BOOL_PREFS
         // so it can be backed-up.
-        assert UserSelectableType.LAST_TYPE == 13;
+        assert UserSelectableType.LAST_TYPE == 14;
 
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();

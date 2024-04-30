@@ -114,6 +114,7 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
   result.Set("bookmarksSynced",
              types.Has(syncer::UserSelectableType::kBookmarks));
   result.Set("compareSynced", types.Has(syncer::UserSelectableType::kCompare));
+  result.Set("cookiesSynced", types.Has(syncer::UserSelectableType::kCookies));
   result.Set("extensionsSynced",
              types.Has(syncer::UserSelectableType::kExtensions));
   result.Set("passwordsSynced",
@@ -132,10 +133,6 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
   result.Set("themesSynced", types.Has(syncer::UserSelectableType::kThemes));
   result.Set("typedUrlsSynced",
              types.Has(syncer::UserSelectableType::kHistory));
-
-  // Reading list doesn't really have a UI and is supported on ios only.
-  result.Set("readingListSynced",
-             types.Has(syncer::UserSelectableType::kReadingList));
 
   std::string args;
   base::JSONWriter::Write(result, &args);
