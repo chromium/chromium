@@ -98,8 +98,10 @@ AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
   // Arrow keys are used to select app icons.
   scroll_view_->SetAllowKeyboardScrolling(false);
 
-  // Scroll view will have a gradient mask layer.
-  scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  // Scroll view will have a gradient mask layer, and is animated during
+  // hide/show.
+  scroll_view_->SetPaintToLayer();
+  scroll_view_->layer()->SetFillsBoundsOpaquely(false);
 
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
@@ -178,10 +180,9 @@ void AppListBubbleAppsCollectionsPage::AnimateShowPage() {
   // Ensure the view is visible.
   SetVisible(true);
 
-  // Scroll contents has a layer, so animate that.
-  views::View* scroll_contents = scroll_view_->contents();
-  DCHECK(scroll_contents->layer());
-  DCHECK_EQ(scroll_contents->layer()->type(), ui::LAYER_TEXTURED);
+  ui::Layer* scroll_view_layer = scroll_view_->layer();
+  DCHECK(scroll_view_layer);
+  DCHECK_EQ(scroll_view_layer->type(), ui::LAYER_TEXTURED);
 
   gfx::Transform translate_down;
   translate_down.Translate(0, kShowPageAnimationVerticalOffset);
@@ -196,15 +197,15 @@ void AppListBubbleAppsCollectionsPage::AnimateShowPage() {
           &AppListBubbleAppsCollectionsPage::SetVisibilityAfterAnimation,
           weak_factory_.GetWeakPtr(), /* visible= */ true))
       .Once()
-      .SetOpacity(scroll_contents, 0.f)
-      .SetTransform(scroll_contents, translate_down)
+      .SetOpacity(scroll_view_layer, 0.f)
+      .SetTransform(scroll_view_layer, translate_down)
       .At(kShowPageAnimationDelay)
       .SetDuration(kShowPageAnimationTransformDuration)
-      .SetTransform(scroll_contents, gfx::Transform(),
+      .SetTransform(scroll_view_layer, gfx::Transform(),
                     gfx::Tween::LINEAR_OUT_SLOW_IN)
       .At(kShowPageAnimationDelay)
       .SetDuration(kShowPageAnimationOpacityDuration)
-      .SetOpacity(scroll_contents, 1.f);
+      .SetOpacity(scroll_view_layer, 1.f);
 }
 
 void AppListBubbleAppsCollectionsPage::AnimateHidePage() {
@@ -214,10 +215,9 @@ void AppListBubbleAppsCollectionsPage::AnimateHidePage() {
     return;
   }
 
-  // Scroll contents has a layer, so animate that.
-  views::View* scroll_contents = scroll_view_->contents();
-  DCHECK(scroll_contents->layer());
-  DCHECK_EQ(scroll_contents->layer()->type(), ui::LAYER_TEXTURED);
+  ui::Layer* scroll_view_layer = scroll_view_->layer();
+  DCHECK(scroll_view_layer);
+  DCHECK_EQ(scroll_view_layer->type(), ui::LAYER_TEXTURED);
 
   // The animation spec says 40 dips down over 250ms, but the opacity animation
   // renders the view invisible after 50ms, so animate the visible fraction.
@@ -237,8 +237,8 @@ void AppListBubbleAppsCollectionsPage::AnimateHidePage() {
           weak_factory_.GetWeakPtr(), /* visible= */ false))
       .Once()
       .SetDuration(base::Milliseconds(50))
-      .SetOpacity(scroll_contents, 0.f)
-      .SetTransform(scroll_contents, translate_down);
+      .SetOpacity(scroll_view_layer, 0.f)
+      .SetTransform(scroll_view_layer, translate_down);
 }
 
 void AppListBubbleAppsCollectionsPage::AbortAllAnimations() {
@@ -247,7 +247,7 @@ void AppListBubbleAppsCollectionsPage::AbortAllAnimations() {
       view->layer()->GetAnimator()->AbortAllAnimations();
     }
   };
-  abort_animations(scroll_view_->contents());
+  abort_animations(scroll_view_);
   if (toast_container_) {
     abort_animations(toast_container_);
   }
@@ -269,7 +269,11 @@ AppListBubbleAppsCollectionsPage::GetGridTypeForContextMenu() {
 }
 
 ui::Layer* AppListBubbleAppsCollectionsPage::GetPageAnimationLayerForTest() {
-  return scroll_view_->contents()->layer();
+  // Animating the `scroll_view_`'s content layer can have its transform
+  // animations interrupted when the content layer's transforms get set due to
+  // rtl specific transforms in ScrollView code. Use the `scroll_view_` layer
+  // for animations to avoid this.
+  return scroll_view_->layer();
 }
 
 AppListToastContainerView*
@@ -282,7 +286,7 @@ void AppListBubbleAppsCollectionsPage::SetVisibilityAfterAnimation(
   // Ensure the view has the correct opacity and transform when the animation is
   // aborted.
   SetVisible(visible);
-  ui::Layer* layer = scroll_view()->contents()->layer();
+  ui::Layer* layer = scroll_view()->layer();
   layer->SetOpacity(1.f);
   layer->SetTransform(gfx::Transform());
 }
