@@ -34,11 +34,16 @@ const char kImageFetcherUmaClient[] = "LargeIconService";
 
 const char kGoogleServerV2Url[] = "https://t0.gstatic.com/faviconV2";
 
+// `check_seen` is a legacy parameter which prevents the Google-favicon-server
+// from crawling a URL as a result of a Google-favicon-server request in order
+// to prevent Google from trying to crawl enterprise/private URLs. Currently the
+// Google-favicon-server ignores the `check_seen` parameter and never triggers
+// Google crawling a URL. check_seen is set explicitly set explicitly in the
+// request URL to make sure `LargeIconService` behavior is not affected if this
+// changes at any point in time.
 const char kGoogleServerV2RequestFormat[] =
-    "%s?client=%s&nfrp=2&%ssize=%d&min_size=%d&max_size=%d&"
+    "%s?client=%s&nfrp=2&check_seen=true&size=%d&min_size=%d&max_size=%d&"
     "fallback_opts=TYPE,SIZE,URL&url=%s";
-
-const char kCheckSeenParam[] = "check_seen=true&";
 
 const int kGoogleServerV2EnforcedMinSizeInPixel = 16;
 
@@ -65,7 +70,6 @@ GURL GetRequestUrlForGoogleServerV2(
     const GURL& page_url,
     const std::string& google_server_client_param,
     int desired_size_in_pixel,
-    bool may_page_url_be_private,
     const GURL& server_url) {
   // Server expects a size value from the server-side enum
   // favicon_service.FaviconSize
@@ -85,8 +89,7 @@ GURL GetRequestUrlForGoogleServerV2(
 
   std::string request_url = base::StringPrintf(
       kGoogleServerV2RequestFormat, server_url.spec().c_str(),
-      google_server_client_param.c_str(),
-      may_page_url_be_private ? kCheckSeenParam : "", desired_size_in_pixel,
+      google_server_client_param.c_str(), desired_size_in_pixel,
       kGoogleServerV2EnforcedMinSizeInPixel, max_size_in_pixel,
       page_url.spec().c_str());
   return GURL(request_url);
@@ -263,7 +266,6 @@ LargeIconServiceImpl::GetIconRawBitmapOrFallbackStyleForPageUrl(
 void LargeIconServiceImpl::
     GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
         const GURL& page_url,
-        bool may_page_url_be_private,
         bool should_trim_page_url_path,
         const net::NetworkTrafficAnnotationTag& traffic_annotation,
         favicon_base::GoogleFaviconServerCallback callback) {
@@ -294,8 +296,7 @@ void LargeIconServiceImpl::
 
   const GURL server_request_url = GetRequestUrlForGoogleServerV2(
       trimmed_page_url, google_server_client_param_,
-      desired_size_in_pixel_for_server_requests_, may_page_url_be_private,
-      server_url_);
+      desired_size_in_pixel_for_server_requests_, server_url_);
   if (!server_request_url.is_valid()) {
     FinishServerRequestAsynchronously(
         std::move(callback),

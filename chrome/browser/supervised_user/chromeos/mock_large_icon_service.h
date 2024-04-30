@@ -26,7 +26,6 @@ class MockLargeIconService : public favicon::LargeIconService {
   MOCK_METHOD(void,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
               (const GURL& page_url,
-               bool may_page_url_be_private,
                bool should_trim_page_url_path,
                const net::NetworkTrafficAnnotationTag& traffic_annotation,
                favicon_base::GoogleFaviconServerCallback callback),

@@ -538,7 +538,6 @@ public class SearchEngineAdapter extends BaseAdapter
         // callback will be triggered nonetheless.
         mLargeIconBridge.getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
                 faviconUrl,
-                /* mayPageUrlBePrivate= */ true,
                 /* shouldTrimPageUrlPath= */ true,
                 TRAFFIC_ANNOTATION,
                 googleServerCallback);

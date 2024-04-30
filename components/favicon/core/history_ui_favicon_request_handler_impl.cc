@@ -230,8 +230,7 @@ void HistoryUiFaviconRequestHandlerImpl::RequestFromGoogleServer(
   large_icon_service_
       ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           page_url,
-          /*may_page_url_be_private=*/true, /*should_trim_url_path=*/false,
-          traffic_annotation,
+          /*should_trim_page_url_path=*/false, traffic_annotation,
           base::BindOnce(
               &HistoryUiFaviconRequestHandlerImpl::OnGoogleServerDataAvailable,
               weak_ptr_factory_.GetWeakPtr(),

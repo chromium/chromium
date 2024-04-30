@@ -108,7 +108,6 @@ void FaviconLoader::FaviconForPageUrl(
       large_icon_service_
           ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
               block_page_url,
-              /*may_page_url_be_private=*/true,
               /*should_trim_page_url_path=*/false, kTrafficAnnotation,
               base::BindRepeating(favicon_loaded_from_server_block));
       return;

@@ -94,7 +94,6 @@ class MockLargeIconService : public favicon::LargeIconService {
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
               (const GURL&,
                bool,
-               bool,
                const net::NetworkTrafficAnnotationTag&,
                favicon_base::GoogleFaviconServerCallback),
               (override));

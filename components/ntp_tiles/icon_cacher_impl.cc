@@ -255,8 +255,7 @@ void IconCacherImpl::OnGetLargeIconOrFallbackStyleFinished(
   large_icon_service_
       ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           page_url,
-          /*may_page_url_be_private=*/true, /*should_trim_page_url_path=*/false,
-          traffic_annotation,
+          /*should_trim_page_url_path=*/false, traffic_annotation,
           base::BindOnce(&IconCacherImpl::OnMostLikelyFaviconDownloaded,
                          weak_ptr_factory_.GetWeakPtr(), page_url));
 }

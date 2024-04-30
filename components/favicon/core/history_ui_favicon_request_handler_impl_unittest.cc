@@ -119,10 +119,10 @@ class MockLargeIconServiceWithFake : public LargeIconService {
       : mock_favicon_service_with_fake_(mock_favicon_service_with_fake) {
     // Fake won't respond with any icons at first (HTTP error 404).
     ON_CALL(*this,
-            GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                _, _, _, _, _))
+            GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _,
+                                                                          _, _))
         .WillByDefault(
-            [](auto, auto, auto, auto,
+            [](auto, auto, auto,
                favicon_base::GoogleFaviconServerCallback server_callback) {
               std::move(server_callback)
                   .Run(favicon_base::GoogleFaviconServerRequestStatus::
@@ -142,10 +142,10 @@ class MockLargeIconServiceWithFake : public LargeIconService {
   void StoreMockGoogleServerFavicon(const GURL& page_url,
                                     const GURL& icon_url) {
     ON_CALL(*this,
-            GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                _, _, _, _, _))
+            GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _,
+                                                                          _, _))
         .WillByDefault(
-            [=](auto, auto, auto, auto,
+            [=](auto, auto, auto,
                 favicon_base::GoogleFaviconServerCallback server_callback) {
               mock_favicon_service_with_fake_->StoreMockLocalFavicon(page_url,
                                                                      icon_url);
@@ -158,7 +158,6 @@ class MockLargeIconServiceWithFake : public LargeIconService {
   MOCK_METHOD(void,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
               (const GURL& page_url,
-               bool may_page_url_be_private,
                bool should_trim_page_url_path,
                const net::NetworkTrafficAnnotationTag& traffic_annotation,
                favicon_base::GoogleFaviconServerCallback callback),
@@ -284,8 +283,8 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
       .Times(2);
   EXPECT_CALL(mock_large_icon_service_,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  kPageUrl, _,
-                  /*should_trim_url_path=*/false, _, _));
+                  kPageUrl,
+                  /*should_trim_page_url_path=*/false, _, _));
   favicon_base::FaviconRawBitmapResult result;
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
       kPageUrl, /*desired_size_in_pixel=*/16,
@@ -327,8 +326,8 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerImage) {
       .Times(2);
   EXPECT_CALL(mock_large_icon_service_,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  kPageUrl, _,
-                  /*should_trim_url_path=*/false, _, _));
+                  kPageUrl,
+                  /*should_trim_page_url_path=*/false, _, _));
   favicon_base::FaviconImageResult result;
   history_ui_favicon_request_handler_.GetFaviconImageForPageURL(
       kPageUrl, base::BindOnce(&StoreImage, &result), kOrigin);
@@ -351,9 +350,9 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest,
         std::move(callback).Run(favicon_base::FaviconRawBitmapResult());
         return kTaskId;
       });
-  EXPECT_CALL(mock_large_icon_service_,
-              GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  _, _, _, _, _))
+  EXPECT_CALL(
+      mock_large_icon_service_,
+      GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _, _, _))
       .Times(0);
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
       kPageUrl, /*desired_size_in_pixel=*/16, base::DoNothing(), kOrigin);

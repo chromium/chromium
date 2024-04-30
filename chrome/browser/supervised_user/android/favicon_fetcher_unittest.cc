@@ -54,7 +54,6 @@ class MockLargeIconService : public favicon::LargeIconService {
   MOCK_METHOD(void,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
               (const GURL& page_url,
-               bool may_page_url_be_private,
                bool should_trim_page_url_path,
                const net::NetworkTrafficAnnotationTag& traffic_annotation,
                favicon_base::GoogleFaviconServerCallback callback),
@@ -137,9 +136,9 @@ TEST_F(FaviconFetcherTest, SucessfullImageRequestSuccessfulImageFetch) {
   // Successful image request from server.
   EXPECT_CALL(mock_large_icon_service_,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  testing::_, testing::_, testing::_, testing::_, testing::_))
+                  testing::_, testing::_, testing::_, testing::_))
       .Times(1)
-      .WillOnce(base::test::RunOnceCallback<4>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           favicon_base::GoogleFaviconServerRequestStatus::SUCCESS));
 
   // Returns an empty image at first, then a valid image (after requesting it
@@ -179,9 +178,9 @@ TEST_F(FaviconFetcherTest, SucessfullImageRequestUnsuccessfulImageFetch) {
   // Successful image request from server.
   EXPECT_CALL(mock_large_icon_service_,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  testing::_, testing::_, testing::_, testing::_, testing::_))
+                  testing::_, testing::_, testing::_, testing::_))
       .Times(1)
-      .WillOnce(base::test::RunOnceCallback<4>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           favicon_base::GoogleFaviconServerRequestStatus::SUCCESS));
 
   // Returns an empty image twice (when image does not comply to our specs).
@@ -231,7 +230,7 @@ TEST_F(FaviconFetcherTest, SuccessfullImageFetchFromCache) {
   // No server request is done when image exists in cache.
   EXPECT_CALL(mock_large_icon_service_,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  testing::_, testing::_, testing::_, testing::_, testing::_))
+                  testing::_, testing::_, testing::_, testing::_))
       .Times(0);
 
   base::WeakPtr<FaviconFetcher> faviconFetcherWeakPtr =
@@ -250,9 +249,9 @@ TEST_F(FaviconFetcherTest, UnuccessfullImageRequest) {
   // Unsuccessful image request from server.
   EXPECT_CALL(mock_large_icon_service_,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  testing::_, testing::_, testing::_, testing::_, testing::_))
+                  testing::_, testing::_, testing::_, testing::_))
       .Times(1)
-      .WillOnce(base::test::RunOnceCallback<4>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           favicon_base::GoogleFaviconServerRequestStatus::FAILURE_HTTP_ERROR));
 
   // Returns an empty image.

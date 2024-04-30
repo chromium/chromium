@@ -100,11 +100,6 @@ class LargeIconService : public KeyedService {
   // only as a hint to the service, no guarantees on the fetched size are
   // provided.
   //
-  // Unless you are sure |page_url| is a public URL (known to Google Search),
-  // set |may_page_url_be_private| to true. This slighty increases the chance of
-  // a failure (e.g. if the URL _is_ private) but it makes sure Google servers
-  // do not crawl a private URL as a result of this call.
-  //
   // If |should_trim_page_url_path| is set to true, the path will be removed
   // from the URL used to query the server but the result will be stored under
   // the full URL provided to the API.
@@ -121,7 +116,6 @@ class LargeIconService : public KeyedService {
   // "StoreLargeIcon..."?
   virtual void GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
       const GURL& page_url,
-      bool may_page_url_be_private,
       bool should_trim_page_url_path,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       favicon_base::GoogleFaviconServerCallback callback) = 0;

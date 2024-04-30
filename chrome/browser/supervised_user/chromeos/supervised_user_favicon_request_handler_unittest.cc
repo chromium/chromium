@@ -50,7 +50,7 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetUncachedFavicon) {
       .Times(2);
   EXPECT_CALL(large_icon_service,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  page_url, _, _, _, _));
+                  page_url, _, _, _));
   // Confirm that the icon was retrieved from the cache.
   EXPECT_CALL(large_icon_service,
               TouchIconFromGoogleServer(large_icon_service.kIconUrl));
@@ -83,7 +83,7 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetCachedFavicon) {
       .Times(1);
   EXPECT_CALL(large_icon_service,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  page_url, _, _, _, _))
+                  page_url, _, _, _))
       .Times(0);
   // Confirm that the icon was retrieved from the cache.
   EXPECT_CALL(large_icon_service,
@@ -117,7 +117,7 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetFallbackFavicon) {
       .Times(0);
   EXPECT_CALL(large_icon_service,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  page_url, _, _, _, _))
+                  page_url, _, _, _))
       .Times(0);
   EXPECT_CALL(large_icon_service,
               TouchIconFromGoogleServer(large_icon_service.kIconUrl))

@@ -18,9 +18,9 @@ const base::CancelableTaskTracker::TaskId kTaskId = 1;
 
 MockLargeIconService::MockLargeIconService() {
   ON_CALL(*this, GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                     _, _, _, _, _))
+                     _, _, _, _))
       .WillByDefault(
-          [this](auto, auto, auto, auto,
+          [this](auto, auto, auto,
                  favicon_base::GoogleFaviconServerCallback callback) {
             StoreIconInCache();
             std::move(callback).Run(

@@ -34,7 +34,6 @@ class LargeIconBridge {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_browser_context,
       const base::android::JavaParamRef<jobject>& j_page_url,
-      jboolean may_page_url_be_private,
       jboolean should_trim_page_url_path,
       jint j_network_annotation_hash_code,
       const base::android::JavaParamRef<jobject>& j_callback);

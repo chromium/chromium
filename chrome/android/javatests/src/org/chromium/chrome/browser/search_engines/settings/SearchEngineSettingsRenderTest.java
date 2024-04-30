@@ -201,7 +201,6 @@ public class SearchEngineSettingsRenderTest {
         @Override
         public void getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
                 GURL pageUrl,
-                boolean mayPageUrlBePrivate,
                 boolean shouldTrimPageUrlPath,
                 NetworkTrafficAnnotationTag trafficAnnotation,
                 GoogleFaviconServerCallback callback) {

@@ -105,7 +105,6 @@ void SupervisedUserFaviconRequestHandler::OnGetFaviconFromCacheFinished(
   large_icon_service_
       ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
           page_url_,
-          /*may_page_url_be_private=*/false,
           /*should_trim_page_url_path=*/false, traffic_annotation,
           base::BindOnce(&SupervisedUserFaviconRequestHandler::
                              OnGetFaviconFromGoogleServerFinished,

@@ -297,8 +297,7 @@ void PartnerBookmarksReader::OnGetFaviconFromCacheFinished(
         })");
   GetLargeIconService()
       ->GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-          page_url, false /* may_page_url_be_private */,
-          false /* should_trim_page_url_path */, traffic_annotation,
+          page_url, false /* should_trim_page_url_path */, traffic_annotation,
           base::BindOnce(
               &PartnerBookmarksReader::OnGetFaviconFromServerFinished,
               base::Unretained(this), page_url, desired_favicon_size_px,
