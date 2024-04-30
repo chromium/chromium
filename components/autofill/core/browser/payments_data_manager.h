@@ -179,7 +179,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns all IBANs, server and local. All local IBANs that share the same
   // prefix, suffix, and length as any existing server IBAN will be considered a
   // duplicate IBAN. These duplicate IBANs will not be returned in the list.
-  virtual std::vector<const Iban*> GetIbansToSuggest() const;
+  // The returned IBANs are ranked by ranking score (see AutofillDataModel for
+  // details).
+  std::vector<Iban> GetOrderedIbansToSuggest() const;
 
   // Returns true if the user has at least 1 masked bank account.
   bool HasMaskedBankAccounts() const;

@@ -71,7 +71,7 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   // Filters the `ibans` based on the `field`'s value and returns the resulting
   // suggestions via `on_suggestions_returned`.
   void SendIbanSuggestions(
-      std::vector<const Iban*> ibans,
+      std::vector<Iban> ibans,
       const FormFieldData& field,
       OnSuggestionsReturnedCallback on_suggestions_returned);
 
@@ -84,7 +84,7 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
   // less than `kFieldLengthLimitOnServerIbanSuggestion` characters.
   // 2. If the IBAN's prefix is present and prefix matches the `field_value`.
   void FilterIbansToSuggest(const std::u16string& field_value,
-                            std::vector<const Iban*>& ibans);
+                            std::vector<Iban>& ibans);
 
   const raw_ptr<PersonalDataManager> personal_data_manager_;
 
