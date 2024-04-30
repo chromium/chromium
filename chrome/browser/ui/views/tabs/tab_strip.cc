@@ -170,7 +170,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
   // from us before our destructor is even called.
   ~TabDragContextImpl() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     int max_child_x = 0;
     for (views::View* child : children()) {
       if (!views::IsViewClass<TabSlotView>(child)) {
@@ -1914,11 +1915,12 @@ gfx::Size TabStrip::GetMinimumSize() const {
   return min_size;
 }
 
-gfx::Size TabStrip::CalculatePreferredSize() const {
+gfx::Size TabStrip::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // `tab_container_` and `drag_context_` overlap (both share TabStrip's
   // origin), so we need to be able to cover the union of their bounds.
-  gfx::Size preferred_size = tab_container_->GetPreferredSize();
-  preferred_size.SetToMax(drag_context_->GetPreferredSize());
+  gfx::Size preferred_size = tab_container_->GetPreferredSize(available_size);
+  preferred_size.SetToMax(drag_context_->GetPreferredSize(available_size));
 
   return preferred_size;
 }

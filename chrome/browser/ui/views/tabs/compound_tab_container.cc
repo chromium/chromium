@@ -693,7 +693,8 @@ views::SizeBounds CompoundTabContainer::GetAvailableSize(
                            views::SizeBound());
 }
 
-gfx::Size CompoundTabContainer::CalculatePreferredSize() const {
+gfx::Size CompoundTabContainer::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return GetCombinedSizeForTabContainerSizes(
       pinned_tab_container_->GetPreferredSize(),
       unpinned_tab_container_->GetPreferredSize());

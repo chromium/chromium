@@ -247,7 +247,8 @@ class TabHoverCardBubbleView::ThumbnailView
   // views::View:
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return image_type_ == ImageType::kNone
                ? gfx::Size()
                : bubble_view_->tab_style_->GetPreviewImageSize();
@@ -627,7 +628,8 @@ std::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
              : std::nullopt;
 }
 
-gfx::Size TabHoverCardBubbleView::CalculatePreferredSize() const {
+gfx::Size TabHoverCardBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int width = tab_style_->GetPreviewImageSize().width();
   const int height =
       GetLayoutManager()->GetPreferredHeightForWidth(this, width);

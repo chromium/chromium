@@ -844,7 +844,8 @@ gfx::Size TabContainerImpl::GetMinimumSize() const {
   return gfx::Size(minimum_width.value(), GetLayoutConstant(TAB_STRIP_HEIGHT));
 }
 
-gfx::Size TabContainerImpl::CalculatePreferredSize() const {
+gfx::Size TabContainerImpl::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // During animations, our preferred width tightly hugs the current bounds of
   // our children.
   std::optional<int> preferred_width = GetMidAnimationTrailingX();

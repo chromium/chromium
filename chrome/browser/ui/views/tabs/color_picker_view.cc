@@ -131,7 +131,8 @@ class ColorPickerElementView : public views::Button {
     return color_name_;
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     const gfx::Insets insets = GetInsets();
     // The size of the color element circle is adaptive, to improve the hit
     // target size on touch devices.

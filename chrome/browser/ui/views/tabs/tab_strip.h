@@ -315,7 +315,8 @@ class TabStrip : public views::View,
   // views::View:
   views::SizeBounds GetAvailableSize(const View* child) const override;
   gfx::Size GetMinimumSize() const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 

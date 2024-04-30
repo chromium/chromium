@@ -259,7 +259,8 @@ gfx::Size OverflowView::GetMinimumSize() const {
   }
 }
 
-gfx::Size OverflowView::CalculatePreferredSize() const {
+gfx::Size OverflowView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Preferred size is the preferred size of the primary as the overflow
   // view wants to show the primary by itself if it can.
   gfx::Size result = GetSizeFromFlexRule(primary_view_, views::SizeBounds())

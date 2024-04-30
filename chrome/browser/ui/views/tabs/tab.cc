@@ -717,7 +717,8 @@ void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-gfx::Size Tab::CalculatePreferredSize() const {
+gfx::Size Tab::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(tab_style()->GetStandardWidth(),
                    GetLayoutConstant(TAB_HEIGHT));
 }

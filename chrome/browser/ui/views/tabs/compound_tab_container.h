@@ -101,7 +101,8 @@ class CompoundTabContainer : public TabContainer,
   // views::View
   gfx::Size GetMinimumSize() const override;
   views::SizeBounds GetAvailableSize(const View* child) const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void Layout(PassKey) override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
