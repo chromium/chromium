@@ -3232,6 +3232,25 @@
             ]
         }
     ],
+    "CastMirroringPlayoutDelayChromeOS": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "cast_mirroring_playout_delay_ms": "200"
+                    },
+                    "enable_features": [
+                        "CastMirroringPlayoutDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastStreamingVp9": [
         {
             "platforms": [
