@@ -73,6 +73,7 @@ if (ios_enable_credential_provider_extension) {
       "credential_provider_util_unittest.mm",
     ]
     deps = [
+      ":features",
       ":model",
       "//base/test:test_support",
       "//components/affiliations/core/browser:test_support",
