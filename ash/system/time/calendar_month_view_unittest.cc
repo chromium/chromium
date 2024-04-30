@@ -371,13 +371,13 @@ class CalendarMonthViewFetchTest
   }
 
   void TearDown() override {
-    widget_.reset();
+    calendar_list_model_ = nullptr;
+    calendar_model_ = nullptr;
+
+    DestroyCalendarMonthViewWidget();
     time_overrides_.reset();
     controller_.reset();
     scoped_feature_list_.Reset();
-    calendar_list_model_ = nullptr;
-    calendar_model_ = nullptr;
-    calendar_month_view_ = nullptr;
 
     AshTestBase::TearDown();
   }
@@ -400,7 +400,10 @@ class CalendarMonthViewFetchTest
     views::test::RunScheduledLayout(calendar_month_view_);
   }
 
-  void DestroyCalendarMonthViewWidget() { widget_.reset(); }
+  void DestroyCalendarMonthViewWidget() {
+    calendar_month_view_ = nullptr;
+    widget_.reset();
+  }
 
   void SetCalendarList() {
     // Sets a mock calendar list.
