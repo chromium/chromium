@@ -7286,9 +7286,6 @@ crbug.com/325441197 http/tests/devtools/security/origin-view-then-interstitial.j
 crbug.com/325441197 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/security/security-explanation-ordering.js [ Failure Pass ]
 
-# Gardener 2024-04-11
-crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
-
 # Gardener 2024-04-16
 crbug.com/335003887 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/arg_min_max.https.any.worker.html [ Failure Pass ]
 crbug.com/335003887 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/arg_min_max.https.any.worker.html [ Failure Pass ]
