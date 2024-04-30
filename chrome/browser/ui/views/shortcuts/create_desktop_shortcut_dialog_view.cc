@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/controls/site_icon_text_and_origin_view.h"
 #include "chrome/browser/ui/views/shortcuts/create_desktop_shortcut_delegate.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"

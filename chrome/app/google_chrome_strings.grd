@@ -2053,6 +2053,13 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SIGNED_IN" desc="Description in the footer of the Delete Browsing Data dialog when the user is signed.">
         To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK">&lt;a href="#" target=&quot;_blank&quot;&gt;</ph>sign out of Chrome<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
+
+      <!-- New Create Shortcut View Strings-->
+      <if expr="not is_android and not is_chromeos">
+        <message name="IDS_CREATE_SHORTCUT_NOT_APPS_DIALOG_SUBTITLE" desc="Subtitle of the updated Create Shortcut dialog about how the site opens for Chrome">
+          Shortcuts open in Chrome
+        </message>
+      </if>
     </messages>
   </release>
 </grit>
