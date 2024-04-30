@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_button.h"
+#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 
 namespace blink {
 
@@ -85,6 +86,9 @@ ControlPart BaseButtonInputType::AutoAppearance() const {
 
 LayoutObject* BaseButtonInputType::CreateLayoutObject(
     const ComputedStyle&) const {
+  if (RuntimeEnabledFeatures::LayoutBlockButtonEnabled()) {
+    return MakeGarbageCollected<LayoutNGBlockFlow>(&GetElement());
+  }
   return MakeGarbageCollected<LayoutButton>(&GetElement());
 }
 

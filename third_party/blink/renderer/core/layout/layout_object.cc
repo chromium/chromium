@@ -505,6 +505,11 @@ bool LayoutObject::IsHR() const {
   return IsA<HTMLHRElement>(GetNode());
 }
 
+bool LayoutObject::IsButtonOrInputButton() const {
+  NOT_DESTROYED();
+  return IsInputButton() || IsA<HTMLButtonElement>(GetNode());
+}
+
 bool LayoutObject::IsInputButton() const {
   NOT_DESTROYED();
   if (const auto* input = DynamicTo<HTMLInputElement>(GetNode())) {

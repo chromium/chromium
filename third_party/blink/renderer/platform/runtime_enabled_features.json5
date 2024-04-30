@@ -2196,6 +2196,10 @@
       status: "stable",
     },
     {
+      name: "LayoutBlockButton",
+      depends_on: ["LayoutBaselineFix"],
+    },
+    {
       name: "LayoutFlexNewRowAlgorithmV3",
       status: "test",
     },

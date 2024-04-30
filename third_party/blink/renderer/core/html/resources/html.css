@@ -414,6 +414,7 @@ fieldset {
 
 button {
     appearance: auto;
+    -internal-align-content-block: center;
 }
 
 input, textarea, select, button {

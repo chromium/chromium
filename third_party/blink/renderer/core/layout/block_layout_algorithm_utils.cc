@@ -189,6 +189,10 @@ void AlignBlockContent(const ComputedStyle& style,
 
   LayoutUnit free_space = builder.FragmentBlockSize() - content_block_size;
   if (style.AlignContentBlockCenter()) {
+    // Buttons have safe alignment.
+    if (builder.Node().IsButtonOrInputButton()) {
+      free_space = free_space.ClampNegativeToZero();
+    }
     builder.MoveChildrenInBlockDirection(free_space / 2);
     return;
   }

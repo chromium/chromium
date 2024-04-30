@@ -102,6 +102,9 @@ class CORE_EXPORT LayoutInputNode {
     return To<LayoutOutsideListMarker>(box_.Get())->NeedsOccupyWholeLine();
   }
   bool IsButton() const { return IsBlock() && box_->IsButton(); }
+  bool IsButtonOrInputButton() const {
+    return IsBlock() && box_->IsButtonOrInputButton();
+  }
   bool IsFieldsetContainer() const { return IsBlock() && box_->IsFieldset(); }
   bool IsInitialLetterBox() const { return box_->IsInitialLetterBox(); }
   bool IsMedia() const { return box_->IsMedia(); }

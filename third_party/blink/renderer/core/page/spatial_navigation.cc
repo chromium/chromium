@@ -840,7 +840,9 @@ PhysicalRect ShrinkInlineBoxToLineBox(const LayoutObject& layout_object,
                                       PhysicalRect node_rect,
                                       int line_boxes) {
   if (!layout_object.IsInline() || layout_object.IsLayoutReplaced() ||
-      layout_object.IsButton()) {
+      layout_object.IsButton() ||
+      (RuntimeEnabledFeatures::LayoutBlockButtonEnabled() &&
+       layout_object.IsButtonOrInputButton())) {
     return node_rect;
   }
 

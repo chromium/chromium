@@ -378,6 +378,11 @@ LayoutObject* FirstInFlowInlineDescendantForFirstLetter(LayoutObject& parent) {
       // first formatted line.
       return nullptr;
     }
+    if (RuntimeEnabledFeatures::LayoutBlockButtonEnabled() &&
+        first_inline->IsButtonOrInputButton()) {
+      // Buttons do not accept the first-letter.
+      return nullptr;
+    }
     if (first_inline->StyleRef().HasPseudoElementStyle(kPseudoIdFirstLetter)) {
       // Applying ::first-letter styles from multiple nested containers is not
       // supported. ::first-letter styles from the inner-most container is
