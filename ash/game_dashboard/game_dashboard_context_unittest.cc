@@ -87,117 +87,13 @@ constexpr char kEntryNameGameControlsEditWithEmptyState[] =
 
 enum class Movement { kTouch, kMouse };
 
-// TODO(b/333390593): Replace the vector by map.
-void VerifyBooleanHistogram(const base::HistogramTester& histograms,
-                            const std::string& histogram_name,
-                            const std::vector<int>& histograms_values) {
-  DCHECK_EQ(2u, histograms_values.size());
-  histograms.ExpectBucketCount(histogram_name, false, histograms_values[0]);
-  histograms.ExpectBucketCount(histogram_name, true, histograms_values[1]);
-}
-
-// Verifies histogram values related to toggling main menu. `histograms_values`
-// is related to enum `GameDashboardMainMenuToggleMethod` with the same order.
-void VerifyToggleMainMenuHistogram(const base::HistogramTester& histograms,
-                                   const std::string& histogram_name,
-                                   const std::vector<int>& histograms_values) {
-  DCHECK_EQ(7u, histograms_values.size());
-  histograms.ExpectBucketCount(
-      histogram_name, GameDashboardMainMenuToggleMethod::kGameDashboardButton,
-      histograms_values[0]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardMainMenuToggleMethod::kSearchPlusG,
-                               histograms_values[1]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardMainMenuToggleMethod::kEsc,
-                               histograms_values[2]);
-  histograms.ExpectBucketCount(
-      histogram_name, GameDashboardMainMenuToggleMethod::kActivateNewFeature,
-      histograms_values[3]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardMainMenuToggleMethod::kOverview,
-                               histograms_values[4]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardMainMenuToggleMethod::kOthers,
-                               histograms_values[5]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardMainMenuToggleMethod::kTabletMode,
-                               histograms_values[6]);
-}
-
-void VerifyFunctionTriggeredHistogram(
-    const base::HistogramTester& histograms,
-    const std::vector<int>& histograms_values) {
-  DCHECK_EQ(6u, histograms_values.size());
-  const std::string histogram_name =
-      BuildGameDashboardHistogramName(kGameDashboardFunctionTriggeredHistogram);
-  histograms.ExpectBucketCount(histogram_name, GameDashboardFunction::kFeedback,
-                               histograms_values[0]);
-  histograms.ExpectBucketCount(histogram_name, GameDashboardFunction::kHelp,
-                               histograms_values[1]);
-  histograms.ExpectBucketCount(histogram_name, GameDashboardFunction::kSetting,
-                               histograms_values[2]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardFunction::kSettingBack,
-                               histograms_values[3]);
-  histograms.ExpectBucketCount(
-      histogram_name, GameDashboardFunction::kScreenSize, histograms_values[4]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardFunction::kGameControlsSetupOrEdit,
-                               histograms_values[5]);
-}
-
-void VerifyToolbarNewLocationHistogram(
-    const base::HistogramTester& histograms,
-    const std::vector<int>& histograms_values) {
-  DCHECK_EQ(4u, histograms_values.size());
-  const std::string histogram_name = BuildGameDashboardHistogramName(
-      kGameDashboardToolbarNewLocationHistogram);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardToolbarSnapLocation::kTopLeft,
-                               histograms_values[0]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardToolbarSnapLocation::kTopRight,
-                               histograms_values[1]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardToolbarSnapLocation::kBottomRight,
-                               histograms_values[2]);
-  histograms.ExpectBucketCount(histogram_name,
-                               GameDashboardToolbarSnapLocation::kBottomLeft,
-                               histograms_values[3]);
-}
-
-void VerifyStartRecordingHistogram(const base::HistogramTester& histograms,
-                                   const std::vector<int>& histograms_values) {
-  const std::string histogram_name = BuildGameDashboardHistogramName(
-      kGameDashboardRecordingStartSourceHistogram);
-  DCHECK_EQ(2u, histograms_values.size());
-  histograms.ExpectBucketCount(histogram_name, GameDashboardMenu::kMainMenu,
-                               histograms_values[0]);
-  histograms.ExpectBucketCount(histogram_name, GameDashboardMenu::kToolbar,
-                               histograms_values[1]);
-}
-
-void VerifyTakeScreenshotHistogram(const base::HistogramTester& histograms,
-                                   const std::vector<int>& histograms_values) {
-  DCHECK_EQ(2u, histograms_values.size());
-  const std::string histogram_name = BuildGameDashboardHistogramName(
-      kGameDashboardScreenshotTakeSourceHistogram);
-  histograms.ExpectBucketCount(histogram_name, GameDashboardMenu::kMainMenu,
-                               histograms_values[0]);
-  histograms.ExpectBucketCount(histogram_name, GameDashboardMenu::kToolbar,
-                               histograms_values[1]);
-}
-
-void VerifyGameControlsHintToggleSourceHistogram(
-    const base::HistogramTester& histograms,
-    const std::string& histogram_name,
-    const std::vector<int>& histograms_values) {
-  DCHECK_EQ(2u, histograms_values.size());
-  histograms.ExpectBucketCount(histogram_name, GameDashboardMenu::kMainMenu,
-                               histograms_values[0]);
-  histograms.ExpectBucketCount(histogram_name, GameDashboardMenu::kToolbar,
-                               histograms_values[1]);
+template <typename T>
+void VerifyHistogramValues(const base::HistogramTester& histograms,
+                           const std::string& histogram_name,
+                           const std::map<T, int>& histogram_values) {
+  for (const auto& entry : histogram_values) {
+    histograms.ExpectBucketCount(histogram_name, entry.first, entry.second);
+  }
 }
 
 // Verifies UKM event entry size of ToggleMainMenu is `expect_entry_size` and
@@ -1073,8 +969,9 @@ TEST_F(GameDashboardContextTest,
 
   const std::string histogram_name = BuildGameDashboardHistogramName(
       kGameDashboardEditControlsWithEmptyStateHistogram);
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{/*not_setup=*/1, 0});
+  std::map<bool, int> expected_histogram_values;
+  expected_histogram_values[false]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyGameControlsEditControlsWithEmptyStateLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/1u, /*expect_histograms_value=*/0);
 
@@ -1086,8 +983,8 @@ TEST_F(GameDashboardContextTest,
           ArcGameControlsFlag::kEnabled | ArcGameControlsFlag::kEmpty));
   test_api_->OpenTheMainMenu();
   LeftClickOn(test_api_->GetMainMenuGameControlsDetailsButton());
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{1, /*is_setup=*/1});
+  expected_histogram_values[true]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyGameControlsEditControlsWithEmptyStateLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/2u, /*expect_histograms_value=*/1);
 }
@@ -1116,24 +1013,28 @@ TEST_F(GameDashboardContextTest, RecordControlsHintToggleSourceHistogramTest) {
   test_api_->OpenTheToolbar();
 
   LeftClickOn(test_api_->GetMainMenuGameControlsTile());
-  VerifyGameControlsHintToggleSourceHistogram(
-      histograms, histogram_name_off, std::vector<int>{/*kMainMenu=*/1, 0});
+  std::map<GameDashboardMenu, int> expected_off_histogram_values;
+  expected_off_histogram_values[GameDashboardMenu::kMainMenu]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
 
   LeftClickOn(test_api_->GetToolbarGameControlsButton());
-  VerifyGameControlsHintToggleSourceHistogram(
-      histograms, histogram_name_on, std::vector<int>{0, /*kToolbar=*/1});
+  std::map<GameDashboardMenu, int> expected_on_histogram_values;
+  expected_on_histogram_values[GameDashboardMenu::kToolbar]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
 
   LeftClickOn(test_api_->GetToolbarGameControlsButton());
-  VerifyGameControlsHintToggleSourceHistogram(
-      histograms, histogram_name_off,
-      std::vector<int>{/*kMainMenu=*/1, /*kToolbar=*/1});
+  expected_off_histogram_values[GameDashboardMenu::kToolbar]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   base::RunLoop().RunUntilIdle();
 
   test_api_->OpenTheMainMenu();
   LeftClickOn(test_api_->GetMainMenuGameControlsTile());
-  VerifyGameControlsHintToggleSourceHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{/*kMainMenu=*/1, /*kToolbar=*/1});
+  expected_on_histogram_values[GameDashboardMenu::kMainMenu]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
 }
 
 TEST_F(GameDashboardContextTest,
@@ -1152,11 +1053,13 @@ TEST_F(GameDashboardContextTest,
 
   const std::string histogram_name = BuildGameDashboardHistogramName(
       kGameDashboardControlsFeatureToggleStateHistogram);
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{/*toggle_off=*/1, 0});
+  std::map<bool, int> expected_histogram_values;
+  expected_histogram_values[false]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+
   LeftClickOn(test_api_->GetMainMenuGameControlsFeatureSwitch());
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{1, /*toggle_on=*/1});
+  expected_histogram_values[true]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 }
 
 TEST_F(GameDashboardContextTest, CompatModeArcGame) {
@@ -2627,9 +2530,12 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
 
   // Toggle on/off main menu by pressing Game Dashboard button.
   test_api_->OpenTheMainMenu();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/1, 0, 0, 0, 0, 0, 0});
+  std::map<GameDashboardMainMenuToggleMethod, int> expected_on_histogram_values;
+  expected_on_histogram_values
+      [GameDashboardMainMenuToggleMethod::kGameDashboardButton]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
+
   const int64_t gd_button_toggle_method = static_cast<int64_t>(
       GameDashboardMainMenuToggleMethod::kGameDashboardButton);
   VerifyToggleMainMenuLastUkmHistogram(
@@ -2638,9 +2544,12 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
                            /*toggle_method=*/gd_button_toggle_method});
 
   test_api_->CloseTheMainMenu();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_off,
-      std::vector<int>{/*kGameDashboardButton=*/1, 0, 0, 0, 0, 0, 0});
+  std::map<GameDashboardMainMenuToggleMethod, int>
+      expected_off_histogram_values;
+  expected_off_histogram_values
+      [GameDashboardMainMenuToggleMethod::kGameDashboardButton]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/2u,
       std::vector<int64_t>{/*toggle_on=*/0,
@@ -2649,9 +2558,10 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
   // Toggle on/off main menu by Search+G.
   auto* event_generator = GetEventGenerator();
   event_generator->PressAndReleaseKey(ui::VKEY_G, ui::EF_COMMAND_DOWN);
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{1, /*kSearchPlusG=*/1, 0, 0, 0, 0, 0});
+  expected_on_histogram_values
+      [GameDashboardMainMenuToggleMethod::kSearchPlusG]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/3u,
       std::vector<int64_t>{
@@ -2660,9 +2570,10 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
               GameDashboardMainMenuToggleMethod::kSearchPlusG)});
 
   event_generator->PressAndReleaseKey(ui::VKEY_G, ui::EF_COMMAND_DOWN);
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_off,
-      std::vector<int>{1, /*kSearchPlusG=*/1, 0, 0, 0, 0, 0});
+  expected_off_histogram_values
+      [GameDashboardMainMenuToggleMethod::kSearchPlusG]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/4u,
       std::vector<int64_t>{
@@ -2672,9 +2583,10 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
 
   // Toggle off main menu by key Esc.
   test_api_->OpenTheMainMenu();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/2, 1, 0, 0, 0, 0, 0});
+  expected_on_histogram_values
+      [GameDashboardMainMenuToggleMethod::kGameDashboardButton]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/5u,
       std::vector<int64_t>{/*toggle_on=*/1,
@@ -2683,8 +2595,9 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
   // Main menu is closed asynchronously. Run until idle to ensure that this
   // posted task runs synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
-  VerifyToggleMainMenuHistogram(histograms, histogram_name_off,
-                                std::vector<int>{1, 1, /*kEsc=*/1, 0, 0, 0, 0});
+  expected_off_histogram_values[GameDashboardMainMenuToggleMethod::kEsc]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/6u,
       std::vector<int64_t>{/*toggle_on=*/0,
@@ -2693,17 +2606,19 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
 
   // Toggle off main menu by activating a new feature.
   test_api_->OpenTheMainMenu();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/3, 1, 0, 0, 0, 0, 0});
+  expected_on_histogram_values
+      [GameDashboardMainMenuToggleMethod::kGameDashboardButton]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/7u,
       std::vector<int64_t>{/*toggle_on=*/1,
                            /*toggle_method=*/gd_button_toggle_method});
   LeftClickOn(test_api_->GetMainMenuScreenshotTile());
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_off,
-      std::vector<int>{1, 1, 1, /*kActivateNewFeature=*/1, 0, 0, 0});
+  expected_off_histogram_values
+      [GameDashboardMainMenuToggleMethod::kActivateNewFeature]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/8u,
       std::vector<int64_t>{
@@ -2713,17 +2628,18 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
 
   // Toggle off main menu by entering overview mode.
   test_api_->OpenTheMainMenu();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/4, 1, 0, 0, 0, 0, 0});
+  expected_on_histogram_values
+      [GameDashboardMainMenuToggleMethod::kGameDashboardButton]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/9u,
       std::vector<int64_t>{/*toggle_on=*/1,
                            /*toggle_method=*/gd_button_toggle_method});
   EnterOverview();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_off,
-      std::vector<int>{1, 1, 1, 1, /*kOverview=*/1, 0, 0});
+  expected_off_histogram_values[GameDashboardMainMenuToggleMethod::kOverview]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/10u,
       std::vector<int64_t>{/*toggle_on=*/0,
@@ -2735,17 +2651,19 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
 
   // Toggle off main menu by entering the tablet mode.
   test_api_->OpenTheMainMenu();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/5, 1, 0, 0, 0, 0, 0});
+  expected_on_histogram_values
+      [GameDashboardMainMenuToggleMethod::kGameDashboardButton]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/11u,
       std::vector<int64_t>{/*toggle_on=*/1,
                            /*toggle_method=*/gd_button_toggle_method});
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_off,
-      std::vector<int>{1, 1, 1, 1, 1, 0, /*kTabletMode=*/1});
+  expected_off_histogram_values
+      [GameDashboardMainMenuToggleMethod::kTabletMode]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   ash::TabletModeControllerTestApi().LeaveTabletMode();
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/12u,
@@ -2756,9 +2674,10 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
 
   // Toggle off main menu by clicking outside of the main menu.
   test_api_->OpenTheMainMenu();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/6, 1, 0, 0, 0, 0, 0});
+  expected_on_histogram_values
+      [GameDashboardMainMenuToggleMethod::kGameDashboardButton]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/13u,
       std::vector<int64_t>{/*toggle_on=*/1,
@@ -2771,9 +2690,9 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
   // Main menu is closed asynchronously. Run until idle to ensure that this
   // posted task runs synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_off,
-      std::vector<int>{1, 1, 1, 1, 1, /*kOthers=*/1, 1});
+  expected_off_histogram_values[GameDashboardMainMenuToggleMethod::kOthers]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/14u,
       std::vector<int64_t>{/*toggle_on=*/0,
@@ -2781,9 +2700,10 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
                                GameDashboardMainMenuToggleMethod::kOthers)});
 
   test_api_->OpenTheMainMenu();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/7, 1, 0, 0, 0, 0, 0});
+  expected_on_histogram_values
+      [GameDashboardMainMenuToggleMethod::kGameDashboardButton]++;
+  VerifyHistogramValues(histograms, histogram_name_on,
+                        expected_on_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/15u,
       std::vector<int64_t>{/*toggle_on=*/1,
@@ -2792,9 +2712,9 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
   // Main menu is closed asynchronously. Run until idle to ensure that this
   // posted task runs synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
-  VerifyToggleMainMenuHistogram(
-      histograms, histogram_name_off,
-      std::vector<int>{1, 1, 1, 1, 1, /*kOthers=*/2, 1});
+  expected_off_histogram_values[GameDashboardMainMenuToggleMethod::kOthers]++;
+  VerifyHistogramValues(histograms, histogram_name_off,
+                        expected_off_histogram_values);
   VerifyToggleMainMenuLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/16u,
       std::vector<int64_t>{/*toggle_on=*/0,
@@ -2812,14 +2732,15 @@ TEST_P(GameTypeGameDashboardContextTest,
 
   const std::string histogram_name = BuildGameDashboardHistogramName(
       kGameDashboardToolbarToggleStateHistogram);
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{0, /*toggle_on=*/1});
+  std::map<bool, int> expected_histogram_values;
+  expected_histogram_values[true]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyToolbarToggleStateLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/1u, /*expect_histograms_value=*/1);
 
   test_api_->CloseTheToolbar();
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{/*toggle_off=*/1, 1});
+  expected_histogram_values[false]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyToolbarToggleStateLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/2u, /*expect_histograms_value=*/0);
 }
@@ -2834,12 +2755,12 @@ TEST_P(GameTypeGameDashboardContextTest,
   LeftClickOn(test_api_->GetToolbarGamepadButton());
   const std::string histogram_name = BuildGameDashboardHistogramName(
       kGameDashboardToolbarClickToExpandStateHistogram);
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{/*collapse=*/1, 0});
+  std::map<bool, int> expected_histogram_values;
+  expected_histogram_values[false]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 
   LeftClickOn(test_api_->GetToolbarGamepadButton());
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{1, /*expand=*/1});
+  expected_histogram_values[true]++;
 }
 
 TEST_P(GameTypeGameDashboardContextTest,
@@ -2852,23 +2773,29 @@ TEST_P(GameTypeGameDashboardContextTest,
   DragToolbarToPoint(
       Movement::kMouse,
       DragToolbarPointForPosition(GameDashboardToolbarSnapLocation::kTopRight));
-  VerifyToolbarNewLocationHistogram(histograms,
-                                    std::vector<int>{0, /*kTopRight=*/1, 0, 0});
+  const std::string histogram_name = BuildGameDashboardHistogramName(
+      kGameDashboardToolbarNewLocationHistogram);
+  std::map<GameDashboardToolbarSnapLocation, int> expected_histogram_values;
+  expected_histogram_values[GameDashboardToolbarSnapLocation::kTopRight]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+
   DragToolbarToPoint(Movement::kMouse,
                      DragToolbarPointForPosition(
                          GameDashboardToolbarSnapLocation::kBottomLeft));
-  VerifyToolbarNewLocationHistogram(
-      histograms, std::vector<int>{0, 1, 0, /*kBottomLeft=*/1});
+  expected_histogram_values[GameDashboardToolbarSnapLocation::kBottomLeft]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+
   DragToolbarToPoint(Movement::kTouch,
                      DragToolbarPointForPosition(
                          GameDashboardToolbarSnapLocation::kBottomRight));
-  VerifyToolbarNewLocationHistogram(
-      histograms, std::vector<int>{0, 1, /*kBottomRight=*/1, 1});
+  expected_histogram_values[GameDashboardToolbarSnapLocation::kBottomRight]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+
   DragToolbarToPoint(
       Movement::kTouch,
       DragToolbarPointForPosition(GameDashboardToolbarSnapLocation::kTopLeft));
-  VerifyToolbarNewLocationHistogram(histograms,
-                                    std::vector<int>{/*kTopLeft=*/1, 1, 1, 1});
+  expected_histogram_values[GameDashboardToolbarSnapLocation::kTopLeft]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 }
 
 TEST_P(GameTypeGameDashboardContextTest,
@@ -2885,8 +2812,11 @@ TEST_P(GameTypeGameDashboardContextTest,
   // runs synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
   ClickOnStartRecordingButtonInCaptureModeBarView();
-  VerifyStartRecordingHistogram(histograms,
-                                std::vector<int>{/*kMainMenu=*/1, 0});
+  const std::string histogram_name = BuildGameDashboardHistogramName(
+      kGameDashboardRecordingStartSourceHistogram);
+  std::map<GameDashboardMenu, int> expected_histogram_values;
+  expected_histogram_values[GameDashboardMenu::kMainMenu]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyRecordingStartSourceLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/1u, /*expect_histograms_value=*/
       static_cast<int64_t>(GameDashboardMenu::kMainMenu));
@@ -2898,8 +2828,8 @@ TEST_P(GameTypeGameDashboardContextTest,
   // Start recording from the toolbar.
   LeftClickOn(test_api_->GetToolbarRecordGameButton());
   ClickOnStartRecordingButtonInCaptureModeBarView();
-  VerifyStartRecordingHistogram(histograms,
-                                std::vector<int>{1, /*kToolbar=*/1});
+  expected_histogram_values[GameDashboardMenu::kToolbar]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyRecordingStartSourceLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/2u, /*expect_histograms_value=*/
       static_cast<int64_t>(GameDashboardMenu::kToolbar));
@@ -2912,8 +2842,11 @@ TEST_P(GameTypeGameDashboardContextTest,
 
   test_api_->OpenTheMainMenu();
   LeftClickOn(test_api_->GetMainMenuScreenshotTile());
-  VerifyTakeScreenshotHistogram(histograms,
-                                std::vector<int>{/*kMainMenu=*/1, 0});
+  const std::string histogram_name = BuildGameDashboardHistogramName(
+      kGameDashboardScreenshotTakeSourceHistogram);
+  std::map<GameDashboardMenu, int> expected_histogram_values;
+  expected_histogram_values[GameDashboardMenu::kMainMenu]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyScreenshotTakeSourceLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/1u, /*expect_histograms_value=*/
       static_cast<int64_t>(GameDashboardMenu::kMainMenu));
@@ -2921,8 +2854,8 @@ TEST_P(GameTypeGameDashboardContextTest,
   test_api_->OpenTheMainMenu();
   test_api_->OpenTheToolbar();
   LeftClickOn(test_api_->GetToolbarScreenshotButton());
-  VerifyTakeScreenshotHistogram(histograms,
-                                std::vector<int>{1, /*kToolbar=*/1});
+  expected_histogram_values[GameDashboardMenu::kToolbar]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   VerifyScreenshotTakeSourceLastUkmHistogram(
       ukm_recorder, /*expect_entry_size=*/2u, /*expect_histograms_value=*/
       static_cast<int64_t>(GameDashboardMenu::kToolbar));
@@ -2944,33 +2877,38 @@ TEST_P(GameTypeGameDashboardContextTest,
 
   test_api_->OpenTheMainMenu();
   LeftClickOn(test_api_->GetMainMenuFeedbackButton());
-  VerifyFunctionTriggeredHistogram(
-      histograms, std::vector<int>{/*kFeedback=*/1, 0, 0, 0, 0, 0});
+  const std::string histogram_name =
+      BuildGameDashboardHistogramName(kGameDashboardFunctionTriggeredHistogram);
+  std::map<GameDashboardFunction, int> expected_histogram_values;
+  expected_histogram_values[GameDashboardFunction::kFeedback]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
   task_environment()->RunUntilIdle();
 
   LeftClickOn(test_api_->GetMainMenuHelpButton());
-  VerifyFunctionTriggeredHistogram(
-      histograms, std::vector<int>{/*kFeedback=*/1, /*kHelp=*/1, 0, 0, 0, 0});
+  expected_histogram_values[GameDashboardFunction::kHelp]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 
   LeftClickOn(test_api_->GetMainMenuSettingsButton());
-  VerifyFunctionTriggeredHistogram(
-      histograms, std::vector<int>{1, 1, /*kSetting=*/1, 0, 0, 0});
+  expected_histogram_values[GameDashboardFunction::kSetting]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 
   LeftClickOn(test_api_->GetSettingsViewBackButton());
-  VerifyFunctionTriggeredHistogram(
-      histograms, std::vector<int>{1, 1, 1, /*kSettingBack=*/1, 0, 0});
+  expected_histogram_values[GameDashboardFunction::kSettingBack]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 
   if (IsArcGame()) {
     LeftClickOn(test_api_->GetMainMenuScreenSizeSettingsButton());
     base::RunLoop().RunUntilIdle();
-    VerifyFunctionTriggeredHistogram(
-        histograms, std::vector<int>{1, 1, 1, 1, /*kScreenSize=*/1, 0});
+    expected_histogram_values[GameDashboardFunction::kScreenSize]++;
+    VerifyHistogramValues(histograms, histogram_name,
+                          expected_histogram_values);
 
     test_api_->OpenTheMainMenu();
     LeftClickOn(test_api_->GetMainMenuGameControlsDetailsButton());
-    VerifyFunctionTriggeredHistogram(
-        histograms,
-        std::vector<int>{1, 1, 1, 1, 1, /*kGameControlsSetupOrEdit=*/1});
+    expected_histogram_values
+        [GameDashboardFunction::kGameControlsSetupOrEdit]++;
+    VerifyHistogramValues(histograms, histogram_name,
+                          expected_histogram_values);
   }
 }
 
@@ -2984,12 +2922,13 @@ TEST_P(GameTypeGameDashboardContextTest,
   test_api_->ToggleWelcomeDialogSettingsSwitch();
   const std::string histogram_name = BuildGameDashboardHistogramName(
       kGameDashboardWelcomeDialogNotificationToggleStateHistogram);
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{0, /*toggled_on=*/1});
+  std::map<bool, int> expected_histogram_values;
+  expected_histogram_values[true]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 
   test_api_->ToggleWelcomeDialogSettingsSwitch();
-  VerifyBooleanHistogram(histograms, histogram_name,
-                         std::vector<int>{/*toggled_on=*/1, 1});
+  expected_histogram_values[false]++;
+  VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
