@@ -1812,7 +1812,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   getCurrentHighlightColorVar(colorSuffix: string) {
     if (colorSuffix === '') {
-      return 'var(--color-sys-state-hover-dim-blend-protection)';
+      return 'var(--color-text-selection-background)';
     }
     return `var(--color-read-anything-current-read-aloud-highlight${
         colorSuffix})`;
