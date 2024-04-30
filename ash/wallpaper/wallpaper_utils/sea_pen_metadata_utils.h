@@ -88,6 +88,11 @@ ASH_EXPORT std::vector<uint32_t> GetIdsFromFilePaths(
 
 ASH_EXPORT bool IsValidTemplateQuery(
     const personalization_app::mojom::SeaPenTemplateQueryPtr& query);
+
+// Extract the visible query string at the time of the image was saved from
+// RecentSeaPenImageInfo `ptr`, empty string if the query is null or invalid.
+ASH_EXPORT std::string GetQueryString(
+    const personalization_app::mojom::RecentSeaPenImageInfoPtr& ptr);
 }  // namespace ash
 
 #endif  // ASH_WALLPAPER_WALLPAPER_UTILS_SEA_PEN_METADATA_UTILS_H_

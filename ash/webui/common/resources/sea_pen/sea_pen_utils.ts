@@ -6,6 +6,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {parseTemplateText, SeaPenImageId, SeaPenOption, SeaPenTemplate} from './constants.js';
+import {SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {SeaPenTemplateChip} from './sea_pen_generated.mojom-webui.js';
 
 // Returns true if `maybeDataUrl` is a Url that contains a base64 encoded image.
@@ -103,6 +104,23 @@ export function getTemplateTokens(
       return str;
     }
   });
+}
+
+/**
+ * Get the user visible query from SeaPenQuery `query`. Empty string if the
+ * query is null or invalid.
+ */
+export function getUserVisibleQuery(query: SeaPenQuery): string {
+  if (!query) {
+    return '';
+  }
+  if (query.textQuery) {
+    return query.textQuery;
+  }
+  if (query.templateQuery) {
+    return query.templateQuery.userVisibleQuery?.text ?? '';
+  }
+  return '';
 }
 
 /**

@@ -71,12 +71,8 @@ union SeaPenQuery {
 // The information of a recent SeaPen image including the query information
 // and its creation time.
 struct RecentSeaPenImageInfo {
-  // The visible query information that the user used to generate the recent
-  // image, including the prompt text and the template title.
-  // If the image was generated from a freeform query, `user_visible_query`
-  // includes the freeform text and an empty template title.
-  // TODO(b/304581483): update SeaPenUserVisibleQuery to SeaPenQuery.
-  SeaPenUserVisibleQuery user_visible_query;
+  // The SeaPen query that the user used to generate the recent image.
+  SeaPenQuery query;
 
   // Human-readable string representation of the date the image was
   // created, e.g., "Dec 30, 2023", translated into the user's current

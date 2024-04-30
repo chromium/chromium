@@ -28,7 +28,7 @@ import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logRecentImageActionMenuItemClick, RecentImageActionMenuItem} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {isImageDataUrl, isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
+import {getUserVisibleQuery, isImageDataUrl, isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
 
 export class SeaPenRecentImageDeleteEvent extends CustomEvent<null> {
   static readonly EVENT_NAME = 'sea-pen-recent-image-delete';
@@ -188,13 +188,13 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     }
 
     const data = recentImageData[recentImage];
-    if (!data || !data.imageInfo || !data.imageInfo.userVisibleQuery) {
+    if (!data || !data.imageInfo || !data.imageInfo.query) {
       return null;
     }
 
     const title = isPersonalizationApp() ? 'seaPenAboutDialogPrompt' :
                                            'vcBackgroundAboutDialogPrompt';
-    return this.i18n(title, data.imageInfo.userVisibleQuery.text);
+    return this.i18n(title, getUserVisibleQuery(data.imageInfo.query));
   }
 
   private getWallpaperInfoDateMessage_(
@@ -236,11 +236,11 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     }
 
     const data = recentImageData[image];
-    if (!data || !data.imageInfo || !data.imageInfo.userVisibleQuery) {
+    if (!data || !data.imageInfo || !data.imageInfo.query) {
       return '';
     }
 
-    return data.imageInfo.userVisibleQuery.text;
+    return getUserVisibleQuery(data.imageInfo.query);
   }
 
   private getAriaIndex_(i: number): number {
@@ -375,7 +375,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
     const data = recentImageData[recentImage];
     return !!data && !!data.imageInfo && !!data.imageInfo.creationTime &&
-        !!data.imageInfo.userVisibleQuery;
+        !!data.imageInfo.query;
   }
 
   private shouldShowWallpaperInfoDialog_(

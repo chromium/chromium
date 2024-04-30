@@ -76,9 +76,37 @@ SeaPenQueryDictToRecentImageInfo(
   auto* freeform_query = query_dict->FindString(kSeaPenFreeformQueryKey);
   if (freeform_query) {
     return personalization_app::mojom::RecentSeaPenImageInfo::New(
-        personalization_app::mojom::SeaPenUserVisibleQuery::New(
-            /*text=*/*freeform_query, /*template_title=*/std::string()),
+        personalization_app::mojom::SeaPenQuery::NewTextQuery(*freeform_query),
         GetCreationTimeInfo(*creation_time));
+  }
+
+  auto* template_id_ptr = query_dict->FindString(kSeaPenTemplateIdKey);
+  auto* option_dict = query_dict->FindDict(kSeaPenTemplateOptionsKey);
+  if (!template_id_ptr || !option_dict) {
+    DVLOG(2) << __func__ << " missing template information in extracted data";
+    return nullptr;
+  }
+
+  int template_id;
+  if (!base::StringToInt(*template_id_ptr, &template_id)) {
+    DVLOG(2) << __func__ << " invalid template id received";
+    return nullptr;
+  }
+
+  base::flat_map<personalization_app::mojom::SeaPenTemplateChip,
+                 personalization_app::mojom::SeaPenTemplateOption>
+      options;
+  for (const auto [chip, option] : *option_dict) {
+    int chip_id, option_id;
+    if (!base::StringToInt(chip, &chip_id) ||
+        !base::StringToInt(option.GetString(), &option_id)) {
+      DVLOG(2) << __func__ << " invalid chip option received";
+      return nullptr;
+    }
+    options[static_cast<personalization_app::mojom::SeaPenTemplateChip>(
+        chip_id)] =
+        static_cast<personalization_app::mojom::SeaPenTemplateOption>(
+            option_id);
   }
 
   auto* user_visible_query_text =
@@ -92,9 +120,22 @@ SeaPenQueryDictToRecentImageInfo(
     return nullptr;
   }
 
+  personalization_app::mojom::SeaPenTemplateQueryPtr template_query =
+      personalization_app::mojom::SeaPenTemplateQuery::New(
+          static_cast<personalization_app::mojom::SeaPenTemplateId>(
+              template_id),
+          options,
+          personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              *user_visible_query_text, *user_visible_query_template));
+
+  if (!IsValidTemplateQuery(template_query)) {
+    DVLOG(2) << __func__ << "invalid template query";
+    return nullptr;
+  }
+
   return personalization_app::mojom::RecentSeaPenImageInfo::New(
-      personalization_app::mojom::SeaPenUserVisibleQuery::New(
-          *user_visible_query_text, *user_visible_query_template),
+      personalization_app::mojom::SeaPenQuery::NewTemplateQuery(
+          std::move(template_query)),
       GetCreationTimeInfo(*creation_time));
 }
 
@@ -238,5 +279,19 @@ bool IsValidTemplateQuery(
     }
   }
   return true;
+}
+
+std::string GetQueryString(
+    const personalization_app::mojom::RecentSeaPenImageInfoPtr& ptr) {
+  if (ptr.is_null() || ptr->query.is_null()) {
+    return std::string();
+  }
+  switch (ptr->query->which()) {
+    case personalization_app::mojom::SeaPenQuery::Tag::kTextQuery:
+      return ptr->query->get_text_query();
+    case personalization_app::mojom::SeaPenQuery::Tag::kTemplateQuery:
+      return ptr->query->get_template_query()->user_visible_query->text;
+  }
+  return std::string();
 }
 }  // namespace ash

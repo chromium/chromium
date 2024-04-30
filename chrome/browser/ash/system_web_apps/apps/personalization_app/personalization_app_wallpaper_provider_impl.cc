@@ -1117,9 +1117,6 @@ void PersonalizationAppWallpaperProviderImpl::SendSeaPenWallpaperAttribution(
     const uint32_t id,
     const gfx::ImageSkia& image,
     mojom::RecentSeaPenImageInfoPtr sea_pen_metadata) {
-  DVLOG(3) << __func__ << " id: " << id << " user_visible_query_text: "
-           << (sea_pen_metadata ? sea_pen_metadata->user_visible_query->text
-                                : "null");
   if (sea_pen_metadata.is_null()) {
     LOG(WARNING) << __func__ << " unable to get metadata";
     NotifyAttributionChanged(
@@ -1129,7 +1126,10 @@ void PersonalizationAppWallpaperProviderImpl::SendSeaPenWallpaperAttribution(
   }
 
   std::vector<std::string> attribution;
-  attribution.push_back(sea_pen_metadata->user_visible_query->text);
+  const std::string query_str = GetQueryString(sea_pen_metadata);
+  if (!query_str.empty()) {
+    attribution.push_back(std::move(query_str));
+  }
   attribution.push_back(
       l10n_util::GetStringUTF8(IDS_SEA_PEN_POWERED_BY_GOOGLE_AI));
 

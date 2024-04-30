@@ -184,11 +184,9 @@ class RecentlyUsedImageButton : public views::ImageButton {
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE_LIST_ITEM_DESCRIPTION));
 
     std::u16string query;
-    if (!info.is_null() && !info->user_visible_query.is_null()) {
-      const auto& text = info->user_visible_query->text;
-      if (!base::UTF8ToUTF16(text.c_str(), text.size(), &query)) {
-        query.clear();
-      }
+    const auto& text = GetQueryString(info);
+    if (text.empty() || !base::UTF8ToUTF16(text.c_str(), text.size(), &query)) {
+      query.clear();
     }
     SetAccessibleName(
         query, query.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty

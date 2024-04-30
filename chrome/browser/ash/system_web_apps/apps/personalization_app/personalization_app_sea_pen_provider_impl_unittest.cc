@@ -527,7 +527,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_EQ(search_query->get_text_query(),
             get_image_and_metadata_future
                 .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
-                ->user_visible_query->text);
+                ->query->get_text_query());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
@@ -578,10 +578,10 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       get_image_and_metadata_future;
   SeaPenWallpaperManager::GetInstance()->GetImageAndMetadata(
       GetTestAccountId(), 111, get_image_and_metadata_future.GetCallback());
-  EXPECT_EQ(search_query->get_template_query()->user_visible_query,
-            get_image_and_metadata_future
-                .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
-                ->user_visible_query);
+  EXPECT_TRUE(search_query->get_template_query().Equals(
+      get_image_and_metadata_future
+          .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
+          ->query->get_template_query()));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
@@ -611,7 +611,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_EQ(base::TimeFormatShortDate(base::Time::Now()),
             thumbnail_info_future.Get()->image_info->creation_time.value());
   EXPECT_EQ("test query 111",
-            thumbnail_info_future.Get()->image_info->user_visible_query->text);
+            thumbnail_info_future.Get()->image_info->query->get_text_query());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,

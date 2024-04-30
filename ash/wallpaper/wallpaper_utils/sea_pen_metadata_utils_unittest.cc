@@ -167,28 +167,39 @@ TEST_F(SeaPenMetadataUtilsTest,
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoValidTemplateData) {
-  auto expected_user_visible_query =
-      ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
-          user_visible_query_text, user_visible_query_template);
+  base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
+                 ash::personalization_app::mojom::SeaPenTemplateOption>
+      options(
+          {{ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerColor,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerColorBlue},
+           {ash::personalization_app::mojom::SeaPenTemplateChip::kFlowerType,
+            ash::personalization_app::mojom::SeaPenTemplateOption::
+                kFlowerTypeRose}});
+  ash::personalization_app::mojom::SeaPenQueryPtr expected_template_query =
+      ash::personalization_app::mojom::SeaPenQuery::NewTemplateQuery(
+          ash::personalization_app::mojom::SeaPenTemplateQuery::New(
+              ash::personalization_app::mojom::SeaPenTemplateId::kFlower,
+              options,
+              ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
+                  user_visible_query_text, user_visible_query_template)));
 
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(GetTestTemplateQueryDict());
 
-  EXPECT_TRUE(recent_image_info->user_visible_query.Equals(
-      expected_user_visible_query));
+  EXPECT_TRUE(recent_image_info->query.Equals(expected_template_query));
 }
 
 TEST_F(SeaPenMetadataUtilsTest,
        SeaPenQueryDictToRecentImageInfoValidFreeformData) {
-  auto expected_user_visible_query =
-      ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
-          user_search_query, std::string());
+  ash::personalization_app::mojom::SeaPenQueryPtr expected_freeform_query =
+      ash::personalization_app::mojom::SeaPenQuery::NewTextQuery(
+          user_search_query);
 
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(GetTestFreeformQueryDict());
 
-  EXPECT_TRUE(recent_image_info->user_visible_query.Equals(
-      expected_user_visible_query));
+  EXPECT_TRUE(recent_image_info->query.Equals(expected_freeform_query));
 }
 
 TEST_F(SeaPenMetadataUtilsTest,
@@ -198,6 +209,72 @@ TEST_F(SeaPenMetadataUtilsTest,
 
   auto recent_image_info =
       SeaPenQueryDictToRecentImageInfo(invalid_template_query_dict);
+
+  EXPECT_FALSE(recent_image_info);
+}
+
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoMissingTemplateId) {
+  base::Value::Dict invalid_template_query_dict =
+      GetTestInvalidTemplateQueryDict(/*missing_field=*/"template_id");
+
+  auto recent_image_info =
+      SeaPenQueryDictToRecentImageInfo(invalid_template_query_dict);
+
+  EXPECT_FALSE(recent_image_info);
+}
+
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoInvalidTemplateId) {
+  base::Value::Dict invalid_template_id_query_dict =
+      GetTestTemplateQueryDict().Set("template_id", 10000);
+
+  auto recent_image_info =
+      SeaPenQueryDictToRecentImageInfo(invalid_template_id_query_dict);
+
+  EXPECT_FALSE(recent_image_info);
+}
+
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoMissingOptions) {
+  base::Value::Dict invalid_template_query_dict =
+      GetTestInvalidTemplateQueryDict(/*missing_field=*/"options");
+
+  auto recent_image_info =
+      SeaPenQueryDictToRecentImageInfo(invalid_template_query_dict);
+
+  EXPECT_FALSE(recent_image_info);
+}
+
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoInvalidOptionsChipId) {
+  base::Value::Dict template_query_dict = GetTestTemplateQueryDict();
+  auto* options = template_query_dict.FindDict("options");
+  ASSERT_TRUE(options);
+  // Update `options` Value::Dict with an invalid chip id.
+  options->Set("10000", base::NumberToString(static_cast<int32_t>(
+                            ash::personalization_app::mojom::
+                                SeaPenTemplateOption::kFlowerColorYellow)));
+
+  auto recent_image_info =
+      SeaPenQueryDictToRecentImageInfo(template_query_dict);
+
+  EXPECT_FALSE(recent_image_info);
+}
+
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoInvalidOptionsOptionId) {
+  base::Value::Dict template_query_dict = GetTestTemplateQueryDict();
+  auto* options = template_query_dict.FindDict("options");
+  ASSERT_TRUE(options);
+  // Update `options` Value::Dict with an invalid option id.
+  options->Set(base::NumberToString(static_cast<int32_t>(
+                   ash::personalization_app::mojom::SeaPenTemplateChip::
+                       kCharactersColor)),
+               "10000");
+
+  auto recent_image_info =
+      SeaPenQueryDictToRecentImageInfo(template_query_dict);
 
   EXPECT_FALSE(recent_image_info);
 }
@@ -242,6 +319,22 @@ TEST_F(SeaPenMetadataUtilsTest, GetIdFromInvalidFilePath) {
   for (const auto& path : cases) {
     EXPECT_FALSE(GetIdFromFileName(base::FilePath(path)).has_value());
   }
+}
+
+TEST_F(SeaPenMetadataUtilsTest, GetQueryStringFromTextQuery) {
+  auto recent_image_info =
+      SeaPenQueryDictToRecentImageInfo(GetTestFreeformQueryDict());
+  EXPECT_EQ(user_search_query, GetQueryString(recent_image_info));
+}
+
+TEST_F(SeaPenMetadataUtilsTest, GetQueryStringFromTemplateQuery) {
+  auto recent_image_info =
+      SeaPenQueryDictToRecentImageInfo(GetTestTemplateQueryDict());
+  EXPECT_EQ(user_visible_query_text, GetQueryString(recent_image_info));
+}
+
+TEST_F(SeaPenMetadataUtilsTest, GetQueryStringFromNullPtr) {
+  EXPECT_EQ(std::string(), GetQueryString(nullptr));
 }
 
 }  // namespace

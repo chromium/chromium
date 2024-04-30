@@ -74,7 +74,15 @@ personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
       personalization_app::mojom::SeaPenTemplateQuery::New(
           personalization_app::mojom::SeaPenTemplateId::kFlower,
           ::base::flat_map<personalization_app::mojom::SeaPenTemplateChip,
-                           personalization_app::mojom::SeaPenTemplateOption>(),
+                           personalization_app::mojom::SeaPenTemplateOption>(
+              {{ash::personalization_app::mojom::SeaPenTemplateChip::
+                    kFlowerColor,
+                ash::personalization_app::mojom::SeaPenTemplateOption::
+                    kFlowerColorBlue},
+               {ash::personalization_app::mojom::SeaPenTemplateChip::
+                    kFlowerType,
+                ash::personalization_app::mojom::SeaPenTemplateOption::
+                    kFlowerTypeRose}}),
           personalization_app::mojom::SeaPenUserVisibleQuery::New(
               "test template query", "test template title")));
 }
@@ -395,14 +403,10 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataSuccess) {
         CreateBitmap(),
         *get_image_and_metadata_future.Get<gfx::ImageSkia>().bitmap(),
         /*max_deviation=*/1));
-    EXPECT_EQ("test template query",
-              get_image_and_metadata_future
-                  .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
-                  ->user_visible_query->text);
-    EXPECT_EQ("test template title",
-              get_image_and_metadata_future
-                  .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
-                  ->user_visible_query->template_title);
+    EXPECT_TRUE(MakeTemplateQuery().Equals(
+        get_image_and_metadata_future
+            .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
+            ->query));
     // base::Time::Now is overridden to return a fixed date.
     EXPECT_EQ(base::TimeFormatShortDate(base::Time::Now()),
               get_image_and_metadata_future

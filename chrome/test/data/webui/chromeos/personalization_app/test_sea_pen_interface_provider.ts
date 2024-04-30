@@ -4,6 +4,7 @@
 
 import {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {MantaStatusCode, RecentSeaPenImageInfo, RecentSeaPenThumbnailData, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -37,17 +38,31 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
   ];
 
   recentImageInfo2: RecentSeaPenImageInfo = {
-    userVisibleQuery: {
-      text: 'test freeform query',
-      templateTitle: '',
+    query: {
+      templateQuery: {
+        id: SeaPenTemplateId.kGlowscapes,
+        options: Object.fromEntries([
+          [
+            SeaPenTemplateChip.kGlowscapesLandscape,
+            SeaPenTemplateOption.kGlowscapesLandscapeCoralReef,
+          ],
+          [
+            SeaPenTemplateChip.kGlowscapesFeature,
+            SeaPenTemplateOption.kGlowscapesFeatureFlower,
+          ],
+        ]),
+        userVisibleQuery: {
+          text: 'test freeform query',
+          templateTitle: '',
+        },
+      },
     },
     creationTime: stringToMojoString16('Dec 15, 2023'),
   };
 
   recentImageInfo3: RecentSeaPenImageInfo = {
-    userVisibleQuery: {
-      text: 'test template query',
-      templateTitle: 'test template title',
+    query: {
+      textQuery: 'test template query',
     },
     creationTime: stringToMojoString16('Dec 31, 2023'),
   };
