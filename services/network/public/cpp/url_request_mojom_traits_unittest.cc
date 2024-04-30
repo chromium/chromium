@@ -121,6 +121,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       original.site_for_cookies);
   original.trusted_params->disable_secure_dns = true;
   original.trusted_params->allow_cookies_from_browser = true;
+  original.trusted_params->include_request_cookies_with_response = true;
 
   original.trust_token_params = network::mojom::TrustTokenParams();
   original.trust_token_params->issuers.push_back(

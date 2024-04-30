@@ -705,6 +705,8 @@ URLLoader::URLLoader(
     has_user_activation_ = request.trusted_params->has_user_activation;
     allow_cookies_from_browser_ =
         request.trusted_params->allow_cookies_from_browser;
+    include_request_cookies_with_response_ =
+        request.trusted_params->include_request_cookies_with_response;
   }
 
   // Store any cookies passed from the browser process to later attach them to
@@ -1405,6 +1407,11 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
     }
   }
 
+  if (request_cookies_.size()) {
+    CHECK(include_request_cookies_with_response_);
+    response->request_cookies = request_cookies_;
+  }
+
   response->request_start = url_request_->creation_time();
   response->response_start = base::TimeTicks::Now();
   response->encoded_data_length = url_request_->GetTotalReceivedBytes();
@@ -1484,6 +1491,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   url_request_.get()->RemoveRequestHeaderByName(
       net::HttpRequestHeaders::kCookie);
   cookies_from_browser_.clear();
+  request_cookies_.clear();
 
   // We may need to clear out old Sec- prefixed request headers. We'll attempt
   // to do this before we re-add any.
@@ -2116,11 +2124,23 @@ void URLLoader::OnReadCompleted(net::URLRequest* url_request, int bytes_read) {
 int URLLoader::OnBeforeStartTransaction(
     const net::HttpRequestHeaders& headers,
     net::NetworkDelegate::OnBeforeStartTransactionCallback callback) {
+  const net::HttpRequestHeaders* used_headers = &headers;
+  net::HttpRequestHeaders headers_with_bonus_cookies;
+  if (!cookies_from_browser_.empty()) {
+    headers_with_bonus_cookies = AttachCookies(headers, cookies_from_browser_);
+    used_headers = &headers_with_bonus_cookies;
+  }
+
+  if (include_request_cookies_with_response_) {
+    request_cookies_.clear();
+    std::string cookie_header;
+    used_headers->GetHeader(net::HttpRequestHeaders::kCookie, &cookie_header);
+    net::cookie_util::ParseRequestCookieLine(cookie_header, &request_cookies_);
+  }
+
   if (header_client_) {
     header_client_->OnBeforeSendHeaders(
-        cookies_from_browser_.empty()
-            ? headers
-            : AttachCookies(headers, cookies_from_browser_),
+        *used_headers,
         base::BindOnce(&URLLoader::OnBeforeSendHeadersComplete,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return net::ERR_IO_PENDING;
@@ -2129,10 +2149,10 @@ int URLLoader::OnBeforeStartTransaction(
   // Additional cookies were added to the existing headers, so `callback` must
   // be invoked to ensure that the cookies are included in the request.
   if (!cookies_from_browser_.empty()) {
+    CHECK_EQ(used_headers, &headers_with_bonus_cookies);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), net::OK,
-                       AttachCookies(headers, cookies_from_browser_)));
+        FROM_HERE, base::BindOnce(std::move(callback), net::OK,
+                                  std::move(headers_with_bonus_cookies)));
     return net::ERR_IO_PENDING;
   }
 
@@ -2626,6 +2646,12 @@ void URLLoader::OnBeforeSendHeadersComplete(
     net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
     int result,
     const std::optional<net::HttpRequestHeaders>& headers) {
+  if (include_request_cookies_with_response_ && headers) {
+    request_cookies_.clear();
+    std::string cookie_header;
+    headers->GetHeader(net::HttpRequestHeaders::kCookie, &cookie_header);
+    net::cookie_util::ParseRequestCookieLine(cookie_header, &request_cookies_);
+  }
   std::move(callback).Run(result, headers);
 }
 

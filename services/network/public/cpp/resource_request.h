@@ -72,6 +72,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     bool disable_secure_dns = false;
     bool has_user_activation = false;
     bool allow_cookies_from_browser = false;
+    bool include_request_cookies_with_response = false;
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
     mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer;
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>

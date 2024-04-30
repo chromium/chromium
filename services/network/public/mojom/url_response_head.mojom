@@ -11,12 +11,14 @@ import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/encoded_body_length.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
+import "services/network/public/mojom/parsed_request_cookie.mojom";
 import "services/network/public/mojom/service_worker_router_info.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
@@ -176,6 +178,11 @@ struct URLResponseHead {
   // and may only contain certain fields of interest (namely, connection
   // parameters and certificate information).
   SSLInfo? ssl_info;
+
+  // Only provided if `include_request_cookies_with_response` was true in the
+  // request's `trusted_params` (and the loader is trusted). May include
+  // cookies added by the loader.
+  array<ParsedRequestCookie> request_cookies;
 
   // In case this is a CORS response fetched by a ServiceWorker, this is the
   // set of headers that should be exposed.

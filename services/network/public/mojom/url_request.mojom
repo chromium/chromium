@@ -74,6 +74,12 @@ struct TrustedUrlRequestParams {
   // FollowRedirect().
   bool allow_cookies_from_browser;
 
+  // Specifies that the response head should include request cookies which were
+  // sent, including cookies added by the browser. Clients which set this flag
+  // should take care to remove them if they forward the response head to a
+  // client which should not be able to see them.
+  bool include_request_cookies_with_response = false;
+
   // Observer which should be notified when this URLRequest reads or writes
   // a cookie. If this is set to non-null, the observer passed to
   // URLLoaderFactory will be ignored.

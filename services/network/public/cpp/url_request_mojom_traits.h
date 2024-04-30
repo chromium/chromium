@@ -73,6 +73,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest::TrustedParams& trusted_params) {
     return trusted_params.allow_cookies_from_browser;
   }
+  static bool include_request_cookies_with_response(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    return trusted_params.include_request_cookies_with_response;
+  }
   static mojo::PendingRemote<network::mojom::CookieAccessObserver>
   cookie_observer(
       const network::ResourceRequest::TrustedParams& trusted_params) {

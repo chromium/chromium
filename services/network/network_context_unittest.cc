@@ -29,6 +29,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -102,6 +103,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_server_properties_manager.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/mock_http_cache.h"
@@ -5858,7 +5860,9 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
     void OnBeforeSendHeaders(const net::HttpRequestHeaders& headers,
                              OnBeforeSendHeadersCallback callback) override {
       auto new_headers = headers;
-      new_headers.SetHeader("foo", "bar");
+      for (const auto& [name, value] : request_headers_to_set_) {
+        new_headers.SetHeader(name, value);
+      }
       std::move(callback).Run(on_before_send_headers_result_, new_headers);
     }
 
@@ -5880,6 +5884,10 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
       on_headers_received_result_ = result;
     }
 
+    void AddRequestHeaderToSet(std::string name, std::string value) {
+      request_headers_to_set_.emplace_back(std::move(name), std::move(value));
+    }
+
     void Bind(
         mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver) {
       receiver_.reset();
@@ -5887,6 +5895,8 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
     }
 
    private:
+    std::vector<std::pair<std::string, std::string>> request_headers_to_set_{
+        {"foo", "bar"}};
     int on_before_send_headers_result_ = net::OK;
     int on_headers_received_result_ = net::OK;
     mojo::Receiver<mojom::TrustedHeaderClient> receiver_{this};
@@ -5919,6 +5929,10 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
 
   void set_on_headers_received_result(int result) {
     header_client_.set_on_headers_received_result(result);
+  }
+
+  void AddRequestHeaderToSet(std::string name, std::string value) {
+    header_client_.AddRequestHeaderToSet(std::move(name), std::move(value));
   }
 
  private:
@@ -6285,6 +6299,379 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnHeadersReceived) {
   client.RunUntilComplete();
 
   EXPECT_EQ(client.completion_status().error_code, net::ERR_ABORTED);
+}
+
+::testing::AssertionResult HasCookie(
+    const net::cookie_util::ParsedRequestCookies& cookies,
+    std::string_view name) {
+  auto it =
+      base::ranges::find(cookies, name, [](const auto& p) { return p.first; });
+  if (it == cookies.end()) {
+    return ::testing::AssertionFailure() << "no cookie named " << name;
+  }
+  return ::testing::AssertionSuccess();
+}
+
+::testing::AssertionResult HasCookie(
+    const net::cookie_util::ParsedRequestCookies& cookies,
+    std::string_view name,
+    std::string_view value) {
+  auto it =
+      base::ranges::find(cookies, name, [](const auto& p) { return p.first; });
+  if (it == cookies.end()) {
+    return ::testing::AssertionFailure() << "no cookie named " << name;
+  }
+  if (it->second != value) {
+    return ::testing::AssertionFailure()
+           << "cookie " << name << " has value " << it->second << ", expecting "
+           << value;
+  }
+  return ::testing::AssertionSuccess();
+}
+
+TEST_F(NetworkContextTest,
+       IncludeRequestCookiesWithResponse_FailWhenUntrusted) {
+  // This somewhat duplicates NetworkContextTest.TrustedParams; see that test
+  // for more detail.
+  net::test_server::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  SetCookieHelper(network_context.get(), test_server.GetURL("/"), "chocolate",
+                  "chip");
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = false;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(test_server.GetOrigin());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.url = test_server.GetURL("/defaultresponse");
+  request.site_for_cookies =
+      net::SiteForCookies::FromOrigin(test_server.GetOrigin());
+  request.trusted_params.emplace();
+  request.trusted_params->include_request_cookies_with_response = true;
+
+  TestURLLoaderClient client;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilComplete();
+  EXPECT_FALSE(client.has_received_response());
+  EXPECT_THAT(client.completion_status().error_code,
+              net::test::IsError(net::ERR_INVALID_ARGUMENT));
+}
+
+TEST_F(NetworkContextTest,
+       IncludeRequestCookiesWithResponse_NoCookiesByDefault) {
+  net::test_server::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  SetCookieHelper(network_context.get(), test_server.GetURL("/"), "chocolate",
+                  "chip");
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(test_server.GetOrigin());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.url = test_server.GetURL("/defaultresponse");
+  request.site_for_cookies =
+      net::SiteForCookies::FromOrigin(test_server.GetOrigin());
+  request.trusted_params.emplace();
+  // include_request_cookies_with_response is intentionally unset.
+
+  TestURLLoaderClient client;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilResponseReceived();
+  EXPECT_EQ(0u, client.response_head()->request_cookies.size());
+}
+
+TEST_F(NetworkContextTest, IncludeRequestCookiesWithResponse_Cookie) {
+  net::test_server::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  SetCookieHelper(network_context.get(), test_server.GetURL("/"), "chocolate",
+                  "chip");
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(test_server.GetOrigin());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.url = test_server.GetURL("/defaultresponse");
+  request.site_for_cookies =
+      net::SiteForCookies::FromOrigin(test_server.GetOrigin());
+  request.trusted_params.emplace();
+  request.trusted_params->include_request_cookies_with_response = true;
+
+  TestURLLoaderClient client;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilResponseReceived();
+  EXPECT_TRUE(
+      HasCookie(client.response_head()->request_cookies, "chocolate", "chip"));
+}
+
+TEST_F(NetworkContextTest,
+       IncludeRequestCookiesWithResponse_CookieWithRedirect) {
+  net::test_server::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  SetCookieHelper(network_context.get(), test_server.GetURL("/"), "chocolate",
+                  "chip");
+  SetCookieHelper(network_context.get(),
+                  test_server.GetURL("oven.localhost", "/"), "baking_time_ms",
+                  "600000");
+  GURL final_url = test_server.GetURL("oven.localhost", "/defaultresponse");
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(test_server.GetOrigin());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.url = test_server.GetURL(
+      "/server-redirect?" + base::EscapeAllExceptUnreserved(final_url.spec()));
+  request.site_for_cookies =
+      net::SiteForCookies::FromOrigin(test_server.GetOrigin());
+  request.trusted_params.emplace();
+  request.trusted_params->include_request_cookies_with_response = true;
+
+  TestURLLoaderClient client;
+  mojo::Remote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilRedirectReceived();
+  EXPECT_EQ(net::HTTP_MOVED_PERMANENTLY,
+            client.response_head()->headers->response_code());
+  EXPECT_TRUE(
+      HasCookie(client.response_head()->request_cookies, "chocolate", "chip"));
+  EXPECT_EQ(client.redirect_info().new_url, final_url);
+  loader->FollowRedirect({}, {}, {}, {});
+
+  client.RunUntilResponseReceived();
+  EXPECT_EQ(net::HTTP_OK, client.response_head()->headers->response_code());
+  EXPECT_TRUE(HasCookie(client.response_head()->request_cookies,
+                        "baking_time_ms", "600000"));
+  EXPECT_FALSE(HasCookie(client.response_head()->request_cookies, "chocolate"));
+}
+
+TEST_F(NetworkContextTest,
+       IncludeRequestCookiesWithResponse_CookiesFromBrowser) {
+  net::test_server::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  SetCookieHelper(network_context.get(), test_server.GetURL("/"), "eggs", "2");
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(test_server.GetOrigin());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.url = test_server.GetURL("/defaultresponse");
+  request.site_for_cookies =
+      net::SiteForCookies::FromOrigin(test_server.GetOrigin());
+  request.headers.SetHeader(net::HttpRequestHeaders::kCookie,
+                            "chocolate=swiss");
+  request.trusted_params.emplace();
+  request.trusted_params->allow_cookies_from_browser = true;
+  request.trusted_params->include_request_cookies_with_response = true;
+
+  TestURLLoaderClient client;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilResponseReceived();
+  EXPECT_TRUE(
+      HasCookie(client.response_head()->request_cookies, "chocolate", "swiss"));
+  EXPECT_TRUE(HasCookie(client.response_head()->request_cookies, "eggs", "2"));
+}
+
+TEST_F(NetworkContextTest, IncludeRequestCookiesWithResponse_HeaderClient) {
+  net::test_server::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  SetCookieHelper(network_context.get(), test_server.GetURL("/"), "chocolate",
+                  "chip");
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(test_server.GetOrigin());
+  TestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  header_client.AddRequestHeaderToSet(net::HttpRequestHeaders::kCookie,
+                                      "chocolate=triple");
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.url = test_server.GetURL("/defaultresponse");
+  request.site_for_cookies =
+      net::SiteForCookies::FromOrigin(test_server.GetOrigin());
+  request.trusted_params.emplace();
+  request.trusted_params->include_request_cookies_with_response = true;
+
+  TestURLLoaderClient client;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilResponseReceived();
+  EXPECT_TRUE(HasCookie(client.response_head()->request_cookies, "chocolate",
+                        "triple"));
+}
+
+TEST_F(NetworkContextTest,
+       IncludeRequestCookiesWithResponse_HSTSRedirectClearsCookie) {
+  net::test_server::EmbeddedTestServer test_server;
+  test_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(test_server.Start());
+
+  net::test_server::EmbeddedTestServer https_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  SetCookieHelper(network_context.get(), test_server.GetURL("/"), "chocolate",
+                  "chip");
+
+  {
+    base::RunLoop run_loop;
+    network_context->AddHSTS(
+        "hsts.localhost", base::Time::Now() + base::Days(1000),
+        false /*include_subdomains*/, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  GURL https_url = https_server.GetURL("hsts.localhost", "/defaultresponse");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr("http");
+  GURL hsts_redirect_url = https_url.ReplaceComponents(replacements);
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info =
+      net::IsolationInfo::CreateForInternalRequest(test_server.GetOrigin());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  ResourceRequest request;
+  request.method = "GET";
+  request.url =
+      test_server.GetURL("/server-redirect?" + base::EscapeAllExceptUnreserved(
+                                                   hsts_redirect_url.spec()));
+  request.site_for_cookies =
+      net::SiteForCookies::FromOrigin(test_server.GetOrigin());
+  request.trusted_params.emplace();
+  request.trusted_params->include_request_cookies_with_response = true;
+
+  TestURLLoaderClient client;
+  mojo::Remote<mojom::URLLoader> loader;
+  loader_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  client.RunUntilRedirectReceived();
+  EXPECT_EQ(client.redirect_info().new_url, hsts_redirect_url);
+  EXPECT_TRUE(
+      HasCookie(client.response_head()->request_cookies, "chocolate", "chip"));
+  client.ClearHasReceivedRedirect();
+  loader->FollowRedirect({}, {}, {}, {});
+
+  client.RunUntilRedirectReceived();
+  EXPECT_EQ(net::HTTP_TEMPORARY_REDIRECT,
+            client.response_head()->headers->response_code());
+  EXPECT_FALSE(HasCookie(client.response_head()->request_cookies, "chocolate"));
+  EXPECT_EQ(client.redirect_info().new_url, https_url);
+  loader->FollowRedirect({}, {}, {}, {});
+
+  client.RunUntilResponseReceived();
+  EXPECT_EQ(net::HTTP_OK, client.response_head()->headers->response_code());
+  EXPECT_FALSE(HasCookie(client.response_head()->request_cookies, "chocolate"));
 }
 
 // Custom proxy does not apply to localhost, so resolve kMockHost to localhost,

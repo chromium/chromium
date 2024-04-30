@@ -153,6 +153,8 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   disable_secure_dns = other.disable_secure_dns;
   has_user_activation = other.has_user_activation;
   allow_cookies_from_browser = other.allow_cookies_from_browser;
+  include_request_cookies_with_response =
+      other.include_request_cookies_with_response;
   cookie_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
           other.cookie_observer));
@@ -185,6 +187,8 @@ bool ResourceRequest::TrustedParams::EqualsForTesting(
          disable_secure_dns == other.disable_secure_dns &&
          has_user_activation == other.has_user_activation &&
          allow_cookies_from_browser == other.allow_cookies_from_browser &&
+         include_request_cookies_with_response ==
+             other.include_request_cookies_with_response &&
          client_security_state == other.client_security_state;
 }
 
