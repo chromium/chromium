@@ -545,10 +545,7 @@ class WPTAdapter:
             logger.debug('Using WPT tools from %s', self.tools_root)
 
             runner_options.run_info = tmp_dir
-            # The filename must be `mozinfo.json` for wptrunner to read it from the
-            # `--run-info` directory.
-            self._create_extra_run_info(self.fs.join(tmp_dir, 'mozinfo.json'),
-                                        tests_root)
+            self._initialize_tmp_dir(tmp_dir, tests_root)
 
             TestLoader.install(self.port, self._expectations)
             stack.enter_context(
@@ -591,7 +588,8 @@ class WPTAdapter:
             logger._state.has_shutdown = False
             return 1 if exit_code or self._processor.num_regressions > 0 else 0
 
-    def _create_extra_run_info(self, run_info_path, tests_root):
+    def _initialize_tmp_dir(self, tmp_dir: str, tests_root: str):
+        assert self.fs.isdir(tmp_dir), tmp_dir
         run_info = {
             # This property should always be a string so that the metadata
             # updater works, even when wptrunner is not running a flag-specific
@@ -611,8 +609,19 @@ class WPTAdapter:
             run_info['revision'] = self.host.git(
                 path=tests_root).current_revision()
 
+        # The filename must be `mozinfo.json` for wptrunner to read it from the
+        # `--run-info` directory.
+        run_info_path = self.fs.join(tmp_dir, 'mozinfo.json')
         with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
             json.dump(run_info, file_handle)
+
+        # The `//third_party/fontconfig/` library embedded into Chromium
+        # recursively searches `$XDG_DATA_HOME/fonts` for locally vended fonts.
+        ahem_path = self.fs.join(tmp_dir, 'fonts', 'Ahem.ttf')
+        self.fs.maybe_make_directory(self.fs.dirname(ahem_path))
+        self.fs.copyfile(self.fs.join(tests_root, 'fonts', 'Ahem.ttf'),
+                         ahem_path)
+        self.host.environ['XDG_DATA_HOME'] = tmp_dir
 
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):
@@ -725,6 +734,7 @@ def _install_xcode(xcode_build_version: str):
                         xcode_build_version)
     else:
         logger.warning('Skip the Xcode installation, no xcode_build_version.')
+
 
 def _run_with_upstream_wpt(host: Host, argv: List[str]) -> int:
     checkout_path = _checkout_upstream_wpt(host)
