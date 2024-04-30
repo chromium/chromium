@@ -622,6 +622,16 @@ std::u16string ViewAccessibility::GetViewAccessibilityDescription() const {
   return std::u16string();
 }
 
+void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
+  data_.SetCheckedState(checked_state);
+}
+
+void ViewAccessibility::RemoveCheckedState() {
+  if (data_.HasCheckedState()) {
+    data_.RemoveIntAttribute(ax::mojom::IntAttribute::kCheckedState);
+  }
+}
+
 void ViewAccessibility::SetIsSelected(bool selected) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected);
 }

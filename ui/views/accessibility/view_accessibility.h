@@ -251,6 +251,9 @@ class VIEWS_EXPORT ViewAccessibility {
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
   std::u16string GetViewAccessibilityDescription() const;
 
+  void SetCheckedState(ax::mojom::CheckedState checked_state);
+  void RemoveCheckedState();
+
   // Sets the platform-specific accessible name/title property of the
   // NativeViewAccessible window. This is needed on platforms where the name
   // of the NativeViewAccessible window is automatically calculated by the
