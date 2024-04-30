@@ -151,7 +151,7 @@ void EmbeddedPermissionPromptBaseView::AddedToWidget() {
   }
 
   auto label = std::make_unique<views::Label>(
-      GetWindowTitle(), views::style::CONTEXT_DIALOG_BODY_TEXT);
+      GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetCollapseWhenHidden(true);
   label->SetMultiLine(true);
