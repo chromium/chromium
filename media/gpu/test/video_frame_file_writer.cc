@@ -225,11 +225,6 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
     const base::FilePath& filename) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
-  if (VideoFrame::BytesPerElement(video_frame->format(), 0) > 1) {
-    LOG(ERROR) << "We don't support more than 8 bits color depth for PNG"
-               << " output. Please use YUV output";
-    return;
-  }
   auto mapped_frame = video_frame;
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   const uint64_t modifier = video_frame->layout().modifier();

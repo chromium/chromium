@@ -176,6 +176,32 @@ bool ConvertVideoFrameToARGB(const VideoFrame* src_frame,
                                 src_frame->visible_data(VideoFrame::kUPlane),
                                 src_frame->stride(VideoFrame::kUPlane),
                                 dst_argb, dst_stride, width, height) == 0;
+    case PIXEL_FORMAT_P016LE: {
+      auto i010_frame = VideoFrame::CreateFrame(
+          PIXEL_FORMAT_YUV420AP10, src_frame->coded_size(),
+          src_frame->visible_rect(), src_frame->natural_size(),
+          src_frame->timestamp());
+      if (!i010_frame) {
+        return false;
+      }
+
+      if (!ConvertVideoFrameToYUV420P10(src_frame, i010_frame.get())) {
+        return false;
+      }
+
+      return libyuv::I010ToARGB(
+                 reinterpret_cast<const uint16_t*>(
+                     i010_frame->visible_data(VideoFrame::kYPlane)),
+                 i010_frame->stride(VideoFrame::kYPlane) >> 1,
+                 reinterpret_cast<const uint16_t*>(
+                     i010_frame->visible_data(VideoFrame::kUPlane)),
+                 i010_frame->stride(VideoFrame::kUPlane) >> 1,
+                 reinterpret_cast<const uint16_t*>(
+                     i010_frame->visible_data(VideoFrame::kVPlane)),
+                 i010_frame->stride(VideoFrame::kVPlane) >> 1, dst_argb,
+                 dst_stride, width, height) == 0;
+    }
+
     default:
       LOG(ERROR) << "Unsupported input format: " << src_frame->format();
       return false;
