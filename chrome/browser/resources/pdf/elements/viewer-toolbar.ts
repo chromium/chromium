@@ -60,7 +60,7 @@ export class ViewerToolbarElement extends PolymerElement {
 
   static get properties() {
     return {
-      // <if expr="enable_ink">
+      // <if expr="enable_ink or enable_pdf_ink2">
       annotationAvailable: Boolean,
       annotationMode: {
         type: Boolean,
@@ -88,6 +88,9 @@ export class ViewerToolbarElement extends PolymerElement {
 
       pageNo: Number,
       pdfAnnotationsEnabled: Boolean,
+      // <if expr="enable_pdf_ink2">
+      pdfInk2Enabled: Boolean,
+      // </if>
       // <if expr="enable_screen_ai_service">
       pdfOcrEnabled: Boolean,
       // </if>
@@ -174,11 +177,18 @@ export class ViewerToolbarElement extends PolymerElement {
   private loading_: boolean = true;
   private viewportZoomPercent_: number;
 
-  // <if expr="enable_ink">
+  // <if expr="enable_ink or enable_pdf_ink2">
   annotationAvailable: boolean;
   annotationMode: boolean;
+  // </if>
+
+  // <if expr="enable_ink">
   private showAnnotationsModeDialog_: boolean;
   private showAnnotationsBar_: boolean;
+  // </if>
+
+  // <if expr="enable_pdf_ink2">
+  pdfInk2Enabled: boolean;
   // </if>
 
   // <if expr="enable_screen_ai_service">
@@ -388,14 +398,25 @@ export class ViewerToolbarElement extends PolymerElement {
       this.toggleAnnotation();
     }
   }
+  // </if>
 
+  // <if expr="enable_ink or enable_pdf_ink2">
   private onAnnotationClick_() {
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled) {
+      this.toggleAnnotation();
+      return;
+    }
+    // </if> enable_pdf_ink2
+
+    // <if expr="enable_ink">
     if (!this.rotated && !this.twoUpViewEnabled) {
       this.toggleAnnotation();
       return;
     }
 
     this.showAnnotationsModeDialog_ = true;
+    // </if> enable_ink
   }
 
   toggleAnnotation() {
@@ -403,11 +424,18 @@ export class ViewerToolbarElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent(
         'annotation-mode-toggled', {detail: newAnnotationMode}));
 
+    // <if expr="enable_pdf_ink2">
+    // Don't toggle display annotations for Ink2.
+    if (this.pdfInk2Enabled) {
+      return;
+    }
+    // </if> enable_pdf_ink2
+
     if (newAnnotationMode && !this.displayAnnotations_) {
       this.toggleDisplayAnnotations_();
     }
   }
-  // </if>
+  // </if> enable_ink or enable_pdf_ink2
 
   // <if expr="enable_screen_ai_service">
   private async onPdfOcrClick_() {

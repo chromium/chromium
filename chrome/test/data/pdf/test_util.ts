@@ -298,3 +298,15 @@ export function createWheelEvent(
     cancelable: true,
   });
 }
+
+/**
+ * Check that the show-annotations button matches the `enabled` state.
+ * @param button The show-annotations button.
+ * @param enabled Whether annotations should be displayed or not.
+ */
+export function assertShowAnnotationsButton(
+    button: HTMLElement, enabled: boolean) {
+  chrome.test.assertEq(
+      enabled ? 'true' : 'false', button.getAttribute('aria-checked'));
+  chrome.test.assertEq(enabled, !button.querySelector('iron-icon')!.hidden);
+}

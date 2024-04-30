@@ -139,9 +139,12 @@
     sidenav-collapsed="[[sidenavCollapsed_]]"
     two-up-view-enabled="[[twoUpViewEnabled_]]"
     viewport-zoom="[[viewportZoom_]]" zoom-bounds="[[zoomBounds_]]"
-<if expr="enable_ink">
+<if expr="enable_ink or enable_pdf_ink2">
     annotation-available="[[annotationAvailable_]]"
     pdf-annotations-enabled="[[pdfAnnotationsEnabled_]]"
+</if>
+<if expr="enable_pdf_ink2">
+    pdf-ink2-enabled="[[pdfInk2Enabled_]]"
 </if>
 <if expr="enable_screen_ai_service">
     pdf-ocr-enabled="[[pdfOcrEnabled_]]"
@@ -156,7 +159,7 @@
     on-two-up-view-changed="onTwoUpViewChanged_"
     on-zoom-changed="onZoomChanged" on-zoom-in="onZoomIn"
     on-zoom-out="onZoomOut" on-rotate-left="rotateCounterclockwise"
-<if expr="enable_ink">
+<if expr="enable_ink or enable_pdf_ink2">
     on-annotation-mode-toggled="onAnnotationModeToggled_"
 </if>
     on-print="onPrint_" on-save="onToolbarSave_" hidden>

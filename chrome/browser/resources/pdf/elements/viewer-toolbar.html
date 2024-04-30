@@ -163,7 +163,7 @@
     visibility: visible;
   }
 
-<if expr="enable_ink">
+<if expr="enable_ink or enable_pdf_ink2">
   #annotate {
     margin-inline-end: 4px;
   }
@@ -254,7 +254,7 @@
     </cr-icon-button>
   </div>
   <div id="end">
-  <if expr="enable_ink">
+  <if expr="enable_ink or enable_pdf_ink2">
     <template is="dom-if" if="[[pdfAnnotationsEnabled]]">
       <cr-icon-button id="annotate" iron-icon="cr:create"
           on-click="onAnnotationClick_"
