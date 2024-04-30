@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller_impl.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -319,7 +320,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     kiosk_app_id_ = KioskAppId::ForWebApp(account_id);
 
     kiosk_controller_ =
-        std::make_unique<KioskController>(fake_user_manager_.Get());
+        std::make_unique<KioskControllerImpl>(fake_user_manager_.Get());
     WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
                                                 GURL(kInstallUrl));
   }
@@ -978,7 +979,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 
   void SetUpKioskAppInAppManager() {
     kiosk_controller_ =
-        std::make_unique<KioskController>(fake_user_manager_.Get());
+        std::make_unique<KioskControllerImpl>(fake_user_manager_.Get());
     WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
                                                 GURL(kInstallUrl));
   }

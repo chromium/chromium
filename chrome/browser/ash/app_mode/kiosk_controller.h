@@ -9,57 +9,38 @@
 #include <string>
 #include <vector>
 
-#include "base/scoped_observation.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+
+class Profile;
 
 namespace ash {
 
+class KioskSystemSession;
+
 // Public interface for Kiosk.
-class KioskController : public user_manager::UserManager::Observer {
+class KioskController {
  public:
   static KioskController& Get();
 
-  explicit KioskController(user_manager::UserManager* user_manager);
-  KioskController(const KioskController&) = delete;
-  KioskController& operator=(const KioskController&) = delete;
-  ~KioskController() override;
+  KioskController();
+  virtual ~KioskController();
 
-  std::vector<KioskApp> GetApps() const;
-  std::optional<KioskApp> GetAppById(const KioskAppId& app_id) const;
-  std::optional<KioskApp> GetAutoLaunchApp() const;
+  virtual std::vector<KioskApp> GetApps() const = 0;
+  virtual std::optional<KioskApp> GetAppById(
+      const KioskAppId& app_id) const = 0;
+  virtual std::optional<KioskApp> GetAutoLaunchApp() const = 0;
 
-  // Initializes `kiosk_system_session_`. Should be called during Kiosk launch.
-  void InitializeKioskSystemSession(
+  // Initializes the `KioskSystemSession`. Should be called at the end of the
+  // Kiosk launch.
+  virtual void InitializeKioskSystemSession(
       Profile* profile,
       const KioskAppId& kiosk_app_id,
-      const std::optional<std::string>& app_name = std::nullopt);
+      const std::optional<std::string>& app_name) = 0;
 
   // Returns the `KioskSystemSession`. Can be `nullptr` if called outside a
   // Kiosk session, or before `InitializeSystemSession`.
-  KioskSystemSession* GetKioskSystemSession();
-
-  // user_manager::UserManager::Observer:
-  void OnUserLoggedIn(const user_manager::User& user) override;
-
- private:
-  WebKioskAppManager web_app_manager_;
-  KioskChromeAppManager chrome_app_manager_;
-  ArcKioskAppManager arc_app_manager_;
-
-  //  Created once the Kiosk session is launched successfully. `nullopt` before
-  //  Kiosk launch and generally when outside Kiosk,
-  std::optional<KioskSystemSession> kiosk_system_session_;
-
-  base::ScopedObservation<user_manager::UserManager,
-                          user_manager::UserManager::Observer>
-      user_manager_observation_{this};
+  virtual KioskSystemSession* GetKioskSystemSession() = 0;
 };
 
 }  // namespace ash
