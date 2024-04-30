@@ -382,7 +382,8 @@ void ToggleButton::RemoveLayerFromRegions(ui::Layer* layer) {
   thumb_view_->RemoveLayerFromRegions(layer);
 }
 
-gfx::Size ToggleButton::CalculatePreferredSize() const {
+gfx::Size ToggleButton::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   gfx::Rect rect(GetTrackSize());
   rect.Inset(-GetInsets());
   return rect.size();

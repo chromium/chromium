@@ -65,7 +65,8 @@ class VIEWS_EXPORT ToggleButton : public Button {
   // views::View:
   void AddLayerToRegion(ui::Layer* layer, LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
 
  protected:
   // views::View:

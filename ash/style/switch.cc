@@ -42,7 +42,8 @@ Switch::Switch(PressedCallback callback)
 
 Switch::~Switch() = default;
 
-gfx::Size Switch::CalculatePreferredSize() const {
+gfx::Size Switch::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   return gfx::Size(kSwitchWidth, kSwitchHeight);
 }
 
