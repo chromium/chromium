@@ -235,6 +235,7 @@ public class TabSwitcherCoordinator
                             mode,
                             activity,
                             mBrowserControlsStateProvider,
+                            modalDialogManager,
                             currentTabModelFilterSupplier,
                             () -> tabModelSelector.getModel(false),
                             mMultiThumbnailCardProvider,

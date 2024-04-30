@@ -149,6 +149,7 @@ import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
@@ -284,6 +285,7 @@ public class TabListMediatorUnitTest {
     @Mock PriceWelcomeMessageController mPriceWelcomeMessageController;
     @Mock ShoppingPersistedTabData mShoppingPersistedTabData;
     @Mock SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock ModalDialogManager mModalDialogManager;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -1092,6 +1094,7 @@ public class TabListMediatorUnitTest {
                         mActivity,
                         mModel,
                         TabListMode.GRID,
+                        mModalDialogManager,
                         mCurrentTabModelFilterSupplier,
                         () -> mTabModel,
                         getTabThumbnailCallback(),
@@ -2711,6 +2714,7 @@ public class TabListMediatorUnitTest {
                         mActivity,
                         mModel,
                         TabListMode.GRID,
+                        mModalDialogManager,
                         mCurrentTabModelFilterSupplier,
                         () -> mTabModel,
                         getTabThumbnailCallback(),
@@ -2744,6 +2748,7 @@ public class TabListMediatorUnitTest {
                         mActivity,
                         mModel,
                         TabListMode.GRID,
+                        mModalDialogManager,
                         mCurrentTabModelFilterSupplier,
                         () -> mTabModel,
                         getTabThumbnailCallback(),
@@ -3110,6 +3115,7 @@ public class TabListMediatorUnitTest {
                         mActivity,
                         mModel,
                         TabListMode.GRID,
+                        mModalDialogManager,
                         mCurrentTabModelFilterSupplier,
                         () -> mTabModel,
                         getTabThumbnailCallback(),
@@ -3154,6 +3160,7 @@ public class TabListMediatorUnitTest {
                         mActivity,
                         mModel,
                         TabListMode.GRID,
+                        mModalDialogManager,
                         mCurrentTabModelFilterSupplier,
                         () -> mTabModel,
                         getTabThumbnailCallback(),
@@ -3198,6 +3205,7 @@ public class TabListMediatorUnitTest {
                         mActivity,
                         mModel,
                         TabListMode.GRID,
+                        mModalDialogManager,
                         mCurrentTabModelFilterSupplier,
                         () -> mTabModel,
                         getTabThumbnailCallback(),
@@ -3677,6 +3685,7 @@ public class TabListMediatorUnitTest {
                         mActivity,
                         mModel,
                         mode,
+                        mModalDialogManager,
                         mCurrentTabModelFilterSupplier,
                         () -> mTabModel,
                         getTabThumbnailCallback(),

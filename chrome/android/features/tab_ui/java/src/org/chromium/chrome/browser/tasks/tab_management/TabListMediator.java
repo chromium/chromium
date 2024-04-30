@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
@@ -95,6 +94,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -342,6 +342,7 @@ class TabListMediator {
     private final Context mContext;
     private final TabListModel mModel;
     private final @TabListMode int mMode;
+    private final ModalDialogManager mModalDialogManager;
     private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     // TODO(crbug.com/40946413): Refactor price drops so we don't need this.
     private final Supplier<TabModel> mRegularTabModelSupplier;
@@ -794,11 +795,10 @@ class TabListMediator {
      * Construct the Mediator with the given Models and observing hooks from the given
      * ChromeActivity.
      *
-     * @param tabModelSelector {@link TabModelSelector} that will provide and receive signals about
-     *     the tabs concerned.
      * @param context The context used to get some configuration information.
      * @param model The Model to keep state about a list of {@link Tab}s.
      * @param mode The {@link TabListMode}
+     * @param modalDialogManager The {@link ModalDialogManager} for managing dialog lifecycles.
      * @param regularTabModelSupplier The supplier of the regular {@link TabModel}.
      * @param thumbnailProvider {@link ThumbnailProvider} to provide screenshot related details.
      * @param titleProvider {@link PseudoTab.TitleProvider} for a given tab's title to show.
@@ -820,6 +820,7 @@ class TabListMediator {
             Context context,
             TabListModel model,
             @TabListMode int mode,
+            @Nullable ModalDialogManager modalDialogManager,
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
             @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
@@ -834,6 +835,7 @@ class TabListMediator {
             String componentName,
             @UiType int uiType) {
         mContext = context;
+        mModalDialogManager = modalDialogManager;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
         mRegularTabModelSupplier = regularTabModelSupplier;
         mThumbnailProvider = thumbnailProvider;

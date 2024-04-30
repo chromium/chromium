@@ -199,6 +199,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             mode,
                             activity,
                             browserControlsStateProvider,
+                            mModalDialogManager,
                             tabModelFilterSupplier,
                             regularTabModelSupplier,
                             mMultiThumbnailCardProvider,

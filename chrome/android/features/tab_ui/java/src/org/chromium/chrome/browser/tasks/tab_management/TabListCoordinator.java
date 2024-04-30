@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -172,6 +173,7 @@ public class TabListCoordinator
                 mode,
                 context,
                 browserControlsStateProvider,
+                /* modalDialogManager= */ null,
                 tabModelFilterSupplier,
                 regularTabModelSupplier,
                 thumbnailProvider,
@@ -197,6 +199,7 @@ public class TabListCoordinator
             @TabListMode int mode,
             Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @Nullable ModalDialogManager modalDialogManager,
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
             @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
@@ -354,6 +357,7 @@ public class TabListCoordinator
                         context,
                         mModel,
                         mMode,
+                        modalDialogManager,
                         tabModelFilterSupplier,
                         regularTabModelSupplier,
                         thumbnailProvider,
