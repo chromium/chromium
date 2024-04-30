@@ -52,9 +52,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   void OnSuccessfulRequestAfterFailures(
       const net::ProxyRetryInfoMap& proxy_retry_info) override;
   void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
-  void OnBeforeTunnelRequest(const net::ProxyChain& proxy_chain,
-                             size_t chain_index,
-                             net::HttpRequestHeaders* extra_headers) override;
+  net::Error OnBeforeTunnelRequest(
+      const net::ProxyChain& proxy_chain,
+      size_t chain_index,
+      net::HttpRequestHeaders* extra_headers) override;
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,

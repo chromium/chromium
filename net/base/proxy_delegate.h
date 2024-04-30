@@ -61,10 +61,11 @@ class NET_EXPORT ProxyDelegate {
       const ProxyRetryInfoMap& proxy_retry_info) = 0;
 
   // Called immediately before a proxy tunnel request is sent. Provides the
-  // embedder an opportunity to add extra request headers.
-  virtual void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                                     size_t chain_index,
-                                     HttpRequestHeaders* extra_headers) = 0;
+  // embedder an opportunity to add extra request headers. Returning any value
+  // other than OK will cause the connection to fail with that error.
+  virtual Error OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                                      size_t chain_index,
+                                      HttpRequestHeaders* extra_headers) = 0;
 
   // Called when the response headers for the proxy tunnel request have been
   // received. Allows the delegate to override the net error code of the tunnel

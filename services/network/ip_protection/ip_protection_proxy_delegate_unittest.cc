@@ -19,6 +19,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -30,6 +31,9 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using net::test::IsError;
+using net::test::IsOk;
 
 namespace network {
 namespace {
@@ -249,8 +253,9 @@ TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
                                                "proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxyb", std::nullopt)});
-  delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
-                                  &headers);
+  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                              /*chain_index=*/0, &headers),
+              IsOk());
 
   EXPECT_THAT(headers, Contain("Authorization", "Bearer: a-token"));
 }
@@ -266,6 +271,7 @@ TEST_F(IpProtectionProxyDelegateTest, AddsPskToTunnelRequest) {
       NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});
   auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
   ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   auto delegate = CreateDelegate(&network_service_proxy_allow_list,
                                  std::move(ipp_config_cache));
 
@@ -275,14 +281,38 @@ TEST_F(IpProtectionProxyDelegateTest, AddsPskToTunnelRequest) {
                                                "proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxyb", std::nullopt)});
-  delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/0,
-                                  &headers);
+  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                              /*chain_index=*/0, &headers),
+              IsOk());
   EXPECT_THAT(headers, testing::Not(Contain("Proxy-Authorization",
                                             "Preshared seekrit")));
 
-  delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain, /*chain_index=*/1,
-                                  &headers);
+  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                              /*chain_index=*/1, &headers),
+              IsOk());
   EXPECT_THAT(headers, Contain("Proxy-Authorization", "Preshared seekrit"));
+}
+
+TEST_F(IpProtectionProxyDelegateTest, ErrorIfConnectionWithNoTokens) {
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});
+  auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+  ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(&network_service_proxy_allow_list,
+                                 std::move(ipp_config_cache));
+
+  net::HttpRequestHeaders headers;
+  auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxya", std::nullopt),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxyb", std::nullopt)});
+  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                              /*chain_index=*/0, &headers),
+              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
+  EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                              /*chain_index=*/1, &headers),
+              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
 }
 
 TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {

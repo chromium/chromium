@@ -298,9 +298,11 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
 
   void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
 
-  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                             size_t chain_index,
-                             HttpRequestHeaders* extra_headers) override {}
+  Error OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                              size_t chain_index,
+                              HttpRequestHeaders* extra_headers) override {
+    return OK;
+  }
 
   Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,

@@ -280,7 +280,7 @@ void IpProtectionProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
   }
 }
 
-void IpProtectionProxyDelegate::OnBeforeTunnelRequest(
+net::Error IpProtectionProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
     size_t chain_index,
     net::HttpRequestHeaders* extra_headers) {
@@ -295,6 +295,7 @@ void IpProtectionProxyDelegate::OnBeforeTunnelRequest(
         vlog("adding proxyB PSK");
         extra_headers->SetHeader(net::HttpRequestHeaders::kProxyAuthorization,
                                  base::StrCat({"Preshared ", proxy_b_psk}));
+        return net::OK;
       }
     }
     std::optional<network::mojom::BlindSignedAuthTokenPtr> token =
@@ -307,10 +308,15 @@ void IpProtectionProxyDelegate::OnBeforeTunnelRequest(
                                std::move((*token)->token));
     } else {
       vlog("no token available");
+      // This is an unexpected circumstance, but does happen in the wild. Rather
+      // than send the request to the proxy, which will reply with an error,
+      // mark the connection as failed immediately.
+      return net::ERR_TUNNEL_CONNECTION_FAILED;
     }
   } else {
     vlog("not for IP protection");
   }
+  return net::OK;
 }
 
 net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(

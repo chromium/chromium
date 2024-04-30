@@ -77,9 +77,9 @@ class TestProxyDelegate : public ProxyDelegate {
   void OnSuccessfulRequestAfterFailures(
       const ProxyRetryInfoMap& proxy_retry_info) override;
   void OnFallback(const ProxyChain& bad_chain, int net_error) override;
-  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                             size_t chain_index,
-                             HttpRequestHeaders* extra_headers) override;
+  Error OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                              size_t chain_index,
+                              HttpRequestHeaders* extra_headers) override;
   Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
       size_t chain_index,
