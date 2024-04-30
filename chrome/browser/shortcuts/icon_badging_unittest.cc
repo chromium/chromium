@@ -149,8 +149,6 @@ TEST(IconBadgingTest, VerifyFromDisk) {
 
     ASSERT_OK_AND_ASSIGN(expected_bitmap,
                          LoadImageFromTestFile(icon_path_relative));
-    // EXPECT_TRUE(
-    //     gfx::test::AreBitmapsEqual(expected_bitmap, image_icon.AsBitmap()));
     EXPECT_THAT(expected_bitmap,
                 gfx::test::EqualsBitmap(image_icon.AsBitmap()));
   }
