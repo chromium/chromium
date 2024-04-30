@@ -8,6 +8,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 
 namespace extensions {
@@ -86,6 +87,38 @@ MV2ExperimentStage ManifestV2ExperimentManager::GetCurrentExperimentStage() {
   }
 
   return MV2ExperimentStage::kNone;
+}
+
+bool ManifestV2ExperimentManager::IsExtensionAffected(
+    const Extension& extension) {
+  // Only consider any extensions if the experiment is enabled.
+  if (GetCurrentExperimentStage() == MV2ExperimentStage::kNone) {
+    return false;
+  }
+
+  // Only extensions < MV3.
+  if (extension.manifest_version() >= 3) {
+    return false;
+  }
+
+  // Only extensions (not platform apps, etc).
+  if (!extension.is_extension() && !extension.is_login_screen_extension()) {
+    return false;
+  }
+
+  // Ignore component extensions (they're implementation details of Chrome).
+  if (Manifest::IsComponentLocation(extension.location())) {
+    return false;
+  }
+
+  // TODO(https://crbug.com/337191307): Finalize behavior for unpacked,
+  // commandline, default-installed, OS-installed, etc extensions.
+  // TODO(https://crbug.com/337191307): Ignore policy-installed extensions in
+  // accordance with the active admin policy.
+
+  // The extension is an MV2 (or lower) extension; we should warn the user
+  // about it.
+  return true;
 }
 
 }  // namespace extensions

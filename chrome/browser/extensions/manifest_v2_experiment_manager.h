@@ -15,6 +15,7 @@ class BrowserContext;
 }  // namespace content
 
 namespace extensions {
+class Extension;
 enum class MV2ExperimentStage;
 
 // The central class responsible for managing experiments related to the MV2
@@ -37,8 +38,13 @@ class ManifestV2ExperimentManager : public KeyedService {
   static BrowserContextKeyedServiceFactory* GetFactory();
 
   // Returns the current experiment stage for the MV2 experiment.  Note: You
-  // should only use this for determining the experiment stage itself.
+  // should only use this for determining the experiment stage itself. For
+  // determining if an extension is affected, use IsExtensionAffected() below.
   MV2ExperimentStage GetCurrentExperimentStage();
+
+  // Returns true if the given `extension` is affected by the MV2 deprecation.
+  // This may be false if, e.g., the extension is policy-installed.
+  bool IsExtensionAffected(const Extension& extension);
 };
 
 }  // namespace extensions
