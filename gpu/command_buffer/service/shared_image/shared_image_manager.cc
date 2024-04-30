@@ -124,7 +124,6 @@ std::unique_ptr<SharedImageRepresentationFactoryRef>
 SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
                              MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
-  DCHECK(backing->mailbox().IsSharedImage());
 
   AutoLock autolock(this);
   if (base::Contains(images_, backing->mailbox())) {
@@ -150,7 +149,6 @@ std::unique_ptr<SharedImageRepresentationFactoryRef>
 SharedImageManager::AddSecondaryReference(const Mailbox& mailbox,
                                           MemoryTypeTracker* tracker) {
   CALLED_ON_VALID_THREAD();
-  DCHECK(mailbox.IsSharedImage());
 
   AutoLock autolock(this);
   auto found = images_.find(mailbox);
