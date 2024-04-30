@@ -16,7 +16,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,8 +44,9 @@ public class PowerBookmarkUtils {
     private static PowerBookmarkMeta sPowerBookmarkMetaForTesting;
 
     /** Returns whether the given meta is a shopping list item. */
-    public static boolean isShoppingListItem(PowerBookmarkMeta meta) {
-        return ShoppingFeatures.isShoppingListEligible()
+    public static boolean isShoppingListItem(
+            ShoppingService shoppingService, PowerBookmarkMeta meta) {
+        return shoppingService.isShoppingListEligible()
                 && meta != null
                 && meta.hasShoppingSpecifics();
     }

@@ -4,27 +4,16 @@
 
 package org.chromium.chrome.browser.commerce;
 
-import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.commerce.core.ShoppingService;
 
 /** Self-documenting feature class for shopping. */
 public class ShoppingFeatures {
-    private static Boolean sShoppingListEligibleForTestsing;
-
-    /** Use {@link #isShoppingListEligible(Profile)} */
-    @Deprecated
-    public static boolean isShoppingListEligible() {
-        if (sShoppingListEligibleForTestsing != null) return sShoppingListEligibleForTestsing;
-
-        if (!ProfileManager.isInitialized()) return false;
-        return isShoppingListEligible(ProfileManager.getLastUsedRegularProfile());
-    }
-
     /** Wrapper function for ShoppingService.isShoppingListEligibile(). */
     public static boolean isShoppingListEligible(Profile profile) {
-        if (sShoppingListEligibleForTestsing != null) return sShoppingListEligibleForTestsing;
+        if (ShoppingService.isShoppingListEligibleForTesting() != null) {
+            return ShoppingService.isShoppingListEligibleForTesting();
+        }
 
         if (profile == null) return false;
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
@@ -33,7 +22,6 @@ public class ShoppingFeatures {
     }
 
     public static void setShoppingListEligibleForTesting(Boolean eligible) {
-        sShoppingListEligibleForTestsing = eligible;
-        ResettersForTesting.register(() -> sShoppingListEligibleForTestsing = null);
+        ShoppingService.setShoppingListEligibleForTesting(eligible);
     }
 }

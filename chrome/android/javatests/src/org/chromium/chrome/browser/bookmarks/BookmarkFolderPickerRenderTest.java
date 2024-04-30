@@ -47,7 +47,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -100,7 +99,6 @@ public class BookmarkFolderPickerRenderTest {
 
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private Runnable mFinishRunnable;
-    @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;

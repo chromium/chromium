@@ -110,7 +110,7 @@ public class ImprovedBookmarkRowCoordinator {
         propertyModel.set(ImprovedBookmarkRowProperties.EDITABLE, bookmarkItem.isEditable());
 
         // Shopping coordinator setup.
-        if (PowerBookmarkUtils.isShoppingListItem(meta)) {
+        if (PowerBookmarkUtils.isShoppingListItem(mShoppingService, meta)) {
             ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
                     new ShoppingAccessoryCoordinator(
                             mContext, meta.getShoppingSpecifics(), mShoppingService);

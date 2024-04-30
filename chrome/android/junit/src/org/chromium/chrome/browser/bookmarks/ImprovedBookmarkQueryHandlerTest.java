@@ -221,6 +221,7 @@ public class ImprovedBookmarkQueryHandlerTest {
     @Test
     public void testBuildBookmarkListForParent_withShoppingFilter() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        doReturn(true).when(mShoppingService).isShoppingListEligible();
 
         ShoppingSpecifics trackedShoppingSpecifics =
                 ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
@@ -284,6 +285,7 @@ public class ImprovedBookmarkQueryHandlerTest {
     @Test
     public void testSearchWithShoppingFilter() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        doReturn(true).when(mShoppingService).isShoppingListEligible();
 
         List<BookmarkId> queryIds =
                 Arrays.asList(

@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.url.GURL;
@@ -23,6 +24,8 @@ import java.util.Optional;
 /** A central hub for accessing shopping and product information. */
 @JNINamespace("commerce")
 public class ShoppingService {
+    private static Boolean sShoppingListEligibleForTestsing;
+
     /** A data container for product info provided by the shopping service. */
     public static final class ProductInfo {
         public final String title;
@@ -370,6 +373,8 @@ public class ShoppingService {
      * @return Whether the user is eligible to use the shopping list feature.
      */
     public boolean isShoppingListEligible() {
+        if (sShoppingListEligibleForTestsing != null) return sShoppingListEligibleForTestsing;
+
         if (mNativeShoppingServiceAndroid == 0) return false;
 
         return ShoppingServiceJni.get().isShoppingListEligible(mNativeShoppingServiceAndroid, this);
@@ -551,6 +556,15 @@ public class ShoppingService {
         for (SubscriptionsObserver o : mSubscriptionsObservers) {
             o.onUnsubscribe(sub, succeeded);
         }
+    }
+
+    public static void setShoppingListEligibleForTesting(Boolean eligible) {
+        sShoppingListEligibleForTestsing = eligible;
+        ResettersForTesting.register(() -> sShoppingListEligibleForTestsing = null);
+    }
+
+    public static Boolean isShoppingListEligibleForTesting() {
+        return sShoppingListEligibleForTestsing;
     }
 
     @NativeMethods

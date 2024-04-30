@@ -153,6 +153,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
     @Test
     public void testShoppingCoordinator() {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        doReturn(true).when(mShoppingService).isShoppingListEligible();
 
         ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
         PowerBookmarkMeta meta =

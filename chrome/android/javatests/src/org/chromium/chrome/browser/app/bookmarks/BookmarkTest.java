@@ -1728,6 +1728,7 @@ public class BookmarkTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testShoppingFilterInBookmarks() throws InterruptedException, ExecutionException {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        doReturn(true).when(mShoppingService).isShoppingListEligible();
         BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         PowerBookmarkMeta.Builder meta =
                 PowerBookmarkMeta.newBuilder()
