@@ -4248,6 +4248,8 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
+      "startup/default_browser_prompt.cc",
+      "startup/default_browser_prompt.h",
       "views/web_apps/deprecated_apps_dialog_view.cc",
       "views/web_apps/deprecated_apps_dialog_view.h",
       "views/web_apps/force_installed_deprecated_apps_dialog_view.cc",
@@ -4296,8 +4298,6 @@ static_library("ui") {
       "profiles/profile_picker.h",
       "signin/signin_reauth_view_controller.cc",
       "signin/signin_reauth_view_controller.h",
-      "startup/default_browser_prompt.cc",
-      "startup/default_browser_prompt.h",
       "startup/default_browser_prompt_trial.cc",
       "startup/default_browser_prompt_trial.h",
       "startup/first_run_service.cc",
