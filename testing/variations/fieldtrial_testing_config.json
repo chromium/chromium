@@ -11803,13 +11803,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Deadline1000_WithoutSystem_WithPrefetch_20240424_M124+",
+                    "name": "Deadline2000_WithoutSystem_WithPrefetch_20240430_M124+",
                     "params": {
-                        "MinorModeRestrictionsFetchDeadlineMs": "1500"
+                        "MinorModeRestrictionsFetchDeadlineMs": "2000"
                     },
                     "enable_features": [
                         "MinorModeRestrictionsForHistorySyncOptIn",
                         "PrefetchSystemCapabilitiesOnFirstRun"
+                    ],
+                    "disable_features": [
+                        "UseSystemCapabilitiesForMinorModeRestrictions"
                     ]
                 }
             ]
