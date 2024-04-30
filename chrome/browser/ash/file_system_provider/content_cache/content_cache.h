@@ -20,14 +20,14 @@ using FileErrorCallback = base::OnceCallback<void(base::File::Error)>;
 // Alias to explain the inner int indicates `bytes_read`.
 using FileErrorOrBytesRead = base::FileErrorOr<int>;
 
-// When the eviction process finishes, this defines the total number of items
-// evicted along with the total bytes evicted.
-struct EvictedItemStats {
+// When the removal process finishes, this defines the total number of items
+// removed along with the total bytes removed.
+struct RemovedItemStats {
   int64_t num_items = 0;
-  int64_t bytes_evicted = 0;
+  int64_t bytes_removed = 0;
 };
 
-using EvictedItemStatsCallback = base::OnceCallback<void(EvictedItemStats)>;
+using RemovedItemStatsCallback = base::OnceCallback<void(RemovedItemStats)>;
 
 // The content cache for every mounted FSP. This will serve as the single point
 // of orchestration between the LRU cache and the disk persistence layer.
@@ -36,8 +36,8 @@ class ContentCache {
   virtual ~ContentCache() = default;
 
   // Sets the maximum size of the cache. If the current number of items exceeds
-  // the number set, items will be marked for removal. Call `EvictItems` to
-  // remove the items from the cache.
+  // the number set, excess items will be evicted. Call `RemoveItems` to remove
+  // the evicted items from the cache.
   virtual void SetMaxCacheItems(size_t max_cache_items) = 0;
 
   // Start reading bytes defined by `file` from the content cache. Returns true
@@ -73,14 +73,15 @@ class ContentCache {
   // used order.
   virtual std::vector<base::FilePath> GetCachedFilePaths() = 0;
 
-  // Mark the item with path `file_path` for eviction, if it exists. It will be
-  // evicted when `EvictItems()` is called.
-  virtual void MarkItemForEviction(const base::FilePath& file_path) = 0;
+  // Evict the item with path `file_path` from the cache, if it exists. The item
+  // is inaccessible from this point onwards despite it remaining on disk and
+  // the database. It will be removed when `RemoveItems()` is called.
+  virtual void Evict(const base::FilePath& file_path) = 0;
 
-  // Evict items which have their `marked_for_removal` bool set to true. If an
-  // eviction is already in progress, the callback will be queued to be called
-  // with the current stats of the in progress eviction.
-  virtual void EvictItems(EvictedItemStatsCallback callback) = 0;
+  // Remove items which have their `evicted` bool set to true. If an
+  // removal is already in progress, the callback will be queued to be called
+  // with the current stats of the in progress removal.
+  virtual void RemoveItems(RemovedItemStatsCallback callback) = 0;
 };
 
 }  // namespace ash::file_system_provider

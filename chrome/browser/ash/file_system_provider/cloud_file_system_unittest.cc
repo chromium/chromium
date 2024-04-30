@@ -86,13 +86,10 @@ class MockContentCache : public ContentCache {
               (override));
   MOCK_METHOD(void, LoadFromDisk, (base::OnceClosure callback), (override));
   MOCK_METHOD(std::vector<base::FilePath>, GetCachedFilePaths, (), (override));
+  MOCK_METHOD(void, Evict, (const base::FilePath& file_path), (override));
   MOCK_METHOD(void,
-              MarkItemForEviction,
-              (const base::FilePath& file_path),
-              (override));
-  MOCK_METHOD(void,
-              EvictItems,
-              (EvictedItemStatsCallback callback),
+              RemoveItems,
+              (RemovedItemStatsCallback callback),
               (override));
 
   base::WeakPtr<MockContentCache> GetWeakPtr() {
@@ -473,8 +470,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
       CreateMockContentCacheAndCloudFileSystem();
 
   // The file won't be evicted after the successful GetMetadata request.
-  EXPECT_CALL(*mock_content_cache, MarkItemForEviction(fake_file_path))
-      .Times(0);
+  EXPECT_CALL(*mock_content_cache, Evict(fake_file_path)).Times(0);
   GetMetadataFuture get_metadata_future1;
   cloud_file_system->GetMetadata(fake_file_path,
                                  /*fields*/ {},
@@ -486,8 +482,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   DeleteEntryOnFakeFileSystem(fake_file_path);
 
   // The file will be evicted after the unsuccessful GetMetadata request.
-  EXPECT_CALL(*mock_content_cache, MarkItemForEviction(fake_file_path))
-      .Times(1);
+  EXPECT_CALL(*mock_content_cache, Evict(fake_file_path)).Times(1);
   GetMetadataFuture get_metadata_future2;
   cloud_file_system->GetMetadata(fake_file_path,
                                  /*fields*/ {},

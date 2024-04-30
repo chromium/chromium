@@ -579,7 +579,7 @@ void CloudFileSystem::OnGetMetadataCompleted(
     base::File::Error result) {
   if (result == base::File::FILE_ERROR_NOT_FOUND) {
     // The file doesn't exist on the FSP, evict it from the cache.
-    content_cache_->MarkItemForEviction(entry_path);
+    content_cache_->Evict(entry_path);
     // TODO(b/328679535): Remove watcher for file.
   }
   std::move(callback).Run(std::move(entry_metadata), result);

@@ -55,9 +55,9 @@ class ContentCacheImpl : public ContentCache {
 
   std::vector<base::FilePath> GetCachedFilePaths() override;
 
-  void MarkItemForEviction(const base::FilePath& file_path) override;
+  void Evict(const base::FilePath& file_path) override;
 
-  void EvictItems(EvictedItemStatsCallback callback) override;
+  void RemoveItems(RemovedItemStatsCallback callback) override;
 
  private:
   void OnBytesRead(
@@ -99,31 +99,29 @@ class ContentCacheImpl : public ContentCache {
   void OnStaleItemsPruned(base::OnceClosure callback,
                           std::vector<bool> prune_success);
 
-  void MarkContextForEviction(const base::FilePath& path,
-                              CacheFileContext& ctx);
+  void EvictContext(const base::FilePath& path, CacheFileContext& ctx);
 
   // The cache has maximum bounds on the number of items available. In the event
-  // this boundary is exceeded, excess items should be marked for eviction.
-  // There may already be items marked for eviction. The remaining items to be
-  // marked for eviction will be the least-recently used items.
+  // this boundary is exceeded, excess items should be evicted. There may
+  // already be evicted items still in the cache (yet to be removed). The
+  // remaining items to evict will be the least-recently used items.
   // TODO(b/330602540): Update the logic to also evict items when the maximum
   // size threshold has been reached.
-  void MarkItemsForEviction();
+  void EvictItems();
 
-  // Removes items marked for eviction individually from on disk then bulk
-  // removes these items from the database. The `item_ids` contains a list of
-  // IDs to be removed from the database once all items have been removed off
-  // the disk.
-  void EvictItemsMarkedForEviction(ContentLRUCache::reverse_iterator it,
-                                   std::vector<int64_t>& item_ids,
-                                   EvictedItemStats& evicted_items);
+  // Removes the evicted items individually from on disk then bulk removes these
+  // items from the database. The `item_ids` contains a list of IDs to be
+  // removed from the database once all items have been removed off the disk.
+  void RemoveEvictedItems(ContentLRUCache::reverse_iterator it,
+                          std::vector<int64_t>& item_ids,
+                          RemovedItemStats& removed_items);
 
   void OnItemRemovedFromDisk(ContentLRUCache::reverse_iterator it,
                              std::vector<int64_t>& item_ids,
-                             EvictedItemStats& evicted_items,
+                             RemovedItemStats& removed_items,
                              bool success);
 
-  void OnItemsRemovedFromDatabase(EvictedItemStats& evicted_items,
+  void OnItemsRemovedFromDatabase(RemovedItemStats& removed_items,
                                   bool success);
 
   // Generates the absolute path on disk from the supplied `item_id`.
@@ -138,9 +136,9 @@ class ContentCacheImpl : public ContentCache {
   BoundContextDatabase context_db_;
 
   size_t max_cache_items_;
-  size_t cache_items_marked_for_eviction_
-      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-  base::OnceCallbackList<void(EvictedItemStats)> on_evicted_callbacks_;
+  // Number of evicted items that will be removed on the next removal cycle.
+  size_t evicted_cache_items_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  base::OnceCallbackList<void(RemovedItemStats)> on_removed_callbacks_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
 };
