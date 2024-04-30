@@ -513,8 +513,11 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     void tryShowingPrompt() {
         if (mTab == null || mTab.getWebContents() == null) return;
 
-        // If a reader mode button will be shown on the toolbar then don't show a message.
-        if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled() && !mTab.isCustomTab()) return;
+        // This prompt should only be shown on incognito or custom tabs, in other cases we'll show a
+        // toolbar button instead.
+        if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()
+                && !mTab.isCustomTab()
+                && !mTab.isIncognito()) return;
 
         // Test if the user is requesting the desktop site. Ignore this if distiller is set to
         // ALWAYS_TRUE.
@@ -626,8 +629,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     private void navigateToReaderMode() {
         WebContents webContents = mTab.getWebContents();
         if (webContents == null) return;
-
-        GURL url = webContents.getLastCommittedUrl();
 
         onStartedReaderMode();
 
