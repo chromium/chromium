@@ -1849,7 +1849,7 @@
 <translation id="2355314311311231464">Сталася помилка налаштувань, оскільки не вдалось отримати дані вашого облікового запису. Повторіть спробу. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">Параметри режиму енергозбереження</translation>
 <translation id="2355604387869345912">Увімкнути миттєву точку доступу</translation>
-<translation id="2356070529366658676">Запитати</translation>
+<translation id="2356070529366658676">Запитувати</translation>
 <translation id="2357330829548294574">Видалити користувача <ph name="USER_NAME" /></translation>
 <translation id="2358777858338503863">Натисніть, щоб надати розширенню доступ до сайту <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Додатки Linux можуть перестати відповідати.</translation>
@@ -7027,7 +7027,7 @@
 <translation id="6395423953133416962">Надсилати <ph name="BEGIN_LINK1" />інформацію про систему<ph name="END_LINK1" /> та <ph name="BEGIN_LINK2" />показники<ph name="END_LINK2" /></translation>
 <translation id="6398715114293939307">Вилучити Google Play Маркет</translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
-<translation id="6399675241776343019">Відхилено</translation>
+<translation id="6399675241776343019">Заборонено</translation>
 <translation id="6399774419735315745">Шпигунка</translation>
 <translation id="6400360390396538896">Завжди ввімкнено (<ph name="ORIGIN" />)</translation>
 <translation id="6401118106417399952">EID пристрою: <ph name="EID_NUMBER" />; серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>

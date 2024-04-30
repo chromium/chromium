@@ -76,7 +76,7 @@
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Consulter le lien copié</translation>
 <translation id="1360432990279830238">Se déconnecter et arrêter la synchronisation ?</translation>
-<translation id="1363028406613469049">Titre</translation>
+<translation id="1363028406613469049">Suivre</translation>
 <translation id="1365106417372288489">Votre iPhone a été restauré récemment, ce qui a peut-être modifié votre navigateur par défaut.</translation>
 <translation id="136942498637440594">Vous pouvez rechercher des images et ce que vous voyez.</translation>
 <translation id="1375321115329958930">Mots de passe enregistrés</translation>
@@ -242,7 +242,7 @@
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
 <translation id="2268044343513325586">Affiner</translation>
-<translation id="2269277877025820298">Afficher plus</translation>
+<translation id="2269277877025820298">Voir plus</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2274800392139890332">Annuler le suivi de ce colis</translation>
 <translation id="2275480389219976105">Adresse trouvée</translation>
@@ -567,7 +567,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904829425754749514">Votre organisation a désactivé la synchronisation. Vos favoris, historique, mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte.</translation>
 <translation id="3909222758573607742">Enregistrer les mots de passe et d'autres éléments dans le compte</translation>
-<translation id="3918585468378680136">Obtenir des infos de suivi</translation>
+<translation id="3918585468378680136">Récupération des infos de suivi</translation>
 <translation id="3921585859122905677">Position de la barre d'adresse</translation>
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
 <translation id="3928666092801078803">Combiner mes données</translation>
@@ -927,7 +927,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5744274077973758795">Notifications activées pour <ph name="FEATURE_NAME" /></translation>
 <translation id="5745916533876677730">Onglet précédent</translation>
 <translation id="574762237186762643">Événements</translation>
-<translation id="5748177854685749242">Arrivée le <ph name="DATE" /></translation>
+<translation id="5748177854685749242">Arrivée : <ph name="DATE" /></translation>
 <translation id="5755162682436943950">Déconnecté. Ouvre la boîte de dialogue pour se connecter et activer la synchronisation.</translation>
 <translation id="5758631781033351321">Votre liste de lecture s'affichera ici</translation>
 <translation id="5765456154762864099">Menu → Paramètres → Navigateur par défaut</translation>
