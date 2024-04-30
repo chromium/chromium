@@ -7,6 +7,8 @@
 #include "base/observer_list.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -27,9 +29,9 @@ void DedicatedWorkerServiceImpl::EnumerateDedicatedWorkers(Observer* observer) {
     const blink::DedicatedWorkerToken& dedicated_worker_token = kv.first;
     DedicatedWorkerHost* host = kv.second;
 
-    observer->OnWorkerCreated(dedicated_worker_token,
-                              host->GetProcessHost()->GetID(),
-                              host->GetCreator());
+    observer->OnWorkerCreated(
+        dedicated_worker_token, host->GetProcessHost()->GetID(),
+        host->GetStorageKey().origin(), host->GetCreator());
     auto& maybe_url = host->GetFinalResponseURL();
     if (maybe_url) {
       observer->OnFinalResponseURLDetermined(dedicated_worker_token,
@@ -46,6 +48,7 @@ void DedicatedWorkerServiceImpl::NotifyWorkerCreated(
 
   for (Observer& observer : observers_) {
     observer.OnWorkerCreated(host->GetToken(), host->GetProcessHost()->GetID(),
+                             host->GetStorageKey().origin(),
                              host->GetCreator());
   }
 }
@@ -67,8 +70,9 @@ void DedicatedWorkerServiceImpl::NotifyWorkerFinalResponseURLDetermined(
   auto it = dedicated_worker_hosts_.find(dedicated_worker_token);
   DCHECK(it != dedicated_worker_hosts_.end());
 
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnFinalResponseURLDetermined(dedicated_worker_token, url);
+  }
 }
 
 bool DedicatedWorkerServiceImpl::HasToken(

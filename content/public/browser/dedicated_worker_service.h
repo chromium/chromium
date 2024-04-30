@@ -13,6 +13,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace content {
 
 // An interface that allows to subscribe to the lifetime of dedicated workers.
@@ -27,6 +31,7 @@ class CONTENT_EXPORT DedicatedWorkerService {
     virtual void OnWorkerCreated(
         const blink::DedicatedWorkerToken& worker_token,
         int worker_process_id,
+        const url::Origin& security_origin,
         DedicatedWorkerCreator creator) = 0;
     virtual void OnBeforeWorkerDestroyed(
         const blink::DedicatedWorkerToken& worker_token,

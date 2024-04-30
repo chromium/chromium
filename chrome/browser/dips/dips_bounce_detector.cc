@@ -859,6 +859,7 @@ void DIPSWebContentsObserver::OnClientAdded(
 void DIPSWebContentsObserver::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
+    const url::Origin& security_origin,
     content::DedicatedWorkerCreator creator) {
   const content::GlobalRenderFrameHostId* const render_frame_host_id =
       absl::get_if<content::GlobalRenderFrameHostId>(&creator);

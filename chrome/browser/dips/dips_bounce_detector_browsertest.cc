@@ -229,6 +229,7 @@ class WCOCallbackLogger
       content::GlobalRenderFrameHostId render_frame_host_id) override;
   void OnWorkerCreated(const blink::SharedWorkerToken& token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        const base::UnguessableToken& dev_tools_token) override {
   }
   void OnBeforeWorkerDestroyed(const blink::SharedWorkerToken& token) override {
@@ -242,6 +243,7 @@ class WCOCallbackLogger
   // Start DedicatedWorkerService.Observer overrides:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& worker_token,
@@ -325,6 +327,7 @@ void WCOCallbackLogger::OnClientAdded(
 void WCOCallbackLogger::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
+    const url::Origin& security_origin,
     content::DedicatedWorkerCreator creator) {
   const content::GlobalRenderFrameHostId& render_frame_host_id =
       absl::get<content::GlobalRenderFrameHostId>(creator);

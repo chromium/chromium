@@ -21,6 +21,8 @@
 #include "components/performance_manager/process_node_source.h"
 #include "components/performance_manager/public/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -229,14 +231,14 @@ void WorkerWatcher::TearDown() {
 void WorkerWatcher::OnWorkerCreated(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
     int worker_process_id,
+    const url::Origin& security_origin,
     content::DedicatedWorkerCreator creator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40640034): Plumb through the URL.
   auto worker_node = PerformanceManagerImpl::CreateWorkerNode(
       browser_context_id_, WorkerNode::WorkerType::kDedicated,
       process_node_source_->GetProcessNode(worker_process_id),
-      dedicated_worker_token);
+      dedicated_worker_token, security_origin);
   auto insertion_result = dedicated_worker_nodes_.emplace(
       dedicated_worker_token, std::move(worker_node));
   DCHECK(insertion_result.second);
@@ -319,13 +321,14 @@ void WorkerWatcher::OnFinalResponseURLDetermined(
 void WorkerWatcher::OnWorkerCreated(
     const blink::SharedWorkerToken& shared_worker_token,
     int worker_process_id,
+    const url::Origin& security_origin,
     const base::UnguessableToken& /* dev_tools_token */) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto worker_node = PerformanceManagerImpl::CreateWorkerNode(
       browser_context_id_, WorkerNode::WorkerType::kShared,
       process_node_source_->GetProcessNode(worker_process_id),
-      shared_worker_token);
+      shared_worker_token, security_origin);
 
   bool inserted =
       shared_worker_nodes_.emplace(shared_worker_token, std::move(worker_node))
@@ -401,13 +404,14 @@ void WorkerWatcher::OnVersionStartedRunning(
     const content::ServiceWorkerRunningInfo& running_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto insertion_result = service_worker_nodes_.emplace(
+  const auto& [it, node_inserted] = service_worker_nodes_.emplace(
       version_id,
       PerformanceManagerImpl::CreateWorkerNode(
           browser_context_id_, WorkerNode::WorkerType::kService,
           process_node_source_->GetProcessNode(running_info.render_process_id),
-          running_info.token));
-  DCHECK(insertion_result.second);
+          running_info.token, running_info.key.origin()));
+  DCHECK(node_inserted);
+  WorkerNodeImpl* worker_node = it->second.get();
 
   const auto& [_, token_inserted] =
       service_worker_ids_by_token_.emplace(running_info.token, version_id);
@@ -416,8 +420,7 @@ void WorkerWatcher::OnVersionStartedRunning(
   // Exclusively for service workers, some notifications for clients
   // (OnControlleeAdded) may have been received before the worker started.
   // Add those clients to the service worker on the PM graph.
-  ConnectAllServiceWorkerClients(insertion_result.first->second.get(),
-                                 version_id);
+  ConnectAllServiceWorkerClients(worker_node, version_id);
 }
 
 void WorkerWatcher::OnVersionStoppedRunning(int64_t version_id) {

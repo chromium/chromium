@@ -20,11 +20,13 @@ using PriorityAndReason = execution_context_priority::PriorityAndReason;
 WorkerNodeImpl::WorkerNodeImpl(const std::string& browser_context_id,
                                WorkerType worker_type,
                                ProcessNodeImpl* process_node,
-                               const blink::WorkerToken& worker_token)
+                               const blink::WorkerToken& worker_token,
+                               const url::Origin& origin)
     : browser_context_id_(browser_context_id),
       worker_type_(worker_type),
       process_node_(process_node),
-      worker_token_(worker_token) {
+      worker_token_(worker_token),
+      origin_(origin) {
   // Nodes are created on the UI thread, then accessed on the PM sequence.
   // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
   // on the PM sequence.
@@ -66,6 +68,11 @@ resource_attribution::WorkerContext WorkerNodeImpl::GetResourceContext() const {
 const GURL& WorkerNodeImpl::GetURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return url_;
+}
+
+const url::Origin& WorkerNodeImpl::GetOrigin() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return origin_;
 }
 
 const PriorityAndReason& WorkerNodeImpl::GetPriorityAndReason() const {

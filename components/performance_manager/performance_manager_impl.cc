@@ -32,6 +32,7 @@
 #include "components/performance_manager/public/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -294,10 +295,11 @@ std::unique_ptr<WorkerNodeImpl> PerformanceManagerImpl::CreateWorkerNode(
     const std::string& browser_context_id,
     WorkerNode::WorkerType worker_type,
     ProcessNodeImpl* process_node,
-    const blink::WorkerToken& worker_token) {
+    const blink::WorkerToken& worker_token,
+    const url::Origin& origin) {
   return CreateNodeImpl<WorkerNodeImpl>(
       base::OnceCallback<void(WorkerNodeImpl*)>(), browser_context_id,
-      worker_type, process_node, worker_token);
+      worker_type, process_node, worker_token, origin);
 }
 
 // static

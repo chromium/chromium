@@ -32,6 +32,10 @@ class MessagePortChannel;
 class StorageKey;
 }  // namespace blink
 
+namespace url {
+class Origin;
+}
+
 namespace content {
 
 class SharedWorkerInstance;
@@ -89,6 +93,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
 
   void NotifyWorkerCreated(const blink::SharedWorkerToken& shared_worker_token,
                            int worker_process_id,
+                           const url::Origin& security_origin,
                            const base::UnguessableToken& dev_tools_token);
   void NotifyBeforeWorkerDestroyed(
       const blink::SharedWorkerToken& shared_worker_token);

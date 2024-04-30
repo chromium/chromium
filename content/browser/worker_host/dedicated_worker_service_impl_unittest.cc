@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -39,7 +40,8 @@ class MockDedicatedWorker
     : public blink::mojom::DedicatedWorkerHostFactoryClient {
  public:
   MockDedicatedWorker(int worker_process_id,
-                      GlobalRenderFrameHostId render_frame_host_id) {
+                      GlobalRenderFrameHostId render_frame_host_id,
+                      const url::Origin& origin) {
     // The COEP reporter is replaced by a placeholder connection. Reports are
     // ignored.
     auto coep_reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
@@ -52,7 +54,7 @@ class MockDedicatedWorker
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<DedicatedWorkerHostFactoryImpl>(
             worker_process_id, /*creator=*/render_frame_host_id,
-            render_frame_host_id, blink::StorageKey(),
+            render_frame_host_id, blink::StorageKey::CreateFirstParty(origin),
             net::IsolationInfo::CreateTransient(),
             network::mojom::ClientSecurityState::New(),
             coep_reporter->GetWeakPtr(), coep_reporter->GetWeakPtr()),
@@ -162,11 +164,12 @@ class TestDedicatedWorkerServiceObserver
  public:
   struct DedicatedWorkerInfo {
     int worker_process_id;
+    url::Origin origin;
     DedicatedWorkerCreator creator;
 
     bool operator==(const DedicatedWorkerInfo& other) const {
-      return std::tie(worker_process_id, creator) ==
-             std::tie(other.worker_process_id, other.creator);
+      return std::tie(worker_process_id, origin, creator) ==
+             std::tie(other.worker_process_id, other.origin, other.creator);
     }
   };
 
@@ -180,10 +183,12 @@ class TestDedicatedWorkerServiceObserver
   // DedicatedWorkerService::Observer:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        DedicatedWorkerCreator creator) override {
     bool inserted =
         dedicated_worker_infos_
-            .emplace(token, DedicatedWorkerInfo{worker_process_id, creator})
+            .emplace(token, DedicatedWorkerInfo{worker_process_id,
+                                                security_origin, creator})
             .second;
     DCHECK(inserted);
 
@@ -230,8 +235,8 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
   scoped_dedicated_worker_service_observation_.Observe(
       GetDedicatedWorkerService());
 
-  std::unique_ptr<TestWebContents> web_contents =
-      CreateWebContents(GURL("http://example.com/"));
+  const GURL kUrl("http://example.com/");
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
   TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
 
   // At first, there is no live dedicated worker.
@@ -240,8 +245,9 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
   // Create the dedicated worker.
   const DedicatedWorkerCreator creator(render_frame_host->GetGlobalId());
   const int render_process_host_id = render_frame_host->GetProcess()->GetID();
+  const auto origin = url::Origin::Create(kUrl);
   auto mock_dedicated_worker = std::make_unique<MockDedicatedWorker>(
-      render_process_host_id, render_frame_host->GetGlobalId());
+      render_process_host_id, render_frame_host->GetGlobalId(), origin);
   observer.RunUntilWorkerEvent();
 
   // The service sent a OnWorkerStarted() notification.
@@ -251,6 +257,7 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
         observer.dedicated_worker_infos().begin()->second;
     EXPECT_EQ(dedicated_worker_info.worker_process_id, render_process_host_id);
     EXPECT_EQ(dedicated_worker_info.creator, creator);
+    EXPECT_EQ(dedicated_worker_info.origin, origin);
   }
 
   // Test EnumerateDedicatedWorkers().
@@ -266,6 +273,7 @@ TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
         enumeration_observer.dedicated_worker_infos().begin()->second;
     EXPECT_EQ(dedicated_worker_info.worker_process_id, render_process_host_id);
     EXPECT_EQ(dedicated_worker_info.creator, creator);
+    EXPECT_EQ(dedicated_worker_info.origin, origin);
   }
 
   // Delete the dedicated worker.

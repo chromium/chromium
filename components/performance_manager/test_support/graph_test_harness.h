@@ -30,6 +30,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -192,9 +193,10 @@ struct TestNodeWrapper<WorkerNodeImpl>::Factory {
       WorkerNode::WorkerType worker_type,
       ProcessNodeImpl* process_node,
       const std::string& browser_context_id = std::string(),
-      const blink::WorkerToken& token = blink::WorkerToken()) {
+      const blink::WorkerToken& token = blink::WorkerToken(),
+      const url::Origin& origin = url::Origin()) {
     return std::make_unique<WorkerNodeImpl>(browser_context_id, worker_type,
-                                            process_node, token);
+                                            process_node, token, origin);
   }
 };
 

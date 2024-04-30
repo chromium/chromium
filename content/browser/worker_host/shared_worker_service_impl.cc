@@ -78,6 +78,7 @@ void SharedWorkerServiceImpl::RemoveObserver(Observer* observer) {
 void SharedWorkerServiceImpl::EnumerateSharedWorkers(Observer* observer) {
   for (const auto& host : worker_hosts_) {
     observer->OnWorkerCreated(host->token(), host->GetProcessHost()->GetID(),
+                              host->instance().storage_key().origin(),
                               host->GetDevToolsToken());
     if (host->started()) {
       observer->OnFinalResponseURLDetermined(host->token(),
@@ -249,9 +250,11 @@ void SharedWorkerServiceImpl::DestroyHost(SharedWorkerHost* host) {
 void SharedWorkerServiceImpl::NotifyWorkerCreated(
     const blink::SharedWorkerToken& token,
     int worker_process_id,
+    const url::Origin& security_origin,
     const base::UnguessableToken& dev_tools_token) {
   for (Observer& observer : observers_) {
-    observer.OnWorkerCreated(token, worker_process_id, dev_tools_token);
+    observer.OnWorkerCreated(token, worker_process_id, security_origin,
+                             dev_tools_token);
   }
 }
 
@@ -473,8 +476,9 @@ void SharedWorkerServiceImpl::StartWorker(
               std::move(controller_service_worker_object_host),
               std::move(outside_fetch_client_settings_object),
               final_response_url, GetContentClient()->browser());
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnFinalResponseURLDetermined(host->token(), final_response_url);
+  }
 }
 
 SharedWorkerHost* SharedWorkerServiceImpl::FindMatchingSharedWorkerHost(

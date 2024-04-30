@@ -156,6 +156,7 @@ SharedWorkerHost::SharedWorkerHost(
   worker_receiver_ = worker_.BindNewPipeAndPassReceiver();
 
   service_->NotifyWorkerCreated(token_, GetProcessHost()->GetID(),
+                                instance_.storage_key().origin(),
                                 devtools_handle_->dev_tools_token());
 }
 

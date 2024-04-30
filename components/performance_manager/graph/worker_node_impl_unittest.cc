@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -100,9 +101,12 @@ TEST_F(WorkerNodeImplTest, ConstProperties) {
       base::UnguessableToken::Create().ToString();
   auto process = CreateNode<ProcessNodeImpl>();
   static const blink::WorkerToken kTestWorkerToken;
+  static const auto kTestWorkerOrigin =
+      url::Origin::Create(GURL("https://example.com"));
 
   auto worker_impl = CreateNode<WorkerNodeImpl>(
-      kWorkerType, process.get(), kTestBrowserContextId, kTestWorkerToken);
+      kWorkerType, process.get(), kTestBrowserContextId, kTestWorkerToken,
+      kTestWorkerOrigin);
 
   // Test private interface.
   EXPECT_EQ(worker_impl->process_node(), process.get());
@@ -114,6 +118,7 @@ TEST_F(WorkerNodeImplTest, ConstProperties) {
   EXPECT_EQ(worker->GetWorkerType(), kWorkerType);
   EXPECT_EQ(worker->GetProcessNode(), process.get());
   EXPECT_EQ(worker->GetWorkerToken(), kTestWorkerToken);
+  EXPECT_EQ(worker->GetOrigin(), kTestWorkerOrigin);
 }
 
 TEST_F(WorkerNodeImplTest, OnFinalResponseURLDetermined) {

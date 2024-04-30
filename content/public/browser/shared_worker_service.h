@@ -23,6 +23,10 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
+namespace url {
+class Origin;
+}
+
 namespace content {
 
 // An interface for managing shared workers. These may be run in a separate
@@ -38,6 +42,7 @@ class CONTENT_EXPORT SharedWorkerService {
     virtual void OnWorkerCreated(
         const blink::SharedWorkerToken& token,
         int worker_process_id,
+        const url::Origin& security_origin,
         const base::UnguessableToken& dev_tools_token) = 0;
     virtual void OnBeforeWorkerDestroyed(
         const blink::SharedWorkerToken& token) = 0;

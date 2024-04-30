@@ -62,6 +62,7 @@ PerProfileWorkerTaskTracker::~PerProfileWorkerTaskTracker() {
 void PerProfileWorkerTaskTracker::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
+    const url::Origin& security_origin,
     content::DedicatedWorkerCreator creator) {
   auto* worker_process_host =
       content::RenderProcessHost::FromID(worker_process_id);
@@ -85,6 +86,7 @@ void PerProfileWorkerTaskTracker::OnFinalResponseURLDetermined(
 void PerProfileWorkerTaskTracker::OnWorkerCreated(
     const blink::SharedWorkerToken& shared_worker_token,
     int worker_process_id,
+    const url::Origin& security_origin,
     const base::UnguessableToken& dev_tools_token) {
   auto* worker_process_host =
       content::RenderProcessHost::FromID(worker_process_id);

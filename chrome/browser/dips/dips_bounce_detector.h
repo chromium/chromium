@@ -39,6 +39,10 @@ class Clock;
 class TickClock;
 }  // namespace base
 
+namespace url {
+class Origin;
+}
+
 using DIPSIssueHandler =
     base::RepeatingCallback<void(std::set<std::string> sites)>;
 using DIPSIssueReportingCallback =
@@ -480,6 +484,7 @@ class DIPSWebContentsObserver
       content::GlobalRenderFrameHostId render_frame_host_id) override;
   void OnWorkerCreated(const blink::SharedWorkerToken& token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        const base::UnguessableToken& dev_tools_token) override {
   }
   void OnBeforeWorkerDestroyed(const blink::SharedWorkerToken& token) override {
@@ -493,6 +498,7 @@ class DIPSWebContentsObserver
   // Start DedicatedWorkerService.Observer overrides:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& worker_token,
