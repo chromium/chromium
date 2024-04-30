@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/metrics/call_stacks/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
@@ -123,7 +124,7 @@ class HeapProfilerController {
     base::TimeTicks profiler_creation_time;
 
     // A callback to invoke for the first snapshot. Will be null for the
-    // following snapshots.
+    // following snapshots. For testing.
     base::OnceCallback<void(bool)> on_first_snapshot_callback;
   };
 
@@ -157,6 +158,10 @@ class HeapProfilerController {
   // functions, to be sure that they can run on the thread pool while
   // HeapProfilerController is deleted on the main thread.
   scoped_refptr<StoppedFlag> stopped_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // A task runner to trigger snapshots in the background.
+  scoped_refptr<base::SequencedTaskRunner> snapshot_task_runner_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If true, the sampling interval and time between samples won't have any
   // random variance added so that tests are repeatable.

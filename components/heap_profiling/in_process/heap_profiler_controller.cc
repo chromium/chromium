@@ -28,6 +28,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -192,7 +193,9 @@ HeapProfilerController::HeapProfilerController(version_info::Channel channel,
                                                ProcessType process_type)
     : process_type_(process_type),
       profiling_enabled_(DecideIfCollectionIsEnabled(channel, process_type)),
-      stopped_(base::MakeRefCounted<StoppedFlag>()) {
+      stopped_(base::MakeRefCounted<StoppedFlag>()),
+      snapshot_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT})) {
   // Only one HeapProfilerController should exist at a time in each
   // process.
   CHECK(!g_instance);
@@ -243,7 +246,9 @@ bool HeapProfilerController::StartIfEnabled() {
       profiler_params.collection_interval,
       /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_,
       process_type_, creation_time_, std::move(on_first_snapshot_callback_));
-  ScheduleNextSnapshot(std::move(params));
+  snapshot_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&HeapProfilerController::ScheduleNextSnapshot,
+                                std::move(params)));
   return true;
 }
 
@@ -286,8 +291,8 @@ void HeapProfilerController::ScheduleNextSnapshot(SnapshotParams params) {
   base::TimeDelta interval = params.use_random_interval
                                  ? RandomInterval(params.mean_interval)
                                  : params.mean_interval;
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&HeapProfilerController::TakeSnapshot, std::move(params)),
       interval);
 }
