@@ -141,4 +141,26 @@ public interface TabGroupModelFilterObserver {
      *     re-used.
      */
     default void didRemoveTabGroup(int oldRootId, @Nullable Token oldTabGroupId) {}
+
+    /**
+     * Called when a tab group is going to be hidden (for tab group sync) rather than deleted.
+     *
+     * @param tabGroupId The tab group id.
+     */
+    default void startHidingTabGroup(Token tabGroupId) {}
+
+    /**
+     * Called when a tab group is no longer going to be hidden (for tab group sync).
+     *
+     * @param tabGroupId The tab group id.
+     */
+    default void cancelledHidingTabGroup(Token tabGroupId) {}
+
+    /**
+     * Called when a tab group is done hiding (for tab group sync).
+     *
+     * @param tabGroupId The tab group id.
+     * @param wasHiding Whether the tab group was set to hide when it closed.
+     */
+    default void finishedClosingTabGroup(Token tabGroupId, boolean wasHiding) {}
 }

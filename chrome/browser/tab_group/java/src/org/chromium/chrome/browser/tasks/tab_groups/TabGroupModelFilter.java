@@ -11,12 +11,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -24,6 +27,8 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -35,6 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of {@link TabModelFilter} that puts {@link Tab}s into a group structure.
@@ -68,6 +74,13 @@ public class TabGroupModelFilter extends TabModelFilter {
     private ObserverList<TabGroupModelFilterObserver> mGroupFilterObserver = new ObserverList<>();
     private Map<Integer, Integer> mRootIdToGroupIndexMap = new HashMap<>();
     private Map<Integer, TabGroup> mRootIdToGroupMap = new HashMap<>();
+
+    /**
+     * The set of tab group IDs that are currently hiding. This cannot be stored on {@link TabGroup}
+     * as for undoable closures that object will already be gone before tab closures are finished.
+     */
+    private Set<Token> mHidingTabGroups = new HashSet<>();
+
     private int mCurrentGroupIndex = TabList.INVALID_TAB_INDEX;
     private Tab mAbsentSelectedTab;
     private boolean mShouldRecordUma = true;
@@ -1257,18 +1270,28 @@ public class TabGroupModelFilter extends TabModelFilter {
         super.didMoveTab(tab, newIndex, curIndex);
     }
 
-    /** Get all tab group root ids that are associated with tab groups greater than size 1. */
+    /** Get all tab group root ids that are associated with tab groups. */
     public Set<Integer> getAllTabGroupRootIds() {
         Set<Integer> uniqueTabGroupRootIds = new ArraySet<>();
-        TabList tabList = getTabModel();
+        forEachTabInTabGroup((tab) -> uniqueTabGroupRootIds.add(tab.getRootId()));
+        return uniqueTabGroupRootIds;
+    }
 
+    /** Get all tab group IDs that are associated with tab groups. */
+    public Set<Token> getAllTabGroupIds() {
+        Set<Token> uniqueTabGroupIds = new ArraySet<>();
+        forEachTabInTabGroup((tab) -> uniqueTabGroupIds.add(tab.getTabGroupId()));
+        return uniqueTabGroupIds;
+    }
+
+    private void forEachTabInTabGroup(Callback<Tab> callback) {
+        TabList tabList = getTabModel();
         for (int i = 0; i < tabList.getCount(); i++) {
             Tab tab = tabList.getTabAt(i);
             if (isTabInTabGroup(tab)) {
-                uniqueTabGroupRootIds.add(tab.getRootId());
+                callback.onResult(tab);
             }
         }
-        return uniqueTabGroupRootIds;
     }
 
     private boolean isMoveTabOutOfGroup(Tab movedTab) {
@@ -1480,6 +1503,113 @@ public class TabGroupModelFilter extends TabModelFilter {
         if (tab == null) return null;
 
         return tab.getTabGroupId();
+    }
+
+    /**
+     * Close all tabs in the filter.
+     *
+     * @param uponExit Whether the tabs are being closed when exiting Chrome see {@link
+     *     TabModel#closeAllTabs(boolean)}.
+     * @param hideTabGroups Whether to hide the tab groups rather than deleting them.
+     */
+    public void closeAllTabs(boolean uponExit, boolean hideTabGroups) {
+        if (hideTabGroups && canHideTabGroups()) {
+            for (Token token : getAllTabGroupIds()) {
+                setTabGroupHiding(token);
+            }
+        }
+        getTabModel().closeAllTabs(uponExit);
+    }
+
+    /**
+     * Close multiple tabs.
+     *
+     * @param tabsToClose The list of tabs to close.
+     * @param canUndo Whether the operation can be undone.
+     * @param hideTabGroups Whether to hide the tab groups rather than deleting them.
+     */
+    public void closeMultipleTabs(List<Tab> tabsToClose, boolean canUndo, boolean hideTabGroups) {
+        TabModel tabModel = getTabModel();
+        if (hideTabGroups && canHideTabGroups()) {
+            Set<Integer> closingTabIds =
+                    tabsToClose.stream().map(Tab::getId).collect(Collectors.toSet());
+            for (int rootId : getAllTabGroupRootIds()) {
+                TabGroup group = mRootIdToGroupMap.get(rootId);
+                if (group == null) continue;
+
+                if (closingTabIds.containsAll(group.getTabIdList())) {
+                    Tab tab = TabModelUtils.getTabById(tabModel, group.getLastShownTabId());
+                    setTabGroupHiding(tab.getTabGroupId());
+                }
+            }
+        }
+        tabModel.closeMultipleTabs(tabsToClose, canUndo);
+    }
+
+    /** Returns whether the tab group is being hidden. */
+    public boolean isTabGroupHiding(@Nullable Token tabGroupId) {
+        if (tabGroupId == null) return false;
+
+        return mHidingTabGroups.contains(tabGroupId);
+    }
+
+    private boolean canHideTabGroups() {
+        Profile profile = getTabModel().getProfile();
+        if (!profile.isNativeInitialized()) return false;
+
+        SyncService syncService = SyncServiceFactory.getForProfile(getTabModel().getProfile());
+        return !isIncognito()
+                && syncService != null
+                && syncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID);
+    }
+
+    /** Sets that the tab group is hiding rather than being deleted. */
+    private void setTabGroupHiding(@Nullable Token tabGroupId) {
+        if (tabGroupId == null) return;
+
+        if (mHidingTabGroups.add(tabGroupId)) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.startHidingTabGroup(tabGroupId);
+            }
+        }
+    }
+
+    @Override
+    public void tabClosureUndone(Tab tab) {
+        super.tabClosureUndone(tab);
+        @Nullable Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId != null && mHidingTabGroups.remove(tabGroupId)) {
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.cancelledHidingTabGroup(tabGroupId);
+            }
+        }
+    }
+
+    @Override
+    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+        super.onFinishingMultipleTabClosure(tabs);
+        Set<Token> processedTabGroupIds = new HashSet<>();
+        for (Tab tab : tabs) {
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (tabGroupId == null) continue;
+
+            if (!processedTabGroupIds.add(tabGroupId)) continue;
+
+            TabList tabList = getTabModel().getComprehensiveModel();
+            boolean tabGroupIdFound = false;
+            for (int i = 0; i < tabList.getCount(); i++) {
+                tabGroupIdFound = tabGroupId.equals(tabList.getTabAt(i).getTabGroupId());
+                if (tabGroupIdFound) break;
+            }
+
+            if (tabGroupIdFound) continue;
+
+            boolean wasHiding = mHidingTabGroups.remove(tabGroupId);
+            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                observer.finishedClosingTabGroup(tabGroupId, wasHiding);
+            }
+        }
     }
 
     private static Token getOrCreateTabGroupId(@NonNull Tab tab) {

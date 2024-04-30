@@ -62,6 +62,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -72,6 +74,8 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
@@ -139,6 +143,8 @@ public class TabGroupModelFilterUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Mock SyncService mSyncService;
+    @Mock Profile mProfile;
     @Mock Token.Natives mTokenJniMock;
     @Mock TabModel mTabModel;
     @Mock TabList mComprehensiveModel;
@@ -409,6 +415,10 @@ public class TabGroupModelFilterUnitTest {
 
         mJniMocker.mock(TokenJni.TEST_HOOKS, mTokenJniMock);
 
+        when(mProfile.isNativeInitialized()).thenReturn(true);
+        when(mSyncService.getActiveDataTypes()).thenReturn(Set.of(ModelType.SAVED_TAB_GROUP));
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
         setUpTab();
         setUpTabModel();
         setupTabGroupModelFilter(true, false);
@@ -2042,6 +2052,17 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void testGetAllTabGroupIds() {
+        // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
+        // group.
+        Set<Token> tabGroupIds = new ArraySet<>();
+        tabGroupIds.add(mTab2.getTabGroupId());
+        tabGroupIds.add(mTab5.getTabGroupId());
+
+        assertEquals(tabGroupIds, mTabGroupModelFilter.getAllTabGroupIds());
+    }
+
+    @Test
     public void testSetTabGroupTitle() {
         mTabGroupModelFilter.setTabGroupTitle(TAB2_ROOT_ID, "Foo");
         verify(mTabGroupModelFilterObserver).didChangeTabGroupTitle(TAB2_ROOT_ID, "Foo");
@@ -2061,5 +2082,237 @@ public class TabGroupModelFilterUnitTest {
         verify(mEditor).putString(eq(prefKey), eq("Foo"));
         mTabGroupModelFilter.getTabGroupSyncId(TAB2_ROOT_ID);
         verify(mSharedPreferencesSyncId).getString(eq(prefKey), eq(null));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseGroup_Hiding_Undone() {
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
+        // canUndo will always be true for pending tab closure, but use false just to verify it is
+        // forwarded correctly.
+        mTabGroupModelFilter.closeMultipleTabs(
+                groupWithTab2AndTab3, /* canUndo= */ false, /* hideTabGroups= */ true);
+        verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ false);
+        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB2_TAB_GROUP_ID);
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+
+        mTabGroupModelFilter.tabClosureUndone(mTab2);
+        verify(mTabGroupModelFilterObserver).cancelledHidingTabGroup(TAB2_TAB_GROUP_ID);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.tabClosureUndone(mTab3);
+        // Only called once.
+        verify(mTabGroupModelFilterObserver).cancelledHidingTabGroup(TAB2_TAB_GROUP_ID);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseGroup_Hiding_Committed() {
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
+        mTabGroupModelFilter.closeMultipleTabs(
+                groupWithTab2AndTab3, /* canUndo= */ true, /* hideTabGroups= */ true);
+        verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ true);
+        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB2_TAB_GROUP_ID);
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+
+        mTabs.remove(mTab2);
+        mTabs.remove(mTab3);
+        mTabGroupModelFilter.onFinishingMultipleTabClosure(groupWithTab2AndTab3);
+        verify(mTabGroupModelFilterObserver)
+                .finishedClosingTabGroup(TAB2_TAB_GROUP_ID, /* wasHiding= */ true);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseMultipleTabs_Hiding_GroupInParts() {
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        List<Tab> listWithTab2AndTab4 = List.of(mTab2, mTab4);
+        mTabGroupModelFilter.closeMultipleTabs(
+                listWithTab2AndTab4, /* canUndo= */ true, /* hideTabGroups= */ true);
+        verify(mTabModel).closeMultipleTabs(listWithTab2AndTab4, /* canUndo= */ true);
+
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab4, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabs.remove(mTab2);
+        mTabs.remove(mTab4);
+        mTabGroupModelFilter.onFinishingMultipleTabClosure(listWithTab2AndTab4);
+        verify(mTabGroupModelFilterObserver, never()).finishedClosingTabGroup(any(), anyBoolean());
+
+        // Close the remainder of the group separately.
+        List<Tab> groupWithTab3 = List.of(mTab3);
+        mTabGroupModelFilter.closeMultipleTabs(
+                groupWithTab3, /* canUndo= */ true, /* hideTabGroups= */ true);
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabs.remove(mTab3);
+
+        mTabGroupModelFilter.onFinishingMultipleTabClosure(groupWithTab3);
+        verify(mTabGroupModelFilterObserver)
+                .finishedClosingTabGroup(TAB2_TAB_GROUP_ID, /* wasHiding= */ true);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseGroup_Deleted_Committed() {
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
+        mTabGroupModelFilter.closeMultipleTabs(
+                groupWithTab2AndTab3, /* canUndo= */ true, /* hideTabGroups= */ false);
+        verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ true);
+        verify(mTabGroupModelFilterObserver, never()).startHidingTabGroup(TAB2_TAB_GROUP_ID);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+
+        mTabs.remove(mTab2);
+        mTabs.remove(mTab3);
+        mTabGroupModelFilter.onFinishingMultipleTabClosure(groupWithTab2AndTab3);
+        verify(mTabGroupModelFilterObserver)
+                .finishedClosingTabGroup(TAB2_TAB_GROUP_ID, /* wasHiding= */ false);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseAllTabs_Hiding_Undone() {
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
+        verify(mTabModel).closeAllTabs(/* uponExit= */ false);
+        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB2_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB5_TAB_GROUP_ID);
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.willCloseTab(mTab1, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab4, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab5, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab6, /* animate= */ false, /* didCloseAlone= */ false);
+
+        mTabs.remove(mTab2);
+        mTabs.remove(mTab3);
+        mTabs.remove(mTab4);
+        mTabs.remove(mTab5);
+        mTabs.remove(mTab6);
+
+        mTabGroupModelFilter.tabClosureUndone(mTab1);
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        mTabs.add(mTab2);
+        mTabGroupModelFilter.tabClosureUndone(mTab2);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        mTabs.add(mTab3);
+        mTabGroupModelFilter.tabClosureUndone(mTab3);
+        mTabs.add(mTab4);
+        mTabGroupModelFilter.tabClosureUndone(mTab4);
+        mTabs.add(mTab5);
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+        mTabGroupModelFilter.tabClosureUndone(mTab5);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+        mTabs.remove(mTab6);
+        mTabGroupModelFilter.tabClosureUndone(mTab6);
+    }
+
+    /**
+     * The partial tab-by-tab commit tested here is impossible with how {@link
+     * PendingTabClosureManager} works, but for testing it is useful to verify the behavior is
+     * correct.
+     */
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseAllTabs_Hiding_PartialCommit() {
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
+        verify(mTabModel).closeAllTabs(/* uponExit= */ false);
+        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB2_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB5_TAB_GROUP_ID);
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.willCloseTab(mTab1, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab4, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab5, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab6, /* animate= */ false, /* didCloseAlone= */ false);
+
+        mTabs.remove(mTab2);
+        mTabs.remove(mTab3);
+        mTabs.remove(mTab4);
+        mTabs.remove(mTab5);
+        mTabs.remove(mTab6);
+
+        mTabGroupModelFilter.tabClosureUndone(mTab1);
+        assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        mTabs.add(mTab2);
+        mTabGroupModelFilter.tabClosureUndone(mTab2);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        mTabs.add(mTab3);
+        mTabGroupModelFilter.tabClosureUndone(mTab3);
+
+        mTabGroupModelFilter.onFinishingMultipleTabClosure(List.of(mTab4, mTab5, mTab6));
+        verify(mTabGroupModelFilterObserver, never())
+                .finishedClosingTabGroup(eq(TAB2_TAB_GROUP_ID), anyBoolean());
+        verify(mTabGroupModelFilterObserver)
+                .finishedClosingTabGroup(TAB5_TAB_GROUP_ID, /* wasHiding= */ true);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseAllTabs_Deleted() {
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ false);
+        verify(mTabModel).closeAllTabs(/* uponExit= */ false);
+        verify(mTabGroupModelFilterObserver, never()).startHidingTabGroup(TAB2_TAB_GROUP_ID);
+        verify(mTabGroupModelFilterObserver, never()).startHidingTabGroup(TAB5_TAB_GROUP_ID);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
+
+        mTabGroupModelFilter.willCloseTab(mTab1, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab4, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab5, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab6, /* animate= */ false, /* didCloseAlone= */ false);
+
+        mTabs.remove(mTab1);
+        mTabs.remove(mTab2);
+        mTabs.remove(mTab3);
+        mTabs.remove(mTab4);
+        mTabs.remove(mTab5);
+        mTabs.remove(mTab6);
+        mTabGroupModelFilter.onFinishingMultipleTabClosure(
+                List.of(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
+        verify(mTabGroupModelFilterObserver)
+                .finishedClosingTabGroup(TAB2_TAB_GROUP_ID, /* wasHiding= */ false);
+        verify(mTabGroupModelFilterObserver)
+                .finishedClosingTabGroup(TAB5_TAB_GROUP_ID, /* wasHiding= */ false);
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
+        assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
     }
 }
