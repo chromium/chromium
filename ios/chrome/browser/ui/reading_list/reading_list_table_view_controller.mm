@@ -157,6 +157,19 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self removeEmptySections];
   }
   [self updateToolbarItems];
+
+  // Force update a11y actions based on edit mode.
+  for (int section = 0; section < self.tableViewModel.numberOfSections;
+       section++) {
+    if (![self.tableViewModel numberOfItemsInSection:section]) {
+      continue;
+    }
+    NSInteger sectionIdentifier =
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
+    [self reconfigureCellsForItems:
+              [self.tableViewModel
+                  itemsInSectionWithIdentifier:sectionIdentifier]];
+  }
 }
 
 - (void)setSelectedUnreadItemCount:(NSUInteger)selectedUnreadItemCount {

@@ -11,6 +11,8 @@
 // Delegate for HistoryEntryItem. Handles actions invoked as custom
 // accessibility actions.
 @protocol HistoryEntryItemDelegate
+// Returns true if ListItem owner is in edit mode.
+- (BOOL)isEditing;
 // Called when custom accessibility action to delete the entry is invoked.
 - (void)historyEntryItemDidRequestDelete:
     (ListItem<HistoryEntryItemInterface>*)item;

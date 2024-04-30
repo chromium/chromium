@@ -52,6 +52,9 @@
 
 - (NSArray<UIAccessibilityCustomAction*>*)customActionsForItem:
     (id<ReadingListListItem>)item {
+  if ([self.accessibilityDelegate isEditing]) {
+    return nil;
+  }
   ReadingListCustomAction* toggleReadStatus = nil;
   if ([self.accessibilityDelegate isItemRead:item]) {
     toggleReadStatus = [[ReadingListCustomAction alloc]

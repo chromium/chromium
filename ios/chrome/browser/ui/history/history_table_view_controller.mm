@@ -978,6 +978,19 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   } else {
     [self configureViewsForEditModeWithAnimation:YES];
   }
+
+  // Force update a11y actions based on edit mode.
+  for (int section = 0; section < self.tableViewModel.numberOfSections;
+       section++) {
+    if (![self.tableViewModel numberOfItemsInSection:section]) {
+      continue;
+    }
+    NSInteger sectionIdentifier =
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
+    [self reconfigureCellsForItems:
+              [self.tableViewModel
+                  itemsInSectionWithIdentifier:sectionIdentifier]];
+  }
 }
 
 // Default TableView and NavigationBar UIToolbar configuration.
