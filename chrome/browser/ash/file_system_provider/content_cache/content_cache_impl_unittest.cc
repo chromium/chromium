@@ -190,6 +190,46 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
+       StartWriteBytesFailsWhenFileEvictedButNotRemoved) {
+  // Perform initial write to cache of length 512 bytes.
+  const base::FilePath fsp_path("random-path");
+  const std::string version_tag("versionA");
+  WriteFileToCache(fsp_path, version_tag, kDefaultChunkSize);
+
+  // The file now exists in the cache.
+  EXPECT_THAT(content_cache_->GetCachedFilePaths(), ElementsAre(fsp_path));
+
+  content_cache_->Evict(fsp_path);
+
+  // The file is now evicted from the cache.
+  EXPECT_EQ(content_cache_->GetCachedFilePaths().size(), 0U);
+
+  // Cannot write to the file in its evicted state.
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ, version_tag,
+                       kDefaultChunkSize);
+  EXPECT_FALSE(content_cache_->StartWriteBytes(file, /*buffer=*/nullptr,
+                                               /*offset=*/0, kDefaultChunkSize,
+                                               base::DoNothing()));
+
+  // No new replacement file is added to the cache.
+  EXPECT_EQ(content_cache_->GetCachedFilePaths().size(), 0U);
+
+  // Remove the evicted file from the cache.
+  TestFuture<RemovedItemStats> remove_items_future;
+  content_cache_->RemoveItems(remove_items_future.GetCallback());
+  EXPECT_THAT(
+      remove_items_future.Get(),
+      AllOf(Field(&RemovedItemStats::num_items, 1),
+            Field(&RemovedItemStats::bytes_removed, kDefaultChunkSize)));
+
+  // Now can write to a file with the same name.
+  WriteFileToCache(fsp_path, version_tag, kDefaultChunkSize);
+
+  // The file exists in the cache again.
+  EXPECT_THAT(content_cache_->GetCachedFilePaths(), ElementsAre(fsp_path));
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
        StartWriteBytesShouldFailIfMultipleWritersAttemptToWriteAtOnce) {
   OpenedCloudFile file(base::FilePath("random-path"),
                        OpenFileMode::OPEN_FILE_MODE_READ,

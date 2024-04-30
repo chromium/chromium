@@ -240,7 +240,7 @@ void ContentCacheImpl::EvictContext(const base::FilePath& path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!ctx.evicted) {
-    VLOG(2) << "Evicting '" << path.value();
+    VLOG(2) << "Evicting '" << path.value() << "'";
     ctx.evicted = true;
     evicted_cache_items_++;
   } else {
