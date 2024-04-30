@@ -1,0 +1,49 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] averagePool2d float32 4D constant tensor all positive default options
+[NOTRUN] averagePool2d float32 4D tensor all positive default options
+[NOTRUN] averagePool2d float32 4D tensor all negative default options
+[NOTRUN] averagePool2d float32 4D tensor options.windowDimensions
+[NOTRUN] global averagePool2d float32 4D tensor all positive options.windowDimensions
+[NOTRUN] averagePool2d float32 4D tensor options.padding
+[NOTRUN] averagePool2d float32 4D tensor options.strides
+[NOTRUN] averagePool2d float32 4D tensor options.dilations
+[NOTRUN] averagePool2d float32 4D tensor options.layout=nchw
+[NOTRUN] averagePool2d float32 4D tensor options.layout=nhwc
+[NOTRUN] global averagePool2d float32 4D tensor options.layout=nhwc and options.windowDimensions
+[NOTRUN] averagePool2d float32 4D tensor options.roundingType=floor
+[NOTRUN] averagePool2d float32 4D tensor options.roundingType=ceil
+[NOTRUN] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
+[NOTRUN] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
+[NOTRUN] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+[NOTRUN] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+[NOTRUN] averagePool2d float32 4D tensor options.dilations with options.strides
+[NOTRUN] l2Pool2d float32 4D constant tensor all positive default options
+[NOTRUN] l2Pool2d float32 4D tensor default all positive options
+[NOTRUN] l2Pool2d float32 4D tensor default all negative options
+[NOTRUN] l2Pool2d float32 4D tensor options.windowDimensions
+[NOTRUN] l2Pool2d float32 4D tensor options.padding
+[NOTRUN] l2Pool2d float32 4D tensor options.strides
+[NOTRUN] l2Pool2d float32 4D tensor options.dilations
+[NOTRUN] l2Pool2d float32 4D tensor options.layout=nchw
+[NOTRUN] l2Pool2d float32 4D tensor options.layout=nhwc
+[NOTRUN] l2Pool2d float32 4D tensor options.roundingType=floor
+[NOTRUN] l2Pool2d float32 4D tensor options.roundingType=ceil
+[NOTRUN] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+[NOTRUN] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+[NOTRUN] l2Pool2d float32 4D tensor options.dilations with options.strides
+[NOTRUN] maxPool2d float32 4D constant tensor default options
+[NOTRUN] maxPool2d float32 4D tensor default options
+[NOTRUN] maxPool2d float32 4D tensor options.windowDimensions
+[NOTRUN] maxPool2d float32 4D tensor options.padding
+[NOTRUN] maxPool2d float32 4D tensor options.strides
+[NOTRUN] maxPool2d float32 4D tensor options.dilations
+[NOTRUN] maxPool2d float32 4D tensor options.layout=nchw
+[NOTRUN] maxPool2d float32 4D tensor options.layout=nhwc
+[NOTRUN] maxPool2d float32 4D tensor options.roundingType=floor
+[NOTRUN] maxPool2d float32 4D tensor options.roundingType=ceil
+[NOTRUN] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+[NOTRUN] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+[NOTRUN] maxPool2d float32 4D tensor options.dilations with options.strides
+Harness: the test ran to completion.
+

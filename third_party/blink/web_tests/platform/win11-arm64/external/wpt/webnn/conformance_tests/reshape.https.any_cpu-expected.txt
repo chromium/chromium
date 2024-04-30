@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] reshape float32 tensor to a new shape (reorder all dimensions)
+[NOTRUN] reshape float32 tensor to a new shape (reduce dimensions)
+[NOTRUN] reshape float32 tensor to a new shape (extend dimensions)
+[NOTRUN] reshape float32 tensor to a new shape (4D to 4D)
+[NOTRUN] reshape float32 tensor to 1D tensor
+[NOTRUN] reshape (squeeze) float32 2D tensor by eliminating one dimension
+[NOTRUN] reshape (squeeze) float32 3D tensor by eliminating one dimension
+[NOTRUN] reshape (squeeze) float32 3D tensor by eliminating two dimensions
+[NOTRUN] reshape (squeeze) float32 4D tensor by eliminating two dimensions
+[NOTRUN] reshape (squeeze) float32 4D tensor by eliminating all dimensions
+[NOTRUN] reshape (squeeze) float32 5D tensor by eliminating four dimensions
+[NOTRUN] reshape (squeeze) float32 2D tensor by eliminating 1st dimension
+[NOTRUN] reshape (squeeze) float32 3D tensor by eliminating 2nd and 3rd dimensions
+[NOTRUN] reshape (squeeze) float32 4D tensor by eliminating 1st and 4th dimensions
+[NOTRUN] reshape (squeeze) float32 5D tensor by eliminating 2nd and 3rd dimensions
+[NOTRUN] reshape (squeeze) float32 5D tensor by eliminating 1st, 2nd and 5th dimensions
+[NOTRUN] reshape (unsqueeze) float32 0D tensor to 4D
+[NOTRUN] reshape (unsqueeze) float32 1D tensor by adding one dimension
+[NOTRUN] reshape (unsqueeze) float32 1D tensor by adding two dimensions
+[NOTRUN] reshape (unsqueeze) float32 1D tensor to 5D
+[NOTRUN] reshape (unsqueeze) float32 1D tensor by adding 2nd and 3rd dimensions
+[NOTRUN] reshape (unsqueeze) float32 2D tensor by adding one dimension
+[NOTRUN] reshape (unsqueeze) float32 2D tensor by adding two dimensions
+[NOTRUN] reshape (unsqueeze) float32 2D tensor by adding 1st dimension
+[NOTRUN] reshape (unsqueeze) float32 2D tensor by adding 1st and 4th dimensions
+[NOTRUN] reshape (unsqueeze) float32 3D tensor by adding 2nd and 3rd dimensions
+[NOTRUN] reshape (unsqueeze) float32 4D tensor by adding 2nd dimension
+[NOTRUN] reshape (unsqueeze) float32 5D tensor by adding 4th dimension
+[NOTRUN] reshape (flatten) float32 3D tensor to 2D
+[NOTRUN] reshape (flatten) float32 4D to 2D
+[NOTRUN] reshape (flatten) float32 4D to 2D exclusive 1st dimension
+[NOTRUN] reshape (flatten) float32 4D to 2D exclusive 4th dimension
+Harness: the test ran to completion.
+

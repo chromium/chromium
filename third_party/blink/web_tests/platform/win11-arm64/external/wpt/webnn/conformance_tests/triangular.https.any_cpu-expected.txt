@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] triangular float32 2D tensor default options
+[NOTRUN] triangular float32 3D tensor default options
+[NOTRUN] triangular float32 4D tensor default options
+[NOTRUN] triangular float32 5D tensor default options
+[NOTRUN] triangular float32 4D tensor explict options.upper=true
+[NOTRUN] triangular float32 4D tensor options.upper=false
+[NOTRUN] triangular float32 4D tensor explict options.diagonal=0
+[NOTRUN] triangular float32 4D tensor options.diagonal=1
+[NOTRUN] triangular float32 4D tensor options.diagonal=-1
+[NOTRUN] triangular float32 4D tensor fully zero options.diagonal=3
+[NOTRUN] triangular float32 4D tensor fully copied options.diagonal=-2
+[NOTRUN] triangular float32 4D tensor options.upper=true options.diagonal=1
+[NOTRUN] triangular float32 4D tensor options.upper=false options.diagonal=1
+[NOTRUN] triangular float32 4D tensor options.upper=false options.diagonal=-1
+[NOTRUN] triangular float32 4D tensor fully copied options.upper=false options.diagonal=3
+[NOTRUN] triangular float32 4D tensor fully zero options.upper=false options.diagonal=-2
+Harness: the test ran to completion.
+

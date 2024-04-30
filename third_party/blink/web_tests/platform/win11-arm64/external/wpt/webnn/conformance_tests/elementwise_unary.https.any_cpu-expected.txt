@@ -1,0 +1,87 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+Found 0 FAIL, 0 TIMEOUT, 82 NOTRUN.
+[NOTRUN] abs float32 1D constant tensor
+[NOTRUN] abs float32 1D tensor
+[NOTRUN] abs float32 2D tensor
+[NOTRUN] abs float32 3D tensor
+[NOTRUN] abs float32 4D tensor
+[NOTRUN] abs float32 5D tensor
+[NOTRUN] ceil float32 1D constant tensor
+[NOTRUN] ceil float32 1D tensor
+[NOTRUN] ceil float32 2D tensor
+[NOTRUN] ceil float32 3D tensor
+[NOTRUN] ceil float32 4D tensor
+[NOTRUN] ceil float32 5D tensor
+[NOTRUN] cos float32 1D constant tensor
+[NOTRUN] cos float32 1D tensor
+[NOTRUN] cos float32 2D tensor
+[NOTRUN] cos float32 3D tensor
+[NOTRUN] cos float32 4D tensor
+[NOTRUN] cos float32 5D tensor
+[NOTRUN] erf float32 0D scalar
+[NOTRUN] erf float32 1D constant tensor
+[NOTRUN] erf float32 1D tensor
+[NOTRUN] erf float32 2D tensor
+[NOTRUN] erf float32 3D tensor
+[NOTRUN] erf float32 4D tensor
+[NOTRUN] erf float32 5D tensor
+[NOTRUN] exp float32 1D constant tensor
+[NOTRUN] exp float32 1D tensor
+[NOTRUN] exp float32 2D tensor
+[NOTRUN] exp float32 3D tensor
+[NOTRUN] exp float32 4D tensor
+[NOTRUN] exp float32 5D tensor
+[NOTRUN] floor float32 1D constant tensor
+[NOTRUN] floor float32 1D tensor
+[NOTRUN] floor float32 2D tensor
+[NOTRUN] floor float32 3D tensor
+[NOTRUN] floor float32 4D tensor
+[NOTRUN] floor float32 5D tensor
+[NOTRUN] identity float32 0D scalar
+[NOTRUN] identity float32 1D constant tensor
+[NOTRUN] identity float32 1D tensor
+[NOTRUN] identity float32 2D tensor
+[NOTRUN] identity float32 3D tensor
+[NOTRUN] identity float32 4D tensor
+[NOTRUN] identity float32 5D tensor
+[NOTRUN] log float32 positive 1D constant tensor
+[NOTRUN] log float32 positive 1D tensor
+[NOTRUN] log float32 positive 2D tensor
+[NOTRUN] log float32 positive 3D tensor
+[NOTRUN] log float32 positive 4D tensor
+[NOTRUN] log float32 positive 5D tensor
+[NOTRUN] neg float32 1D constant tensor
+[NOTRUN] neg float32 1D tensor
+[NOTRUN] neg float32 2D tensor
+[NOTRUN] neg float32 3D tensor
+[NOTRUN] neg float32 4D tensor
+[NOTRUN] neg float32 5D tensor
+[NOTRUN] reciprocal float32 0D scalar
+[NOTRUN] reciprocal float32 1D constant tensor
+[NOTRUN] reciprocal float32 1D tensor
+[NOTRUN] reciprocal float32 2D tensor
+[NOTRUN] reciprocal float32 3D tensor
+[NOTRUN] reciprocal float32 4D tensor
+[NOTRUN] reciprocal float32 5D tensor
+[NOTRUN] sin float32 1D constant tensor
+[NOTRUN] sin float32 1D tensor
+[NOTRUN] sin float32 2D tensor
+[NOTRUN] sin float32 3D tensor
+[NOTRUN] sin float32 4D tensor
+[NOTRUN] sin float32 5D tensor
+[NOTRUN] sqrt float32 0D scalar
+[NOTRUN] sqrt float32 1D constant tensor
+[NOTRUN] sqrt float32 1D tensor
+[NOTRUN] sqrt float32 2D tensor
+[NOTRUN] sqrt float32 3D tensor
+[NOTRUN] sqrt float32 4D tensor
+[NOTRUN] sqrt float32 5D tensor
+[NOTRUN] tan float32 1D constant tensor
+[NOTRUN] tan float32 1D tensor
+[NOTRUN] tan float32 2D tensor
+[NOTRUN] tan float32 3D tensor
+[NOTRUN] tan float32 4D tensor
+[NOTRUN] tan float32 5D tensor
+Harness: the test ran to completion.
+

@@ -1,0 +1,87 @@
+This is a testharness.js-based test.
+[FAIL] argMin float32 1D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 1D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 3D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.keepDimensions=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.keepDimensions=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[0, 2] options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 4D tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 0D scalar options.axes=[]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMin float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 1D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 1D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 3D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.keepDimensions=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.keepDimensions=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.keepDimensions=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[0, 2] options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=false
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor options.axes=[3, 0, 1] options.selectLastIndex=true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 4D tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 0D scalar options.axes=[]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+[FAIL] argMax float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
+Harness: the test ran to completion.
+

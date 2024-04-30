@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] instanceNormalization float32 4D tensor default options
+[NOTRUN] instanceNormalization float32 4D tensor options.scale
+[NOTRUN] instanceNormalization float32 4D tensor options.bias
+[NOTRUN] instanceNormalization float32 4D tensor options.epsilon
+[NOTRUN] instanceNormalization float32 4D tensor explict options.layout='nchw'
+[NOTRUN] instanceNormalization float32 4D tensor options.layout='nhwc'
+[NOTRUN] instanceNormalization float32 4D tensor all options
+Harness: the test ran to completion.
+

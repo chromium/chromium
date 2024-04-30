@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] where float32 0D scalars
+[NOTRUN] where float32 1D constant tensors
+[NOTRUN] where float32 1D tensors
+[NOTRUN] where float32 2D tensors
+[NOTRUN] where float32 3D tensors
+[NOTRUN] where float32 4D tensors
+[NOTRUN] where float32 5D tensors
+[NOTRUN] where float32 4D tensors only broadcast condition 0D to 4D
+[NOTRUN] where float32 4D tensors only broadcast condition 1D to 4D
+[NOTRUN] where float32 4D tensors only broadcast condition 2D to 4D
+[NOTRUN] where float32 4D tensors only broadcast condition 3D to 4D
+[NOTRUN] where float32 4D tensors only broadcast condition 4D to 4D
+[NOTRUN] where float32 4D tensors only broadcast trueValues 2D to 4D
+[NOTRUN] where float32 4D tensors only broadcast trueValues 4D to 4D
+[NOTRUN] where float32 4D tensors only broadcast falseValues 3D to 4D
+[NOTRUN] where float32 4D tensors only broadcast falseValues 4D to 4D
+[NOTRUN] where float32 4D tensors all broadcast 4D
+Harness: the test ran to completion.
+

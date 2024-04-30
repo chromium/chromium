@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] conv2d float32 4D input and filter(non-constant) tensors default options
+[NOTRUN] conv2d float32 4D both input and filter constant tensors default options
+[NOTRUN] conv2d float32 4D input and filter tensors default options
+[NOTRUN] conv2d float32 4D input and filter tensors options.padding
+[NOTRUN] conv2d float32 4D input and filter tensors options.strides
+[NOTRUN] conv2d float32 4D input and filter tensors options.dilations
+[NOTRUN] depthwise conv2d float32 4D input and filter tensors options.groups= input_channels
+[NOTRUN] conv2d float32 4D input and filter tensors options.inputLayout='nchw'
+[NOTRUN] conv2d float32 4D input and filter tensors options.inputLayout='nhwc'
+[NOTRUN] conv2d float32 4D input and filter tensors options.filterLayout='oihw'
+[NOTRUN] conv2d float32 4D input and filter tensors options.filterLayout='hwio'
+[NOTRUN] conv2d float32 4D input and filter tensors options.filterLayout='ohwi'
+[NOTRUN] conv2d float32 4D input and filter tensors options.filterLayout='ihwo'
+[NOTRUN] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='oihw'
+[NOTRUN] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='hwio'
+[NOTRUN] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ohwi'
+[NOTRUN] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ihwo'
+[NOTRUN] conv2d float32 4D input and filter tensors 1D options.bias
+[NOTRUN] conv2d float32 4D input and filter tensors options.activation=relu
+[NOTRUN] conv2d float32 4D input and filter tensors options.activation=sigmoid
+[NOTRUN] conv2d float32 4D input and filter tensors all options
+[NOTRUN] conv2d float32 4D input and filter tensors, both negative input tensor and options.bias
+Harness: the test ran to completion.
+

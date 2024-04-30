@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] cast float32 0D tensor to int32
+[NOTRUN] cast float32 1D tensor to int32
+[NOTRUN] cast float32 2D tensor to int32
+[NOTRUN] cast float32 3D tensor to int32
+[NOTRUN] cast float32 4D tensor to int32
+[NOTRUN] cast float32 5D tensor to int32
+[NOTRUN] cast float32 4D tensor to float16
+[NOTRUN] cast float32 4D tensor to uint32
+[NOTRUN] cast float32 4D tensor to int64
+[NOTRUN] cast float32 4D tensor to int8
+[NOTRUN] cast float32 4D tensor to uint8
+[NOTRUN] cast float16 4D tensor to float32
+[NOTRUN] cast float16 4D tensor to int32
+[NOTRUN] cast float16 4D tensor to uint32
+[NOTRUN] cast float16 4D tensor to int64
+[NOTRUN] cast float16 4D tensor to int8
+[NOTRUN] cast float16 4D tensor to uint8
+[NOTRUN] cast int32 4D tensor to float32
+[NOTRUN] cast int32 4D tensor to float16
+[NOTRUN] cast int32 4D tensor to int64
+[NOTRUN] cast int32 4D tensor to int8
+[NOTRUN] cast int32 4D tensor to uint8
+[NOTRUN] cast uint32 4D tensor to float32
+[NOTRUN] cast uint32 4D tensor to float16
+[NOTRUN] cast uint32 4D tensor to int32
+[NOTRUN] cast uint32 4D tensor to int64
+[NOTRUN] cast uint32 4D tensor to int8
+[NOTRUN] cast uint32 4D tensor to uint8
+[NOTRUN] cast int64 4D tensor to float32
+[NOTRUN] cast int64 4D tensor to float16
+[NOTRUN] cast int64 4D tensor to int32
+[NOTRUN] cast int64 4D tensor to uint32
+[NOTRUN] cast int64 4D tensor to int8
+[NOTRUN] cast int64 4D tensor to uint8
+[NOTRUN] cast int8 4D tensor to float32
+[NOTRUN] cast int8 4D tensor to float16
+[NOTRUN] cast int8 4D tensor to int32
+[NOTRUN] cast int8 4D tensor to uint32
+[NOTRUN] cast int8 4D tensor to int64
+[NOTRUN] cast int8 4D tensor to uint8
+[NOTRUN] cast uint8 4D tensor to float32
+[NOTRUN] cast uint8 4D tensor to float16
+[NOTRUN] cast uint8 4D tensor to int32
+[NOTRUN] cast uint8 4D tensor to uint32
+[NOTRUN] cast uint8 4D tensor to int64
+[NOTRUN] cast uint8 4D tensor to int8
+Harness: the test ran to completion.
+

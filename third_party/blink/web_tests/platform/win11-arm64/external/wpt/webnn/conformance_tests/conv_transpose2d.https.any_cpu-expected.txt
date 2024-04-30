@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] convTranspose2d float32 4D input and filter(non-constant) tensors default options
+[NOTRUN] convTranspose2d float32 4D both input and filter constant tensors default options
+[NOTRUN] convTranspose2d float32 4D input and filter tensors default options
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.groups
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2]
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.padding
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.strides
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.dilations
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.outputPadding
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.outputSizes
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.inputLayout=nchw
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.bias
+[NOTRUN] convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias
+[NOTRUN] convTranspose2d float32 4D input and filter tensors options.activation=relu
+Harness: the test ran to completion.
+

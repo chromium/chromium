@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+[NOTRUN] slice float32 1D constant tensor
+[NOTRUN] slice float32 1D tensor
+[NOTRUN] slice float32 2D tensor
+[NOTRUN] slice float32 3D tensor
+[NOTRUN] slice float32 4D tensor
+[NOTRUN] slice float32 5D tensor
+Harness: the test ran to completion.
+

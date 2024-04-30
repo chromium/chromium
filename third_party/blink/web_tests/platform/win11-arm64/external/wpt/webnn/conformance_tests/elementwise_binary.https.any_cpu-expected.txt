@@ -1,0 +1,76 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ReferenceError: variant is not defined
+Found 0 FAIL, 0 TIMEOUT, 71 NOTRUN.
+[NOTRUN] add float32 1D constant tensors
+[NOTRUN] add float32 1D tensors
+[NOTRUN] add float32 2D tensors
+[NOTRUN] add float32 3D tensors
+[NOTRUN] add float32 4D tensors
+[NOTRUN] add float32 5D tensors
+[NOTRUN] add float32 broadcast 1D to 4D
+[NOTRUN] add float32 broadcast 2D to 4D
+[NOTRUN] add float32 broadcast 3D to 4D
+[NOTRUN] add float32 broadcast 4D to 4D
+[NOTRUN] add float32 large inputs
+[NOTRUN] sub float32 1D constant tensors
+[NOTRUN] sub float32 1D tensors
+[NOTRUN] sub float32 2D tensors
+[NOTRUN] sub float32 3D tensors
+[NOTRUN] sub float32 4D tensors
+[NOTRUN] sub float32 5D tensors
+[NOTRUN] sub float32 broadcast 1D to 4D
+[NOTRUN] sub float32 broadcast 2D to 4D
+[NOTRUN] sub float32 broadcast 3D to 4D
+[NOTRUN] sub float32 broadcast 4D to 4D
+[NOTRUN] mul float32 1D constant tensors
+[NOTRUN] mul float32 1D tensors
+[NOTRUN] mul float32 2D tensors
+[NOTRUN] mul float32 3D tensors
+[NOTRUN] mul float32 4D tensors
+[NOTRUN] mul float32 5D tensors
+[NOTRUN] mul float32 broadcast 1D to 4D
+[NOTRUN] mul float32 broadcast 2D to 4D
+[NOTRUN] mul float32 broadcast 3D to 4D
+[NOTRUN] mul float32 broadcast 4D to 4D
+[NOTRUN] div float32 1D constant tensors
+[NOTRUN] div float32 1D tensors
+[NOTRUN] div float32 2D tensors
+[NOTRUN] div float32 3D tensors
+[NOTRUN] div float32 4D tensors
+[NOTRUN] div float32 5D tensors
+[NOTRUN] div float32 broadcast 1D to 4D
+[NOTRUN] div float32 broadcast 2D to 4D
+[NOTRUN] div float32 broadcast 3D to 4D
+[NOTRUN] div float32 broadcast 4D to 4D
+[NOTRUN] max float32 1D constant tensors
+[NOTRUN] max float32 1D tensors
+[NOTRUN] max float32 2D tensors
+[NOTRUN] max float32 3D tensors
+[NOTRUN] max float32 4D tensors
+[NOTRUN] max float32 5D tensors
+[NOTRUN] max float32 broadcast 1D to 4D
+[NOTRUN] max float32 broadcast 2D to 4D
+[NOTRUN] max float32 broadcast 3D to 4D
+[NOTRUN] max float32 broadcast 4D to 4D
+[NOTRUN] min float32 1D constant tensors
+[NOTRUN] min float32 1D tensors
+[NOTRUN] min float32 2D tensors
+[NOTRUN] min float32 3D tensors
+[NOTRUN] min float32 4D tensors
+[NOTRUN] min float32 5D tensors
+[NOTRUN] min float32 broadcast 1D to 4D
+[NOTRUN] min float32 broadcast 2D to 4D
+[NOTRUN] min float32 broadcast 3D to 4D
+[NOTRUN] min float32 broadcast 4D to 4D
+[NOTRUN] pow float32 constant 1D base tensor and 1D integer exponent tensor
+[NOTRUN] pow float32 1D base tensor and 1D integer exponent tensor
+[NOTRUN] pow float32 2D base tensor and 2D integer exponent tensor
+[NOTRUN] pow float32 3D base tensor and 3D integer exponent tensor
+[NOTRUN] pow float32 4D base tensor and 4D integer exponent tensor
+[NOTRUN] pow float32 5D base tensor and 5D integer exponent tensor
+[NOTRUN] pow (square) float32 4D base tensor and broadcastable 0D integer exponent scalar
+[NOTRUN] pow (sqrt) float32 4D positive base tensor and broadcastable 0D integer exponent scalar
+[NOTRUN] pow float32 4D base tensor and broadcastable 2D integer exponent tensor
+[NOTRUN] pow float32 4D base tensor and broadcastable 3D integer exponent tensor
+Harness: the test ran to completion.
+
