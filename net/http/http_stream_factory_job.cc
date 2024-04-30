@@ -154,11 +154,6 @@ HttpStreamFactory::Job::Job(
   // `HttpNetworkTransaction`, which consumes additional fields.
   DCHECK(!proxy_info_.is_empty());
 
-  // QUIC can only be spoken to servers, never to proxies.
-  if (alternative_protocol == kProtoQUIC) {
-    DCHECK(proxy_info_.is_direct());
-  }
-
   // The Job is forced to use QUIC without a designated version, try the
   // preferred QUIC version that is supported by default.
   if (quic_version_ == quic::ParsedQuicVersion::Unsupported() &&

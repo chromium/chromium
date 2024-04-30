@@ -812,13 +812,11 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
   DCHECK(destination.IsValid());
   ConvertWsToHttp(destination);
 
-  // Create an alternative job if alternative service is set up for this domain,
-  // but only if we'll be speaking directly to the server, since QUIC through
-  // proxies is not supported. TODO(https://crbug.com/324534606): allow this.
-  if (proxy_info_.is_direct()) {
+  // Create an alternative job if alternative service is set up for this domain.
+  // This is applicable even if the connection will be made via a proxy.
     alternative_service_info_ = GetAlternativeServiceInfoFor(
         http_request_info_url_, request_info_, delegate_, stream_type_);
-  }
+
   quic::ParsedQuicVersion quic_version = quic::ParsedQuicVersion::Unsupported();
   if (alternative_service_info_.protocol() == kProtoQUIC) {
     quic_version =

@@ -566,6 +566,43 @@ class QuicNetworkTransactionTest
     return ConstructDataFrameForVersion(body, version_);
   }
 
+  std::unique_ptr<quic::QuicEncryptedPacket> ConstructConnectUdpRequestPacket(
+      uint64_t packet_number,
+      quic::QuicStreamId stream_id,
+      std::string authority,
+      std::string path,
+      bool fin) {
+    spdy::Http2HeaderBlock headers;
+    headers[":scheme"] = "https";
+    headers[":path"] = path;
+    headers[":protocol"] = "connect-udp";
+    headers[":method"] = "CONNECT";
+    headers[":authority"] = authority;
+    headers["capsule-protocol"] = "?1";
+    spdy::SpdyPriority priority =
+        ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+    size_t spdy_headers_frame_len;
+    auto rv = client_maker_->MakeRequestHeadersPacket(
+        packet_number, stream_id, fin, priority, std::move(headers),
+        &spdy_headers_frame_len, /*should_include_priority_frame=*/false);
+    return rv;
+  }
+
+  std::string ConstructH3Datagram(
+      uint64_t stream_id,
+      uint64_t context_id,
+      std::unique_ptr<quic::QuicEncryptedPacket> packet) {
+    std::string data;
+    // Allow enough space for payload and two varint-62's.
+    data.resize(packet->length() + 2 * 8);
+    quiche::QuicheDataWriter writer(data.capacity(), data.data());
+    CHECK(writer.WriteVarInt62(stream_id >> 2));
+    CHECK(writer.WriteVarInt62(context_id));
+    CHECK(writer.WriteBytes(packet->data(), packet->length()));
+    data.resize(writer.length());
+    return data;
+  }
+
   void CreateSession(const quic::ParsedQuicVersionVector& supported_versions) {
     session_params_.enable_quic = true;
     context_.params()->supported_versions = supported_versions;
@@ -6597,7 +6634,6 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   CreateSession();
 
   request_.url = GURL("https://mail.example.org/");
-  AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
   SendRequestAndExpectHttpResponseFromProxy(
       kRespData, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
 
@@ -6699,6 +6735,252 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
   EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
+}
+
+// Performs an HTTP/3 request over QUIC proxy tunnel.
+TEST_P(QuicNetworkTransactionTest, QuicProxyConnectQuicServer) {
+  DisablePriorityHeader();
+  session_params_.enable_quic = true;
+
+  const auto kQuicProxyChain =
+      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  proxy_resolution_service_ =
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  QuicTestPacketMaker to_endpoint_maker(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), "mail.example.org", quic::Perspective::IS_CLIENT,
+      /*client_priority_uses_incremental=*/true,
+      /*use_priority_header=*/true);
+  QuicTestPacketMaker from_endpoint_maker(
+      version_,
+      quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
+      context_.clock(), "mail.example.org", quic::Perspective::IS_SERVER,
+      /*client_priority_uses_incremental=*/false,
+      /*use_priority_header=*/true);
+
+  QuicSocketDataProvider socket_data(version_);
+  const char kRespData[] = "0123456789";
+  int to_proxy_packet_num = 1;
+  int from_proxy_packet_num = 1;
+  int to_endpoint_packet_num = 1;
+  int from_endpoint_packet_num = 1;
+  socket_data
+      .AddWrite("inital-client-settings",
+                ConstructInitialSettingsPacket(to_proxy_packet_num++))
+      .Sync();
+
+  socket_data
+      .AddWrite("connect-udp",
+                ConstructConnectUdpRequestPacket(
+                    to_proxy_packet_num++,
+                    GetNthClientInitiatedBidirectionalStreamId(0),
+                    "proxy.example.org:70",
+                    "/.well-known/masque/udp/mail.example.org/443/", false))
+      .Sync();
+
+  socket_data
+      .AddRead("inital-proxy-settings",
+               server_maker_.MakeInitialSettingsPacket(from_proxy_packet_num++))
+      .Sync();
+
+  socket_data.AddRead("connect-udp-response",
+                      ConstructServerResponseHeadersPacket(
+                          from_proxy_packet_num++,
+                          GetNthClientInitiatedBidirectionalStreamId(0), false,
+                          GetResponseHeaders("200")));
+
+  socket_data
+      .AddWrite("ack-connect-udp-response",
+                ConstructClientAckPacket(to_proxy_packet_num++,
+                                         from_proxy_packet_num - 1,
+                                         from_proxy_packet_num - 1))
+      .Sync();
+
+  socket_data
+      .AddWrite("endpoint-initial-client-settings",
+                client_maker_->Packet(to_proxy_packet_num++)
+                    .AddMessageFrame(ConstructH3Datagram(
+                        GetNthClientInitiatedBidirectionalStreamId(0), 0,
+                        to_endpoint_maker.MakeInitialSettingsPacket(
+                            to_endpoint_packet_num++)))
+                    .Build())
+      .Sync();
+
+  socket_data
+      .AddWrite(
+          "get-request-to-ep",
+          client_maker_->Packet(to_proxy_packet_num++)
+              .AddMessageFrame(ConstructH3Datagram(
+                  GetNthClientInitiatedBidirectionalStreamId(0), 0,
+                  to_endpoint_maker.MakeRequestHeadersPacket(
+                      to_endpoint_packet_num++,
+                      GetNthClientInitiatedBidirectionalStreamId(0), true,
+                      ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
+                      GetRequestHeaders("GET", "https", "/",
+                                        &to_endpoint_maker),
+                      nullptr,
+                      /*should_include_priority_frame=*/true)))
+              .Build())
+      .Sync();
+
+  socket_data
+      .AddRead("endpoint-response",
+               server_maker_
+                   .Packet(from_proxy_packet_num++)
+                   // Response headers
+                   .AddMessageFrame(ConstructH3Datagram(
+                       GetNthClientInitiatedBidirectionalStreamId(0), 0,
+                       from_endpoint_maker.MakeResponseHeadersPacket(
+                           from_endpoint_packet_num++,
+                           GetNthClientInitiatedBidirectionalStreamId(0), false,
+                           GetResponseHeaders("200"), nullptr)))
+                   // Response data
+                   .AddMessageFrame(ConstructH3Datagram(
+                       GetNthClientInitiatedBidirectionalStreamId(0), 0,
+                       from_endpoint_maker.MakeDataPacket(
+                           from_endpoint_packet_num++,
+                           GetNthClientInitiatedBidirectionalStreamId(0), true,
+                           ConstructDataFrame(kRespData))))
+                   .Build())
+      .Sync();
+
+  socket_data
+      .AddWrite(
+          "ack-endpoint-response",
+          client_maker_
+              ->Packet(to_proxy_packet_num++)
+              // Ack to proxy
+              .AddAckFrame(1, from_proxy_packet_num - 1,
+                           from_proxy_packet_num - 1)
+              // Ack to endpoint
+              .AddMessageFrame(ConstructH3Datagram(
+                  GetNthClientInitiatedBidirectionalStreamId(0), 0,
+                  to_endpoint_maker.MakeAckPacket(
+                      to_endpoint_packet_num++, from_endpoint_packet_num - 1,
+                      from_endpoint_packet_num - 1)))
+              .Build())
+      .Sync();
+
+  socket_factory_.AddSocketDataProvider(&socket_data);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
+
+  CreateSession();
+
+  // Add an alternate-protocol mapping so that the transaction
+  // uses QUIC to the endpoint.
+  AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
+
+  request_.url = GURL("https://mail.example.org/");
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
+  RunTransaction(&trans);
+  CheckResponsePort(&trans, kQuicProxyChain.First().GetPort());
+  CheckResponseData(&trans, kRespData);
+  EXPECT_EQ(trans.GetResponseInfo()->proxy_chain, kQuicProxyChain);
+  EXPECT_TRUE(socket_data.AllDataConsumed());
+}
+
+// Performs an 'http://' request over QUIC proxy tunnel, where the endpoint
+// has AlternativeService info, but that is not used for HTTP
+TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpServer) {
+  DisablePriorityHeader();
+  session_params_.enable_quic = true;
+
+  const auto kQuicProxyChain =
+      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          ProxyServer::SCHEME_QUIC, "proxy.example.org", 70)});
+  proxy_resolution_service_ =
+      ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
+          {kQuicProxyChain}, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  QuicSocketDataProvider socket_data(version_);
+  int packet_num = 1;
+  socket_data
+      .AddWrite("initial-setttings",
+                ConstructInitialSettingsPacket(packet_num++))
+      .Sync();
+  socket_data
+      .AddWrite("priority",
+                ConstructClientPriorityPacket(
+                    packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                    DEFAULT_PRIORITY))
+      .Sync();
+  socket_data
+      .AddWrite("connect-request",
+                ConstructClientRequestHeadersPacket(
+                    packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                    false, DEFAULT_PRIORITY,
+                    ConnectRequestHeaders("mail.example.org:80"), false))
+      .Sync();
+  socket_data.AddRead("connect-response",
+                         ConstructServerResponseHeadersPacket(
+                             1, GetNthClientInitiatedBidirectionalStreamId(0),
+                             false, GetResponseHeaders("200")));
+
+  const char kGetRequest[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: mail.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  socket_data
+      .AddWrite("get-request",
+                ConstructClientAckAndDataPacket(
+                    packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                    1, 1, false, ConstructDataFrame(kGetRequest)))
+      .Sync();
+
+  const char kGetResponse[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  const char kRespData[] = "0123456789";
+
+  socket_data.AddRead("get-response",
+                         ConstructServerDataPacket(
+                             2, GetNthClientInitiatedBidirectionalStreamId(0),
+                             false, ConstructDataFrame(kGetResponse)));
+
+  socket_data
+      .AddRead("response-data",
+               ConstructServerDataPacket(
+                   3, GetNthClientInitiatedBidirectionalStreamId(0), false,
+                   ConstructDataFrame(kRespData)))
+      .Sync();
+
+  socket_data
+      .AddWrite("response-ack", ConstructClientAckPacket(packet_num++, 3, 2))
+      .Sync();
+
+  socket_data
+      .AddWrite("qpack-cancel",
+                ConstructClientDataPacket(
+                    packet_num++, GetQpackDecoderStreamId(), false,
+                    StreamCancellationQpackDecoderInstruction(0)))
+      .Sync();
+
+  socket_data
+      .AddWrite("rst",
+                ConstructClientRstPacket(
+                    packet_num++, GetNthClientInitiatedBidirectionalStreamId(0),
+                    quic::QUIC_STREAM_CANCELLED))
+      .Sync();
+
+  socket_factory_.AddSocketDataProvider(&socket_data);
+  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
+
+  CreateSession();
+
+  request_.url = GURL("http://mail.example.org/");
+  AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
+  SendRequestAndExpectHttpResponseFromProxy(
+      kRespData, kQuicProxyChain.First().GetPort(), kQuicProxyChain);
+
+  // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
+  // proxy socket to disconnect.
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+
+  socket_data.RunUntilAllConsumed();
 }
 
 // Make two HTTP/1.1 requests to the same host over a QUIC proxy tunnel and
@@ -8043,7 +8325,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
         client_maker.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), false,
             quic::HttpStreamPriority::kDefaultUrgency,
-            ConnectRequestHeaders("mail.example.org:443"), nullptr, false));
+            ConnectRequestHeaders("mail.example.org:80"), nullptr, false));
     mock_quic_data[index]->AddRead(
         ASYNC, server_maker.MakeResponseHeadersPacket(
                    1, GetNthClientInitiatedBidirectionalStreamId(0), false,
@@ -8077,7 +8359,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
 
   CreateSession();
 
-  request_.url = GURL("https://mail.example.org/");
+  request_.url = GURL("http://mail.example.org/");
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
   RunTransaction(&trans);
