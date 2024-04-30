@@ -421,6 +421,12 @@ crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 # Conformance expectations
 # ========================
 
+# Failing new ImageDecoder -> VideoFrame -> texture test in WebGL 2.0 mode only
+crbug.com/337904214 [ android ] conformance/textures/misc/image-decoder-to-texture.html [ Failure ]
+crbug.com/337904214 [ linux ] conformance/textures/misc/image-decoder-to-texture.html [ Failure ]
+crbug.com/337904214 [ mac ] conformance/textures/misc/image-decoder-to-texture.html [ Failure ]
+crbug.com/337904214 [ win ] conformance/textures/misc/image-decoder-to-texture.html [ Failure ]
+
 # Failing new updated tests
 crbug.com/1131224 [ angle-d3d11 desktop no-asan oop-c passthrough release win10 ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
