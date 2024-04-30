@@ -12,12 +12,6 @@
 BASE_FEATURE(kForYouFre, "ForYouFre", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Whether the browser should be opened when the user closes the FRE window. If
-// false, we just exit Chrome and the user will get straight to the browser on
-// the next process launch.
-const base::FeatureParam<bool> kForYouFreCloseShouldProceed{
-    &kForYouFre, /*name=*/"close_should_proceed", /*default_value=*/true};
-
 constexpr base::FeatureParam<WithDefaultBrowserStep>::Option
     kWithDefaultBrowserStepOptions[] = {
         {WithDefaultBrowserStep::kYes, "yes"},

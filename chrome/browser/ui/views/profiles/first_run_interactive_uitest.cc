@@ -415,8 +415,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
           .SetMustRemainVisible(false));
   WaitForPickerClosed();
 
-  EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
-
+  EXPECT_TRUE(proceed_future.Get());
   ASSERT_TRUE(IsProfileNameDefault());
 
   // Checking the expected metrics from this flow.
@@ -774,7 +773,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
          CompleteDefaultBrowserStep()));
 
   WaitForPickerClosed();
-  EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
+  EXPECT_TRUE(proceed_future.Get());
 
   ASSERT_TRUE(IsProfileNameDefault());
 

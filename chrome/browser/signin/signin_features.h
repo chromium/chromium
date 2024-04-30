@@ -14,8 +14,6 @@
 BASE_DECLARE_FEATURE(kForYouFre);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-extern const base::FeatureParam<bool> kForYouFreCloseShouldProceed;
-
 enum class WithDefaultBrowserStep {
   // The default browser step should be shown as appropriate.
   kYes,

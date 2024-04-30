@@ -308,7 +308,7 @@ void FirstRunService::OnFirstRunHasExited(
       break;
     case ProfilePicker::FirstRunExitStatus::kQuitAtEnd:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      proceed = kForYouFreCloseShouldProceed.Get();
+      proceed = true;
 #endif
       should_mark_fre_finished = true;
       break;
