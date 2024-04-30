@@ -11,34 +11,34 @@
 
 namespace webnn::dml {
 
-#define RETURN_IF_FAILED(d3d_func)                          \
-  do {                                                      \
-    HRESULT hr = d3d_func;                                  \
-    if (FAILED(hr)) {                                       \
-      DLOG(ERROR) << "Failed to call " << #d3d_func << ": " \
-                  << logging::SystemErrorCodeToString(hr);  \
-      return hr;                                            \
-    }                                                       \
+#define RETURN_IF_FAILED(d3d_func)                                 \
+  do {                                                             \
+    HRESULT hr = d3d_func;                                         \
+    if (FAILED(hr)) {                                              \
+      LOG(ERROR) << "[WebNN] Failed to call " << #d3d_func << ": " \
+                 << logging::SystemErrorCodeToString(hr);          \
+      return hr;                                                   \
+    }                                                              \
   } while (0)
 
-#define RETURN_UNEXPECTED_IF_FAILED(d3d_func)               \
-  do {                                                      \
-    HRESULT hr = d3d_func;                                  \
-    if (FAILED(hr)) {                                       \
-      DLOG(ERROR) << "Failed to call " << #d3d_func << ": " \
-                  << logging::SystemErrorCodeToString(hr);  \
-      return base::unexpected(hr);                          \
-    }                                                       \
+#define RETURN_UNEXPECTED_IF_FAILED(d3d_func)                      \
+  do {                                                             \
+    HRESULT hr = d3d_func;                                         \
+    if (FAILED(hr)) {                                              \
+      LOG(ERROR) << "[WebNN] Failed to call " << #d3d_func << ": " \
+                 << logging::SystemErrorCodeToString(hr);          \
+      return base::unexpected(hr);                                 \
+    }                                                              \
   } while (0)
 
-#define RETURN_NULL_IF_FAILED(d3d_func)                     \
-  do {                                                      \
-    HRESULT hr = d3d_func;                                  \
-    if (FAILED(hr)) {                                       \
-      DLOG(ERROR) << "Failed to call " << #d3d_func << ": " \
-                  << logging::SystemErrorCodeToString(hr);  \
-      return nullptr;                                       \
-    }                                                       \
+#define RETURN_NULL_IF_FAILED(d3d_func)                            \
+  do {                                                             \
+    HRESULT hr = d3d_func;                                         \
+    if (FAILED(hr)) {                                              \
+      LOG(ERROR) << "[WebNN] Failed to call " << #d3d_func << ": " \
+                 << logging::SystemErrorCodeToString(hr);          \
+      return nullptr;                                              \
+    }                                                              \
   } while (0)
 
 }  // namespace webnn::dml

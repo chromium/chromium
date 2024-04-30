@@ -25,9 +25,10 @@ base::unexpected<mojom::ErrorPtr> HandleAdapterFailure(
     std::string_view error_message,
     HRESULT hr = S_OK) {
   if (FAILED(hr)) {
-    LOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] " << error_message << " "
+               << logging::SystemErrorCodeToString(hr);
   } else {
-    LOG(ERROR) << error_message;
+    LOG(ERROR) << "[WebNN] " << error_message;
   }
   return base::unexpected(
       CreateError(error_code, "Unable to find a capable adapter."));

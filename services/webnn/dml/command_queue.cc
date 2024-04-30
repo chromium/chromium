@@ -54,8 +54,8 @@ void CommandQueue::ScheduleCleanupForPendingWork(
 
   HRESULT hr = fence->SetEventOnCompletion(last_fence_value, fence_event.get());
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set event on completion : "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to set event on completion: "
+               << logging::SystemErrorCodeToString(hr);
     return;
   }
 
@@ -98,8 +98,8 @@ scoped_refptr<CommandQueue> CommandQueue::Create(
   HRESULT hr = d3d12_device->CreateCommandQueue(&command_queue_desc,
                                                 IID_PPV_ARGS(&command_queue));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create ID3D12CommandQueue: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to create ID3D12CommandQueue: "
+               << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
 
@@ -107,8 +107,8 @@ scoped_refptr<CommandQueue> CommandQueue::Create(
   hr =
       d3d12_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create ID3D12Fence: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to create ID3D12Fence: "
+               << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
 
@@ -173,8 +173,8 @@ void CommandQueue::WaitAsync(base::OnceCallback<void(HRESULT hr)> callback) {
   HRESULT hr =
       fence_->SetEventOnCompletion(last_fence_value_, fence_event_.get());
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set event on completion : "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to set event on completion: "
+               << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(hr);
     return;
   }

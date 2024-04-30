@@ -66,8 +66,8 @@ std::unique_ptr<WebNNBufferImpl> ContextImpl::CreateBufferImpl(
       CreateDefaultBuffer(adapter_->d3d12_device(), aligned_buffer_byte_size,
                           L"WebNN_Default_Buffer_External", buffer);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create the default buffer: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to create the default buffer: "
+               << logging::SystemErrorCodeToString(hr);
     return nullptr;
   }
 
@@ -94,8 +94,8 @@ void ContextImpl::ReadBuffer(const WebNNBufferImpl& src_buffer,
   hr = CreateReadbackBuffer(adapter_->d3d12_device(), src_buffer_size,
                             L"WebNN_Readback_Buffer", download_buffer);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create the download buffer: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to create the download buffer: "
+               << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
     return;
@@ -153,8 +153,8 @@ void ContextImpl::OnReadbackComplete(
   void* mapped_download_data = nullptr;
   hr = download_buffer->Map(0, nullptr, &mapped_download_data);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to map the download buffer: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to map the download buffer: "
+               << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
     return;
@@ -181,8 +181,8 @@ void ContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
                                   L"WebNN_Upload_Buffer", upload_buffer);
   if (FAILED(hr)) {
     // TODO(crbug.com/41492165): generate error using context.
-    DLOG(ERROR) << "Failed to create the upload buffer: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to create the upload buffer: "
+               << logging::SystemErrorCodeToString(hr);
     return;
   }
 
@@ -192,8 +192,8 @@ void ContextImpl::WriteBuffer(const WebNNBufferImpl& dst_buffer,
   void* mapped_upload_data = nullptr;
   hr = upload_buffer->Map(0, nullptr, &mapped_upload_data);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to map the upload buffer: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to map the upload buffer: "
+               << logging::SystemErrorCodeToString(hr);
     return;
   }
 

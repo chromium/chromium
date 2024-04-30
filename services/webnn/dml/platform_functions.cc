@@ -16,14 +16,14 @@ PlatformFunctions::PlatformFunctions() {
   base::ScopedNativeLibrary d3d12_library(
       base::LoadSystemLibrary(L"D3D12.dll"));
   if (!d3d12_library.is_valid()) {
-    DLOG(ERROR) << "Failed to load D3D12.dll.";
+    LOG(ERROR) << "[WebNN] Failed to load D3D12.dll.";
     return;
   }
   D3d12CreateDeviceProc d3d12_create_device_proc =
       reinterpret_cast<D3d12CreateDeviceProc>(
           d3d12_library.GetFunctionPointer("D3D12CreateDevice"));
   if (!d3d12_create_device_proc) {
-    DLOG(ERROR) << "Failed to get D3D12CreateDevice function.";
+    LOG(ERROR) << "[WebNN] Failed to get D3D12CreateDevice function.";
     return;
   }
 
@@ -31,7 +31,7 @@ PlatformFunctions::PlatformFunctions() {
       reinterpret_cast<D3d12GetDebugInterfaceProc>(
           d3d12_library.GetFunctionPointer("D3D12GetDebugInterface"));
   if (!d3d12_get_debug_interface_proc) {
-    DLOG(ERROR) << "Failed to get D3D12GetDebugInterface function.";
+    LOG(ERROR) << "[WebNN] Failed to get D3D12GetDebugInterface function.";
     return;
   }
 
@@ -49,7 +49,7 @@ PlatformFunctions::PlatformFunctions() {
         base::ScopedNativeLibrary(base::LoadSystemLibrary(L"directml.dll"));
   }
   if (!dml_library.is_valid()) {
-    DLOG(ERROR) << "Failed to load directml.dll.";
+    LOG(ERROR) << "[WebNN] Failed to load directml.dll.";
     return;
   }
   // On older versions of Windows, DMLCreateDevice was not publicly documented
@@ -61,7 +61,7 @@ PlatformFunctions::PlatformFunctions() {
       reinterpret_cast<DmlCreateDevice1Proc>(
           dml_library.GetFunctionPointer("DMLCreateDevice1"));
   if (!dml_create_device1_proc) {
-    DLOG(ERROR) << "Failed to get DMLCreateDevice1 function.";
+    LOG(ERROR) << "[WebNN] Failed to get DMLCreateDevice1 function.";
     return;
   }
 
@@ -104,7 +104,7 @@ PlatformFunctions::~PlatformFunctions() = default;
 PlatformFunctions* PlatformFunctions::GetInstance() {
   static base::NoDestructor<PlatformFunctions> instance;
   if (!instance->AllFunctionsLoaded()) {
-    DLOG(ERROR) << "Failed to load all platform functions.";
+    LOG(ERROR) << "[WebNN] Failed to load all platform functions.";
     return nullptr;
   }
   return instance.get();
