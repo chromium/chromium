@@ -103,16 +103,16 @@
     <span id="noResultsMessage"
     hidden$="[[searchHasLanguages(availableLanguages_, languageSearchValue_)]]">
     $i18n{languageMenuNoResults}</span>
-    <template is="dom-repeat" initial-count="30"
+    <template is="dom-repeat" initial-count="30" index-as="index"
         items="[[availableLanguages_]]">
         <div class="language-line dropdown-line">
-          <span id="language-name" class="language-name">
+          <span id$="language-name-[[index]]" class="language-name">
             [[item.readableLanguage]]
           </span>
           <cr-toggle
             checked="[[item.checked]]"
             on-change="onToggleChange_"
-            aria-labelledby="language-name"></cr-toggle>
+            aria-labelledby$="language-name-[[index]]"></cr-toggle>
         </div>
         <span id="notificationText"
               class$="notification-error-[[isNotificationError(item.languageCode, voicePackInstallStatus)]]"
