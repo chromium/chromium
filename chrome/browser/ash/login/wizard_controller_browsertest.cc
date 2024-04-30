@@ -149,6 +149,7 @@ namespace ash {
 namespace {
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::NotNull;
@@ -2582,6 +2583,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerEnableAdbSideloadingTest,
                mock_enable_adb_sideloading_screen_.get());
   CheckCurrentScreen(EnableAdbSideloadingScreenView::kScreenId);
 
+  EXPECT_CALL(*mock_enable_adb_sideloading_screen_,
+              OnUserAction(ElementsAre("enable-pressed")))
+      .Times(1);
   test::OobeJS().ClickOnPath(
       {"adb-sideloading", "enable-adb-sideloading-ok-button"});
 
@@ -2607,6 +2611,15 @@ IN_PROC_BROWSER_TEST_F(WizardControllerEnableAdbSideloadingTest,
   SkipToScreen(EnableAdbSideloadingScreenView::kScreenId,
                mock_enable_adb_sideloading_screen_.get());
   CheckCurrentScreen(EnableAdbSideloadingScreenView::kScreenId);
+
+  EXPECT_CALL(*mock_enable_adb_sideloading_screen_,
+              OnUserAction(ElementsAre("cancel-pressed")))
+      .Times(1);
+  test::OobeJS().ClickOnPath(
+      {"adb-sideloading", "enable-adb-sideloading-cancel-button"});
+
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_CALL(*mock_enable_adb_sideloading_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
 

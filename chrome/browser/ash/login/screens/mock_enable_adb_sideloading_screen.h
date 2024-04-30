@@ -21,6 +21,7 @@ class MockEnableAdbSideloadingScreen : public EnableAdbSideloadingScreen {
 
   MOCK_METHOD(void, ShowImpl, ());
   MOCK_METHOD(void, HideImpl, ());
+  MOCK_METHOD(void, OnUserAction, (const base::Value::List&));
 
   void ExitScreen();
 };
