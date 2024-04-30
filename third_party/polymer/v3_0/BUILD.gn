@@ -41,7 +41,6 @@ js_files = [
   "paper-spinner/paper-spinner-behavior.js",
   "paper-spinner/paper-spinner-lite.js",
   "paper-spinner/paper-spinner-styles.js",
-  "paper-styles/shadow.js",
 ]
 
 if (is_chromeos_ash) {
@@ -121,7 +120,6 @@ ts_library("library") {
     "components-chromium/paper-spinner/paper-spinner-behavior.d.ts",
     "components-chromium/paper-spinner/paper-spinner-lite.d.ts",
     "components-chromium/paper-spinner/paper-spinner-styles.d.ts",
-    "components-chromium/paper-styles/shadow.d.ts",
     "components-chromium/polymer/interfaces.d.ts",
     "components-chromium/polymer/lib/elements/array-selector.d.ts",
     "components-chromium/polymer/lib/elements/custom-style.d.ts",

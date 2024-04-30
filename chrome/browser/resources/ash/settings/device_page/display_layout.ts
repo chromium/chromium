@@ -8,7 +8,6 @@
  * more displays and allows them to be arranged.
  */
 
-import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
 import '../settings_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
