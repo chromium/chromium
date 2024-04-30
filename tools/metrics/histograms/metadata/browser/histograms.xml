@@ -95,6 +95,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.CachedEventsCount" units="events"
+    expires_after="2024-10-31">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Reflects cached events count: presents number of times a single event is
+    received and placed in cache. Per-event count is incremented every time an
+    event is added/replaced in the cache, and the metrics sample is recorded
+    once the event is confirmed by the server (and thus won't be accepted for
+    upload anymore). Expected to be 1 for the majority of the events, although
+    small number of re-uploads is allowed. Counter for an event that has not
+    been confirmed by the server yet will not be presented in UMA even if
+    received and cached multiple times; since ERP guarantees delivery, this
+    would only be a temporary state. Counter is inexact, since it may be reset
+    in the rare cases that the uploader memory usage reaches its limit. To see
+    how common that is, look at the histogram
+    Browser.ERP.UploadMemoryUsagePercent.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.ConfigFileParsingError"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2025-04-01">
   <owner>albertojuarez@google.com</owner>

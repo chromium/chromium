@@ -63,6 +63,16 @@ constexpr char kUmaRecordProcessedByServer[] =
 // tracked by Browser.ERP.UploadMemoryUsagePercent metrics.
 constexpr char kEventsUploadCount[] = "Browser.ERP.EventsUploadCount";
 
+// UMA that reflects cached events count: samples number of times a single event
+// is received and placed in cache. Per-event count is incremented every time an
+// event is added/replaced in the cache, and the metrics sample is recorded once
+// the event is confirmed by the server (and thus won't be accepted for upload
+// anymore). Expected to be 1 for the majority of the events, although small
+// number of re-uploads is allowed. This counter is inexact, since it may be
+// reset in rare cases uploader memory usage reaches its limit - tracked by
+// Browser.ERP.UploadMemoryUsagePercent metrics.
+constexpr char kCachedEventsCount[] = "Browser.ERP.CachedEventsCount";
+
 // Returns `true` if HTTP response code indicates an irrecoverable error.
 bool IsIrrecoverableError(int response_code) {
   return response_code >= ::net::HTTP_BAD_REQUEST &&
@@ -169,6 +179,12 @@ struct UploadState {
   // UMA is expected to see counter of 1 for the majority of events.
   base::flat_map<int64_t /*sequence_id*/, size_t> upload_counters;
 
+  // Cached events counters per sequence id. Incremented every time an event is
+  // received for upload and added to cache; sampled in UMA and removed from map
+  // once the event is confirmed or if the state is reset.
+  // UMA is expected to see counter of 1 for the majority of events.
+  base::flat_map<int64_t /*sequence_id*/, size_t> cached_counters;
+
   // Highest sequence id that has been successfully sent to server
   // (but not confirmed, so it remains in `cached_records`). Events until
   // `last_sequence_id` (inclusive) are not sent to the server.
@@ -218,10 +234,23 @@ void RemoveConfirmedEventsFromCache(UploadState* state) {
     if (const auto it =
             state->upload_counters.find(state->cached_records.begin()->first);
         it != state->upload_counters.end()) {
-      base::UmaHistogramCustomCounts(kEventsUploadCount, /*sample=*/it->second,
+      const auto event_upload_count = it->second;
+      base::UmaHistogramCustomCounts(kEventsUploadCount,
+                                     /*sample=*/event_upload_count,
                                      /*min=*/1, /*exclusive_max=*/20,
                                      /*buckets=*/20);
       state->upload_counters.erase(it);
+    }
+    // Sample incoming counter.
+    if (const auto it =
+            state->cached_counters.find(state->cached_records.begin()->first);
+        it != state->cached_counters.end()) {
+      const auto event_cached_count = it->second;
+      base::UmaHistogramCustomCounts(kCachedEventsCount,
+                                     /*sample=*/event_cached_count,
+                                     /*min=*/1, /*exclusive_max=*/20,
+                                     /*buckets=*/20);
+      state->cached_counters.erase(it);
     }
     // Remove record from cache.
     state->cached_records.erase(state->cached_records.begin());
@@ -490,8 +519,20 @@ void EncryptedReportingClient::UploadReport(
       record.Clear();
       continue;
     }
+    // Insert new record or replace the one cached before, either replacing the
+    // event with identical one, or with a gap record (in rare cases when the
+    // record triggered a permanent error by server). Since the gap replacement
+    // is rare, we do not account for the possible memory decrease.
     const auto [it, success] =
-        state->cached_records.insert(std::make_pair(seq_id, std::move(record)));
+        state->cached_records.insert_or_assign(seq_id, std::move(record));
+    // Set or increment cached counter of the event.
+    {
+      const auto [counter_it, counter_inserted] =
+          state->cached_counters.try_emplace(seq_id, 1u);
+      if (!counter_inserted) {
+        ++(counter_it->second);
+      }
+    }
     if (!success) {
       // `record` is already in cache, skip it.
       continue;
