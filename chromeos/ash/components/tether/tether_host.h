@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_HOST_H_
 
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
-#include "third_party/nearby/src/presence/presence_device.h"
 
 namespace ash::tether {
 
@@ -16,7 +15,6 @@ namespace ash::tether {
 struct TetherHost {
  public:
   explicit TetherHost(multidevice::RemoteDeviceRef remote_device_ref);
-  explicit TetherHost(nearby::presence::PresenceDevice presence_device);
   TetherHost(const TetherHost&) = delete;
   TetherHost& operator=(const TetherHost&) = delete;
 
@@ -32,13 +30,7 @@ struct TetherHost {
     return remote_device_ref_;
   }
 
-  const std::optional<nearby::presence::PresenceDevice> presence_device()
-      const {
-    return presence_device_;
-  }
-
  private:
-  std::optional<nearby::presence::PresenceDevice> presence_device_;
   std::optional<multidevice::RemoteDeviceRef> remote_device_ref_;
 };
 
