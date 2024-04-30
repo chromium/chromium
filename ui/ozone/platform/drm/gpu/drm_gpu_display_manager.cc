@@ -822,7 +822,7 @@ bool DrmGpuDisplayManager::UpdateDisplaysWithNewCrtcs(
   for (const auto& [drm, config_list] : drm_device_to_configs) {
     ConnectorCrtcMap current_connector_to_crtc_pairings;
     ConnectorCrtcMap new_connector_to_crtc_pairings;
-    for (const auto& config_param : controllers_to_configure) {
+    for (const auto& config_param : config_list) {
       const uint32_t connector_id = config_param.connector;
       DrmDisplay* display = FindDisplayByConnectorId(connector_id);
       if (!display) {
