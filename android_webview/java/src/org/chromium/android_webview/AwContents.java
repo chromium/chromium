@@ -205,6 +205,9 @@ public class AwContents implements SmartClipProvider {
     private static final Pattern sDataURLWithSelectorPattern =
             Pattern.compile("^[^#]*(#[A-Za-z][A-Za-z0-9\\-_:.]*)$");
 
+    private static final String CONSTRUCTOR_HISTOGRAM_NAME =
+            "Android.WebView.AwContentsConstructorTime";
+
     private static class ForceAuxiliaryBitmapRendering {
         private static final boolean sResult = lazyCheck();
 
@@ -1270,6 +1273,7 @@ public class AwContents implements SmartClipProvider {
             AwSettings settings,
             DependencyFactory dependencyFactory) {
         assert browserContext != null;
+        long startTime = SystemClock.uptimeMillis();
         sLastId += 1;
         mId = sLastId;
         if (!browserContext.isDefaultAwBrowserContext()) {
@@ -1388,6 +1392,11 @@ public class AwContents implements SmartClipProvider {
             }
 
             onContainerViewChanged();
+        }
+        long delta = SystemClock.uptimeMillis() - startTime;
+        RecordHistogram.recordTimesHistogram(CONSTRUCTOR_HISTOGRAM_NAME, delta);
+        if (mId == 1) {
+            RecordHistogram.recordTimesHistogram(CONSTRUCTOR_HISTOGRAM_NAME + ".First", delta);
         }
     }
 

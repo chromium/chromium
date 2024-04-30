@@ -4769,6 +4769,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.AwContentsConstructorTime{IsFirst}" units="ms"
+    expires_after="2024-10-29">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Time it takes to run the AwContents constructor. Recorded {IsFirst} time the
+    constructor is run.
+  </summary>
+  <token key="IsFirst">
+    <variant name="" summary="each"/>
+    <variant name=".First" summary="the first"/>
+  </token>
+</histogram>
+
 <histogram name="Android.WebView.Callback.Counts" enum="WebViewCallbackType"
     expires_after="2024-09-01">
   <owner>ntfschr@chromium.org</owner>
