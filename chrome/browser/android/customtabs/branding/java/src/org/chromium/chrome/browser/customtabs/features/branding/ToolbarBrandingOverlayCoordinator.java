@@ -6,15 +6,16 @@ package org.chromium.chrome.browser.customtabs.features.branding;
 
 import static org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayProperties.HIDING_PROGRESS;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import androidx.core.animation.Animator;
+import androidx.core.animation.AnimatorListenerAdapter;
+import androidx.core.animation.ValueAnimator;
+
 import org.chromium.chrome.R;
-import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.interpolators.AndroidxInterpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -56,10 +57,13 @@ public class ToolbarBrandingOverlayCoordinator {
         assert mHidingAnimator == null : "Toolbar branding overlay is already hiding.";
 
         mHidingAnimator = ValueAnimator.ofFloat(mModel.get(HIDING_PROGRESS), 1.f);
-        mHidingAnimator.setInterpolator(Interpolators.STANDARD_INTERPOLATOR);
+        mHidingAnimator.setInterpolator(AndroidxInterpolators.STANDARD_INTERPOLATOR);
         mHidingAnimator.setDuration(HIDING_DURATION_MS);
         mHidingAnimator.addUpdateListener(
-                anim -> mModel.set(HIDING_PROGRESS, (float) anim.getAnimatedValue()));
+                anim ->
+                        mModel.set(
+                                HIDING_PROGRESS,
+                                (float) ((ValueAnimator) anim).getAnimatedValue()));
         mHidingAnimator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
