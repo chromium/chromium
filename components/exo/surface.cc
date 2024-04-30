@@ -1868,7 +1868,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       }
     }
     frame->resource_list.push_back(current_resource_);
-  } else {
+  } else if (state_.basic_state.alpha != 0.0f) {
     const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
         viz::DrawQuad::Material::kSolidColor, state_.basic_state.alpha,
         render_pass, quad_to_target_transform, quad_rect, msk, quad_clip_rect,
