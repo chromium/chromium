@@ -34,7 +34,7 @@ const tests = [
     b: {dataType: 'float32', dimensions: [2, 4]},
   },
   {
-    name: 'Test building gemm with aTranspose=true.',
+    name: '[gemm] Test building gemm with aTranspose=true.',
     a: {dataType: 'float32', dimensions: [2, 3]},
     b: {dataType: 'float32', dimensions: [2, 4]},
     options: {
@@ -44,7 +44,7 @@ const tests = [
   },
   {
     name:
-        'Throw if inputShapeA[0] is not equal to inputShapeB[0] with aTranspose=true.',
+        '[gemm] Throw if inputShapeA[0] is not equal to inputShapeB[0] with aTranspose=true.',
     a: {dataType: 'float32', dimensions: [2, 3]},
     b: {dataType: 'float32', dimensions: [3, 4]},
     options: {
@@ -52,7 +52,7 @@ const tests = [
     },
   },
   {
-    name: 'Test building gemm with bTranspose=true.',
+    name: '[gemm] Test building gemm with bTranspose=true.',
     a: {dataType: 'float32', dimensions: [2, 3]},
     b: {dataType: 'float32', dimensions: [4, 3]},
     options: {
@@ -62,7 +62,7 @@ const tests = [
   },
   {
     name:
-        'Throw if inputShapeA[0] is not equal to inputShapeB[0] with bTranspose=true.',
+        '[gemm] Throw if inputShapeA[0] is not equal to inputShapeB[0] with bTranspose=true.',
     a: {dataType: 'float32', dimensions: [2, 3]},
     b: {dataType: 'float32', dimensions: [3, 4]},
     options: {
@@ -70,22 +70,22 @@ const tests = [
     },
   },
   {
-    name: 'Throw if the rank of inputA is not 2.',
+    name: '[gemm] Throw if the rank of inputA is not 2.',
     a: {dataType: 'float32', dimensions: [2, 3, 1]},
     b: {dataType: 'float32', dimensions: [2, 4]},
   },
   {
-    name: 'Throw if the rank of inputB is not 2.',
+    name: '[gemm] Throw if the rank of inputB is not 2.',
     a: {dataType: 'float32', dimensions: [2, 4]},
     b: {dataType: 'float32', dimensions: [2, 3, 1]},
   },
   {
-    name: 'Throw if data types of two inputs do not match.',
+    name: '[gemm] Throw if data types of two inputs do not match.',
     a: {dataType: 'float32', dimensions: [2, 3]},
-    b: {dataType: 'int32', dimensions: [3, 4]},
+    b: {dataType: 'float16', dimensions: [3, 4]},
   },
   {
-    name: 'Test building gemm with inputC.',
+    name: '[gemm] Test building gemm with inputC.',
     a: {dataType: 'float32', dimensions: [2, 3]},
     b: {dataType: 'float32', dimensions: [3, 4]},
     options: {
@@ -94,7 +94,7 @@ const tests = [
     output: {dataType: 'float32', dimensions: [2, 4]}
   },
   {
-    name: 'Test building gemm with scalar inputC.',
+    name: '[gemm] Test building gemm with scalar inputC.',
     a: {dataType: 'float32', dimensions: [2, 3]},
     b: {dataType: 'float32', dimensions: [3, 4]},
     options: {
@@ -104,7 +104,7 @@ const tests = [
   },
   {
     name:
-        'Throw if inputShapeC is not unidirectionally broadcastable to the output shape [inputShapeA[0], inputShapeB[1]].',
+        '[gemm] Throw if inputShapeC is not unidirectionally broadcastable to the output shape [inputShapeA[0], inputShapeB[1]].',
     a: {dataType: 'float32', dimensions: [2, 3]},
     b: {dataType: 'float32', dimensions: [3, 4]},
     options: {
@@ -112,18 +112,23 @@ const tests = [
     },
   },
   {
+    name: '[gemm] Throw if the input data type is not floating point.',
+    a: {dataType: 'int32', dimensions: [2, 3]},
+    b: {dataType: 'int32', dimensions: [3, 4]}
+  },
+  {
     name:
-        'Throw if data type of inputC does not match ones of inputA and inputB.',
+        '[gemm] Throw if data type of inputC does not match ones of inputA and inputB.',
     a: {dataType: 'float32', dimensions: [3, 2]},
     b: {dataType: 'float32', dimensions: [4, 3]},
     options: {
-      c: {dataType: 'int32', dimensions: [2, 4]},
+      c: {dataType: 'float16', dimensions: [2, 4]},
       aTranspose: true,
       bTranspose: true,
     },
   },
   {
-    name: 'Throw if the rank of inputC is 3.',
+    name: '[gemm] Throw if the rank of inputC is 3.',
     a: {dataType: 'float32', dimensions: [3, 2]},
     b: {dataType: 'float32', dimensions: [4, 3]},
     options: {

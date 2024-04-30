@@ -3013,6 +3013,16 @@ TEST_F(WebNNGraphImplTest, GemmTest) {
         .Test();
   }
   {
+    // Test the invalid graph if the input is not floating point.
+    GemmTester{
+        .a = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kInt32, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kInt32,
+                   .dimensions = {2, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
     // Test the invalid graph for the output shapes are not expected.
     GemmTester{
         .a = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2, 3}},
@@ -4826,6 +4836,16 @@ TEST_F(WebNNGraphImplTest, MatmulTest) {
                  .output = {.type = mojom::Operand::DataType::kFloat32,
                             .dimensions = {3, 4}},
                  .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph if the input is not floating point.
+    MatmulTester{
+        .a = {.type = mojom::Operand::DataType::kUint8, .dimensions = {2, 3}},
+        .b = {.type = mojom::Operand::DataType::kUint8, .dimensions = {3, 4}},
+        .output = {.type = mojom::Operand::DataType::kUint8,
+                   .dimensions = {2, 4}},
+        .expected = false}
         .Test();
   }
   {

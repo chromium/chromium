@@ -12,6 +12,7 @@
 
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -62,6 +63,10 @@ using IdToOperandMap = base::flat_map<uint64_t, OperandPtr>;
 // A map of all node outputs in `dml::GraphBuilder` using the mojom operand id
 // as key.
 using IdToNodeOutputMap = std::map<uint64_t, const NodeOutput*>;
+
+static constexpr auto kDmlFloatDataTypes =
+    base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
+        {DML_TENSOR_DATA_TYPE_FLOAT32, DML_TENSOR_DATA_TYPE_FLOAT16});
 
 constexpr const uint32_t kNhwcToNchwPermutation[] = {0, 3, 1, 2};
 constexpr const uint32_t kNchwToNhwcPermutation[] = {0, 2, 3, 1};
@@ -1416,8 +1421,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   // The input tensor description may be transposed.
   auto input_tensor_desc = input->GetTensorDesc();
   CHECK_EQ(input_tensor_desc.GetDimensions().size(), 4u);
-  CHECK(input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_FLOAT32 ||
-        input_tensor_desc.GetDataType() == DML_TENSOR_DATA_TYPE_FLOAT16);
+  CHECK(kDmlFloatDataTypes.contains(input_tensor_desc.GetDataType()));
 
   const NodeOutput* filter =
       GetNodeOutputForOperand(id_to_node_output_map, conv2d->filter_operand_id);
@@ -2621,6 +2625,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   const NodeOutput* input_a_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, gemm->a_operand_id);
   auto input_a_tensor_desc = input_a_node_output->GetTensorDesc();
+  CHECK(kDmlFloatDataTypes.contains(input_a_tensor_desc.GetDataType()));
 
   const NodeOutput* input_b_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, gemm->b_operand_id);
@@ -3766,6 +3771,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   const NodeOutput* input_a_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, matmul->a_operand_id);
   auto input_a_tensor_desc = input_a_node_output->GetTensorDesc();
+  CHECK(kDmlFloatDataTypes.contains(input_a_tensor_desc.GetDataType()));
+
   const NodeOutput* input_b_node_output =
       GetNodeOutputForOperand(id_to_node_output_map, matmul->b_operand_id);
   auto input_b_tensor_desc = input_b_node_output->GetTensorDesc();

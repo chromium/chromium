@@ -802,6 +802,11 @@ base::expected<Operand, std::string> ValidatePadAndInferOutput(
 base::expected<Operand, std::string> ValidateMatmulAndInferOutput(
     const Operand& a,
     const Operand& b) {
+  if (!IsFloatingPointType(a.data_type)) {
+    return base::unexpected(
+        "The data type of inputs must be one of the floating point types.");
+  }
+
   if (a.data_type != b.data_type) {
     return base::unexpected("The data types of first two inputs don't match.");
   }
@@ -1123,6 +1128,11 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& a,
     const Operand& b,
     const GemmAttributes& attributes) {
+  if (!IsFloatingPointType(a.data_type)) {
+    return base::unexpected(
+        "The data type of inputs must be one of the floating point types.");
+  }
+
   if (a.data_type != b.data_type) {
     return base::unexpected("The data types of first two inputs don't match.");
   }

@@ -1084,6 +1084,8 @@ auto GraphBuilder::SerializeGemm(const mojom::Gemm& gemm)
   // Check for unsupported inputs.
   const mojom::Operand& output_operand = GetOperand(gemm.output_operand_id);
   CHECK_EQ(output_operand.dimensions.size(), 2u);
+  CHECK(output_operand.data_type == mojom::Operand::DataType::kFloat32 ||
+        output_operand.data_type == mojom::Operand::DataType::kFloat16);
   const uint32_t output_channels = output_operand.dimensions[1];
   if (gemm.c_operand_id.has_value()) {
     // The TFLite fully connected operator only supports a 1-D bias tensor with
@@ -1239,6 +1241,11 @@ auto GraphBuilder::SerializeLogicalNot(
 
 auto GraphBuilder::SerializeMatmul(const mojom::Matmul& matmul)
     -> OperatorOffset {
+  const mojom::Operand::DataType a_operand_data_type =
+      GetOperand(matmul.a_operand_id).data_type;
+  CHECK(a_operand_data_type == mojom::Operand::DataType::kFloat32 ||
+        a_operand_data_type == mojom::Operand::DataType::kFloat16);
+
   const auto matmul_options =
       ::tflite::CreateBatchMatMulOptions(builder_, /*adj_x=*/false,
                                          /*adj_y=*/false);
