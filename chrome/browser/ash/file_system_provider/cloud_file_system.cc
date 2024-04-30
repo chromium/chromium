@@ -170,7 +170,11 @@ AbortCallback CloudFileSystem::GetMetadata(const base::FilePath& entry_path,
   VLOG(2) << "GetMetadata {fsid = '" << GetFileSystemId() << "', entry_path = '"
           << entry_path << "', fields = '" << fields << "'}";
   fields |= METADATA_FIELD_CLOUD_FILE_INFO;
-  return file_system_->GetMetadata(entry_path, fields, std::move(callback));
+  return file_system_->GetMetadata(
+      entry_path, fields,
+      base::BindOnce(&CloudFileSystem::OnGetMetadataCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), entry_path,
+                     std::move(callback)));
 }
 
 AbortCallback CloudFileSystem::GetActions(
@@ -566,6 +570,19 @@ void CloudFileSystem::OnCloseFileCompleted(
   // list of opened files.
   opened_files_.erase(file_handle);
   std::move(callback).Run(result);
+}
+
+void CloudFileSystem::OnGetMetadataCompleted(
+    const base::FilePath& entry_path,
+    GetMetadataCallback callback,
+    std::unique_ptr<EntryMetadata> entry_metadata,
+    base::File::Error result) {
+  if (result == base::File::FILE_ERROR_NOT_FOUND) {
+    // The file doesn't exist on the FSP, evict it from the cache.
+    content_cache_->MarkItemForEviction(entry_path);
+    // TODO(b/328679535): Remove watcher for file.
+  }
+  std::move(callback).Run(std::move(entry_metadata), result);
 }
 
 }  // namespace ash::file_system_provider

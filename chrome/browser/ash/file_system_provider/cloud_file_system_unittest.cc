@@ -38,6 +38,8 @@ using testing::Return;
 using OpenFileFuture =
     TestFuture<int, base::File::Error, std::unique_ptr<EntryMetadata>>;
 using ReadFileFuture = TestFuture<int, bool, base::File::Error>;
+using GetMetadataFuture =
+    TestFuture<std::unique_ptr<EntryMetadata>, base::File::Error>;
 using FileErrorFuture = TestFuture<base::File::Error>;
 
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -461,5 +463,38 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
           Pair(_, AllOf(Field(&Watcher::entry_path, base::FilePath("/b.txt")),
                         Field(&Watcher::recursive, IsFalse()))))));
 }
+
+TEST_F(FileSystemProviderCloudFileSystemTest,
+       NotFoundFromGetMetadataEvictsCachedFile) {
+  // Underlying FakeProvidedFileSystem is (always) initialised with fake file
+  // with kFakeFilePath.
+  const base::FilePath fake_file_path(kFakeFilePath);
+  auto [mock_content_cache, cloud_file_system] =
+      CreateMockContentCacheAndCloudFileSystem();
+
+  // The file won't be evicted after the successful GetMetadata request.
+  EXPECT_CALL(*mock_content_cache, MarkItemForEviction(fake_file_path))
+      .Times(0);
+  GetMetadataFuture get_metadata_future1;
+  cloud_file_system->GetMetadata(fake_file_path,
+                                 /*fields*/ {},
+                                 get_metadata_future1.GetRepeatingCallback());
+  EXPECT_EQ(get_metadata_future1.Get<base::File::Error>(), base::File::FILE_OK);
+
+  // Remove the entry from the underlying FSP, this should result in a
+  // base::File::FILE_ERROR_NOT_FOUND on the `GetMetadata` request.
+  DeleteEntryOnFakeFileSystem(fake_file_path);
+
+  // The file will be evicted after the unsuccessful GetMetadata request.
+  EXPECT_CALL(*mock_content_cache, MarkItemForEviction(fake_file_path))
+      .Times(1);
+  GetMetadataFuture get_metadata_future2;
+  cloud_file_system->GetMetadata(fake_file_path,
+                                 /*fields*/ {},
+                                 get_metadata_future2.GetRepeatingCallback());
+  EXPECT_EQ(get_metadata_future2.Get<base::File::Error>(),
+            base::File::FILE_ERROR_NOT_FOUND);
+}
+
 }  // namespace
 }  // namespace ash::file_system_provider

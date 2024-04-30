@@ -153,6 +153,13 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
                             storage::AsyncFileUtil::StatusCallback callback,
                             base::File::Error result);
 
+  // Called when the get metadata request is completed with either a success or
+  // an error.
+  void OnGetMetadataCompleted(const base::FilePath& entry_path,
+                              GetMetadataCallback callback,
+                              std::unique_ptr<EntryMetadata> entry_metadata,
+                              base::File::Error result);
+
   // When an attempt to read the file from disk completes, in the event it fails
   // ensure it gets delegated to the underlying FSP.
   void OnReadFileFromCacheCompleted(int file_handle,
