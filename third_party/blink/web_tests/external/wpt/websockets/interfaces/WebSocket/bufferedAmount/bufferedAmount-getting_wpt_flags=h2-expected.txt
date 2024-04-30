@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] WebSockets: bufferedAmount after send()ing
-  assert_unreached: Reached unreachable code
-Harness: the test ran to completion.
-

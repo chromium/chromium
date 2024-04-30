@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] WebSockets: sending HttpOnly cookies in ws request
-  assert_unreached: error Reached unreachable code
-Harness: the test ran to completion.
-

@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] constructing with a valid URL should work
-  promise_test: Unhandled rejection with value: object "WebSocketError: WebSocket closed before handshake complete."
-[FAIL] setting a protocol in the constructor should work
-  promise_test: Unhandled rejection with value: object "WebSocketError: WebSocket closed before handshake complete."
-[FAIL] wss.opened should resolve to the right types
-  promise_test: Unhandled rejection with value: object "WebSocketError: WebSocket closed before handshake complete."
-Harness: the test ran to completion.
-
