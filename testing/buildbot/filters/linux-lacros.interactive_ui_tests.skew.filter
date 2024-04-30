@@ -17,3 +17,5 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAll/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAll/3
+-TabDragging/DetachToBrowserTabDragControllerTest.DragInMaximizedWindow/1
+-TabDragging/DetachToBrowserTabDragControllerTest.DragInMaximizedWindow/3
