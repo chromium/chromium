@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1021782183249308751">按住 Chrome 圖示，然後點選「編輯主畫面」</translation>
-<translation id="1066101356081285416">造訪網站時，Chrome 會在網站上偵測是否有追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將包裹追蹤號碼和網站名稱傳送給 Google。這些資料也會用於改善 Google 購物功能，造福所有使用者。你隨時可以前往<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />進行更新。</translation>
+<translation id="1066101356081285416">造訪網站時，Chrome 會偵測網站上的追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將包裹追蹤號碼和網站名稱傳送給 Google。這些資料也會用於改善 Google 購物功能，造福所有使用者。你隨時可以前往<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />更新這項設定。</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="1105362920864247682">清除 Chrome 中的瀏覽資料。</translation>
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中。</translation>
@@ -67,7 +67,7 @@
 <translation id="2574249610672786438">在你所有的裝置上登入帳戶後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="2576431527583832481">Chrome 現在變得更進步了！歡迎你升級使用新版本。</translation>
 <translation id="257708665678654955">下次造訪這個網站時，需要 Google Chrome 為您翻譯其中的<ph name="LANGUAGE_NAME" />網頁嗎？</translation>
-<translation id="2650286135394207535">讓 Chrome 協助你追蹤包裹</translation>
+<translation id="2650286135394207535">Chrome 可協助追蹤包裹</translation>
 <translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式中，使用 Google 密碼管理員所儲存的密碼。</translation>
 <translation id="2689064829982324496">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>

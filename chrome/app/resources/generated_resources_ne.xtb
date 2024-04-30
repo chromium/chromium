@@ -1646,7 +1646,7 @@
 <translation id="2218019600945559112">माउस र टचप्याड</translation>
 <translation id="2218515861914035131">सादा पाठको रूपमा टाँस्नुहोस्</translation>
 <translation id="221872881068107022">विपरीत दिशामा स्क्रोल गर्नुहोस्</translation>
-<translation id="2219007152108311874">हरेक पटक साइटमा जाँदा सोधियोस्</translation>
+<translation id="2219007152108311874">हरेक पटक साइटमा जाँदा सोध्नुहोस्</translation>
 <translation id="2219081237089444028">साइन इन गर्न सजिलो होस् भनेर <ph name="DEVICE_TYPE" /> को पासवर्ड राख्नुहोस्</translation>
 <translation id="2220409419896228519">Google का आफ्ना मन पर्ने एपहरूमा पुस्तक चिन्ह थप्नुहोस्</translation>
 <translation id="2220529011494928058">मुद्दा उजुरी गर्नुहोस्</translation>
@@ -4466,7 +4466,7 @@
 <translation id="4350230709416545141"><ph name="HOST" /> लाई कहिल्यै पनि आफ्नो स्थानसम्बन्धी जानकारी प्रयोग नदिनुहोस्</translation>
 <translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">इन्स्टल र स्ट्रिम गरिएका एपहरू व्यवस्थापन गर्न "<ph name="APP_NAME" />" एपमा जानुहोस्</translation>
-<translation id="4354073718307267720">कुनै साइटले आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन खोज्दा मलाई सोधियोस्</translation>
+<translation id="4354073718307267720">कुनै साइटले आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन खोज्दा मलाई सोध्नुहोस्</translation>
 <translation id="4354344420232759511">तपाईंले भ्रमण गर्ने साइटहरू यहाँ देखिने छन्</translation>
 <translation id="435527878592612277">आफ्नो तस्बिर चयन गर्नुहोस्</translation>
 <translation id="4356100841225547054">भोल्युम अफ गर्नुहोस्</translation>
@@ -5907,7 +5907,7 @@
 <translation id="5487521232677179737">डेटा मेटाउनुहोस्</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' कपी गरियो</translation>
 <translation id="5488508217173274228">इन्क्रिप्सनसम्बन्धी विकल्पहरू सिंक गर्नुहोस्</translation>
-<translation id="5489077378642700219"><ph name="WEBSITE" /> का सूचनाहरू ब्लक गर्नुहोस् तर पछि फेरि सोधियोस्</translation>
+<translation id="5489077378642700219"><ph name="WEBSITE" /> का सूचनाहरू ब्लक गर्नुहोस् तर पछि फेरि सोध्नुहोस्</translation>
 <translation id="5489435190927933437"><ph name="DOMAIN" /> का सुरक्षित गरिएका पासवर्डहरू</translation>
 <translation id="5490721031479690399">ब्लुटुथ डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="5490798133083738649">Linux लाई तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
@@ -6469,7 +6469,7 @@
 <translation id="59174027418879706">सक्षम गरिएको</translation>
 <translation id="5920543303088087579">तपाईंका प्रशासकले यस नेवर्टकमा जडान गर्ने सुविधालाई असक्षम पार्नुभएको छ</translation>
 <translation id="5924047253200400718">मद्दत प्राप्त गर्नुहोस्<ph name="SCANNING_STATUS" /></translation>
-<translation id="5924438086390153180">Microsoft फाइलहरू Google Drive मा कपी गर्नुअघि वा त्यहाँबाट सारेर अन्यत्र लैजानुअघि सोधियोस्</translation>
+<translation id="5924438086390153180">Microsoft फाइलहरू Google Drive मा कपी गर्नुअघि वा त्यहाँबाट सारेर अन्यत्र लैजानुअघि सोध्नुहोस्</translation>
 <translation id="5924527146239595929">कुनै नयाँ तस्बिर खिच्नुहोस्‌ वा विद्यमान तस्बिर वा आइकन छनौट गर्नुहोस्।
     <ph name="LINE_BREAK" />
 
@@ -6801,7 +6801,7 @@
 <translation id="6170470584681422115">स्यान्डविच</translation>
 <translation id="6170498031581934115">ADB डिबग प्रक्रिया सक्षम पार्न सकिएन। सेटिङमा गएर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6170675927290506430">सूचनाका सेटिङमा जानुहोस्</translation>
-<translation id="6171779718418683144">हरेक पटक साइटमा जाँदा सोधियोस्</translation>
+<translation id="6171779718418683144">हरेक पटक साइटमा जाँदा सोध्नुहोस्</translation>
 <translation id="617213288191670920">कुनै पनि भाषा थपिएको छैन</translation>
 <translation id="6173623053897475761">आफ्नो PIN फेरि टाइप गर्नुहोस्</translation>
 <translation id="6175314957787328458">Microsoft डोमेन GUID</translation>
@@ -6889,7 +6889,7 @@
 <translation id="6238923052227198598">लक स्क्रिनसम्बन्धी पछिल्लो टिपोट राख्नुहोस्</translation>
 <translation id="6238982280403036866">JavaScript प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="6239558157302047471">&amp;frame पुन: लोड गर्नुहोस्</translation>
-<translation id="6240821072888636753">हरेक पटक सोधियोस्</translation>
+<translation id="6240821072888636753">हरेक पटक सोध्नुहोस्</translation>
 <translation id="6240964651812394252">अपरेटिङ सिस्टममा पासवर्ड म्यानेजर प्रयोग गर्न Chrome रिलन्च गर्नुहोस् र कम्प्युटरको पासवर्ड म्यानेजर प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="6241530762627360640">तपाईंको सिस्टमसँग पेयर गरिएको ब्लूटुथ डिभाइसहरूको जानकारी पहुँच गर्नुहोस् र नजिकैको ब्लूटुथ यन्त्रहरू खोज्नुहोस्।</translation>
 <translation id="6241844896329831164">पहुँच चाहिँदैन</translation>
@@ -6927,7 +6927,7 @@
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
 <translation id="6264520534872750757">यो डिभाइस प्रयोग गर्न जारी राख्नुहोस्</translation>
 <translation id="6264636978858465832">पासवर्ड म्यानेजरलाई थप कुराको अनुमति दिनु पर्ने हुन्छ</translation>
-<translation id="6265159465845424232">Microsoft फाइलहरू Microsoft OneDrive मा कपी गर्नुअघि वा त्यहाँबाट सारेर अन्यत्र लैजानुअघि सोधियोस्</translation>
+<translation id="6265159465845424232">Microsoft फाइलहरू Microsoft OneDrive मा कपी गर्नुअघि वा त्यहाँबाट सारेर अन्यत्र लैजानुअघि सोध्नुहोस्</translation>
 <translation id="6265687851677020761">पोर्ट हटाउनुहोस्</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="6267166720438879315">तपाइँ आफैलाई <ph name="HOST_NAME" /> मा प्रमाणीकरण गर्नको लागि एक प्रमाणपत्र चयन गर्नुहोस्</translation>

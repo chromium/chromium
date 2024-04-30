@@ -588,7 +588,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1444628761356461360">To nastavitev upravlja lastnik naprave <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Ni bilo mogoče naložiti slike »<ph name="IMAGE_PATH" />« za temo.</translation>
 <translation id="1447531650545977377">Vklopite &amp;sinhronizacijo …</translation>
-<translation id="1447895950459090752">Zavihek z lebdečo kartico za predogled</translation>
+<translation id="1447895950459090752">Lebdeča kartica za predogled zavihka</translation>
 <translation id="1448264954024227422">Ta račun lahko uporabljate z aplikacijami za Android. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
 
 Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dovoljenja za aplikacije Android lahko nadzirate v <ph name="APPS_LINK_BEGIN" />nastavitvah aplikacij<ph name="APPS_LINK_END" />.</translation>
@@ -2465,7 +2465,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2792465461386711506">Vklopite sinhronizacijo za Chrome, če si želite ogledati nedavne Chromove zavihke iz telefona</translation>
 <translation id="2792697226874849938">Slika omejitve</translation>
 <translation id="2794522004398861033">Če želite nastaviti eSIM, se povežite z omrežjem Wi-Fi ali ethernetom.</translation>
-<translation id="2794977172822818797">Dodaj trenutna spletna mesta</translation>
+<translation id="2794977172822818797">Dodajanje trenutnih spletnih mest</translation>
 <translation id="2795716239552913152">Spletna mesta običajno uporabljajo vašo lokacijo zaradi ustreznih funkcij ali informacij, kot so lokalne novice ali trgovine v bližini.</translation>
 <translation id="2798347533012571708">Ohrani posodobitve</translation>
 <translation id="2799223571221894425">Vnovičen zagon</translation>
@@ -3434,7 +3434,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3563558822383875692">Konfiguriranje prenosljive vsebine.</translation>
 <translation id="3564334271939054422">Omrežje Wi-Fi, ki ga uporabljate (<ph name="NETWORK_ID" />), bo morda zahtevalo, da obiščete stran za prijavo.</translation>
 <translation id="3564848315152754834">Varnostni ključ USB</translation>
-<translation id="3566211766752891194">Prikaz uporabe pomnilnika zavihkov</translation>
+<translation id="3566211766752891194">Prikaz uporabe pomnilnika za zavihke</translation>
 <translation id="3566325075220776093">Iz te naprave</translation>
 <translation id="3566721612727112615">Dodano ni bilo nobeno spletno mesto</translation>
 <translation id="3567284462585300767">Če želite prejeti in sprejeti datoteke od oseb okoli sebe, omogočite vidnost.</translation>
@@ -4508,7 +4508,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4364830672918311045">Prikaz obvestil</translation>
 <translation id="4367513928820380646">Pregled odstranjenih dovoljenj</translation>
 <translation id="4367971618859387374">Prikazno ime</translation>
-<translation id="4368960422722232719">Prikaz uporabe pomnilnika na zavihku z lebdečo kartico za predogled</translation>
+<translation id="4368960422722232719">Prikaz uporabe pomnilnika na lebdeči kartici za predogled zavihka</translation>
 <translation id="4369215744064167350">Odobrena zahteva za dostop do spletnega mesta</translation>
 <translation id="4369233657762989723">Vklop/izklop nareka</translation>
 <translation id="436926121798828366">To lahko kadar koli spremenite tu: <ph name="SETTINGS_LINK" />.</translation>
