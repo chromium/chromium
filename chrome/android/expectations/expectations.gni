@@ -8,7 +8,7 @@ import("//build/config/coverage/coverage.gni")
 # Chosen to match android-binary-size trybot.
 enable_libs_and_assets_verification =
     !enable_chrome_android_internal && !is_component_build &&
-    !use_jacoco_coverage &&
+    !use_jacoco_coverage && is_official_build &&
     (target_cpu == "arm64" && android_channel == "stable")
 
 # enable_chrome_android_internal: Manifest merging of play services deps vary.
