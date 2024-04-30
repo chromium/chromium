@@ -740,7 +740,9 @@ Node* ContainerNode::RemoveChild(Node* old_child,
 
   Node* child = old_child;
 
-  GetDocument().RemoveFocusedElementOfSubtree(*child);
+  if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+    GetDocument().RemoveFocusedElementOfSubtree(*child);
+  }
 
   // Events fired when blurring currently focused node might have moved this
   // child into a different parent.
