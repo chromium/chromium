@@ -893,7 +893,8 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
           gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
       "TestLabel", std::move(out_gmb));
 
-  auto vulkan_image_processor = VulkanImageProcessor::Create();
+  auto vulkan_image_processor =
+      VulkanImageProcessor::Create(/*is_protected=*/false, kMM21);
   ASSERT_TRUE(vulkan_image_processor);
 
   auto input_vulkan_representation = shared_image_manager.ProduceVulkan(
@@ -1114,7 +1115,8 @@ TEST(ImageProcessorBackendTest, VulkanMT2TDetileScaleTest) {
           gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT,
       "TestLabel", std::move(out_gmb));
 
-  auto vulkan_image_processor = VulkanImageProcessor::Create(kMT2T);
+  auto vulkan_image_processor =
+      VulkanImageProcessor::Create(/*is_protected=*/false, kMT2T);
   ASSERT_TRUE(vulkan_image_processor);
 
   auto input_vulkan_representation = shared_image_manager.ProduceVulkan(

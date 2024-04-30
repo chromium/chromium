@@ -953,7 +953,8 @@ TEST_P(VulkanImageProcessorPerfTest, Detile) {
         std::move(output_gmb));
   }
 
-  auto vulkan_image_processor = VulkanImageProcessor::Create(GetParam());
+  auto vulkan_image_processor =
+      VulkanImageProcessor::Create(/*is_protected=*/false, GetParam());
   ASSERT_TRUE(vulkan_image_processor);
 
   auto start_time = base::TimeTicks::Now();

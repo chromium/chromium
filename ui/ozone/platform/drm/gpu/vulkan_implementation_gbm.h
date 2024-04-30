@@ -14,7 +14,7 @@ namespace ui {
 
 class VulkanImplementationGbm : public gpu::VulkanImplementation {
  public:
-  VulkanImplementationGbm();
+  VulkanImplementationGbm(bool allow_protected_memory);
 
   VulkanImplementationGbm(const VulkanImplementationGbm&) = delete;
   VulkanImplementationGbm& operator=(const VulkanImplementationGbm&) = delete;

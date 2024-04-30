@@ -32,7 +32,9 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
 
   ~VulkanImageProcessor();
 
+  // TODO(greenjustin): Change the |is_protected| bool to an enum.
   static std::unique_ptr<VulkanImageProcessor> Create(
+      bool is_protected,
       TiledImageFormat format = kMM21,
       const gfx::Size& max_size = gfx::Size(3840, 2160));
 
@@ -79,7 +81,8 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
           transform_descriptor_pool,
       std::unique_ptr<VulkanImageProcessor::VulkanSampler> sampler,
       std::unique_ptr<gpu::VulkanImage> pivot_image,
-      std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture);
+      std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture,
+      bool is_protected);
 
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<VulkanImageProcessor::VulkanDeviceQueueWrapper>
@@ -98,6 +101,8 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
 
   std::unique_ptr<gpu::VulkanImage> pivot_image_;
   std::unique_ptr<VulkanImageProcessor::VulkanTextureImage> pivot_texture_;
+
+  bool is_protected_;
 };
 
 }  // namespace media

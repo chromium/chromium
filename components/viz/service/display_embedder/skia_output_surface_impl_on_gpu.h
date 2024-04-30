@@ -652,7 +652,8 @@ class SkiaOutputSurfaceImplOnGpu
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
-  std::unique_ptr<media::VulkanImageProcessor> vulkan_image_processor_;
+  std::unique_ptr<media::VulkanImageProcessor> vulkan_image_processor_ =
+      nullptr;
 #endif
 
   base::WeakPtr<SkiaOutputSurfaceImplOnGpu> weak_ptr_;

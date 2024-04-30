@@ -312,7 +312,7 @@ GbmSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
                                               bool allow_protected_memory) {
   DCHECK(!use_swiftshader)
       << "Vulkan Swiftshader is not supported on this platform.";
-  return std::make_unique<VulkanImplementationGbm>();
+  return std::make_unique<VulkanImplementationGbm>(allow_protected_memory);
 }
 
 scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(

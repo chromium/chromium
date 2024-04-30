@@ -15,10 +15,12 @@ namespace viz {
 
 BufferQueue::BufferQueue(SkiaOutputSurface* skia_output_surface,
                          gpu::SurfaceHandle surface_handle,
-                         size_t number_of_buffers)
+                         size_t number_of_buffers,
+                         bool is_protected)
     : skia_output_surface_(skia_output_surface),
       surface_handle_(surface_handle),
-      number_of_buffers_(number_of_buffers) {}
+      number_of_buffers_(number_of_buffers),
+      is_protected_(is_protected) {}
 
 BufferQueue::~BufferQueue() {
   FreeAllBuffers();
@@ -178,9 +180,10 @@ void BufferQueue::AllocateBuffers(size_t n) {
   const SharedImageFormat format =
       GetSinglePlaneSharedImageFormat(format_.value());
 
-  constexpr uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                             gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-                             gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  const uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      (is_protected_ ? gpu::SHARED_IMAGE_USAGE_PROTECTED_VIDEO : 0);
 
   available_buffers_.reserve(available_buffers_.size() + n);
   for (size_t i = 0; i < n; ++i) {

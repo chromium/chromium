@@ -39,7 +39,8 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // |supports_dynamic_frame_buffer_allocation| capability is true.
   BufferQueue(SkiaOutputSurface* skia_output_surface,
               gpu::SurfaceHandle surface_handle,
-              size_t number_of_buffers);
+              size_t number_of_buffers,
+              bool is_protected = false);
 
   BufferQueue(const BufferQueue&) = delete;
   BufferQueue& operator=(const BufferQueue&) = delete;
@@ -200,6 +201,8 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // Used to see how often we destroy buffers and recreate them very soon, which
   // we want to be rare.
   std::optional<base::ElapsedTimer> destroyed_timer_;
+  // Whether or not to allocate these buffers as protected buffers.
+  bool is_protected_ = false;
 };
 
 }  // namespace viz

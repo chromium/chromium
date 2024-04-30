@@ -1085,7 +1085,8 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
   protected_buffer_queue_ = std::make_unique<BufferQueue>(
-      skia_output_surface_, skia_output_surface_->GetSurfaceHandle(), 3);
+      skia_output_surface_, skia_output_surface_->GetSurfaceHandle(), 3,
+      /*is_protected=*/true);
 #endif
 }
 

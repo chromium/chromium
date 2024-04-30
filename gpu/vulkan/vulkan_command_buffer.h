@@ -36,7 +36,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandBuffer {
   bool Submit(uint32_t num_wait_semaphores,
               VkSemaphore* wait_semaphores,
               uint32_t num_signal_semaphores,
-              VkSemaphore* signal_semaphores);
+              VkSemaphore* signal_semaphores,
+              bool allow_protected_memory = false);
 
   // Enqueue secondary command buffer within a primary command buffer.
   void Enqueue(VkCommandBuffer primary_command_buffer);

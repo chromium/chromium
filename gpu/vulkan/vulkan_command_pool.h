@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandPool {
 
   ~VulkanCommandPool();
 
-  bool Initialize();
+  bool Initialize(bool allow_protected_memory = false);
   // Destroy() should be called when all related GPU tasks have been finished.
   void Destroy();
 

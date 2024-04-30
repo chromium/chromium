@@ -18,7 +18,8 @@
 
 namespace ui {
 
-VulkanImplementationGbm::VulkanImplementationGbm() = default;
+VulkanImplementationGbm::VulkanImplementationGbm(bool allow_protected_memory)
+    : VulkanImplementation(/*use_switfshader=*/false, allow_protected_memory) {}
 
 VulkanImplementationGbm::~VulkanImplementationGbm() = default;
 
@@ -164,8 +165,9 @@ VulkanImplementationGbm::CreateImageFromGpuMemoryHandle(
                     ? VK_IMAGE_TILING_OPTIMAL
                     : VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
   return gpu::VulkanImage::CreateFromGpuMemoryBufferHandle(
-      device_queue, std::move(gmb_handle), size, vk_format, kUsage, /*flags=*/0,
-      tiling, VK_QUEUE_FAMILY_FOREIGN_EXT);
+      device_queue, std::move(gmb_handle), size, vk_format, kUsage,
+      allow_protected_memory() ? VK_IMAGE_CREATE_PROTECTED_BIT : 0, tiling,
+      VK_QUEUE_FAMILY_FOREIGN_EXT);
 }
 
 }  // namespace ui

@@ -2934,7 +2934,8 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
     const gfx::RectF& crop_rect,
     gfx::OverlayTransform transform) {
   if (!vulkan_image_processor_) {
-    vulkan_image_processor_ = media::VulkanImageProcessor::Create();
+    vulkan_image_processor_ =
+        media::VulkanImageProcessor::Create(/*is_protected=*/true);
   }
 
   // Note that we don't want to get the device queue from the
