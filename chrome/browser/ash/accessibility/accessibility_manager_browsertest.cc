@@ -81,6 +81,7 @@ using ::testing::WithParamInterface;
 // Use a real domain to avoid policy loading problems.
 constexpr char kTestUserName[] = "owner@gmail.com";
 constexpr char kTestUserGaiaId[] = "9876543210";
+constexpr char kSodaUnsupportedLocale[] = "af-ZA";
 
 // Dictation notification titles and descriptions. '*'s are used as placeholders
 // for languages, which are substituted in at a later time.
@@ -1166,13 +1167,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaDownloadTriggeredByLocaleChange) {
   EXPECT_FALSE(IsSodaDownloading());
 
-  // it-IT is not supported by SODA, so download shouldn't trigger.
-  SetDictationLocale("it-IT");
+  // af-ZA is not supported by SODA, so download shouldn't trigger.
+  SetDictationLocale(kSodaUnsupportedLocale);
   SetDictationEnabled(true);
   EXPECT_FALSE(IsSodaDownloading());
   // The nudge should not be requested to be shown because this is not an
   // offline language.
-  EXPECT_FALSE(GetDictationOfflineNudgePref("it-IT"));
+  EXPECT_FALSE(GetDictationOfflineNudgePref(kSodaUnsupportedLocale));
 
   // Change the locale to one supported by SODA without changing Dictation
   // enabled. This mocks selecting a new locale from settings.
@@ -1313,8 +1314,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaWrongLanguage) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
                        SodaNotificationShownOnDictationLocaleChange) {
-  // it-IT is not supported by SODA.
-  SetDictationLocale("it-IT");
+  // af-ZA is not supported by SODA.
+  SetDictationLocale(kSodaUnsupportedLocale);
   EnableDictationTriggeredByUser(/*soda_uninstalled_first=*/false);
   AssertMessageCenterEmpty();
 
@@ -1579,7 +1580,7 @@ class AccessibilityManagerDictationDialogTest
     // Set the device language to one that is not supported by SODA on Chrome
     // OS. This will force Dictation to show the confirmation dialog when
     // enabled.
-    locale_ = "it-IT";
+    locale_ = kSodaUnsupportedLocale;
     command_line->AppendSwitchASCII(::switches::kLang, locale_);
 
     std::vector<base::test::FeatureRef> enabled_features;
@@ -1633,8 +1634,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationDialogTest,
     EXPECT_TRUE(ShouldShowNetworkDictationDialog("en-US"));
   }
   EXPECT_TRUE(ShouldShowNetworkDictationDialog(""));
-  EXPECT_TRUE(ShouldShowNetworkDictationDialog("fr-FR"));
-  EXPECT_TRUE(ShouldShowNetworkDictationDialog("ja-JP"));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog(kSodaUnsupportedLocale));
 
   PrefService* prefs = GetActiveUserPrefs();
   prefs->SetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
@@ -1665,7 +1665,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerDictationDialogTest, AcceptDialog) {
   PrefService* prefs = GetActiveUserPrefs();
   EXPECT_FALSE(
       prefs->GetBoolean(prefs::kDictationAcceleratorDialogHasBeenAccepted));
-  EXPECT_TRUE(ShouldShowNetworkDictationDialog(locale()));
+  EXPECT_TRUE(ShouldShowNetworkDictationDialog(locale()))
+      << " locale " << locale();
 
   SetDictationEnabled(true);
   EXPECT_TRUE(IsDictationEnabled());
@@ -2139,7 +2140,7 @@ class AccessibilityManagerDictationKeyboardImprovementsTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Set the device language to one that is not supported by SODA on ChromeOS.
     // This will force Dictation to show the confirmation dialog when enabled.
-    command_line->AppendSwitchASCII(::switches::kLang, "it-IT");
+    command_line->AppendSwitchASCII(::switches::kLang, kSodaUnsupportedLocale);
     AccessibilityManagerTest::SetUpCommandLine(command_line);
   }
 
