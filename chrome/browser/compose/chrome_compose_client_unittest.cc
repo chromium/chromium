@@ -770,7 +770,7 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
 }
 
 TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabledUKM) {
-  // Enable proactive nudge
+  // Enable proactive nudge.
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.proactive_nudge_enabled = true;
 

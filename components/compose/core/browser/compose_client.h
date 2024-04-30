@@ -47,6 +47,9 @@ class ComposeClient {
 
   // Getter for the PageUkmTracker instance for the currently loaded page.
   virtual PageUkmTracker* getPageUkmTracker() = 0;
+
+  // Disable the global preference controlling the proactive nudge.
+  virtual void DisableProactiveNudge() = 0;
 };
 
 }  // namespace compose

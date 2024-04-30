@@ -220,7 +220,7 @@ void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {
 }
 
 void ComposeManagerImpl::DisableCompose() {
-  // TODO(b/333929225): Implement.
+  client_->DisableProactiveNudge();
 }
 
 void ComposeManagerImpl::GoToSettings() {

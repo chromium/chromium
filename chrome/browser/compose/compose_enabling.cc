@@ -17,12 +17,14 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/pref_names.h"
 #include "components/compose/buildflags.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_storage.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #if BUILDFLAG(IS_CHROMEOS)
@@ -194,6 +196,7 @@ base::expected<void, compose::ComposeNudgeDenyReason>
 ComposeEnabling::ShouldTriggerPopup(
     std::string_view autocomplete_attribute,
     Profile* profile,
+    PrefService* prefs,
     translate::TranslateManager* translate_manager,
     bool ongoing_session,
     const url::Origin& top_level_frame_origin,
@@ -203,7 +206,7 @@ ComposeEnabling::ShouldTriggerPopup(
   if (ongoing_session) {
     return ShouldTriggerSavedStatePopup(trigger_source);
   }
-  return ShouldTriggerNoStatePopup(autocomplete_attribute, profile,
+  return ShouldTriggerNoStatePopup(autocomplete_attribute, profile, prefs,
                                    translate_manager, top_level_frame_origin,
                                    element_frame_origin, url);
 }
@@ -212,6 +215,7 @@ base::expected<void, compose::ComposeNudgeDenyReason>
 ComposeEnabling::ShouldTriggerNoStatePopup(
     std::string_view autocomplete_attribute,
     Profile* profile,
+    PrefService* prefs,
     translate::TranslateManager* translate_manager,
     const url::Origin& top_level_frame_origin,
     const url::Origin& element_frame_origin,
@@ -247,6 +251,11 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
   if (!AutocompleteAllowed(autocomplete_attribute)) {
     DVLOG(2) << "autocomplete=off";
     return base::unexpected(compose::ComposeNudgeDenyReason::kDOMLevelChecks);
+  }
+
+  if (!prefs->GetBoolean(prefs::kEnableProactiveNudge)) {
+    return base::unexpected(compose::ComposeNudgeDenyReason::
+                                kProactiveNudgeDisabledByGlobalPreference);
   }
 
   if (!compose::GetComposeConfig().proactive_nudge_enabled) {
