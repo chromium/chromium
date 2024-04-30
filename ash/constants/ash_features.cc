@@ -1761,7 +1761,7 @@ BASE_FEATURE(kLanguagePacksFonts,
 
 // Enables loading in fonts via language packs on login, even after a download.
 const base::FeatureParam<bool> kLanguagePacksFontsLoadAfterDownloadDuringLogin =
-    {&kLanguagePacksFonts, "load_after_download_during_login", false};
+    {&kLanguagePacksFonts, "load_after_download_during_login", true};
 
 // If enabled, the Language Pack corresponding to the application locale is
 // downloaded and installed during OOBE. This pre-fetching is aimed at improving
