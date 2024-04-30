@@ -16,6 +16,7 @@
   NSMutableDictionary<NSNumber*, GroupTabInfo*>* _tabGroupInfos;
   base::WeakPtr<const TabGroup> _tabGroup;
   const void* _tabGroupIdentifier;
+  NSUUID* _requestUUID;
 }
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
@@ -88,6 +89,8 @@
 
   // Reset the array to ensure to not display old snapshots and or favicons.
   [_tabGroupInfos removeAllObjects];
+  NSUUID* UUID = [NSUUID UUID];
+  _requestUUID = UUID;
   NSUInteger numberOfRequests = MIN(7, _tabGroup->range().count());
   int firstIndex = _tabGroup->range().range_begin();
   for (NSUInteger requestIndex = 0; requestIndex < numberOfRequests;
@@ -98,11 +101,12 @@
     __weak TabGroupItem* weakSelf = self;
     [TabGroupUtils fetchTabGroupInfoFromWebState:webState
                                       completion:^(GroupTabInfo* info) {
-                                        [weakSelf addInfo:info
-                                            forRequestNumber:requestIndex];
                                         [weakSelf
-                                            notifyCompletion:completion
-                                            numberOfRequests:numberOfRequests];
+                                            groupTabInfoFetched:info
+                                               forRequestNumber:requestIndex
+                                                numberOfRequest:numberOfRequests
+                                                     completion:completion
+                                                    requestUUID:UUID];
                                       }];
   }
 }
@@ -115,30 +119,32 @@
 
 #pragma mark - Private helpers
 
-// Adds the given info to the GroupTabInfo array.
-- (void)addInfo:(GroupTabInfo*)info forRequestNumber:(NSUInteger)requestNumber {
-  _tabGroupInfos[@(requestNumber)] = info;
-}
-
-// Saves the snapshot and favicon couple in the same GroupTabInfo. Call the
-// completion if there is no new snapshot or favicon to save.
-- (void)notifyCompletion:(GroupTabInfosFetchingCompletionBlock)completion
-        numberOfRequests:(NSUInteger)numberOfRequests {
-  if (!_tabGroup) {
-    completion(self, @[]);
+// Called when `info` for the `requestNumber` out of `numberOfRequests` is
+// fetched for the `requestUUID`.
+- (void)groupTabInfoFetched:(GroupTabInfo*)info
+           forRequestNumber:(NSUInteger)requestNumber
+            numberOfRequest:(NSUInteger)numberOfRequests
+                 completion:(GroupTabInfosFetchingCompletionBlock)completion
+                requestUUID:(NSUUID*)requestUUId {
+  if (![requestUUId isEqual:_requestUUID] || !_tabGroup) {
     return;
   }
-  if (_tabGroupInfos.count == numberOfRequests) {
-    auto comparator = ^NSComparisonResult(NSNumber* obj1, NSNumber* obj2) {
-      return [obj1 compare:obj2];
-    };
-    NSMutableArray* infos = [NSMutableArray array];
-    for (NSNumber* key in
-         [[_tabGroupInfos allKeys] sortedArrayUsingComparator:comparator]) {
-      [infos addObject:_tabGroupInfos[key]];
-    }
-    completion(self, infos);
+
+  _tabGroupInfos[@(requestNumber)] = info;
+
+  if (_tabGroupInfos.count != numberOfRequests) {
+    return;
   }
+
+  auto comparator = ^NSComparisonResult(NSNumber* obj1, NSNumber* obj2) {
+    return [obj1 compare:obj2];
+  };
+  NSMutableArray* infos = [NSMutableArray array];
+  for (NSNumber* key in
+       [[_tabGroupInfos allKeys] sortedArrayUsingComparator:comparator]) {
+    [infos addObject:_tabGroupInfos[key]];
+  }
+  completion(self, infos);
 }
 
 @end

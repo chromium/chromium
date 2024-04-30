@@ -386,6 +386,13 @@ void DeleteGroupAtIndex(int group_cell_index) {
   // Check that `Tab 2` tab cell is in the group.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
       assertWithMatcher:grey_notNil()];
+
+  // Close the tab and check it is no longer visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(1)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests the group renaming from the group's context menu in the grid.
