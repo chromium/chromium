@@ -77,11 +77,17 @@ def main():
     targets.append(target)
 
   if options.perform_build:
-    # use `-k=0` to build generated files as much as possible.
     if _use_reclient(options.out_dir):
-      args = ['autoninja', '-k=0', '-C', options.out_dir]
+      args = ['autoninja']
     else:
-      args = ['siso', 'ninja', '-k=0', '-C', options.out_dir]
+      args = ['siso', 'ninja']
+    # use `-k=0` to build generated files as much as possible.
+    args.extend([
+        '-k=0',
+        '--prepare',
+        '-C',
+        options.out_dir,
+    ])
     args.extend(targets)
     p = subprocess.run(args, cwd=repo_root, stdout=2, stderr=2)
     if p.returncode != 0:
