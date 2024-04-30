@@ -59,7 +59,7 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   MOCK_METHOD(bool,
               IsEntityUnsynced,
               (const std::string& storage_key),
-              (const override));
+              (override));
   MOCK_METHOD(base::Time,
               GetEntityCreationTime,
               (const std::string& storage_key),

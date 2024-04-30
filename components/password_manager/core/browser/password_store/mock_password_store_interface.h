@@ -11,8 +11,6 @@
 
 namespace password_manager {
 
-class PasswordStoreSyncInterface;
-
 class MockPasswordStoreInterface : public PasswordStoreInterface {
  public:
   MockPasswordStoreInterface();
@@ -90,9 +88,9 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               CreateSyncControllerDelegate,
               (),
               (override));
-  MOCK_METHOD(PasswordStoreSyncInterface*,
-              GetPasswordStoreSyncInterface,
-              (),
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddSyncEnabledOrDisabledCallback,
+              (base::RepeatingClosure),
               (override));
   MOCK_METHOD(PasswordStoreBackend*, GetBackendForTesting, (), (override));
   MOCK_METHOD(void,

@@ -365,15 +365,6 @@ void LoginDatabaseAsyncHelper::RemoveStatisticsByOriginAndTime(
   }
 }
 
-std::vector<PasswordForm> LoginDatabaseAsyncHelper::GetUnsyncedCredentials() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!password_sync_bridge_) {
-    return {};
-  }
-
-  return password_sync_bridge_->GetUnsyncedCredentials();
-}
-
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 LoginDatabaseAsyncHelper::GetSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

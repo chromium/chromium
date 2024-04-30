@@ -55,7 +55,7 @@ ForwardingModelTypeChangeProcessor::GetAllTrackedStorageKeys() const {
 }
 
 bool ForwardingModelTypeChangeProcessor::IsEntityUnsynced(
-    const std::string& storage_key) const {
+    const std::string& storage_key) {
   return other_->IsEntityUnsynced(storage_key);
 }
 

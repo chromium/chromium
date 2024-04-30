@@ -378,14 +378,6 @@ void PasswordStore::OnSyncServiceInitialized(
   }
 }
 
-PasswordStoreSyncInterface* PasswordStore::GetPasswordStoreSyncInterface() {
-  return this;
-}
-
-PasswordStoreBackend* PasswordStore::GetBackendForTesting() {
-  return backend_.get();
-}
-
 base::CallbackListSubscription PasswordStore::AddSyncEnabledOrDisabledCallback(
     base::RepeatingClosure sync_enabled_or_disabled_cb) {
   DCHECK(sync_enabled_or_disabled_cbs_);
@@ -393,16 +385,9 @@ base::CallbackListSubscription PasswordStore::AddSyncEnabledOrDisabledCallback(
       std::move(sync_enabled_or_disabled_cb));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void PasswordStore::GetUnsyncedCredentials(
-    base::OnceCallback<void(std::vector<PasswordForm>)> callback) {
-  if (!backend_) {
-    std::move(callback).Run({});
-    return;
-  }
-  backend_->GetUnsyncedCredentials(std::move(callback));
+PasswordStoreBackend* PasswordStore::GetBackendForTesting() {
+  return backend_.get();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 PasswordStore::~PasswordStore() {
   DCHECK(!backend_) << "Shutdown() needs to be called before destruction!";

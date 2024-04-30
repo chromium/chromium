@@ -15,7 +15,6 @@ source_set("password_store_interface") {
     "password_store_consumer.cc",
     "password_store_consumer.h",
     "password_store_interface.h",
-    "password_store_sync_interface.h",
     "password_store_util.cc",
     "password_store_util.h",
   ]
@@ -119,8 +118,6 @@ static_library("test_support") {
     "mock_password_store_consumer.h",
     "mock_password_store_interface.cc",
     "mock_password_store_interface.h",
-    "mock_password_store_sync_interface.cc",
-    "mock_password_store_sync_interface.h",
     "mock_smart_bubble_stats_store.cc",
     "mock_smart_bubble_stats_store.h",
     "password_store_results_observer.cc",
