@@ -42,6 +42,9 @@
 -keep,allowobfuscation,allowaccessmodification class !cr_allowunused,** extends <1> {
   <init>();
 }
+# This is necessary to work around a bug: crbug.com/337905171.
+-keep,allowobfuscation,allowshrinking @org.chromium.components.module_installer.builder.ModuleInterface interface !cr_allowunused,*
+
 
 # Required to remove fields until b/274802355 is resolved.
 -assumevalues class !cr_allowunused,** {
