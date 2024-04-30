@@ -147,9 +147,10 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
                                           LoggedInUserMixin::LogInType::kChild,
                                           embedded_test_server(),
                                           this,
-                                          true /*should_launch_browser*/,
-                                          std::nullopt /*account_id*/,
-                                          false /*include_initial_user*/};
+                                          /*should_launch_browser=*/true,
+                                          /*account_id=*/std::nullopt,
+                                          /*auth_config=*/std::nullopt,
+                                          /*include_initial_user=*/false};
 };
 
 // Tests a simple lock override.

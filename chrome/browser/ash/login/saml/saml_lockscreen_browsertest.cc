@@ -220,6 +220,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
       true /*should_launch_browser*/,
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
                                      FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      /*auth_config=*/std::nullopt,
       true /*include_initial_user*/};
 
   FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, fake_gaia_mixin()};

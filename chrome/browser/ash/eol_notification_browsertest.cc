@@ -408,6 +408,7 @@ class ChildUserEolNotificationTest
       this,
       /*should_launch_browser=*/true,
       /*account_id=*/std::nullopt,
+      /*auth_config=*/std::nullopt,
       /*include_initial_user=*/true,
       /*use_embedded_policy_server=*/false};
 

@@ -133,6 +133,7 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
                                           this,
                                           true /*should_launch_browser*/,
                                           std::nullopt /*account_id*/,
+                                          std::nullopt /*auth_config*/,
                                           true /*include_initial_user*/};
   std::unique_ptr<TestParentAccessServiceObserver> test_observer_;
 };

@@ -5,13 +5,14 @@
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash::settings {
 
 namespace {
 
-using PasswordType = OSSettingsLockScreenBrowserTestBase::PasswordType;
+using PasswordType = ash::AshAuthFactor;
 
 // Name and value of the metric that records authentication on the lock screen
 // page.
@@ -38,8 +39,8 @@ class OSSettingsLockScreenAuthenticationTest
 
 INSTANTIATE_TEST_SUITE_P(OSSettingsLockScreenAuthenticationTests,
                          OSSettingsLockScreenAuthenticationTest,
-                         testing::Values(PasswordType::kGaia,
-                                         PasswordType::kLocal));
+                         testing::Values(ash::AshAuthFactor::kGaiaPassword,
+                                         ash::AshAuthFactor::kLocalPassword));
 
 IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest,
                        SuccessfulUnlock) {

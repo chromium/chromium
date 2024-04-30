@@ -19,17 +19,13 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash::auth {
 
 namespace {
-
-enum class PasswordType {
-  kGaia,
-  kLocal,
-};
 
 // The initial password set up by the test fixture.
 const char kPassword[] = "the-password";
@@ -40,26 +36,29 @@ using extensions::api::quick_unlock_private::TokenInfo;
 
 class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
  public:
-  explicit AuthFactorConfigTestBase(PasswordType password_type) {
-    cryptohome_.set_enable_auth_check(true);
-    cryptohome_.MarkUserAsExisting(logged_in_user_mixin_.GetAccountId());
-
-    switch (password_type) {
-      case PasswordType::kGaia:
-        cryptohome_.AddGaiaPassword(logged_in_user_mixin_.GetAccountId(),
-                                    kPassword);
-        break;
-      case PasswordType::kLocal:
-        cryptohome_.AddLocalPassword(logged_in_user_mixin_.GetAccountId(),
-                                     kPassword);
-        break;
+  explicit AuthFactorConfigTestBase(ash::AshAuthFactor password_type) {
+    test::UserAuthConfig config;
+    if (password_type == ash::AshAuthFactor::kGaiaPassword) {
+      config.WithOnlinePassword(kPassword);
+    } else {
+      CHECK_EQ(password_type, ash::AshAuthFactor::kLocalPassword);
+      config.WithLocalPassword(kPassword);
     }
+
+    logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
+        &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
+        embedded_test_server(), this, /*should_launch_browser=*/true,
+        /*account_id=*/std::nullopt, config);
+    cryptohome_ = &logged_in_user_mixin_->GetCryptohomeMixin();
+
+    cryptohome_->set_enable_auth_check(true);
+    cryptohome_->MarkUserAsExisting(logged_in_user_mixin_->GetAccountId());
   }
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
-    logged_in_user_mixin_.LogInUser();
+    logged_in_user_mixin_->LogInUser();
   }
 
   // Create a new auth token. Returns nullopt if something went wrong, probably
@@ -82,16 +81,14 @@ class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
   }
 
  protected:
-  CryptohomeMixin cryptohome_{&mixin_host_};
-  LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(), this};
+  std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
+  raw_ptr<CryptohomeMixin> cryptohome_{nullptr};
 };
 
 class AuthFactorConfigTestWithLocalPassword : public AuthFactorConfigTestBase {
  public:
   AuthFactorConfigTestWithLocalPassword()
-      : AuthFactorConfigTestBase(PasswordType::kLocal) {}
+      : AuthFactorConfigTestBase(ash::AshAuthFactor::kLocalPassword) {}
 };
 
 // Checks that PasswordFactorEditor::UpdateLocalPassword can be used to set a

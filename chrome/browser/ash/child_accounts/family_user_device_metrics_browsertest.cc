@@ -55,6 +55,7 @@ class FamilyUserDeviceMetricsTest
       this,
       /*should_launch_browser=*/false,
       /*account_id=*/std::nullopt,
+      /*auth_config=*/std::nullopt,
       /*include_initial_user=*/IsUserExisting()};
 
   // MixinBasedInProcessBrowserTest:

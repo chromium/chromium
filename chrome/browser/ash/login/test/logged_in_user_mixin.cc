@@ -4,15 +4,22 @@
 
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 
-#include <vector>
+#include <optional>
 
+#include "base/check.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
-#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user_type.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace ash {
 namespace {
@@ -43,18 +50,23 @@ LoggedInUserMixin::LoggedInUserMixin(
     InProcessBrowserTest* test_base,
     bool should_launch_browser,
     std::optional<AccountId> account_id,
+    std::optional<test::UserAuthConfig> auth_config,
     bool include_initial_user,
     bool use_embedded_policy_server)
     : InProcessBrowserTestMixin(mixin_host),
       user_(account_id.value_or(
                 AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                                FakeGaiaMixin::kFakeUserGaiaId)),
-            test::kDefaultAuthSetup,
+            auth_config.value_or(
+                test::UserAuthConfig::Create(test::kDefaultAuthSetup)),
             ConvertUserType(type)),
       include_initial_user_(include_initial_user),
+      fake_gaia_(mixin_host),
+      cryptohome_(mixin_host),
       login_manager_(mixin_host,
                      GetInitialUsers(user_, include_initial_user),
-                     &fake_gaia_),
+                     &fake_gaia_,
+                     &cryptohome_),
       embedded_policy_server_(mixin_host),
       user_policy_(
           mixin_host,
@@ -63,7 +75,6 @@ LoggedInUserMixin::LoggedInUserMixin(
       user_policy_helper_(user_.account_id.GetUserEmail(),
                           &embedded_policy_server_),
       embedded_test_server_setup_(mixin_host, embedded_test_server),
-      fake_gaia_(mixin_host),
       test_base_(test_base) {
   // By default, LoginManagerMixin will set up user session manager not to
   // launch browser as part of user session setup - use this to override that

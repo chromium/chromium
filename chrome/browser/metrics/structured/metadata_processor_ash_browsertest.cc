@@ -374,7 +374,7 @@ class MetadataProcessorTest : public policy::DevicePolicyCrosBrowserTest,
       &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this,
       /*should_launch_browser=*/true, GetPrimaryAccountId(),
-      /*include_initial_user=*/true,
+      /*auth_config=*/std::nullopt, /*include_initial_user=*/true,
       // Don't use EmbeddedPolicyTestServer because it does not support
       // customizing PolicyData.
       // TODO(crbug/1112885): Use EmbeddedPolicyTestServer when this is fixed.

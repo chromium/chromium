@@ -65,10 +65,10 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
   OSSettingsPinSetupTest() : pin_type_(GetParam()) {
     switch (pin_type_) {
       case PinType::kPrefs:
-        cryptohome_.set_supports_low_entropy_credentials(false);
+        cryptohome_->set_supports_low_entropy_credentials(false);
         break;
       case PinType::kCryptohome:
-        cryptohome_.set_supports_low_entropy_credentials(true);
+        cryptohome_->set_supports_low_entropy_credentials(true);
         break;
     }
   }
@@ -104,7 +104,7 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
         return !Prefs().GetString(prefs::kQuickUnlockPinSecret).empty() &&
                !Prefs().GetString(prefs::kQuickUnlockPinSalt).empty();
       case PinType::kCryptohome:
-        return cryptohome_.HasPinFactor(GetAccountId());
+        return cryptohome_->HasPinFactor(GetAccountId());
     }
   }
 
@@ -125,7 +125,7 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
         break;
       }
       case PinType::kCryptohome: {
-        cryptohome_.SetPinLocked(GetAccountId(), true);
+        cryptohome_->SetPinLocked(GetAccountId(), true);
         break;
       }
     }
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupCryptohomeOnlyTest,
   pin_settings.AssertHasPin(false);
   EXPECT_EQ(false, IsPinConfigured());
 
-  cryptohome_.SetNextOperationError(
+  cryptohome_->SetNextOperationError(
       FakeUserDataAuthClient::Operation::kAddAuthFactor,
       cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
           ::user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED));

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/test/data/webui/chromeos/settings/os_people_page/password_settings_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash::settings {
@@ -30,13 +31,13 @@ class OSSettingsPasswordSetupTestWithGaiaPassword
     : public OSSettingsPasswordSetupTest {
  public:
   OSSettingsPasswordSetupTestWithGaiaPassword()
-      : OSSettingsPasswordSetupTest(PasswordType::kGaia) {}
+      : OSSettingsPasswordSetupTest(ash::AshAuthFactor::kGaiaPassword) {}
 };
 class OSSettingsPasswordSetupTestWithLocalPassword
     : public OSSettingsPasswordSetupTest {
  public:
   OSSettingsPasswordSetupTestWithLocalPassword()
-      : OSSettingsPasswordSetupTest(PasswordType::kLocal) {}
+      : OSSettingsPasswordSetupTest(ash::AshAuthFactor::kLocalPassword) {}
 };
 
 // The control for changing passwords is not shown if user has Gaia password.

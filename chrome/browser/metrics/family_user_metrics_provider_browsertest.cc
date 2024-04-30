@@ -112,6 +112,7 @@ class FamilyUserMetricsProviderTest
       embedded_test_server(), this,
       /*should_launch_browser=*/true,
       GetPrimaryAccountId(GetFamilyUserLogSegment()),
+      /*auth_config=*/std::nullopt,
       /*include_initial_user=*/true,
       // Don't use EmbeddedPolicyTestServer because it does not support
       // customizing PolicyData.
