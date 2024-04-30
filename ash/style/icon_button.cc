@@ -22,6 +22,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -329,6 +330,7 @@ IconButton::IconButton(PressedCallback callback,
 
   UpdateBackground();
   UpdateVectorIcon();
+  UpdateAccessibilityProperties();
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
@@ -464,6 +466,8 @@ void IconButton::SetToggled(bool toggled) {
   }
 
   toggled_ = toggled;
+
+  UpdateAccessibilityProperties();
 
   if (GetEnabled()) {
     UpdateBackground();
@@ -680,6 +684,18 @@ bool IconButton::IsToggledOn() const {
          (GetEnabled() ||
           button_behavior_ ==
               DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
+}
+
+void IconButton::UpdateAccessibilityProperties() {
+  if (is_togglable_) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+    GetViewAccessibility().SetCheckedState(
+        toggled_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
+  } else {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    GetViewAccessibility().RemoveCheckedState();
+  }
 }
 
 BEGIN_METADATA(IconButton)

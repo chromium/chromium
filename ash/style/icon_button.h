@@ -209,12 +209,16 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // disabled.
   bool IsToggledOn() const;
 
+  // Updates the accessibility properties directly in the cache, like the role
+  // and the toggle state.
+  void UpdateAccessibilityProperties();
+
   const Type type_;
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   raw_ptr<const gfx::VectorIcon> toggled_icon_ = nullptr;
 
   // True if this button is togglable.
-  bool is_togglable_ = false;
+  const bool is_togglable_ = false;
 
   // True if the button is currently toggled.
   bool toggled_ = false;

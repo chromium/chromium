@@ -247,6 +247,10 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Updates the color of `drill_in_arrow_` for better visibility.
   void UpdateDrillInArrowColor();
 
+  // Updates the accessibility properties directly in the cache, like the role
+  // and the toggle state.
+  void UpdateAccessibilityProperties();
+
   // Updates `label_` attributes depending on whether a sub-label will be
   // visible.
   void SetCompactTileLabelPreferences(bool has_sub_label);
@@ -298,7 +302,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   bool is_icon_clickable_ = false;
 
   // Whether this button is togglable.
-  bool is_togglable_ = false;
+  const bool is_togglable_ = false;
 
   // Whether the button is currently toggled.
   bool toggled_ = false;

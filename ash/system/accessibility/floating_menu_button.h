@@ -64,6 +64,7 @@ class FloatingMenuButton : public views::ImageButton {
 
  private:
   void UpdateImage();
+  void UpdateAccessibleProperties();
 
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   // True if the button is currently toggled.

@@ -28,6 +28,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
@@ -178,6 +179,7 @@ FeatureTile::FeatureTile(PressedCallback callback,
 
   CreateChildViews();
   UpdateColors();
+  UpdateAccessibilityProperties();
 
   enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
       [](FeatureTile* feature_tile) {
@@ -290,6 +292,7 @@ void FeatureTile::SetIconClickable(bool clickable) {
   is_icon_clickable_ = clickable;
   icon_button_->SetCanProcessEventsWithinSubtree(clickable);
   icon_button_->SetEnabled(clickable);
+  UpdateAccessibilityProperties();
 
   if (clickable) {
     views::InstallRoundRectHighlightPathGenerator(icon_button_, gfx::Insets(),
@@ -403,6 +406,8 @@ void FeatureTile::SetToggled(bool toggled) {
   }
 
   toggled_ = toggled;
+  UpdateAccessibilityProperties();
+
   UpdateColors();
   views::InkDrop::Get(this)->GetInkDrop()->SnapToHidden();
 }
@@ -688,6 +693,21 @@ void FeatureTile::UpdateDrillInArrowColor() {
   CHECK(drill_in_arrow_);
   drill_in_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kQuickSettingsRightArrowIcon, GetIconColorId()));
+}
+
+void FeatureTile::UpdateAccessibilityProperties() {
+  // If the icon is clickable then the main feature tile usually takes the user
+  // to a detailed page (like Network or Bluetooth). Those tiles act more like a
+  // regular button than a toggle button.
+  if (is_togglable_ && !is_icon_clickable_) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+    GetViewAccessibility().SetCheckedState(
+        toggled_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
+  } else {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    GetViewAccessibility().RemoveCheckedState();
+  }
 }
 
 void FeatureTile::SetCompactTileLabelPreferences(bool has_sub_label) {
