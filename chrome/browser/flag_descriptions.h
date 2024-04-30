@@ -227,9 +227,6 @@ extern const char kMediaSessionEnterPictureInPictureDescription[];
 extern const char kPasspointSettingsName[];
 extern const char kPasspointSettingsDescription[];
 
-extern const char kPrivacyIndicatorsName[];
-extern const char kPrivacyIndicatorsDescription[];
-
 extern const char kEnableBluetoothSerialPortProfileInSerialApiName[];
 extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 

@@ -311,11 +311,6 @@ const char kPrerender2Description[] =
     "prerendering. If disabled, all prerendering APIs still exist, but a "
     "prerender will never successfully take place.";
 
-const char kPrivacyIndicatorsName[] = "Enable Privacy Indicators";
-const char kPrivacyIndicatorsDescription[] =
-    "While screen sharing or camera/microphone is being accessed, show a green "
-    "icon in the status area as well as add a silent notification to the tray.";
-
 const char kEnableDrDcName[] =
     "Enables Display Compositor to use a new gpu thread.";
 const char kEnableDrDcDescription[] =

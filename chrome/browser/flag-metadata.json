@@ -3570,11 +3570,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-privacy-indicators",
-    "owners": [ "leandre@chromium.org" ],
-    "expiry_milestone": 117
-  },
-  {
     "name": "enable-process-per-site-up-to-main-frame-threshold",
     "owners": [ "bashi@chromium.org", "blink-network-stack@google.com" ],
     "expiry_milestone": 130

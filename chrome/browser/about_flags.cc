@@ -7909,12 +7909,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCooperativeSchedulingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kCooperativeScheduling)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-privacy-indicators", flag_descriptions::kPrivacyIndicatorsName,
-     flag_descriptions::kPrivacyIndicatorsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPrivacyIndicators)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     {"enable-network-service-sandbox",
      flag_descriptions::kEnableNetworkServiceSandboxName,
