@@ -1,0 +1,44 @@
+{
+    "bullseye_amd64": {
+        "Sha1Sum": "4f611ec025be98214164d4bf9fbe8843f58533f7",
+        "SysrootDir": "debian_bullseye_amd64-sysroot",
+        "Tarball": "debian_bullseye_amd64_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
+    },
+    "bullseye_arm64": {
+        "Sha1Sum": "906cc7c6bf47d4bd969a3221fc0602c6b3153caa",
+        "SysrootDir": "debian_bullseye_arm64-sysroot",
+        "Tarball": "debian_bullseye_arm64_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
+    },
+    "bullseye_armel": {
+        "Sha1Sum": "702f9fcda48a8731da4b822a9c939912974588a4",
+        "SysrootDir": "debian_bullseye_armel-sysroot",
+        "Tarball": "debian_bullseye_armel_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
+    },
+    "bullseye_armhf": {
+        "Sha1Sum": "adca8118c488b1610978c17dd432660a4851b5c0",
+        "SysrootDir": "debian_bullseye_armhf-sysroot",
+        "Tarball": "debian_bullseye_armhf_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
+    },
+    "bullseye_i386": {
+        "Sha1Sum": "c1e1b1442f31d71932fee33e82f5a7011e64dfaf",
+        "SysrootDir": "debian_bullseye_i386-sysroot",
+        "Tarball": "debian_bullseye_i386_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
+    },
+    "bullseye_mips64el": {
+        "Sha1Sum": "6880f554ba1d54640fdeebe5b3aadf519a8771d1",
+        "SysrootDir": "debian_bullseye_mips64el-sysroot",
+        "Tarball": "debian_bullseye_mips64el_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
+    },
+    "bullseye_mipsel": {
+        "Sha1Sum": "8333afd1fccd3faddac6a84c427854baa12fd7a4",
+        "SysrootDir": "debian_bullseye_mipsel-sysroot",
+        "Tarball": "debian_bullseye_mipsel_sysroot.tar.xz",
+        "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
+    }
+}
