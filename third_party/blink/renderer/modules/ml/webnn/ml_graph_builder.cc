@@ -2070,9 +2070,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
                                             .axis = options->axis(),
                                         });
   if (!validated_outputs.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_outputs.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};
   }
 
@@ -2083,8 +2081,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
         this, ComponentOperandTypeToBlink(validated_output.data_type),
         Vector<uint32_t>(validated_output.dimensions), split);
     if (!output.has_value()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        output.error());
+      exception_state.ThrowTypeError(output.error());
       return {};
     }
     outputs.push_back(output.value());
@@ -2110,9 +2107,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
                                             .axis = options->axis(),
                                         });
   if (!validated_outputs.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        WTF::String::FromUTF8(validated_outputs.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};
   }
 
@@ -2123,8 +2118,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
         this, ComponentOperandTypeToBlink(validated_output.data_type),
         Vector<uint32_t>(validated_output.dimensions), split);
     if (!output.has_value()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        output.error());
+      exception_state.ThrowTypeError(output.error());
       return {};
     }
     outputs.push_back(output.value());

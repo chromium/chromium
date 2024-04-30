@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_utils.h"
