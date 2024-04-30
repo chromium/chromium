@@ -21,3 +21,5 @@ Local changes:
 Opus' own unit tests are located in ./src/tests
 Additional chromium tests are located in ./tests, and require chromium
 checkout to run the tests.
+
+Update DEPS entry for object_name, sha, size, and generation when updating test resource.
