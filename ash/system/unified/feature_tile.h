@@ -16,6 +16,7 @@
 
 namespace gfx {
 struct VectorIcon;
+class Insets;
 }  // namespace gfx
 
 namespace views {
@@ -133,6 +134,9 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the vector icon.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
+  // Sets margins for 'title_container_' in the tile.
+  void SetTitleContainerMargins(const gfx::Insets& insets);
+
   // Setters to apply custom background colors.
   void SetBackgroundColorId(ui::ColorId background_color_id);
   void SetBackgroundToggledColorId(ui::ColorId background_toggled_color_id);
@@ -196,7 +200,6 @@ class ASH_EXPORT FeatureTile : public views::Button {
   TileType tile_type() { return type_; }
   bool is_icon_clickable() const { return is_icon_clickable_; }
   views::ImageButton* icon_button() { return icon_button_; }
-  views::FlexLayoutView* title_container() const { return title_container_; }
   views::Label* label() { return label_; }
   views::Label* sub_label() { return sub_label_; }
   views::ImageView* drill_in_arrow() { return drill_in_arrow_; }

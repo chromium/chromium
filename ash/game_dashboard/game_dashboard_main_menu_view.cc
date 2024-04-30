@@ -48,6 +48,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -70,6 +71,7 @@
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -91,9 +93,17 @@ constexpr float kDetailRowCornerRadius = 16.0f;
 // Corner radius for feature tiles.
 constexpr int kTileCornerRadius = 20;
 // Line height for feature tiles with sub-labels
-constexpr int kTileSublabelLineHeight = 16;
-// Line height for feature tiles with no sub-labels
-constexpr int kTileLabelLineHeight = 32;
+constexpr int kTileLabelLineHeight = 16;
+// Feature Tile default padding when there are less than 4 Feature Tiles in the
+// Shortcut Tiles Row.
+constexpr gfx::Insets kDefaultTilePadding = gfx::Insets::TLBR(0, 24, 10, 24);
+// Feature Tile padding when there are 4 Feature Tiles in the Shortcut Tiles
+// Row.
+constexpr gfx::Insets kFourTilePadding = gfx::Insets::TLBR(0, 10, 10, 10);
+// Feature Tile Icon Padding.
+constexpr gfx::Insets kTileIconPadding = gfx::Insets::TLBR(12, 8, 4, 8);
+// Primary Feature Tile Label Padding.
+constexpr gfx::Insets kPrimaryTileLabelPadding = gfx::Insets::TLBR(0, 0, 0, 15);
 
 constexpr gfx::RoundedCornersF kGCDetailRowCorners =
     gfx::RoundedCornersF(/*upper_left=*/kDetailRowCornerRadius,
@@ -127,11 +137,19 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
   auto tile =
       std::make_unique<FeatureTile>(std::move(callback), is_togglable, type);
 
+  views::Label* tile_sub_label = tile->sub_label();
+  if (sub_label) {
+    tile->SetSubLabel(sub_label.value());
+    tile->SetSubLabelVisibility(true);
+    tile_sub_label->SetLineHeight(kTileLabelLineHeight);
+  }
+
   tile->SetID(id);
   tile->SetVectorIcon(icon);
   tile->SetLabel(text);
   tile->SetTooltipText(text);
   tile->SetButtonCornerRadius(kTileCornerRadius);
+  tile->SetTitleContainerMargins(kDefaultTilePadding);
 
   // Default state colors.
   tile->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
@@ -149,26 +167,15 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
   // Disabled state colors.
   tile->SetBackgroundDisabledColorId(cros_tokens::kCrosSysSystemOnBaseOpaque);
 
-  views::ImageButton* tile_icon = tile->icon_button();
-  views::FlexLayoutView* tile_label_container = tile->title_container();
   views::Label* tile_label = tile->label();
-  views::Label* tile_sub_label = tile->sub_label();
+
+  tile_label->SetLineHeight(kTileLabelLineHeight);
 
   // Readjust Compact Tiles.
+  views::ImageButton* tile_icon = tile->icon_button();
   if (type == FeatureTile::TileType::kCompact) {
     // Adjust internal spacing.
-    tile->SetProperty(views::kInternalPaddingKey,
-                      gfx::Insets::TLBR(0, 8, 0, 8));
-    tile_icon->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(12, 0, 4, 0));
-    tile_icon->SetPreferredSize(gfx::Size(20, 20));
-
-    // Adjust text and icon alignment for text wrapping.
-    tile_icon->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-    tile_label_container->SetCrossAxisAlignment(
-        views::LayoutAlignment::kCenter);
-
-    tile_label_container->SetProperty(views::kMarginsKey,
-                                      gfx::Insets::TLBR(0, 0, 10, 0));
+    tile_icon->SetProperty(views::kMarginsKey, kTileIconPadding);
 
     // Adjust line and text specifications.
     tile_label->SetFontList(
@@ -180,27 +187,17 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
         TypographyProvider::Get()->ResolveTypographyToken(
             TypographyToken::kCrosAnnotation2));
 
-    tile_label->SetLineHeight(kTileSublabelLineHeight);
-    tile_label->SetPreferredSize(gfx::Size(80, kTileLabelLineHeight));
-
   } else {
     // Resize the icon and its margins.
     tile_icon->SetPreferredSize(
         gfx::Size(20, tile_icon->GetPreferredSize().height()));
-    tile_icon->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(6, 20, 6, 16));
+    tile_icon->SetProperty(views::kMarginsKey, kTileIconPadding);
 
     // Adjust line specifications and enable text wrapping.
-    tile_label->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 15));
-    tile_label->SetLineHeight(tile->sub_label() ? kTileSublabelLineHeight
-                                                : kTileLabelLineHeight);
+    tile_label->SetProperty(views::kMarginsKey, kPrimaryTileLabelPadding);
     tile_label->SetMultiLine(true);
   }
 
-  if (sub_label.has_value()) {
-    tile->SetSubLabel(sub_label.value());
-    tile->SetSubLabelVisibility(true);
-    tile_sub_label->SetLineHeight(kTileSublabelLineHeight);
-  }
   // Setup focus ring.
   views::FocusRing::Get(tile.get())->SetColorId(cros_tokens::kCrosSysPrimary);
   return tile;
@@ -992,10 +989,20 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
     screenshot_tile->sub_label()->SetVisible(false);
   }
 
-  // Ensure that the Feature Tiles stretch out to equal width and height in the
-  // Feature Tile row.
+  // Shortcut tiles row holds up to 4 tiles, and always contains the
+  // 'toolbar_tile' and the 'screenshot_tile'. If there are 4 tiles in the row,
+  // the padding is set to 'kFourTilePadding', otherwise, the padding is set to
+  // 'kDefaultTilePadding'.
+  const auto title_container_margin = (game_controls_tile_ && record_game_tile_)
+                                          ? kFourTilePadding
+                                          : kDefaultTilePadding;
   for (auto tile : container->children()) {
+    // Ensure that the Feature Tiles stretch out to equal width and height in
+    // the Feature Tile row.
     tile->SetPreferredSize(gfx::Size(1, tile->GetPreferredSize().height()));
+    // Adjust padding for depending on tile quantity to prevent clipping.
+    views::AsViewClass<FeatureTile>(tile)->SetTitleContainerMargins(
+        title_container_margin);
   }
 
   container->SetDefaultFlex(1);

@@ -315,6 +315,10 @@ void FeatureTile::SetOnTitleBoundsChangedCallback(
   on_title_container_bounds_changed_ = std::move(callback);
 }
 
+void FeatureTile::SetTitleContainerMargins(const gfx::Insets& insets) {
+  title_container_->SetProperty(views::kMarginsKey, insets);
+}
+
 void FeatureTile::CreateDecorativeDrillInArrow() {
   CHECK_EQ(type_, TileType::kPrimary)
       << "Drill-in arrows are just used in Primary tiles";
