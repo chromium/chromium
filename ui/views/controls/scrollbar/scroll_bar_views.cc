@@ -35,7 +35,9 @@ class ScrollBarThumb : public BaseScrollBarThumb {
   explicit ScrollBarThumb(ScrollBar* scroll_bar);
   ~ScrollBarThumb() override;
 
-  gfx::Size CalculatePreferredSize() const override;
+  // BaseScrollBarThumb:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
 
  protected:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -54,7 +56,8 @@ ScrollBarThumb::ScrollBarThumb(ScrollBar* scroll_bar)
 
 ScrollBarThumb::~ScrollBarThumb() = default;
 
-gfx::Size ScrollBarThumb::CalculatePreferredSize() const {
+gfx::Size ScrollBarThumb::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   if (!GetWidget())
     return gfx::Size();
   return GetNativeTheme()->GetPartSize(

@@ -240,7 +240,10 @@ class TestScrollBarThumb : public BaseScrollBarThumb {
   using BaseScrollBarThumb::BaseScrollBarThumb;
 
   // BaseScrollBarThumb:
-  gfx::Size CalculatePreferredSize() const override { return gfx::Size(1, 1); }
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override {
+    return gfx::Size(1, 1);
+  }
   void OnPaint(gfx::Canvas* canvas) override {}
 };
 

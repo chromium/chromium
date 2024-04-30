@@ -82,7 +82,8 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
   }
 
   // views::BaseScrollBarThumb:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override {
     const int thickness = GetThumbThickness();
     return gfx::Size(thickness, thickness);
   }
