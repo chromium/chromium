@@ -2557,7 +2557,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.PasswordSharingIOS.UserAction"
     enum="PasswordManager.PasswordSharingIOSUserAction"
-    expires_after="2024-06-09">
+    expires_after="2024-10-30">
   <owner>rgod@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
