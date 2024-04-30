@@ -549,6 +549,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // |render_pass|'s contents.
   bool NeedsLayerForColorConversion(const AggregatedRenderPass* render_pass);
 
+  // Returns the color space of the current draw layer, which may differ from
+  // the render pass' color space.
+  gfx::ColorSpace CurrentDrawLayerColorSpace() const;
+
   // A layer that may be pushed at the start of |BeginDrawingRenderPass| that is
   // the size of the pass' update rect. Drawing done inside this layer is in a
   // blend-friendly color space.

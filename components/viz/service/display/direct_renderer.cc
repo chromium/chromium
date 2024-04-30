@@ -1168,10 +1168,6 @@ gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
       .GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel());
 }
 
-gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {
-  return RenderPassColorSpace(current_frame()->current_render_pass);
-}
-
 SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
   gpu::Capabilities caps;

@@ -1488,6 +1488,12 @@ bool SkiaRenderer::NeedsLayerForColorConversion(
   return true;
 }
 
+gfx::ColorSpace SkiaRenderer::CurrentDrawLayerColorSpace() const {
+  return hdr_color_conversion_layer_reset_
+             ? gfx::ColorSpace::CreateExtendedSRGB()
+             : RenderPassColorSpace(current_frame()->current_render_pass);
+}
+
 void SkiaRenderer::BeginDrawingRenderPass(
     const AggregatedRenderPass* render_pass,
     bool needs_clear,
@@ -1507,13 +1513,14 @@ void SkiaRenderer::BeginDrawingRenderPass(
                                               /*do_save=*/true);
 
     const SkRect layer_bounds = gfx::RectToSkRect(render_pass_update_rect);
+    SkPaint no_blend;
+    no_blend.setBlendMode(SkBlendMode::kSrc);
     const gfx::ColorSpace blend_color_space =
         gfx::ColorSpace::CreateExtendedSRGB();
     CHECK(blend_color_space.IsSuitableForBlending());
     sk_sp<const SkColorSpace> color_space = blend_color_space.ToSkColorSpace();
     current_canvas_->saveLayer(
-        SkCanvas::SaveLayerRec(&layer_bounds,
-                               /*paint=*/nullptr,
+        SkCanvas::SaveLayerRec(&layer_bounds, &no_blend,
                                /*backdrop=*/nullptr, color_space.get(),
                                SkCanvas::SaveLayerFlagsSet::kF16ColorType));
   }
@@ -2668,7 +2675,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 
   sk_sp<SkColorSpace> override_color_space;
   if (needs_color_conversion_filter) {
-    override_color_space = CurrentRenderPassSkColorSpace();
+    override_color_space = CurrentDrawLayerColorSpace().ToSkColorSpace();
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2747,9 +2754,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 
   if (needs_color_conversion_filter) {
     // Skia won't perform color conversion.
-    const gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
+    const gfx::ColorSpace dst_color_space = CurrentDrawLayerColorSpace();
     DCHECK(SkColorSpace::Equals(image->colorSpace(),
-                                CurrentRenderPassSkColorSpace().get()));
+                                dst_color_space.ToSkColorSpace().get()));
     sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
         src_color_space, std::nullopt, src_hdr_metadata, dst_color_space,
         quad->is_video_frame);
@@ -2868,7 +2875,7 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   // color space we lie and say the SkImage destination color space is always
   // the same as the rest of the frame. Otherwise the two color space
   // adjustments combined will produce the wrong result.
-  gfx::ColorSpace dst_color_space = CurrentRenderPassColorSpace();
+  gfx::ColorSpace dst_color_space = CurrentDrawLayerColorSpace();
 
 #if BUILDFLAG(IS_WIN)
   // Force sRGB output on Windows for overlay candidate video quads to match
@@ -2889,11 +2896,12 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
 #endif
 
   DCHECK(resource_provider());
-  // Pass in |CurrentRenderPassSkColorSpace()| here instead of |dst_color_space|
+  // Pass in |CurrentDrawLayerColorSpace()| here instead of |dst_color_space|
   // so the color space transform going from SkImage to SkSurface is identity.
   // The SkColorFilter already handles color space conversion so this avoids
   // applying the conversion twice.
-  ScopedYUVSkImageBuilder builder(this, quad, CurrentRenderPassSkColorSpace());
+  ScopedYUVSkImageBuilder builder(
+      this, quad, CurrentDrawLayerColorSpace().ToSkColorSpace());
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
@@ -3403,7 +3411,7 @@ void SkiaRenderer::CopyDrawnRenderPass(
     mailbox = it->second.mailbox;
   }
 
-  skia_output_surface_->CopyOutput(geometry, CurrentRenderPassColorSpace(),
+  skia_output_surface_->CopyOutput(geometry, RenderPassColorSpace(render_pass),
                                    std::move(request), mailbox);
 }
 

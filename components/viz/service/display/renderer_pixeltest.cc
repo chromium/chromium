@@ -5735,13 +5735,79 @@ INSTANTIATE_TEST_SUITE_P(,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     RendererPixelTestWithOverdrawFeedback);
 
+class RendererPixelTestColorConversion
+    : public VizPixelTest,
+      public testing::WithParamInterface<std::tuple<RendererType, bool>> {
+ public:
+  RendererPixelTestColorConversion() : VizPixelTest(std::get<0>(GetParam())) {
+    // Set a color space that is not suitable for blending to ensure we go
+    // through the color conversion code paths.
+    this->display_color_spaces_ =
+        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSCRGBLinear80Nits());
+    this->display_color_spaces_.SetSDRMaxLuminanceNits(80.f);
+
+    if (std::get<1>(GetParam())) {
+      features_.InitAndEnableFeature(features::kColorConversionInRenderer);
+    } else {
+      features_.InitAndDisableFeature(features::kColorConversionInRenderer);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Check that render pass updates do not blend with previous frames.
+TEST_P(RendererPixelTestColorConversion,
+       RenderPassClearsUpdatesWithHdrContent) {
+  gfx::Rect rect(this->device_viewport_size_);
+
+  SkColor4f semi_transparent_white = SkColors::kWhite;
+  semi_transparent_white.fA = 0.5;
+
+  const int value = 255 * semi_transparent_white.fA;
+  std::vector<SkColor> expected_output_colors(
+      rect.width() * rect.height(), SkColorSetARGB(255, value, value, value));
+
+  // Draw two frames with semi-transparent content. Both frames should result in
+  // the same image.
+  for (int i = 0; i < 2; i++) {
+    SCOPED_TRACE(base::StringPrintf("Frame %d", i));
+
+    AggregatedRenderPassId id{1};
+    auto pass = CreateTestRootRenderPass(id, rect);
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+
+    SharedQuadState* shared_state = CreateTestSharedQuadState(
+        gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
+
+    auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    color_quad->SetNew(shared_state, rect, rect, semi_transparent_white, false);
+
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    EXPECT_TRUE(this->RunPixelTest(&pass_list, &expected_output_colors,
+                                   cc::AlphaDiscardingExactPixelComparator()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    RendererPixelTestColorConversion,
+    testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
+                     testing::Bool()));
+
 using PrimaryID = gfx::ColorSpace::PrimaryID;
 using TransferID = gfx::ColorSpace::TransferID;
 
 class ColorTransformPixelTest
     : public VizPixelTest,
-      public testing::WithParamInterface<
-          std::tuple<RendererType, gfx::ColorSpace, gfx::ColorSpace, bool>> {
+      public testing::WithParamInterface<std::tuple<RendererType,
+                                                    gfx::ColorSpace,
+                                                    gfx::ColorSpace,
+                                                    bool,
+                                                    bool>> {
  public:
   ColorTransformPixelTest() : VizPixelTest(std::get<0>(GetParam())) {
     // Note that this size of 17 is not random -- it is chosen to match the
@@ -5761,6 +5827,11 @@ class ColorTransformPixelTest
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(this->dst_color_space_);
     this->premultiplied_alpha_ = std::get<3>(GetParam());
+    if (std::get<4>(GetParam())) {
+      features_.InitAndEnableFeature(features::kColorConversionInRenderer);
+    } else {
+      features_.InitAndDisableFeature(features::kColorConversionInRenderer);
+    }
   }
 
   // Add a new root pass to handle the color conversion to ensure the previous
@@ -5967,6 +6038,8 @@ class ColorTransformPixelTest
         << " src:" << src_color_space_ << ", dst:" << dst_color_space_;
   }
 
+  base::test::ScopedFeatureList features_;
+
   gfx::ColorSpace src_color_space_;
   gfx::ColorSpace dst_color_space_;
   bool premultiplied_alpha_ = false;
@@ -6028,7 +6101,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
                      testing::ValuesIn(src_color_spaces),
                      testing::ValuesIn(intermediate_color_spaces),
-                     testing::Bool()));
+                     testing::Bool(),
+                     testing::Values(false)));
 
 INSTANTIATE_TEST_SUITE_P(
     ToColorSpace,
@@ -6036,6 +6110,26 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::ValuesIn(dst_color_spaces),
+                     testing::Bool(),
+                     testing::Values(false)));
+
+// Test cases that simulate HDR content with tone mapping, which may require
+// color conversion when the destination color space is not suitable for
+// blending.
+INSTANTIATE_TEST_SUITE_P(
+    HdrVideoCases,
+    ColorTransformPixelTest,
+    testing::Combine(testing::ValuesIn(GetGpuRendererTypes()),
+                     testing::ValuesIn({
+                         gfx::ColorSpace::CreateExtendedSRGB(),
+                         gfx::ColorSpace::CreateHDR10(),
+                         gfx::ColorSpace::CreateHLG(),
+                     }),
+                     testing::ValuesIn({
+                         gfx::ColorSpace::CreateExtendedSRGB(),
+                         gfx::ColorSpace::CreateSCRGBLinear80Nits(),
+                     }),
+                     testing::Bool(),
                      testing::Bool()));
 
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.

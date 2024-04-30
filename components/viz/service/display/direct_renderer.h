@@ -334,7 +334,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
   float CurrentFrameSDRWhiteLevel() const;
   gfx::ColorSpace RootRenderPassColorSpace() const;
-  gfx::ColorSpace CurrentRenderPassColorSpace() const;
   gfx::ColorSpace RenderPassColorSpace(
       const AggregatedRenderPass* render_pass) const;
   SharedImageFormat GetColorSpaceSharedImageFormat(
@@ -343,8 +342,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // CurrentRenderPassColorSpace, this color space has the value of
   // CurrentFrameSDRWhiteLevel incorporated into it.
   sk_sp<SkColorSpace> CurrentRenderPassSkColorSpace() const {
-    return CurrentRenderPassColorSpace().ToSkColorSpace(
-        CurrentFrameSDRWhiteLevel());
+    return RenderPassColorSpace(current_frame()->current_render_pass)
+        .ToSkColorSpace(CurrentFrameSDRWhiteLevel());
   }
 
   const raw_ptr<const RendererSettings> settings_;
