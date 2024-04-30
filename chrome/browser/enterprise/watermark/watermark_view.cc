@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 
 #include <math.h>
+
 #include <algorithm>
 #include <string>
 
@@ -15,6 +16,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace enterprise_watermark {
 
@@ -284,6 +286,10 @@ int WatermarkView::max_y(double angle, const gfx::Rect& bounds) const {
   //                           │╱
   //
   return sin(angle) * bounds.width() + cos(angle) * bounds.height();
+}
+
+void WatermarkView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->AddState(ax::mojom::State::kInvisible);
 }
 
 BEGIN_METADATA(WatermarkView)
