@@ -1318,6 +1318,12 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="4" label="Settings Button"/>
 </enum>
 
+<enum name="MetadataTier">
+  <int value="0" label="NoMetadata"/>
+  <int value="1" label="ClassificationOnly"/>
+  <int value="2" label="HasButtonConfig"/>
+</enum>
+
 <enum name="ModifierKeyDomCodes">
   <int value="0" label="MetaLeft"/>
   <int value="1" label="MetaRight"/>

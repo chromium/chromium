@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
+#include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
@@ -171,6 +172,31 @@ const ui::InputDevice kSampleKeyboardMouseCombo(7,
                                                 /*vendor=*/0x046d,
                                                 /*product=*/0xc548,
                                                 /*version=*/0x0009);
+const ui::InputDevice kSampleUnCustomizableGraphicsTablet(
+    27,
+    ui::INPUT_DEVICE_USB,
+    "kSampleGraphicsTablet",
+    /*phys=*/"",
+    /*sys_path=*/base::FilePath(),
+    /*vendor=*/0xeeee,
+    /*product=*/0xeeee,
+    /*version=*/0x0006);
+const ui::InputDevice kSamplekWacomOnePenTabletS(28,
+                                                 ui::INPUT_DEVICE_USB,
+                                                 "kSamplekWacomOnePenTabletS",
+                                                 /*phys=*/"",
+                                                 /*sys_path=*/base::FilePath(),
+                                                 /*vendor=*/0x0531,
+                                                 /*product=*/0x0100,
+                                                 /*version=*/0x0006);
+const ui::KeyboardDevice kSampleKeychronKeyboard(29,
+                                                 ui::INPUT_DEVICE_USB,
+                                                 "kSampleKeychronKeyboard",
+                                                 /*phys=*/"",
+                                                 /*sys_path=*/base::FilePath(),
+                                                 /*vendor=*/0x3434,
+                                                 /*product=*/0x0311,
+                                                 /*version=*/0);
 
 const ui::KeyboardDevice kSampleSplitModifierKeyboard(
     21,
@@ -1156,6 +1182,44 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.Internal.AccelerationEnabled.Changed",
       /*expected_count=*/1u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, RecordsMetadataMetrics) {
+  base::HistogramTester histogram_tester;
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {kSampleKeyboardInternal, kSampleKeychronKeyboard});
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
+      {kSampleGraphicsTablet, kSampleUnCustomizableGraphicsTablet,
+       kSamplekWacomOnePenTabletS});
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {kSampleMouseUsb, kSampleCustomizableMouse, kSampleUncustomizableMouse});
+  // Two input device settings controllers publish this metric at the same time,
+  // so we expect 2 times the number of metadata tiers for all devices.
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.GraphicsTablet.MetadataTier", MetadataTier::kNoMetadata,
+      /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.GraphicsTablet.MetadataTier", MetadataTier::kNoMetadata,
+      /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.GraphicsTablet.MetadataTier",
+      MetadataTier::kHasButtonConfig,
+      /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.Mouse.MetadataTier",
+                                     MetadataTier::kNoMetadata,
+                                     /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.Mouse.MetadataTier",
+                                     MetadataTier::kNoMetadata,
+                                     /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.Mouse.MetadataTier",
+                                     MetadataTier::kHasButtonConfig,
+                                     /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.Keyboard.MetadataTier",
+                                     MetadataTier::kNoMetadata,
+                                     /*expected_count=*/2u);
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.Keyboard.MetadataTier",
+                                     MetadataTier::kNoMetadata,
+                                     /*expected_count=*/2u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {

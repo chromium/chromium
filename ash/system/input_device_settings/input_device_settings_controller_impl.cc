@@ -170,6 +170,55 @@ std::vector<mojom::TopRowActionKey> GetTopRowActionKeys(
   return top_row_keys;
 }
 
+void RecordMouseMetadataTierMetrics(
+    const ui::InputDevice& mouse,
+    mojom::MouseButtonConfig mouse_button_config) {
+  auto* metadata = GetMouseMetadata(mouse);
+  MetadataTier tier;
+
+  if (!metadata) {
+    tier = MetadataTier::kNoMetadata;
+  } else if (mouse_button_config == mojom::MouseButtonConfig::kNoConfig) {
+    tier = MetadataTier::kClassificationOnly;
+  } else {
+    tier = MetadataTier::kHasButtonConfig;
+  }
+
+  base::UmaHistogramEnumeration("ChromeOS.Inputs.Mouse.MetadataTier", tier);
+}
+
+void RecordGraphicsTabletMetadataTierMetrics(
+    const ui::InputDevice& graphics_tablet,
+    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config) {
+  auto* metadata = GetGraphicsTabletMetadata(graphics_tablet);
+  MetadataTier tier;
+
+  if (!metadata) {
+    tier = MetadataTier::kNoMetadata;
+  } else if (graphics_tablet_button_config ==
+             mojom::GraphicsTabletButtonConfig::kNoConfig) {
+    tier = MetadataTier::kClassificationOnly;
+  } else {
+    tier = MetadataTier::kHasButtonConfig;
+  }
+
+  base::UmaHistogramEnumeration("ChromeOS.Inputs.GraphicsTablet.MetadataTier",
+                                tier);
+}
+
+void RecordKeyboardMetadataTierMetrics(const ui::KeyboardDevice& keyboard) {
+  auto* metadata = GetKeyboardMetadata(keyboard);
+  MetadataTier tier;
+
+  if (!metadata) {
+    tier = MetadataTier::kNoMetadata;
+  } else {
+    tier = MetadataTier::kClassificationOnly;
+  }
+
+  base::UmaHistogramEnumeration("ChromeOS.Inputs.Keyboard.MetadataTier", tier);
+}
+
 mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
@@ -189,6 +238,8 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
   if (::features::AreF11AndF12ShortcutsEnabled()) {
     mojom_keyboard->top_row_action_keys = GetTopRowActionKeys(keyboard);
   }
+  RecordKeyboardMetadataTierMetrics(keyboard);
+
   return mojom_keyboard;
 }
 
@@ -206,6 +257,8 @@ mojom::MousePtr BuildMojomMouse(
           mouse);
   mojom_mouse->is_external =
       mouse.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
+  RecordMouseMetadataTierMetrics(mouse, mouse_button_config);
+
   return mojom_mouse;
 }
 
@@ -248,6 +301,9 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
   mojom_graphics_tablet->device_key =
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
           graphics_tablet);
+  RecordGraphicsTabletMetadataTierMetrics(graphics_tablet,
+                                          graphics_tablet_button_config);
+
   return mojom_graphics_tablet;
 }
 
