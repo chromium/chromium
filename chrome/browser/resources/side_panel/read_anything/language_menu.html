@@ -107,7 +107,7 @@
         items="[[availableLanguages_]]">
         <div class="language-line dropdown-line">
           <span id="language-name" class="language-name">
-            [[item.language]]
+            [[item.readableLanguage]]
           </span>
           <cr-toggle
             checked="[[item.checked]]"
@@ -115,10 +115,11 @@
             aria-labelledby="language-name"></cr-toggle>
         </div>
         <span id="notificationText"
-              class$="notification-error-[[item.isNotificationError]]"
-              aria-live$="[[item.ariaString]]">
-
-              [[item.notificationText]]</span>
+              class$="notification-error-[[isNotificationError(item.languageCode, voicePackInstallStatus)]]"
+              aria-live$=
+              "[[getAriaSetting(item.languageCode, voicePackInstallStatus)]]">
+              [[getNotificationText(item.languageCode, voicePackInstallStatus)]]
+        </span>
     </template>
   </div>
 </cr-dialog>

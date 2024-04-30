@@ -28,13 +28,9 @@ export interface LanguageMenuElement {
 }
 
 interface LanguageDropdownItem {
-  language: string;
+  readableLanguage: string;
   checked: boolean;
-  notificationText: string;
-  ariaString: string;
-  // A notification that's an "error" should be red and announce the error
-  // properly for accessibility.
-  isNotificationError: boolean;
+  languageCode: string;
   callback: () => void;
 }
 
@@ -62,14 +58,14 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
         type: Array,
         computed:
             'computeAvailableLanguages_(availableVoices,localeToDisplayName,' +
-            ' languageSearchValue_, enabledLanguagesInPref,' +
-            ' voicePackInstallStatus)',
+            ' languageSearchValue_)',
       },
     };
   }
 
   private languageSearchValue_: string;
   private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
+  private enabledLanguagesInPref: string[] = [];
 
   private closeLanguageMenu_() {
     this.$.languageMenu.close();
@@ -86,9 +82,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private computeAvailableLanguages_(
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
-      languageSearchValue: string|undefined, enabledLanguagesInPref: string[],
-      voicePackInstallStatus: {[language: string]: VoicePackStatus}):
-      LanguageDropdownItem[] {
+      languageSearchValue: string|undefined): LanguageDropdownItem[] {
     if (!availableVoices) {
       return [];
     }
@@ -112,14 +106,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
           }
         })
         .map(([lang, readableLang]) => ({
-               language: readableLang,
-               checked: enabledLanguagesInPref &&
-                   enabledLanguagesInPref.includes(lang),
-               notificationText:
-                   this.getNotificationText(lang, voicePackInstallStatus),
-               isNotificationError:
-                   this.isNotificationError(lang, voicePackInstallStatus),
-               ariaString: this.getAriaSetting(lang, voicePackInstallStatus),
+               readableLanguage: readableLang,
+               checked: this.enabledLanguagesInPref &&
+                   this.enabledLanguagesInPref.includes(lang),
+               languageCode: lang,
                callback: () =>
                    this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
                      bubbles: true,
