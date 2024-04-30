@@ -629,7 +629,7 @@ void SVGImage::NotifyAsyncLoadCompleted() {
 }
 
 Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
-  TRACE_EVENT0("blink", "SVGImage::dataChanged");
+  TRACE_EVENT("blink", "SVGImage::DataChanged");
 
   // Don't do anything if is an empty image.
   if (!DataSize())
@@ -661,7 +661,9 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // SVGImage objects, but we're safe now, because SVGImage can only be
   // loaded by a top-level document.
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
-      *chrome_client_, *agent_group_scheduler_, Data(),
+      *chrome_client_, *agent_group_scheduler_);
+  document_host_->InstallDocument(
+      Data(),
       WTF::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
                     weak_ptr_factory_.GetWeakPtr()),
       settings_to_use, IsolatedSVGDocumentHost::ProcessingMode::kAnimated);

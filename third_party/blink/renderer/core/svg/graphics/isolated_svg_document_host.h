@@ -52,13 +52,13 @@ class IsolatedSVGDocumentHost final
     kStatic,    // Corresponds to "secure static mode".
     kAnimated,  // Corresponds to "secure animated mode".
   };
-  IsolatedSVGDocumentHost(IsolatedSVGChromeClient&,
-                          AgentGroupScheduler&,
-                          scoped_refptr<const SharedBuffer>,
-                          base::OnceClosure async_load_callback,
-                          const Settings*,
-                          ProcessingMode);
+  IsolatedSVGDocumentHost(IsolatedSVGChromeClient&, AgentGroupScheduler&);
   ~IsolatedSVGDocumentHost();
+
+  void InstallDocument(scoped_refptr<const SharedBuffer> data,
+                       base::OnceClosure async_load_callback,
+                       const Settings* inherited_settings,
+                       ProcessingMode processing_mode);
 
   void Shutdown();
 

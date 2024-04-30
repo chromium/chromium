@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 
+#include "base/trace_event/trace_event.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -80,12 +80,9 @@ class IsolatedSVGDocumentHost::LocalFrameClient : public EmptyLocalFrameClient {
 
 IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
     IsolatedSVGChromeClient& chrome_client,
-    AgentGroupScheduler& agent_group_scheduler,
-    scoped_refptr<const SharedBuffer> data,
-    base::OnceClosure async_load_callback,
-    const Settings* inherited_settings,
-    ProcessingMode processing_mode)
-    : async_load_callback_(std::move(async_load_callback)) {
+    AgentGroupScheduler& agent_group_scheduler) {
+  TRACE_EVENT("blink", "IsolatedSVGDocumentHost::IsolatedSVGDocumentHost");
+
   // The isolated document will fire events (and the default C++ handlers run)
   // but doesn't actually allow scripts to run so it's fine to call into it. We
   // allow this since it means an SVG data url can synchronously load like other
@@ -97,28 +94,20 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
 
   Page* page;
   {
-    TRACE_EVENT0("blink", "SVGImage::dataChanged::createPage");
+    TRACE_EVENT("blink",
+                "IsolatedSVGDocumentHost::IsolatedSVGDocumentHost::createPage");
     page = Page::CreateNonOrdinary(chrome_client, agent_group_scheduler);
 
     Settings& settings = page->GetSettings();
     settings.SetScriptEnabled(false);
     settings.SetPluginsEnabled(false);
-
-    if (inherited_settings) {
-      CopySettingsFrom(settings, *inherited_settings);
-    }
-
-    // If "secure static mode" is requested, set the animation policy to "no
-    // animation". This will disable SMIL and image animations.
-    if (processing_mode == ProcessingMode::kStatic) {
-      settings.SetImageAnimationPolicy(
-          mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
-    }
   }
 
   LocalFrame* frame = nullptr;
   {
-    TRACE_EVENT0("blink", "SVGImage::dataChanged::createFrame");
+    TRACE_EVENT(
+        "blink",
+        "IsolatedSVGDocumentHost::IsolatedSVGDocumentHost::createFrame");
     frame_client_ = MakeGarbageCollected<LocalFrameClient>(this);
     frame = MakeGarbageCollected<LocalFrame>(
         frame_client_, *page, nullptr, nullptr, nullptr,
@@ -137,15 +126,43 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
   // SVG Images are transparent.
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
 
-  TRACE_EVENT0("blink", "SVGImage::dataChanged::load");
-
-  frame->ForceSynchronousDocumentInstall(AtomicString("image/svg+xml"),
-                                         std::move(data));
-
   // Set up our Page reference after installing our document. This avoids
   // tripping on a non-existing (null) Document if a GC is triggered during the
   // set up and ends up collecting the last owner/observer of this image.
   page_ = page;
+}
+
+void IsolatedSVGDocumentHost::InstallDocument(
+    scoped_refptr<const SharedBuffer> data,
+    base::OnceClosure async_load_callback,
+    const Settings* inherited_settings,
+    ProcessingMode processing_mode) {
+  TRACE_EVENT("blink", "IsolatedSVGDocumentHost::InstallDocument");
+
+  // The isolated document will fire events (and the default C++ handlers run)
+  // but doesn't actually allow scripts to run so it's fine to call into it. We
+  // allow this since it means an SVG data url can synchronously load like other
+  // image types.
+  EventDispatchForbiddenScope::AllowUserAgentEvents allow_user_agent_events;
+
+  async_load_callback_ = std::move(async_load_callback);
+
+  Settings& settings = page_->GetSettings();
+
+  if (inherited_settings) {
+    CopySettingsFrom(settings, *inherited_settings);
+  }
+
+  // If "secure static mode" is requested, set the animation policy to "no
+  // animation". This will disable SMIL and image animations.
+  if (processing_mode == ProcessingMode::kStatic) {
+    settings.SetImageAnimationPolicy(
+        mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
+  }
+
+  LocalFrame* frame = GetFrame();
+  frame->ForceSynchronousDocumentInstall(AtomicString("image/svg+xml"),
+                                         std::move(data));
 
   // Intrinsic sizing relies on computed style (e.g. font-size and
   // writing-mode).

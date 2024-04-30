@@ -263,7 +263,7 @@ class ImageObserverDisabler {
   STACK_ALLOCATED();
 
  public:
-  ImageObserverDisabler(Image* image) : image_(image) {
+  explicit ImageObserverDisabler(Image* image) : image_(image) {
     image_->SetImageObserverDisabled(true);
   }
 
