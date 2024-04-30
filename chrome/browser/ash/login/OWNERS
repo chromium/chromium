@@ -15,3 +15,5 @@ per-file *security_token*=fabiansommer@chromium.org
 
 per-file *quickstart_controller*=bhartmire@google.com
 per-file *quickstart_controller*=hansenmichael@google.com
+
+per-file *profile_auth_data*=file://ash/login/SAML_INTEGRATION_OWNERS
