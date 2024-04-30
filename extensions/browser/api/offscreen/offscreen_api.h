@@ -38,6 +38,9 @@ class OffscreenCreateDocumentFunction : public ExtensionFunction,
   void OnExtensionHostDestroyed(ExtensionHost* host) override;
   void OnExtensionHostDidStopFirstLoad(const ExtensionHost* host) override;
 
+  // Called (asynchronously) if the page fails to load.
+  void NotifyPageFailedToLoad();
+
   // Sends a reply asynchronously to the extension.
   void SendResponseToExtension(ResponseValue response_value);
 
