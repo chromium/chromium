@@ -3453,6 +3453,8 @@ static_library("browser") {
       "sync/glue/web_contents_state_synced_tab_delegate.h",
       "tab/web_contents_state.cc",
       "tab/web_contents_state.h",
+      "tab_resumption/tab_resumption_bridge.cc",
+      "tab_resumption/tab_resumption_bridge.h",
       "trusted_vault/trusted_vault_client_android.cc",
       "trusted_vault/trusted_vault_client_android.h",
 
@@ -3562,6 +3564,7 @@ static_library("browser") {
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab:jni_headers",
       "//chrome/browser/tab_group_sync:utils",
+      "//chrome/browser/tab_resumption:jni_headers",
       "//chrome/browser/touch_to_fill/autofill/android:public",
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android",

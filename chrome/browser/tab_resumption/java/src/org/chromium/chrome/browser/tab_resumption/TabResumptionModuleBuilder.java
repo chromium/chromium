@@ -65,13 +65,15 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         UrlImageProvider urlImageProvider = new UrlImageProvider(profile, mContext);
 
         assert mTabContentManagerSupplier.hasValue();
+        boolean isV2Enabled = TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
         TabResumptionModuleCoordinator coordinator =
                 new TabResumptionModuleCoordinator(
                         mContext,
                         moduleDelegate,
                         dataProviderFactory,
                         urlImageProvider,
-                        getThumbnailProvider(mTabContentManagerSupplier.get()));
+                        getThumbnailProvider(mTabContentManagerSupplier.get()),
+                        isV2Enabled ? new TabResumptionBridge(profile) : null);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }

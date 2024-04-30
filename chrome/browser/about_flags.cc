@@ -2589,6 +2589,12 @@ const FeatureEntry::FeatureVariation
          std::size(kSearchResumption_use_new_service), nullptr},
 };
 
+const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2[] = {
+    {"enable_v2", "true"}};
+const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
+    {"V2", kTabResumptionModule_enable_v2,
+     std::size(kTabResumptionModule_enable_v2), nullptr},
+};
 const FeatureEntry::FeatureParam
     kNotificationPermissionRationale_show_dialog_next_start[] = {
         {"always_show_rationale_before_requesting_permission", "true"},
@@ -7126,7 +7132,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-tab-resumption-module",
      flag_descriptions::kTabResumptionModuleAndroidName,
      flag_descriptions::kTabResumptionModuleAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabResumptionModuleAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kTabResumptionModuleAndroid,
+         kTabResumptionModuleAndroidVariations,
+         "kTabResumptionModuleAndroid")},
 
     {"enable-tabstate-flatbuffer", flag_descriptions::kTabStateFlatBufferName,
      flag_descriptions::kTabStateFlatBufferDescription, kOsAndroid,

@@ -30,8 +30,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.SuggestionsResult;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
@@ -49,42 +51,33 @@ import java.util.List;
 @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
 public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
     @Mock private ThumbnailProvider mThumbnailProvider;
     @Mock private SuggestionClickCallbacks mClickCallbacks;
+    @Mock private Profile mProfile;
+    @Mock private TabResumptionBridge.Natives mTabResumptionBridgeJni;
 
     @Captor private ArgumentCaptor<Callback<SuggestionsResult>> mFetchSuggestionCallbackCaptor;
 
+    private Context mContext;
     private PropertyModel mModel;
     private TabResumptionModuleMediator mMediator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(TabResumptionBridgeJni.TEST_HOOKS, mTabResumptionBridgeJni);
 
-        Context context = ApplicationProvider.getApplicationContext();
-        context.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContext = ApplicationProvider.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
 
-        mMediator =
-                new TabResumptionModuleMediator(
-                        /* context= */ context,
-                        /* moduleDelegate= */ mModuleDelegate,
-                        /* model= */ mModel,
-                        /* urlImageProvider= */ mUrlImageProvider,
-                        /* thumbnailProvider= */ mThumbnailProvider,
-                        /* statusChangedCallback= */ () -> {},
-                        /* suggestionClickCallbacks= */ mClickCallbacks) {
-                    @Override
-                    long getCurrentTimeMs() {
-                        return CURRENT_TIME_MS;
-                    }
-                };
-        mMediator.startSession(mDataProvider);
+        createMediator(/* isV2Enabled= */ false);
 
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
         Assert.assertEquals(
@@ -227,6 +220,17 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testTentativeNothingStableNothing() {
+        testTentativeNothingStableNothingImpl();
+    }
+
+    @Test
+    @SmallTest
+    public void testTentativeNothingStableNothingV2() {
+        createMediator(/* isV2Enabled= */ true);
+        testTentativeNothingStableNothingImpl();
+    }
+
+    private void testTentativeNothingStableNothingImpl() {
         List<SuggestionEntry> tentativeSuggestions = new ArrayList<SuggestionEntry>();
         List<SuggestionEntry> stableSuggestions1 = new ArrayList<SuggestionEntry>();
 
@@ -260,6 +264,17 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testTentativeNothingStableSomething() {
+        testTentativeNothingStableSomethingImpl();
+    }
+
+    @Test
+    @SmallTest
+    public void testTentativeNothingStableSomethingV2() {
+        createMediator(/* isV2Enabled= */ true);
+        testTentativeNothingStableSomethingImpl();
+    }
+
+    public void testTentativeNothingStableSomethingImpl() {
         List<SuggestionEntry> tentativeSuggestions = new ArrayList<SuggestionEntry>();
         List<SuggestionEntry> stableSuggestions1 = Arrays.asList(makeForeignSessionSuggestion(0));
 
@@ -345,6 +360,17 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testTentativeSomethingStableSomething() {
+        testTentativeSomethingStableSomethingImpl();
+    }
+
+    @Test
+    @SmallTest
+    public void testTentativeSomethingStableSomethingV2() {
+        createMediator(/* isV2Enabled= */ true);
+        testTentativeSomethingStableSomethingImpl();
+    }
+
+    private void testTentativeSomethingStableSomethingImpl() {
         List<SuggestionEntry> tentativeSuggestions = Arrays.asList(makeForeignSessionSuggestion(0));
         List<SuggestionEntry> stableSuggestions1 =
                 Arrays.asList(makeForeignSessionSuggestion(1), makeForeignSessionSuggestion(0));
@@ -426,6 +452,25 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         verify(mModuleDelegate, times(expectOnDataReadyCalls)).onDataReady(anyInt(), any());
         verify(mModuleDelegate, times(expectOnDataFetchFailedCalls)).onDataFetchFailed(anyInt());
         verify(mModuleDelegate, times(expectRemoveModuleCalls)).removeModule(anyInt());
+    }
+
+    private void createMediator(boolean isV2Enabled) {
+        mMediator =
+                new TabResumptionModuleMediator(
+                        /* context= */ mContext,
+                        /* moduleDelegate= */ mModuleDelegate,
+                        /* model= */ mModel,
+                        /* urlImageProvider= */ mUrlImageProvider,
+                        /* thumbnailProvider= */ mThumbnailProvider,
+                        /* statusChangedCallback= */ () -> {},
+                        /* suggestionClickCallbacks= */ mClickCallbacks,
+                        isV2Enabled ? new TabResumptionBridge(mProfile) : null) {
+                    @Override
+                    long getCurrentTimeMs() {
+                        return CURRENT_TIME_MS;
+                    }
+                };
+        mMediator.startSession(mDataProvider);
     }
 
     private SuggestionBundle getSuggestionBundle() {

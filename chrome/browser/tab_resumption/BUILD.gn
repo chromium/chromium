@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/ForeignSessionTabResumptionDataSource.java",
@@ -14,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_resumption/MixedTabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionBundle.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/SuggestionEntry.java",
+    "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionBridge.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleCoordinator.java",
@@ -47,11 +50,16 @@ android_library("java") {
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java_resources",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.tab_resumption"
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/tab_resumption/TabResumptionBridge.java" ]
 }
 
 android_resources("java_resources") {

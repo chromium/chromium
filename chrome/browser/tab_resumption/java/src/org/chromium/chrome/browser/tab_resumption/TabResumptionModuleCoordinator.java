@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_resumption;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -35,7 +36,8 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
             @NonNull ModuleDelegate moduleDelegate,
             @NonNull TabResumptionDataProviderFactory dataProviderFactory,
             @NonNull UrlImageProvider urlImageProvider,
-            @NonNull ThumbnailProvider thumbnailProvider) {
+            @NonNull ThumbnailProvider thumbnailProvider,
+            @Nullable TabResumptionBridge tabResumptionBridge) {
         mContext = context;
         mModuleDelegate = moduleDelegate;
         mDataProviderFactory = dataProviderFactory;
@@ -61,7 +63,8 @@ public class TabResumptionModuleCoordinator implements ModuleProvider {
                         /* urlImageProvider= */ mUrlImageProvider,
                         /* thumbnailProvider= */ thumbnailProvider,
                         /* statusChangedCallback= */ this::showModule,
-                        /* suggestionClickCallbacks= */ wrappedClickCallbacks);
+                        /* suggestionClickCallbacks= */ wrappedClickCallbacks,
+                        tabResumptionBridge);
         mMediator.startSession(mDataProviderFactory.make());
     }
 

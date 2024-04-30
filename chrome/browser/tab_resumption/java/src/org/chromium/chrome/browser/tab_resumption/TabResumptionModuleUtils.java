@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab_resumption;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -23,6 +25,13 @@ public class TabResumptionModuleUtils {
         // Called to switch to an existing Tab.
         void onSuggestionClickByTabId(int tabId);
     }
+
+    private static final String TAB_RESUMPTION_V2_PARAM = "enable_v2";
+    public static final BooleanCachedFieldTrialParameter TAB_RESUMPTION_V2 =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+                    TAB_RESUMPTION_V2_PARAM,
+                    false);
 
     /**
      * Computes the string representation of how recent an event was, given the time delta.

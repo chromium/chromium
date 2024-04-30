@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotif
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -126,6 +127,7 @@ public class ChromeCachedFlags {
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS,
+                        TabResumptionModuleUtils.TAB_RESUMPTION_V2,
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
