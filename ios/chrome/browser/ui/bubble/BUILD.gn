@@ -49,7 +49,6 @@ source_set("bubble") {
 
 source_set("bubble_view") {
   sources = [
-    "bubble_dismissal_reason_type.h",
     "bubble_util.h",
     "bubble_util.mm",
     "bubble_view.h",

@@ -8,11 +8,17 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/ui/bubble/bubble_dismissal_reason_type.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 
 typedef NS_ENUM(NSInteger, BubbleAlignment);
 typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 typedef NS_ENUM(NSInteger, BubbleViewType);
+
+// Used for the bubble's dismissal callback.
+using CallbackWithIPHDismissalReasonType =
+    void (^)(IPHDismissalReasonType reason,
+             feature_engagement::Tracker::SnoozeAction action);
 
 @class BubbleViewController;
 
