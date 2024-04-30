@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
+import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
-import {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
+import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 
-suite('LanguageMenuElement', () => {
+suite('LanguageMenu', () => {
   let languageMenu: LanguageMenuElement;
   let availableVoices: SpeechSynthesisVoice[];
   let enabledLanguagesInPref: string[];

@@ -5,7 +5,7 @@
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
-import '../strings.m.js';
+import './strings.m.js';
 import './read_anything_toolbar.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';

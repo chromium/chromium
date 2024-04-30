@@ -21,6 +21,7 @@ build_webui("build") {
     "voice_selection_menu.ts",
   ]
   non_web_component_files = [
+    "read_anything.ts",
     "common.ts",
     "voice_language_util.ts",
   ]
@@ -47,4 +48,15 @@ build_webui("build") {
             target_gen_dir) ]
 
   webui_context_type = "untrusted"
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host =
+        "chrome-untrusted://read-anything-side-panel.top-chrome"
+    optimize_webui_in_files = [ "read_anything.js" ]
+    optimize_webui_external_paths =
+        [ "//read-anything-side-panel.top-chrome/shared|" +
+          rebase_path(
+              "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc",
+              root_build_dir) ]
+  }
 }
