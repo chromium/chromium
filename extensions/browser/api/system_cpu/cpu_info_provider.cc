@@ -62,6 +62,7 @@ bool CpuInfoProvider::QueryInfo() {
 
 std::vector<std::string> CpuInfoProvider::GetFeatures() const {
   std::vector<std::string> features;
+#if defined(ARCH_CPU_X86_FAMILY)
   // These are the feature codes used by /proc/cpuinfo on Linux.
   if (cpu_.has_mmx()) {
     features.push_back("mmx");
@@ -87,6 +88,7 @@ std::vector<std::string> CpuInfoProvider::GetFeatures() const {
   if (cpu_.has_avx()) {
     features.push_back("avx");
   }
+#endif  // defined(ARCH_CPU_X86_FAMILY)
   return features;
 }
 

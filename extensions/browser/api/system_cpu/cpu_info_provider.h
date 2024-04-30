@@ -7,10 +7,14 @@
 
 #include <vector>
 
-#include "base/cpu.h"
 #include "base/lazy_instance.h"
+#include "build/build_config.h"
 #include "extensions/browser/api/system_info/system_info_provider.h"
 #include "extensions/common/api/system_cpu.h"
+
+#if defined(ARCH_CPU_X86_FAMILY)
+#include "base/cpu.h"
+#endif
 
 namespace extensions {
 
@@ -54,7 +58,9 @@ class CpuInfoProvider : public SystemInfoProvider {
 
   static base::LazyInstance<scoped_refptr<CpuInfoProvider>>::DestructorAtExit
       provider_;
+#if defined(ARCH_CPU_X86_FAMILY)
   base::CPU cpu_;
+#endif
 };
 
 }  // namespace extensions

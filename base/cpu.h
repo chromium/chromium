@@ -65,6 +65,7 @@ class BASE_EXPORT CPU final {
   };
 
   // Accessors for CPU information.
+  // TODO(crbug.com/335001230): Most if not all of these should be x86-only.
   std::string vendor_name() const { return cpu_vendor_; }
   int signature() const { return signature_; }
   int stepping() const { return stepping_; }
@@ -81,9 +82,11 @@ class BASE_EXPORT CPU final {
   bool has_sse41() const { return has_sse41_; }
   bool has_sse42() const { return has_sse42_; }
   bool has_popcnt() const { return has_popcnt_; }
+#if defined(ARCH_CPU_X86_FAMILY)
   bool has_avx() const { return has_avx_; }
   bool has_fma3() const { return has_fma3_; }
   bool has_avx2() const { return has_avx2_; }
+#endif
   bool has_aesni() const { return has_aesni_; }
   bool has_non_stop_time_stamp_counter() const {
     return has_non_stop_time_stamp_counter_;
@@ -144,9 +147,11 @@ class BASE_EXPORT CPU final {
   bool has_sse41_ = false;
   bool has_sse42_ = false;
   bool has_popcnt_ = false;
+#if defined(ARCH_CPU_X86_FAMILY)
   bool has_avx_ = false;
   bool has_fma3_ = false;
   bool has_avx2_ = false;
+#endif
   bool has_aesni_ = false;
 #if defined(ARCH_CPU_ARM_FAMILY)
   bool has_mte_ = false;  // Armv8.5-A MTE (Memory Taggging Extension)
