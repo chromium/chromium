@@ -71,7 +71,7 @@ class ArcTracingBridge : public KeyedService,
  private:
   // TODO(crbug.com/41386726): Remove once we have replaced the legacy tracing
   // service with perfetto.
-  class ArcTracingAgent : public tracing::BaseAgent {
+  class ArcTracingAgent : public ::tracing::BaseAgent {
    public:
     explicit ArcTracingAgent(ArcTracingBridge* bridge);
 
