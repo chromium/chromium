@@ -3,63 +3,63 @@ rootWebArea
 ++++genericContainer ignored
 ++++++link name='Section one'
 ++++++++staticText name='Section one'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Section one'
 ++++++staticText name=' '
-++++++++inlineTextBox
+++++++++inlineTextBox name=' '
 ++++++link name='Section two'
 ++++++++staticText name='Section two'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Section two'
 ++++++staticText name=' '
-++++++++inlineTextBox
+++++++++inlineTextBox name=' '
 ++++++link name='Section three' ariaCurrentState=location
 ++++++++staticText name='Section three'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Section three'
 ++++++lineBreak name='<newline>'
-++++++++inlineTextBox
+++++++++inlineTextBox name='<newline>'
 ++++++heading name='Section one heading' hierarchicalLevel=1
 ++++++++staticText name='Section one heading'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Section one heading'
 ++++++heading name='Section two heading' hierarchicalLevel=1
 ++++++++staticText name='Section two heading'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Section two heading'
 ++++++heading name='Section three heading' hierarchicalLevel=1
 ++++++++staticText name='Section three heading'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Section three heading'
 ++++++lineBreak name='<newline>'
-++++++++inlineTextBox
+++++++++inlineTextBox name='<newline>'
 ++++++genericContainer
 ++++++++staticText name='Span 1'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Span 1'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++genericContainer ariaCurrentState=true
 ++++++++++staticText name='Span 2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Span 2'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='Span 3'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Span 3'
 ++++++paragraph ariaCurrentState=true
 ++++++++staticText name='aria-current is true'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria-current is true'
 ++++++paragraph ariaCurrentState=false
 ++++++++staticText name='aria-current is false'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria-current is false'
 ++++++paragraph ariaCurrentState=time
 ++++++++staticText name='aria-current is time'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria-current is time'
 ++++++paragraph ariaCurrentState=date
 ++++++++staticText name='aria-current is date'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria-current is date'
 ++++++paragraph ariaCurrentState=location
 ++++++++staticText name='aria-current is location'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria-current is location'
 ++++++paragraph ariaCurrentState=step
 ++++++++staticText name='aria-current is step'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria-current is step'
 ++++++paragraph ariaCurrentState=page
 ++++++++staticText name='aria-current is page'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria-current is page'
 ++++++paragraph
 ++++++++staticText name='aria-current is empty string'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria-current is empty string'

@@ -2,54 +2,54 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++staticText name='before'
-++++++++inlineTextBox
+++++++++inlineTextBox name='before'
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++staticText name='before'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='before'
 ++++++layoutTable
 ++++++++genericContainer ignored
 ++++++++++staticText name='before'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='before'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='before'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='before'
 ++++++++++layoutTableRow
 ++++++++++++genericContainer ignored
 ++++++++++++++staticText name='before'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='before'
 ++++++++++++layoutTableCell name='before after'
 ++++++++++++++genericContainer ignored
 ++++++++++++++++staticText name='before'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='before'
 ++++++++++++++textField
 ++++++++++++++++genericContainer
 ++++++++++++++genericContainer ignored
 ++++++++++++++++staticText name='after'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='after'
 ++++++++++++layoutTableCell name='before Submit after'
 ++++++++++++++genericContainer ignored
 ++++++++++++++++staticText name='before'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='before'
 ++++++++++++++button name='Submit'
 ++++++++++++++++staticText name='Submit'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='Submit'
 ++++++++++++++genericContainer ignored
 ++++++++++++++++staticText name='after'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='after'
 ++++++++++++genericContainer ignored
 ++++++++++++++staticText name='after'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='after'
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='after'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='after'
 ++++++++genericContainer ignored
 ++++++++++staticText name='after'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='after'
 ++++++genericContainer ignored
 ++++++++staticText name='after'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='after'
 ++++genericContainer ignored
 ++++++staticText name='after'
-++++++++inlineTextBox
+++++++++inlineTextBox name='after'

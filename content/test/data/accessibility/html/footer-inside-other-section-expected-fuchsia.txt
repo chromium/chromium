@@ -5,14 +5,14 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='footer inside article.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='footer inside article.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='footer inside section.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='footer inside section.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='footer inside main.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='footer inside main.'

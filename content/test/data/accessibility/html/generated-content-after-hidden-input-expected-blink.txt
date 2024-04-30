@@ -4,4 +4,4 @@ rootWebArea
 ++++++paragraph
 ++++++++genericContainer ignored
 ++++++++++staticText name='*'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='*'

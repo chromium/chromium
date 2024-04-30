@@ -5,4 +5,4 @@ rootWebArea
 ++++++++genericContainer
 ++++++heading name='h2' hierarchicalLevel=2
 ++++++++staticText name='h2'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='h2'

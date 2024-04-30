@@ -3,4 +3,4 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Label'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='Label'

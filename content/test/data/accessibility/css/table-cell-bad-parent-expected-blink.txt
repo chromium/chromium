@@ -2,12 +2,12 @@ rootWebArea htmlTag='#document'
 ++genericContainer ignored htmlTag='html'
 ++++genericContainer htmlTag='body'
 ++++++staticText name='one'
-++++++++inlineTextBox
+++++++++inlineTextBox name='one'
 ++++++genericContainer className='two' htmlTag='span'
 ++++++++staticText name='two'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='two'
 ++++++genericContainer ignored className='three' htmlTag='span'
 ++++++++staticText name='three'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='three'
 ++++++staticText name='four'
-++++++++inlineTextBox
+++++++++inlineTextBox name='four'

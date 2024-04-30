@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer
 ++++++labelText
 ++++++++staticText name='How often?'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='How often?'
 ++++++comboBoxSelect collapsed required name='How often?' invalidState=true
 ++++++++menuListPopup invisible
 ++++++++++menuListOption selected=true

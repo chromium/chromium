@@ -6,4 +6,4 @@ rootWebArea
 ++++++++++layoutTableRow
 ++++++++++++layoutTableCell name='cat'
 ++++++++++++++staticText name='cat'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='cat'

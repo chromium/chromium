@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++button name='Click me!'
 ++++++++staticText name='Click me!'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Click me!'

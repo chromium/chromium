@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++labelText
 ++++++++staticText name='This label should be visible'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This label should be visible'

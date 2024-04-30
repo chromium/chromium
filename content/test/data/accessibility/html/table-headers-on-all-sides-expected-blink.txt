@@ -7,43 +7,43 @@ rootWebArea name='Table example - headers on all sides'
 ++++++++++++cell
 ++++++++++++columnHeader name='Red'
 ++++++++++++++staticText name='Red'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Red'
 ++++++++++++columnHeader name='Green'
 ++++++++++++++staticText name='Green'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Green'
 ++++++++++++cell
 ++++++++++row
 ++++++++++++rowHeader name='Fruit'
 ++++++++++++++staticText name='Fruit'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Fruit'
 ++++++++++++cell name='strawberry'
 ++++++++++++++staticText name='strawberry'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='strawberry'
 ++++++++++++cell name='lime'
 ++++++++++++++staticText name='lime'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='lime'
 ++++++++++++rowHeader name='Fruit'
 ++++++++++++++staticText name='Fruit'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Fruit'
 ++++++++++row
 ++++++++++++rowHeader name='Veggies'
 ++++++++++++++staticText name='Veggies'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Veggies'
 ++++++++++++cell name='radish'
 ++++++++++++++staticText name='radish'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='radish'
 ++++++++++++cell name='spinach'
 ++++++++++++++staticText name='spinach'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='spinach'
 ++++++++++++rowHeader name='Veggies'
 ++++++++++++++staticText name='Veggies'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Veggies'
 ++++++++++row
 ++++++++++++cell
 ++++++++++++columnHeader name='Red'
 ++++++++++++++staticText name='Red'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Red'
 ++++++++++++columnHeader name='Green'
 ++++++++++++++staticText name='Green'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Green'
 ++++++++++++cell

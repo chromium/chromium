@@ -4,12 +4,12 @@ rootWebArea
 ++++++tabList horizontal multiselectable
 ++++++++tab name='tab1' selected=false selectedFromFocus=false
 ++++++++++staticText name='tab1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tab1'
 ++++++++tab name='tab2' selected=true selectedFromFocus=false
 ++++++++++staticText name='tab2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tab2'
 ++++++++tab name='tab3' selected=false selectedFromFocus=false
 ++++++++++staticText name='tab3'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tab3'
 ++++++staticText name='Done'
-++++++++inlineTextBox
+++++++++inlineTextBox name='Done'

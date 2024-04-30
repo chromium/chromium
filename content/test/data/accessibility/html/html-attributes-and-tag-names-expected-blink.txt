@@ -3,16 +3,16 @@ rootWebArea name='Hello World'
 ++++genericContainer ignored
 ++++++heading name='Heading'
 ++++++++staticText name='Heading'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Heading'
 ++++++paragraph
 ++++++++staticText name='Paragraph'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Paragraph'
 ++++++genericContainer
 ++++++++textField
 ++++++++++genericContainer
 ++++++button name='c'
 ++++++++staticText name='D'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='D'
 ++++++button name='Click'
 ++++++++staticText name='Click'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Click'

@@ -28,7 +28,7 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN label='switch should not be exposed'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Hey!'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Hey!'
 ++++++IMAGE label='view should not be exposed'
 ++++++IMAGE label='desc should not be exposed as accessible object' secondary_label='abc'
 ++++++IMAGE label='title should not be exposed as accessible object' secondary_label='abc'
@@ -61,8 +61,8 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN label='tspan which lacks criteria for inclusion should not be exposed'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Hello '
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Hello '
 ++++++++++STATIC_TEXT label='world'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='world'
 ++++++++++STATIC_TEXT label='!'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='!'

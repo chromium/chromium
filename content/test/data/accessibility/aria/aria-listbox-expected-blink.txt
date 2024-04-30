@@ -4,14 +4,14 @@ rootWebArea
 ++++++listBox setSize=4
 ++++++++listBoxOption name='Item 1' setSize=4 posInSet=1 selected=false
 ++++++++++staticText name='Item 1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Item 1'
 ++++++++listBoxOption name='Item 2' setSize=4 posInSet=2 selected=false
 ++++++++++staticText name='Item 2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Item 2'
 ++++++++splitter horizontal
 ++++++++listBoxOption name='Second group item 1' setSize=4 posInSet=3 selected=false
 ++++++++++staticText name='Second group item 1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Second group item 1'
 ++++++++listBoxOption name='Second group item 2' setSize=4 posInSet=4 selected=false
 ++++++++++staticText name='Second group item 2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Second group item 2'

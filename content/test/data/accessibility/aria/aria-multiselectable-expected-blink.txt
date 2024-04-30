@@ -5,49 +5,49 @@ rootWebArea
 ++++++++listBoxOption name='Example 1' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Example 1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Example 1'
 ++++++++listBoxOption name='Example 2' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Example 2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Example 2'
 ++++++++listBoxOption name='Example 3' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Example 3'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Example 3'
 ++++++++listBoxOption name='Example 4' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Example 4'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Example 4'
 ++++++listBox multiselectable name='My Listbox'
 ++++++++listBoxOption name='Example 1' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Example 1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Example 1'
 ++++++++listBoxOption name='Example 2' selected=true
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Example 2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Example 2'
 ++++++++listBoxOption name='Example 3' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Example 3'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Example 3'
 ++++++++listBoxOption name='Example 4' selected=true
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Example 4'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Example 4'

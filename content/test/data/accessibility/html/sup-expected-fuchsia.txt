@@ -3,9 +3,9 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='This text contains'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This text contains'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='superscript'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='superscript'
 ++++++++STATIC_TEXT label='text.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='text.'

@@ -3,7 +3,7 @@ rootWebArea focusable
 ++++genericContainer ignored
 ++++++genericContainer
 ++++++++staticText name='State'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='State'
 ++++++comboBoxGrouping name='State' haspopup=listbox
 ++++++++textField focusable activedescendantId=listBoxOption controlsIds=listBox
 ++++++++++genericContainer
@@ -11,15 +11,15 @@ rootWebArea focusable
 ++++++++listBoxOption focusable name='Alabama' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Alabama'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Alabama'
 ++++++++listBoxOption focusable name='Alaska' selected=true
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Alaska'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Alaska'
 ++++++comboBoxGrouping name='State' haspopup=listbox
 ++++++++textField focusable activedescendantId=listBoxOption controlsIds=listBox
 ++++++++++genericContainer
@@ -27,12 +27,12 @@ rootWebArea focusable
 ++++++++listBoxOption focusable name='Alabama' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Alabama'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Alabama'
 ++++++++listBoxOption focusable name='Alaska' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Alaska'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Alaska'

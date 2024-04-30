@@ -4,20 +4,20 @@ rootWebArea
 ++++++menu
 ++++++++menuItem collapsed name='New' haspopup=menu
 ++++++++++staticText name='New'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='New'
 ++++++++menuItem name='Open' haspopup=menu
 ++++++++++staticText name='Open'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Open'
 ++++++++menuItem collapsed name='Save'
 ++++++++++staticText name='Save'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Save'
 ++++++++menuItem name='Quit'
 ++++++++++staticText name='Quit'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Quit'
 ++++++splitter horizontal
 ++++++++staticText name='ARIA separator. aria-expanded value set to false.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA separator. aria-expanded value set to false.'
 ++++++splitter horizontal
 ++++++++staticText name='ARIA separator. aria-expanded value set to true.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA separator. aria-expanded value set to true.'
 ++++++splitter horizontal

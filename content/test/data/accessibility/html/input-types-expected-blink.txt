@@ -3,49 +3,49 @@ rootWebArea
 ++++genericContainer
 ++++++labelText
 ++++++++staticText name='Default: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Default: '
 ++++++++textField editable name='Default:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Button: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Button: '
 ++++++++button name='Button:'
 ++++++labelText ignored
 ++++++++staticText ignored name='Checkbox: '
 ++++++++checkBox name='Checkbox:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Color: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Color: '
 ++++++++colorWell name='Color:' value='#000000'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++labelText
 ++++++++staticText name='Email: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Email: '
 ++++++++textField editable name='Email:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='File: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='File: '
 ++++++++button name='File:: No file chosen' value='No file chosen'
 ++++++++++button invisible name='Choose File'
 ++++++labelText
 ++++++++staticText name='Image: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Image: '
 ++++++++button name='Image:'
 ++++++++++image
 ++++++++++staticText name='Submit'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Submit'
 ++++++staticText name=' '
-++++++++inlineTextBox
+++++++++inlineTextBox name=' '
 ++++++labelText
 ++++++++staticText name='Number: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Number: '
 ++++++++spinButton editable name='Number:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Password: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Password: '
 ++++++++textField editable protected name='Password:'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
@@ -57,37 +57,37 @@ rootWebArea
 ++++++++radioButton name='Radio:' checkedState=false
 ++++++labelText
 ++++++++staticText name='Range: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Range: '
 ++++++++slider horizontal name='Range:' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
 ++++++labelText
 ++++++++staticText name='Reset: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Reset: '
 ++++++++button name='Reset:'
 ++++++++++staticText name='Reset'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Reset'
 ++++++labelText
 ++++++++staticText name='Search: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Search: '
 ++++++++searchBox editable name='Search:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Submit: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Submit: '
 ++++++++button name='Submit:'
 ++++++++++staticText name='Submit'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Submit'
 ++++++labelText
 ++++++++staticText name='Tel: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Tel: '
 ++++++++textField editable name='Tel:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Text: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Text: '
 ++++++++textField editable name='Text:'
 ++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Url: '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Url: '
 ++++++++textField editable name='Url:'
 ++++++++++genericContainer editable

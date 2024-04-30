@@ -4,9 +4,9 @@ rootWebArea
 ++++++header
 ++++++++paragraph
 ++++++++++staticText name='header inside section with role presentational.'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='header inside section with role presentational.'
 ++++++genericContainer
 ++++++++header
 ++++++++++paragraph
 ++++++++++++staticText name='header inside section with role generic.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='header inside section with role generic.'

@@ -4,9 +4,9 @@ rootWebArea
 ++++++footer
 ++++++++paragraph
 ++++++++++staticText name='footer inside section with role presentational.'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='footer inside section with role presentational.'
 ++++++genericContainer
 ++++++++footer
 ++++++++++paragraph
 ++++++++++++staticText name='footer inside section with role generic.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='footer inside section with role generic.'

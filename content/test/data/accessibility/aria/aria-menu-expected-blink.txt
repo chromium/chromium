@@ -4,23 +4,23 @@ rootWebArea
 ++++++menuBar horizontal
 ++++++++menuItem name='File' controlsIds=menu
 ++++++++++staticText name='File'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='File'
 ++++++++menuItem name='Edit'
 ++++++++++staticText name='Edit'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Edit'
 ++++++++menuItem name='View'
 ++++++++++staticText name='View'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='View'
 ++++++menu name='File'
 ++++++++menuItem name='New'
 ++++++++++staticText name='New'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='New'
 ++++++++menuItem name='Open'
 ++++++++++staticText name='Open'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Open'
 ++++++++menuItem name='Save'
 ++++++++++staticText name='Save'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Save'
 ++++++++menuItem name='Quit'
 ++++++++++staticText name='Quit'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Quit'

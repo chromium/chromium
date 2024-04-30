@@ -7,10 +7,10 @@ rootWebArea
 ++++++++++++genericContainer
 ++++++++++++++spinButton name='Month' placeholder='---------' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++staticText name='---------'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='---------'
 ++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name=' '
 ++++++++++++++spinButton name='Year' placeholder='----' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++staticText name='----'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='----'
 ++++++++++popUpButton description='Show month picker' name='Show month picker' descriptionFrom=title haspopup=menu

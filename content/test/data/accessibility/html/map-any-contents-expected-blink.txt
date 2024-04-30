@@ -4,17 +4,17 @@ rootWebArea
 ++++++image name='pipe'
 ++++++++heading name='Headings are allowed in a map'
 ++++++++++staticText name='Headings are allowed in a map'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Headings are allowed in a map'
 ++++++++link name='pipe1'
 ++++++++paragraph
 ++++++++++staticText name='So are '
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='So are '
 ++++++++++mark
 ++++++++++++staticText name='other elements'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='other elements'
 ++++++++++staticText name='!'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='!'
 ++++++++staticText ignored name='pipe2'
 ++++++++button name='Even a button'
 ++++++++++staticText name='Even a button'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Even a button'

@@ -4,4 +4,4 @@ UNKNOWN focusable has_input_focus
 ++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='someone@example.com'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='someone@example.com'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='someone@example.com'

@@ -3,14 +3,14 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='My favorite browser is '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='My favorite browser is '
 ++++++++contentDeletion
 ++++++++++staticText name='ABC'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='ABC'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++contentInsertion
 ++++++++++staticText name='Chrome'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Chrome'
 ++++++++staticText name='!'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='!'

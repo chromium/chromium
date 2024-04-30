@@ -5,4 +5,4 @@ rootWebArea name='done'
 ++++++++staticText ignored invisible name='Button 1'
 ++++++button name='Button 2'
 ++++++++staticText name='Button 2'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Button 2'

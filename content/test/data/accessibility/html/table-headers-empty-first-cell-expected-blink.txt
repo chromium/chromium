@@ -4,98 +4,98 @@ rootWebArea name='Table example - headers with empty first cell'
 ++++++table name='Delivery slots:'
 ++++++++caption
 ++++++++++staticText name='Delivery slots:'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Delivery slots:'
 ++++++++rowGroup ignored
 ++++++++++row
 ++++++++++++cell
 ++++++++++++columnHeader name='Monday'
 ++++++++++++++staticText name='Monday'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Monday'
 ++++++++++++columnHeader name='Tuesday'
 ++++++++++++++staticText name='Tuesday'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Tuesday'
 ++++++++++++columnHeader name='Wednesday'
 ++++++++++++++staticText name='Wednesday'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Wednesday'
 ++++++++++++columnHeader name='Thursday'
 ++++++++++++++staticText name='Thursday'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Thursday'
 ++++++++++++columnHeader name='Friday'
 ++++++++++++++staticText name='Friday'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Friday'
 ++++++++++row
 ++++++++++++rowHeader name='09:00 - 11:00'
 ++++++++++++++staticText name='09:00 - 11:00'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='09:00 - 11:00'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++row
 ++++++++++++rowHeader name='11:00 - 13:00'
 ++++++++++++++staticText name='11:00 - 13:00'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='11:00 - 13:00'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++row
 ++++++++++++rowHeader name='13:00 - 15:00'
 ++++++++++++++staticText name='13:00 - 15:00'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='13:00 - 15:00'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++row
 ++++++++++++rowHeader name='15:00 - 17:00'
 ++++++++++++++staticText name='15:00 - 17:00'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='15:00 - 17:00'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++++cell name='Closed'
 ++++++++++++++staticText name='Closed'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Closed'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'
 ++++++++++++cell name='Open'
 ++++++++++++++staticText name='Open'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Open'

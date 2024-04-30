@@ -2,9 +2,9 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++staticText name='One word is '
-++++++++inlineTextBox
+++++++++inlineTextBox name='One word is '
 ++++++emphasis
 ++++++++staticText name='emphasized'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='emphasized'
 ++++++staticText name='.'
-++++++++inlineTextBox
+++++++++inlineTextBox name='.'

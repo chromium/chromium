@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++contentDeletion
 ++++++++staticText name='My car is blue.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='My car is blue.'

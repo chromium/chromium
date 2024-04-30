@@ -5,14 +5,14 @@ rootWebArea
 ++++++++headerAsNonLandmark
 ++++++++++paragraph
 ++++++++++++staticText name='Header inside article.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Header inside article.'
 ++++++section
 ++++++++headerAsNonLandmark
 ++++++++++paragraph
 ++++++++++++staticText name='Header inside section.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Header inside section.'
 ++++++main
 ++++++++headerAsNonLandmark
 ++++++++++paragraph
 ++++++++++++staticText name='Header inside main.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Header inside main.'

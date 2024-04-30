@@ -4,4 +4,4 @@ rootWebArea
 ++++++heading name='Link In Heading' hierarchicalLevel=1
 ++++++++link name='Link In Heading'
 ++++++++++staticText name='Link In Heading'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Link In Heading'

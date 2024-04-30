@@ -4,4 +4,4 @@ UNKNOWN focusable has_input_focus
 ++++++SEARCH_BOX focusable actions='{DEFAULT, SET_VALUE}' value='Search terms'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Search terms'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Search terms'

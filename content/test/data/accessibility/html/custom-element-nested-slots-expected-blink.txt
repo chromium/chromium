@@ -7,4 +7,4 @@ rootWebArea htmlTag='#document'
 ++++++++++++genericContainer ignored className='inner' htmlTag='slot'
 ++++++++++++++paragraph htmlTag='p'
 ++++++++++++++++staticText name='Slot contents'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='Slot contents'

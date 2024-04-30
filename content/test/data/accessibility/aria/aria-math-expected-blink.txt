@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer ignored
 ++++++math name='ARIA role math.'
 ++++++++staticText name='ARIA role math.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA role math.'

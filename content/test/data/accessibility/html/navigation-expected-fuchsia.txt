@@ -4,4 +4,4 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++LINK focusable label='Don't click on me' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Don't click on me' actions='{DEFAULT}'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Don't click on me'

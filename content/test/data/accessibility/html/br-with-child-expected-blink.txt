@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='Text line 1'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Text line 1'
 ++++++++lineBreak name='<newline>'
 ++++++++staticText name='Text line 2'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Text line 2'

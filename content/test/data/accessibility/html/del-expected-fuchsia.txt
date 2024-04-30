@@ -3,7 +3,7 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='I am '
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='I am '
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='vegetarian'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='vegetarian'

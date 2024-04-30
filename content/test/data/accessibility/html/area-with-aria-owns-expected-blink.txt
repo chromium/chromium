@@ -6,4 +6,4 @@ rootWebArea
 ++++++++link name='pipe1'
 ++++++paragraph
 ++++++++staticText name='Paragraph'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Paragraph'

@@ -5,4 +5,4 @@ rootWebArea
 ++++++genericContainer description='Description from describedby' name='both' descriptionFrom=relatedElement describedbyIds=tooltip
 ++++++tooltip name='Description from describedby'
 ++++++++staticText name='Description from describedby'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Description from describedby'

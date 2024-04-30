@@ -4,8 +4,8 @@ rootWebArea
 ++++++genericContainer ignored
 ++++++++genericContainer display='block'
 ++++++++++staticText name='Cats'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Cats'
 ++++++++genericContainer display='block'
 ++++++++++code display='inline'
 ++++++++++++staticText name='done'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='done'

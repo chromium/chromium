@@ -6,17 +6,17 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='%F0%9D%90%B4'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='%F0%9D%90%B4'
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='2'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='2'
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='+'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='+'
 ++++++++++UNKNOWN
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='%F0%9D%90%B5'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='%F0%9D%90%B5'
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='2'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='2'

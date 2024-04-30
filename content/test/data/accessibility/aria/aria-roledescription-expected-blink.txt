@@ -3,22 +3,22 @@ rootWebArea
 ++++genericContainer ignored
 ++++++button name='Native button'
 ++++++++staticText name='Native button'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Native button'
 ++++++button name='ARIA button'
 ++++++++staticText name='ARIA button'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA button'
 ++++++button name='Clicky button' roleDescription='Clicky'
 ++++++++staticText name='Clicky button'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Clicky button'
 ++++++genericContainer
 ++++++++staticText name='foo'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='foo'
 ++++++genericContainer name='bar'
 ++++++++staticText name='bar'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='bar'
 ++++++paragraph roleDescription='Texty'
 ++++++++staticText name='baz'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='baz'
 ++++++group roleDescription='SuperContainer'
 ++++++++staticText name='SuperContainer group'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='SuperContainer group'

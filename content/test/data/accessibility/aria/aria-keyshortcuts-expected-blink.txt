@@ -3,10 +3,10 @@ rootWebArea
 ++++genericContainer
 ++++++button keyShortcuts='Ctrl+X' name='Cut'
 ++++++++staticText name='Cut'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Cut'
 ++++++button keyShortcuts='Ctrl+C' name='Copy'
 ++++++++staticText name='Copy'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Copy'
 ++++++button keyShortcuts='Ctrl+V' name='Paste'
 ++++++++staticText name='Paste'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Paste'

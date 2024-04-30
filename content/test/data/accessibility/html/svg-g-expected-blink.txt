@@ -5,11 +5,11 @@ rootWebArea
 ++++++++group ignored htmlTag='g'
 ++++++++++genericContainer
 ++++++++++++staticText name='Group 1 Text 1'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Group 1 Text 1'
 ++++++++++genericContainer
 ++++++++++++staticText name='Group 1 Text 2'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Group 1 Text 2'
 ++++++++group ignored htmlTag='g'
 ++++++++++genericContainer
 ++++++++++++staticText name='Group 2 Text 1'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Group 2 Text 1'

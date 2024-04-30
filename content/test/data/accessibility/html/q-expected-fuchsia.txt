@@ -3,17 +3,17 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='This is '
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is '
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden
 ++++++++++++++STATIC_TEXT label='%E2%80%9C'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='%E2%80%9C'
 ++++++++++STATIC_TEXT label='Chromium Blink'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Chromium Blink'
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN hidden
 ++++++++++++++STATIC_TEXT label='%E2%80%9D'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='%E2%80%9D'
 ++++++++STATIC_TEXT label=' based browser.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label=' based browser.'

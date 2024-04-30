@@ -2,16 +2,16 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++staticText name='Parent div not included'
-++++++++inlineTextBox
+++++++++inlineTextBox name='Parent div not included'
 ++++++none ignored className='before'
 ++++++++genericContainer ignored
 ++++++++++staticText name='['
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='['
 ++++++++staticText name='Has ::before'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Has ::before'
 ++++++none ignored className='after'
 ++++++++staticText name='Has ::after'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Has ::after'
 ++++++++genericContainer ignored
 ++++++++++staticText name=']'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name=']'

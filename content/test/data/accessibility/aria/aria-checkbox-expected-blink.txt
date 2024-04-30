@@ -3,20 +3,20 @@ rootWebArea
 ++++genericContainer ignored
 ++++++checkBox name='CheckBox1' checkedState=true
 ++++++++staticText name='CheckBox1'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='CheckBox1'
 ++++++checkBox name='CheckBox2' checkedState=false
 ++++++++staticText name='CheckBox2'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='CheckBox2'
 ++++++checkBox name='CheckBox3' checkedState=mixed
 ++++++++staticText name='CheckBox3'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='CheckBox3'
 ++++++checkBox name='CheckBox4' checkedState=false
 ++++++++staticText name='CheckBox4'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='CheckBox4'
 ++++++checkBox name='Complex checkbox' checkedState=false
 ++++++++staticText name='Complex '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Complex '
 ++++++++textField
 ++++++++++genericContainer
 ++++++++staticText name=' checkbox'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' checkbox'

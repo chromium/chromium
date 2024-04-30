@@ -4,4 +4,4 @@ rootWebArea
 ++++++genericContainer
 ++++++++button name='Kettle'
 ++++++++++staticText name='Kettle'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Kettle'

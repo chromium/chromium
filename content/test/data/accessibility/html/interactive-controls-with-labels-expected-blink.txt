@@ -3,104 +3,104 @@ rootWebArea
 ++++genericContainer ignored
 ++++++labelText
 ++++++++staticText name='Test label'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Test label'
 ++++++genericContainer name='aria label'
 ++++++++staticText name='Generic container'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Generic container'
 ++++++genericContainer name='Test label'
 ++++++++staticText name='Generic container with aria-labelledby'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Generic container with aria-labelledby'
 ++++++textField name='aria label' value='Textbox'
 ++++++++staticText name='Textbox'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Textbox'
 ++++++textField name='Test label' value='Textbox with aria-labelledby'
 ++++++++staticText name='Textbox with aria-labelledby'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Textbox with aria-labelledby'
 ++++++button name='aria label'
 ++++++++staticText name='Button'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Button'
 ++++++button name='Test label'
 ++++++++staticText name='Button with aria-labelledby'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Button with aria-labelledby'
 ++++++textFieldWithComboBox name='aria label' activedescendantId=listBoxOption controlsIds=listBox
 ++++++++genericContainer
 ++++++listBox
 ++++++++listBoxOption name='Option 1' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Option 1'
 ++++++++listBoxOption name='Option 2' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Option 2'
 ++++++textFieldWithComboBox name='Test label' activedescendantId=listBoxOption controlsIds=listBox
 ++++++++genericContainer
 ++++++listBox
 ++++++++listBoxOption name='Option 3' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 3'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Option 3'
 ++++++++listBoxOption name='Option 4' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 4'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Option 4'
 ++++++comboBoxMenuButton name='aria label' value='Combobox' controlsIds=listBox
 ++++++++staticText name='Combobox'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Combobox'
 ++++++listBox
 ++++++++listBoxOption name='Option 5' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 5'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Option 5'
 ++++++++listBoxOption name='Option 6' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 6'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Option 6'
 ++++++comboBoxMenuButton name='Test label' value='Combobox with aria-labelledby' controlsIds=listBox
 ++++++++staticText name='Combobox with aria-labelledby'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Combobox with aria-labelledby'
 ++++++listBox
 ++++++++listBoxOption name='Option 7' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 7'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Option 7'
 ++++++++listBoxOption name='Option 8' selected=false
 ++++++++++none ignored
 ++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Option 8'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Option 8'
 ++++++inputTime name='aria label' value='12:05'
 ++++++++genericContainer ignored
 ++++++++++genericContainer
 ++++++++++++genericContainer
 ++++++++++++++spinButton name='Hours aria label' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++staticText name='12'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='12'
 ++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name=':'
 ++++++++++++++spinButton name='Minutes aria label' placeholder='--' value='05' valueForRange=5.00 minValueForRange=0.00 maxValueForRange=59.00
 ++++++++++++++++staticText name='05'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='05'
 ++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name=' '
 ++++++++++++++spinButton name='AM/PM aria label' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++++staticText name='PM'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='PM'
 ++++++++++popUpButton description='Show time picker' name='Show time picker' descriptionFrom=title
 ++++++inputTime name='Test label' value='12:05'
 ++++++++genericContainer ignored
@@ -108,17 +108,17 @@ rootWebArea
 ++++++++++++genericContainer
 ++++++++++++++spinButton name='Hours Test label' placeholder='--' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++staticText name='12'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='12'
 ++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name=':'
 ++++++++++++++spinButton name='Minutes Test label' placeholder='--' value='05' valueForRange=5.00 minValueForRange=0.00 maxValueForRange=59.00
 ++++++++++++++++staticText name='05'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='05'
 ++++++++++++++staticText name=' '
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name=' '
 ++++++++++++++spinButton name='AM/PM Test label' placeholder='--' value='PM' valueForRange=2.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++++++staticText name='PM'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='PM'
 ++++++++++popUpButton description='Show time picker' name='Show time picker' descriptionFrom=title
 ++++++colorWell name='aria label' value='#e4e4e4'
 ++++++++genericContainer ignored

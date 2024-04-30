@@ -3,6 +3,6 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='Chromium'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='Chromium'
 ++++++++STATIC_TEXT label='open source project'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='open source project'

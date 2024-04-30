@@ -4,8 +4,8 @@ rootWebArea
 ++++++section
 ++++++++button default name='Submit'
 ++++++++++staticText name='Submit'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Submit'
 ++++++form name='Name'
 ++++++++button default name='Submit'
 ++++++++++staticText name='Submit'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Submit'

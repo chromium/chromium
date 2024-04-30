@@ -7,7 +7,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++STATIC_TEXT hidden label='%E2%96%B8 '
 ++++++++++++STATIC_TEXT label='details tag' actions='{DEFAULT}'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='details tag'
 ++++++++UNKNOWN hidden
 ++++++++++STATIC_TEXT hidden label='<newline>    '
 ++++++++++STATIC_TEXT hidden label='<newline>    '
@@ -19,8 +19,8 @@ UNKNOWN focusable has_input_focus
 ++++++++++++LIST_ELEMENT_MARKER hidden
 ++++++++++++++STATIC_TEXT hidden label='%E2%96%BE '
 ++++++++++++STATIC_TEXT label='details tag open' actions='{DEFAULT}'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='details tag open'
 ++++++++UNKNOWN hidden
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='The details tag with open specifies that the details should be visible (open) to the user.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='The details tag with open specifies that the details should be visible (open) to the user.'

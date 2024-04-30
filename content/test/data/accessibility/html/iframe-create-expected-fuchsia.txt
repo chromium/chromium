@@ -7,4 +7,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN
 ++++++++++++++LINK focusable label='done' actions='{DEFAULT}'
 ++++++++++++++++STATIC_TEXT label='done' actions='{DEFAULT}'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='done'

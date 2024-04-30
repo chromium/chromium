@@ -4,4 +4,4 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++BUTTON focusable label='Kettle' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Kettle' actions='{DEFAULT}'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Kettle'

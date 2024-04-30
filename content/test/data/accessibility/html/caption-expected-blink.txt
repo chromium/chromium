@@ -10,33 +10,33 @@ rootWebArea
 ++++++++++row
 ++++++++++++columnHeader name='Browser'
 ++++++++++++++staticText name='Browser'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Browser'
 ++++++++++++columnHeader name='Engine'
 ++++++++++++++staticText name='Engine'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Engine'
 ++++++++++row
 ++++++++++++cell name='Chrome'
 ++++++++++++++staticText name='Chrome'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Chrome'
 ++++++++++++cell name='Blink'
 ++++++++++++++staticText name='Blink'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Blink'
 ++++++++++row
 ++++++++++++cell name='Safari'
 ++++++++++++++staticText name='Safari'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Safari'
 ++++++++++++cell name='WebKit'
 ++++++++++++++staticText name='WebKit'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='WebKit'
 ++++++table description='Description' name='Name' descriptionFrom=tableCaption
 ++++++++caption
 ++++++++++staticText name='Description'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Description'
 ++++++++rowGroup ignored
 ++++++++++row
 ++++++++++++cell name='A'
 ++++++++++++++staticText name='A'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A'
 ++++++++++++cell name='B'
 ++++++++++++++staticText name='B'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='B'

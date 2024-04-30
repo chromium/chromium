@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer ignored
 ++++++complementary
 ++++++++staticText name='This is ARIA role complementary.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This is ARIA role complementary.'

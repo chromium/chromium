@@ -4,7 +4,7 @@ rootWebArea
 ++++++list pageSize=(400, 400)
 ++++++++listItem pageSize=(400, 200)
 ++++++++++staticText name='One'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='One'
 ++++++++listItem pageSize=(400, 200)
 ++++++++++staticText name='Two'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Two'

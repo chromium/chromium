@@ -5,11 +5,11 @@ rootWebArea
 ++++++++tab name='Item' selected=false
 ++++++++++heading name='Item' hierarchicalLevel=3
 ++++++++++++staticText name='Item'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Item'
 ++++++++tab name='Prices' selected=false
 ++++++++++heading name='Prices' hierarchicalLevel=3
 ++++++++++++staticText name='Prices'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Prices'
 ++++++tabPanel name='Item'
 ++++++++staticText name='Item tab content'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Item tab content'

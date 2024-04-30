@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer
 ++++++button inputType='button' name='Button'
 ++++++++staticText name='Button'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Button'
 ++++++button description='Description' inputType='button' name='Name' descriptionFrom=buttonLabel
 ++++++++staticText name='Description'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Description'

@@ -2,15 +2,15 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++lineBreak name='<newline>'
-++++++++inlineTextBox
+++++++++inlineTextBox name='<newline>'
 ++++++staticText name='Text line 1'
-++++++++inlineTextBox
+++++++++inlineTextBox name='Text line 1'
 ++++++paragraph
 ++++++++staticText name='Text line 2'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Text line 2'
 ++++++++lineBreak name='<newline>'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='<newline>'
 ++++++++staticText name='Text line 3'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Text line 3'
 ++++++lineBreak name='<newline>'
-++++++++inlineTextBox
+++++++++inlineTextBox name='<newline>'

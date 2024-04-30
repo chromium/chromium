@@ -3,6 +3,6 @@ rootWebArea
 ++++genericContainer
 ++++++button name='GrowButton'
 ++++++++staticText name='GrowButton'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='GrowButton'
 ++++++staticText name='Done'
-++++++++inlineTextBox
+++++++++inlineTextBox name='Done'

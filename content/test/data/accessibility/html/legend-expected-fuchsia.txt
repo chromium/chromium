@@ -5,12 +5,12 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN label='Browser Engines:'
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='Browser Engines:'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='Browser Engines:'
 ++++++++++STATIC_TEXT label='Browser: '
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Browser: '
 ++++++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}'
 ++++++++++++UNKNOWN
 ++++++++++STATIC_TEXT label=' Rendering Engine: '
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label=' Rendering Engine: '
 ++++++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}'
 ++++++++++++UNKNOWN

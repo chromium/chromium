@@ -3,9 +3,9 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='This test is to check '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This test is to check '
 ++++++++mark
 ++++++++++staticText name='mark tag'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='mark tag'
 ++++++++staticText name='.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='.'

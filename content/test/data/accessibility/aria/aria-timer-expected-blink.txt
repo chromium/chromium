@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer ignored
 ++++++timer
 ++++++++staticText name='This test is for aria-role = timer'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This test is for aria-role = timer'

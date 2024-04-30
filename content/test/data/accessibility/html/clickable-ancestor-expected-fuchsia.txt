@@ -3,14 +3,14 @@ UNKNOWN focusable has_input_focus label='Checking nodes marked as clickable'
 ++++UNKNOWN hidden
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Generic div'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='Generic div'
 ++++++UNKNOWN label='Heading'
 ++++++++STATIC_TEXT label='Heading'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='Heading'
 ++++++BUTTON focusable label='Button' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Button' actions='{DEFAULT}'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='Button'
 ++++++UNKNOWN actions='{DEFAULT}'
 ++++++++PARAGRAPH actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Paragraph with click handler on parent and should be not marked as clickable' actions='{DEFAULT}'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Paragraph with click handler on parent and should be not marked as clickable'

@@ -6,21 +6,21 @@ rootWebArea name='Table example'
 ++++++++++row
 ++++++++++++columnHeader name='Pair'
 ++++++++++++++staticText name='Pair'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Pair'
 ++++++++++++columnHeader name='Single'
 ++++++++++++++staticText name='Single'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Single'
 ++++++++++row
 ++++++++++++cell name='AB'
 ++++++++++++++staticText name='AB'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='AB'
 ++++++++++++cell name='B'
 ++++++++++++++staticText name='B'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='B'
 ++++++++++row
 ++++++++++++cell name='CD'
 ++++++++++++++staticText name='CD'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='CD'
 ++++++++++++cell name='D'
 ++++++++++++++staticText name='D'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='D'

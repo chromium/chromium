@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++staticText name='Done'
-++++++++inlineTextBox
+++++++++inlineTextBox name='Done'

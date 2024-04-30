@@ -4,20 +4,20 @@ rootWebArea
 ++++++checkBox inputType='checkbox' name='foo bar baz' checkedState=false
 ++++++labelText
 ++++++++staticText name='foo'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='foo'
 ++++++++textField inputType='text' value='bar'
 ++++++++++genericContainer
 ++++++++++++staticText name='bar'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='bar'
 ++++++++staticText name='baz'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='baz'
 ++++++checkBox inputType='checkbox' name='foo bar baz' checkedState=false
 ++++++labelText
 ++++++++staticText name='foo '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='foo '
 ++++++++textField inputType='text' value='bar'
 ++++++++++genericContainer
 ++++++++++++staticText name='bar'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='bar'
 ++++++++staticText name=' baz'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' baz'

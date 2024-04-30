@@ -4,11 +4,11 @@ rootWebArea scrollXMin=0 scrollable=true
 ++++++genericContainer ignored className='no-overflow not-scrollable'
 ++++++++paragraph
 ++++++++++staticText name='no overflow'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='no overflow'
 ++++++genericContainer ignored className='clipped-not scrollable'
 ++++++++paragraph
 ++++++++++staticText name='clipped large lots of text more text'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='clipped large lots of text more text'
 ++++++textField multiline className='textarea scrollable' value='ab cd' scrollXMin=0 scrollable=true
 ++++++++genericContainer
 ++++++++++staticText name='ab cd'
@@ -19,46 +19,46 @@ rootWebArea scrollXMin=0 scrollable=true
 ++++++++genericContainer ignored
 ++++++++++paragraph
 ++++++++++++staticText name='tiny'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='tiny'
 ++++++group className='x-overflow-group'
 ++++++++genericContainer className='x-hidden-small not-scrollable' scrollXMin=0
 ++++++++++paragraph
 ++++++++++++staticText name='x=hidden'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='x=hidden'
 ++++++++genericContainer className='x-hidden-large scrollable' name='x=hidden' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=hidden'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='x=hidden'
 ++++++++genericContainer className='x-auto scrollable' name='x=auto' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=auto'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='x=auto'
 ++++++++genericContainer className='x-scroll scrollable' name='x=scroll' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=scroll'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='x=scroll'
 ++++++++genericContainer ignored className='x-visible not-scrollable'
 ++++++++++paragraph
 ++++++++++++staticText name='x=visible'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='x=visible'
 ++++++group className='y-overflow-group'
 ++++++++genericContainer className='y-hidden-small not-scrollable' scrollXMin=0
 ++++++++++paragraph
 ++++++++++++staticText name='y=hidden'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='y=hidden'
 ++++++++genericContainer className='y-hidden-large scrollable' name='y=hidden' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=hidden'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='y=hidden'
 ++++++++genericContainer className='y-auto scrollable' name='y=auto' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=auto'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='y=auto'
 ++++++++genericContainer className='y-scroll scrollable' name='y=scroll' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=scroll'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='y=scroll'
 ++++++++genericContainer ignored className='y-visible not-scrollable'
 ++++++++++paragraph
 ++++++++++++staticText name='y=visible'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='y=visible'

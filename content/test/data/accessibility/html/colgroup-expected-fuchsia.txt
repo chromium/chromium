@@ -6,14 +6,14 @@ UNKNOWN focusable has_input_focus
 ++++++++++TABLE_ROW
 ++++++++++++COLUMN_HEADER label='Single' cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Single'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='Single'
 ++++++++++++COLUMN_HEADER label='Pair' cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='Pair'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='Pair'
 ++++++++++TABLE_ROW row_index=1
 ++++++++++++CELL label='A' cell_row_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='A'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='A'
 ++++++++++++CELL label='AA' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
 ++++++++++++++STATIC_TEXT label='AA'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='AA'

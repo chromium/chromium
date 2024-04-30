@@ -3,31 +3,31 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='This text contains '
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This text contains '
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='subscript'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='subscript'
 ++++++++STATIC_TEXT label=' text.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label=' text.'
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='H'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='H'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label=' '
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label=' '
 ++++++++++UNKNOWN
 ++++++++++++UNKNOWN focusable label='3'
 ++++++++++++++UNKNOWN label='oops'
 ++++++++++++++++STATIC_TEXT label='3'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='3'
 ++++++++++STATIC_TEXT label=' '
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label=' '
 ++++++++++UNKNOWN
 ++++++++++++LINK focusable label='2' actions='{DEFAULT}'
 ++++++++++++++UNKNOWN label='better' actions='{DEFAULT}'
 ++++++++++++++++STATIC_TEXT label='2' actions='{DEFAULT}'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='2'
 ++++++++++STATIC_TEXT label=' '
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label=' '
 ++++++++STATIC_TEXT label='O'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='O'

@@ -4,18 +4,18 @@ rootWebArea
 ++++++figure detailsIds=figcaption
 ++++++++figcaption
 ++++++++++staticText name='External Caption'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='External Caption'
 ++++++++figure detailsIds=figcaption
 ++++++++++image name='This is a green box.'
 ++++++++++figcaption
 ++++++++++++staticText name='Internal caption'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Internal caption'
 ++++++figure detailsIds=figcaption
 ++++++++figure detailsIds=figcaption
 ++++++++++image name='This is a green box.'
 ++++++++++figcaption
 ++++++++++++staticText name='Internal caption'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Internal caption'
 ++++++++figcaption
 ++++++++++staticText name='External Caption'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='External Caption'

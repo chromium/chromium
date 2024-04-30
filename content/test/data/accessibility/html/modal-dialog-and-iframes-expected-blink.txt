@@ -3,18 +3,18 @@ rootWebArea
 ++++dialog
 ++++++paragraph
 ++++++++staticText name='Text in the dialog.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Text in the dialog.'
 ++++++iframe
 ++++++++rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++paragraph
 ++++++++++++++++staticText name='Text in normal iframe'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='Text in normal iframe'
 ++++++++++++++iframe
 ++++++++++++++++rootWebArea
 ++++++++++++++++++genericContainer ignored
 ++++++++++++++++++++genericContainer ignored
 ++++++++++++++++++++++paragraph
 ++++++++++++++++++++++++staticText name='Text in nested normal iframe'
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++inlineTextBox name='Text in nested normal iframe'

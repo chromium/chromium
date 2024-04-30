@@ -7,17 +7,17 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN
 ++++++++++++++UNKNOWN focusable label='Month' actions='{SET_VALUE}' value='09'
 ++++++++++++++++STATIC_TEXT label='09'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='09'
 ++++++++++++++STATIC_TEXT label='/'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='/'
 ++++++++++++++UNKNOWN focusable label='Day' actions='{SET_VALUE}' value='01'
 ++++++++++++++++STATIC_TEXT label='01'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='01'
 ++++++++++++++STATIC_TEXT label='/'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='/'
 ++++++++++++++UNKNOWN focusable label='Year' actions='{SET_VALUE}' value='2008'
 ++++++++++++++++STATIC_TEXT label='2008'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='2008'
 ++++++++++UNKNOWN focusable label='Show date picker' actions='{DEFAULT}' secondary_label='Show date picker'
 ++++++UNKNOWN focusable label='When' actions='{DEFAULT, SET_VALUE}' value='2008-09-01'
 ++++++++UNKNOWN hidden
@@ -25,16 +25,16 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN
 ++++++++++++++UNKNOWN focusable label='Month When' actions='{SET_VALUE}' value='09'
 ++++++++++++++++STATIC_TEXT label='09'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='09'
 ++++++++++++++STATIC_TEXT label='/'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='/'
 ++++++++++++++UNKNOWN focusable label='Day When' actions='{SET_VALUE}' value='01'
 ++++++++++++++++STATIC_TEXT label='01'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='01'
 ++++++++++++++STATIC_TEXT label='/'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='/'
 ++++++++++++++UNKNOWN focusable label='Year When' actions='{SET_VALUE}' value='2008'
 ++++++++++++++++STATIC_TEXT label='2008'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='2008'
 ++++++++++UNKNOWN focusable label='Show date picker' actions='{DEFAULT}' secondary_label='Show date picker'
 

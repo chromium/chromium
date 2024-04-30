@@ -4,14 +4,14 @@ rootWebArea name='done'
 ++++++genericContainer ignored
 ++++++++radioButton setSize=4 posInSet=1 checkedState=false
 ++++++++staticText name='Airedale'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Airedale'
 ++++++++genericContainer
 ++++++++++radioButton setSize=4 posInSet=2 checkedState=false
 ++++++++++staticText name='Beagle'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Beagle'
 ++++++++radioButton setSize=4 posInSet=3 checkedState=false
 ++++++++staticText name='Chihuahua '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Chihuahua '
 ++++++++radioButton setSize=4 posInSet=4 checkedState=false
 ++++++++staticText name='Dachshund'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Dachshund'

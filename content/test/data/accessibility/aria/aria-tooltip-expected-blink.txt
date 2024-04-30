@@ -5,4 +5,4 @@ rootWebArea
 ++++++++genericContainer
 ++++++tooltip name='Your username should be your email id'
 ++++++++staticText name='Your username should be your email id'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Your username should be your email id'

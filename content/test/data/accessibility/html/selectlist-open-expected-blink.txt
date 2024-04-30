@@ -5,7 +5,7 @@ rootWebArea focusable
 ++++++++genericContainer ignored
 ++++++++++comboBoxMenuButton focusable value='Option 1' haspopup=listbox
 ++++++++++++staticText name='Custom selectlist button'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Custom selectlist button'
 ++++++++genericContainer ignored
 ++++++++++listBox setSize=3 ispopup=auto
 ++++++++++++listBoxOption focusable name='Option 1' setSize=3 posInSet=1 selected=true

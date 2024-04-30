@@ -4,10 +4,10 @@ rootWebArea
 ++++++menuBar horizontal
 ++++++++menuItem name='File'
 ++++++++++staticText name='File'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='File'
 ++++++++menuItem name='Edit'
 ++++++++++staticText name='Edit'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Edit'
 ++++++++menuItem name='View'
 ++++++++++staticText name='View'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='View'

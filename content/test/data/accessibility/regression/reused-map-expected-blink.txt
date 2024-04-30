@@ -4,5 +4,5 @@ rootWebArea focusable name='done'
 ++++++image name='star1'
 ++++++++link focusable name='Area2'
 ++++++staticText name=' '
-++++++++inlineTextBox
+++++++++inlineTextBox name=' '
 ++++++image name='star2'

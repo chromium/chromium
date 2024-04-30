@@ -6,30 +6,30 @@ rootWebArea
 ++++++++++listMarker name='1. '
 ++++++++++++staticText ignored name='1. '
 ++++++++++staticText name='Chrome'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Chrome'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='2. '
 ++++++++++++staticText ignored name='2. '
 ++++++++++staticText name='Safari'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Safari'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='3. '
 ++++++++++++staticText ignored name='3. '
 ++++++++++staticText name='IE'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='IE'
 ++++++list
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='10. '
 ++++++++++++staticText ignored name='10. '
 ++++++++++staticText name='Android'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Android'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='11. '
 ++++++++++++staticText ignored name='11. '
 ++++++++++staticText name='Mac'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Mac'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='12. '
 ++++++++++++staticText ignored name='12. '
 ++++++++++staticText name='Windows'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Windows'

@@ -3,7 +3,7 @@ rootWebArea focusable name='done'
 ++++genericContainer
 ++++++button focusable name='Before'
 ++++++++staticText name='Before'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Before'
 ++++++button focusable name='After'
 ++++++++staticText name='After'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='After'

@@ -4,9 +4,9 @@ rootWebArea
 ++++++complementary
 ++++++++paragraph
 ++++++++++staticText name='aside inside section with role presentational.'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='aside inside section with role presentational.'
 ++++++genericContainer
 ++++++++complementary
 ++++++++++paragraph
 ++++++++++++staticText name='aside inside section with role generic.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='aside inside section with role generic.'

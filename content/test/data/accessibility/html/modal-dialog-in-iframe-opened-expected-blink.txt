@@ -2,10 +2,10 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++staticText name='Test for modal dialog opened in an iframe. '
-++++++++inlineTextBox
+++++++++inlineTextBox name='Test for modal dialog opened in an iframe. '
 ++++++iframe
 ++++++++rootWebArea
 ++++++++++genericContainer ignored invisible
 ++++++++++++dialog
 ++++++++++++++staticText name='Text in the dialog.'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Text in the dialog.'

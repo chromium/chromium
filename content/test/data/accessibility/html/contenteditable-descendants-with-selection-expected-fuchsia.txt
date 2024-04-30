@@ -4,29 +4,29 @@ UNKNOWN focusable
 ++++++UNKNOWN focusable has_input_focus actions='{DEFAULT}' value='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.'
 ++++++++PARAGRAPH actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='A contenteditable with a ' actions='{DEFAULT}'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='A contenteditable with a '
 ++++++++++LINK label='link' actions='{DEFAULT}'
 ++++++++++++STATIC_TEXT label='link' actions='{DEFAULT}'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='link'
 ++++++++++STATIC_TEXT label=' and an ' actions='{DEFAULT}'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label=' and an '
 ++++++++++IMAGE label='Image' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label=' and a ' actions='{DEFAULT}'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label=' and a '
 ++++++++++BUTTON focusable label='Button' actions='{DEFAULT}'
 ++++++++++++STATIC_TEXT label='Button'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='Button'
 ++++++++++STATIC_TEXT label='.' actions='{DEFAULT}'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='.'
 ++++++++TABLE actions='{DEFAULT}' number_of_rows=1 number_of_columns=1
 ++++++++++ROW_GROUP hidden
 ++++++++++++TABLE_ROW actions='{DEFAULT}'
 ++++++++++++++CELL label='Always expose editable tables as tables.' actions='{DEFAULT}' cell_row_span=1 cell_column_span=1
 ++++++++++++++++STATIC_TEXT label='Always expose editable tables as tables.' actions='{DEFAULT}'
-++++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN label='Always expose editable tables as tables.'
 ++++++++LIST actions='{DEFAULT}' list_size=1
 ++++++++++LIST_ELEMENT actions='{DEFAULT}' list_element_index=1
 ++++++++++++LIST_ELEMENT_MARKER label='1. ' actions='{DEFAULT}'
 ++++++++++++++STATIC_TEXT hidden label='1. '
 ++++++++++++STATIC_TEXT label='Editable list item.' actions='{DEFAULT}'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='Editable list item.'

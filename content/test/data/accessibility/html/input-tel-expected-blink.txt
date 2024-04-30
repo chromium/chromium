@@ -4,4 +4,4 @@ rootWebArea
 ++++++textField inputType='tel' value='123-456-7890'
 ++++++++genericContainer
 ++++++++++staticText name='123-456-7890'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='123-456-7890'

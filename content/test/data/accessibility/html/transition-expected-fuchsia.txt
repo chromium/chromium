@@ -3,6 +3,6 @@ UNKNOWN focusable
 ++++UNKNOWN
 ++++++BUTTON focusable has_input_focus label='GrowButton' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='GrowButton' actions='{DEFAULT}'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='GrowButton'
 ++++++STATIC_TEXT label='Done'
-++++++++UNKNOWN
+++++++++UNKNOWN label='Done'

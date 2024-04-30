@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer ignored
 ++++++dialog
 ++++++++staticText name='This is ARIA dialog.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This is ARIA dialog.'

@@ -5,15 +5,15 @@ rootWebArea
 ++++++++docEndnotes
 ++++++++++docEndnote
 ++++++++++++staticText name='Endnote 1'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Endnote 1'
 ++++++++++docEndnote
 ++++++++++++staticText name='Endnote 2'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Endnote 2'
 ++++++++++genericContainer ignored
 ++++++++++++group
 ++++++++button name='1'
 ++++++++++staticText name='1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='1'
 ++++++++button name='2'
 ++++++++++staticText name='2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='2'

@@ -3,20 +3,20 @@ rootWebArea
 ++++genericContainer ignored
 ++++++ruby description='ruby text' descriptionFrom=rubyAnnotation
 ++++++++staticText name='ruby base'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ruby base'
 ++++++++rubyAnnotation ignored
 ++++++++++staticText ignored name='ruby text'
 ++++++paragraph
 ++++++++ruby description='ruby text' descriptionFrom=rubyAnnotation
 ++++++++++staticText name='ruby base'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='ruby base'
 ++++++++++rubyAnnotation ignored
 ++++++++++++staticText ignored name='ruby text'
 ++++++paragraph
 ++++++++staticText name='Hi! '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Hi! '
 ++++++++ruby description='ruby text' descriptionFrom=rubyAnnotation
 ++++++++++staticText name='ruby base'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='ruby base'
 ++++++++++rubyAnnotation ignored
 ++++++++++++staticText ignored name='ruby text'

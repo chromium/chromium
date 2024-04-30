@@ -7,7 +7,7 @@ rootWebArea
 ++++++++++++listMarker ignored
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='the summary'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='the summary'
 ++++++++genericContainer ignored
 ++++++++++staticText ignored invisible name='<newline>    '
 ++++++++++staticText ignored invisible name='<newline>    '
@@ -20,18 +20,18 @@ rootWebArea
 ++++++++++++++listMarker ignored
 ++++++++++++++++staticText ignored name='%E2%96%BE '
 ++++++++++++++staticText name='materials'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='materials'
 ++++++++++genericContainer ignored
 ++++++++++++paragraph
 ++++++++++++++staticText name='Info about what it's made of.'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Info about what it's made of.'
 ++++++++details
 ++++++++++genericContainer ignored
 ++++++++++++disclosureTriangleGrouped collapsed name='dimensions' setSize=3 posInSet=2
 ++++++++++++++listMarker ignored
 ++++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++++staticText name='dimensions'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='dimensions'
 ++++++++++genericContainer ignored
 ++++++++++++staticText ignored invisible name='<newline>      '
 ++++++++++++staticText ignored invisible name='<newline>      '
@@ -43,7 +43,7 @@ rootWebArea
 ++++++++++++++listMarker ignored
 ++++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++++staticText name='origin'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='origin'
 ++++++++++genericContainer ignored
 ++++++++++++staticText ignored invisible name='<newline>      '
 ++++++++++++staticText ignored invisible name='<newline>      '

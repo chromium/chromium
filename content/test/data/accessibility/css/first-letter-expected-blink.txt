@@ -3,17 +3,17 @@ rootWebArea
 ++++genericContainer ignored
 ++++++heading name='Chapter 1'
 ++++++++staticText name='Chapter 1'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Chapter 1'
 ++++++paragraph
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='T'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='T'
 ++++++++staticText name='his starts with a large T.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='his starts with a large T.'
 ++++++heading name='%E0%A4%B8%E0%A5%8D%E0%A4%A5%E0%A4%B2%E0%A5%8B%E0%A4%82'
 ++++++++staticText name='%E0%A4%B8%E0%A5%8D%E0%A4%A5%E0%A4%B2%E0%A5%8B%E0%A4%82'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='%E0%A4%B8%E0%A5%8D%E0%A4%A5%E0%A4%B2%E0%A5%8B%E0%A4%82'
 ++++++heading name='((AB))C'
 ++++++++staticText name='((AB))C'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='((AB))C'

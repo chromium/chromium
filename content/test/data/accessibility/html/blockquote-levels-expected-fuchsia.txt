@@ -4,10 +4,10 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN hidden
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Top level'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Top level'
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='Sub'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='Sub'
 ++++++++++++UNKNOWN
 ++++++++++++++STATIC_TEXT label='Sub-sub'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='Sub-sub'

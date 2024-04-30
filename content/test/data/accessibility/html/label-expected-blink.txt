@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++labelText
 ++++++++staticText name='Label'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Label'

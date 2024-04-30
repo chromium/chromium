@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++region name='current' flowtoIds=footer
 ++++++++staticText name='Lorem ipsum'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Lorem ipsum'
 ++++++footer name='next'
 ++++++++staticText name='dolor sit amet'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='dolor sit amet'

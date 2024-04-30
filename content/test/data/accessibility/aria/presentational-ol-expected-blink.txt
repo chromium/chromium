@@ -7,10 +7,10 @@ rootWebArea
 ++++++++++++listMarker name='1. '
 ++++++++++++++staticText ignored name='1. '
 ++++++++++++staticText name='List'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='List'
 ++++++++none ignored
 ++++++++++none ignored
 ++++++++++++staticText name='1. '
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='1. '
 ++++++++++staticText name='Presentational list item'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Presentational list item'

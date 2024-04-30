@@ -3,12 +3,12 @@ rootWebArea
 ++++genericContainer ignored
 ++++++code
 ++++++++staticText name='role'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='role'
 ++++++code
 ++++++++staticText name='element (no name)'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='element (no name)'
 ++++++staticText name=' '
-++++++++inlineTextBox
+++++++++inlineTextBox name=' '
 ++++++code name='include me'
 ++++++++staticText name='element (with name)'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='element (with name)'

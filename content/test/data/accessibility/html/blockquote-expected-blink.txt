@@ -4,7 +4,7 @@ rootWebArea
 ++++++blockquote
 ++++++++paragraph
 ++++++++++staticText name='First blockquote has a child element.'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='First blockquote has a child element.'
 ++++++blockquote
 ++++++++staticText name='Second blockquote has no child.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Second blockquote has no child.'

@@ -3,14 +3,14 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++staticText name='Cats '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Cats '
 ++++++++genericContainer
 ++++++++++checkBox name='checkbox' checkedState=false
 ++++++++genericContainer
 ++++++++++code
 ++++++++++++staticText name='done'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='done'
 ++++++group
 ++++++++mark
 ++++++++++staticText name='text'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='text'

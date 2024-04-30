@@ -6,14 +6,14 @@ rootWebArea
 ++++++++++row
 ++++++++++++columnHeader name='Firstname' ariaCellColumnIndex=1 tableCellColumnIndex=0
 ++++++++++++++staticText name='Firstname'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Firstname'
 ++++++++++++columnHeader name='Lastname' ariaCellColumnIndex=2 tableCellColumnIndex=1
 ++++++++++++++staticText name='Lastname'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Lastname'
 ++++++++++row
 ++++++++++++cell name='Jill' ariaCellColumnIndex=1 tableCellColumnIndex=0
 ++++++++++++++staticText name='Jill'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Jill'
 ++++++++++++cell name='Smith' ariaCellColumnIndex=2 tableCellColumnIndex=1
 ++++++++++++++staticText name='Smith'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Smith'

@@ -3,201 +3,201 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++HEADER
 ++++++++STATIC_TEXT label='This is a header element.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is a header element.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an aside element.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an aside element.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an address element.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an address element.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is a footer element.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is a footer element.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is a form element.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is a form element.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is a main element.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is a main element.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is a nav element.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is a nav element.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an ARIA application landmark.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an ARIA application landmark.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an ARIA banner landmark.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an ARIA banner landmark.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an ARIA complementary landmark.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an ARIA complementary landmark.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an ARIA contentinfo landmark.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an ARIA contentinfo landmark.'
 ++++++UNKNOWN label='Named form'
 ++++++++STATIC_TEXT label='This is an ARIA form landmark.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an ARIA form landmark.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an ARIA main landmark.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an ARIA main landmark.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an ARIA navigation landmark.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an ARIA navigation landmark.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='This is an ARIA search landmark.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='This is an ARIA search landmark.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT banner role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT banner role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have banner role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have banner role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT footer role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT footer role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have footer role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have footer role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT complementary role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have complementary role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have complementary role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should NOT have complementary role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should NOT have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='This should have complementary role.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='This should have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should NOT have complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should NOT have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should have complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should have complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should have complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should have complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should have complementary role.'
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++STATIC_TEXT label='This should have complementary role.'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='This should have complementary role.'

@@ -6,14 +6,14 @@ rootWebArea
 ++++++++++listMarker name='1. '
 ++++++++++++staticText ignored name='1. '
 ++++++++++staticText name='Kirk'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Kirk'
 ++++++++listItem
 ++++++++++listMarker name='2. '
 ++++++++++++staticText ignored name='2. '
 ++++++++++staticText name='Picard'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Picard'
 ++++++++listItem
 ++++++++++listMarker name='3. '
 ++++++++++++staticText ignored name='3. '
 ++++++++++staticText name='Janeway'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Janeway'

@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='No id'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='No id'
 ++++++paragraph
 ++++++++staticText name='Has id'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Has id'

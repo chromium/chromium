@@ -2,4 +2,4 @@ rootWebArea htmlTag='#document'
 ++genericContainer ignored htmlTag='html'
 ++++genericContainer htmlTag='body'
 ++++++staticText name='done'
-++++++++inlineTextBox
+++++++++inlineTextBox name='done'

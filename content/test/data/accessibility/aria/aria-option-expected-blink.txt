@@ -4,25 +4,25 @@ rootWebArea focusable
 ++++++listBox activedescendantId=listBoxOption
 ++++++++listBoxOption focusable name='option 1' selected=false
 ++++++++++staticText name='option 1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='option 1'
 ++++++++listBoxOption focusable name='label 2' selected=false
 ++++++++++staticText name='option 2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='option 2'
 ++++++++listBoxOption focusable name='caterpillar' selected=false
 ++++++++++staticText name='cat'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='cat'
 ++++++++++strong
 ++++++++++++staticText name='erpillar'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='erpillar'
 ++++++++listBoxOption focusable name='catfish' selected=false
 ++++++++++staticText name='cat'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='cat'
 ++++++++++emphasis
 ++++++++++++staticText name='fish'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='fish'
 ++++++++listBoxOption focusable name='medusa' selected=false
 ++++++++++emphasis
 ++++++++++++staticText name='jelly'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='jelly'
 ++++++++++staticText name='fish'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='fish'

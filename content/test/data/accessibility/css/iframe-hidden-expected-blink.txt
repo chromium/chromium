@@ -4,16 +4,16 @@ rootWebArea name='done'
 ++++++main
 ++++++++paragraph
 ++++++++++staticText name='Before visibility:collapse iframes'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Before visibility:collapse iframes'
 ++++++++paragraph
 ++++++++++staticText name='After visibility:collapse iframes'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='After visibility:collapse iframes'
 ++++++genericContainer ignored
 ++++++++splitter horizontal
 ++++++footer
 ++++++++paragraph
 ++++++++++staticText name='Before display:none iframes'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Before display:none iframes'
 ++++++++paragraph
 ++++++++++staticText name='After display:none iframes'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='After display:none iframes'

@@ -4,10 +4,10 @@ rootWebArea
 ++++++listBox
 ++++++++listBoxOption name='1' selected=false
 ++++++++++staticText name='Item 1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Item 1'
 ++++++++listBoxOption name='2' selected=true
 ++++++++++staticText name='Item 2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Item 2'
 ++++++++listBoxOption name='3' selected=false
 ++++++++++staticText name='Item 3'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Item 3'

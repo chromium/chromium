@@ -3,14 +3,14 @@ rootWebArea
 ++++genericContainer ignored
 ++++++tab name='First Tab' selected=true controlsIds=tabPanel
 ++++++++staticText name='First Tab'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='First Tab'
 ++++++tab name='Second Tab' selected=false controlsIds=
 ++++++++staticText name='Second Tab'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Second Tab'
 ++++++tab name='Third Tab' selected=false controlsIds=
 ++++++++staticText name='Third Tab'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Third Tab'
 ++++++tabPanel name='First Tab'
 ++++++++paragraph
 ++++++++++staticText name='Content for the first panel, this should be read.'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Content for the first panel, this should be read.'

@@ -7,18 +7,18 @@ rootWebArea
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++genericContainer
 ++++++++++++staticText name='One'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='One'
 ++++++++listItem
 ++++++++++listMarker name='%E2%80%A2'
 ++++++++++++staticText ignored name='%E2%80%A2'
 ++++++++++genericContainer
 ++++++++++++staticText name='Two'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Two'
 ++++++++listItem
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='Four'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Four'
 ++++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++genericContainer
@@ -26,5 +26,5 @@ rootWebArea
 ++++++++++++staticText ignored name='%E2%80%A2'
 ++++++++++genericContainer
 ++++++++++++staticText name='Three'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Three'
 ++++++genericContainer ignored

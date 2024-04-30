@@ -3,14 +3,14 @@ rootWebArea htmlTag='#document'
 ++++genericContainer ignored htmlTag='head'
 ++++++genericContainer htmlTag='style'
 ++++++++staticText name='head,style,script { display:block; }'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='head,style,script { display:block; }'
 ++++++genericContainer htmlTag='script'
 ++++++++staticText name='var x = 3;'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='var x = 3;'
 ++++genericContainer ignored htmlTag='body'
 ++++++genericContainer htmlTag='style'
 ++++++++staticText name='p { outline: 2px solid green; }'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='p { outline: 2px solid green; }'
 ++++++genericContainer htmlTag='script'
 ++++++++staticText name='var x = 3;'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='var x = 3;'

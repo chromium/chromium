@@ -3,6 +3,6 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='This test passes if the 'math' node in the accessibility tree contains a single child, which is ignored:'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This test passes if the 'math' node in the accessibility tree contains a single child, which is ignored:'
 ++++++mathMLMath
 ++++++++genericContainer ignored

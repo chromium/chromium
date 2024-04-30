@@ -3,23 +3,23 @@ rootWebArea
 ++++genericContainer ignored
 ++++++heading name='ARIA Heading 1' hierarchicalLevel=1
 ++++++++staticText name='ARIA Heading 1'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA Heading 1'
 ++++++heading name='ARIA Heading 2' hierarchicalLevel=2
 ++++++++staticText name='ARIA Heading 2'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA Heading 2'
 ++++++heading name='ARIA Heading 3' hierarchicalLevel=3
 ++++++++staticText name='ARIA Heading 3'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA Heading 3'
 ++++++heading name='ARIA Heading 4' hierarchicalLevel=4
 ++++++++staticText name='ARIA Heading 4'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA Heading 4'
 ++++++heading name='ARIA Heading 5' hierarchicalLevel=5
 ++++++++staticText name='ARIA Heading 5'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA Heading 5'
 ++++++heading name='ARIA Heading 6' hierarchicalLevel=6
 ++++++++staticText name='ARIA Heading 6'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA Heading 6'
 ++++++genericContainer
 ++++++++heading name='Heading' hierarchicalLevel=2
 ++++++++++staticText name='Heading'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Heading'

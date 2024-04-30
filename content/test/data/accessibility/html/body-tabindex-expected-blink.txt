@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='This test is for the body tag with a tabindex'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This test is for the body tag with a tabindex'

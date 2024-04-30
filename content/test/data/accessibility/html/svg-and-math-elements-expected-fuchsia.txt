@@ -10,4 +10,4 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN label='created'
 ++++++++UNKNOWN label='created'
 ++++++STATIC_TEXT label='Done'
-++++++++UNKNOWN
+++++++++UNKNOWN label='Done'

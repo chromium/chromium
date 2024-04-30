@@ -4,7 +4,7 @@ rootWebArea
 ++++++descriptionList
 ++++++++term
 ++++++++++staticText name='Coffee'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Coffee'
 ++++++++definition
 ++++++++++staticText name='Black hot drink'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Black hot drink'

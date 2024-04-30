@@ -5,4 +5,4 @@ rootWebArea
 ++++++++genericContainer
 ++++++button inputType='reset' name='Reset'
 ++++++++staticText name='Reset'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Reset'

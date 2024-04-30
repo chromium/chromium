@@ -6,74 +6,74 @@ rootWebArea
 ++++++++++row name='r1-real' tableRowIndex=0
 ++++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='A1'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A1'
 ++++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++staticText name='A2'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A2'
 ++++++++genericContainer description='r2-wrap'
 ++++++++++genericContainer description='r2-vanilla'
 ++++++++++++row name='r2-real' tableRowIndex=1
 ++++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++++staticText name='B1'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='B1'
 ++++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1
 ++++++++++++++++staticText name='B2'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='B2'
 ++++++grid name='2: Single wrapper around all rows' tableRowCount=2 tableColumnCount=2
 ++++++++genericContainer
 ++++++++++row tableRowIndex=0
 ++++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='A1'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A1'
 ++++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++staticText name='A2'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A2'
 ++++++++++row tableRowIndex=1
 ++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++staticText name='B1'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='B1'
 ++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1
 ++++++++++++++staticText name='B2'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='B2'
 ++++++grid name='3: Individual cells get their own wrappers' tableRowCount=2 tableColumnCount=2
 ++++++++row tableRowIndex=0
 ++++++++++genericContainer
 ++++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='A1'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A1'
 ++++++++++genericContainer
 ++++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++staticText name='A2'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A2'
 ++++++++row tableRowIndex=1
 ++++++++++genericContainer
 ++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++staticText name='B1'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='B1'
 ++++++++++genericContainer
 ++++++++++++genericContainer
 ++++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1
 ++++++++++++++++staticText name='B2'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='B2'
 ++++++grid name='4: Single wrapper around all cells in a row' tableRowCount=2 tableColumnCount=2
 ++++++++row tableRowIndex=0
 ++++++++++genericContainer
 ++++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='A1'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A1'
 ++++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++staticText name='A2'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='A2'
 ++++++++row tableRowIndex=1
 ++++++++++genericContainer
 ++++++++++++genericContainer
 ++++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++++staticText name='B1'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='B1'
 ++++++++++++genericContainer
 ++++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1
 ++++++++++++++++staticText name='B2'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='B2'
 ++++++grid name='5: Wrapper insanity' tableRowCount=2 tableColumnCount=2
 ++++++++genericContainer
 ++++++++++genericContainer
@@ -83,15 +83,15 @@ rootWebArea
 ++++++++++++++++++genericContainer
 ++++++++++++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++++++++++staticText name='A1'
-++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++inlineTextBox name='A1'
 ++++++++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++++++staticText name='A2'
-++++++++++++++++++++inlineTextBox
+++++++++++++++++++++inlineTextBox name='A2'
 ++++++++++genericContainer
 ++++++++++++row tableRowIndex=1
 ++++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++++staticText name='B1'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='B1'
 ++++++++++++++cell name='B2' tableCellColumnIndex=1 tableCellRowIndex=1
 ++++++++++++++++staticText name='B2'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='B2'

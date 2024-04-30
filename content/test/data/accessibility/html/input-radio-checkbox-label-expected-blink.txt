@@ -9,7 +9,7 @@ rootWebArea
 ++++++++checkBox name='label ignored for checkbox' checkedState=false
 ++++++labelText name='label exposed for radio button '
 ++++++++staticText name='label exposed for radio button '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='label exposed for radio button '
 ++++++++radioButton name='label exposed for radio button' checkedState=false
 ++++++labelText name='label exposed for checkbox '
 ++++++++staticText name='label exposed for checkbox '

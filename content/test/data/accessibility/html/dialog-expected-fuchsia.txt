@@ -3,4 +3,4 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++UNKNOWN focusable
 ++++++++STATIC_TEXT label='Text in dialog'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='Text in dialog'

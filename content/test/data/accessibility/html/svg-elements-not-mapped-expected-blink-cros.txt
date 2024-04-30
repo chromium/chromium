@@ -28,7 +28,7 @@ rootWebArea htmlTag='#document'
 ++++++svgRoot htmlTag='svg' name='switch should not be exposed'
 ++++++++genericContainer htmlTag='text'
 ++++++++++staticText name='Hey!'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Hey!'
 ++++++image htmlTag='svg' name='view should not be exposed'
 ++++++image description='abc' htmlTag='svg' name='desc should not be exposed as accessible object' descriptionFrom=svgDescElement
 ++++++image description='abc' htmlTag='svg' name='title should not be exposed as accessible object' descriptionFrom=title
@@ -61,8 +61,8 @@ rootWebArea htmlTag='#document'
 ++++++svgRoot htmlTag='svg' name='tspan which lacks criteria for inclusion should not be exposed'
 ++++++++genericContainer htmlTag='text'
 ++++++++++staticText name='Hello '
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Hello '
 ++++++++++staticText name='world'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='world'
 ++++++++++staticText name='!'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='!'

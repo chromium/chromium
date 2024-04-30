@@ -5,10 +5,11 @@ rootWebArea
 ++++++++listMarker name='%E2%80%A2 '
 ++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++staticText name='CSS list item (without list parent)'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='CSS list item (without list parent)'
 ++++++list
 ++++++++listItem
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++staticText name='CSS list item'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='CSS list item'
+

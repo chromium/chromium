@@ -3,20 +3,20 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='color'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='color'
 ++++++heading name='text size'
 ++++++++staticText name='text size'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='text size'
 ++++++heading name='text style'
 ++++++++staticText name='text style'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='text style'
 ++++++paragraph
 ++++++++strong
 ++++++++++staticText name='strong'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='strong'
 ++++++staticText name='italic'
-++++++++inlineTextBox
+++++++++inlineTextBox name='italic'
 ++++++staticText name=' '
-++++++++inlineTextBox
+++++++++inlineTextBox name=' '
 ++++++staticText name='bold'
-++++++++inlineTextBox
+++++++++inlineTextBox name='bold'

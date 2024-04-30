@@ -7,17 +7,17 @@ rootWebArea
 ++++++++++++genericContainer
 ++++++++++++++spinButton name='Month' placeholder='mm' value='09' valueForRange=9.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++staticText name='09'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='09'
 ++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='/'
 ++++++++++++++spinButton name='Day' placeholder='dd' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=31.00
 ++++++++++++++++staticText name='01'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='01'
 ++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='/'
 ++++++++++++++spinButton name='Year' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++staticText name='2008'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='2008'
 ++++++++++popUpButton description='Show date picker' name='Show date picker' descriptionFrom=title
 ++++++date inputType='date' value='2008-09-01'
 ++++++++genericContainer ignored
@@ -25,17 +25,17 @@ rootWebArea
 ++++++++++++genericContainer
 ++++++++++++++spinButton name='Month' placeholder='mm' value='09' valueForRange=9.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++staticText name='09'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='09'
 ++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='/'
 ++++++++++++++spinButton name='Day' placeholder='dd' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=31.00
 ++++++++++++++++staticText name='01'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='01'
 ++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='/'
 ++++++++++++++spinButton name='Year' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++staticText name='2008'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='2008'
 ++++++++++popUpButton description='Show date picker' name='Show date picker' descriptionFrom=title
 ++++++date inputType='date' name='Third date picker' value='2008-09-01' controlsIds=group
 ++++++++genericContainer ignored
@@ -43,17 +43,17 @@ rootWebArea
 ++++++++++++genericContainer
 ++++++++++++++spinButton name='Month Third date picker' placeholder='mm' value='09' valueForRange=9.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++staticText name='09'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='09'
 ++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='/'
 ++++++++++++++spinButton name='Day Third date picker' placeholder='dd' value='01' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=31.00
 ++++++++++++++++staticText name='01'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='01'
 ++++++++++++++staticText name='/'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='/'
 ++++++++++++++spinButton name='Year Third date picker' placeholder='yyyy' value='2008' valueForRange=2008.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++staticText name='2008'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='2008'
 ++++++++++popUpButton description='Show date picker' name='Show date picker' descriptionFrom=title
 ++++++++group
 ++++++++++genericContainer ignored
@@ -74,162 +74,162 @@ rootWebArea
 ++++++++++++++++++++genericContainer
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++staticText name='S'
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++inlineTextBox name='S'
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++staticText name='M'
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++inlineTextBox name='M'
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++staticText name='T'
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++inlineTextBox name='T'
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++staticText name='W'
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++inlineTextBox name='W'
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++staticText name='T'
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++inlineTextBox name='T'
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++staticText name='F'
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++inlineTextBox name='F'
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++staticText name='S'
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++inlineTextBox name='S'
 ++++++++++++++++++++genericContainer ignored
 ++++++++++++++++++++++genericContainer
 ++++++++++++++++++++++++row name='Sunday, August 31, 2008 Monday, September 1, 2008 Tuesday, September 2, 2008 Wednesday, September 3, 2008 Thursday, September 4, 2008 Friday, September 5, 2008 Saturday, September 6, 2008'
 ++++++++++++++++++++++++++cell name='Sunday, August 31, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='31'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='31'
 ++++++++++++++++++++++++++cell name='Monday, September 1, 2008' selected=true
 ++++++++++++++++++++++++++++staticText name='1'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='1'
 ++++++++++++++++++++++++++cell name='Tuesday, September 2, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='2'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='2'
 ++++++++++++++++++++++++++cell name='Wednesday, September 3, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='3'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='3'
 ++++++++++++++++++++++++++cell name='Thursday, September 4, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='4'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='4'
 ++++++++++++++++++++++++++cell name='Friday, September 5, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='5'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='5'
 ++++++++++++++++++++++++++cell name='Saturday, September 6, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='6'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='6'
 ++++++++++++++++++++++++row name='Sunday, September 7, 2008 Monday, September 8, 2008 Tuesday, September 9, 2008 Wednesday, September 10, 2008 Thursday, September 11, 2008 Friday, September 12, 2008 Saturday, September 13, 2008'
 ++++++++++++++++++++++++++cell name='Sunday, September 7, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='7'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='7'
 ++++++++++++++++++++++++++cell name='Monday, September 8, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='8'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='8'
 ++++++++++++++++++++++++++cell name='Tuesday, September 9, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='9'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='9'
 ++++++++++++++++++++++++++cell name='Wednesday, September 10, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='10'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='10'
 ++++++++++++++++++++++++++cell name='Thursday, September 11, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='11'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='11'
 ++++++++++++++++++++++++++cell name='Friday, September 12, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='12'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='12'
 ++++++++++++++++++++++++++cell name='Saturday, September 13, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='13'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='13'
 ++++++++++++++++++++++++row name='Sunday, September 14, 2008 Monday, September 15, 2008 Tuesday, September 16, 2008 Wednesday, September 17, 2008 Thursday, September 18, 2008 Friday, September 19, 2008 Saturday, September 20, 2008'
 ++++++++++++++++++++++++++cell name='Sunday, September 14, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='14'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='14'
 ++++++++++++++++++++++++++cell name='Monday, September 15, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='15'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='15'
 ++++++++++++++++++++++++++cell name='Tuesday, September 16, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='16'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='16'
 ++++++++++++++++++++++++++cell name='Wednesday, September 17, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='17'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='17'
 ++++++++++++++++++++++++++cell name='Thursday, September 18, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='18'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='18'
 ++++++++++++++++++++++++++cell name='Friday, September 19, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='19'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='19'
 ++++++++++++++++++++++++++cell name='Saturday, September 20, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='20'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='20'
 ++++++++++++++++++++++++row name='Sunday, September 21, 2008 Monday, September 22, 2008 Tuesday, September 23, 2008 Wednesday, September 24, 2008 Thursday, September 25, 2008 Friday, September 26, 2008 Saturday, September 27, 2008'
 ++++++++++++++++++++++++++cell name='Sunday, September 21, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='21'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='21'
 ++++++++++++++++++++++++++cell name='Monday, September 22, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='22'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='22'
 ++++++++++++++++++++++++++cell name='Tuesday, September 23, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='23'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='23'
 ++++++++++++++++++++++++++cell name='Wednesday, September 24, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='24'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='24'
 ++++++++++++++++++++++++++cell name='Thursday, September 25, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='25'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='25'
 ++++++++++++++++++++++++++cell name='Friday, September 26, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='26'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='26'
 ++++++++++++++++++++++++++cell name='Saturday, September 27, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='27'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='27'
 ++++++++++++++++++++++++row name='Sunday, September 28, 2008 Monday, September 29, 2008 Tuesday, September 30, 2008 Wednesday, October 1, 2008 Thursday, October 2, 2008 Friday, October 3, 2008 Saturday, October 4, 2008'
 ++++++++++++++++++++++++++cell name='Sunday, September 28, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='28'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='28'
 ++++++++++++++++++++++++++cell name='Monday, September 29, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='29'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='29'
 ++++++++++++++++++++++++++cell name='Tuesday, September 30, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='30'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='30'
 ++++++++++++++++++++++++++cell name='Wednesday, October 1, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='1'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='1'
 ++++++++++++++++++++++++++cell name='Thursday, October 2, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='2'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='2'
 ++++++++++++++++++++++++++cell name='Friday, October 3, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='3'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='3'
 ++++++++++++++++++++++++++cell name='Saturday, October 4, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='4'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='4'
 ++++++++++++++++++++++++row name='Sunday, October 5, 2008 Monday, October 6, 2008 Tuesday, October 7, 2008 Wednesday, October 8, 2008 Thursday, October 9, 2008 Friday, October 10, 2008 Saturday, October 11, 2008'
 ++++++++++++++++++++++++++cell name='Sunday, October 5, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='5'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='5'
 ++++++++++++++++++++++++++cell name='Monday, October 6, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='6'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='6'
 ++++++++++++++++++++++++++cell name='Tuesday, October 7, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='7'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='7'
 ++++++++++++++++++++++++++cell name='Wednesday, October 8, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='8'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='8'
 ++++++++++++++++++++++++++cell name='Thursday, October 9, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='9'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='9'
 ++++++++++++++++++++++++++cell name='Friday, October 10, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='10'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='10'
 ++++++++++++++++++++++++++cell name='Saturday, October 11, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='11'
-++++++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++++++++inlineTextBox name='11'
 ++++++++++++++++++++button name='Clear'
 ++++++++++++++++++++++staticText name='Clear'
-++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++inlineTextBox name='Clear'
 ++++++++++++++++++++button name='Today'
 ++++++++++++++++++++++staticText name='Today'
-++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++++inlineTextBox name='Today'

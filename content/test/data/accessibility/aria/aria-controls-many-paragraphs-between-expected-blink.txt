@@ -3,13 +3,13 @@ rootWebArea
 ++++genericContainer ignored
 ++++++button name='First button' controlsIds=paragraph
 ++++++++staticText name='First button'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='First button'
 ++++++paragraph
 ++++++++staticText name='First paragraph'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='First paragraph'
 ++++++button name='Last button' controlsIds=paragraph
 ++++++++staticText name='Last button'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Last button'
 ++++++paragraph
 ++++++++staticText name='Last paragraph'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Last paragraph'

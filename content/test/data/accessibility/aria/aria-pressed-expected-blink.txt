@@ -3,13 +3,13 @@ rootWebArea
 ++++genericContainer ignored
 ++++++button name='Regular button'
 ++++++++staticText name='Regular button'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Regular button'
 ++++++toggleButton name='Toggle button unpressed' checkedState=false
 ++++++++staticText name='Toggle button unpressed'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Toggle button unpressed'
 ++++++toggleButton name='Toggle button pressed' checkedState=true
 ++++++++staticText name='Toggle button pressed'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Toggle button pressed'
 ++++++toggleButton name='Toggle button mixed' checkedState=mixed
 ++++++++staticText name='Toggle button mixed'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Toggle button mixed'

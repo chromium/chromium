@@ -3,17 +3,17 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='This is '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This is '
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++staticText name='%E2%80%9C'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='%E2%80%9C'
 ++++++++++staticText name='Chromium Blink'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Chromium Blink'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++staticText name='%E2%80%9D'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='%E2%80%9D'
 ++++++++staticText name=' based browser.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' based browser.'

@@ -3,118 +3,118 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='This'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='paragraph has '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='paragraph has '
 ++++++++staticText name='text'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='text'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='in'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='in'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='spans'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='spans'
 ++++++++staticText name='.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='.'
 ++++++paragraph
 ++++++++staticText name='E1. Eat'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='E1. Eat'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++link name='space'
 ++++++++++staticText name='space'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='E2. Eat'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='E2. Eat'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++link name='space'
 ++++++++++staticText name='space'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='E3. Eat'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='E3. Eat'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++link name='space'
 ++++++++++staticText name='space'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++link name='E4. Eat'
 ++++++++++staticText name='E4. Eat'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='E4. Eat'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++link name='E5. Eat'
 ++++++++++staticText name='E5. Eat'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='E5. Eat'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++link name='E6. Eat'
 ++++++++++staticText name='E6. Eat'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='E6. Eat'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='K1. Keep'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='K1. Keep'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='K2. Keep'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='K2. Keep'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='K3. Keep'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='K3. Keep'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='K4. Keep '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='K4. Keep '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='K5. Keep'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='K5. Keep'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='K6. Keep '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='K6. Keep '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'
 ++++++paragraph
 ++++++++staticText name='K7. Keep'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='K7. Keep'
 ++++++++staticText name=' space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' space'
 ++++++paragraph
 ++++++++staticText name='K8. Keep'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='K8. Keep'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++staticText name='space'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='space'

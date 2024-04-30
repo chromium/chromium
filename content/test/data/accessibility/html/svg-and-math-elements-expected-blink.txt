@@ -10,4 +10,4 @@ rootWebArea htmlTag='#document'
 ++++++++genericContainer className='html-namespace' htmlTag='math' name='created'
 ++++++++genericContainer className='custom-namespace' htmlTag='math' name='created'
 ++++++staticText name='Done'
-++++++++inlineTextBox
+++++++++inlineTextBox name='Done'

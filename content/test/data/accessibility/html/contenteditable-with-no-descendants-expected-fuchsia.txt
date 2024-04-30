@@ -6,4 +6,4 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN focusable label='title' actions='{DEFAULT}'
 ++++++PARAGRAPH
 ++++++++STATIC_TEXT label='description'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='description'

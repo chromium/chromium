@@ -3,11 +3,11 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer
 ++++++++staticText name='Visible'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Visible'
 ++++++genericContainer ignored
 ++++++++genericContainer size=(200, 100)
 ++++++++++staticText name='Also visible'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Also visible'
 ++++++genericContainer ignored
 ++++++++genericContainer
 ++++++++++staticText name='Also visible'
@@ -15,7 +15,7 @@ rootWebArea
 ++++++++++++inlineTextBox name='visible'
 ++++++genericContainer
 ++++++++staticText offscreen name='Hidden'
-++++++++++inlineTextBox offscreen
+++++++++++inlineTextBox offscreen name='Hidden'
 ++++++genericContainer size=(10, 10)
 ++++++++genericContainer
 ++++++++++staticText offscreen name='Also hidden'

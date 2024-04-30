@@ -4,20 +4,20 @@ rootWebArea
 ++++++link name='Header 1 List element 1 List element 2 List element 3'
 ++++++++heading name='Header 1' hierarchicalLevel=1
 ++++++++++staticText name='Header 1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Header 1'
 ++++++++list
 ++++++++++listItem hierarchicalLevel=1
 ++++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++++staticText name='List element 1'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='List element 1'
 ++++++++++listItem hierarchicalLevel=1
 ++++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++++staticText name='List element 2'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='List element 2'
 ++++++++++listItem hierarchicalLevel=1
 ++++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++++staticText name='List element 3'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='List element 3'

@@ -5,12 +5,12 @@ rootWebArea
 ++++++++textField value='Readonly-false input'
 ++++++++++genericContainer
 ++++++++++++staticText name='Readonly-false input'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Readonly-false input'
 ++++++genericContainer
 ++++++++textField value='Readonly-true input' restriction=readOnly
 ++++++++++genericContainer
 ++++++++++++staticText name='Readonly-true input'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Readonly-true input'
 ++++++genericContainer name='Readonly-false plain div'
 ++++++genericContainer name='Readonly-true plain div'
 ++++++genericContainer multiline name='Readonly-false contenteditable div'

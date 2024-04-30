@@ -6,36 +6,36 @@ rootWebArea
 ++++++++++listMarker name='1. '
 ++++++++++++staticText ignored name='1. '
 ++++++++++staticText name='tic'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tic'
 ++++++++staticText name='^'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='^'
 ++++++++listItem
 ++++++++++listMarker name='2. '
 ++++++++++++staticText ignored name='2. '
 ++++++++++staticText name='tac'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tac'
 ++++++++listItem
 ++++++++++listMarker name='3. '
 ++++++++++++staticText ignored name='3. '
 ++++++++++staticText name='toe'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='toe'
 ++++++++staticText name='|'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='|'
 ++++++staticText name='^'
-++++++++inlineTextBox
+++++++++inlineTextBox name='^'
 ++++++list
 ++++++++listItem
 ++++++++++staticText name='tic'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tic'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++listItem
 ++++++++++staticText name='tac'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tac'
 ++++++++staticText name=' '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' '
 ++++++++listItem
 ++++++++++staticText name='toe'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='toe'
 ++++++staticText name='|'
-++++++++inlineTextBox
+++++++++inlineTextBox name='|'

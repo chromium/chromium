@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer ignored
 ++++++document
 ++++++++staticText name='aria role document'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='aria role document'

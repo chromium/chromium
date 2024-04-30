@@ -5,10 +5,10 @@ rootWebArea htmlTag='#document'
 ++++++++genericContainer htmlTag='text'
 ++++++++++genericContainer htmlTag='a' name='focusable'
 ++++++++++++staticText name='focusable'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='focusable'
 ++++++++genericContainer htmlTag='text'
 ++++++++++staticText name='not focusable'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='not focusable'
 ++++++svgRoot htmlTag='svg' name='Not text descendants'
 ++++++++group htmlTag='a'
 ++++++++group ignored htmlTag='a'

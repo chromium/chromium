@@ -6,7 +6,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN hidden
 ++++++++++++UNKNOWN label='Enabled'
 ++++++++++++++STATIC_TEXT label='Enabled'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='Enabled'
 ++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN focusable label='One' actions='{DEFAULT}'
 ++++++++++++++UNKNOWN focusable label='Two' actions='{DEFAULT}'

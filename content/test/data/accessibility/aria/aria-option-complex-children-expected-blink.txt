@@ -5,16 +5,16 @@ rootWebArea focusable
 ++++++++listBoxOption focusable name='label-WAI-ARIA 1.1' selected=true
 ++++++++++link focusable description='title-WAI-ARIA 1.1' name='href-WAI-ARIA 1.1' descriptionFrom=title
 ++++++++++++staticText name='href-WAI-ARIA 1.1'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='href-WAI-ARIA 1.1'
 ++++++++++paragraph name='title-https://www.w3.org/TR/wai-aria-practices-1.1/'
 ++++++++++++staticText name='link-https://www.w3.org/TR/wai-aria-practices-1.1/'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='link-https://www.w3.org/TR/wai-aria-practices-1.1/'
 ++++++++++button focusable name='Close'
 ++++++++++++staticText name='Close'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Close'
 ++++++++listBoxOption focusable name='1234567' selected=false
 ++++++++++staticText name='href-WAI-ARIA 1.1 '
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='href-WAI-ARIA 1.1 '
 ++++++++++button focusable name='Close'
 ++++++++++++staticText name='Close'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Close'

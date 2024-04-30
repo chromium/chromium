@@ -15,7 +15,7 @@ rootWebArea
 ++++++++++genericContainer ignored
 ++++++++++++button name='button-in-owned-tree'
 ++++++++++++++staticText name='button-in-owned-tree'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='button-in-owned-tree'
 ++++++++splitter horizontal name='Element with aria-owns is always in tree'
 ++++++++genericContainer
 ++++++++++textField
@@ -30,7 +30,7 @@ rootWebArea
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
 ++++++++++++++++staticText name='xyz'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='xyz'
 ++++++++++++genericContainer
 ++++++++++++++slider horizontal valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
 ++++++++none ignored

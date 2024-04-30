@@ -3,4 +3,4 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='A piece of computer code'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='A piece of computer code'

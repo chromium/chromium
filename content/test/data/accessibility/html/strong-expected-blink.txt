@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++strong
 ++++++++staticText name='Strong text'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Strong text'

@@ -5,4 +5,4 @@ UNKNOWN focusable has_input_focus
 ++++++++UNKNOWN
 ++++++BUTTON focusable label='Reset' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='Reset'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='Reset'

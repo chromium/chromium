@@ -4,10 +4,10 @@ rootWebArea
 ++++++menu name='parent node' activedescendantId=menuItemCheckBox
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Inactive descendant'
 ++++++++menuItemCheckBox name='Active descendant' checkedState=false
 ++++++++++staticText name='Active descendant'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Active descendant'
 ++++++++menuItemRadio name='Inactive descendant #2' checkedState=false
 ++++++++++staticText name='Inactive descendant #2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Inactive descendant #2'

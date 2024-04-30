@@ -4,4 +4,4 @@ UNKNOWN focusable has_input_focus label='done'
 ++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='xyz'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='xyz'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='xyz'

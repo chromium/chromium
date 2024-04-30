@@ -3,4 +3,4 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++LINK focusable label='normal link' actions='{DEFAULT}'
 ++++++++STATIC_TEXT label='normal link' actions='{DEFAULT}'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='normal link'

@@ -3,26 +3,26 @@ rootWebArea
 ++++genericContainer ignored
 ++++++radioButton name='Both%C2%A0 %C2%A0and%C2%A0' checkedState=false
 ++++++++staticText name='Both%C2%A0'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Both%C2%A0'
 ++++++++math
 ++++++++++mathMLNumber
 ++++++++++++staticText name='1'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='1'
 ++++++++++mathMLOperator
 ++++++++++++staticText name='+'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='+'
 ++++++++++mathMLNumber
 ++++++++++++staticText name='4'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='4'
 ++++++++staticText name='%C2%A0and%C2%A0'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='%C2%A0and%C2%A0'
 ++++++++mathMLMath
 ++++++++++mathMLNumber
 ++++++++++++staticText name='2'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='2'
 ++++++++++mathMLOperator
 ++++++++++++staticText name='+'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='+'
 ++++++++++mathMLNumber
 ++++++++++++staticText name='3'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='3'

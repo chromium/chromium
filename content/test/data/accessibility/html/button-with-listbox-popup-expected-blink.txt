@@ -4,26 +4,26 @@ rootWebArea
 ++++++genericContainer
 ++++++++genericContainer
 ++++++++++staticText name='Choose one:'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Choose one:'
 ++++++++popUpButton name='Choose one: Foo'
 ++++++++++staticText name='Foo'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Foo'
 ++++++++listBox name='Choose one:'
 ++++++++++listBoxOption name='Baz' selected=false
 ++++++++++++none ignored
 ++++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++++staticText name='Baz'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Baz'
 ++++++++++listBoxOption name='Bar' selected=false
 ++++++++++++none ignored
 ++++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++++staticText name='Bar'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Bar'
 ++++++++++listBoxOption name='Foo' selected=false
 ++++++++++++none ignored
 ++++++++++++++staticText name='%E2%80%A2 '
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++++staticText name='Foo'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Foo'

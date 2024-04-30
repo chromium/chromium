@@ -2,10 +2,10 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++STATIC_TEXT label='Some LTR text'
-++++++++UNKNOWN
+++++++++UNKNOWN label='Some LTR text'
 ++++++STATIC_TEXT label=' '
-++++++++UNKNOWN
+++++++++UNKNOWN label=' '
 ++++++STATIC_TEXT label='Some RTL text '
-++++++++UNKNOWN
+++++++++UNKNOWN label='Some RTL text '
 ++++++STATIC_TEXT label='with some LTR text embedded'
-++++++++UNKNOWN
+++++++++UNKNOWN label='with some LTR text embedded'

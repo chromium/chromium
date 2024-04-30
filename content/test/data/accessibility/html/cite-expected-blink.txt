@@ -4,6 +4,6 @@ rootWebArea
 ++++++image name='Pipe'
 ++++++paragraph
 ++++++++staticText name='The pipe'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='The pipe'
 ++++++++staticText name=' clicked by SomeOne.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name=' clicked by SomeOne.'

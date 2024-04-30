@@ -7,49 +7,49 @@ rootWebArea
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++genericContainer
 ++++++++++++staticText name='tic'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='tic'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++button name='a button'
 ++++++++++++staticText name='a button'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='a button'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++genericContainer
 ++++++++++++staticText name='tac'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='tac'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++genericContainer
 ++++++++++++staticText name='toe'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='toe'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++link name='a link'
 ++++++++++++staticText name='a link'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='a link'
 ++++++list
 ++++++++listItem hierarchicalLevel=1
 ++++++++++genericContainer
 ++++++++++++staticText name='tic'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='tic'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++button name='a button'
 ++++++++++++staticText name='a button'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='a button'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++genericContainer
 ++++++++++++staticText name='tac'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='tac'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++genericContainer
 ++++++++++++staticText name='toe'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='toe'
 ++++++++listItem hierarchicalLevel=1
 ++++++++++link name='a link'
 ++++++++++++staticText name='a link'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='a link'

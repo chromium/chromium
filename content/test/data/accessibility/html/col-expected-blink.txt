@@ -6,14 +6,14 @@ rootWebArea
 ++++++++++row
 ++++++++++++columnHeader name='Browser' ariaCellColumnIndex=1 tableCellColumnIndex=0
 ++++++++++++++staticText name='Browser'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Browser'
 ++++++++++++columnHeader name='Rendering Engine' ariaCellColumnIndex=2 tableCellColumnIndex=1
 ++++++++++++++staticText name='Rendering Engine'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Rendering Engine'
 ++++++++++row
 ++++++++++++cell name='Chrome' ariaCellColumnIndex=1 tableCellColumnIndex=0
 ++++++++++++++staticText name='Chrome'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Chrome'
 ++++++++++++cell name='Blink' ariaCellColumnIndex=2 tableCellColumnIndex=1
 ++++++++++++++staticText name='Blink'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='Blink'

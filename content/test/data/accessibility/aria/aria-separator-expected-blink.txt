@@ -2,12 +2,12 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++staticText name='Before'
-++++++++inlineTextBox
+++++++++inlineTextBox name='Before'
 ++++++splitter horizontal
 ++++++++staticText name='ARIA separator. No value when unfocusable.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA separator. No value when unfocusable.'
 ++++++splitter horizontal valueForRange=1.00 minValueForRange=1.00 maxValueForRange=3.00
 ++++++++staticText name='ARIA separator. Can have a value when focusable.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ARIA separator. Can have a value when focusable.'
 ++++++staticText name='After'
-++++++++inlineTextBox
+++++++++inlineTextBox name='After'

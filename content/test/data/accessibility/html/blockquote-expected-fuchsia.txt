@@ -4,7 +4,7 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++PARAGRAPH
 ++++++++++STATIC_TEXT label='First blockquote has a child element.'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='First blockquote has a child element.'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Second blockquote has no child.'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='Second blockquote has no child.'

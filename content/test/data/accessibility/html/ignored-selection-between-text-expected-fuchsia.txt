@@ -4,12 +4,12 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN hidden
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='before selection'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='before selection'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='this text is not ignored'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='this text is not ignored'
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='after selection'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='after selection'
 ++++++STATIC_TEXT label='Done'
-++++++++UNKNOWN
+++++++++UNKNOWN label='Done'

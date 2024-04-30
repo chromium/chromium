@@ -7,12 +7,12 @@ rootWebArea
 ++++++++genericContainer name='foo'
 ++++++++++genericContainer name='bar'
 ++++++++++++staticText name='baz'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='baz'
 ++++++lineBreak name='<newline>'
-++++++++inlineTextBox
+++++++++inlineTextBox name='<newline>'
 ++++++textField name='bar'
 ++++++++genericContainer
 ++++++labelText
 ++++++++genericContainer name='bar'
 ++++++++++staticText name='baz'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='baz'

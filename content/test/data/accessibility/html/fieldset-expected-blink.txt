@@ -5,9 +5,9 @@ rootWebArea
 ++++++++group name='Browser Engines:'
 ++++++++++legend
 ++++++++++++staticText name='Browser Engines:'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Browser Engines:'
 ++++++group name='Which cake do you prefer?'
 ++++++++legend
 ++++++++++heading name='Which cake do you prefer?'
 ++++++++++++staticText name='Which cake do you prefer?'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Which cake do you prefer?'

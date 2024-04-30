@@ -7,7 +7,7 @@ rootWebArea
 ++++++++++++listMarker ignored
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='details tag'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='details tag'
 ++++++++genericContainer ignored
 ++++++++++staticText ignored invisible name='<newline>    '
 ++++++++++staticText ignored invisible name='<newline>    '
@@ -19,8 +19,8 @@ rootWebArea
 ++++++++++++listMarker ignored
 ++++++++++++++staticText ignored name='%E2%96%BE '
 ++++++++++++staticText name='details tag open'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='details tag open'
 ++++++++genericContainer ignored
 ++++++++++paragraph
 ++++++++++++staticText name='The details tag with open specifies that the details should be visible (open) to the user.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='The details tag with open specifies that the details should be visible (open) to the user.'

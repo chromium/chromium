@@ -6,24 +6,24 @@ rootWebArea
 ++++++++++listItem
 ++++++++++++genericContainer ignored
 ++++++++++++++staticText name='1'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='1'
 ++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name=':'
 ++++++++++++staticText name='line1'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='line1'
 ++++++++++listItem
 ++++++++++++genericContainer ignored
 ++++++++++++++staticText name='2'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='2'
 ++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name=':'
 ++++++++++++staticText name='line2'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='line2'
 ++++++++++listItem
 ++++++++++++genericContainer ignored
 ++++++++++++++staticText name='3'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name='3'
 ++++++++++++++staticText name=':'
-++++++++++++++++inlineTextBox
+++++++++++++++++inlineTextBox name=':'
 ++++++++++++staticText name='line3'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='line3'

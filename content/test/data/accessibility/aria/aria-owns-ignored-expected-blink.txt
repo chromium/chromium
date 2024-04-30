@@ -7,7 +7,7 @@ rootWebArea
 ++++++++none ignored
 ++++++++++button name='button-in-owned-tree'
 ++++++++++++staticText name='button-in-owned-tree'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='button-in-owned-tree'
 ++++++splitter horizontal name='Element with aria-owns is never ignored'
 ++++++genericContainer
 ++++++++textField

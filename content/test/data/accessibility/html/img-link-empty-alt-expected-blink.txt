@@ -3,14 +3,14 @@ rootWebArea
 ++++genericContainer
 ++++++link name='unread '
 ++++++++staticText name='unread '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='unread '
 ++++++link name='read '
 ++++++++staticText name='read '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='read '
 ++++++link name='read '
 ++++++++staticText name='read '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='read '
 ++++++link name='read'
 ++++++++image
 ++++++++staticText name='read'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='read'

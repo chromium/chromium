@@ -4,26 +4,26 @@ UNKNOWN focusable has_input_focus
 ++++++UNKNOWN
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='Choose one:'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Choose one:'
 ++++++++UNKNOWN focusable label='Choose one: Foo' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='Foo' actions='{DEFAULT}'
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN label='Foo'
 ++++++++UNKNOWN focusable label='Choose one:' actions='{DEFAULT}'
 ++++++++++UNKNOWN label='Baz' actions='{DEFAULT}'
 ++++++++++++UNKNOWN hidden
 ++++++++++++++STATIC_TEXT label='%E2%80%A2 ' actions='{DEFAULT}'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='%E2%80%A2 '
 ++++++++++++STATIC_TEXT label='Baz' actions='{DEFAULT}'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='Baz'
 ++++++++++UNKNOWN label='Bar' actions='{DEFAULT}'
 ++++++++++++UNKNOWN hidden
 ++++++++++++++STATIC_TEXT label='%E2%80%A2 ' actions='{DEFAULT}'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='%E2%80%A2 '
 ++++++++++++STATIC_TEXT label='Bar' actions='{DEFAULT}'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='Bar'
 ++++++++++UNKNOWN label='Foo' actions='{DEFAULT}'
 ++++++++++++UNKNOWN hidden
 ++++++++++++++STATIC_TEXT label='%E2%80%A2 ' actions='{DEFAULT}'
-++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='%E2%80%A2 '
 ++++++++++++STATIC_TEXT label='Foo' actions='{DEFAULT}'
-++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='Foo'

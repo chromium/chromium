@@ -7,9 +7,9 @@ rootWebArea
 ++++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++++staticText name='Hello'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Hello'
 ++++++++++listItem
 ++++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++++staticText ignored name='%E2%80%A2 '
 ++++++++++++staticText name='Bye'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Bye'

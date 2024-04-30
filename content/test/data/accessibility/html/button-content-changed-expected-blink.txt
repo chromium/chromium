@@ -6,11 +6,11 @@ rootWebArea
 ++++++++paragraph ignored
 ++++++++genericContainer
 ++++++++++staticText name='After'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='After'
 ++++++++paragraph ignored
 ++++++button name='After'
 ++++++++paragraph ignored
 ++++++++genericContainer
 ++++++++++staticText name='After'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='After'
 ++++++++paragraph ignored

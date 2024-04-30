@@ -4,4 +4,4 @@ rootWebArea
 ++++++button inputType='image' name='email'
 ++++++++image
 ++++++++staticText name='email'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='email'

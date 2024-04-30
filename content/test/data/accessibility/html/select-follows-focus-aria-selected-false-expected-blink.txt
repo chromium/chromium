@@ -4,9 +4,9 @@ rootWebArea
 ++++++tabList horizontal
 ++++++++tab name='tab1' selected=false selectedFromFocus=false
 ++++++++++staticText name='tab1'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tab1'
 ++++++++tab name='tab2' selected=false selectedFromFocus=false
 ++++++++++staticText name='tab2'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='tab2'
 ++++++staticText name='Done'
-++++++++inlineTextBox
+++++++++inlineTextBox name='Done'

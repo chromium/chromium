@@ -3,7 +3,7 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN hidden
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='not scrollable'
-++++++++++UNKNOWN
+++++++++++UNKNOWN label='not scrollable'
 ++++++UNKNOWN focusable
 ++++++++UNKNOWN hidden
 ++++++UNKNOWN focusable

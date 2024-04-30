@@ -5,9 +5,9 @@ rootWebArea
 ++++++suggestion name='suggestion'
 ++++++paragraph
 ++++++++staticText name='This is '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='This is '
 ++++++++mark
 ++++++++++staticText name='highlighted'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='highlighted'
 ++++++++staticText name='.'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='.'

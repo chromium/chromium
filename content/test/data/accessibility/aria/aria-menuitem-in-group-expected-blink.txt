@@ -4,4 +4,4 @@ rootWebArea
 ++++++group
 ++++++++menuItem name='Menu item'
 ++++++++++staticText name='Menu item'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Menu item'

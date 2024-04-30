@@ -8,4 +8,4 @@ rootWebArea
 ++++++++++++++genericContainer
 ++++++++++++++++button name='Ordinary Button'
 ++++++++++++++++++staticText name='Ordinary Button'
-++++++++++++++++++++inlineTextBox
+++++++++++++++++++++inlineTextBox name='Ordinary Button'

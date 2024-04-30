@@ -4,4 +4,4 @@ rootWebArea
 ++++++image
 ++++++++genericContainer
 ++++++++++staticText name='Img.jpg'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Img.jpg'

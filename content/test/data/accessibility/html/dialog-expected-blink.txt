@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer
 ++++++dialog
 ++++++++staticText name='Text in dialog'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Text in dialog'

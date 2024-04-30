@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++region name='Stuff'
 ++++++++staticText name='Text'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Text'
 ++++++++button name='Button'
 ++++++++++staticText name='Button'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='Button'

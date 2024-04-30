@@ -3,9 +3,9 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++staticText name='%E2%80%9C'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='%E2%80%9C'
 ++++genericContainer
 ++++++genericContainer ignored
 ++++++++genericContainer ignored
 ++++++++++staticText name='%E2%80%98'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='%E2%80%98'

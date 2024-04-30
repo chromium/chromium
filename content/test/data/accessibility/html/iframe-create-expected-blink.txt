@@ -7,4 +7,4 @@ rootWebArea
 ++++++++++++genericContainer
 ++++++++++++++link name='done'
 ++++++++++++++++staticText name='done'
-++++++++++++++++++inlineTextBox
+++++++++++++++++++inlineTextBox name='done'

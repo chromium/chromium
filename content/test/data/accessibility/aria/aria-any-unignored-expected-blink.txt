@@ -3,12 +3,12 @@ rootWebArea
 ++++genericContainer ignored
 ++++++paragraph
 ++++++++staticText name='Hi '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Hi '
 ++++++++staticText name='ignored span'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='ignored span'
 ++++++paragraph
 ++++++++staticText name='Hi '
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Hi '
 ++++++++genericContainer
 ++++++++++staticText name='unignored span'
-++++++++++++inlineTextBox
+++++++++++++inlineTextBox name='unignored span'

@@ -3,4 +3,4 @@ rootWebArea
 ++++genericContainer ignored
 ++++++slider horizontal valueForRange=5.00 minValueForRange=1.00 maxValueForRange=10.00
 ++++++++staticText name='Slider'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='Slider'

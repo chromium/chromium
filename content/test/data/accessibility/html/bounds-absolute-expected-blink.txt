@@ -5,7 +5,7 @@ rootWebArea clipsChildren=true
 ++++++++dialog size=(200, 200) pageLocation=(150, 50) pageSize=(200, 200) unclippedLocation=(150, 50) unclippedSize=(200, 200)
 ++++++++++button size=(160, 50) pageSize=(160, 50) name='Button 1'
 ++++++++++++staticText name='Button 1'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Button 1'
 ++++++++++button size=(160, 50) pageSize=(160, 50) name='Button 2'
 ++++++++++++staticText name='Button 2'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='Button 2'

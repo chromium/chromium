@@ -11,13 +11,13 @@ rootWebArea name='done'
 ++++++++genericContainer
 ++++++group
 ++++++++staticText name='controls target'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='controls target'
 ++++++group
 ++++++++staticText name='details target'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='details target'
 ++++++group
 ++++++++staticText name='errormessage target'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='errormessage target'
 ++++++group
 ++++++++staticText name='flowto target'
-++++++++++inlineTextBox
+++++++++++inlineTextBox name='flowto target'

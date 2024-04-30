@@ -5,14 +5,14 @@ rootWebArea
 ++++++++footerAsNonLandmark
 ++++++++++paragraph
 ++++++++++++staticText name='footer inside article.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='footer inside article.'
 ++++++section
 ++++++++footerAsNonLandmark
 ++++++++++paragraph
 ++++++++++++staticText name='footer inside section.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='footer inside section.'
 ++++++main
 ++++++++footerAsNonLandmark
 ++++++++++paragraph
 ++++++++++++staticText name='footer inside main.'
-++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='footer inside main.'
