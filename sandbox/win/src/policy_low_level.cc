@@ -85,7 +85,7 @@ bool LowLevelPolicy::Done() {
 
   for (Mmap::iterator it = mmap.begin(); it != mmap.end(); ++it) {
     IpcTag service = (*it).first;
-    if (static_cast<size_t>(service) >= kMaxServiceCount) {
+    if (service > IpcTag::kMaxValue) {
       return false;
     }
     policy_store_->entry[static_cast<size_t>(service)] = current_buffer;

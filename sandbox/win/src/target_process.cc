@@ -67,7 +67,7 @@ void CopyPolicyToTarget(base::span<const uint8_t> source, void* dest) {
 
   size_t offset = reinterpret_cast<size_t>(source.data());
 
-  for (size_t i = 0; i < sandbox::kMaxServiceCount; i++) {
+  for (size_t i = 0; i < sandbox::kSandboxIpcCount; i++) {
     size_t buffer = reinterpret_cast<size_t>(policy->entry[i]);
     if (buffer) {
       buffer -= offset;

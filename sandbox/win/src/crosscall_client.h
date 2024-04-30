@@ -44,7 +44,7 @@
 // return codes indicate that the IPC transport failed to deliver it.
 namespace sandbox {
 
-enum class IpcTag;
+enum class IpcTag : uint32_t;
 
 // this is the assumed channel size. This can be overridden in a given
 // IPC implementation.

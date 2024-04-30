@@ -78,7 +78,7 @@ TopLevelDispatcher::~TopLevelDispatcher() {}
 
 std::vector<IpcTag> TopLevelDispatcher::ipc_targets() {
   std::vector<IpcTag> results = {IpcTag::PING1, IpcTag::PING2};
-  for (uint32_t ipc = 0; ipc < kMaxIpcTag; ipc++) {
+  for (size_t ipc = 0; ipc < kSandboxIpcCount; ipc++) {
     if (ipc_targets_[ipc]) {
       results.push_back(static_cast<IpcTag>(ipc));
     }
@@ -151,8 +151,9 @@ bool TopLevelDispatcher::Ping(IPCInfo* ipc, void* arg1) {
 }
 
 Dispatcher* TopLevelDispatcher::GetDispatcher(IpcTag ipc_tag) {
-  if (ipc_tag >= IpcTag::LAST || ipc_tag <= IpcTag::UNUSED)
+  if (ipc_tag > IpcTag::kMaxValue || ipc_tag == IpcTag::UNUSED) {
     return nullptr;
+  }
 
   return ipc_targets_[static_cast<size_t>(ipc_tag)];
 }

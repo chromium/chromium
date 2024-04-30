@@ -181,9 +181,6 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "CreateThread";
     case IpcTag::NTCREATESECTION:
       return "NtCreateSection";
-    case IpcTag::LAST:
-      DCHECK(false) << "Unknown IpcTag";
-      return "Unknown";
   }
 }
 
@@ -403,7 +400,7 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
     // Fixup pointers (see |PolicyGlobal| in policy_low_level.h).
     PolicyBuffer** original_entries = original_rules->entry;
     PolicyBuffer** copy_base = policy_rules_->entry;
-    for (size_t i = 0; i < kMaxServiceCount; i++) {
+    for (size_t i = 0; i < kSandboxIpcCount; i++) {
       if (policy_rules_->entry[i]) {
         policy_rules_->entry[i] = reinterpret_cast<PolicyBuffer*>(
             reinterpret_cast<char*>(copy_base) +

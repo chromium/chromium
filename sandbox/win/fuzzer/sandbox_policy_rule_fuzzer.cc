@@ -112,7 +112,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // We send the fuzzer generated data to every available policy rule.
   // Only some of the services will be registered, but it will
   // quickly skip those that have nothing registered.
-  for (size_t i = 0; i < sandbox::kMaxIpcTag; i++) {
+  for (size_t i = 0; i < sandbox::kSandboxIpcCount; i++) {
     policy->EvalPolicy(static_cast<sandbox::IpcTag>(i), real_params);
   }
 

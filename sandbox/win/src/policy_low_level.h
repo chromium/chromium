@@ -75,7 +75,7 @@ struct PolicyGlobal {
     return entry[static_cast<size_t>(service)] != nullptr;
   }
 
-  PolicyBuffer* entry[kMaxServiceCount];
+  PolicyBuffer* entry[kSandboxIpcCount];
   size_t data_size;
   PolicyBuffer data[1];
 };

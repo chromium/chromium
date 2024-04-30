@@ -751,7 +751,7 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
   InterceptionManager manager(target);
   PolicyGlobal* policy = config()->policy();
   if (policy) {
-    for (size_t i = 0; i < kMaxIpcTag; i++) {
+    for (size_t i = 0; i < kSandboxIpcCount; i++) {
       if (policy->entry[i] &&
           !dispatcher_->SetupService(&manager, static_cast<IpcTag>(i)))
         return SBOX_ERROR_SETUP_INTERCEPTION_SERVICE;
