@@ -194,10 +194,6 @@ void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
   SetInfoForBrowserStateAtIndex(index, std::move(info));
 }
 
-const base::FilePath& BrowserStateInfoCache::GetUserDataDir() const {
-  return user_data_dir_;
-}
-
 // static
 void BrowserStateInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kBrowserStateInfoCache);

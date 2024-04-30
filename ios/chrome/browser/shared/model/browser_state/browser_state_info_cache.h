@@ -56,8 +56,6 @@ class BrowserStateInfoCache {
   void SetBrowserStateIsAuthErrorAtIndex(size_t index, bool value);
   bool BrowserStateIsAuthErrorAtIndex(size_t index) const;
 
-  const base::FilePath& GetUserDataDir() const;
-
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

@@ -150,8 +150,8 @@ base::FilePath ChromeBrowserStateManagerImpl::GetLastUsedBrowserStateDir(
 BrowserStateInfoCache*
 ChromeBrowserStateManagerImpl::GetBrowserStateInfoCache() {
   if (!browser_state_info_cache_) {
-    browser_state_info_cache_.reset(new BrowserStateInfoCache(
-        GetApplicationContext()->GetLocalState(), GetUserDataDir()));
+    browser_state_info_cache_ = std::make_unique<BrowserStateInfoCache>(
+        GetApplicationContext()->GetLocalState(), GetUserDataDir());
   }
   return browser_state_info_cache_.get();
 }
@@ -284,18 +284,15 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
 void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
     ChromeBrowserState* browser_state) {
   DCHECK(!browser_state->IsOffTheRecord());
-  BrowserStateInfoCache* cache = GetBrowserStateInfoCache();
-  if (browser_state->GetStatePath().DirName() != cache->GetUserDataDir()) {
-    return;
-  }
-
+  DCHECK_EQ(browser_state->GetStatePath().DirName(), GetUserDataDir());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
-  CoreAccountInfo account_info =
+  const CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  std::u16string username = base::UTF8ToUTF16(account_info.email);
+  const std::u16string username = base::UTF8ToUTF16(account_info.email);
 
-  size_t browser_state_index =
+  BrowserStateInfoCache* cache = GetBrowserStateInfoCache();
+  const size_t browser_state_index =
       cache->GetIndexOfBrowserStateWithPath(browser_state->GetStatePath());
   if (browser_state_index != std::string::npos) {
     // The BrowserStateInfoCache's info must match the IdentityManager.
