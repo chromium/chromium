@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertShowAnnotationsButton} from './test_util.js';
+import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+
+import {assertShowAnnotationsButton, createMockPdfPluginForTest} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -54,6 +56,31 @@ chrome.test.runTests([
     viewerToolbar.toggleAnnotation();
     chrome.test.assertFalse(viewerToolbar.annotationMode);
     assertShowAnnotationsButton(showAnnotationsButton, false);
+    chrome.test.succeed();
+  },
+  // Test that toggling annotation mode sends a message to the PDF content.
+  async function testToggleAnnotationModeSendsMessage() {
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    const controller = PluginController.getInstance();
+    const mockPlugin = createMockPdfPluginForTest();
+    controller.setPluginForTesting(mockPlugin);
+
+    viewerToolbar.toggleAnnotation();
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
+
+    const enableMessage = mockPlugin.findMessage('setAnnotationMode');
+    chrome.test.assertTrue(enableMessage !== null);
+    chrome.test.assertEq(enableMessage!.enable, true);
+
+    mockPlugin.clearMessages();
+
+    viewerToolbar.toggleAnnotation();
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    const disableMessage = mockPlugin.findMessage('setAnnotationMode');
+    chrome.test.assertTrue(disableMessage !== null);
+    chrome.test.assertEq(disableMessage!.enable, false);
     chrome.test.succeed();
   },
 ]);

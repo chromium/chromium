@@ -128,21 +128,13 @@ export class PluginController implements ContentController {
       plugin: HTMLEmbedElement, viewport: Viewport,
       getIsUserInitiatedCallback: () => boolean,
       getLoadedCallback: () => Promise<void>| null) {
-    this.plugin_ = plugin as PdfPluginElement;
-    this.plugin_.addEventListener(
-        'message', e => this.handlePluginMessage_(e as MessageEvent), false);
-    this.plugin_.postMessage = (message, transfer) => {
-      this.delayedMessages_!.push({message, transfer});
-    };
-
     this.viewport_ = viewport;
     this.getIsUserInitiatedCallback_ = getIsUserInitiatedCallback;
     this.getLoadedCallback_ = getLoadedCallback;
     this.pendingTokens_ = new Map();
     this.requestResolverMap_ = new Map();
 
-    this.viewport_.setContent(this.plugin_);
-    this.viewport_.setRemoteContent(this.plugin_);
+    this.setPlugin_(plugin);
   }
 
   get isActive(): boolean {
@@ -161,6 +153,20 @@ export class PluginController implements ContentController {
         PluginControllerEventType.IS_ACTIVE_CHANGED, {detail: this.isActive}));
   }
 
+  private setPlugin_(plugin: HTMLEmbedElement) {
+    this.plugin_ = plugin as PdfPluginElement;
+    this.plugin_.addEventListener(
+        'message', e => this.handlePluginMessage_(e as MessageEvent), false);
+    if (this.delayedMessages_) {
+      this.plugin_.postMessage = (message, transfer) => {
+        this.delayedMessages_!.push({message, transfer});
+      };
+    }
+
+    this.viewport_.setContent(this.plugin_);
+    this.viewport_.setRemoteContent(this.plugin_);
+  }
+
   private createUid_(): number {
     return this.uidCounter_++;
   }
@@ -170,6 +176,15 @@ export class PluginController implements ContentController {
   }
 
   viewportChanged() {}
+
+  // <if expr="enable_pdf_ink2">
+  setAnnotationMode(enable: boolean) {
+    this.postMessage_({
+      type: 'setAnnotationMode',
+      enable,
+    });
+  }
+  // </if>
 
   redo() {}
 
@@ -494,6 +509,12 @@ export class PluginController implements ContentController {
 
     resolver.resolve(messageData);
   }
+
+  // <if expr="enable_pdf_ink2">
+  setPluginForTesting(plugin: HTMLEmbedElement) {
+    this.setPlugin_(plugin);
+  }
+  // </if>
 
   static getInstance(): PluginController {
     return instance || (instance = new PluginController());

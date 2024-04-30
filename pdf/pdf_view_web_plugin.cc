@@ -1322,6 +1322,10 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
           {"save", &PdfViewWebPlugin::HandleSaveMessage},
           {"saveAttachment", &PdfViewWebPlugin::HandleSaveAttachmentMessage},
           {"selectAll", &PdfViewWebPlugin::HandleSelectAllMessage},
+#if BUILDFLAG(ENABLE_PDF_INK2)
+          {"setAnnotationMode",
+           &PdfViewWebPlugin::HandleSetAnnotationModeMessage},
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
           {"setBackgroundColor",
            &PdfViewWebPlugin::HandleSetBackgroundColorMessage},
           {"setPresentationMode",
@@ -1485,6 +1489,13 @@ void PdfViewWebPlugin::HandleSelectAllMessage(
     const base::Value::Dict& /*message*/) {
   engine_->SelectAll();
 }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+void PdfViewWebPlugin::HandleSetAnnotationModeMessage(
+    const base::Value::Dict& message) {
+  // TODO(crbug.com/335521184): Implement the backend for Ink2.
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 void PdfViewWebPlugin::HandleSetBackgroundColorMessage(
     const base::Value::Dict& message) {

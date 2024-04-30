@@ -501,6 +501,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       record(
           annotationMode ? UserAction.ENTER_ANNOTATION_MODE :
                            UserAction.EXIT_ANNOTATION_MODE);
+      this.pluginController_!.setAnnotationMode(annotationMode);
       this.annotationMode_ = annotationMode;
       return;
     }

@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/loader/url_loader.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_manager.h"
@@ -492,6 +493,9 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void HandleSaveAttachmentMessage(const base::Value::Dict& message);
   void HandleSaveMessage(const base::Value::Dict& message);
   void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
   void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
   void HandleSetPresentationModeMessage(const base::Value::Dict& message);
   void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
