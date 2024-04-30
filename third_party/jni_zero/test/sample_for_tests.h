@@ -11,6 +11,26 @@
 #include <vector>
 #include "third_party/jni_zero/jni_zero.h"
 
+// In case concepts are not defined, have placeholder implementations of array
+// conversion functions so that tests compile.
+#if !defined(__cpp_concepts)
+namespace jni_zero {
+template <typename T>
+struct ConvertArray<std::vector<T>> {
+  static std::vector<T> FromJniType(JNIEnv* env,
+                                    const JavaRef<jobjectArray>& j_array) {
+    return {};
+  }
+
+  static ScopedJavaLocalRef<jobjectArray> ToJniType(JNIEnv* env,
+                                                    const std::vector<T>& vec,
+                                                    jclass clazz) {
+    return nullptr;
+  }
+};
+}  // namespace jni_zero
+#endif  // !defined(__cpp_concepts)
+
 namespace jni_zero::tests {
 
 enum class MyEnum {
