@@ -11,6 +11,8 @@
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace ash::cfm {
 
@@ -55,6 +57,9 @@ class LocalDataSource : public mojom::DataSource {
   bool IsDataBufferOverMaxLimit();
   void RedactUploadBuffer();
   void AddTimestamps(std::vector<std::string>& data);
+  bool IsWatchDogFilterValid(mojom::DataFilterPtr& filter);
+  void FireChangeWatchdogCallbacks(const std::string& data);
+  void CheckRegexWatchdogsAndFireCallbacks(const std::string& data);
 
   base::RepeatingTimer poll_timer_;
   base::TimeDelta poll_rate_;
@@ -81,6 +86,20 @@ class LocalDataSource : public mojom::DataSource {
   // Contains the most recent unique data from GetNextData(). Only used
   // for non-incremental sources to avoid spamming the same data.
   std::vector<std::string> last_unique_data_;
+
+  // Contains a set of watchdogs to be fired when the output contains
+  // any change since the previous output.
+  mojo::RemoteSet<mojom::DataWatchDog> change_based_watchdogs_;
+
+  // Contains a collection of watchdogs to be fired when the output matches
+  // one or more regex patterns. The patterns are the keys, which map to a
+  // set of remotes. Supports multiple watchdogs per pattern.
+  std::map<const std::string, mojo::RemoteSet<mojom::DataWatchDog>>
+      regex_based_watchdogs_;
+
+  // Regex objects are expensive to create, so cache them here and
+  // reuse for repeated usages and duplicate watchdogs.
+  std::map<const std::string, std::unique_ptr<RE2>> regex_cache_;
 
   // Must be the last class member.
   base::WeakPtrFactory<LocalDataSource> weak_ptr_factory_{this};

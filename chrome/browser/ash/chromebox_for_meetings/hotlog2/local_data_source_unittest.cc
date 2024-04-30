@@ -12,6 +12,10 @@
 namespace ash::cfm {
 namespace {
 
+// Local convenience aliases
+using mojom::DataFilter::FilterType::CHANGE;
+using mojom::DataFilter::FilterType::REGEX;
+
 constexpr std::string kDataSourceName = "fake_display_name";
 
 // These are all arguments passed to the |LocalDataSource| object.
@@ -82,6 +86,16 @@ class LocalDataSourcePeer : public LocalDataSource {
     // received by the callback matches what we requested.
     auto callback = base::BindOnce(&FetchCallbackFn, expected_data);
     Fetch(std::move(callback));
+  }
+
+  void RunAddWatchDogWithExpectedResult(mojom::DataFilterPtr filter,
+                                        bool expected_result) {
+    // Redirect callback to test function to verify that the data
+    // received by the callback matches what we requested.
+    auto callback = base::BindOnce(&AddWatchDogCallbackFn, expected_result);
+    mojo::PendingRemote<mojom::DataWatchDog> unused_remote;
+    AddWatchDog(std::move(filter), std::move(unused_remote),
+                std::move(callback));
   }
 
  protected:
@@ -212,23 +226,9 @@ TEST(HotlogLocalDataSourceTest, TestBufferSizeIsCapped) {
   source.Fetch(std::move(callback));
 }
 
-TEST(HotlogLocalDataSourceTest, TestWatchdogCallbackAlwaysFalse) {
-  auto source =
-      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
-
-  // TODO(b/326440932): watchdog support
-  bool expected_result = false; /* success */
-  auto unused_filter = mojom::DataFilter::New();
-  mojo::PendingRemote<mojom::DataWatchDog> unused_remote;
-  auto callback = base::BindOnce(&AddWatchDogCallbackFn, expected_result);
-
-  source.AddWatchDog(std::move(unused_filter), std::move(unused_remote),
-                     std::move(callback));
-}
-
 TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
-  auto source =
-      LocalDataSourcePeer(kPollFrequency, kRedactData, kIsIncremental);
+  auto source = LocalDataSourcePeer(kPollFrequency, kRedactData,
+                                    kIsIncremental);
 
   source.SetFakeData({"192.168.0.1", "fake@email.com"});
   source.FillDataBufferForTesting();
@@ -243,6 +243,36 @@ TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
   new_source.FillDataBufferForTesting();
   new_source.FillDataBufferForTesting();
   new_source.RunFetchWithExpectedData({"192.168.0.1", "fake@email.com"});
+}
+
+TEST(HotlogWatchdogTest, TestVariousInvalidWatchdogs) {
+  // All of these tests should fail
+  bool expected_result = false;
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsNotIncremental);
+
+  // CHANGE filter with supplied pattern
+  auto filter = mojom::DataFilter::New(CHANGE, "pattern");
+  source.RunAddWatchDogWithExpectedResult(std::move(filter), expected_result);
+
+  // REGEX filter with empty pattern
+  filter = mojom::DataFilter::New(REGEX, "");
+  source.RunAddWatchDogWithExpectedResult(std::move(filter), expected_result);
+
+  // REGEX filter with too-permissive pattern
+  filter = mojom::DataFilter::New(REGEX, "*");
+  source.RunAddWatchDogWithExpectedResult(std::move(filter), expected_result);
+
+  // REGEX filter with invalid pattern
+  filter = mojom::DataFilter::New(REGEX, "[a-z");
+  source.RunAddWatchDogWithExpectedResult(std::move(filter), expected_result);
+
+  // CHANGE filter for incremental source
+  auto incr_source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
+  filter = mojom::DataFilter::New(CHANGE, "");
+  incr_source.RunAddWatchDogWithExpectedResult(std::move(filter),
+                                               expected_result);
 }
 
 }  // namespace
