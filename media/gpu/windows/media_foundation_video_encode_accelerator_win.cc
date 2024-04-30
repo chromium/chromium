@@ -1665,12 +1665,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
       return MF_E_INVALID_STREAM_DATA;
     }
 
-    if (gmb->GetType() != gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE &&
-        gmb->GetType() != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
-      LOG(ERROR) << "Unsupported GMB type";
-      return MF_E_INVALID_STREAM_DATA;
-    }
-
     if (gmb->GetType() == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE &&
         dxgi_device_manager_ != nullptr) {
       if (!dxgi_resource_mapping_required_) {
