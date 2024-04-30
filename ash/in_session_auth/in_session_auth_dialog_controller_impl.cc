@@ -4,24 +4,35 @@
 
 #include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/in_session_auth/authentication_dialog.h"
 #include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
+#include "ash/public/cpp/in_session_auth_dialog_controller.h"
+#include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
+#include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_factor_store.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
-#include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
-#include "chromeos/ash/components/auth_panel/impl/factor_auth_view_factory.h"
+#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 namespace {

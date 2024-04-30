@@ -2,32 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <utility>
 
-#include "ash/constants/ash_pref_names.h"
 #include "ash/in_session_auth/auth_dialog_contents_view.h"
 #include "ash/in_session_auth/mock_in_session_auth_dialog_client.h"
 #include "ash/login/ui/login_password_view.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/window_state.h"
+#include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"

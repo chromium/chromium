@@ -4299,6 +4299,7 @@ test("ash_unittests") {
     "//chromeos/ash/components/dbus/services:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/emoji",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/fwupd",

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/sequence_checker.h"
 #include "chromeos/components/webauthn/webauthn_request_registrar.h"
 #include "ui/aura/window_tracker.h"
 

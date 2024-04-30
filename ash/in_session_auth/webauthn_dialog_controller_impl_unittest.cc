@@ -4,11 +4,18 @@
 
 #include "ash/in_session_auth/webauthn_dialog_controller_impl.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "ash/in_session_auth/mock_in_session_auth_dialog_client.h"
+#include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
 

@@ -4,17 +4,27 @@
 
 #include "ash/in_session_auth/webauthn_dialog_controller_impl.h"
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "ash/in_session_auth/auth_dialog_contents_view.h"
+#include "ash/in_session_auth/in_session_auth_dialog.h"
 #include "ash/in_session_auth/webauthn_request_registrar_impl.h"
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
+#include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "components/user_manager/known_user.h"
 #include "ui/aura/window.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 

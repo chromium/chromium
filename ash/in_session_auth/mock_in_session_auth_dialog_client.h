@@ -5,8 +5,12 @@
 #ifndef ASH_IN_SESSION_AUTH_MOCK_IN_SESSION_AUTH_DIALOG_CLIENT_H_
 #define ASH_IN_SESSION_AUTH_MOCK_IN_SESSION_AUTH_DIALOG_CLIENT_H_
 
+#include <string>
+
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
+#include "ash/public/cpp/login_types.h"
 #include "base/functional/callback.h"
+#include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

@@ -5,8 +5,12 @@
 #ifndef ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTENTS_VIEW_H_
 #define ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTENTS_VIEW_H_
 
+#include <optional>
+#include <string>
+
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ash/components/auth_panel/public/shared_types.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {

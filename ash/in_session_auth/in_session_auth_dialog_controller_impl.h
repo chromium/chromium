@@ -5,11 +5,18 @@
 #ifndef ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTROLLER_IMPL_H_
 #define ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_CONTROLLER_IMPL_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/osauth/public/auth_attempt_consumer.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "components/account_id/account_id.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

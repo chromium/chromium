@@ -6,13 +6,16 @@
 #define ASH_IN_SESSION_AUTH_AUTHENTICATION_DIALOG_H_
 
 #include <memory>
+#include <optional>
 
-#include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/account_id/account_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"

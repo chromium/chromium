@@ -4,10 +4,16 @@
 
 #include "ash/in_session_auth/in_session_auth_dialog.h"
 
-#include "base/command_line.h"
+#include <cstdint>
+#include <memory>
+#include <utility>
+
+#include "ash/in_session_auth/auth_dialog_contents_view.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "ui/aura/window.h"
-#include "ui/display/display.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 

@@ -5,21 +5,31 @@
 #include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/login/ui/animated_rounded_image_view.h"
+#include "ash/login/ui/non_accessible_view.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/check.h"
+#include "base/functional/callback_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view_factory.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -27,8 +37,8 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/vector_icons.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 

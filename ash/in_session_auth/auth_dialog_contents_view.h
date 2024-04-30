@@ -5,12 +5,18 @@
 #ifndef ASH_IN_SESSION_AUTH_AUTH_DIALOG_CONTENTS_VIEW_H_
 #define ASH_IN_SESSION_AUTH_AUTH_DIALOG_CONTENTS_VIEW_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/session/user_info.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/event.h"
 #include "ui/views/view.h"
 
 namespace views {
