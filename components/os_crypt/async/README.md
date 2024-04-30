@@ -76,7 +76,10 @@ There are a few considerations that are important for integrators:
             backwards compatible with `os_crypt::OSCrypt`. This means that if
             any issues are found when converting the code from sync to async,
             there is no risk of any permanent data loss, and any CLs can be
-            safely rolled back, or features turned off.
+            safely rolled back, or features turned off. Note that Encryptors
+            obtained with this flag might not always operate correctly in all
+            processes as they might fallback to OSCrypt sync internally, but are
+            always safe to use from browser process.
         2.  Land the async code behind a feature, although this might not always
             be possible given the restructuring required. By both using
             `kEncryptSyncCompat` and a feature flag, the code can be iterated on

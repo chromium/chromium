@@ -466,11 +466,21 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, Empty) {
   ProviderList providers;
   OSCryptAsync factory(std::move(providers));
   Encryptor encryptor = GetInstanceSync(factory);
-  std::string ciphertext;
-  EXPECT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
-  std::string plaintext;
-  EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
-  EXPECT_EQ("secrets", plaintext);
+  {
+    std::string ciphertext;
+    EXPECT_TRUE(OSCrypt::EncryptString("secrets", &ciphertext));
+    std::string plaintext;
+    EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
+    EXPECT_EQ("secrets", plaintext);
+  }
+  {
+    const auto ciphertext = encryptor.EncryptString("moresecrets");
+    ASSERT_TRUE(ciphertext.has_value());
+    std::string plaintext;
+    EXPECT_TRUE(OSCrypt::DecryptString(
+        std::string(ciphertext->begin(), ciphertext->end()), &plaintext));
+    EXPECT_EQ("moresecrets", plaintext);
+  }
 }
 
 TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
@@ -500,6 +510,26 @@ TEST_F(OSCryptAsyncTestWithOSCrypt, FailingKeyProvider) {
     EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
     EXPECT_EQ("secrets", plaintext);
   }
+}
+
+// Test also that if no key providers have OSCrypt sync compatibility then
+// encryption simply falls back to OSCrypt, and that OSCrypt can decrypt it
+// fine.
+TEST_F(OSCryptAsyncTestWithOSCrypt, EncryptorOption) {
+  ProviderList providers;
+  providers.emplace_back(/*precedence=*/5u,
+                         std::make_unique<TestKeyProvider>(
+                             "BAR", /*use_for_encryption=*/true,
+                             /*compatible_with_os_crypt_sync=*/false));
+  OSCryptAsync factory(std::move(providers));
+  Encryptor encryptor =
+      GetInstanceSync(factory, Encryptor::Option::kEncryptSyncCompat);
+  const auto ciphertext = encryptor.EncryptString("os_crypt_secrets");
+  ASSERT_TRUE(ciphertext);
+  std::string plaintext;
+  ASSERT_TRUE(OSCrypt::DecryptString(
+      std::string(ciphertext->begin(), ciphertext->end()), &plaintext));
+  EXPECT_EQ("os_crypt_secrets", plaintext);
 }
 
 using OSCryptAsyncDeathTest = OSCryptAsyncTest;

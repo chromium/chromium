@@ -267,10 +267,12 @@ Encryptor Encryptor::Clone(Option option) const {
   for (const auto& [provider, key] : keys_) {
     keyring.emplace(provider, key.Clone());
   }
-  std::string provider_for_encryption = provider_for_encryption_;
+
+  std::string provider_for_encryption;
 
   switch (option) {
     case Option::kNone:
+      provider_for_encryption = provider_for_encryption_;
       break;
     case Option::kEncryptSyncCompat:
       for (const auto& [provider, key] : keyring) {
@@ -284,6 +286,7 @@ Encryptor Encryptor::Clone(Option option) const {
       break;
   }
 
+  // Can be empty provider, if no suitable provider is available.
   return Encryptor(std::move(keyring), provider_for_encryption);
 }
 

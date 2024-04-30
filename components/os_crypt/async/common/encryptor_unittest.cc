@@ -547,6 +547,28 @@ TEST_F(EncryptorTestBase, Clone) {
     }
   }
 
+  // Test when the only key provider is not OSCrypt compatible. In this case, no
+  // default provider for encryption should end up being set (and fallback to
+  // OSCrypt for encryption).
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("BLAH", GenerateRandomAES256TestKey(
+                                 /*is_os_crypt_sync_compatible=*/false));
+    auto encryptor = GetEncryptor(std::move(key_ring), "BLAH");
+    EXPECT_EQ(encryptor.provider_for_encryption_, "BLAH");
+
+    {
+      auto cloned_encryptor = encryptor.Clone(Encryptor::Option::kNone);
+      EXPECT_EQ(cloned_encryptor.provider_for_encryption_, "BLAH");
+    }
+
+    {
+      auto cloned_encryptor =
+          encryptor.Clone(Encryptor::Option::kEncryptSyncCompat);
+      EXPECT_TRUE(cloned_encryptor.provider_for_encryption_.empty());
+    }
+  }
+
   // Test empty keyring.
   {
     const auto empty_encryptor = GetEncryptor();
