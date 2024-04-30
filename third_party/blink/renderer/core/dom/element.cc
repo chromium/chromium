@@ -1301,7 +1301,11 @@ bool Element::HasAnimations() const {
 }
 
 bool Element::hasAttribute(const QualifiedName& name) const {
-  return hasAttributeNS(name.NamespaceURI(), name.LocalName());
+  if (!HasElementData()) {
+    return false;
+  }
+  SynchronizeAttribute(name);
+  return GetElementData()->Attributes().Find(name);
 }
 
 bool Element::HasAttributeIgnoringNamespace(
