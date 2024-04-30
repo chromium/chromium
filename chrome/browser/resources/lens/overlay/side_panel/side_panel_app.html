@@ -3,15 +3,23 @@
     --cr-realbox-min-width: 340px
   }
   #results {
-    height: 100%;
-    left: 0;
-    top: 0;
+    border: none;
+     /* Viewport height minus the realbox height and margin. */
+    height: calc(100vh - 76px);
+    inset-inline-start: 0;
+     /*
+      * We need to offset by the realbox height and margin since we are in a
+      * fixed position.
+      */
+    inset-block-start: 76px;
+    position: fixed;
     width: 100%;
   }
   #realboxContainer {
+    display: flex;
     font-family: Roboto, Arial, sans-serif;
     margin: 12px 8px;
-    display: flex;
+    position: fixed;
     /* TODO(jdonnelly): Specify these in a color mixer. */
     --color-realbox-background: #ffffffff;
     --color-realbox-background-hovered: #ffffffff;
