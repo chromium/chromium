@@ -65,7 +65,8 @@ class AnimatedImageButton : public TabSliderButton {
     // TODO(b/334205690): Use view builder pattern.
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
-        /*inside_border_insets=*/gfx::Insets(8)));
+        /*inside_border_insets=*/gfx::Insets(8),
+        /*between_child_spacing=*/6));
 
     auto* animated_view_container =
         AddChildView(std::make_unique<views::View>());
@@ -79,7 +80,6 @@ class AnimatedImageButton : public TabSliderButton {
         animated_view_container->AddChildView(std::make_unique<views::View>());
     image_view_container->SetLayoutManager(
         std::make_unique<views::FillLayout>());
-    image_view_container->SetBorder(views::CreateEmptyBorder(gfx::Insets(4)));
     auto* image_view = image_view_container->AddChildView(
         std::make_unique<views::ImageView>());
     image_view->SetImage(ui::ImageModel::FromImageGenerator(
