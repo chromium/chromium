@@ -13,6 +13,10 @@ namespace ash::cfm {
 
 namespace {
 
+// Local convenience aliases
+using mojom::DataFilter::FilterType::CHANGE;
+using mojom::DataFilter::FilterType::REGEX;
+
 static DataAggregatorService* g_data_aggregator_service = nullptr;
 
 constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
@@ -33,6 +37,13 @@ const char* kLocalLogSources[] = {
 void DataAggregatorService::Initialize() {
   CHECK(!g_data_aggregator_service);
   g_data_aggregator_service = new DataAggregatorService();
+}
+
+// static
+void DataAggregatorService::InitializeForTesting(
+    DataAggregatorService* data_aggregator_service) {
+  CHECK(!g_data_aggregator_service);
+  g_data_aggregator_service = data_aggregator_service;
 }
 
 // static
@@ -207,6 +218,18 @@ void DataAggregatorService::OnMojoDisconnect() {
   VLOG(3) << "mojom::DataAggregator disconnected";
 }
 
+void DataAggregatorService::InitializeLocalSources() {
+  // Add local command sources
+  for (auto* const cmd : kLocalCommandSources) {
+    AddLocalCommandSource(cmd);
+  }
+
+  // Add local log file sources
+  for (auto* const logfile : kLocalLogSources) {
+    AddLocalLogSource(logfile);
+  }
+}
+
 void DataAggregatorService::StartFetchTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   fetch_timer_.Start(
@@ -283,16 +306,7 @@ DataAggregatorService::DataAggregatorService()
   local_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
-  // Add local command sources
-  for (auto* const cmd : kLocalCommandSources) {
-    AddLocalCommandSource(cmd);
-  }
-
-  // Add local log file sources
-  for (auto* const logfile : kLocalLogSources) {
-    AddLocalLogSource(logfile);
-  }
-
+  InitializeLocalSources();
   StartFetchTimer();
 }
 

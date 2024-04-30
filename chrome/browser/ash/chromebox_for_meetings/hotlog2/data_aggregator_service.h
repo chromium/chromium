@@ -26,11 +26,15 @@ class DataAggregatorService : public CfmObserver,
                               public ServiceAdaptor::Delegate,
                               public mojom::DataAggregator {
  public:
+  DataAggregatorService();
+  ~DataAggregatorService() override;
   DataAggregatorService(const DataAggregatorService&) = delete;
   DataAggregatorService& operator=(const DataAggregatorService&) = delete;
 
   // Manage singleton instance.
   static void Initialize();
+  static void InitializeForTesting(
+      DataAggregatorService* data_aggregator_service);
   static void Shutdown();
   static DataAggregatorService* Get();
   static bool IsInitialized();
@@ -56,10 +60,13 @@ class DataAggregatorService : public CfmObserver,
   // Disconnect handler for |mojom::DataAggregator|
   virtual void OnMojoDisconnect();
 
- private:
-  DataAggregatorService();
-  ~DataAggregatorService() override;
+  // Will be overridden by test object for more controlled test environment
+  virtual void InitializeLocalSources();
 
+  // Maps DataSource names to their remotes, for access convenience
+  std::map<std::string, mojo::Remote<mojom::DataSource>> data_source_map_;
+
+ private:
   void AddLocalCommandSource(const std::string& command);
   void OnLocalCommandDisconnect(const std::string& command);
   void AddLocalLogSource(const std::string& filepath);
@@ -79,9 +86,6 @@ class DataAggregatorService : public CfmObserver,
 
   // Worker thread for locally created DataSources
   scoped_refptr<base::SequencedTaskRunner> local_task_runner_;
-
-  // Maps DataSource names to their remotes, for access convenience
-  std::map<std::string, mojo::Remote<mojom::DataSource>> data_source_map_;
 
   // Must be the last class member.
   base::WeakPtrFactory<DataAggregatorService> weak_ptr_factory_{this};
