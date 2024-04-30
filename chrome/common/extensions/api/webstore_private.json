@@ -351,6 +351,23 @@
             { "name": "status", "$ref": "ExtensionInstallStatus" }
           ]
         }
+      },
+      {
+        "name": "getFullChromeVersion",
+        "description": "Returns the full version number, e.g. '123.0.6312.112'.",
+        "parameters" : [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "info",
+              "type": "object",
+              "properties": {
+                "version_number": { "type": "string" }
+              }
+            }
+          ]
+        }
       }
     ]
   }

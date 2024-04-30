@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -23,6 +24,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/browser_process.h"
@@ -87,6 +89,7 @@ namespace IsPendingCustodianApproval =
     api::webstore_private::IsPendingCustodianApproval;
 namespace IsInIncognitoMode = api::webstore_private::IsInIncognitoMode;
 namespace SetStoreLogin = api::webstore_private::SetStoreLogin;
+namespace GetFullChromeVersion = api::webstore_private::GetFullChromeVersion;
 
 namespace {
 
@@ -1320,6 +1323,19 @@ void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
   api::webstore_private::ExtensionInstallStatus api_status =
       ConvertExtensionInstallStatusForAPI(status);
   Respond(ArgumentList(GetExtensionStatus::Results::Create(api_status)));
+}
+
+WebstorePrivateGetFullChromeVersionFunction::
+    WebstorePrivateGetFullChromeVersionFunction() = default;
+WebstorePrivateGetFullChromeVersionFunction::
+    ~WebstorePrivateGetFullChromeVersionFunction() = default;
+
+ExtensionFunction::ResponseAction
+WebstorePrivateGetFullChromeVersionFunction::Run() {
+  std::string_view version = version_info::GetVersionNumber();
+  GetFullChromeVersion::Results::Info info;
+  info.version_number = std::string(version);
+  return RespondNow(ArgumentList(GetFullChromeVersion::Results::Create(info)));
 }
 
 }  // namespace extensions

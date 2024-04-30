@@ -362,6 +362,25 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class WebstorePrivateGetFullChromeVersionFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("webstorePrivate.getFullChromeVersion",
+                             WEBSTOREPRIVATE_GETFULLCHROMEVERSION)
+
+  WebstorePrivateGetFullChromeVersionFunction();
+
+  WebstorePrivateGetFullChromeVersionFunction(
+      const WebstorePrivateGetFullChromeVersionFunction&) = delete;
+  WebstorePrivateGetFullChromeVersionFunction& operator=(
+      const WebstorePrivateGetFullChromeVersionFunction&) = delete;
+
+ private:
+  ~WebstorePrivateGetFullChromeVersionFunction() override;
+
+  // ExtensionFunction:
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_

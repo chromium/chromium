@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
@@ -146,6 +147,21 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 }
 
 }  // namespace
+
+using WebstorePrivateApiUnittest = ExtensionApiUnittest;
+
+TEST_F(WebstorePrivateApiUnittest, GetFullChromeVersion) {
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetFullChromeVersionFunction>();
+  std::optional<base::Value> response =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), /*args*/ "[]", browser()->profile());
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_dict());
+
+  std::string version = std::string(version_info::GetVersionNumber());
+  EXPECT_EQ(version, *response->GetDict().FindString("version_number"));
+}
 
 class WebstorePrivateExtensionInstallRequestBase : public ExtensionApiUnittest {
  public:
