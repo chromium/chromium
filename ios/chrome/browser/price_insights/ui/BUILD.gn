@@ -26,6 +26,7 @@ source_set("price_insights_ui") {
     "//ui/base",
     "//url",
   ]
+
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -49,7 +50,7 @@ swift_source_set("price_history_swift") {
     "price_history.swift",
     "price_history_provider.swift",
   ]
-  deps = []
+  deps = [ "//ios/chrome/common/ui/colors" ]
   frameworks = [
     "Charts.framework",
     "Foundation.framework",

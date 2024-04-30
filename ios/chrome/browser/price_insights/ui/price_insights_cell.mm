@@ -99,7 +99,7 @@ const float kCornerRadius = 24;
   }
 
   // Configure Price History.
-  if ([self hasPriceHistory]) {
+  if ([self hasPriceHistory] && self.item.currency) {
     NSString* title;
     NSString* primarySubtitle;
     NSString* secondarySubtitle;
@@ -328,8 +328,9 @@ const float kCornerRadius = 24;
     }
   }
 
-  UIViewController* priceHistoryViewController = [PriceHistoryProvider
-      makeViewControllerWithHistory:self.item.priceHistory];
+  UIViewController* priceHistoryViewController =
+      [PriceHistoryProvider makeViewControllerWithHistory:self.item.priceHistory
+                                                 currency:self.item.currency];
   priceHistoryViewController.view.translatesAutoresizingMaskIntoConstraints =
       NO;
   [self.viewController addChildViewController:priceHistoryViewController];

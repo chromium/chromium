@@ -21,6 +21,8 @@ class GURL;
 @property(nonatomic, copy) NSString* lowPrice;
 // The product typically high price.
 @property(nonatomic, copy) NSString* highPrice;
+// The product price currency.
+@property(nonatomic, copy) NSString* currency;
 // The price history.
 @property(nonatomic, copy) NSDictionary* priceHistory;
 // The product buying options URL.

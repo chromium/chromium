@@ -21,6 +21,7 @@ NSString* kTitle = @"Product title";
 NSString* kVariant = @"Product variant";
 NSString* kLowPrice = @"$699";
 NSString* kHighPrice = @"$799";
+NSString* kCurrency = @"USD";
 
 // Retrieves a view of a specified class with a given accessibility identifier
 // within a given view hierarchy.
@@ -74,6 +75,7 @@ PriceInsightsItem* GetPriceInsights(bool has_variant,
   }
   item.canPriceTrack = has_tracking;
   item.buyingOptionsURL = has_buying_options ? GURL(kUrl) : GURL();
+  item.currency = kCurrency;
 
   if (has_history) {
     NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
