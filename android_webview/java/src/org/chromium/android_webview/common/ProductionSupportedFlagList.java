@@ -532,9 +532,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.V_SYNC_DECODING, "Runs the WebRTC metronome off the VSync signal."),
         Flag.baseFeature(
-                BlinkFeatures.WEB_RTC_SEND_PACKET_BATCH,
-                "Sends outgoing WebRTC Video RTP packets in batches."),
-        Flag.baseFeature(
                 "WebRtcEncodedTransformsPerStreamCreation",
                 "Allows creating WebRTC Encoded Transforms without the "
                         + "encodedInsertableStreams RTCPeerConnection Parameter."),

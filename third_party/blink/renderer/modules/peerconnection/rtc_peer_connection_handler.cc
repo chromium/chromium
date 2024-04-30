@@ -811,9 +811,6 @@ bool RTCPeerConnectionHandler::Initialize(
   // Apply 40 ms worth of bursting. See webrtc::TaskQueuePacedSender.
   configuration_.pacer_burst_interval = webrtc::TimeDelta::Millis(40);
 
-  configuration_.media_config.video.enable_send_packet_batching =
-      base::FeatureList::IsEnabled(features::kWebRtcSendPacketBatch);
-
   peer_connection_observer_ =
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
   native_peer_connection_ = dependency_factory_->CreatePeerConnection(

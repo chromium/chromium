@@ -664,12 +664,13 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
             "block it."
         }
     )");
+  // TODO(crbug.com/40265716): remove batch_udp_packets parameter.
   socket_factory_ = std::make_unique<IpcPacketSocketFactory>(
       WTF::CrossThreadBindRepeating(
           &PeerConnectionDependencyFactory::DoGetDevtoolsToken,
           WrapCrossThreadWeakPersistent(this)),
       p2p_socket_dispatcher_.Get(), traffic_annotation, /*batch_udp_packets=*/
-      base::FeatureList::IsEnabled(features::kWebRtcSendPacketBatch));
+      false);
 
   gpu_factories_ = gpu_factories;
   // WrapCrossThreadWeakPersistent is safe below, because
