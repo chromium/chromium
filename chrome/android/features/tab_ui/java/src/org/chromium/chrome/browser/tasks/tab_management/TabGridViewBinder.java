@@ -218,9 +218,17 @@ class TabGridViewBinder {
             ((ClosableTabGridView) view)
                     .hideTabGridCardViewForQuickDelete(
                             model.get(TabProperties.QUICK_DELETE_ANIMATION_STATUS));
-        } else if (TabProperties.IS_TAB_GROUP == propertyKey) {
-            ((ClosableTabGridView) view)
-                    .setTabActionButtonDrawable(model.get(TabProperties.IS_TAB_GROUP));
+        } else if (TabProperties.IS_TAB_GROUP == propertyKey
+                || TabProperties.TAB_ID == propertyKey) {
+            // Only change the drawable if the property key in question is for tab groups.
+            if (TabProperties.IS_TAB_GROUP == propertyKey) {
+                ((ClosableTabGridView) view)
+                        .setTabActionButtonDrawable(model.get(TabProperties.IS_TAB_GROUP));
+            }
+
+            // Note: TAB_ID changes are NOT flag guarded, so this code block will be used.
+            // However, IS_TAB_GROUP will never be set since it is flag guarded and will be
+            // defaulted to false so in theory this should never cause problems.
             if (model.get(TabProperties.IS_TAB_GROUP)) {
                 ImageView actionButton = (ImageView) view.fastFindViewById(R.id.action_button);
                 actionButton.setOnClickListener(
