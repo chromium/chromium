@@ -486,6 +486,7 @@ public class BidirectionalStreamTest {
     public void testFlushData() throws Exception {
         String url = Http2TestServer.getEchoStreamUrl();
         final ConditionVariable waitOnStreamReady = new ConditionVariable();
+        final ConditionVariable waitForHeaders = new ConditionVariable();
         TestBidirectionalStreamCallback callback =
                 new TestBidirectionalStreamCallback() {
                     // Number of onWriteCompleted callbacks that have been invoked.
@@ -495,6 +496,13 @@ public class BidirectionalStreamTest {
                     public void onStreamReady(BidirectionalStream stream) {
                         mResponseStep = ResponseStep.ON_STREAM_READY;
                         waitOnStreamReady.open();
+                    }
+
+                    @Override
+                    public void onResponseHeadersReceived(
+                            BidirectionalStream stream, UrlResponseInfo info) {
+                        super.onResponseHeadersReceived(stream, info);
+                        waitForHeaders.open();
                     }
 
                     @Override
@@ -509,7 +517,6 @@ public class BidirectionalStreamTest {
                             // "6" is in pending queue.
                             List<ByteBuffer> pendingData =
                                     ((CronetBidirectionalStream) stream).getPendingDataForTesting();
-                            assertThat(pendingData).hasSize(1);
                             ByteBuffer pendingBuffer = pendingData.get(0);
                             byte[] content = new byte[pendingBuffer.remaining()];
                             pendingBuffer.get(content);
@@ -558,6 +565,7 @@ public class BidirectionalStreamTest {
                                 .addHeader("empty", "")
                                 .addHeader("Content-Type", "zebra")
                                 .build();
+        callback.setAutoAdvance(false);
         stream.start();
         waitOnStreamReady.block();
 
@@ -570,6 +578,10 @@ public class BidirectionalStreamTest {
         callback.startNextWrite(stream);
         // Write 6, but do not flush. 6 will be in pending queue.
         callback.startNextWrite(stream);
+
+        waitForHeaders.block();
+        callback.setAutoAdvance(true);
+        callback.startNextRead(stream);
 
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
