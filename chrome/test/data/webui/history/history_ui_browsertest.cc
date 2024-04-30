@@ -72,6 +72,10 @@ class HistoryListTest : public HistoryUIBrowserTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest, IsEmpty) {
+  RunTestCase("IsEmpty");
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryListTest, DeletingSingleItem) {
   RunTestCase("DeletingSingleItem");
 }

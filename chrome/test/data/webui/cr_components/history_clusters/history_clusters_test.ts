@@ -118,6 +118,23 @@ suite('history-clusters', () => {
     return clustersElement;
   }
 
+  test('Updates IsEmpty attribute', async () => {
+    const clustersElement = new HistoryClustersElement();
+    document.body.appendChild(clustersElement);
+    await handler.whenCalled('startQueryClusters');
+
+    callbackRouterRemote.onClustersQueryResult({
+      query: '',
+      clusters: [],
+      canLoadMore: false,
+      isContinuation: false,
+    });
+    await callbackRouterRemote.$.flushForTesting();
+    await flushTasks();
+
+    assertTrue(clustersElement.isEmpty);
+  });
+
   test('List displays one element per cluster', async () => {
     const clustersElement = await setupClustersElement();
 

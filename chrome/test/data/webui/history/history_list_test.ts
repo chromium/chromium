@@ -71,6 +71,23 @@ suite('HistoryListTest', function() {
     return element.$['infinite-list'].items! as HistoryEntry[];
   }
 
+  test('IsEmpty', async () => {
+    await finishSetup([]);
+    await flushTasks();
+    assertTrue(element.isEmpty);
+
+    // Load some results.
+    testService.resetResolver('queryHistory');
+    testService.setQueryResult(
+        {info: createHistoryInfo(), value: ADDITIONAL_RESULTS});
+    element.dispatchEvent(new CustomEvent(
+        'query-history', {detail: true, bubbles: true, composed: true}));
+    await testService.whenCalled('queryHistoryContinuation');
+    await flushTasks();
+
+    assertFalse(element.isEmpty);
+  });
+
   test('DeletingSingleItem', async function() {
     await finishSetup([createHistoryEntry('2015-01-01', 'http://example.com')]);
     await flushTasks();

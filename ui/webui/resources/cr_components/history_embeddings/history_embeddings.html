@@ -3,6 +3,10 @@
   display: block;
 }
 
+:host([is-empty]) {
+  display: none;
+}
+
 .card {
   background: var(--cr-card-background-color);
   border-radius: var(--cr-card-border-radius);

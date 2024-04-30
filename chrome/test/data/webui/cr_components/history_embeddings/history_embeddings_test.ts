@@ -14,6 +14,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('cr-history-embeddings', () => {
   let element: HistoryEmbeddingsElement;
@@ -143,7 +144,8 @@ suite('cr-history-embeddings', () => {
     await flushTasks();
 
     // There is still 1 result left so it should still be visible.
-    assertFalse(element.hidden);
+    assertFalse(element.isEmpty);
+    assertTrue(isVisible(element));
     assertEquals(
         1, element.shadowRoot!.querySelectorAll('cr-url-list-item').length);
 
@@ -154,6 +156,7 @@ suite('cr-history-embeddings', () => {
     await flushTasks();
 
     // No results left.
-    assertTrue(element.hidden);
+    assertTrue(element.isEmpty);
+    assertFalse(isVisible(element));
   });
 });

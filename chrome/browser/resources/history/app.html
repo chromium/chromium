@@ -73,6 +73,15 @@
       :host([toolbar-shadow_]) #drop-shadow {
         opacity: var(--cr-container-shadow-max-opacity);
       }
+
+      /* Both history-list and history-clusters have their own empty states
+       * that show a text message indicating there are no results. Hide the
+       * entire components to hide these messages if there are history
+       * embeddings results. */
+      :host([has-history-embeddings-results_]) history-list[is-empty],
+      :host([has-history-embeddings-results_]) history-clusters[is-empty] {
+        display: none;
+      }
     </style>
     <history-query-manager query-state="{{queryState_}}"
         query-result="{{queryResult_}}"
@@ -141,7 +150,8 @@
                       search-query="[[queryState_.searchTerm]]"
                       time-range-start="[[queryStateAfterDate_]]"
                       on-more-from-site-click="onHistoryEmbeddingsItemMoreFromSiteClick_"
-                      on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_">
+                      on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_"
+                      on-is-empty-changed="onHistoryEmbeddingsIsEmptyChanged_">
                   </cr-history-embeddings>
                 </template>
               </div>

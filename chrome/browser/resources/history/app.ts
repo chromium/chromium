@@ -254,6 +254,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
         type: Object,
         computed: 'computeQueryStateAfterDate_(queryState_.*)',
       },
+
+      hasHistoryEmbeddingsResults_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -278,6 +284,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private historyClustersViewStartTime_: Date|null = null;
   private scrollTarget_: HTMLElement;
   private queryStateAfterDate_?: Date;
+  private hasHistoryEmbeddingsResults_: boolean;
 
   constructor() {
     super();
@@ -756,6 +763,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
       url: historyEmbeddingsItem.url.url,
       timestamps: [historyEmbeddingsItem.lastUrlVisitTimestamp],
     }]);
+  }
+
+  private onHistoryEmbeddingsIsEmptyChanged_(e: CustomEvent<{value: boolean}>) {
+    this.hasHistoryEmbeddingsResults_ = !e.detail.value;
   }
 }
 

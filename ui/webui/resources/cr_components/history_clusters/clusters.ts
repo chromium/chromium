@@ -129,6 +129,12 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
         type: Object,
         observer: 'onScrollTargetChanged_',
       },
+
+      isEmpty: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: 'computeIsEmpty_(result_.clusters.length)',
+      },
     };
   }
 
@@ -136,6 +142,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   // Properties
   //============================================================================
 
+  isEmpty: boolean;
   query: string;
   scrollTarget: HTMLElement = document.documentElement;
   timeRangeStart?: Date;
@@ -443,6 +450,10 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
 
   private onScrollTargetChanged_() {
     this.$.clusters.notifyResize();
+  }
+
+  private computeIsEmpty_() {
+    return this.result_.clusters.length === 0;
   }
 }
 

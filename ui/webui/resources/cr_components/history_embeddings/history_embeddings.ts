@@ -66,11 +66,12 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       searchResult_: Object,
       searchQuery: String,
       timeRangeStart: Object,
-      hidden: {
+      isEmpty: {
         type: Boolean,
         reflectToAttribute: true,
         value: true,
-        computed: 'computeIsHidden_(loading_, searchResult_.items.length)',
+        computed: 'computeIsEmpty_(loading_, searchResult_.items.length)',
+        notify: true,
       },
     };
   }
@@ -85,10 +86,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private loading_ = false;
   private searchResult_: SearchResult;
+  isEmpty: boolean;
   searchQuery: string;
   timeRangeStart?: Date;
 
-  private computeIsHidden_(): boolean {
+  private computeIsEmpty_(): boolean {
     return !this.loading_ && this.searchResult_?.items.length === 0;
   }
 
