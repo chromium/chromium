@@ -7294,7 +7294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.UrlBySink"
-    enum="PresentationUrlBySink" expires_after="2024-05-05">
+    enum="PresentationUrlBySink" expires_after="2025-04-29">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
