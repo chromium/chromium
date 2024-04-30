@@ -132,6 +132,8 @@ public class HomeModulesMediator {
             mHandler.postDelayed(this::onModuleFetchTimeOut, MODULE_FETCHING_TIMEOUT_MS);
         } else {
             mIsFetchingModules = false;
+            // If there isn't any module to build, hide the magic stack now to clean up data.
+            hide();
         }
     }
 
@@ -298,6 +300,12 @@ public class HomeModulesMediator {
             }
             mModuleResultsWaitingIndex++;
         }
+
+        if (mModel.size() == 0) {
+            // It is possible that there isn't any module has data to show, hide the magic stack
+            // now to clean up data.
+            hide();
+        }
     }
 
     /**
@@ -451,5 +459,9 @@ public class HomeModulesMediator {
 
     boolean getIsFetchingModulesForTesting() {
         return mIsFetchingModules;
+    }
+
+    boolean getIsShownForTesting() {
+        return mIsShown;
     }
 }
