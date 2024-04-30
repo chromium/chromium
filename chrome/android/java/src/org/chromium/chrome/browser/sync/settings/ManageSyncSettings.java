@@ -86,7 +86,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 Preference.OnPreferenceChangeListener,
                 SyncService.SyncStateChangedListener,
                 SyncErrorCardPreference.SyncErrorCardPreferenceListener,
-                FragmentSettingsLauncher {
+                FragmentSettingsLauncher,
+                IdentityErrorCardPreference.Listener {
     private static final String IS_FROM_SIGNIN_SCREEN = "ManageSyncSettings.isFromSigninScreen";
 
     @VisibleForTesting public static final String FRAGMENT_ENTER_PASSPHRASE = "enter_password";
@@ -95,6 +96,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     @VisibleForTesting
     public static final String PREF_SYNC_ERROR_CARD_PREFERENCE = "sync_error_card";
+
+    @VisibleForTesting
+    public static final String PREF_IDENTITY_ERROR_CARD_PREFERENCE = "identity_error_card";
 
     @VisibleForTesting public static final String PREF_SYNCING_CATEGORY = "syncing_category";
     @VisibleForTesting public static final String PREF_SYNC_EVERYTHING = "sync_everything";
@@ -191,6 +195,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (shouldReplaceSyncSettingsWithAccountSettings()) {
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);
+
+            IdentityErrorCardPreference identityErrorCardPreference =
+                    (IdentityErrorCardPreference)
+                            findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
+            identityErrorCardPreference.initialize(profile, this);
 
             mSyncTypeSwitchPreferencesMap = new HashMap<>();
             mSyncTypeSwitchPreferencesMap.put(
@@ -818,15 +827,44 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     @Override
     public void onSyncErrorCardPrimaryButtonClicked() {
-        @SyncError int syncError = mSyncErrorCardPreference.getSyncError();
+        assert !shouldReplaceSyncSettingsWithAccountSettings()
+                : "Should not show on account settings page";
+        assert mSyncService.hasSyncConsent();
+
+        onErrorCardClicked(mSyncErrorCardPreference.getSyncError());
+    }
+
+    @Override
+    public void onSyncErrorCardSecondaryButtonClicked() {
+        assert !shouldReplaceSyncSettingsWithAccountSettings()
+                : "Should not show on account settings page";
+        assert mSyncService.hasSyncConsent();
+
+        assert mSyncErrorCardPreference.getSyncError() == SyncError.SYNC_SETUP_INCOMPLETE;
+        IdentityServicesProvider.get()
+                .getSigninManager(getProfile())
+                .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
+        getActivity().finish();
+    }
+
+    @Override
+    public void onIdentityErrorCardButtonClicked(@SyncError int error) {
+        assert shouldReplaceSyncSettingsWithAccountSettings()
+                : "Should not show on sync settings page";
+        assert error != SyncError.SYNC_SETUP_INCOMPLETE : "Invalid error";
+        assert error != SyncError.OTHER_ERRORS : "Not an identity error";
+        onErrorCardClicked(error);
+    }
+
+    private void onErrorCardClicked(@SyncError int error) {
         Profile profile = getProfile();
         final CoreAccountInfo primaryAccountInfo =
                 IdentityServicesProvider.get()
                         .getIdentityManager(profile)
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC);
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         assert primaryAccountInfo != null;
 
-        switch (syncError) {
+        switch (error) {
             case SyncError.AUTH_ERROR:
                 AccountManagerFacadeProvider.getInstance()
                         .updateCredentials(
@@ -881,15 +919,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             case SyncError.NO_ERROR:
             default:
         }
-    }
-
-    @Override
-    public void onSyncErrorCardSecondaryButtonClicked() {
-        assert mSyncErrorCardPreference.getSyncError() == SyncError.SYNC_SETUP_INCOMPLETE;
-        IdentityServicesProvider.get()
-                .getSigninManager(getProfile())
-                .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
-        getActivity().finish();
     }
 
     private void confirmSettings() {
