@@ -10,6 +10,7 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
@@ -41,6 +42,15 @@ void ArcAppInstaller::InstallApp(AppInstallSurface surface,
                                  AppInstallData data,
                                  ArcAppInstalledCallback callback) {
   CHECK(absl::holds_alternative<AndroidAppInstallData>(data.app_type_data));
+
+  // Installation is only allowed from specific surfaces, while we build a
+  // general-purpose installation method.
+  if (surface != AppInstallSurface::kAppPreloadServiceOem &&
+      surface != AppInstallSurface::kAppPreloadServiceDefault &&
+      surface != AppInstallSurface::kOobeAppRecommendations) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   pending_android_installs_.emplace_back(surface, data.package_id.identifier(),
                                          std::move(callback));
@@ -94,7 +104,7 @@ void ArcAppInstaller::InstallPendingAndroidApps() {
   app_instance->StartFastAppReinstallFlow(packages);
 
   // Invoke callbacks and UMAs.
-  // TODO(crbug.com/327059134): Track outcome rather than assuming success.
+  // TODO(b/336694386): Track outcome rather than assuming success.
   for (auto& install : pending_android_installs_) {
     RecordInstallResultMetric(install.surface, ArcAppInstallResult::kSuccess);
     std::move(install.callback).Run(true);

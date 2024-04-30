@@ -32,6 +32,9 @@ enum class ArcAppInstallResult {
 using ArcAppInstalledCallback = base::OnceCallback<void(bool success)>;
 
 // ArcAppInstaller installs android apps.
+//
+// Note: This is an experimental implementation using StartFastAppReinstallFlow,
+// and is not yet ready for general purpose use.
 class ArcAppInstaller
     : public arc::ConnectionObserver<arc::mojom::AppInstance> {
  public:
