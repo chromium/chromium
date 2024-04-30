@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -1114,7 +1115,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
                                     prefs::kDefaultBrowserFirstShownTime),
             base::Milliseconds(1), base::Days(7), 50);
       }
-      DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
+      chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
           browser_->profile());
       DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
           DefaultBrowserPromptManager::CloseReason::kAccept);

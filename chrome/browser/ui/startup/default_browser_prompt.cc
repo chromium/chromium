@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_trial.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -90,7 +91,7 @@ void OnCheckIsDefaultBrowserFinished(
   if (state == shell_integration::IS_DEFAULT) {
     // Notify the user in the future if Chrome ceases to be the user's chosen
     // default browser.
-    DefaultBrowserPromptManager::ResetPromptPrefs(profile);
+    chrome::startup::default_prompt::ResetPromptPrefs(profile);
   } else if (state == shell_integration::NOT_DEFAULT &&
              shell_integration::CanSetAsDefaultBrowser() &&
              ShouldShowDefaultBrowserPromptForCurrentVersion()) {
@@ -98,7 +99,7 @@ void OnCheckIsDefaultBrowserFinished(
     // synthetic trial cohort.
     DefaultBrowserPromptTrial::MaybeJoinDefaultBrowserPromptCohort();
 
-    DefaultBrowserPromptManager::MaybeResetAppMenuPromptPrefs(profile);
+    chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile);
 
     // Only show the prompt if some other program is the user's default browser.
     // In particular, don't show it if another install mode is default (e.g.,

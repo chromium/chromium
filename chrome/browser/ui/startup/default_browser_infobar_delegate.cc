@@ -19,6 +19,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -87,7 +88,7 @@ void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = true;
   // |profile_| may be null in tests.
   if (profile_) {
-    DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(profile_);
+    chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(profile_);
   }
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Dismiss"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
@@ -124,7 +125,7 @@ bool DefaultBrowserInfoBarDelegate::Accept() {
   action_taken_ = true;
   // |profile_| may be null in tests.
   if (profile_) {
-    DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(profile_);
+    chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(profile_);
   }
   base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Accept"));
   UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",

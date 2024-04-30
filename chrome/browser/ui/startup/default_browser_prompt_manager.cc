@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -23,52 +24,40 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+bool ShouldShowPrompts() {
+  PrefService* local_state = g_browser_process->local_state();
+
+  const int declined_count =
+      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
+  const base::Time last_declined_time =
+      local_state->GetTime(prefs::kDefaultBrowserLastDeclinedTime);
+  const int max_prompt_count = features::kMaxPromptCount.Get();
+
+  // A negative value for the max prompt count indicates that the prompt
+  // should be shown indefinitely. Otherwise, don't show the prompt if
+  // declined count equals or exceeds the max prompt count. A max prompt count
+  // of zero should mean that the prompt is never shown.
+  if (max_prompt_count >= 0 && declined_count >= max_prompt_count) {
+    return false;
+  }
+
+  // Show if the user has never declined the prompt.
+  if (declined_count == 0) {
+    return true;
+  }
+
+  // Show if it has been long enough since the last declined time
+  base::TimeDelta reprompt_duration =
+      features::kRepromptDuration.Get() *
+      std::pow(features::kRepromptDurationMultiplier.Get(), declined_count - 1);
+  return (base::Time::Now() - last_declined_time) > reprompt_duration;
+}
+}  // namespace
+
 // static
 DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
   return base::Singleton<DefaultBrowserPromptManager>::get();
-}
-
-// static
-void DefaultBrowserPromptManager::ResetPromptPrefs(Profile* profile) {
-  profile->GetPrefs()->ClearPref(prefs::kDefaultBrowserLastDeclined);
-
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
-  local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
-  local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
-}
-
-// static
-void DefaultBrowserPromptManager::UpdatePrefsForDismissedPrompt(
-    Profile* profile) {
-  base::Time now = base::Time::Now();
-  profile->GetPrefs()->SetInt64(prefs::kDefaultBrowserLastDeclined,
-                                now.ToInternalValue());
-
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime, now);
-  local_state->SetInteger(
-      prefs::kDefaultBrowserDeclinedCount,
-      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount) + 1);
-  local_state->ClearPref(prefs::kDefaultBrowserFirstShownTime);
-}
-
-// static
-void DefaultBrowserPromptManager::MaybeResetAppMenuPromptPrefs(
-    Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh) ||
-      !features::kShowDefaultBrowserAppMenuChip.Get()) {
-    g_browser_process->local_state()->ClearPref(
-        prefs::kDefaultBrowserFirstShownTime);
-    return;
-  }
-
-  if (!ShouldShowAppMenuPrompt()) {
-    // Found that app menu should no longer be shown. Triggers an implicit
-    // dismissal so that the subsequent call to ShouldShowPrompts() will return
-    // false.
-    UpdatePrefsForDismissedPrompt(profile);
-  }
 }
 
 void DefaultBrowserPromptManager::AddObserver(Observer* observer) {
@@ -165,49 +154,6 @@ DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
 
 DefaultBrowserPromptManager::~DefaultBrowserPromptManager() = default;
 
-// static
-bool DefaultBrowserPromptManager::ShouldShowPrompts() {
-  PrefService* local_state = g_browser_process->local_state();
-
-  const int declined_count =
-      local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
-  const base::Time last_declined_time =
-      local_state->GetTime(prefs::kDefaultBrowserLastDeclinedTime);
-  const int max_prompt_count = features::kMaxPromptCount.Get();
-
-  // A negative value for the max prompt count indicates that the prompt
-  // should be shown indefinitely. Otherwise, don't show the prompt if
-  // declined count equals or exceeds the max prompt count. A max prompt count
-  // of zero should mean that the prompt is never shown.
-  if (max_prompt_count >= 0 && declined_count >= max_prompt_count) {
-    return false;
-  }
-
-  // Show if the user has never declined the prompt.
-  if (declined_count == 0) {
-    return true;
-  }
-
-  // Show if it has been long enough since the last declined time
-  base::TimeDelta reprompt_duration =
-      features::kRepromptDuration.Get() *
-      std::pow(features::kRepromptDurationMultiplier.Get(), declined_count - 1);
-  return (base::Time::Now() - last_declined_time) > reprompt_duration;
-}
-
-// static
-bool DefaultBrowserPromptManager::ShouldShowAppMenuPrompt() {
-  PrefService* local_state = g_browser_process->local_state();
-  const PrefService::Preference* first_shown_time_pref =
-      local_state->FindPreference(prefs::kDefaultBrowserFirstShownTime);
-  base::Time first_shown_time =
-      local_state->GetTime(prefs::kDefaultBrowserFirstShownTime);
-
-  return first_shown_time_pref->IsDefaultValue() ||
-         (base::Time::Now() - first_shown_time) <
-             features::kDefaultBrowserAppMenuDuration.Get();
-}
-
 void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
     content::WebContents* web_contents,
     Profile* profile) {
@@ -264,7 +210,7 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
 
     app_menu_prompt_dismiss_timer_.Start(
         FROM_HERE, app_menu_remaining_duration, base::BindOnce([]() {
-          UpdatePrefsForDismissedPrompt(
+          chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
               BrowserList::GetInstance()->GetLastActive()->profile());
           DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
               CloseReason::kDismiss);

@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/startup/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -298,7 +299,7 @@ TEST_F(DefaultBrowserPromptManagerTest, PromptHiddenWhenFeatureParamDisabled) {
 TEST_F(DefaultBrowserPromptManagerTest, AppMenuFeatureParamFalse) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams({});
   ASSERT_FALSE(features::kShowDefaultBrowserAppMenuChip.Get());
-  manager()->MaybeResetAppMenuPromptPrefs(profile());
+  chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile());
   manager()->MaybeShowPrompt();
   EXPECT_FALSE(manager()->get_show_app_menu_prompt());
 }
@@ -310,7 +311,7 @@ TEST_F(DefaultBrowserPromptManagerTest, ShowAppMenuFirstTime) {
   ASSERT_TRUE(local_state()
                   ->FindPreference(prefs::kDefaultBrowserFirstShownTime)
                   ->IsDefaultValue());
-  manager()->MaybeResetAppMenuPromptPrefs(profile());
+  chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile());
   manager()->MaybeShowPrompt();
   EXPECT_TRUE(manager()->get_show_app_menu_prompt());
   EXPECT_EQ(base::Time::Now(),
@@ -337,7 +338,7 @@ TEST_F(DefaultBrowserPromptManagerTest, DoNotShowIfPromptsShouldNotBeReshown) {
   local_state()->SetTime(prefs::kDefaultBrowserLastDeclinedTime,
                          base::Time::Now());
   local_state()->SetInteger(prefs::kDefaultBrowserDeclinedCount, 1);
-  manager()->MaybeResetAppMenuPromptPrefs(profile());
+  chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile());
   manager()->MaybeShowPrompt();
   EXPECT_FALSE(manager()->get_show_app_menu_prompt());
 }
@@ -350,7 +351,7 @@ TEST_F(DefaultBrowserPromptManagerTest, KeepShowingIfFirstShownTimeIsRecent) {
                          base::Time::Now() - base::Days(1));
   local_state()->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
   local_state()->ClearPref(prefs::kDefaultBrowserDeclinedCount);
-  manager()->MaybeResetAppMenuPromptPrefs(profile());
+  chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile());
   manager()->MaybeShowPrompt();
   EXPECT_TRUE(manager()->get_show_app_menu_prompt());
 
@@ -378,7 +379,7 @@ TEST_F(DefaultBrowserPromptManagerTest, StopShowingIfFirstShownTimeTooOld) {
       prefs::kDefaultBrowserLastDeclinedTime,
       base::Time::Now() - base::Days(1) - base::Microseconds(1));
   local_state()->SetInteger(prefs::kDefaultBrowserDeclinedCount, 1);
-  manager()->MaybeResetAppMenuPromptPrefs(profile());
+  chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile());
   manager()->MaybeShowPrompt();
   EXPECT_FALSE(manager()->get_show_app_menu_prompt());
   EXPECT_TRUE(local_state()

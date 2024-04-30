@@ -1472,6 +1472,8 @@ static_library("ui") {
       "startup/default_browser_infobar_delegate.h",
       "startup/default_browser_prompt_manager.cc",
       "startup/default_browser_prompt_manager.h",
+      "startup/default_browser_prompt_prefs.cc",
+      "startup/default_browser_prompt_prefs.h",
       "startup/google_api_keys_infobar_delegate.cc",
       "startup/google_api_keys_infobar_delegate.h",
       "startup/infobar_utils.cc",

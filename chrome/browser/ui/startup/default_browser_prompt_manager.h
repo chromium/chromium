@@ -42,20 +42,6 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   static DefaultBrowserPromptManager* GetInstance();
 
-  // Resets the tracking preferences for the default browser prompts so that
-  // they are re-shown if the browser ceases to be the user's chosen default.
-  static void ResetPromptPrefs(Profile* profile);
-
-  // Updates the tracking preferences for the default browser prompts to reflect
-  // that the prompt was just dismissed. This will ensure the proper delay
-  // before re-prompting.
-  static void UpdatePrefsForDismissedPrompt(Profile* profile);
-
-  // If enough time has passed since the first show time, the app menu should
-  // implicitly be dismissed, in which case prompts will not be shown when
-  // `MaybeShowPrompt()` is called.
-  static void MaybeResetAppMenuPromptPrefs(Profile* profile);
-
   bool get_show_app_menu_prompt() const { return show_app_menu_prompt_; }
 
   bool get_show_app_menu_item() const { return show_app_menu_item_; }
@@ -88,12 +74,6 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   DefaultBrowserPromptManager();
   ~DefaultBrowserPromptManager() override;
-
-  // Whether prompts should be shown based on the last declined time/count prefs
-  // and the recurrence feature params.
-  static bool ShouldShowPrompts();
-
-  static bool ShouldShowAppMenuPrompt();
 
   void CreateInfoBarForWebContents(content::WebContents* contents,
                                    Profile* profile);
