@@ -2155,6 +2155,7 @@ source_set("blink_platform_unittests_sources") {
     "geometry/layout_unit_test.cc",
     "geometry/length_functions_test.cc",
     "geometry/length_test.cc",
+    "geometry/math_functions_test.cc",
     "graphics/accelerated_static_bitmap_image_test.cc",
     "graphics/bitmap_image_test.cc",
     "graphics/color_test.cc",
