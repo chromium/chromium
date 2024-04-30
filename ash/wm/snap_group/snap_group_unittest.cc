@@ -4682,6 +4682,53 @@ TEST_F(SnapGroupDesksTest, DesksMerge) {
   ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
 }
 
+// Tests that create one Snap Group per desk and then switching between desks,
+// the windows in the Snap Group remain visible. See regression at
+// http://b/335477702.
+TEST_F(SnapGroupDesksTest, OneSnapGroupOnEachDesk) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  // Create `snap_group0` on `desk0`.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group0 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group0);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  ActivateDesk(desk1);
+  ASSERT_TRUE(desk1->is_active());
+  ASSERT_FALSE(desk0->is_active());
+
+  // Create `snap_group1` on `desk1`.
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindows(w2.get(), w3.get());
+  SnapGroup* snap_group1 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group1);
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w2.get()));
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w3.get()));
+
+  // Activate `desk0` and verify that both windows in `snap_group0` are visible.
+  ActivateDesk(desk0);
+  EXPECT_TRUE(w0->IsVisible());
+  EXPECT_TRUE(w1->IsVisible());
+
+  // Activate `desk1` and verify that both windows in `snap_group1` are visible.
+  ActivateDesk(desk1);
+  EXPECT_TRUE(w2->IsVisible());
+  EXPECT_TRUE(w3->IsVisible());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupWindowCycleTest:
 

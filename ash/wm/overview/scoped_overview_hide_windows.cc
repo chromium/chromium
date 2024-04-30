@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/aura/window.h"
 
@@ -41,7 +41,11 @@ bool ScopedOverviewHideWindows::HasWindow(aura::Window* window) const {
 
 void ScopedOverviewHideWindows::AddWindow(aura::Window* window) {
   window->AddObserver(this);
-  window_visibility_.emplace(window, window->IsVisible());
+
+  // Stores `TargetVisibility()` in `window_visibility_`, which directly
+  // assesses the window's target visibility, regardless of the visibility of
+  // its parent's layer.
+  window_visibility_.emplace(window, window->TargetVisibility());
   window->Hide();
 }
 
