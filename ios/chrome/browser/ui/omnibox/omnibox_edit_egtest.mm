@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_earl_grey.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_test_util.h"
@@ -88,6 +89,39 @@
   // Verify that the clear button is not visible.
   [[EarlGrey selectElementWithMatcher:omnibox::ClearButtonMatcher()]
       assertWithMatcher:grey_notVisible()];
+}
+
+- (void)testTapBehaviors {
+  [OmniboxEarlGrey openPage:omnibox::Page(1) testServer:self.testServer];
+
+  GURL fullPage1GURL = self.testServer->GetURL(
+      omnibox::PageURL(omnibox::Page(1)));  //< http://127.0.0.1/foobar
+
+  NSString* schemePrefix = [NSString
+      stringWithFormat:@"%@://", base::SysUTF8ToNSString(
+                                     fullPage1GURL.scheme())];  //< http://
+  NSString* page1URL = base::SysUTF8ToNSString(fullPage1GURL.spec());
+  page1URL = [page1URL
+      substringFromIndex:schemePrefix.length];  //< 127.0.0.1:123/page1.html
+
+  // Expect "127" to autocomplete to 127[0.0.1:123/page1.html]
+  NSString* typedText = [page1URL substringToIndex:3];
+  NSString* inlineAutocomplete = [page1URL substringFromIndex:typedText.length];
+
+  [ChromeEarlGreyUI focusOmniboxAndType:typedText];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingAutocompleteText(
+                            inlineAutocomplete)];
+
+  // Tapping the inline autocomplete should accept it.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingAutocompleteText(
+                            @"")];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(
+                            base::SysNSStringToUTF8(page1URL))];
 }
 
 #pragma mark - Test rich inline

@@ -142,6 +142,9 @@
 // Returns matcher for `text` being a substring of the text in the omnibox.
 + (id<GREYMatcher>)omniboxContainingText:(NSString*)text;
 
+// Returns matcher for `text` being the inline autocomplete text in the omnibox.
++ (id<GREYMatcher>)omniboxContainingAutocompleteText:(NSString*)text;
+
 // Returns matcher for omniboxAutocomplete label in the omnibox.
 + (id<GREYMatcher>)omniboxAutocompleteLabel;
 

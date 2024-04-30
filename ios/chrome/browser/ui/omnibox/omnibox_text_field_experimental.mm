@@ -559,13 +559,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 // Triggered on tap gesture recognizer.
 - (void)handleTap:(UITapGestureRecognizer*)sender {
-  if ([self isPreEditing]) {
+  if (self.isPreEditing) {
     [self exitPreEditState];
   }
-  if ([self hasAutocompleteText]) {
+  if (self.hasAutocompleteText) {
     [self acceptAutocompleteText];
   }
-  if (IsRichAutocompletionEnabled() && [self hasAdditionalText]) {
+  if (IsRichAutocompletionEnabled() && self.hasAdditionalText) {
     [self handleUserInitiatedRemovalOfAdditionalText];
   }
 }
@@ -770,6 +770,17 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   commandLeft.wantsPriorityOverSystemBehavior = YES;
   commandRight.wantsPriorityOverSystemBehavior = YES;
   return @[ commandUp, commandDown, commandLeft, commandRight ];
+}
+
+#pragma mark - UIAccessibilityElement
+
+- (NSString*)accessibilityValue {
+  if (NSClassFromString(@"XCTest")) {
+    return [NSString stringWithFormat:@"%@||||%@||||%@", self.userText ?: @"",
+                                      self.autocompleteText ?: @"",
+                                      self.additionalText ?: @""];
+  }
+  return self.text;
 }
 
 #pragma mark - OmniboxKeyboardDelegate

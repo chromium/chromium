@@ -9,6 +9,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -454,6 +455,31 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
         [description
             appendText:[NSString stringWithFormat:@"Omnibox contains text '%@'",
                                                   text]];
+      }];
+  return matcher;
+}
+
++ (id<GREYMatcher>)omniboxContainingAutocompleteText:(NSString*)text {
+  if (!text) {
+    text = @"";
+  }
+
+  GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
+      matcherWithMatchesBlock:^BOOL(id element) {
+        OmniboxTextFieldIOS* omnibox =
+            base::apple::ObjCCast<OmniboxTextFieldIOS>(element);
+
+        NSArray* textComponents =
+            [omnibox.accessibilityValue componentsSeparatedByString:@"||||"];
+
+        return textComponents.count >= 2 &&
+               [textComponents[1] isEqualToString:text];
+      }
+      descriptionBlock:^void(id<GREYDescription> description) {
+        [description
+            appendText:[NSString stringWithFormat:
+                                     @"Omnibox contains autocomplete text '%@'",
+                                     text]];
       }];
   return matcher;
 }

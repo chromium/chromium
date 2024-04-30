@@ -198,6 +198,10 @@ id<GREYMatcher> OmniboxContainingText(const std::string& text) {
       omniboxContainingText:base::SysUTF8ToNSString(text)];
 }
 
+id<GREYMatcher> OmniboxContainingAutocompleteText(NSString* text) {
+  return [ChromeMatchersAppInterface omniboxContainingAutocompleteText:text];
+}
+
 id<GREYMatcher> OmniboxAutocompleteLabel() {
   return [ChromeMatchersAppInterface omniboxAutocompleteLabel];
 }

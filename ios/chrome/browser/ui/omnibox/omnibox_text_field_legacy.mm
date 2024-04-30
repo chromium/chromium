@@ -822,6 +822,17 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
 }
 
+#pragma mark - UIAccessibilityElement
+
+- (NSString*)accessibilityValue {
+  if (NSClassFromString(@"XCTest")) {
+    return [NSString stringWithFormat:@"%@||||%@||||%@", self.userText ?: @"",
+                                      self.autocompleteText ?: @"",
+                                      self.additionalText ?: @""];
+  }
+  return self.text;
+}
+
 #pragma mark - OmniboxKeyboardDelegate
 
 - (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {

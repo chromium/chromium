@@ -159,6 +159,9 @@ id<GREYMatcher> OmniboxText(const std::string& text);
 // Returns a matcher for `text` being a substring of the text in the omnibox.
 id<GREYMatcher> OmniboxContainingText(const std::string& text);
 
+// Returns a matcher for `text` being inline autocomplete text in the omnibox.
+id<GREYMatcher> OmniboxContainingAutocompleteText(NSString* text);
+
 // Returns a matcher for omnibox autocomplete.
 id<GREYMatcher> OmniboxAutocompleteLabel();
 
