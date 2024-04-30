@@ -200,14 +200,8 @@ svg {
 
 .tile:nth-of-type(-n+4) customize-chrome-check-mark-wrapper {
   --customize-chrome-check-mark-wrapper-end: -6px;
-  --customize-chrome-check-mark-wrapper-size: 24px;
+  --customize-chrome-check-mark-wrapper-size: 28px;
   --customize-chrome-check-mark-wrapper-top: -9px;
-}
-
-.tile customize-chrome-check-mark-wrapper {
-  --customize-chrome-check-mark-wrapper-end: -4px;
-  --customize-chrome-check-mark-wrapper-size: 20px;
-  --customize-chrome-check-mark-wrapper-top: -6px;
 }
 
 customize-chrome-check-mark-wrapper[checked] .image-container {

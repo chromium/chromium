@@ -12,14 +12,17 @@
       --color-side-panel-customize-chrome-theme-checkmark-background);
   --customize-chrome-check-mark-wrapper-color: var(
       --color-side-panel-customize-chrome-theme-checkmark-foreground);
-  --customize-chrome-check-mark-wrapper-end: 0px;
-  --customize-chrome-check-mark-wrapper-size: 16px;
-  --customize-chrome-check-mark-wrapper-top: 0px;
+  --customize-chrome-check-mark-wrapper-end: -4px;
+  --customize-chrome-check-mark-wrapper-size: 20px;
+  --customize-chrome-check-mark-wrapper-top: -6px;
+  --customize-chrome-check-mark-wrapper-check-mark-size: 20px;
   display: block;
   position: relative;
 }
 
-svg {
+#circle {
+  background-color: var(--customize-chrome-check-mark-wrapper-background);
+  border-radius: 50%;
   display: block;
   height: var(--customize-chrome-check-mark-wrapper-size);
   left: initial;
@@ -30,17 +33,22 @@ svg {
   z-index: 1;
 }
 
-:host(:not([checked])) svg {
+:host(:not([checked])) #circle {
   display: none;
 }
 
-:host-context([dir=rtl]) svg {
+:host-context([dir=rtl]) #circle {
   left: var(--customize-chrome-check-mark-wrapper-end);
   right: initial;
 }
 
-#background {
-  fill: var(--customize-chrome-check-mark-wrapper-background);
+svg {
+  height: var(--customize-chrome-check-mark-wrapper-check-mark-size);
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--customize-chrome-check-mark-wrapper-check-mark-size);
 }
 
 #checkMark {

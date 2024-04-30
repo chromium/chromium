@@ -9,7 +9,7 @@ import {getHtml} from './check_mark_wrapper.html.js';
 
 export interface CheckMarkWrapperElement {
   $: {
-    svg: SVGElement,
+    circle: HTMLElement,
   };
 }
 

@@ -19,12 +19,12 @@ suite('CheckMarkWrapperTest', () => {
   test('renders check mark if checked', async () => {
     checkMarkWrapperElement.checked = true;
     await microtasksFinished();
-    assertNotStyle(checkMarkWrapperElement.$.svg, 'display', 'none');
+    assertNotStyle(checkMarkWrapperElement.$.circle, 'display', 'none');
   });
 
   test('does not render check mark if not checked', async () => {
     checkMarkWrapperElement.checked = false;
     await microtasksFinished();
-    assertStyle(checkMarkWrapperElement.$.svg, 'display', 'none');
+    assertStyle(checkMarkWrapperElement.$.circle, 'display', 'none');
   });
 });
