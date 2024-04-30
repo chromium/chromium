@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
@@ -232,6 +234,45 @@ public class HubManagerImplUnitTest {
         assertTrue(hubController.onHubLayoutBackPressed());
 
         verify(mHubLayoutController).selectTabAndHideHubLayout(eq(TAB_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testConsumeTouchEvents() {
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(
+                                PaneId.TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mTabSwitcherPane))
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                LazyOneshotSupplier.fromValue(mIncognitoTabSwitcherPane));
+        HubManagerImpl hubManager =
+                new HubManagerImpl(
+                        mActivity,
+                        builder,
+                        mBackPressManager,
+                        mMenuOrKeyboardActionController,
+                        mSnackbarManager,
+                        mTabSupplier,
+                        mMenuButtonCoordinator);
+        hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
+
+        HubController hubController = hubManager.getHubController();
+        hubController.setHubLayoutController(mHubLayoutController);
+        hubController.onHubLayoutShow();
+
+        FrameLayout containerView = hubController.getContainerView();
+        long eventTime = SystemClock.uptimeMillis();
+        assertTrue(
+                containerView.onTouchEvent(
+                        MotionEvent.obtain(
+                                eventTime + 100,
+                                eventTime,
+                                MotionEvent.ACTION_DOWN,
+                                /* x= */ 100,
+                                /* y= */ 100,
+                                0)));
     }
 
     @Test
