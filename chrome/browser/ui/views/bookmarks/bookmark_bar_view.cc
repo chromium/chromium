@@ -99,6 +99,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model_utils.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -1608,9 +1609,14 @@ BookmarkBarView::CreateAppsPageShortcutButton() {
   button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_APPS_SHORTCUT_TOOLTIP));
   button->SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
-  button->SetImageModel(views::Button::STATE_NORMAL,
-                        ui::ImageModel::FromImageSkia(*GetImageSkiaNamed(
-                            IDR_BOOKMARK_BAR_APPS_SHORTCUT)));
+
+  ui::ImageModel icon = ui::ImageModel::FromImageSkia(
+      *GetImageSkiaNamed(IDR_BOOKMARK_BAR_APPS_SHORTCUT));
+  button->SetImageModel(views::Button::STATE_NORMAL, icon);
+  button->SetImageModel(
+      views::Button::STATE_DISABLED,
+      ui::GetDefaultDisabledIconFromImageModel(icon, GetColorProvider()));
+
   button->set_context_menu_controller(this);
   return button;
 }
@@ -1629,10 +1635,13 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     button->SetTextColorId(views::Button::ButtonState::STATE_DISABLED,
                            kColorBookmarkBarForegroundDisabled);
     if (node->is_folder()) {
+      ui::ImageModel icon = chrome::GetBookmarkFolderIcon(
+          chrome::BookmarkFolderIconType::kNormal, kColorBookmarkFolderIcon);
+      button->SetImageModel(views::Button::STATE_NORMAL, icon);
       button->SetImageModel(
-          views::Button::STATE_NORMAL,
+          views::Button::STATE_DISABLED,
           chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                        kColorBookmarkFolderIcon));
+                                        ui::kColorIconDisabled));
     }
   }
 
@@ -1673,6 +1682,9 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
       }
     }
 
+    button->SetImageModel(
+        views::Button::STATE_DISABLED,
+        ui::GetDefaultDisabledIconFromImageModel(favicon, GetColorProvider()));
     button->SetImageModel(views::Button::STATE_NORMAL, std::move(favicon));
   }
 
@@ -1944,31 +1956,48 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
   }
 
   const SkColor color = color_provider->GetColor(kColorBookmarkBarForeground);
-  all_bookmarks_button_->SetEnabledTextColors(color);
-  all_bookmarks_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                    kColorBookmarkFolderIcon));
+  {
+    all_bookmarks_button_->SetEnabledTextColors(color);
+    ui::ImageModel all_bookmarks_icon = chrome::GetBookmarkFolderIcon(
+        chrome::BookmarkFolderIconType::kNormal, kColorBookmarkFolderIcon);
+    all_bookmarks_button_->SetImageModel(views::Button::STATE_NORMAL,
+                                         all_bookmarks_icon);
+    all_bookmarks_button_->SetImageModel(
+        views::Button::STATE_DISABLED,
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                      ui::kColorIconDisabled));
+  }
 
-  managed_bookmarks_button_->SetEnabledTextColors(color);
-  managed_bookmarks_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
-                                    kColorBookmarkFolderIcon));
+  {
+    managed_bookmarks_button_->SetEnabledTextColors(color);
+    ui::ImageModel managed_bookmarks_button_icon =
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
+                                      kColorBookmarkFolderIcon);
+    managed_bookmarks_button_->SetImageModel(views::Button::STATE_NORMAL,
+                                             managed_bookmarks_button_icon);
+    managed_bookmarks_button_->SetImageModel(
+        views::Button::STATE_DISABLED,
+        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                      ui::kColorIconDisabled));
+  }
 
   apps_page_shortcut_->SetEnabledTextColors(color);
 
   const SkColor overflow_color =
       color_provider->GetColor(kColorBookmarkButtonIcon);
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
+
+  ui::ImageModel overflow_button_icon = ui::ImageModel::FromVectorIcon(
+      features::IsChromeRefresh2023()
+          ? kBookmarkbarOverflowRefreshIcon
+          : (touch_ui ? kBookmarkbarTouchOverflowIcon : kOverflowChevronIcon),
+      overflow_color);
+  overflow_button_->SetImageModel(views::Button::STATE_NORMAL,
+                                  overflow_button_icon);
   overflow_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          features::IsChromeRefresh2023()
-              ? kBookmarkbarOverflowRefreshIcon
-              : (touch_ui ? kBookmarkbarTouchOverflowIcon
-                          : kOverflowChevronIcon),
-          overflow_color));
+      views::Button::STATE_DISABLED,
+      ui::GetDefaultDisabledIconFromImageModel(overflow_button_icon,
+                                               GetColorProvider()));
 
   // Redraw the background.
   SchedulePaint();

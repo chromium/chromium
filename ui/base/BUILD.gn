@@ -176,6 +176,8 @@ component("base") {
     "models/dialog_model_menu_model_adapter.h",
     "models/image_model.cc",
     "models/image_model.h",
+    "models/image_model_utils.cc",
+    "models/image_model_utils.h",
     "models/list_model.h",
     "models/list_model_observer.h",
     "models/list_selection_model.cc",

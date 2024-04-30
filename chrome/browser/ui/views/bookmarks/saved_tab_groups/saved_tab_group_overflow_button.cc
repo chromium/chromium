@@ -71,17 +71,15 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
   views::MenuButton::OnThemeChanged();
 
   ui::ColorProvider* color_provider = GetColorProvider();
-  const SkColor overflow_color =
-      color_provider->GetColor(kColorBookmarkButtonIcon);
-  const gfx::VectorIcon& icon = features::IsChromeRefresh2023()
-                                    ? kBookmarkbarOverflowRefreshIcon
-                                    : kOverflowChevronIcon;
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(IsTabGroupsSaveUIUpdateEnabled()
-                                         ? kSavedTabGroupBarEverythingIcon
-                                         : icon,
-                                     overflow_color));
+  const gfx::VectorIcon& icon = IsTabGroupsSaveUIUpdateEnabled()
+                                    ? kSavedTabGroupBarEverythingIcon
+                                    : kBookmarkbarOverflowRefreshIcon;
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(
+                    icon, color_provider->GetColor(kColorBookmarkButtonIcon)));
+  SetImageModel(views::Button::STATE_DISABLED,
+                ui::ImageModel::FromVectorIcon(
+                    icon, color_provider->GetColor(ui::kColorIconDisabled)));
   return;
 }
 

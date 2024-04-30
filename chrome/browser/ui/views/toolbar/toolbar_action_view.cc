@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -154,6 +155,8 @@ void ToolbarActionView::UpdateState() {
       view_controller_->GetIcon(web_contents, GetPreferredSize());
   if (!icon.IsEmpty()) {
     SetImageModel(views::Button::STATE_NORMAL, icon);
+    SetImageModel(views::Button::STATE_DISABLED,
+                  ui::GetDefaultDisabledIconFromImageModel(icon));
   }
 
   if (!base::FeatureList::IsEnabled(

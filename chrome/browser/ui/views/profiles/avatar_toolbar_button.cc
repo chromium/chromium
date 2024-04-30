@@ -48,6 +48,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model_utils.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -123,10 +124,12 @@ void AvatarToolbarButton::UpdateIcon() {
   }
 
   const int icon_size = GetIconSize();
-  for (auto state : kButtonStates) {
-    SetImageModel(
-        state, delegate_->GetAvatarIcon(icon_size, GetForegroundColor(state)));
-  }
+  ui::ImageModel icon = delegate_->GetAvatarIcon(
+      icon_size, GetForegroundColor(ButtonState::STATE_NORMAL));
+
+  SetImageModel(ButtonState::STATE_NORMAL, icon);
+  SetImageModel(ButtonState::STATE_DISABLED,
+                ui::GetDefaultDisabledIconFromImageModel(icon));
 
   SetInsets();
 
