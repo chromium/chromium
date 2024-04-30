@@ -292,22 +292,22 @@ INSTANTIATE_TEST_SUITE_P(
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_object_source_test.html",
          /*expected_csp_acceptable=*/false,
-         /*expected_error_name=*/"NotAllowedError",
+         /*expected_error_name=*/"TypeError",
          /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_base_uri_test.html",
          /*expected_csp_acceptable=*/false,
-         /*expected_error_name=*/"NotAllowedError",
+         /*expected_error_name=*/"TypeError",
          /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_script_source_test.html",
          /*expected_csp_acceptable=*/false,
-         /*expected_error_name=*/"NotAllowedError",
+         /*expected_error_name=*/"TypeError",
          /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_no_trusted_types_test.html",
          /*expected_csp_acceptable=*/false,
-         /*expected_error_name=*/"NotAllowedError",
+         /*expected_error_name=*/"TypeError",
          /*expected_script_should_load=*/true},
         {/*base_page=*/"/webrtc/"
                        "webrtc_getallscreensmedia_invalid_csp_test.html",
@@ -456,9 +456,15 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
   std::string error_name;
   EXPECT_FALSE(RunGetAllScreensMediaAndGetIds(contents_, stream_ids, track_ids,
                                               &error_name));
-  EXPECT_EQ(param.expected_script_should_load ? "NotAllowedError"
-                                              : "ScriptNotLoadedError",
-            error_name);
+  if (!param.expected_script_should_load) {
+    EXPECT_EQ("ScriptNotLoadedError", error_name);
+  } else if (!param.expected_csp_acceptable) {
+    // If the CSP provided is not acceptable, then the API will not be exposed
+    // and a `TypeError` will be thrown when it's accessed.
+    EXPECT_EQ("TypeError", error_name);
+  } else {
+    EXPECT_EQ("NotAllowedError", error_name);
+  }
 }
 
 // Test that getDisplayMedia and getAllScreensMedia are independent,

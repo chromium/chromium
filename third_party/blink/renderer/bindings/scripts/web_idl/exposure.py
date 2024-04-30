@@ -67,6 +67,7 @@ class Exposure(object):
             self._only_in_coi_contexts = other.only_in_coi_contexts
             self._only_in_coi_contexts_or_runtime_enabled_features = tuple(
                 other.only_in_coi_contexts_or_runtime_enabled_features)
+            self._only_in_injection_mitigated_contexts = other.only_in_injection_mitigated_contexts
             self._only_in_isolated_contexts = other.only_in_isolated_contexts
             self._only_in_secure_contexts = other.only_in_secure_contexts
         else:
@@ -78,6 +79,7 @@ class Exposure(object):
             self._context_enabled_features = tuple()
             self._only_in_coi_contexts = False
             self._only_in_coi_contexts_or_runtime_enabled_features = tuple()
+            self._only_in_injection_mitigated_contexts = False
             self._only_in_isolated_contexts = False
             self._only_in_secure_contexts = None
 
@@ -146,6 +148,15 @@ class Exposure(object):
         return self._only_in_coi_contexts_or_runtime_enabled_features
 
     @property
+    def only_in_injection_mitigated_contexts(self):
+        """
+        Returns whether this construct is available only in contexts with
+        sufficient injection attack mitigations. The returned value is a
+        boolean: True if the construct is restricted, False otherwise.
+        """
+        return self._only_in_injection_mitigated_contexts
+
+    @property
     def only_in_isolated_contexts(self):
         """
         Returns whether this construct is available only in isolated app
@@ -184,6 +195,7 @@ class Exposure(object):
 
         if (self.context_dependent_runtime_enabled_features
                 or self.context_enabled_features or self.only_in_coi_contexts
+                or self.only_in_injection_mitigated_contexts
                 or self.only_in_isolated_contexts
                 or self.only_in_secure_contexts):
             return True
@@ -212,6 +224,7 @@ class ExposureMutable(Exposure):
         self._context_enabled_features = []
         self._only_in_coi_contexts = False
         self._only_in_coi_contexts_or_runtime_enabled_features = []
+        self._only_in_injection_mitigated_contexts = False
         self._only_in_isolated_contexts = False
         self._only_in_secure_contexts = None
 
@@ -248,6 +261,10 @@ class ExposureMutable(Exposure):
         assert isinstance(name, str)
         self._only_in_coi_contexts_or_runtime_enabled_features.append(
             _Feature(name))
+
+    def set_only_in_injection_mitigated_contexts(self, value):
+        assert isinstance(value, bool)
+        self._only_in_injection_mitigated_contexts = value
 
     def set_only_in_isolated_contexts(self, value):
         assert isinstance(value, bool)

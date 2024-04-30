@@ -377,6 +377,9 @@ class IdlCompiler(object):
                       default_value=True)
             propagate(('CrossOriginIsolatedOrRuntimeEnabled',
                        'add_only_in_coi_contexts_or_runtime_enabled_feature'))
+            propagate(('InjectionMitigated',
+                       'set_only_in_injection_mitigated_contexts'),
+                      default_value=True)
             propagate(('IsolatedContext', 'set_only_in_isolated_contexts'),
                       default_value=True)
             propagate(('SecureContext', 'set_only_in_secure_contexts'),
@@ -691,9 +694,10 @@ class IdlCompiler(object):
                         OperationGroup.IR, item.operations)
 
     def _propagate_extattrs_to_overload_group(self):
-        ANY_OF = ('CrossOrigin', 'CrossOriginIsolated', 'IsolatedContext',
-                  'LegacyLenientThis', 'LegacyUnforgeable', 'NotEnumerable',
-                  'PerWorldBindings', 'SecureContext', 'Unscopable')
+        ANY_OF = ('CrossOrigin', 'CrossOriginIsolated', 'InjectionMitigated',
+                  'IsolatedContext', 'LegacyLenientThis', 'LegacyUnforgeable',
+                  'NotEnumerable', 'PerWorldBindings', 'SecureContext',
+                  'Unscopable')
 
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
                                             IRMap.IR.Kind.INTERFACE,
@@ -805,6 +809,14 @@ class IdlCompiler(object):
                     (group.exposure.
                      add_only_in_coi_contexts_or_runtime_enabled_feature
                      )(feature)
+
+                # [InjectionMitigated]
+                if any(not exposure.only_in_injection_mitigated_contexts
+                       for exposure in exposures):
+                    pass  # Exposed by default.
+                else:
+                    group.exposure.set_only_in_injection_mitigated_contexts(
+                        True)
 
                 # [IsolatedContext]
                 if any(not exposure.only_in_isolated_contexts

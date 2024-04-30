@@ -402,6 +402,11 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // TODO(mkwst): We need a specification for the necessary restrictions.
   virtual bool IsIsolatedContext() const = 0;
 
+  // Returns true if scripts within this ExecutionContext are considered
+  // sufficiently protected from injection attacks (e.g. by enforcing a strict
+  // CSP, a la https://csp.withgoogle.com/docs/strict-csp.html.
+  bool IsInjectionMitigatedContext() const;
+
   // Returns true if SharedArrayBuffers can be transferred via PostMessage,
   // false otherwise. SharedArrayBuffer allows pages to craft high-precision
   // timers useful for Spectre-style side channel attacks, so are restricted

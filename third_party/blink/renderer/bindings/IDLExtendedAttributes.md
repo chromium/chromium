@@ -1273,6 +1273,12 @@ Only used in some HTML*ELement.idl files and one other place.
 
 These extended attributes are _temporary_ and are only in use while some change is in progress. Unless you are involved with the change, you can generally ignore them, and should not use them.
 
+### [InjectionMitigated]
+
+Summary: Interfaces and interface members with an `[InjectionMitigated]` attribute are exposed only in contexts that enforce a [strict Content Security Policy](https://csp.withgoogle.com/docs/strict-csp.html) and [Trusted Types](https://w3c.github.io/trusted-types/dist/spec/).
+
+This attribute implements the core idea behind the [Securer Contexts explainer](https://github.com/mikewest/securer-contexts), and may be renamed as it works its way through the standards process.
+
 ### [IsCodeLike]
 
 This implements the TC39 "Dynamic Code Brand Checks" proposal. By attaching

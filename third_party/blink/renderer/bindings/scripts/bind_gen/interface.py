@@ -2075,8 +2075,8 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
             elif key == "Reflect":
                 has_reflect = True
             elif key in ("Affects", "CrossOriginIsolated", "DeprecateAs",
-                         "Exposed", "IsolatedContext", "LogActivity",
-                         "LogAllWorlds", "Measure", "MeasureAs",
+                         "Exposed", "InjectionMitigated", "IsolatedContext",
+                         "LogActivity", "LogAllWorlds", "Measure", "MeasureAs",
                          "ReflectEmpty", "ReflectInvalid", "ReflectMissing",
                          "ReflectOnly", "RuntimeCallStatsCounter",
                          "RuntimeEnabled", "SecureContext", "URL",
@@ -4392,6 +4392,9 @@ def bind_installer_local_vars(code_node, cg_context):
           ("const bool ${is_cross_origin_isolated} = "
            "${execution_context}"
            "->CrossOriginIsolatedCapabilityOrDisabledWebSecurity();")),
+        S("is_in_injection_mitigated_context",
+          ("const bool ${is_in_injection_mitigated_context} = "
+           "${execution_context}->IsInjectionMitigatedContext();")),
         S("is_in_isolated_context",
           ("const bool ${is_in_isolated_context} = "
            "${execution_context}->IsIsolatedContext();")),
