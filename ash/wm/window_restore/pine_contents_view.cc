@@ -5,6 +5,7 @@
 #include "ash/wm/window_restore/pine_contents_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -21,6 +22,7 @@
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
+#include "chromeos/ui/base/display_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -36,8 +38,10 @@
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/core/window_animations.h"
@@ -75,11 +79,20 @@ constexpr int kScreenshotMinHeight = 88;
 }  // namespace
 
 PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
+  // The layout of this view changes based on the screen orientation. The Pine
+  // widget will always appear on the primary display, so we only need to check
+  // the primary root window.
+  bool landscape_mode =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
+          .is_landscape();
+
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
   SetInsideBorderInsets(kContentsInsets);
-  SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  SetOrientation(landscape_mode ? views::BoxLayout::Orientation::kHorizontal
+                                : views::BoxLayout::Orientation::kVertical);
 
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
@@ -91,11 +104,12 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
                                          ? IDS_ASH_PINE_DIALOG_CRASH_DESCRIPTION
                                          : IDS_ASH_PINE_DIALOG_DESCRIPTION;
 
-  views::View* spacer;
-  auto* actions_container_view = AddChildView(
-      // This box layout view is the container for the left hand side (in LTR)
-      // of the contents view. It contains the title, buttons container and
-      // settings button.
+  auto* primary_container_view = AddChildView(
+      // In landscape mode, this box layout view is the container for the left
+      // hand side (in LTR) of the contents view. It contains the title,
+      // description, buttons container, and settings button. In portrait mode,
+      // this box layout view is the container for the header of the contents
+      // view. It contains just the title and description.
       views::Builder<views::BoxLayoutView>()
           .SetBetweenChildSpacing(kLeftContentsChildSpacing)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
@@ -120,49 +134,8 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
                   .CustomConfigure(base::BindOnce([](views::Label* label) {
                     TypographyProvider::Get()->StyleLabel(
                         TypographyToken::kCrosBody1, *label);
-                  })),
-              // This box layout view is the container for the "No thanks" and
-              // "Restore" pill buttons.
-              views::Builder<views::BoxLayoutView>()
-                  .SetBetweenChildSpacing(kButtonContainerChildSpacing)
-                  .SetProperty(views::kMarginsKey, kButtonContainerChildMargins)
-                  .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                  .AddChildren(
-                      views::Builder<PillButton>()
-                          .SetCallback(base::BindRepeating(
-                              &PineContentsView::OnCancelButtonPressed,
-                              weak_ptr_factory_.GetWeakPtr()))
-                          .SetID(pine::kCancelButtonID)
-                          .SetPillButtonType(
-                              PillButton::Type::kDefaultLargeWithoutIcon)
-                          .SetTextWithStringId(
-                              IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON),
-                      views::Builder<PillButton>()
-                          .SetCallback(base::BindRepeating(
-                              &PineContentsView::OnRestoreButtonPressed,
-                              weak_ptr_factory_.GetWeakPtr()))
-                          .SetID(pine::kRestoreButtonID)
-                          .SetPillButtonType(
-                              PillButton::Type::kPrimaryLargeWithoutIcon)
-                          .SetTextWithStringId(
-                              IDS_ASH_PINE_DIALOG_RESTORE_BUTTON)),
-              views::Builder<views::View>().CopyAddressTo(&spacer),
-              views::Builder<views::ImageButton>(
-                  views::CreateVectorImageButtonWithNativeTheme(
-                      base::BindRepeating(
-                          &PineContentsView::OnSettingsButtonPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-                      kSettingsIcon, kSettingsIconSize))
-                  .CopyAddressTo(&settings_button_)
-                  .SetBackground(views::CreateThemedRoundedRectBackground(
-                      cros_tokens::kCrosSysSystemOnBase, kSettingsIconSize))
-                  .SetID(pine::kSettingsButtonID)
-                  .SetTooltipText(
-                      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS)))
+                  })))
           .Build());
-
-  views::AsViewClass<views::BoxLayoutView>(spacer->parent())
-      ->SetFlexForView(spacer, 1);
 
   gfx::Size screenshot_size;
   showing_list_view_ = pine_contents_data->image.isNull();
@@ -221,6 +194,34 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
   }
   RecordDialogScreenshotVisibility(!showing_list_view_);
 
+  // The display orientation determines where we place the settings,
+  // "No thanks", and "Restore" buttons.
+  views::View* spacer;
+  if (landscape_mode) {
+    // Add the buttons to the left hand side container view.
+    primary_container_view->AddChildView(
+        CreateButtonContainerBuilder()
+            .SetProperty(views::kMarginsKey, kButtonContainerChildMargins)
+            .Build());
+    spacer =
+        primary_container_view->AddChildView(std::make_unique<views::View>());
+    primary_container_view->AddChildView(CreateSettingsButtonBuilder().Build());
+  } else {
+    // Add a footer view that contains the buttons.
+    AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetCrossAxisAlignment(
+                views::BoxLayout::CrossAxisAlignment::kCenter)
+            .AddChildren(CreateSettingsButtonBuilder(),
+                         views::Builder<views::View>().CopyAddressTo(&spacer),
+                         CreateButtonContainerBuilder())
+            .Build());
+  }
+
+  views::AsViewClass<views::BoxLayoutView>(spacer->parent())
+      ->SetFlexForView(spacer, 1);
+
   // The height of the pine dialog is dynamic, depending on the height of the
   // screenshot. For the screenshot, its width is fixed as
   // `kPreviewContainerWidth` while its height is calculated based on the
@@ -230,7 +231,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
       showing_list_view_
           ? kItemsViewContainerHeight
           : std::max(kScreenshotContainerMinHeight, screenshot_height);
-  actions_container_view->SetPreferredSize(
+  primary_container_view->SetPreferredSize(
       gfx::Size(kActionsContainerWidth, pine_contents_height));
 
   // Set the screenshot preview container vertical margin based on the height of
@@ -370,6 +371,42 @@ void PineContentsView::OnSettingsButtonPressed() {
       settings_button_->GetWidget(), /*button_controller=*/nullptr,
       settings_button_->GetBoundsInScreen(),
       views::MenuAnchorPosition::kBubbleRight, ui::MENU_SOURCE_NONE);
+}
+
+views::Builder<views::ImageButton>
+PineContentsView::CreateSettingsButtonBuilder() {
+  return views::Builder<views::ImageButton>(
+             views::CreateVectorImageButtonWithNativeTheme(
+                 base::BindRepeating(&PineContentsView::OnSettingsButtonPressed,
+                                     weak_ptr_factory_.GetWeakPtr()),
+                 kSettingsIcon, kSettingsIconSize))
+      .CopyAddressTo(&settings_button_)
+      .SetBackground(views::CreateThemedRoundedRectBackground(
+          cros_tokens::kCrosSysSystemOnBase, kSettingsIconSize))
+      .SetID(pine::kSettingsButtonID)
+      .SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SETTINGS));
+}
+
+views::Builder<views::BoxLayoutView>
+PineContentsView::CreateButtonContainerBuilder() {
+  return views::Builder<views::BoxLayoutView>()
+      .SetBetweenChildSpacing(kButtonContainerChildSpacing)
+      .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+      .AddChildren(
+          views::Builder<PillButton>()
+              .SetCallback(
+                  base::BindRepeating(&PineContentsView::OnCancelButtonPressed,
+                                      weak_ptr_factory_.GetWeakPtr()))
+              .SetID(pine::kCancelButtonID)
+              .SetPillButtonType(PillButton::Type::kDefaultLargeWithoutIcon)
+              .SetTextWithStringId(IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON),
+          views::Builder<PillButton>()
+              .SetCallback(
+                  base::BindRepeating(&PineContentsView::OnRestoreButtonPressed,
+                                      weak_ptr_factory_.GetWeakPtr()))
+              .SetID(pine::kRestoreButtonID)
+              .SetPillButtonType(PillButton::Type::kPrimaryLargeWithoutIcon)
+              .SetTextWithStringId(IDS_ASH_PINE_DIALOG_RESTORE_BUTTON));
 }
 
 void PineContentsView::OnMenuClosed() {

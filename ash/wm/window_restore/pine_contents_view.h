@@ -24,6 +24,8 @@ namespace ash {
 
 class PineContextMenuModel;
 
+// TODO(http://b/337339184): Change the layout when the display orientation
+// changes.
 class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   METADATA_HEADER(PineContentsView, views::BoxLayoutView)
 
@@ -48,6 +50,12 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   // Called when the pine context menu is closed. Used as a callback for
   // `menu_model_adapter_`.
   void OnMenuClosed();
+
+  // Creates a builder for the settings button that opens up a context menu.
+  views::Builder<views::ImageButton> CreateSettingsButtonBuilder();
+  // Creates a builder for the container of the "No thanks" and "Restore" pill
+  // buttons.
+  views::Builder<views::BoxLayoutView> CreateButtonContainerBuilder();
 
   // The context menu model and its adapter for `settings_button_view_`.
   std::unique_ptr<PineContextMenuModel> context_menu_model_;

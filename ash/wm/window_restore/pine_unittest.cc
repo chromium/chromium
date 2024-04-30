@@ -38,16 +38,19 @@
 #include "ash/wm/window_restore/pine_test_base.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/display_util.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/models/image_model.h"
+#include "ui/display/display_switches.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -64,6 +67,14 @@ class PineTest : public PineTestBase {
   PineTest(const PineTest&) = delete;
   PineTest& operator=(const PineTest&) = delete;
   ~PineTest() override = default;
+
+  void SetUp() override {
+    // Required for the display rotation to register as a change in orientation.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kUseFirstDisplayAsInternal);
+
+    PineTestBase::SetUp();
+  }
 
   void StartPineOverviewSession(std::unique_ptr<PineContentsData> data) {
     Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
@@ -744,6 +755,53 @@ TEST_F(PineTest, ShowSavedDeskLibrary) {
   ASSERT_TRUE(library_button);
   LeftClickOn(library_button);
   EXPECT_EQ(0.f, pine_widget->GetLayer()->GetTargetOpacity());
+}
+
+// Tests that the Pine contents are laid out correctly when the display is in
+// landscape mode.
+TEST_F(PineTest, LayoutLandscape) {
+  StartPineOverviewSession(MakeTestAppIds(1));
+
+  OverviewGrid* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
+  ASSERT_TRUE(pine_widget);
+
+  // In landscape mode, the `PineContentsView` should have two children: a left
+  // hand side contents view, and a right hand side contents view.
+  const PineContentsView* contents_view =
+      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  ASSERT_TRUE(contents_view);
+  EXPECT_EQ(contents_view->children().size(), 2u);
+}
+
+// Tests that the Pine contents are laid out correctly when the display is in
+// portrait mode.
+TEST_F(PineTest, LayoutPortrait) {
+  // Rotate the display to put it in portrait mode.
+  ScreenOrientationControllerTestApi orientation_test_api(
+      Shell::Get()->screen_orientation_controller());
+  orientation_test_api.SetDisplayRotation(
+      display::Display::ROTATE_90, display::Display::RotationSource::ACTIVE);
+  ASSERT_TRUE(chromeos::IsPortraitOrientation(
+      orientation_test_api.GetCurrentOrientation()));
+
+  StartPineOverviewSession(MakeTestAppIds(1));
+
+  OverviewGrid* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
+  ASSERT_TRUE(pine_widget);
+
+  // In portrait mode, the `PineContentsView` should have three children: the
+  // title and description container (header), the `PineItemsContainerView`, and
+  // the buttons container (footer).
+  const PineContentsView* contents_view =
+      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  ASSERT_TRUE(contents_view);
+  EXPECT_EQ(contents_view->children().size(), 3u);
 }
 
 class PineAppIconTest : public PineTest {
