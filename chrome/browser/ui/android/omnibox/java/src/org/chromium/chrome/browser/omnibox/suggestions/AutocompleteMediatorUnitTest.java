@@ -82,6 +82,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
@@ -111,7 +112,7 @@ import java.util.Set;
         })
 @EnableFeatures({
     ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION,
-    ChromeFeatureList.OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS
+    OmniboxFeatureList.GROUPING_FRAMEWORK_FOR_NON_ZPS
 })
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
@@ -433,7 +434,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
+    @EnableFeatures(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE)
     public void onOmniboxSessionStateChange_startsAnimationDriver() {
         mListModel.set(SuggestionListProperties.ALPHA, 1.0f);
         mMediator.onNativeInitialized();

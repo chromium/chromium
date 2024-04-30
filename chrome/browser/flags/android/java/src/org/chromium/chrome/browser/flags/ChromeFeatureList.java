@@ -166,8 +166,6 @@ public abstract class ChromeFeatureList {
             "AndroidTabDeclutterRescueKillswitch";
     public static final String ANDROID_TAB_GROUP_STABLE_IDS = "AndroidTabGroupStableIds";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
-    public static final String ANIMATE_SUGGESTIONS_LIST_APPEARANCE =
-            "AnimateSuggestionsListAppearance";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
     public static final String ARCHIVE_TAB_SERVICE = "ArchiveTabService";
     public static final String ASYNC_NOTIFICATION_MANAGER = "AsyncNotificationManager";
@@ -344,8 +342,6 @@ public abstract class ChromeFeatureList {
             "OmniboxNoopEditUrlSuggestionClicks";
     public static final String AVOID_RELAYOUT_DURING_FOCUS_ANIMATION =
             "AvoidRelayoutDuringFocusAnimation";
-    public static final String OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS =
-            "OmniboxGroupingFrameworkForNonZPS";
     public static final String OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH =
             "OmniboxTouchDownTriggerForPrefetch";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
@@ -765,8 +761,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, false);
     public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
-    public static final MutableFlagWithSafeDefault sAnimateSuggestionsListAppearance =
-            newMutableFlagWithSafeDefault(ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutter =
             newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER, false);
     public static final MutableFlagWithSafeDefault sAndroidTabDeclutterRescueKillSwitch =

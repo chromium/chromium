@@ -13,7 +13,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -54,7 +53,6 @@ class DropdownItemViewInfoListBuilder {
     private @NonNull Optional<OmniboxImageSupplier> mImageSupplier;
     private @NonNull BookmarkState mBookmarkState;
     private @Px int mDropdownHeight;
-    private boolean mUseNativeGrouping;
 
     DropdownItemViewInfoListBuilder(
             @NonNull Supplier<Tab> tabSupplier, @NonNull BookmarkState bookmarkState) {
@@ -197,9 +195,6 @@ class DropdownItemViewInfoListBuilder {
         mHeaderProcessor.onNativeInitialized();
         mImageSupplier.ifPresent(s -> s.onNativeInitialized());
 
-        mUseNativeGrouping =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS);
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
             mPriorityOrderedSuggestionProcessors.get(index).onNativeInitialized();
         }
@@ -367,7 +362,7 @@ class DropdownItemViewInfoListBuilder {
             mPriorityOrderedSuggestionProcessors.get(index).onSuggestionsReceived();
         }
 
-        if (!mUseNativeGrouping) {
+        if (!OmniboxFeatures.sGroupingFrameworkForNonZPS.isEnabled()) {
             performPartialGroupingBySearchVsUrl(autocompleteResult);
         }
 

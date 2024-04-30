@@ -49,6 +49,12 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxModernizeVisualUpdate =
             newFlag(OmniboxFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, true);
 
+    public static final CachedFlag sAnimateSuggestionsListAppearance =
+            newFlag(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
+
+    public static final CachedFlag sGroupingFrameworkForNonZPS =
+            newFlag(OmniboxFeatureList.GROUPING_FRAMEWORK_FOR_NON_ZPS, false);
+
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             newBooleanParam(
                     OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP,
@@ -208,6 +214,6 @@ public class OmniboxFeatures {
      * keyboard.
      */
     public static boolean shouldAnimateSuggestionsListAppearance() {
-        return ChromeFeatureList.sAnimateSuggestionsListAppearance.isEnabled();
+        return sAnimateSuggestionsListAppearance.isEnabled();
     }
 }
