@@ -106,12 +106,6 @@ namespace viz {
 
 namespace {
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
-BASE_FEATURE(kAddSharedImageRasterReadUsage,
-             "AddSharedImageRasterReadUsage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
 // was chosen to match that used by gl_renderer.
@@ -3767,13 +3761,6 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
-    // The SharedImages created here are not used by the raster interface, but
-    // RASTER usage was historically listed. We are in the process of removing
-    // this usage with a reverse killswitch.
-    // TODO(crbug.com/41496862): Remove this code post-safe rollout.
-    if (base::FeatureList::IsEnabled(kAddSharedImageRasterReadUsage)) {
-      kOverlayUsage = kOverlayUsage | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
-    }
 
 #if BUILDFLAG(IS_WIN)
     // We must use DComp surfaces in this case since they have no special
