@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_TAB_HELPER_H_
 #define CHROME_BROWSER_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_TAB_HELPER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -47,6 +48,13 @@ class HistoryEmbeddingsTabHelper
   explicit HistoryEmbeddingsTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HistoryEmbeddingsTabHelper>;
 
+  // This is called some time after `DidFinishLoad` to do passage extraction.
+  // Calls may be canceled by weak pointer invalidation.
+  void ExtractPassages(content::RenderFrameHost* render_frame_host);
+
+  // Invalidates weak pointers and cancels any pending extraction callbacks.
+  void CancelExtraction();
+
   // Helper functions to return the embeddings and history services.
   // `GetHistoryClustersService()` may return nullptr (in tests).
   history_embeddings::HistoryEmbeddingsService* GetHistoryEmbeddingsService();
@@ -61,6 +69,10 @@ class HistoryEmbeddingsTabHelper
 
   // Task tracker for calls for the history service.
   base::CancelableTaskTracker task_tracker_;
+
+  // This factory frequently invalidates existing weak pointers to cancel
+  // delayed passage extraction.
+  base::WeakPtrFactory<HistoryEmbeddingsTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
@@ -43,6 +44,11 @@ void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
     return;
   }
 
+  // Invalidate existing weak pointers to cancel any outstanding delayed tasks.
+  // Since this is a new navigation, the document may have changed and so
+  // the visit time and URL data would not match the web content.
+  CancelExtraction();
+
   // Save data for later use in `DidFinishLoad`.
   history_visit_time_ = visit_time;
   history_url_ = url;
@@ -56,6 +62,22 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
     return;
   }
 
+  // Invalidate existing weak pointers to cancel any outstanding delayed tasks.
+  // Normally, navigation will have already canceled, but in the event that
+  // `DidFinishLoad` is called twice without navigation, invalidating here
+  // guarantees at most one delayed task is scheduled at a time.
+  CancelExtraction();
+
+  // Schedule a new delayed task with a fresh weak pointer.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&HistoryEmbeddingsTabHelper::ExtractPassages,
+                     weak_ptr_factory_.GetWeakPtr(), render_frame_host),
+      base::Milliseconds(history_embeddings::kPassageExtractionDelay.Get()));
+}
+
+void HistoryEmbeddingsTabHelper::ExtractPassages(
+    content::RenderFrameHost* render_frame_host) {
   if (!history_visit_time_.has_value() || !history_url_.has_value()) {
     return;
   }
@@ -109,6 +131,11 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
   // Clear the data. It isn't reused and will be set anew by later navigation.
   history_visit_time_.reset();
   history_url_.reset();
+}
+
+void HistoryEmbeddingsTabHelper::CancelExtraction() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  task_tracker_.TryCancelAll();
 }
 
 history_embeddings::HistoryEmbeddingsService*

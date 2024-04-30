@@ -12,6 +12,10 @@ namespace history_embeddings {
 
 BASE_DECLARE_FEATURE(kHistoryEmbeddings);
 
+// Number of milliseconds to wait after `DidFinishLoad` before extracting
+// passages, computing and storing their embeddings, etc.
+extern const base::FeatureParam<int> kPassageExtractionDelay;
+
 // Specifies the `max_words_per_aggregate_passage` parameter for the
 // DocumentChunker passage extraction algorithm. A passage from a single
 // node can exceed this maximum, but aggregation keeps within the limit.
