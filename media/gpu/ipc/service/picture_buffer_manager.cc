@@ -259,7 +259,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         const auto& image = picture_buffer_data.scoped_shared_images[i];
         if (image) {
           mailbox_holders[i] = image->GetMailboxHolder();
-          CHECK(mailbox_holders[i].mailbox.IsSharedImage());
         }
       }
 

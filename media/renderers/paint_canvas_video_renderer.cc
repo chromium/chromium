@@ -1600,17 +1600,6 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 
   CHECK(video_frame->HasTextures());
 
-  // It is not possible for VideoFrames holding legacy mailboxes to reach this
-  // function. The reason is the following:
-  // * VideoFrames holding legacy mailboxes must have exactly one texture
-  // * By definition, they are not using multiplanar SharedImages (since they
-  //   are not using SharedImage at all)
-  // * This function's only entrypoint is from
-  //   CopyVideoFrameTexturesToGLTexture(), and that entrypoint is
-  //   conditional on the mailbox either having more than one texture or
-  //   holding a multiplanar SharedImage.
-  CHECK(video_frame->mailbox_holder(0).mailbox.IsSharedImage());
-
   // Trigger resource allocation for dst texture to back SkSurface.
   // Dst texture size should equal to video frame visible rect.
   BindAndTexImage2D(destination_gl, target, texture, internal_format, format,

@@ -1097,9 +1097,6 @@ void VideoResourceUpdater::CopyHardwarePlane(
   auto* ri = RasterInterface();
   ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
 
-  // This is only used on Android where all video mailboxes already use shared
-  // images.
-  CHECK(mailbox_holder.mailbox.IsSharedImage());
   ri->CopySharedImage(
       mailbox_holder.mailbox, hardware_resource->mailbox(), GL_TEXTURE_2D,
       /*xoffset=*/0, /*yoffset=*/0, /*x=*/0, /*y=*/0,
