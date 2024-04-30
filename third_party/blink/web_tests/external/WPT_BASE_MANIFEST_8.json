@@ -359185,20 +359185,8 @@
         "2733836c998fa919d9f6880fd96a32026e82ca2c",
         []
        ],
-       "2d.fillStyle.parse.hsl-clamp-1.png": [
-        "2733836c998fa919d9f6880fd96a32026e82ca2c",
-        []
-       ],
-       "2d.fillStyle.parse.hsl-clamp-2.png": [
+       "2d.fillStyle.parse.hsl-clamp-negative-saturation.png": [
         "88fd8279855266c96740bc935718b22db592198c",
-        []
-       ],
-       "2d.fillStyle.parse.hsl-clamp-3.png": [
-        "bf48767a881289c077718965163addae848790ac",
-        []
-       ],
-       "2d.fillStyle.parse.hsl-clamp-4.png": [
-        "d638d033868afd3aab0a7b26d5b2a0a2b95da010",
         []
        ],
        "2d.fillStyle.parse.hsla-1.png": [
@@ -359209,28 +359197,16 @@
         "2733836c998fa919d9f6880fd96a32026e82ca2c",
         []
        ],
-       "2d.fillStyle.parse.hsla-clamp-1.png": [
+       "2d.fillStyle.parse.hsla-clamp-alpha-1.png": [
         "2733836c998fa919d9f6880fd96a32026e82ca2c",
         []
        ],
-       "2d.fillStyle.parse.hsla-clamp-2.png": [
-        "88fd8279855266c96740bc935718b22db592198c",
-        []
-       ],
-       "2d.fillStyle.parse.hsla-clamp-3.png": [
-        "bf48767a881289c077718965163addae848790ac",
-        []
-       ],
-       "2d.fillStyle.parse.hsla-clamp-4.png": [
-        "d638d033868afd3aab0a7b26d5b2a0a2b95da010",
-        []
-       ],
-       "2d.fillStyle.parse.hsla-clamp-5.png": [
-        "2733836c998fa919d9f6880fd96a32026e82ca2c",
-        []
-       ],
-       "2d.fillStyle.parse.hsla-clamp-6.png": [
+       "2d.fillStyle.parse.hsla-clamp-alpha-2.png": [
         "eeedd0ff05889ffd4468bf19a2e8e9e0a094201c",
+        []
+       ],
+       "2d.fillStyle.parse.hsla-clamp-negative-saturation.png": [
+        "88fd8279855266c96740bc935718b22db592198c",
         []
        ],
        "2d.fillStyle.parse.html4.png": [
@@ -361221,7 +361197,7 @@
        },
        "offscreen": {
         "meta.yaml": [
-         "7b44fd9f2677fc63ce974a426025f6646cf9e3c8",
+         "b07898224d2b3c3cc2e038dcf23589c26071df02",
          []
         ],
         "the-offscreen-canvas.yaml": [
@@ -543238,29 +543214,8 @@
          {}
         ]
        ],
-       "2d.fillStyle.parse.hsl-clamp-1.html": [
-        "59d66c383c90d6a4c01ca327dd316aa4efae5608",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.fillStyle.parse.hsl-clamp-2.html": [
-        "1a1939e47af3373d083a99f2d406df360c86fe8a",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.fillStyle.parse.hsl-clamp-3.html": [
-        "56f3a0a8b540b6873f0eaeee4059b0fc71ee2025",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.fillStyle.parse.hsl-clamp-4.html": [
-        "af9d11e678c7c5a0582c64627e62ad2e8af753ab",
+       "2d.fillStyle.parse.hsl-clamp-negative-saturation.html": [
+        "65440c6228e67dff9a7572096ed532f0ea05644f",
         [
          null,
          {}
@@ -543280,43 +543235,22 @@
          {}
         ]
        ],
-       "2d.fillStyle.parse.hsla-clamp-1.html": [
-        "2acac26e1a97cdaf49a99ee795be7ff437d89977",
+       "2d.fillStyle.parse.hsla-clamp-alpha-1.html": [
+        "e5dc98d4e3a90e698407cee2954e6de004e8b58b",
         [
          null,
          {}
         ]
        ],
-       "2d.fillStyle.parse.hsla-clamp-2.html": [
-        "0f32fb5474a517c6f527d5cd217b0085d4829bb4",
+       "2d.fillStyle.parse.hsla-clamp-alpha-2.html": [
+        "26139a562ee57d63eca44d3c5348e05569f75fbe",
         [
          null,
          {}
         ]
        ],
-       "2d.fillStyle.parse.hsla-clamp-3.html": [
-        "4bc134aec5ceba79cc4991cdac16ba2a4c71c624",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.fillStyle.parse.hsla-clamp-4.html": [
-        "f8b2382755a7c51d33f34798328389aa9776a03e",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.fillStyle.parse.hsla-clamp-5.html": [
-        "9c5e2258b9e5a108daa2729969d4621262f4a778",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.fillStyle.parse.hsla-clamp-6.html": [
-        "153515eeddacbeaf784415ea9a20260795cbec54",
+       "2d.fillStyle.parse.hsla-clamp-negative-saturation.html": [
+        "2d9b9d3bdf9aec50271993fca60c5ffe25b813a7",
         [
          null,
          {}
@@ -552592,6 +552526,20 @@
          {}
         ]
        ],
+       "2d.fillStyle.parse.hsl-clamp-negative-saturation.html": [
+        "69277677b96c28a23249f932e5054ec56059dcd8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.fillStyle.parse.hsl-clamp-negative-saturation.worker.js": [
+        "7f1e91ddb7b81e42ff0e0d7a74e53f8c777f41b5",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.parse.hsl-clamp-negative-saturation.worker.html",
+         {}
+        ]
+       ],
        "2d.fillStyle.parse.hsla-1.html": [
         "67a65da730e9c7c66dec30eef1bf23a28fa2e6ce",
         [
@@ -552701,6 +552649,48 @@
         "da6cd93e2a1b4aa56819152885e8eebf9e0cd6cd",
         [
          "html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.parse.hsla-clamp-6.worker.html",
+         {}
+        ]
+       ],
+       "2d.fillStyle.parse.hsla-clamp-alpha-1.html": [
+        "5d73d34c9c64b40348dcca200359b6f6cb9ccd4d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.fillStyle.parse.hsla-clamp-alpha-1.worker.js": [
+        "7acb76d80b83aa01f59903006d8b6f557f30d582",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.parse.hsla-clamp-alpha-1.worker.html",
+         {}
+        ]
+       ],
+       "2d.fillStyle.parse.hsla-clamp-alpha-2.html": [
+        "eaf7a6af89cf0cb04641cd29c99740d3d00f7930",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.fillStyle.parse.hsla-clamp-alpha-2.worker.js": [
+        "540b3ea15f08e6dfb2b956cf9ad05a447d687d27",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.parse.hsla-clamp-alpha-2.worker.html",
+         {}
+        ]
+       ],
+       "2d.fillStyle.parse.hsla-clamp-negative-saturation.html": [
+        "04749fb4a79bbd2cf1bb54ccec985ee77aa3d301",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.fillStyle.parse.hsla-clamp-negative-saturation.worker.js": [
+        "f5fe6d4296dca10d062b76b5d3ba2f9d2af387f0",
+        [
+         "html/canvas/offscreen/fill-and-stroke-styles/2d.fillStyle.parse.hsla-clamp-negative-saturation.worker.html",
          {}
         ]
        ],
@@ -677578,7 +677568,7 @@
       ]
      ],
      "gemm.https.any.js": [
-      "b6c8e511327e38793cbd47de7724ca6618c76d26",
+      "abe0ba61936b0f11a6eade254a3e58a2ec29d11b",
       [
        "webnn/validation_tests/gemm.https.any.html",
        {
@@ -678070,7 +678060,7 @@
       ]
      ],
      "matmul.https.any.js": [
-      "6ce0d87ca1c26f67a5e20711bb7f397cc3bb202e",
+      "8db16242c9efb5612123333eb80d93167d754503",
       [
        "webnn/validation_tests/matmul.https.any.html",
        {
@@ -678662,7 +678652,7 @@
       ]
      ],
      "split.https.any.js": [
-      "38f31266037fb93cf1823dcaad05771b27971f31",
+      "6f7809744a7b6ecdceda9a9b97e50176c5b1e884",
       [
        "webnn/validation_tests/split.https.any.html",
        {
