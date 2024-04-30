@@ -5072,6 +5072,41 @@
             ]
         }
     ],
+    "CrOSLateBootDiscardStaleAtModeratePressure": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledDefaultParams",
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ]
+                },
+                {
+                    "name": "EnabledConservativeGradient",
+                    "params": {
+                        "MaxLastVisibleDurationSeconds": "7200",
+                        "MinLastVisibleDurationSeconds": "3600"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ]
+                },
+                {
+                    "name": "EnabledAggressiveGradient",
+                    "params": {
+                        "MaxLastVisibleDurationSeconds": "3600",
+                        "MinLastVisibleDurationSeconds": "300"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootDynamicEPP": [
         {
             "platforms": [
