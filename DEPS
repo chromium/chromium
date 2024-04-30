@@ -5104,20 +5104,6 @@ hooks = [
     ],
   },
 
-  # Pull down Zucchini test data.
-  {
-    'name': 'zucchini_testdata',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--num_threads=4',
-                '--bucket', 'chromium-binary-patching/zucchini_testdata',
-                '--recursive',
-                '-d', 'src/components/zucchini',
-    ],
-  },
   # Pull down WPR Archive files
   {
     'name': 'Fetch WPR archive files',

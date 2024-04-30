@@ -197,7 +197,6 @@ vs-chromium-project.txt
 /components/suggestions.xml
 /components/variations.xml
 /components/vector_icons/google_chrome/
-/components/zucchini/testdata/*.exe
 /content/browser/service_worker/proto.xml
 /content/content_browsertests_run.xml
 /content/content_common_mojo_bindings.xml
