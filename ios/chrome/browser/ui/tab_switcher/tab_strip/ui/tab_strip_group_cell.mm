@@ -73,6 +73,11 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
       }));
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  [self updateTransitionState];
+}
+
 #pragma mark - Setters
 
 - (void)setTitle:(NSString*)title {
