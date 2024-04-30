@@ -83,7 +83,7 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
   profile1.set_use_date(AutofillClock::Now() - base::Days(1));
   test_adm_.AddProfile(profile1);
 
-  AutofillProfile profile2(AddressCountryCode(""));
+  AutofillProfile profile2(AddressCountryCode("US"));
   profile2.SetRawInfo(NAME_MIDDLE, u"Jay");
   profile2.SetRawInfo(ADDRESS_HOME_LINE1, u"742 Evergreen Terrace");
   profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"12345678910");
@@ -91,7 +91,7 @@ TEST_F(AddressDataCleanerTest, ApplyDeduplicationRoutine_MergedProfileValues) {
   profile2.set_use_date(AutofillClock::Now() - base::Days(3));
   test_adm_.AddProfile(profile2);
 
-  AutofillProfile profile3(AddressCountryCode(""));
+  AutofillProfile profile3(AddressCountryCode("US"));
   profile3.SetRawInfo(NAME_MIDDLE, u"J");
   profile3.SetRawInfo(ADDRESS_HOME_LINE1, u"742 Evergreen Terrace");
   profile3.SetRawInfo(COMPANY_NAME, u"Fox");
