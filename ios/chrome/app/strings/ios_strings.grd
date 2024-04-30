@@ -5071,6 +5071,22 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Your account is managed by your parent.
 <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
+      <message name="IDS_IOS_TAB_GRID_TAB_GROUPS_EMPTY_MESSAGE" desc="Message shown underneath a title on the Tab Groups list when there are no tab groups, explaining why to use the Tab Groups list. [iOS only]">
+        Tab groups automatically save and update across all your devices.
+      </message>
+      <message name="IDS_IOS_TAB_GRID_TAB_GROUPS_EMPTY_TITLE" desc="Title shown above a message on the Tab Groups list when there are no tab groups. [iOS only]">
+        You’ll find your tab groups here
+      </message>
+      <message name="IDS_IOS_TAB_GRID_TAB_GROUPS_TITLE" desc="The accessibility label of the Tab Groups page in the tab grid UI. [iOS only]">
+        Tab Groups
+      </message>
+      <message name="IDS_IOS_TAB_GRID_TAB_GROUPS_UNAVAILABLE_MESSAGE" desc="Message shown in the Tab Groups page of the tab grid when the IncognitoModeAvailability enterprise policy is set to forced. [iOS only]">
+        Your organization requires you to browse privately. Tab Groups aren't synced in Incognito mode.
+<ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_TAB_GRID_TAB_GROUPS_UNAVAILABLE_TITLE" desc="Title shown above a message in the Tab Group Sync page of the tab grid when the IncognitoModeAvailability enterprise policy is set to forced. [iOS only]">
+        Tab Groups are Unavailable
+      </message>
       <message name="IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that revert the close all action recently taken by the user. [iOS only]">
         Undo
       </message>

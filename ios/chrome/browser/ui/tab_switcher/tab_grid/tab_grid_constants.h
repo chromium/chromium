@@ -21,6 +21,7 @@ extern const char kUMATabSwitcherIdleRegularTabGridPageHistogram[];
 extern NSString* const kTabGridIncognitoTabsPageButtonIdentifier;
 extern NSString* const kTabGridRegularTabsPageButtonIdentifier;
 extern NSString* const kTabGridRemoteTabsPageButtonIdentifier;
+extern NSString* const kTabGridTabGroupsPageButtonIdentifier;
 extern NSString* const kTabGridDoneButtonIdentifier;
 extern NSString* const kTabGridSearchButtonIdentifier;
 extern NSString* const kTabGridCancelButtonIdentifier;

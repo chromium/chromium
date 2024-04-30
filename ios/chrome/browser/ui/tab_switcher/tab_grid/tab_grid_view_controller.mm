@@ -14,6 +14,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -364,6 +365,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageRemoteTabs:
       stringID = IDS_IOS_TAB_GRID_REMOTE_TABS_TITLE;
       break;
+    case TabGridPageTabGroups:
+      stringID = IDS_IOS_TAB_GRID_TAB_GROUPS_TITLE;
+      break;
   }
   return l10n_util::GetNSString(stringID);
 }
@@ -615,6 +619,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       base::UmaHistogramBoolean(kUMATabSwitcherIdleRecentTabsHistogram,
                                 _idleRecentTabs);
       break;
+    case TabGridPage::TabGridPageTabGroups:
+      // TODO(crbug.com/329626033): Handle displaying Tab Groups.
+      NOTIMPLEMENTED();
+      break;
   }
 }
 
@@ -685,6 +693,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageRegularTabs:
       return self.regularTabsViewController;
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       return nil;
   }
 }
@@ -825,6 +834,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageRemoteTabs:
       return self.remoteTabsViewController ? self.remoteTabsViewController
                                            : self.remoteDisabledViewController;
+    case TabGridPage::TabGridPageTabGroups:
+      // TODO(crbug.com/329626033): Handle displaying Tab Groups.
+      NOTIMPLEMENTED();
+      return nil;
   }
 }
 
@@ -976,11 +989,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// YES if there are tabs present on `page`. For `TabGridPageRemoteTabs`, YES
-// if there are tabs on either of the other pages.
+// YES if there are tabs present on `page`. For `TabGridPageRemoteTabs` or
+// `TabGridPageTabGroups`, YES if there are tabs on either of the other pages.
 - (BOOL)tabsPresentForPage:(TabGridPage)page {
   switch (page) {
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       return !([self.regularTabsViewController isGridEmpty] &&
                (!IsPinnedTabsEnabled() ||
                 [self.pinnedTabsViewController isCollectionEmpty]) &&
@@ -1089,7 +1103,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Guard against opening new tabs in a page that is disabled. It is the job
   // of the caller to make sure to not open a new tab in a page that can't
   // perform the action. For example, it is an error to attempt to open a new
-  // tab in the icognito page when incognito is disabled by policy.
+  // tab in the incognito page when incognito is disabled by policy.
   CHECK([self canPerformOpenNewTabActionForDestinationPage:page]);
 
   switch (page) {
@@ -1102,7 +1116,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self.regularGridHandler addNewItem];
       break;
     case TabGridPageRemoteTabs:
-      NOTREACHED() << "It is invalid to open a new tab in remote tabs.";
+      NOTREACHED() << "It is invalid to open a new tab in Recent Tabs.";
+      break;
+    case TabGridPageTabGroups:
+      NOTREACHED() << "It is invalid to open a new tab in Tab Groups.";
       break;
   }
   self.activePage = page;
@@ -1136,7 +1153,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self openNewRegularTabForKeyboardCommand];
       break;
     case TabGridPageRemoteTabs:
-      NOTREACHED() << "It is invalid to have an active tab in remote tabs.";
+      NOTREACHED() << "It is invalid to open a new tab from Recent Tabs.";
+      break;
+    case TabGridPageTabGroups:
+      NOTREACHED() << "It is invalid to open a new tab from Tab Groups.";
       break;
   }
 }
@@ -1241,6 +1261,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       gridScrolledToTop = self.remoteTabsViewController.scrolledToTop;
       gridScrolledToBottom = self.remoteTabsViewController.scrolledToBottom;
       break;
+    case TabGridPage::TabGridPageTabGroups:
+      // TODO(crbug.com/329626033): Handle displaying Tab Groups.
+      NOTIMPLEMENTED();
+      gridScrolledToTop = YES;
+      gridScrolledToBottom = YES;
+      break;
   }
   [self.topToolbar setScrollViewScrolledToEdge:gridScrolledToTop];
   [self.bottomToolbar setScrollViewScrolledToEdge:gridScrolledToBottom];
@@ -1265,8 +1291,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       return _pageConfiguration !=
              TabGridPageConfiguration::kIncognitoPageDisabled;
     case TabGridPageRegularTabs:
-      return _pageConfiguration != TabGridPageConfiguration::kIncognitoPageOnly;
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       return _pageConfiguration != TabGridPageConfiguration::kIncognitoPageOnly;
   }
 }
@@ -1288,6 +1314,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageRegularTabs:
       return [self transitionItemForRegularActiveCell];
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       return nil;
   }
 }
@@ -1452,6 +1479,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       break;
     case TabGridPageRemoteTabs:
       self.remoteTabsViewController.searchTerms = searchText;
+      break;
+    case TabGridPage::TabGridPageTabGroups:
+      NOTREACHED() << "Tab Groups doesn't support searching";
       break;
   }
 }

@@ -9,6 +9,7 @@
 #import <algorithm>
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -52,14 +53,14 @@ UIControlEvents TabGridPageChangeByDragEvent = 1 << 25;
 // This control has an intrinsic size, and generally ignores frame changes. It's
 // not expected that its bounds will ever change.
 // Given that, it's generally simpler to used fixed (frame-based) layout for
-// most of the content of this control. However, in order to acommodate RTL
+// most of the content of this control. However, in order to accommodate RTL
 // layout, three layout guides are used to define the position of the
-// incognito, regular, and remote tab sections. The layout frames of these
+// incognito, regular, and third panel sections. The layout frames of these
 // guides are used to map points in the view to specific TabGridPage values.
 // This means that the initial view layout for this control happens in two
 // phases. -setupViews creates all of the subviews and the layout guides, but
 // the positions of the images and labels is set in -layoutSubviews, after the
-// constrainst for the guides have been applied.
+// constraints for the guides have been applied.
 
 namespace {
 
@@ -115,11 +116,21 @@ CGPoint RectCenter(CGRect rect) {
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
 }
 
-// Returns an UIImageView for the given `symbolName` and `selected` state.
-UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
+// Returns an UIImageView for the given `symbol_name` and `selected` state.
+UIImageView* ImageViewForSymbol(NSString* symbol_name,
+                                bool selected,
+                                bool is_system_symbol = false) {
   CGFloat size = selected ? kSelectedSymbolSize : kUnselectedSymbolSize;
-  return [[UIImageView alloc]
-      initWithImage:CustomSymbolTemplateWithPointSize(symbolName, size)];
+  UIImage* image = is_system_symbol
+                       ? DefaultSymbolTemplateWithPointSize(symbol_name, size)
+                       : CustomSymbolTemplateWithPointSize(symbol_name, size);
+  return [[UIImageView alloc] initWithImage:image];
+}
+
+// Returns the page that the third panel represents given the current
+// experiments.
+TabGridPage ThirdTabGridPage() {
+  return IsTabGroupSyncEnabled() ? TabGridPageTabGroups : TabGridPageRemoteTabs;
 }
 
 }  // namespace
@@ -128,7 +139,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
                                   UIPointerInteractionDelegate> {
   UIAccessibilityElement* _incognitoAccessibilityElement;
   UIAccessibilityElement* _regularAccessibilityElement;
-  UIAccessibilityElement* _remoteAccessibilityElement;
+  UIAccessibilityElement* _thirdPanelAccessibilityElement;
 }
 
 // The grey background for all the segments.
@@ -137,10 +148,10 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 // Layout guides used to position segment-specific content.
 @property(nonatomic, weak) UILayoutGuide* incognitoGuide;
 @property(nonatomic, weak) UILayoutGuide* regularGuide;
-@property(nonatomic, weak) UILayoutGuide* remoteGuide;
+@property(nonatomic, weak) UILayoutGuide* thirdPanelGuide;
 // The separator between incognito and regular tabs.
 @property(nonatomic, weak) UIView* firstSeparator;
-// The separator between the regular and remote tabs.
+// The separator between the regular and third panels.
 @property(nonatomic, weak) UIView* secondSeparator;
 // The view for the slider.
 @property(nonatomic, weak) UIView* sliderView;
@@ -154,8 +165,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 @property(nonatomic, weak) UIView* regularSelectedIcon;
 @property(nonatomic, weak) UILabel* regularLabel;
 @property(nonatomic, weak) UILabel* regularSelectedLabel;
-@property(nonatomic, weak) UIView* remoteNotSelectedIcon;
-@property(nonatomic, weak) UIView* remoteSelectedIcon;
+@property(nonatomic, weak) UIView* thirdPanelNotSelectedIcon;
+@property(nonatomic, weak) UIView* thirdPanelSelectedIcon;
 
 // Standard pointer interactions provided UIKit require views on which to attach
 // interactions. These transparent views are the size of the whole segment and
@@ -164,7 +175,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 // pointer.
 @property(nonatomic, weak) UIView* incognitoHoverView;
 @property(nonatomic, weak) UIView* regularHoverView;
-@property(nonatomic, weak) UIView* remoteHoverView;
+@property(nonatomic, weak) UIView* thirdPanelHoverView;
 
 // The center point for the slider corresponding to a `sliderPosition` of 0.
 @property(nonatomic) CGFloat sliderOrigin;
@@ -218,18 +229,25 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
     _regularAccessibilityElement.accessibilityIdentifier =
         kTabGridRegularTabsPageButtonIdentifier;
 
-    _remoteAccessibilityElement =
+    _thirdPanelAccessibilityElement =
         [[UIAccessibilityElement alloc] initWithAccessibilityContainer:self];
-    _remoteAccessibilityElement.accessibilityTraits =
+    _thirdPanelAccessibilityElement.accessibilityTraits =
         UIAccessibilityTraitButton;
-    _remoteAccessibilityElement.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_TAB_GRID_REMOTE_TABS_TITLE);
-    _remoteAccessibilityElement.accessibilityIdentifier =
-        kTabGridRemoteTabsPageButtonIdentifier;
+    if (IsTabGroupSyncEnabled()) {
+      _thirdPanelAccessibilityElement.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_TAB_GRID_TAB_GROUPS_TITLE);
+      _thirdPanelAccessibilityElement.accessibilityIdentifier =
+          kTabGridTabGroupsPageButtonIdentifier;
+    } else {
+      _thirdPanelAccessibilityElement.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_TAB_GRID_REMOTE_TABS_TITLE);
+      _thirdPanelAccessibilityElement.accessibilityIdentifier =
+          kTabGridRemoteTabsPageButtonIdentifier;
+    }
 
     self.accessibilityElements = @[
       _incognitoAccessibilityElement, _regularAccessibilityElement,
-      _remoteAccessibilityElement
+      _thirdPanelAccessibilityElement
     ];
 
     [[NSNotificationCenter defaultCenter]
@@ -256,7 +274,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
                                                       alpha:backgroundAlpha];
 }
 
-#pragma mark - Public Properies
+#pragma mark - Public Properties
 
 - (void)setSelectedPage:(TabGridPage)selectedPage {
   [self setSelectedPage:selectedPage animated:NO];
@@ -281,6 +299,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   } else if (sliderPosition < 0.75) {
     _selectedPage = TabGridPageRegularTabs;
   } else {
+    // TODO(crbug.com/329626033): Handle displaying Tab Groups.
+    //_selectedPage = ThirdTabGridPage();
     _selectedPage = TabGridPageRemoteTabs;
   }
 
@@ -321,6 +341,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
       newPosition = 0.5;
       break;
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       newPosition = 1.0;
       break;
   }
@@ -431,20 +452,21 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   self.regularSelectedLabel.center =
       [self centerOfSegment:TabGridPageRegularTabs];
 
-  self.remoteNotSelectedIcon.center =
-      [self centerOfSegment:TabGridPageRemoteTabs];
-  self.remoteSelectedIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
+  self.thirdPanelNotSelectedIcon.center =
+      [self centerOfSegment:ThirdTabGridPage()];
+  self.thirdPanelSelectedIcon.center =
+      [self centerOfSegment:ThirdTabGridPage()];
 
   self.incognitoHoverView.center =
       [self centerOfSegment:TabGridPageIncognitoTabs];
   self.regularHoverView.center = [self centerOfSegment:TabGridPageRegularTabs];
-  self.remoteHoverView.center = [self centerOfSegment:TabGridPageRemoteTabs];
+  self.thirdPanelHoverView.center = [self centerOfSegment:ThirdTabGridPage()];
 
   // Determine the slider origin and range; this is based on the layout guides
   // and can't be computed until they are determined.
   self.sliderOrigin = CGRectGetMidX(self.incognitoGuide.layoutFrame);
   self.sliderRange =
-      CGRectGetMidX(self.remoteGuide.layoutFrame) - self.sliderOrigin;
+      CGRectGetMidX(self.thirdPanelGuide.layoutFrame) - self.sliderOrigin;
 
   // Set the slider position using the new slider origin and range.
   self.sliderPosition = _sliderPosition;
@@ -466,6 +488,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
       return kTabGridRegularTabsPageButtonIdentifier;
     case TabGridPageRemoteTabs:
       return kTabGridRemoteTabsPageButtonIdentifier;
+    case TabGridPageTabGroups:
+      return kTabGridTabGroupsPageButtonIdentifier;
   }
 }
 
@@ -485,8 +509,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
       self.incognitoGuide.layoutFrame;
   _regularAccessibilityElement.accessibilityFrameInContainerSpace =
       self.regularGuide.layoutFrame;
-  _remoteAccessibilityElement.accessibilityFrameInContainerSpace =
-      self.remoteGuide.layoutFrame;
+  _thirdPanelAccessibilityElement.accessibilityFrameInContainerSpace =
+      self.thirdPanelGuide.layoutFrame;
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -504,24 +528,36 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   UIImageView* iconNotSelected;
   switch (tab) {
     case TabGridPageRegularTabs: {
-      iconSelected = ImageViewForSymbol(kSquareNumberSymbol, true);
-      iconNotSelected = ImageViewForSymbol(kSquareNumberSymbol, false);
+      iconSelected = ImageViewForSymbol(kSquareNumberSymbol, /*selected=*/true);
+      iconNotSelected =
+          ImageViewForSymbol(kSquareNumberSymbol, /*selected=*/false);
       self.regularSelectedIcon = iconSelected;
       self.regularNotSelectedIcon = iconNotSelected;
       break;
     }
     case TabGridPageIncognitoTabs: {
-      iconSelected = ImageViewForSymbol(kIncognitoSymbol, true);
-      iconNotSelected = ImageViewForSymbol(kIncognitoSymbol, false);
+      iconSelected = ImageViewForSymbol(kIncognitoSymbol, /*selected=*/true);
+      iconNotSelected =
+          ImageViewForSymbol(kIncognitoSymbol, /*selected=*/false);
       self.incognitoSelectedIcon = iconSelected;
       self.incognitoNotSelectedIcon = iconNotSelected;
       break;
     }
     case TabGridPageRemoteTabs: {
-      iconSelected = ImageViewForSymbol(kRecentTabsSymbol, true);
-      iconNotSelected = ImageViewForSymbol(kRecentTabsSymbol, false);
-      self.remoteSelectedIcon = iconSelected;
-      self.remoteNotSelectedIcon = iconNotSelected;
+      iconSelected = ImageViewForSymbol(kRecentTabsSymbol, /*selected=*/true);
+      iconNotSelected =
+          ImageViewForSymbol(kRecentTabsSymbol, /*selected=*/false);
+      self.thirdPanelSelectedIcon = iconSelected;
+      self.thirdPanelNotSelectedIcon = iconNotSelected;
+      break;
+    }
+    case TabGridPageTabGroups: {
+      iconSelected = ImageViewForSymbol(kTabGroupsSymbol, /*selected=*/true,
+                                        /*is_system_symbol=*/true);
+      iconNotSelected = ImageViewForSymbol(kTabGroupsSymbol, /*selected=*/false,
+                                           /*is_system_symbol=*/true);
+      self.thirdPanelSelectedIcon = iconSelected;
+      self.thirdPanelNotSelectedIcon = iconNotSelected;
       break;
     }
   }
@@ -557,16 +593,17 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   UILayoutGuide* regularGuide = [[UILayoutGuide alloc] init];
   [self addLayoutGuide:regularGuide];
   self.regularGuide = regularGuide;
-  UILayoutGuide* remoteGuide = [[UILayoutGuide alloc] init];
-  [self addLayoutGuide:remoteGuide];
-  self.remoteGuide = remoteGuide;
+  UILayoutGuide* thirdPanelGuide = [[UILayoutGuide alloc] init];
+  [self addLayoutGuide:thirdPanelGuide];
+  self.thirdPanelGuide = thirdPanelGuide;
 
   // All of the guides are of the same height, and vertically centered in the
   // control.
-  for (UILayoutGuide* guide in @[ incognitoGuide, regularGuide, remoteGuide ]) {
+  for (UILayoutGuide* guide in
+       @[ incognitoGuide, regularGuide, thirdPanelGuide ]) {
     [guide.heightAnchor constraintEqualToConstant:kOverallHeight].active = YES;
     // Guides are all the same width. The regular guide is centered in the
-    // control, and the incognito and remote guides are on the leading and
+    // control, and the incognito and third panel guides are on the leading and
     // trailing sides of it, with separators in between.
     [guide.widthAnchor constraintEqualToConstant:kSegmentWidth].active = YES;
     [guide.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active =
@@ -589,7 +626,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
     [regularGuide.trailingAnchor
         constraintEqualToAnchor:secondSeparator.leadingAnchor],
     [secondSeparator.trailingAnchor
-        constraintEqualToAnchor:remoteGuide.leadingAnchor],
+        constraintEqualToAnchor:thirdPanelGuide.leadingAnchor],
 
     [firstSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
     [secondSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
@@ -622,7 +659,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
   [self addTabsIcon:TabGridPageRegularTabs];
   [self addTabsIcon:TabGridPageIncognitoTabs];
-  [self addTabsIcon:TabGridPageRemoteTabs];
+  [self addTabsIcon:ThirdTabGridPage()];
 
   UILabel* regularLabel = [self labelSelected:NO];
   [self insertSubview:regularLabel belowSubview:self.sliderView];
@@ -633,7 +670,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
   self.incognitoHoverView = [self configureHoverView];
   self.regularHoverView = [self configureHoverView];
-  self.remoteHoverView = [self configureHoverView];
+  self.thirdPanelHoverView = [self configureHoverView];
 
   [self.sliderView
       addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
@@ -687,8 +724,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   TabGridPage page;
   if (CGRectContainsPoint(self.incognitoGuide.layoutFrame, point)) {
     page = TabGridPageIncognitoTabs;
-  } else if (CGRectContainsPoint(self.remoteGuide.layoutFrame, point)) {
-    page = TabGridPageRemoteTabs;
+  } else if (CGRectContainsPoint(self.thirdPanelGuide.layoutFrame, point)) {
+    page = ThirdTabGridPage();
   } else {
     // bug: taps in the left- or rightmost `kSliderOverhang` points of the
     // control will fall through to this case.
@@ -709,7 +746,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
     case TabGridPageRegularTabs:
       return RectCenter(self.regularGuide.layoutFrame);
     case TabGridPageRemoteTabs:
-      return RectCenter(self.remoteGuide.layoutFrame);
+    case TabGridPageTabGroups:
+      return RectCenter(self.thirdPanelGuide.layoutFrame);
   }
 }
 

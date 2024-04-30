@@ -47,6 +47,9 @@ NSString* GetTitleString(TabGridPage page) {
     case TabGridPageRemoteTabs:
       return l10n_util::GetNSString(
           IDS_IOS_TAB_GRID_RECENT_TABS_UNAVAILABLE_TITLE);
+    case TabGridPageTabGroups:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_GRID_TAB_GROUPS_UNAVAILABLE_TITLE);
   }
 }
 }  // namespace
@@ -177,6 +180,9 @@ NSString* GetTitleString(TabGridPage page) {
       break;
     case TabGridPageRemoteTabs:
       messageID = IDS_IOS_TAB_GRID_RECENT_TABS_UNAVAILABLE_MESSAGE;
+      break;
+    case TabGridPageTabGroups:
+      messageID = IDS_IOS_TAB_GRID_TAB_GROUPS_UNAVAILABLE_MESSAGE;
       break;
   }
 

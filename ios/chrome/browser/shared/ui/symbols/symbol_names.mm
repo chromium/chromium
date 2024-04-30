@@ -65,6 +65,7 @@ NSString* const kPhotoBadgeMagnifyingglassSymbol =
     @"photo_badge_magnifyingglass";
 NSString* const kReadingListSymbol = @"square_bullet_square";
 NSString* const kRecentTabsSymbol = @"laptopcomputer_and_phone";
+NSString* const kTabGroupsSymbol = @"square.grid.2x2";
 NSString* const kLanguageSymbol = @"language";
 NSString* const kLocationSymbol = @"location";
 NSString* const kPasswordSymbol = @"password";

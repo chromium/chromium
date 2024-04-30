@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/notimplemented.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -109,6 +110,10 @@
       break;
     case TabGridPageRemoteTabs:
       _currentPageMutator = self.remotePageMutator;
+      break;
+    case TabGridPage::TabGridPageTabGroups:
+      // TODO(crbug.com/329626033): Handle displaying Tab Groups.
+      NOTIMPLEMENTED();
       break;
   }
 }

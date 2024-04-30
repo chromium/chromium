@@ -1053,8 +1053,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       activeBrowser = self.regularBrowser;
       break;
     case TabGridPageRemoteTabs:
-      NOTREACHED() << "It is invalid to have an active tab in remote tabs.";
+      NOTREACHED() << "It is invalid to have an active tab in Recent Tabs.";
       // This appears to come up in release -- see crbug.com/1069243.
+      // Defensively early return instead of continuing.
+      return;
+    case TabGridPageTabGroups:
+      NOTREACHED() << "It is invalid to have an active tab in Tab Groups.";
+      // This may come up in release -- see crbug.com/1069243.
       // Defensively early return instead of continuing.
       return;
   }
@@ -1601,6 +1606,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     case TabGridPageRegularTabs:
       return [_regularGridCoordinator isSelectedCellVisible];
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       return NO;
   }
 }
@@ -1644,6 +1650,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       potentialGridContainer = [_regularGridCoordinator gridView];
       break;
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       NOTREACHED_NORETURN();
   }
   UIView* baseView = self.baseViewController.view;
@@ -1665,6 +1672,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           [_regularGridCoordinator gridContainerForAnimation];
       break;
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       NOTREACHED_NORETURN();
   }
   if (potentialAnimationContainer) {
@@ -1691,6 +1699,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     case TabGridPageRegularTabs:
       return [_regularGridCoordinator transitionLayout];
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       return nil;
   }
 }

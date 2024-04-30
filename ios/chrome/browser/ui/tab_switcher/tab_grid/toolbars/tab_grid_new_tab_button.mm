@@ -75,6 +75,7 @@ const CGFloat kLargeSymbolSize = 37;
           forState:UIControlStateNormal];
       break;
     case TabGridPageRemoteTabs:
+    case TabGridPageTabGroups:
       break;
   }
   _page = page;

@@ -18,7 +18,7 @@ extern UIControlEvents TabGridPageChangeByDragEvent;
 // A "slider" is positioned over the section for the selected page.
 // This is a fixed-size control; it's an error to set  or change its size.
 // The sections are arranged in leading-to-trailing order:
-//   incognito tabs, regular tabs, remote tabs.
+//   incognito tabs, regular tabs, and Recent Tabs or Tab Groups.
 //
 // Dragging the slider will change the value of the control's `sliderPosition`
 // property, and will trigger any UIControlEventValueChanged actions. Once a
@@ -35,25 +35,26 @@ extern UIControlEvents TabGridPageChangeByDragEvent;
 // animation. When an instance of this control is created, this value defaults
 // to TabGridPageRegularTabs.
 @property(nonatomic, assign) TabGridPage selectedPage;
+
 // The position of the slider, from 0.0 to 1.0, where 0.0 is as far as possible
 // to the leading side of the control, and 1.0 is as far as possible to the
 // trailing side of the control. Setting this property will update the position
 // of the slider without animation. Setting a value below 0.0 or above 1.0 will
 // set 0.0 or 1.0 instead.
-// Setting this property may change the `selectedPage` property of the reciever,
+// Setting this property may change the `selectedPage` property of the receiver,
 // but will not cause any UIControl actions to be sent.
 @property(nonatomic, assign) CGFloat sliderPosition;
 
 // The number of regular tabs that the control should display in the appropriate
 // sections.
 // Numbers less than 1 are not displayed.
-// Numbers greated than 99 are displayed as ':-)'.
+// Numbers greater than 99 are displayed as ':-)'.
 @property(nonatomic, assign) NSUInteger regularTabCount;
 
 // The number of pinned tabs that the control should display in the appropriate
 // sections.
 // Numbers less than 1 are not displayed.
-// Numbers greated than 99 are displayed as ':-)'.
+// Numbers greater than 99 are displayed as ':-)'.
 @property(nonatomic, assign) NSUInteger pinnedTabCount;
 
 // Create and return a new instance of this control. This is the preferred way

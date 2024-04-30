@@ -23,7 +23,7 @@ class GURL;
 @end
 
 // View controller representing a view without tab grids when any of the
-// incognito tab grid, regular tab grid, and remote tab is disabled.
+// incognito tab grid, regular tab grid, Recent Tabs, or Tab Groups is disabled.
 @interface DisabledGridViewController : UIViewController
 
 @property(nonatomic, weak) id<DisabledGridViewControllerDelegate> delegate;
