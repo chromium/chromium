@@ -2295,6 +2295,8 @@
         ],
       },
       'android-13-x64-rel': {
+        # TODO(crbug.com/337935399): Remove experiment after the bug is fixed.
+        'experiment_percentage': 100,
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter',
         ],
