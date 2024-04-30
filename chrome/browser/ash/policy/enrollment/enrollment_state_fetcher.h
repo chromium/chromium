@@ -20,6 +20,7 @@ class PrefService;
 
 namespace ash {
 class DeviceSettingsService;
+class OobeConfiguration;
 class SystemClockClient;
 }
 
@@ -82,7 +83,8 @@ class EnrollmentStateFetcher {
           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
           ash::SystemClockClient* system_clock_client,
           ServerBackedStateKeysBroker* state_key_broker,
-          ash::DeviceSettingsService* device_settings_service)>;
+          ash::DeviceSettingsService* device_settings_service,
+          ash::OobeConfiguration* oobe_configuration)>;
 
   // Creates an instance of EnrollmentStateFetcher.
   //
@@ -95,7 +97,8 @@ class EnrollmentStateFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       ash::SystemClockClient* system_clock_client,
       ServerBackedStateKeysBroker* state_key_broker,
-      ash::DeviceSettingsService* device_settings_service);
+      ash::DeviceSettingsService* device_settings_service,
+      ash::OobeConfiguration* oobe_configuration);
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

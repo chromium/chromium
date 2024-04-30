@@ -84,9 +84,6 @@ class AutoEnrollmentTypeChecker {
 
   // Returns true if forced re-enrollment is enabled based on command-line
   // switch and official build status.
-  //
-  // Also returns true when unified enrollment is enabled. This allows legacy
-  // code to handle the unified enrollment state determination correctly.
   static bool IsFREEnabled();
 
   // Returns true if initial enrollment is enabled based on command-line

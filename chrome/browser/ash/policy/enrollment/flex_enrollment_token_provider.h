@@ -17,6 +17,9 @@ namespace policy {
 // Returns the Flex enrollment token if the token is present in the OOBE config
 // and the device is a legitimate candidate for attempting Flex Auto Enrollment.
 // Returns an empty optional otherwise.
+//
+// TODO(b/331285209): Rename this method to GetEnrollmentToken as part of the
+// effort to dissociate "Flex" with enrollment tokens.
 std::optional<std::string> GetFlexEnrollmentToken(
     ash::OobeConfiguration* oobe_config);
 

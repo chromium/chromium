@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
+#include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/device_disabled_screen.h"
@@ -352,7 +353,8 @@ class ScopedEnrollmentStateFetcherFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       ash::SystemClockClient* system_clock_client,
       policy::ServerBackedStateKeysBroker* state_key_broker,
-      ash::DeviceSettingsService* device_settings_service) {
+      ash::DeviceSettingsService* device_settings_service,
+      OobeConfiguration* oobe_configuration) {
     // Only allow one `EnrollmentStateFetcher` to be created. The test should
     // call `Reset` to expect a new `EnrollmentStateFetcher` to be created.
     EXPECT_FALSE(fetcher_created_);

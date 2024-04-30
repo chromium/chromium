@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
@@ -143,6 +144,43 @@ MATCHER_P3(JobWithStateRequest, state_key, serial_number, brand_code, "") {
          state_request.brand_code() == brand_code;
 }
 
+MATCHER_P3(JobWithEnrollmentTokenStateRequest,
+           enrollment_token,
+           serial_number,
+           brand_code,
+           "") {
+  DeviceManagementService::JobConfiguration* config =
+      arg.GetConfigurationForTesting();
+  if (config->GetType() !=
+      DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL) {
+    return false;
+  }
+  em::DeviceManagementRequest request;
+  request.ParseFromString(config->GetPayload());
+  if (!request.has_device_state_retrieval_request()) {
+    return false;
+  }
+  const auto& state_request = request.device_state_retrieval_request();
+  return state_request.enrollment_token() == enrollment_token &&
+         state_request.serial_number() == serial_number &&
+         state_request.brand_code() == brand_code;
+}
+
+MATCHER(JobWithStateRequestWithNoEnrollmentToken, "") {
+  DeviceManagementService::JobConfiguration* config =
+      arg.GetConfigurationForTesting();
+  if (config->GetType() !=
+      DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL) {
+    return false;
+  }
+  em::DeviceManagementRequest request;
+  request.ParseFromString(config->GetPayload());
+  if (!request.has_device_state_retrieval_request()) {
+    return false;
+  }
+  return !request.device_state_retrieval_request().has_enrollment_token();
+}
+
 MATCHER(WithAnyOprfRequest, "") {
   return arg.has_oprf_request();
 }
@@ -196,7 +234,8 @@ class EnrollmentStateFetcherTest : public testing::Test {
         future.GetCallback(), &local_state_,
         base::BindRepeating(&CreateRlweClientForTesting, psm_test_case_),
         fake_dm_service_.get(), shared_url_loader_factory_, &system_clock_,
-        &state_key_broker_, &device_settings_service_);
+        &state_key_broker_, &device_settings_service_,
+        flex_test_helper_.oobe_configuration());
     fetcher->Start();
     return future.Get();
   }
@@ -262,6 +301,25 @@ class EnrollmentStateFetcherTest : public testing::Test {
         .WillOnce(DoAll(
             InvokeWithoutArgs([=]() { task_environment_.AdvanceClock(time); }),
             fake_dm_service_->SendJobOKAsync(response)));
+  }
+
+  em::DeviceManagementResponse CreateTokenEnrollmentStateResponse() {
+    em::DeviceManagementResponse response;
+    auto* state_response = response.mutable_device_state_retrieval_response()
+                               ->mutable_initial_state_response();
+    state_response->set_initial_enrollment_mode(
+        em::DeviceInitialEnrollmentStateResponse::
+            INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED);
+    return response;
+  }
+
+  void ExpectStateRetrievalRequestWithEnrollmentToken(
+      const em::DeviceManagementResponse& response) {
+    EXPECT_CALL(job_creation_handler_,
+                OnJobCreation(JobWithEnrollmentTokenStateRequest(
+                    policy::test::kFlexEnrollmentToken, kTestSerialNumber,
+                    kTestBrandCode)))
+        .WillOnce(fake_dm_service_->SendJobOKAsync(response));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -521,7 +579,8 @@ TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
                     .value();
           }),
       fake_dm_service_.get(), shared_url_loader_factory_, &system_clock_,
-      &state_key_broker_, &device_settings_service_);
+      &state_key_broker_, &device_settings_service_,
+      flex_test_helper_.oobe_configuration());
 
   fetcher->Start();
   AutoEnrollmentState state = future.Get();
@@ -1187,6 +1246,131 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPackagedLicense) {
   EXPECT_EQ(*device_state.FindString(kDeviceStateLicenseType),
             kDeviceStateLicenseTypeEnterprise);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(EnrollmentStateFetcherTest,
+       DeviceNotOnFlexDoesNotSendEnrollmentTokenInStateRequest) {
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
+  em::DeviceManagementResponse response;
+  auto* state_response = response.mutable_device_state_retrieval_response()
+                             ->mutable_initial_state_response();
+  state_response->set_initial_enrollment_mode(
+      em::DeviceInitialEnrollmentStateResponse::
+          INITIAL_ENROLLMENT_MODE_ZERO_TOUCH_ENFORCED);
+  EXPECT_CALL(job_creation_handler_,
+              OnJobCreation(JobWithStateRequestWithNoEnrollmentToken()))
+      .WillOnce(fake_dm_service_->SendJobOKAsync(response));
+
+  const AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
+}
+
+TEST_F(EnrollmentStateFetcherTest,
+       EnrollmentTokenPresentWithFREDisabledSkipsStateKeys) {
+  flex_test_helper_.SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
+  ExpectStateRetrievalRequestWithEnrollmentToken(
+      CreateTokenEnrollmentStateResponse());
+
+  const AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
+  const base::Value::Dict& device_state =
+      local_state_.GetDict(prefs::kServerBackedDeviceState);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
+  ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
+            kDeviceStateInitialModeTokenEnrollment);
+  EXPECT_FALSE(device_state.FindString(kDeviceStateModeDisabled));
+  EXPECT_FALSE(device_state.FindString(kDeviceStateLicenseType));
+  EXPECT_FALSE(device_state.FindString(kDeviceStatePackagedLicense));
+  EXPECT_FALSE(device_state.FindString(kDeviceStateAssignedUpgradeType));
+}
+
+TEST_F(EnrollmentStateFetcherTest,
+       EnrollmentTokenPresentWithFREEnabledRetrievesStateKeys) {
+  flex_test_helper_.EnableFREOnFlex();
+  flex_test_helper_.SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
+  ExpectStateRetrievalRequestWithEnrollmentToken(
+      CreateTokenEnrollmentStateResponse());
+
+  const AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
+  const base::Value::Dict& device_state =
+      local_state_.GetDict(prefs::kServerBackedDeviceState);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
+  ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
+            kDeviceStateInitialModeTokenEnrollment);
+}
+
+TEST_F(EnrollmentStateFetcherTest,
+       EnrollmentTokenPresentNoPsmStateStillDoesStateRetrieval) {
+  psm_test_case_ = psm::testing::LoadTestCase(false);
+  flex_test_helper_.SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
+  ExpectStateRetrievalRequestWithEnrollmentToken(
+      CreateTokenEnrollmentStateResponse());
+
+  const AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
+  const base::Value::Dict& device_state =
+      local_state_.GetDict(prefs::kServerBackedDeviceState);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
+  ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
+            kDeviceStateInitialModeTokenEnrollment);
+}
+
+TEST_F(EnrollmentStateFetcherTest,
+       EnrollmentTokenPresentServerRespondsWithKioskUpgradeType) {
+  flex_test_helper_.SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
+  ExpectOwnershipCheck();
+  ExpectOprfRequest();
+  ExpectQueryRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
+  em::DeviceManagementResponse response;
+  auto* state_response = response.mutable_device_state_retrieval_response()
+                             ->mutable_initial_state_response();
+  state_response->set_initial_enrollment_mode(
+      em::DeviceInitialEnrollmentStateResponse::
+          INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED);
+  state_response->set_assigned_upgrade_type(
+      em::DeviceInitialEnrollmentStateResponse::
+          ASSIGNED_UPGRADE_TYPE_KIOSK_AND_SIGNAGE);
+  ExpectStateRetrievalRequestWithEnrollmentToken(response);
+
+  const AutoEnrollmentState state = FetchEnrollmentState();
+
+  EXPECT_EQ(state, AutoEnrollmentResult::kEnrollment);
+  const base::Value::Dict& device_state =
+      local_state_.GetDict(prefs::kServerBackedDeviceState);
+  ASSERT_TRUE(device_state.FindString(kDeviceStateMode));
+  ASSERT_EQ(*device_state.FindString(kDeviceStateMode),
+            kDeviceStateInitialModeTokenEnrollment);
+  ASSERT_EQ(*device_state.FindString(kDeviceStateAssignedUpgradeType),
+            kDeviceStateAssignedUpgradeTypeKiosk);
+}
+
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // An enum for the kind of Chromium OS running on the device.
 enum class DeviceOs { Chrome = 0, Flex = 1 };

@@ -15,6 +15,9 @@ namespace policy::test {
 extern const char kFlexEnrollmentToken[];
 extern const char kFlexEnrollmentTokenOobeConfig[];
 
+// TODO(b/331285209): Rename this class to "EnrollmentTestHelper" as part of
+// the effort to dissociate "Flex" with enrollment tokens, and so we can
+// include other non-Flex test helper methods here.
 class FlexEnrollmentTestHelper {
  public:
   FlexEnrollmentTestHelper(
