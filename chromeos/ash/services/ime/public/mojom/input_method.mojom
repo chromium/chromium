@@ -460,7 +460,7 @@ struct JapaneseSettings {
   };
 
   // This is a legacy field that is no longer used.
-  JpUnusedStruct unused@0;
+  JpUnusedStruct? unused@0;
 
   [MinVersion=22] InputMode input_mode@1;
   [MinVersion=22] PunctuationStyle punctuation_style@2;
