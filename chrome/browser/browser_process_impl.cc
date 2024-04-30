@@ -1058,6 +1058,15 @@ os_crypt_async::OSCryptAsync* BrowserProcessImpl::os_crypt_async() {
   return os_crypt_async_.get();
 }
 
+void BrowserProcessImpl::set_additional_os_crypt_async_provider_for_test(
+    size_t precedence,
+    std::unique_ptr<os_crypt_async::KeyProvider> provider) {
+  CHECK(!additional_provider_for_test_);
+  CHECK(!os_crypt_async_);
+  additional_provider_for_test_.emplace(
+      std::make_pair(precedence, std::move(provider)));
+}
+
 BuildState* BrowserProcessImpl::GetBuildState() {
 #if !BUILDFLAG(IS_ANDROID)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1332,6 +1341,14 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   // encryption operations to OSCrypt.
   std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
       providers;
+
+  if (additional_provider_for_test_) {
+    // Explicitly move the KeyProvider but leave the std::optional holding the
+    // pair, this ensures it can only be set once in testing.
+    providers.push_back(
+        std::make_pair(std::get<0>(*additional_provider_for_test_),
+                       std::move(std::get<1>(*additional_provider_for_test_))));
+  }
 
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/40241934): For Windows, continue to add providers behind

@@ -92,6 +92,7 @@ class NetworkTimeTracker;
 }
 
 namespace os_crypt_async {
+class KeyProvider;
 class OSCryptAsync;
 }
 
@@ -290,6 +291,12 @@ class BrowserProcess {
   // Obtain the browser instance of OSCryptAsync, which should be used for data
   // encryption.
   virtual os_crypt_async::OSCryptAsync* os_crypt_async() = 0;
+
+  // Add an additional OSCryptAsync provider for use in tests. Should only be
+  // called once, during startup.
+  virtual void set_additional_os_crypt_async_provider_for_test(
+      size_t precedence,
+      std::unique_ptr<os_crypt_async::KeyProvider> provider) = 0;
 
   virtual BuildState* GetBuildState() = 0;
 };

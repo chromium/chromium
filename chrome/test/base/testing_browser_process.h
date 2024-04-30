@@ -164,6 +164,10 @@ class TestingBrowserProcess : public BrowserProcess {
   UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
   os_crypt_async::OSCryptAsync* os_crypt_async() override;
+  void set_additional_os_crypt_async_provider_for_test(
+      size_t precedence,
+      std::unique_ptr<os_crypt_async::KeyProvider> provider) override;
+
   BuildState* GetBuildState() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up

@@ -22,9 +22,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/after_startup_task_utils.h"
@@ -80,6 +82,7 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -282,6 +285,52 @@ bool IsTestControllerAvailable() {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// This extra parts adds a test key provider to make sure that async
+// initialization of OSCrypt Async always happens during browser_tests, but
+// otherwise does nothing.
+class OSCryptAsyncExtraSetUp : public ChromeBrowserMainExtraParts {
+ public:
+  void PostEarlyInitialization() override {
+    g_browser_process->set_additional_os_crypt_async_provider_for_test(
+        // Lowest precedence, any other registered key provider should always
+        // take precedence over this one.
+        /*precedence=*/1u,
+        std::make_unique<SlowTestKeyProvider>(base::Milliseconds(10)));
+  }
+
+ private:
+  class SlowTestKeyProvider : public os_crypt_async::KeyProvider {
+   public:
+    explicit SlowTestKeyProvider(base::TimeDelta sleep_time)
+        : sleep_time_(sleep_time) {}
+
+   private:
+    void GetKey(KeyCallback callback) override {
+      // Fixed key.
+      os_crypt_async::Encryptor::Key key(
+          std::vector<uint8_t>(
+              os_crypt_async::Encryptor::Key::kAES256GCMKeySize, 0xCE),
+          os_crypt_async::mojom::Algorithm::kAES256GCM);
+
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](KeyCallback callback, os_crypt_async::Encryptor::Key key) {
+                std::move(callback).Run("test_key_provider", std::move(key));
+              },
+              std::move(callback), std::move(key)),
+          sleep_time_);
+    }
+
+    // It's important this does not get used for encrypt because otherwise tests
+    // that verify rollback from async to sync will fail as data might be
+    // encrypted with the test key above.
+    bool UseForEncryption() override { return false; }
+    bool IsCompatibleWithOsCryptSync() override { return false; }
+    const base::TimeDelta sleep_time_;
+  };
+};
 
 void EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt() {
   NotificationDisplayServiceTester::EnsureFactoryBuilt();
@@ -704,6 +753,8 @@ void InProcessBrowserTest::CreatedBrowserMainParts(
   static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
       std::make_unique<IdentityExtraSetUp>());
 #endif
+  static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+      std::make_unique<OSCryptAsyncExtraSetUp>());
 }
 
 void InProcessBrowserTest::SelectFirstBrowser() {

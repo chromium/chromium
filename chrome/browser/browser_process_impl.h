@@ -15,6 +15,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -75,6 +76,7 @@ class GCMDriver;
 }
 
 namespace os_crypt_async {
+class KeyProvider;
 class OSCryptAsync;
 }
 
@@ -229,6 +231,10 @@ class BrowserProcessImpl : public BrowserProcess,
 #endif
 
   os_crypt_async::OSCryptAsync* os_crypt_async() override;
+
+  void set_additional_os_crypt_async_provider_for_test(
+      size_t precedence,
+      std::unique_ptr<os_crypt_async::KeyProvider> provider) override;
 
   BuildState* GetBuildState() override;
 
@@ -475,6 +481,9 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<base::CallbackListSubscription>
       os_crypt_async_init_subscription_;
+
+  std::optional<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      additional_provider_for_test_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

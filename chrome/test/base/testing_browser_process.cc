@@ -531,6 +531,13 @@ os_crypt_async::OSCryptAsync* TestingBrowserProcess::os_crypt_async() {
   return os_crypt_async_.get();
 }
 
+void TestingBrowserProcess::set_additional_os_crypt_async_provider_for_test(
+    size_t precedence,
+    std::unique_ptr<os_crypt_async::KeyProvider> provider) {
+  // Not implemented.
+  CHECK(false);
+}
+
 BuildState* TestingBrowserProcess::GetBuildState() {
 #if !BUILDFLAG(IS_ANDROID)
   return &build_state_;
