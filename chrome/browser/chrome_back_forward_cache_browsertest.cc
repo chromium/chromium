@@ -898,7 +898,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Flaky on Mac and ChromeOS: crbug.com/1492026
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
+    ((BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)))
 #define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded DISABLED_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
 #else
 #define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
