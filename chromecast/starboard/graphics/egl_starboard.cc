@@ -14,6 +14,8 @@
 
 extern "C" {
 
+constexpr char kSupportedExtensions[] = "EGL_EXT_client_extensions";
+
 EGLBoolean Sb_eglChooseConfig(EGLDisplay dpy,
                               const EGLint* attrib_list,
                               EGLConfig* configs,
@@ -132,6 +134,16 @@ EGLBoolean Sb_eglQueryContext(EGLDisplay dpy,
 }
 
 const char* Sb_eglQueryString(EGLDisplay dpy, EGLint name) {
+  if (dpy == EGL_NO_DISPLAY && name == EGL_EXTENSIONS) {
+    // Report that we do not support any additional client extensions. See
+    // https://registry.khronos.org/EGL/sdk/docs/man/html/eglQueryString.xhtml
+    // for more details about the eglQueryString API.
+    //
+    // If any ANGLE platforms were returned here, chromium would attempt to use
+    // an ANGLE ozone implementation rather than the EGL implementation
+    // supported by cast.
+    return kSupportedExtensions;
+  }
   return SbGetEglInterface()->eglQueryString(dpy, name);
 }
 
