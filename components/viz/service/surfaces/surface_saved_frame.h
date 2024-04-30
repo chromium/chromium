@@ -29,7 +29,7 @@ class Surface;
 
 class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  public:
-  using TransitionDirectiveCompleteCallback =
+  using CopyFinishedCallback =
       base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
 
   struct RenderPassDrawData {
@@ -82,7 +82,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
   SurfaceSavedFrame(CompositorFrameTransitionDirective directive,
                     gpu::SharedImageInterface* shared_image_interface,
-                    TransitionDirectiveCompleteCallback finished_callback);
+                    CopyFinishedCallback finished_callback);
   ~SurfaceSavedFrame();
 
   // Returns true iff the frame is valid and complete.
@@ -145,7 +145,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
   CompositorFrameTransitionDirective directive_;
   raw_ptr<gpu::SharedImageInterface> shared_image_interface_;
-  TransitionDirectiveCompleteCallback directive_finished_callback_;
+  CopyFinishedCallback directive_finished_callback_;
 
   // Store the blit images while the copy output request is ongoing.
   base::flat_map<size_t, scoped_refptr<gpu::ClientSharedImage>>

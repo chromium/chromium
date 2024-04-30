@@ -68,7 +68,7 @@ std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrame::CreateForTesting(
 SurfaceSavedFrame::SurfaceSavedFrame(
     CompositorFrameTransitionDirective directive,
     gpu::SharedImageInterface* shared_image_interface,
-    TransitionDirectiveCompleteCallback directive_finished_callback)
+    CopyFinishedCallback directive_finished_callback)
     : directive_(std::move(directive)),
       shared_image_interface_(shared_image_interface),
       directive_finished_callback_(std::move(directive_finished_callback)) {

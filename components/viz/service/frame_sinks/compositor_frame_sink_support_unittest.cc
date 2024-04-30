@@ -279,7 +279,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
 
   bool SupportHasSurfaceAnimationManager(
       CompositorFrameSinkSupport* support) const {
-    return !!support->surface_animation_manager_;
+    return !support->view_transition_token_to_animation_manager_.empty();
   }
 
  protected:

@@ -280,7 +280,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       std::unique_ptr<SurfaceAnimationManager> manager);
   std::unique_ptr<SurfaceAnimationManager> TakeSurfaceAnimationManager(
       const blink::ViewTransitionToken& transition_token);
-  void ClearSurfaceAnimationManager(
+  // Returns true if an entry for this token was erased.
+  bool ClearSurfaceAnimationManager(
       const blink::ViewTransitionToken& transition_token);
 
   FrameCounter* frame_counter() {

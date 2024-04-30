@@ -891,9 +891,9 @@ FrameSinkManagerImpl::TakeSurfaceAnimationManager(
   return manager;
 }
 
-void FrameSinkManagerImpl::ClearSurfaceAnimationManager(
+bool FrameSinkManagerImpl::ClearSurfaceAnimationManager(
     const blink::ViewTransitionToken& transition_token) {
-  transition_token_to_animation_manager_.erase(transition_token);
+  return transition_token_to_animation_manager_.erase(transition_token);
 }
 
 void FrameSinkManagerImpl::OnScreenshotCaptured(

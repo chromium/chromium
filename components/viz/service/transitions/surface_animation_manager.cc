@@ -137,7 +137,7 @@ SurfaceAnimationManager::CreateWithSave(
     SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
-    TransitionDirectiveCompleteCallback sequence_id_finished_callback) {
+    SaveDirectiveCompleteCallback sequence_id_finished_callback) {
   return base::WrapUnique(new SurfaceAnimationManager(
       directive, surface, shared_bitmap_manager, shared_image_interface,
       id_tracker, std::move(sequence_id_finished_callback)));
@@ -149,12 +149,19 @@ SurfaceAnimationManager::SurfaceAnimationManager(
     SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
-    TransitionDirectiveCompleteCallback sequence_id_finished_callback)
+    SaveDirectiveCompleteCallback sequence_id_finished_callback)
     : transferable_resource_tracker_(shared_bitmap_manager, id_tracker) {
   DCHECK(directive.type() == CompositorFrameTransitionDirective::Type::kSave);
+
+  // The SurfaceSavedFrame can dispatch the result asynchronously so use a weak
+  // ptr.
+  auto copy_finished_callback =
+      base::BindOnce(&SurfaceAnimationManager::OnSaveDirectiveProcessed,
+                     weak_factory_.GetMutableWeakPtr(),
+                     std::move(sequence_id_finished_callback));
+
   saved_frame_ = std::make_unique<SurfaceSavedFrame>(
-      directive, shared_image_interface,
-      std::move(sequence_id_finished_callback));
+      directive, shared_image_interface, std::move(copy_finished_callback));
   saved_frame_->RequestCopyOfOutput(surface);
   empty_resource_ids_ = saved_frame_->GetEmptyResourceIds();
 }
@@ -165,16 +172,26 @@ SurfaceAnimationManager::~SurfaceAnimationManager() {
   saved_textures_.reset();
 }
 
-void SurfaceAnimationManager::Animate() {
-  if (animating_)
-    return;
+void SurfaceAnimationManager::OnSaveDirectiveProcessed(
+    SaveDirectiveCompleteCallback callback,
+    const CompositorFrameTransitionDirective& directive) {
+  CHECK_EQ(stage_, Stage::kPendingCopy);
+  stage_ = Stage::kWaitingForAnimate;
+  std::move(callback).Run(directive);
+}
+
+bool SurfaceAnimationManager::Animate() {
+  if (stage_ != Stage::kWaitingForAnimate) {
+    return false;
+  }
+
+  stage_ = Stage::kAnimating;
 
   DCHECK(!saved_textures_);
-  animating_ = true;
   if (!saved_frame_ || !saved_frame_->IsValid()) {
     LOG(ERROR) << "Failure in caching shared element snapshots";
     saved_frame_.reset();
-    return;
+    return true;
   }
 
   // Import the saved frame, which converts it to a ResourceFrame -- a
@@ -182,6 +199,7 @@ void SurfaceAnimationManager::Animate() {
   saved_textures_.emplace(
       transferable_resource_tracker_.ImportResources(std::move(saved_frame_)));
   empty_resource_ids_.clear();
+  return true;
 }
 
 void SurfaceAnimationManager::ReceiveFromChild(
@@ -212,10 +230,14 @@ void SurfaceAnimationManager::UnrefResources(
   }
 }
 
+// static
 bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
     std::vector<TransferableResource>* resource_list,
     const base::flat_map<ViewTransitionElementResourceId,
                          CompositorRenderPass*>* element_id_to_pass,
+    const base::flat_map<blink::ViewTransitionToken,
+                         std::unique_ptr<SurfaceAnimationManager>>*
+        token_to_animation_manager,
     const DrawQuad& quad,
     CompositorRenderPass& copy_pass) {
   if (quad.material != DrawQuad::Material::kSharedElement)
@@ -231,16 +253,26 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
     return true;
   }
 
-  if (saved_textures_) {
-    auto texture_it = saved_textures_->element_id_to_resource.find(
+  auto manager_it = token_to_animation_manager->find(
+      shared_element_quad.resource_id.transition_token());
+  if (manager_it == token_to_animation_manager->end()) {
+    LOG(ERROR) << "No SurfaceAnimationManager for token : "
+               << shared_element_quad.resource_id.transition_token().ToString();
+    return true;
+  }
+
+  auto& saved_textures = manager_it->second->saved_textures_;
+  if (saved_textures) {
+    auto texture_it = saved_textures->element_id_to_resource.find(
         shared_element_quad.resource_id);
 
-    if (texture_it != saved_textures_->element_id_to_resource.end()) {
+    if (texture_it != saved_textures->element_id_to_resource.end()) {
       const auto& transferable_resource = texture_it->second;
       if (transferable_resource.is_null())
         return true;
 
       resource_list->push_back(transferable_resource);
+      manager_it->second->RefResources({transferable_resource});
 
       ReplaceSharedElementWithTexture(&copy_pass, shared_element_quad,
                                       resource_list->back().id);
@@ -248,8 +280,10 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
     }
   }
 
-  if (empty_resource_ids_.count(shared_element_quad.resource_id) > 0)
+  if (manager_it->second->empty_resource_ids_.count(
+          shared_element_quad.resource_id) > 0) {
     return true;
+  }
 
 #if DCHECK_IS_ON()
   LOG(ERROR) << "Content not found for shared element: "
@@ -260,10 +294,10 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
                << " -> RenderPassId: " << render_pass->id.GetUnsafeValue();
   }
 
-  if (saved_textures_) {
+  if (saved_textures) {
     LOG(ERROR) << "Known saved textures:";
     for (const auto& [shared_resource_id, transferable_resource] :
-         saved_textures_->element_id_to_resource) {
+         saved_textures->element_id_to_resource) {
       LOG(ERROR) << " " << shared_resource_id.ToString();
     }
   }
@@ -276,7 +310,12 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
   return true;
 }
 
-void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
+// static
+void SurfaceAnimationManager::ReplaceSharedElementResources(
+    Surface* surface,
+    const base::flat_map<blink::ViewTransitionToken,
+                         std::unique_ptr<SurfaceAnimationManager>>&
+        token_to_animation_manager) {
   const auto& active_frame = surface->GetActiveFrame();
   if (!active_frame.metadata.has_shared_element_resources)
     return;
@@ -289,8 +328,9 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
       element_id_to_pass;
   TransitionUtils::FilterCallback filter_callback = base::BindRepeating(
       &SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource,
-      base::Unretained(this), base::Unretained(&resolved_frame.resource_list),
-      base::Unretained(&element_id_to_pass));
+      base::Unretained(&resolved_frame.resource_list),
+      base::Unretained(&element_id_to_pass),
+      base::Unretained(&token_to_animation_manager));
 
   for (auto& render_pass : active_frame.render_pass_list) {
     auto copy_requests = std::move(render_pass->copy_requests);
@@ -311,7 +351,6 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
     resolved_frame.render_pass_list.push_back(std::move(pass_copy));
   }
 
-  RefResources(resolved_frame.resource_list);
   surface->SetActiveFrameForViewTransition(std::move(resolved_frame));
 }
 

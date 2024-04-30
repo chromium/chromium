@@ -44,7 +44,7 @@ struct TransferableResource;
 class VIZ_SERVICE_EXPORT SurfaceAnimationManager
     : public ReservedResourceDelegate {
  public:
-  using TransitionDirectiveCompleteCallback =
+  using SaveDirectiveCompleteCallback =
       base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
 
   static std::unique_ptr<SurfaceAnimationManager> CreateWithSave(
@@ -53,11 +53,20 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
-      TransitionDirectiveCompleteCallback sequence_id_finished_callback);
+      SaveDirectiveCompleteCallback sequence_id_finished_callback);
+
+  // Replaces ViewTransitionElementResourceIds with corresponding ResourceIds if
+  // necessary.
+  static void ReplaceSharedElementResources(
+      Surface* surface,
+      const base::flat_map<blink::ViewTransitionToken,
+                           std::unique_ptr<SurfaceAnimationManager>>&
+          token_to_animation_manager);
 
   ~SurfaceAnimationManager() override;
 
-  void Animate();
+  // Returns false if it is invalid to start the animation phase.
+  bool Animate();
 
   // ReservedResourceDelegate:
   void ReceiveFromChild(
@@ -66,12 +75,18 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       const std::vector<TransferableResource>& resources) override;
   void UnrefResources(const std::vector<ReturnedResource>& resources) override;
 
-  // Replaced ViewTransitionElementResourceIds with corresponding ResourceIds if
-  // necessary.
-  void ReplaceSharedElementResources(Surface* surface);
-
  private:
   friend class SurfaceAnimationManagerTest;
+
+  static bool FilterSharedElementsWithRenderPassOrResource(
+      std::vector<TransferableResource>* resource_list,
+      const base::flat_map<ViewTransitionElementResourceId,
+                           CompositorRenderPass*>* element_id_to_pass,
+      const base::flat_map<blink::ViewTransitionToken,
+                           std::unique_ptr<SurfaceAnimationManager>>*
+          token_to_animation_manager,
+      const DrawQuad& quad,
+      CompositorRenderPass& copy_pass);
 
   SurfaceAnimationManager(
       const CompositorFrameTransitionDirective& directive,
@@ -79,25 +94,23 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageInterface* shared_image_interface,
       ReservedResourceIdTracker* id_tracker,
-      TransitionDirectiveCompleteCallback sequence_id_finished_callback);
+      SaveDirectiveCompleteCallback sequence_id_finished_callback);
 
-  bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,
-                            Surface* surface);
+  void OnSaveDirectiveProcessed(
+      SaveDirectiveCompleteCallback callback,
+      const CompositorFrameTransitionDirective& directive);
 
-  bool FilterSharedElementsWithRenderPassOrResource(
-      std::vector<TransferableResource>* resource_list,
-      const base::flat_map<ViewTransitionElementResourceId,
-                           CompositorRenderPass*>* element_id_to_pass,
-      const DrawQuad& quad,
-      CompositorRenderPass& copy_pass);
+  enum class Stage { kPendingCopy, kWaitingForAnimate, kAnimating };
+  Stage stage_ = Stage::kPendingCopy;
 
-  bool animating_ = false;
   TransferableResourceTracker transferable_resource_tracker_;
 
   std::unique_ptr<SurfaceSavedFrame> saved_frame_;
   base::flat_set<ViewTransitionElementResourceId> empty_resource_ids_;
 
   std::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;
+
+  base::WeakPtrFactory<SurfaceAnimationManager> weak_factory_{this};
 };
 
 }  // namespace viz
