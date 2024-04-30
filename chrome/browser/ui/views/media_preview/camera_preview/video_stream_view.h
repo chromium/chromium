@@ -36,7 +36,8 @@ class VideoStreamView : public views::View, public viz::ContextLostObserver {
  protected:
   // views::View overrides
   int GetHeightForWidth(int w) const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:

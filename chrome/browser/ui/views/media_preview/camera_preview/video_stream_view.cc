@@ -127,7 +127,8 @@ int VideoStreamView::GetHeightForWidth(int w) const {
   return w / current_aspect_ratio_;
 }
 
-gfx::Size VideoStreamView::CalculatePreferredSize() const {
+gfx::Size VideoStreamView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   return gfx::Size(width(), GetHeightForWidth(width()));
 }
 

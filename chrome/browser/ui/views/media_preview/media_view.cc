@@ -27,8 +27,11 @@ void MediaView::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
 
-gfx::Size MediaView::CalculatePreferredSize() const {
-  return {width(), views::BoxLayoutView::CalculatePreferredSize().height()};
+gfx::Size MediaView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return {
+      width(),
+      views::BoxLayoutView::CalculatePreferredSize(available_size).height()};
 }
 
 MediaView::~MediaView() = default;

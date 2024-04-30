@@ -23,7 +23,8 @@ class MediaView : public views::BoxLayoutView {
  protected:
   // views::BoxLayoutView
   void ChildPreferredSizeChanged(View* child) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_VIEW_H_
