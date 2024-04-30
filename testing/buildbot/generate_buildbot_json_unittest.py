@@ -778,6 +778,20 @@ FOO_TEST_SUITE = """\
 }
 """
 
+FOO_TEST_SUITE_ANDROID_SWARMING = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'foo_test': {
+        'android_swarming': {
+          'shards': 100,
+        },
+      },
+    },
+  },
+}
+"""
+
 FOO_TEST_SUITE_NO_DIMENSIONS = """\
 {
   'basic_suites': {
@@ -2162,6 +2176,12 @@ class UnitTest(TestCase):
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
+  def test_android_swarming(self):
+    fbb = FakeBBGen(self.args, ANDROID_WATERFALL,
+                    FOO_TEST_SUITE_ANDROID_SWARMING, LUCI_MILO_CFG)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
   def test_nonexistent_removal_raises(self):
     fbb = FakeBBGen(self.args,
                     FOO_GTESTS_WATERFALL,
@@ -2415,26 +2435,6 @@ FOO_LINUX_GTESTS_BUILDER_MIXIN_WATERFALL = """\
             'os': 'Linux',
           },
         },
-        'test_suites': {
-          'gtest_tests': 'foo_tests',
-        },
-      },
-    },
-  },
-]
-"""
-
-FOO_GTESTS_WATERFALL_MIXIN_BUILDER_REMOVE_MIXIN_WATERFALL = """\
-[
-  {
-    'mixins': ['waterfall_mixin'],
-    'project': 'chromium',
-    'bucket': 'ci',
-    'name': 'chromium.test',
-    'machines': {
-      'Fake Tester': {
-        'remove_mixins': ['waterfall_mixin'],
-        'swarming': {},
         'test_suites': {
           'gtest_tests': 'foo_tests',
         },
@@ -2966,15 +2966,6 @@ class MixinTests(TestCase):
                     FOO_TEST_SUITE_WITH_ARGS,
                     LUCI_MILO_CFG,
                     mixins=MIXIN_LINUX_ARGS)
-    fbb.check_output_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
-
-  def test_remove_mixin_builder_remove_waterfall(self):
-    fbb = FakeBBGen(self.args,
-                    FOO_GTESTS_WATERFALL_MIXIN_BUILDER_REMOVE_MIXIN_WATERFALL,
-                    FOO_TEST_SUITE,
-                    LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
