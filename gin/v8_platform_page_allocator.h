@@ -10,7 +10,7 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 #include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "gin/gin_export.h"
@@ -59,6 +59,6 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
 };
 }  // namespace gin
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 #endif  // GIN_V8_PLATFORM_PAGE_ALLOCATOR_H_

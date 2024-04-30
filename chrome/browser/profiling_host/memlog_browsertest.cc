@@ -19,7 +19,7 @@
 #endif
 
 // Some builds don't support memlog in which case the tests won't function.
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 namespace heap_profiling {
 
@@ -105,4 +105,4 @@ INSTANTIATE_TEST_SUITE_P(Memlog,
 
 }  // namespace heap_profiling
 
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)

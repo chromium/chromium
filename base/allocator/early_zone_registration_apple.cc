@@ -17,7 +17,7 @@
 
 namespace partition_alloc {
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void EarlyMallocZoneRegistration() {}
 void AllowDoublePartitionAllocZoneRegistration() {}
@@ -262,5 +262,5 @@ void AllowDoublePartitionAllocZoneRegistration() {
   }
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }  // namespace partition_alloc

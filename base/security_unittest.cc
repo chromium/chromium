@@ -66,7 +66,7 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
 
 #if BUILDFLAG(IS_APPLE) || defined(ADDRESS_SANITIZER) ||      \
     defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    BUILDFLAG(IS_HWASAN) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    BUILDFLAG(IS_HWASAN) || PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #define MAYBE_NewOverflow DISABLED_NewOverflow
 #else
 #define MAYBE_NewOverflow NewOverflow

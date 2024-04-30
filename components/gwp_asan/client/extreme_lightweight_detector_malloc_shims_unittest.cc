@@ -4,7 +4,7 @@
 
 #include "components/gwp_asan/client/extreme_lightweight_detector_malloc_shims.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
@@ -84,4 +84,4 @@ TEST_F(ExtremeLightweightDetectorMallocShimsTest, Basic) {
 
 }  // namespace gwp_asan::internal
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

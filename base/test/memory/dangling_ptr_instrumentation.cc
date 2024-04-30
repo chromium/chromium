@@ -27,11 +27,11 @@ DanglingPtrInstrumentation::Create() {
   // because this does provide an alternative "implementation", by incrementing
   // the two counters.
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return base::unexpected(
       "DanglingPtrInstrumentation requires the binary flag "
       "'use_partition_alloc_as_malloc' to be on.");
-#elif !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#elif !PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   return base::unexpected(
       "DanglingPtrInstrumentation requires the binary flag "
       "'enable_dangling_raw_ptr_checks' to be on.");

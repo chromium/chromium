@@ -240,10 +240,10 @@ void InstallExtremeLightweightDetectorHooks(
   sampling_state.Init(init_options.sampling_frequency);
   allocator_shim::InsertAllocatorDispatch(&allocator_dispatch);
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::trace_event::MallocDumpProvider::SetExtremeLUDGetStatsCallback(
       GetStats);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 partition_alloc::internal::LightweightQuarantineBranch&

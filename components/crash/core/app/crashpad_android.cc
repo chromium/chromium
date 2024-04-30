@@ -710,12 +710,12 @@ bool PlatformCrashpadInitialization(
   if (browser_process) {
     HandlerStarter* starter = HandlerStarter::Get();
     *database_path = starter->Initialize(dump_at_crash);
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     // Handler gets called in SignalHandler::HandleOrReraiseSignal() after
     // reporting the crash.
     crashpad::CrashpadClient::SetLastChanceExceptionHandler(
         partition_alloc::PermissiveMte::HandleCrash);
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     return true;
   }
 
@@ -723,10 +723,10 @@ bool PlatformCrashpadInitialization(
   bool result = handler->Initialize(dump_at_crash);
   DCHECK(result);
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   handler->SetLastChanceExceptionHandler(
       partition_alloc::PermissiveMte::HandleCrash);
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
   *database_path = base::FilePath();
   return true;

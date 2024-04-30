@@ -93,7 +93,7 @@
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
 #include "content/browser/starscan_load_observer.h"
 #endif
 
@@ -2445,7 +2445,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // color or if the page does not set a background color.
   std::optional<SkColor> page_base_background_color_;
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
   // TODO(crbug.com/40190798): Remove/reevaluate after the PCScan experiment is
   // finished.
   std::unique_ptr<StarScanLoadObserver> star_scan_load_observer_;

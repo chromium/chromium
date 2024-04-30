@@ -58,7 +58,7 @@ class TestMultiprocessExec final : public MultiprocessExec {
 // //base/allocator/partition_allocator/src/partition_alloc/random.cc) So when
 // making PartitionAllocator default, multiprocess_exec_test_child will crash
 // because of LOG(FATAL) << "close". https://crbug.com/1153544
-#if defined(OS_POSIX) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+#if defined(OS_POSIX) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     defined(OS_MAC)
 #define MAYBE_MultiprocessExec DISABLED_MultiprocessExec
 #else

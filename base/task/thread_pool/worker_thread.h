@@ -113,7 +113,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     // mechanism. Returns |true| if signaled, and |false| if the call timed out.
     virtual bool TimedWait(TimeDelta timeout) = 0;
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
     // Returns the desired sleep time before the worker has to wake up to purge
     // the cache thread or reclaim itself.
@@ -126,7 +126,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     // Simulated time at which the worker first attempts to go to sleep.
     TimeTicks first_sleep_time_for_testing_;
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
   };
 

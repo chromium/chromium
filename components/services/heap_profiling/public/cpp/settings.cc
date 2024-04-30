@@ -16,7 +16,7 @@ namespace heap_profiling {
 
 Mode GetModeForStartup() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   if (cmdline->HasSwitch("enable-heap-profiling")) {
     LOG(ERROR) << "--enable-heap-profiling is no longer supported. Use "
                   "--memlog instead. See documentation at "

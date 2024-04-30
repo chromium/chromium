@@ -13,11 +13,11 @@
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_for_testing.h"
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/shim/allocator_shim.h"
 #endif
 
@@ -94,7 +94,8 @@ TEST_F(BaseAllocatorDispatcherTest, VerifyInitialization) {
   DispatcherInitializerGuard g(testing::CreateTupleOfPointers(observers));
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && \
+    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 // Don't enable this test when MEMORY_TOOL_REPLACES_ALLOCATOR is defined,
 // because it makes PartitionAlloc take a different path that doesn't provide
 // notifications to observer hooks.
@@ -117,13 +118,13 @@ TEST_F(BaseAllocatorDispatcherTest, VerifyNotificationUsingPartitionAllocator) {
 }
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 struct AllocatorShimAllocator {
   void* Alloc(size_t size) { return allocator_shim::UncheckedAlloc(size); }
   void Free(void* data) { allocator_shim::UncheckedFree(data); }
 };
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Disable the test when running on any of Apple's OSs without PartitionAlloc
 // being the default allocator. In this case, all allocations are routed to
 // MallocImpl, which then causes the test to terminate unexpectedly.

@@ -25,8 +25,8 @@ TEST(PartitionAllocMemoryDumpProviderTest, Simple) {
   base::trace_event::ProcessMemoryDump pmd(args);
   PartitionAllocMemoryDumpProvider::Instance()->OnMemoryDump(args, &pmd);
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    PA_CONFIG(THREAD_CACHE_SUPPORTED) &&         \
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_CONFIG(THREAD_CACHE_SUPPORTED) &&            \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   histogram_tester.ExpectTotalCount("Memory.PartitionAlloc.ThreadCache.HitRate",
                                     1);
@@ -46,7 +46,7 @@ TEST(PartitionAllocMemoryDumpProviderTest, Simple) {
       "Memory.PartitionAlloc.ThreadCache.BatchFillRate", 0);
   histogram_tester.ExpectTotalCount(
       "Memory.PartitionAlloc.ThreadCache.BatchFillRate.MainThread", 0);
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+#endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }

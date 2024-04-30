@@ -20,7 +20,7 @@
 
 namespace base::allocator {
 
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_STARSCAN)
 BASE_EXPORT void RegisterPCScanStatsReporter();
 #endif
 
@@ -84,7 +84,7 @@ class BASE_EXPORT PartitionAllocSupport {
   void OnForegrounded(bool has_main_frame);
   void OnBackgrounded();
 
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   static std::string ExtractDanglingPtrSignatureForTests(
       std::string stacktrace);
 #endif
@@ -112,7 +112,7 @@ class BASE_EXPORT PartitionAllocSupport {
   std::string established_process_type_ GUARDED_BY(lock_) = "INVALID";
 
 #if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
-    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   size_t largest_cached_size_ =
       ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;
 #endif

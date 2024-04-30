@@ -16,7 +16,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_allocation_data.h"
 #endif
 
@@ -57,14 +57,14 @@ auto FreeNotificationMatches(
                         std::move(subsystem_matcher)));
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 ::partition_alloc::AllocationNotificationData CreatePAAllocationData(
     void* address,
     size_t size,
     partition_alloc::TagViolationReportingMode mte_mode =
         partition_alloc::TagViolationReportingMode::kUndefined) {
   return ::partition_alloc::AllocationNotificationData(address, size, nullptr)
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
       .SetMteReportingMode(mte_mode)
 #endif
       ;
@@ -75,12 +75,12 @@ auto FreeNotificationMatches(
     partition_alloc::TagViolationReportingMode mte_mode =
         partition_alloc::TagViolationReportingMode::kUndefined) {
   return ::partition_alloc::FreeNotificationData(address)
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
       .SetMteReportingMode(mte_mode)
 #endif
       ;
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 struct AllocationEventDispatcherInternalTest : public DispatcherTest {
   static void* GetAllocatedAddress() {
@@ -92,7 +92,7 @@ struct AllocationEventDispatcherInternalTest : public DispatcherTest {
     return reinterpret_cast<void*>(0x876543210);
   }
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   AllocatorDispatch* GetNextAllocatorDispatch() { return &allocator_dispatch_; }
   static void* alloc_function(const AllocatorDispatch*, size_t, void*) {
     return GetAllocatedAddress();
@@ -197,7 +197,7 @@ TEST(AllocationEventDispatcherInternalDeathTest,
 #endif  // defined(GTEST_HAS_DEATH_TEST) && GTEST_HAS_DEATH_TEST &&
         // DCHECK_IS_ON()
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 TEST_F(AllocationEventDispatcherInternalTest,
        VerifyPartitionAllocatorHooksAreSet) {
   std::array<ObserverMock, 1> observers;
@@ -253,9 +253,9 @@ TEST_F(AllocationEventDispatcherInternalTest,
 
   dispatch_data.GetFreeObserverHook()(CreatePAFreeData(this));
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 TEST_F(AllocationEventDispatcherInternalTest, VerifyAllocatorShimDataIsSet) {
   std::array<ObserverMock, 1> observers;
 
@@ -619,5 +619,5 @@ TEST_F(AllocationEventDispatcherInternalTest,
   allocator_dispatch->aligned_free_function(allocator_dispatch,
                                             GetFreedAddress(), nullptr);
 }
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 }  // namespace base::allocator::dispatcher::internal

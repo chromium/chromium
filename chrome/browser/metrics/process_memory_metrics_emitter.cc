@@ -295,7 +295,7 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"malloc/partitions/allocator", "Malloc.Allocator.ObjectCount",
      MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
      EmitTo::kSizeInUmaOnly, nullptr},
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     {"malloc/partitions/allocator", "Malloc.BRPQuarantined", MetricSize::kSmall,
      "brp_quarantined_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"malloc/partitions/allocator", "Malloc.BRPQuarantinedCount",
@@ -325,14 +325,14 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"partition_alloc/partitions/array_buffer",
      "PartitionAlloc.BRPQuarantinedCount.ArrayBuffer", MetricSize::kTiny,
      "brp_quarantined_count", EmitTo::kSizeInUmaOnly, nullptr},
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     {"malloc/partitions", "Malloc.BRPQuarantinedBytesPerMinute",
      MetricSize::kSmall, "brp_quarantined_bytes_per_minute",
      EmitTo::kSizeInUmaOnly, nullptr},
     {"malloc/partitions", "Malloc.BRPQuarantinedCountPerMinute",
      MetricSize::kTiny, "brp_quarantined_count_per_minute",
      EmitTo::kSizeInUmaOnly, nullptr},
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"malloc/partitions/allocator/scheduler_loop_quarantine",
      "Malloc.SchedulerLoopQuarantine.Count", MetricSize::kTiny, "count",
      EmitTo::kSizeInUmaOnly, nullptr},
@@ -362,7 +362,7 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      MetricSize::kPercentage, "fragmentation", EmitTo::kSizeInUmaOnly, nullptr},
     {"malloc", "Malloc.SyscallsPerMinute", MetricSize::kTiny,
      "syscalls_per_minute", EmitTo::kSizeInUmaOnly, nullptr},
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"mojo", "NumberOfMojoHandles", MetricSize::kSmall,
      MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
      &Memory_Experimental::SetNumberOfMojoHandles},
@@ -448,7 +448,7 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"partition_alloc/partitions/fast_malloc",
      "PartitionAlloc.Wasted.FastMalloc", MetricSize::kLarge, "wasted",
      EmitTo::kSizeInUmaOnly, nullptr},
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"partition_alloc/partitions/fast_malloc/thread_cache",
      "PartitionAlloc.Partitions.FastMalloc.ThreadCache", MetricSize::kSmall,
      kSize, EmitTo::kSizeInUmaOnly, nullptr},
@@ -637,7 +637,7 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
 #endif
 };
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Metrics specific to PartitionAlloc's address space stats (cf.
 // kAllocatorDumpNamesForMetrics above). All of these metrics come in
 // three variants: bare, after 1 hour, and after 24 hours. These metrics
@@ -698,7 +698,7 @@ const Metric kPartitionAllocAddressSpaceMetrics[] = {
         .metric = "thread_isolated_pool_usage",
     },
 };
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Record a memory size in megabytes, over a potential interval up to 32 GB.
 #define UMA_HISTOGRAM_LARGE_MEMORY_MB(name, sample) \
@@ -806,9 +806,9 @@ void EmitPartitionAllocWastedStat(const GlobalMemoryDump::ProcessDump& pmd,
 void EmitMallocStats(const GlobalMemoryDump::ProcessDump& pmd,
                      HistogramProcessType process_type,
                      const std::optional<base::TimeDelta>& uptime) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   const char* const kMallocDumpName = "malloc/partitions/allocator";
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   static constexpr int kRecordHours[] = {1, 24};
   // First element of the pair is the name as found in memory dumps, second
@@ -823,14 +823,14 @@ void EmitMallocStats(const GlobalMemoryDump::ProcessDump& pmd,
     if (uptime <= base::Hours(hours))
       continue;
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     EmitPartitionAllocFragmentationStat(
         pmd, process_type, kMallocDumpName,
         base::StringPrintf("Malloc.Fragmentation.After%dH", hours).c_str());
     EmitPartitionAllocWastedStat(
         pmd, process_type, kMallocDumpName,
         base::StringPrintf("Malloc.Wasted.After%dH", hours).c_str());
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
     for (const auto& partition_name : kPartitionNames) {
       const auto* dump_name = partition_name.first;
@@ -849,7 +849,7 @@ void EmitMallocStats(const GlobalMemoryDump::ProcessDump& pmd,
   }
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void EmitPartitionAllocAddressSpaceStatVariants(
     const Metric& metric,
     const uint64_t metric_value,
@@ -894,7 +894,7 @@ void EmitPartitionAllocAddressSpaceStats(
                                                process_type, uptime);
   }
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
                           HistogramProcessType process_type,
@@ -964,9 +964,9 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
 
   if (record_uma) {
     EmitMallocStats(pmd, process_type, uptime);
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     EmitPartitionAllocAddressSpaceStats(pmd, process_type, uptime);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   }
 }
 
@@ -1177,9 +1177,9 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
     std::vector<std::string> mad_list;
     for (const auto& metric : kAllocatorDumpNamesForMetrics)
       mad_list.push_back(metric.dump_name);
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     mad_list.push_back("partition_alloc/address_space");
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     if (pid_scope_ != base::kNullProcessId) {
       instrumentation->RequestGlobalDumpForPid(pid_scope_, mad_list,
                                                std::move(callback));

@@ -43,11 +43,11 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
     partition_alloc::LightweightQuarantineStats lq_stats{0};
     size_t capacity_in_bytes = 0;
   };
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   using ExtremeLUDGetStatsCallback = ExtremeLUDStats (*)();
   static void SetExtremeLUDGetStatsCallback(
       ExtremeLUDGetStatsCallback callback);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   MallocDumpProvider(const MallocDumpProvider&) = delete;
   MallocDumpProvider& operator=(const MallocDumpProvider&) = delete;
@@ -74,7 +74,7 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
       GUARDED_BY(emit_metrics_on_memory_dump_lock_) = true;
   base::Lock emit_metrics_on_memory_dump_lock_;
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // The injected stats-report function of the Extreme LUD. Non-null iff the
   // Extreme LUD is enabled.
   static ExtremeLUDGetStatsCallback extreme_lud_get_stats_callback_;
@@ -91,7 +91,7 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
 #endif
 };
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 // This class is used to invert the dependency of PartitionAlloc on the
 // PartitionAllocMemoryDumpProvider. This implements an interface that will
 // be called with memory statistics for each bucket in the allocator.
@@ -138,7 +138,7 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
   bool detailed_;
 };
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace trace_event
 }  // namespace base

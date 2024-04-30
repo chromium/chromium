@@ -190,7 +190,7 @@ void CheckExperimentalMemoryMetricsForProcessType(
                     histogram_tester, count, ValueRestriction::NONE,
                     number_of_processes);
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // It's a small metric, so should not be strictly zero in theory, but could be
   // if purge comes at the wrong time, or the thread cache is not available on
   // this platform.
@@ -218,7 +218,7 @@ void CheckExperimentalMemoryMetricsForProcessType(
                         "2.Tiny.Malloc.SyscallsPerMinute",
                     histogram_tester, count, ValueRestriction::ABOVE_ZERO,
                     number_of_processes);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void CheckExperimentalMemoryMetrics(

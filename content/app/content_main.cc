@@ -73,7 +73,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #endif
 #endif  // BUILDFLAG(IS_MAC)
@@ -201,7 +201,7 @@ RunContentProcess(ContentMainParams params,
     content_main_runner->ReInitializeParams(std::move(params));
   } else {
     is_initialized = true;
-#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
     allocator_shim::InitializeAllocatorShim();
 #endif
     base::EnableTerminationOnOutOfMemory();

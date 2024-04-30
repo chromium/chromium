@@ -6,7 +6,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #include <sanitizer/allocator_interface.h>
 #include <sanitizer/asan_interface.h>
@@ -67,4 +67,4 @@ void RawPtrAsanBoundArgTracker::Add(uintptr_t ptr) {
 
 }  // namespace base
 
-#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

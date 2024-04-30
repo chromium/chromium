@@ -1042,12 +1042,12 @@ struct Invoker<Traits, StorageType, R(UnboundArgs...)> {
                           BoundArgsTuple&& bound,
                           std::index_sequence<indices...>,
                           UnboundArgs&&... unbound_args) {
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
     RawPtrAsanBoundArgTracker raw_ptr_asan_bound_arg_tracker;
     raw_ptr_asan_bound_arg_tracker.AddArgs(
         std::get<indices>(std::forward<BoundArgsTuple>(bound))...,
         std::forward<UnboundArgs>(unbound_args)...);
-#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
     using DecayedArgsTuple = std::decay_t<BoundArgsTuple>;
     static constexpr bool kIsWeakCall =

@@ -49,7 +49,7 @@ class TRIVIAL_ABI SetOnDestroy {
   }
 
  private:
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
   // In instance tracer mode, raw_ptr is larger than a void*, but values stored
   // inline in a SequenceLocalStorageMap must be at most sizeof(void*).
   RAW_PTR_EXCLUSION bool* was_destroyed_ptr_;

@@ -15,7 +15,7 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 #include "partition_alloc/thread_cache.h"
 #endif

@@ -21,7 +21,7 @@
 #endif
 #endif
 
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_IOS) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/ios/ios_util.h"
@@ -30,7 +30,7 @@
 
 // HeapProfilerController's dependencies are not compiled on iOS unless
 // AllocatorShim is enabled.
-#if !BUILDFLAG(IS_IOS) || BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if !BUILDFLAG(IS_IOS) || PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #define HEAP_PROFILING_SUPPORTED 1
 #else
 #define HEAP_PROFILING_SUPPORTED 0
@@ -60,7 +60,7 @@
 namespace memory_system {
 namespace {
 
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_IOS) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 // Do not install allocator shim on iOS 13.4 due to high crash volume on this
 // particular version of OS. TODO(crbug.com/40707342): Remove this workaround
 // when/if the bug gets fixed.
@@ -128,7 +128,7 @@ struct MemorySystem::Impl {
       heap_profiler_controller_;
 #endif
 
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_IOS) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   const bool should_install_allocator_shim_ = ShouldInstallAllocatorShim();
 #endif
 
@@ -151,7 +151,7 @@ struct MemorySystem::Impl {
 };
 
 MemorySystem::Impl::Impl() {
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_IOS) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   if (should_install_allocator_shim_) {
     allocator_shim::InitializeAllocatorShim();
   }
@@ -209,7 +209,7 @@ void MemorySystem::Impl::Initialize(
 }
 
 bool MemorySystem::Impl::IsAllocatorShimInitialized() {
-#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_IOS) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   if (!should_install_allocator_shim_) {
     return false;
   }

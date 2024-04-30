@@ -15,7 +15,7 @@
 #include <atomic>
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_hooks.h"
 #endif
 
@@ -51,13 +51,13 @@ struct Dispatcher::Impl {
   // connected. This way we prevent notifications although no observers are
   // present.
   static void ConnectToEmitters(const internal::DispatchData& dispatch_data) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
     if (auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch()) {
       allocator_shim::InsertAllocatorDispatch(allocator_dispatch);
     }
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
     {
       auto* const allocation_hook = dispatch_data.GetAllocationObserverHook();
       auto* const free_hook = dispatch_data.GetFreeObserverHook();
@@ -70,14 +70,14 @@ struct Dispatcher::Impl {
   }
 
   static void DisconnectFromEmitters(internal::DispatchData& dispatch_data) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
     if (auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch()) {
       allocator_shim::RemoveAllocatorDispatchForTesting(
           allocator_dispatch);  // IN-TEST
     }
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
     partition_alloc::PartitionAllocHooks::SetObserverHooks(nullptr, nullptr);
 #endif
   }

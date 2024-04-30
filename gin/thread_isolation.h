@@ -7,7 +7,7 @@
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/alignment.h"
 #include "base/no_destructor.h"
@@ -40,6 +40,6 @@ GIN_EXPORT ThreadIsolationData& GetThreadIsolationData();
 
 }  // namespace gin
 
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #endif  // GIN_THREAD_ISOLATION_H_

@@ -29,7 +29,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/shim/allocator_shim.h"
 #endif
 
@@ -169,7 +169,7 @@ TEST_F(StackTraceTest, DebugOutputToStreamWithNullPrefix) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 // Since Mac's base::debug::StackTrace().Print() is not malloc-free, skip
 // StackDumpSignalHandlerIsMallocFree if BUILDFLAG(IS_MAC).
-#if BUILDFLAG(USE_ALLOCATOR_SHIM) && !BUILDFLAG(IS_MAC)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && !BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -252,7 +252,7 @@ TEST_F(StackTraceDeathTest, StackDumpSignalHandlerIsMallocFree) {
       }(),
       "\\[end of stack trace\\]\n");
 }
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 namespace {
 

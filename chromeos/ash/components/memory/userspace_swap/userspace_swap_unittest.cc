@@ -15,7 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #endif
@@ -24,7 +24,8 @@ namespace ash {
 namespace memory {
 namespace userspace_swap {
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 // InRange matches if the range specified by [start,end] is in [address,
 // address+length] of a region.
 MATCHER_P2(InRange, start, end, "") {
@@ -91,8 +92,8 @@ TEST(UserspaceSwap, LimitSuperpagesReturned) {
     free(reinterpret_cast<void*>(mem_area[i]));
   }
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 }  // namespace userspace_swap
 }  // namespace memory

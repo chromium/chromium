@@ -473,7 +473,7 @@ class OzonePlatformWayland : public OzonePlatform,
   void PostMainMessageLoopRun() override {
     // TODO(b/324294360): This will cause a lot of dangling pointers, which
     // breaks linux wayland bot. Fix them and enable on linux as well.
-#if BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if BUILDFLAG(IS_CHROMEOS) || !PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     connection_.reset();
 #endif
   }

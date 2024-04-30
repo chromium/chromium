@@ -13,9 +13,9 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // This header defines `ADVANCED_MEMORY_SAFETY_CHECKS()` macro.
 // They can be used to specify a class/struct that is targeted to perform
@@ -92,14 +92,14 @@ namespace {
 
 // Allocator type traits.
 constexpr bool ShouldUsePartitionAlloc(MemorySafetyCheck checks) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return static_cast<bool>(checks &
                            (MemorySafetyCheck::kForcePartitionAlloc |
                             MemorySafetyCheck::kSchedulerLoopQuarantine |
                             MemorySafetyCheck::kZapOnFree));
 #else
   return false;
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 // Returns |partition_alloc::AllocFlags| corresponding to |checks|.
@@ -137,21 +137,21 @@ inline constexpr bool is_memory_safety_checked =
     (get_memory_safety_checks<T> & c) == c;
 
 // Allocator functions.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 ALWAYS_INLINE partition_alloc::PartitionRoot*
 GetPartitionRootForMemorySafetyCheckedAllocation() {
   return allocator_shim::internal::PartitionAllocMalloc::Allocator();
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 template <MemorySafetyCheck checks>
 NOINLINE void* HandleMemorySafetyCheckedOperatorNew(std::size_t count) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
     return GetPartitionRootForMemorySafetyCheckedAllocation()
         ->AllocInline<GetAllocFlags(checks)>(count);
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return ::operator new(count);
 }
 
@@ -159,25 +159,25 @@ template <MemorySafetyCheck checks>
 NOINLINE void* HandleMemorySafetyCheckedOperatorNew(
     std::size_t count,
     std::align_val_t alignment) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
     return GetPartitionRootForMemorySafetyCheckedAllocation()
         ->AlignedAlloc<GetAllocFlags(checks)>(static_cast<size_t>(alignment),
                                               count);
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return ::operator new(count, alignment);
 }
 
 template <MemorySafetyCheck checks>
 NOINLINE void HandleMemorySafetyCheckedOperatorDelete(void* ptr) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
     GetPartitionRootForMemorySafetyCheckedAllocation()
         ->Free<GetFreeFlags(checks)>(ptr);
     return;
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ::operator delete(ptr);
 }
 
@@ -185,13 +185,13 @@ template <MemorySafetyCheck checks>
 NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
     void* ptr,
     std::align_val_t alignment) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (ShouldUsePartitionAlloc(checks)) {
     GetPartitionRootForMemorySafetyCheckedAllocation()
         ->Free<GetFreeFlags(checks)>(ptr);
     return;
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ::operator delete(ptr, alignment);
 }
 

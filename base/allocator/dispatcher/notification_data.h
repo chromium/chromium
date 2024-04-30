@@ -42,28 +42,28 @@ class BASE_EXPORT AllocationNotificationData {
 
   // In the allocation observer path, it's interesting which reporting mode is
   // enabled.
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   constexpr AllocationNotificationData& SetMteReportingMode(MTEMode mode) {
     mte_reporting_mode_ = mode;
     return *this;
   }
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
   constexpr MTEMode mte_reporting_mode() const {
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     return mte_reporting_mode_;
 #else
     return MTEMode::kUndefined;
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   }
 
  private:
   void* address_ = nullptr;
   size_t size_ = 0;
   const char* type_name_ = nullptr;
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   MTEMode mte_reporting_mode_ = MTEMode::kUndefined;
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   AllocationSubsystem allocation_subsystem_;
 };
 
@@ -83,26 +83,26 @@ class BASE_EXPORT FreeNotificationData {
 
   // In the free observer path, it's interesting which reporting mode is
   // enabled.
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   constexpr FreeNotificationData& SetMteReportingMode(MTEMode mode) {
     mte_reporting_mode_ = mode;
     return *this;
   }
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
   constexpr MTEMode mte_reporting_mode() const {
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     return mte_reporting_mode_;
 #else
     return MTEMode::kUndefined;
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   }
 
  private:
   void* address_ = nullptr;
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   MTEMode mte_reporting_mode_ = MTEMode::kUndefined;
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   AllocationSubsystem allocation_subsystem_;
 };
 

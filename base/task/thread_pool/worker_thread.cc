@@ -36,7 +36,7 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 #include "partition_alloc/thread_cache.h"
 #endif
@@ -66,7 +66,7 @@ void WorkerThread::Delegate::WaitForWork() {
   // that point, and go to sleep for the remaining of the time. This ensures
   // that we do no work for short sleeps, and that threads do not get awaken
   // many times.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
   const TimeDelta sleep_duration_before_purge =
       GetSleepDurationBeforePurge(base::TimeTicks::Now());
@@ -88,7 +88,7 @@ void WorkerThread::Delegate::WaitForWork() {
   }
 #else
   TimedWait(sleep_duration_before_worker_reclaim);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
 
@@ -97,7 +97,7 @@ bool WorkerThread::Delegate::IsDelayFirstWorkerSleepEnabled() {
   return state;
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 TimeDelta WorkerThread::Delegate::GetSleepDurationBeforePurge(TimeTicks now) {
   base::TimeDelta sleep_duration_before_purge = kPurgeThreadCacheIdleDelay;
@@ -136,7 +136,7 @@ TimeDelta WorkerThread::Delegate::GetSleepDurationBeforePurge(TimeTicks now) {
   return snapped_purge_time - now;
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 WorkerThread::WorkerThread(ThreadType thread_type_hint,

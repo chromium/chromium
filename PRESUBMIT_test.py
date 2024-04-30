@@ -4761,7 +4761,7 @@ class VerifyDcheckParentheses(unittest.TestCase):
       # own thing at their own risk.
       MockFile('okay3.cc', ['PA_DCHECK_IS_ON']),
       MockFile('okay4.cc', ['#if PA_DCHECK_IS_ON']),
-      MockFile('okay6.cc', ['BUILDFLAG(PA_DCHECK_IS_ON)']),
+      MockFile('okay6.cc', ['PA_BUILDFLAG(PA_DCHECK_IS_ON)']),
     ]
     errors = PRESUBMIT.CheckDCHECK_IS_ONHasBraces(input_api, MockOutputApi())
     self.assertEqual(0, len(errors))

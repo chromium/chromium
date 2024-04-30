@@ -30,7 +30,7 @@ TEST(PartitionAllocSupportTest,
   std::string dpd_group =
       ProposeSyntheticFinchTrials()["DanglingPointerDetector"];
 
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   EXPECT_EQ(dpd_group, "Enabled");
 #else
   EXPECT_EQ(dpd_group, "Disabled");
@@ -38,7 +38,7 @@ TEST(PartitionAllocSupportTest,
 }
 
 // - Death tests misbehave on Android, http://crbug.com/643760.
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && !BUILDFLAG(IS_ANDROID) && \
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && !BUILDFLAG(IS_ANDROID) && \
     defined(GTEST_HAS_DEATH_TEST)
 
 namespace {
@@ -254,7 +254,7 @@ TEST(PartitionAllocDanglingPtrChecks,
 
 #endif
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 TEST(PartitionAllocSupportTest,
      ProposeSyntheticFinchTrials_MemoryTaggingDogfood) {
   {
@@ -283,7 +283,7 @@ TEST(PartitionAllocSupportTest,
     EXPECT_EQ(group_iter->second, expectation);
   }
 }
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
 class MemoryReclaimerSupportTest : public ::testing::Test {
  public:

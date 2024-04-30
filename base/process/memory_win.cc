@@ -6,9 +6,9 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/shim/allocator_shim.h"
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #include <windows.h>  // Must be in front of other Windows header files.
 
@@ -44,23 +44,23 @@ void EnableTerminationOnOutOfMemory() {
 }
 
 bool UncheckedMalloc(size_t size, void** result) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedAlloc(size);
 #else
   // malloc_unchecked is required to implement UncheckedMalloc properly.
   // It's provided by allocator_shim_win.cc but since that's not always present,
   // In the case, use regular malloc instead.
   *result = malloc(size);
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   return *result != NULL;
 }
 
 void UncheckedFree(void* ptr) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::UncheckedFree(ptr);
 #else
   free(ptr);
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 
 }  // namespace base

@@ -40,7 +40,7 @@
 #include <features.h>
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
@@ -114,7 +114,7 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                MemoryDumpLevelOfDetail level_of_detail,
                                size_t* total_virtual_size,
@@ -151,16 +151,16 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   *allocated_objects_size += partition_stats_dumper.total_active_bytes();
   *allocated_objects_count += partition_stats_dumper.total_active_count();
   *syscall_count += partition_stats_dumper.syscall_count();
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   *cumulative_brp_quarantined_size +=
       partition_stats_dumper.cumulative_brp_quarantined_bytes();
   *cumulative_brp_quarantined_count +=
       partition_stats_dumper.cumulative_brp_quarantined_count();
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
 void ReportAppleAllocStats(size_t* total_virtual_size,
                            size_t* resident_size,
                            size_t* allocated_objects_size) {
@@ -184,8 +184,8 @@ void ReportAppleAllocStats(size_t* total_virtual_size,
 }
 #endif
 
-#if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)) || \
-    (!BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !BUILDFLAG(IS_WIN) &&    \
+#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)) || \
+    (!PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !BUILDFLAG(IS_WIN) &&    \
      !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA))
 void ReportMallinfoStats(ProcessMemoryDump* pmd,
                          size_t* total_virtual_size,
@@ -222,7 +222,7 @@ void ReportMallinfoStats(ProcessMemoryDump* pmd,
 }
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 void ReportPartitionAllocThreadCacheStats(
     ProcessMemoryDump* pmd,
     MemoryAllocatorDump* dump,
@@ -303,7 +303,7 @@ void ReportPartitionAllocLightweightQuarantineStats(
   dump->AddScalar("quarantine_miss_count", MemoryAllocatorDump::kUnitsObjects,
                   stats.quarantine_miss_count);
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace
 
@@ -316,7 +316,7 @@ MallocDumpProvider* MallocDumpProvider::GetInstance() {
                    LeakySingletonTraits<MallocDumpProvider>>::get();
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // static
 MallocDumpProvider::ExtremeLUDGetStatsCallback
     MallocDumpProvider::extreme_lud_get_stats_callback_ = nullptr;
@@ -328,7 +328,7 @@ void MallocDumpProvider::SetExtremeLUDGetStatsCallback(
   DCHECK(!extreme_lud_get_stats_callback_);
   extreme_lud_get_stats_callback_ = callback;
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 MallocDumpProvider::MallocDumpProvider() = default;
 MallocDumpProvider::~MallocDumpProvider() = default;
@@ -351,12 +351,12 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   uint64_t syscall_count = 0;
   size_t cumulative_brp_quarantined_size = 0;
   size_t cumulative_brp_quarantined_count = 0;
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t pa_only_resident_size;
   uint64_t pa_only_allocated_objects_size;
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ReportPartitionAllocStats(
       pmd, args.level_of_detail, &total_virtual_size, &resident_size,
       &allocated_objects_size, &allocated_objects_count, &syscall_count,
@@ -415,7 +415,7 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   //
   // Still report waste, as on some platforms, PartitionAlloc doesn't capture
   // all of malloc()'s memory footprint.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   int64_t pa_waste = static_cast<int64_t>(pa_only_resident_size -
                                           pa_only_allocated_objects_size);
   waste -= pa_waste;
@@ -434,7 +434,7 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   base::trace_event::MemoryAllocatorDump* partitions_dump = nullptr;
   base::trace_event::MemoryAllocatorDump* elud_dump = nullptr;
   ExtremeLUDStats elud_stats;
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   partitions_dump = pmd->CreateAllocatorDump("malloc/partitions");
   pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
 
@@ -444,7 +444,7 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
     ReportPartitionAllocLightweightQuarantineStats(elud_dump,
                                                    elud_stats.lq_stats);
   }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   ReportPerMinuteStats(syscall_count, cumulative_brp_quarantined_size,
                        cumulative_brp_quarantined_count, elud_stats, outer_dump,
@@ -461,7 +461,7 @@ void MallocDumpProvider::ReportPerMinuteStats(
     MemoryAllocatorDump* malloc_dump,
     MemoryAllocatorDump* partition_alloc_dump,
     MemoryAllocatorDump* elud_dump) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t new_syscalls = syscall_count - last_syscall_count_;
   size_t new_brp_quarantined_bytes =
       cumulative_brp_quarantined_bytes - last_cumulative_brp_quarantined_bytes_;
@@ -536,10 +536,10 @@ void MallocDumpProvider::ReportPerMinuteStats(
   last_syscall_count_ = syscall_count;
   last_cumulative_brp_quarantined_bytes_ = cumulative_brp_quarantined_bytes;
   last_cumulative_brp_quarantined_count_ = cumulative_brp_quarantined_count;
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 std::string GetPartitionDumpName(const char* root_name,
                                  const char* partition_name) {
   return base::StringPrintf("%s/%s/%s", root_name,
@@ -563,12 +563,12 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   total_active_bytes_ += memory_stats->total_active_bytes;
   total_active_count_ += memory_stats->total_active_count;
   syscall_count_ += memory_stats->syscall_count;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   cumulative_brp_quarantined_bytes_ +=
       memory_stats->cumulative_brp_quarantined_bytes;
   cumulative_brp_quarantined_count_ +=
       memory_stats->cumulative_brp_quarantined_count;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
   MemoryAllocatorDump* allocator_dump =
@@ -608,13 +608,13 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   allocator_dump->AddScalar("discardable_size",
                             MemoryAllocatorDump::kUnitsBytes,
                             memory_stats->total_discardable_bytes);
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   allocator_dump->AddScalar("brp_quarantined_size",
                             MemoryAllocatorDump::kUnitsBytes,
                             memory_stats->total_brp_quarantined_bytes);
   allocator_dump->AddScalar("brp_quarantined_count", "count",
                             memory_stats->total_brp_quarantined_count);
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   allocator_dump->AddScalar("syscall_count", "count",
                             memory_stats->syscall_count);
   allocator_dump->AddScalar("syscall_total_time_ms", "ms",
@@ -694,7 +694,7 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
                             MemoryAllocatorDump::kUnitsObjects,
                             memory_stats->num_decommitted_slot_spans);
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace trace_event
 }  // namespace base

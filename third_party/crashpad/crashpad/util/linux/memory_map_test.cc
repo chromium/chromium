@@ -50,7 +50,7 @@ namespace {
 // fail.) To avoid this failue, firstly allocate a large buffer and read entire
 // /proc/self/maps into the buffer. Next will parse data from the buffer and
 // initialize MemoryMap. crbug.com/1163794.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #define MAYBE_SelfLargeFiles DISABLED_SelfLargeFiles
 #else
 #define MAYBE_SelfLargeFiles SelfLargeFiles
@@ -89,7 +89,7 @@ TEST(MemoryMap, MAYBE_SelfLargeFiles) {
 
 // TODO(tasak): Disable SelfBasic when PartitionAlloc is used as malloc.
 // crbug.com/1163794. See SelfLargeFiles' comment.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #define MAYBE_SelfBasic DISABLED_SelfBasic
 #else
 #define MAYBE_SelfBasic SelfBasic
@@ -330,7 +330,7 @@ void ExpectMappings(const MemoryMap& map,
 
 // TODO(tasak): Disable SelfLargeMapFile when PartitionAlloc is used as malloc.
 // crbug.com/1163794. See SelfLargeFiles' comment.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #define MAYBE_SelfLargeMapFile DISABLED_SelfLargeMapFile
 #else
 #define MAYBE_SelfLargeMapFile SelfLargeMapFile

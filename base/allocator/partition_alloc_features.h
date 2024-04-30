@@ -59,10 +59,10 @@ enum class DanglingPtrType {
 extern const BASE_EXPORT base::FeatureParam<DanglingPtrType>
     kDanglingPtrTypeParam;
 
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_STARSCAN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScan);
 #endif
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanBrowserOnly);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanRendererOnly);
 
@@ -77,7 +77,7 @@ extern const BASE_EXPORT base::FeatureParam<int>
     kPartitionAllocSchedulerLoopQuarantineBranchCapacity;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocZappingByFreeFlags);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 enum class BackupRefPtrEnabledProcesses {
   // BRP enabled only in the browser process.
@@ -209,7 +209,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
 // This feature is additionally gated behind a buildflag because
 // pool offset freelists cannot be represented when PartitionAlloc uses
 // 32-bit pointers.
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 BASE_EXPORT BASE_DECLARE_FEATURE(kUsePoolOffsetFreelists);
 #endif
 

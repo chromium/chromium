@@ -56,7 +56,7 @@ namespace {
 
 // Returns the string to display at the top of the page for help.
 std::string GetMessageString() {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   Mode mode = Mode::kNone;
   if (heap_profiling::Supervisor::GetInstance()->HasStarted()) {
     mode = heap_profiling::Supervisor::GetInstance()->GetMode();

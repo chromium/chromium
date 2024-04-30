@@ -12,7 +12,7 @@
 
 namespace heap_profiling {
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 TEST(HeapProfilingSwitches, GetModeForStartup_Default) {
   EXPECT_EQ(Mode::kNone, GetModeForStartup());

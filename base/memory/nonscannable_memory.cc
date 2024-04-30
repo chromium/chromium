@@ -6,7 +6,7 @@
 
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/nonscannable_allocator.h"
 #else
 #include <stdlib.h>
@@ -15,7 +15,7 @@
 namespace base {
 
 void* AllocNonScannable(size_t size) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return allocator_shim::NonScannableAllocator::Instance().Alloc(size);
 #else
   return ::malloc(size);
@@ -23,7 +23,7 @@ void* AllocNonScannable(size_t size) {
 }
 
 void FreeNonScannable(void* ptr) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   allocator_shim::NonScannableAllocator::Instance().Free(ptr);
 #else
   return ::free(ptr);
@@ -31,7 +31,7 @@ void FreeNonScannable(void* ptr) {
 }
 
 void* AllocNonQuarantinable(size_t size) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   return allocator_shim::NonQuarantinableAllocator::Instance().Alloc(size);
 #else
   return ::malloc(size);
@@ -39,7 +39,7 @@ void* AllocNonQuarantinable(size_t size) {
 }
 
 void FreeNonQuarantinable(void* ptr) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   allocator_shim::NonQuarantinableAllocator::Instance().Free(ptr);
 #else
   return ::free(ptr);

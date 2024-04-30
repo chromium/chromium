@@ -9,24 +9,24 @@
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_hooks.h"
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "partition_alloc/shim/allocator_shim.h"
 #endif
 
 namespace base::allocator::dispatcher::internal {
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 using allocator_shim::AllocatorDispatch;
 #endif
 
 // A simple utility class to pass all the information required to properly hook
 // into the memory allocation subsystems from DispatcherImpl to the Dispatcher.
 struct BASE_EXPORT DispatchData {
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   using AllocationObserverHook =
       partition_alloc::PartitionAllocHooks::AllocationObserverHook;
   using FreeObserverHook =
@@ -44,7 +44,7 @@ struct BASE_EXPORT DispatchData {
  public:
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   DispatchData& SetAllocatorDispatch(AllocatorDispatch* allocator_dispatch);
   AllocatorDispatch* GetAllocatorDispatch() const;
 

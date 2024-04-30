@@ -18,7 +18,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
-#if !BUILDFLAG(USE_ALLOCATOR_SHIM) && \
+#if !PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(LIBC_GLIBC)
 extern "C" {
 void* __libc_malloc(size_t);
@@ -48,7 +48,7 @@ void EnableTerminationOnOutOfMemory() {
   // If we're using glibc's allocator, the above functions will override
   // malloc and friends and make them die on out of memory.
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::SetCallNewHandlerOnMallocFailure(true);
 #endif
 }
@@ -114,7 +114,7 @@ bool AdjustOOMScore(ProcessId process, int score) {
 }
 
 bool UncheckedMalloc(size_t size, void** result) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedAlloc(size);
 #elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
   *result = malloc(size);
@@ -125,7 +125,7 @@ bool UncheckedMalloc(size_t size, void** result) {
 }
 
 void UncheckedFree(void* ptr) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::UncheckedFree(ptr);
 #elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || !defined(LIBC_GLIBC)
   free(ptr);

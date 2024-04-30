@@ -7,7 +7,7 @@
 
 namespace base::allocator::dispatcher::internal {
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 DispatchData& DispatchData::SetAllocationObserverHooks(
     AllocationObserverHook* allocation_observer_hook,
@@ -28,7 +28,7 @@ DispatchData::FreeObserverHook* DispatchData::GetFreeObserverHook() const {
 }
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 DispatchData& DispatchData::SetAllocatorDispatch(
     AllocatorDispatch* allocator_dispatch) {
   allocator_dispatch_ = allocator_dispatch;

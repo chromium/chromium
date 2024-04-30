@@ -31,15 +31,15 @@
 #include "components/gwp_asan/client/sampling_helpers.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "components/gwp_asan/client/lightweight_detector/malloc_shims.h"
 #include "components/gwp_asan/client/sampling_malloc_shims.h"
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "components/gwp_asan/client/lightweight_detector/partitionalloc_shims.h"
 #include "components/gwp_asan/client/sampling_partitionalloc_shims.h"
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 namespace gwp_asan {
 
@@ -107,7 +107,7 @@ constexpr int kDefaultProcessSamplingBoost2 = 10;
 // The memory overhead of Lightweight UAF detector is:
 //   sizeof(LightweightSlotMetadata) * kDefaultMaxLightweightMetadata
 constexpr int kDefaultMaxLightweightMetadata = 3000;
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 constexpr int kDefaultMaxTotalSize = 65536;
 
 // A set of parameters temporarily used by the random sampling LUD experiment.
@@ -119,7 +119,7 @@ constexpr int kDefaultEvictionTaskIntervalMs = 1000;
 constexpr int kMaxMaxTotalSize = 2 * 1024 * 1024;
 constexpr int kMaxEvictionChunkSize = 1024;
 constexpr int kMaxEvictionTaskIntervalMs = 10000;
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #endif  // defined(ARCH_CPU_64_BITS)
 
 BASE_FEATURE(kLightweightUafDetector,
@@ -332,7 +332,7 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
   }
 
   switch (kLightweightUafDetectorModeParam.Get()) {
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
     case LightweightDetectorMode::kBrpQuarantine: {
       if (!base::allocator::PartitionAllocSupport::GetBrpConfiguration(
                process_type)
@@ -348,9 +348,9 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
       lud::InstallPartitionAllocHooks();
       return true;
     }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
     case LightweightDetectorMode::kRandom: {
       int max_allocations = GetFieldTrialParamByFeatureAsInt(
           feature, "MaxAllocations", kDefaultMaxAllocations);
@@ -427,7 +427,7 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
                               alloc_sampling_freq);
       return true;
     }
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
     default: {
       DLOG(ERROR) << "Unsupported Lightweight UAF Detector mode.";
@@ -445,7 +445,7 @@ bool MaybeEnableLightweightDetectorInternal(bool boost_sampling,
 }  // namespace internal
 
 void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   static bool init_once = [&]() -> bool {
     auto settings = internal::GetAllocatorSettings(internal::kGwpAsanMalloc,
                                                    boost_sampling);
@@ -465,12 +465,12 @@ void EnableForMalloc(bool boost_sampling, std::string_view process_type) {
 #else
   std::ignore = internal::kGwpAsanMalloc;
   DLOG(WARNING) << "base::allocator shims are unavailable for GWP-ASan.";
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 
 void EnableForPartitionAlloc(bool boost_sampling,
                              std::string_view process_type) {
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   static bool init_once = [&]() -> bool {
     auto settings = internal::GetAllocatorSettings(
         internal::kGwpAsanPartitionAlloc, boost_sampling);
@@ -490,7 +490,7 @@ void EnableForPartitionAlloc(bool boost_sampling,
 #else
   std::ignore = internal::kGwpAsanPartitionAlloc;
   DLOG(WARNING) << "PartitionAlloc hooks are unavailable for GWP-ASan.";
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 }
 
 void MaybeEnableLightweightDetector(bool boost_sampling,
@@ -502,7 +502,7 @@ void MaybeEnableLightweightDetector(bool boost_sampling,
 
 void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
                                            const char* process_type) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (!base::FeatureList::IsEnabled(internal::kExtremeLightweightUAFDetector)) {
     return;
   }
@@ -529,7 +529,7 @@ void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
          .quarantine_capacity_in_bytes = quarantine_capacity_in_bytes});
     return true;
   }();
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 }  // namespace gwp_asan

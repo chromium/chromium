@@ -6,7 +6,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include <sys/mman.h>
 #include <sys/syscall.h>
@@ -14,10 +14,10 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/pkey.h"
 #include "gin/thread_isolation.h"
 
-#if BUILDFLAG(ENABLE_PKEYS)
-#else  // BUILDFLAG(ENABLE_PKEYS)
+#if PA_BUILDFLAG(ENABLE_PKEYS)
+#else  // PA_BUILDFLAG(ENABLE_PKEYS)
 #error Not implemented for non-pkey thread isolation
-#endif  // BUILDFLAG(ENABLE_PKEYS)
+#endif  // PA_BUILDFLAG(ENABLE_PKEYS)
 
 namespace gin {
 
@@ -50,4 +50,4 @@ int ThreadIsolatedAllocator::Pkey() const {
 
 }  // namespace gin
 
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)

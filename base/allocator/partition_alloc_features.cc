@@ -42,7 +42,7 @@ const base::FeatureParam<UnretainedDanglingPtrMode>
 
 BASE_FEATURE(kPartitionAllocDanglingPtr,
              "PartitionAllocDanglingPtr",
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
@@ -70,15 +70,15 @@ const base::FeatureParam<DanglingPtrType> kDanglingPtrTypeParam{
     &kDanglingPtrTypeOption,
 };
 
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_STARSCAN)
 // If enabled, PCScan is turned on by default for all partitions that don't
 // disable it explicitly.
 BASE_FEATURE(kPartitionAllocPCScan,
              "PartitionAllocPCScan",
              FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(USE_STARSCAN)
+#endif  // PA_BUILDFLAG(USE_STARSCAN)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // If enabled, PCScan is turned on only for the browser's malloc partition.
 BASE_FEATURE(kPartitionAllocPCScanBrowserOnly,
              "PartitionAllocPCScanBrowserOnly",
@@ -122,14 +122,14 @@ const base::FeatureParam<int>
 BASE_FEATURE(kPartitionAllocZappingByFreeFlags,
              "PartitionAllocZappingByFreeFlags",
              FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,
              "PartitionAllocBackupRefPtr",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||     \
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) ||                  \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_FEATURE_FLAG)
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_FEATURE_FLAG)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
@@ -162,7 +162,7 @@ const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{
 
 BASE_FEATURE(kPartitionAllocMemoryTagging,
              "PartitionAllocMemoryTagging",
-#if BUILDFLAG(USE_FULL_MTE)
+#if PA_BUILDFLAG(USE_FULL_MTE)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
@@ -175,7 +175,7 @@ constexpr FeatureParam<MemtagMode>::Option kMemtagModeOptions[] = {
 
 const base::FeatureParam<MemtagMode> kMemtagModeParam{
     &kPartitionAllocMemoryTagging, "memtag-mode",
-#if BUILDFLAG(USE_FULL_MTE)
+#if PA_BUILDFLAG(USE_FULL_MTE)
     MemtagMode::kSync,
 #else
     MemtagMode::kAsync,
@@ -191,7 +191,7 @@ constexpr FeatureParam<MemoryTaggingEnabledProcesses>::Option
 const base::FeatureParam<MemoryTaggingEnabledProcesses>
     kMemoryTaggingEnabledProcessesParam{
         &kPartitionAllocMemoryTagging, "enabled-processes",
-#if BUILDFLAG(USE_FULL_MTE)
+#if PA_BUILDFLAG(USE_FULL_MTE)
         MemoryTaggingEnabledProcesses::kAllProcesses,
 #else
         MemoryTaggingEnabledProcesses::kBrowserOnly,
@@ -205,7 +205,7 @@ BASE_FEATURE(kKillPartitionAllocMemoryTagging,
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPermissiveMte);
 BASE_FEATURE(kPartitionAllocPermissiveMte,
              "PartitionAllocPermissiveMte",
-#if BUILDFLAG(USE_FULL_MTE)
+#if PA_BUILDFLAG(USE_FULL_MTE)
              // We want to actually crash if USE_FULL_MTE is enabled.
              FEATURE_DISABLED_BY_DEFAULT
 #else
@@ -283,11 +283,11 @@ BASE_FEATURE(kPartitionAllocPCScanEagerClearing,
 // In addition to heap, scan also the stack of the current mutator.
 BASE_FEATURE(kPartitionAllocPCScanStackScanning,
              "PartitionAllocPCScanStackScanning",
-#if BUILDFLAG(STACK_SCAN_SUPPORTED)
+#if PA_BUILDFLAG(STACK_SCAN_SUPPORTED)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(STACK_SCAN_SUPPORTED)
+#endif  // PA_BUILDFLAG(STACK_SCAN_SUPPORTED)
 );
 
 BASE_FEATURE(kPartitionAllocDCScan,
@@ -430,7 +430,7 @@ BASE_FEATURE(kPartitionAllocDisableBRPInBufferPartition,
              "PartitionAllocDisableBRPInBufferPartition",
              FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(USE_FREELIST_DISPATCHER)
+#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 BASE_FEATURE(kUsePoolOffsetFreelists,
              "PartitionAllocUsePoolOffsetFreelists",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -469,17 +469,17 @@ void MakeFreeNoOp(WhenFreeBecomesNoOp callsite) {
   // Note: For now, the DanglingPointerDetector is only enabled on 5 bots, and
   // on linux non-official configuration.
   // TODO(b/40802063): Reconsider this decision after the experiment.
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   if (base::FeatureList::IsEnabled(features::kPartitionAllocDanglingPtr)) {
     return;
   }
-#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   if (base::FeatureList::IsEnabled(kPartitionAllocMakeFreeNoOpOnShutdown) &&
       kPartitionAllocMakeFreeNoOpOnShutdownParam.Get() == callsite) {
     allocator_shim::InsertNoOpOnFreeAllocatorShimOnShutDown();
   }
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 
 BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,

@@ -79,8 +79,9 @@ TEST_F(BufferTest, TestInitWithAlloc) {
 
 #if defined(ARCH_CPU_64_BITS) &&                                              \
     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||               \
-     defined(THREAD_SANITIZER) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
-     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
+     defined(THREAD_SANITIZER) ||                                             \
+     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
 // - ASAN and MSAN malloc by default triggers crash instead of returning null on
 //   failure.
 // - PartitionAlloc malloc also crashes on allocation failure by design.

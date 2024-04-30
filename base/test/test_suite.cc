@@ -97,9 +97,9 @@
 #include "base/debug/handle_hooks_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "base/allocator/partition_alloc_support.h"
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 #if GTEST_HAS_DEATH_TEST
 #include "base/gtest_prod_util.h"
@@ -202,7 +202,7 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
 
     // TODO(crbug.com/40255771): Enable PartitionAlloc in unittests with
     // ASAN.
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
     allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
         "",
         /*configure_dangling_pointer_detector=*/true);
@@ -567,7 +567,7 @@ void TestSuite::Initialize() {
   // Android too. Same for ASAN.
   // TODO(crbug.com/40255771): Enable PartitionAlloc in unittests with
   // ASAN.
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
   allocator::PartitionAllocSupport::Get()->ReconfigureForTests();
 #endif  // BUILDFLAG(IS_WIN)
 

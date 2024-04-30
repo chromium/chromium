@@ -119,12 +119,12 @@ base::LazyInstance<EnabledStateObserverImpl>::Leaky g_trace_state_dispatcher =
     LAZY_INSTANCE_INITIALIZER;
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 base::LazyInstance<gin::PageAllocator>::Leaky g_page_allocator =
     LAZY_INSTANCE_INITIALIZER;
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 base::TaskPriority ToBaseTaskPriority(v8::TaskPriority priority) {
   switch (priority) {
@@ -322,19 +322,19 @@ V8Platform::V8Platform() : tracing_controller_(new TracingControllerImpl) {}
 
 V8Platform::~V8Platform() = default;
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 PageAllocator* V8Platform::GetPageAllocator() {
   return g_page_allocator.Pointer();
 }
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 ThreadIsolatedAllocator* V8Platform::GetThreadIsolatedAllocator() {
   if (!GetThreadIsolationData().Initialized()) {
     return nullptr;
   }
   return GetThreadIsolationData().allocator.get();
 }
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 void V8Platform::OnCriticalMemoryPressure() {
 // We only have a reservation on 32-bit Windows systems.
@@ -353,7 +353,7 @@ v8::ZoneBackingAllocator* V8Platform::GetZoneBackingAllocator() {
   } allocator;
   return &allocator;
 }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 std::shared_ptr<v8::TaskRunner> V8Platform::GetForegroundTaskRunner(
     v8::Isolate* isolate,

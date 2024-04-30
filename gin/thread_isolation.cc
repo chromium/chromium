@@ -4,7 +4,7 @@
 
 #include "gin/thread_isolation.h"
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include <sys/mman.h>
 #include <sys/utsname.h>
@@ -112,4 +112,4 @@ ThreadIsolationData& GetThreadIsolationData() {
 
 }  // namespace gin
 
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)

@@ -86,7 +86,7 @@ class AllocationTraceRecorderTest : public Test {
       MTEMode mte_mode = MTEMode::kUndefined) {
     return AllocationNotificationData(address, size, nullptr,
                                       AllocationSubsystem::kPartitionAllocator)
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
         .SetMteReportingMode(mte_mode)
 #endif
         ;
@@ -96,7 +96,7 @@ class AllocationTraceRecorderTest : public Test {
                                       MTEMode mte_mode = MTEMode::kUndefined) {
     return FreeNotificationData(address,
                                 AllocationSubsystem::kPartitionAllocator)
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
         .SetMteReportingMode(mte_mode)
 #endif
         ;

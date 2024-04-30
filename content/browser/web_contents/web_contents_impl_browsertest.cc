@@ -118,7 +118,7 @@
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/src/partition_alloc/starscan/pcscan.h"
 #endif
 
@@ -6158,7 +6158,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
   }
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(USE_STARSCAN)
 
 namespace {
 
@@ -6411,6 +6411,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   }
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // PA_BUILDFLAG(USE_STARSCAN)
 
 }  // namespace content
