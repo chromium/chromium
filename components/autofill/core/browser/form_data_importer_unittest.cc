@@ -748,8 +748,9 @@ class FormDataImporterTest : public testing::Test {
 
     CreditCard expected = test::CreateCreditCardWithInfo(
         exp_name, exp_cc_num, exp_cc_month, exp_cc_year, "");
-    EXPECT_THAT(personal_data_manager_->GetCreditCards(),
-                UnorderedElementsCompareEqual(expected));
+    EXPECT_THAT(
+        personal_data_manager_->payments_data_manager().GetCreditCards(),
+        UnorderedElementsCompareEqual(expected));
   }
 
   MockVirtualCardEnrollmentManager& virtual_card_enrollment_manager() {
@@ -1443,7 +1444,9 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_NotEnoughFilledFields) {
 
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
   // Also verify that there was no import of a credit card.
-  ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
+  ASSERT_EQ(
+      0U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 }
 
 TEST_F(FormDataImporterTest, ImportAddressProfiles_MinimumAddressUSA) {
@@ -1850,7 +1853,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Valid) {
   CreditCard expected = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999",
       "");  // Imported cards have no billing info.
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 }
 
@@ -1870,7 +1873,9 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_InvalidCardNumber) {
                                       AutofillMetrics::HAS_EXPIRATION_DATE_ONLY,
                                       1);
 
-  ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
+  ASSERT_EQ(
+      0U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 }
 
 // Tests that FormFieldData::user_input is preferred over FormFieldData::value
@@ -1905,7 +1910,7 @@ TEST_F(FormDataImporterTest,
 
   CreditCard expected = test::CreateCreditCardWithInfo(
       "Jim Johansen", "4444333322221111", "02", "2999", "", u"001");
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 }
 
@@ -1976,7 +1981,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
   CreditCard expected = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "02", "2999",
       "");  // Imported cards have no billing info.
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 }
 
@@ -1993,7 +1998,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
   CreditCard expected = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999",
       "");  // Imported cards have no billing info.
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
   // Add a second different valid credit card.
@@ -2016,7 +2021,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
   // We ignore the order because multiple profiles or credit cards that
   // are added to the SQLite DB within the same second will be returned in GUID
   // (i.e., random) order.
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected, expected2));
 }
 
@@ -2097,7 +2102,9 @@ TEST_F(FormDataImporterTest,
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // Type the same data as the masked card into a form.
   FormData form = CreateFullCreditCardForm("John Dillinger", "4111111111111111",
@@ -2125,7 +2132,9 @@ TEST_F(FormDataImporterTest,
                           "378282246310005" /* American Express */, "04",
                           "2999", "");  // Imported cards have no billing info.
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // Type the same data as the unmasked card into a form.
   FormData form =
@@ -2160,7 +2169,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
   CreditCard expected = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2998",
       "");  // Imported cards have no billing info.
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
   // Add a second different valid credit card where the year is different but
@@ -2182,7 +2191,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
       "Biggie Smalls", "4111111111111111", "01", "2999",
       "");  // Imported cards have no billing info.
   const std::vector<CreditCard*>& results2 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
@@ -2204,7 +2213,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
   CreditCard expected = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2998",
       "");  // Imported cards have no billing info.
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
   // Add a second different valid credit card where the year is different but
@@ -2222,7 +2231,8 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
   EXPECT_TRUE(extracted_credit_card2);
   // Verify the local card from PDM is equal to `extracted_credit_card2`.
   EXPECT_EQ(extracted_credit_card2.value(),
-            *personal_data_manager_->GetLocalCreditCards()[0]);
+            *personal_data_manager_->payments_data_manager()
+                 .GetLocalCreditCards()[0]);
 
   // Expect that the newer information is saved.  In this case the year is
   // updated to "2999".
@@ -2230,7 +2240,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
       "Biggie Smalls", "4111111111111111", "01", "2999",
       "");  // Imported cards have no billing info.
   const std::vector<CreditCard*>& results2 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
@@ -2254,7 +2264,7 @@ TEST_F(FormDataImporterTest,
                       test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");  // Imported cards have no billing info.
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
   // Create a form with CVC field present and filled.
@@ -2275,7 +2285,7 @@ TEST_F(FormDataImporterTest,
   // `extracted_credit_card2` for card_number and expiration date but not for
   // the CVC.
   const CreditCard local_saved_credit_card =
-      *personal_data_manager_->GetLocalCreditCards()[0];
+      *personal_data_manager_->payments_data_manager().GetLocalCreditCards()[0];
   EXPECT_TRUE(extracted_credit_card2->HasSameNumberAs(local_saved_credit_card));
   EXPECT_TRUE(
       extracted_credit_card2->HasSameExpirationDateAs(local_saved_credit_card));
@@ -2301,7 +2311,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   CreditCard expected = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2998",
       "");  // Imported cards have no billing info.
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
   // Add a second credit card with no number.
@@ -2320,7 +2330,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   CreditCard expected2 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2998", "");
   const std::vector<CreditCard*>& results2 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
@@ -2341,7 +2351,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
 
   CreditCard expected = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
-  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+  EXPECT_THAT(personal_data_manager_->payments_data_manager().GetCreditCards(),
               UnorderedElementsCompareEqual(expected));
 
   // Add a second different valid credit card where the name is missing but
@@ -2360,7 +2370,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   CreditCard expected2 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results2 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 
@@ -2381,7 +2391,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   CreditCard expected3 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results3 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results3.size());
   EXPECT_THAT(*results3[0], ComparesEqual(expected3));
 }
@@ -2393,10 +2403,11 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
       base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&saved_credit_card, "", "4111111111111111" /* Visa */,
                           "01", "2998", "1");
-  personal_data_manager_->AddCreditCard(saved_credit_card);
+  personal_data_manager_->payments_data_manager().AddCreditCard(
+      saved_credit_card);
 
   const std::vector<CreditCard*>& results1 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results1.size());
   EXPECT_EQ(saved_credit_card, *results1[0]);
 
@@ -2418,7 +2429,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
   CreditCard expected2 = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "1");
   const std::vector<CreditCard*>& results2 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
@@ -2432,10 +2443,11 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
       base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  personal_data_manager_->AddCreditCard(saved_credit_card);
+  personal_data_manager_->payments_data_manager().AddCreditCard(
+      saved_credit_card);
 
   const std::vector<CreditCard*>& results1 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results1.size());
   EXPECT_THAT(*results1[0], ComparesEqual(saved_credit_card));
 
@@ -2452,7 +2464,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
 
   // Expect that no new card is saved.
   const std::vector<CreditCard*>& results2 =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results2.size());
   EXPECT_THAT(*results2[0], ComparesEqual(saved_credit_card));
 }
@@ -2468,8 +2480,10 @@ TEST_F(FormDataImporterTest,
                           "4111 1111 1111 1111" /* Visa */, "01", "2998", "");
   EXPECT_TRUE(credit_card.IsVerified());
 
-  personal_data_manager_->AddCreditCard(credit_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  personal_data_manager_->payments_data_manager().AddCreditCard(credit_card);
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // Simulate a form submission with conflicting expiration year.
   FormData form =
@@ -2485,7 +2499,7 @@ TEST_F(FormDataImporterTest,
 
   // Expect that the saved credit card is not modified.
   const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(credit_card));
 }
@@ -2500,10 +2514,11 @@ TEST_F(FormDataImporterTest,
       base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  personal_data_manager_->AddCreditCard(saved_credit_card);
+  personal_data_manager_->payments_data_manager().AddCreditCard(
+      saved_credit_card);
 
   const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(saved_credit_card));
 
@@ -2605,10 +2620,11 @@ TEST_F(FormDataImporterTest,
       base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  personal_data_manager_->AddCreditCard(saved_credit_card);
+  personal_data_manager_->payments_data_manager().AddCreditCard(
+      saved_credit_card);
 
   const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(saved_credit_card));
 
@@ -2640,7 +2656,9 @@ TEST_F(FormDataImporterTest,
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // Simulate a form submission with the same masked server card.
   FormData form = CreateFullCreditCardForm("Biggie Smalls",
@@ -2669,7 +2687,7 @@ TEST_F(
   test::SetCreditCardInfo(
       &local_card, kDefaultCreditCardName, kDefaultCreditCardNumber /* Visa */,
       kDefaultCreditCardExpMonth, kDefaultCreditCardExpYear, "");
-  personal_data_manager_->AddCreditCard(local_card);
+  personal_data_manager_->payments_data_manager().AddCreditCard(local_card);
   // Add a masked server card.
   CreditCard server_card = test::GetMaskedServerCard();
   test::SetCreditCardInfo(
@@ -2700,7 +2718,9 @@ TEST_F(FormDataImporterTest,
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // Simulate a form submission with the same full server card.
   FormData form = CreateFullCreditCardForm("Biggie Smalls", "378282246310005",
@@ -2839,7 +2859,9 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "John Dillinger",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   personal_data_manager_->AddServerCreditCard(server_card);
-  ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  ASSERT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // Simulate a form submission with the same card number but different
   // expiration date.
@@ -2867,7 +2889,9 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "John Dillinger",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   personal_data_manager_->AddServerCreditCard(server_card);
-  ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  ASSERT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // Simulate a form submission with the same card number but different
   // expiration date.
@@ -2895,7 +2919,9 @@ TEST_F(
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->AddServerCreditCard(server_card);
-  ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  ASSERT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // Simulate a form submission with the card with same last four but different
   // expiration date.
@@ -2939,7 +2965,9 @@ TEST_F(
                           "02", "2112", "");
   server_card2.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->AddServerCreditCard(server_card2);
-  EXPECT_EQ(2U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      2U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   {
     // A user fills/enters the card's information on a checkout form but changes
@@ -3022,7 +3050,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
   CreditCard expected_card = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results_cards =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results_cards.size());
   EXPECT_THAT(*results_cards[0], ComparesEqual(expected_card));
 }
@@ -3054,7 +3082,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_TwoAddressesOneCreditCard) {
   CreditCard expected_card = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
@@ -3190,7 +3218,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_AddressesDisabledOneCreditCard) {
   CreditCard expected_card = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
@@ -3219,7 +3247,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_OneAddressCreditCardDisabled) {
 
   // Test that the credit card was not saved.
   const std::vector<CreditCard*>& results_cards =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(0U, results_cards.size());
 }
 
@@ -3243,7 +3271,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_AddressCreditCardDisabled) {
 
   // Test that the credit card was not saved.
   const std::vector<CreditCard*>& results_cards =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(0U, results_cards.size());
 }
 
@@ -3258,7 +3286,9 @@ TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
                           "378282246310005" /* American Express */, "04",
                           "2999", "");
   personal_data_manager_->AddServerCreditCard(server_card2);
-  EXPECT_EQ(2U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      2U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A valid credit card form. A user re-enters one of their masked cards.
   // We should not offer to save locally.
@@ -3316,7 +3346,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
   CreditCard expected_card = test::CreateCreditCardWithInfo(
       "Biggie Smalls", "4111111111111111", "01", "2999", "");
   const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
+      personal_data_manager_->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
@@ -3345,10 +3375,12 @@ TEST_F(FormDataImporterTest,
                             "378282246310005" /* American Express */, "05",
                             "2999", "1");
     local_card.set_record_type(CreditCard::RecordType::kLocalCard);
-    personal_data_manager_->AddCreditCard(local_card);
+    personal_data_manager_->payments_data_manager().AddCreditCard(local_card);
   }
 
-  EXPECT_EQ(4U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      4U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A user re-types (or fills with) an unmasked card. Don't offer to save
   // here, either. Since it's unmasked, we know for certain that it's the same
@@ -3378,7 +3410,8 @@ TEST_F(FormDataImporterTest,
 
   // Check that both of the local cards we have added were updated.
   int matched_local_cards = 0;
-  for (const CreditCard* card : personal_data_manager_->GetCreditCards()) {
+  for (const CreditCard* card :
+       personal_data_manager_->payments_data_manager().GetCreditCards()) {
     if (card->record_type() == CreditCard::RecordType::kLocalCard) {
       matched_local_cards++;
       EXPECT_EQ(card->expiration_month(), 4);
@@ -3393,7 +3426,9 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form.  Ensure that
   // an expiration date match is recorded.
@@ -3430,7 +3465,9 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
@@ -3463,7 +3500,9 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
@@ -3497,7 +3536,9 @@ TEST_F(
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4111111111111111" /* Visa */, "04", "2111", "1");
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
   // expiration date.
@@ -3528,7 +3569,9 @@ TEST_F(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form but changes
   // the expiration date of the card.  Ensure that an expiration date mismatch
@@ -3565,7 +3608,9 @@ TEST_F(FormDataImporterTest,
                           "01", "2111", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form.  Ensure that
   // an expiration date match is recorded.
@@ -3601,7 +3646,9 @@ TEST_F(FormDataImporterTest,
                           "01", "2111", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
   personal_data_manager_->AddServerCreditCard(server_card);
-  EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
+  EXPECT_EQ(
+      1U,
+      personal_data_manager_->payments_data_manager().GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form but changes
   // the expiration date of the card.  Ensure that an expiration date mismatch

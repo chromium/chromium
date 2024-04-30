@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -289,7 +290,8 @@ bool KeysMatch(int profile_a, int profile_b) {
 }
 
 void SetCreditCards(int profile, std::vector<CreditCard>* credit_cards) {
-  GetPersonalDataManager(profile)->SetCreditCards(credit_cards);
+  GetPersonalDataManager(profile)->payments_data_manager().SetCreditCards(
+      credit_cards);
 }
 
 void AddProfile(int profile, const AutofillProfile& autofill_profile) {

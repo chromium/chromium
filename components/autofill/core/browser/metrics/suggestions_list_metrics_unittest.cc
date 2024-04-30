@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +42,7 @@ TEST_F(SuggestionsListMetricsTest, SuggestionsCount) {
   autofill_manager().OnFormsSeen({form}, {});
   personal_data().AddProfile(test::GetFullProfile());
   personal_data().AddProfile(test::GetFullProfile2());
-  personal_data().AddCreditCard(test::GetCreditCard());
+  personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
   {
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());

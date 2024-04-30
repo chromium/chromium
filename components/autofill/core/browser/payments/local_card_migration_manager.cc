@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <unordered_map>
 #include <vector>
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -435,7 +437,7 @@ int LocalCardMigrationManager::GetDetectedValues() const {
 
 void LocalCardMigrationManager::GetMigratableCreditCards() {
   std::vector<CreditCard*> local_credit_cards =
-      personal_data_manager_->GetLocalCreditCards();
+      personal_data_manager_->payments_data_manager().GetLocalCreditCards();
 
   // Empty previous state.
   migratable_credit_cards_.clear();

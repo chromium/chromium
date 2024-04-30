@@ -8,6 +8,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
@@ -22,7 +23,7 @@ int64_t GetBillingCustomerId(PersonalDataManager* personal_data_manager) {
 
   // Get billing customer ID from the synced PaymentsCustomerData.
   PaymentsCustomerData* customer_data =
-      personal_data_manager->GetPaymentsCustomerData();
+      personal_data_manager->payments_data_manager().GetPaymentsCustomerData();
   if (customer_data && !customer_data->customer_id.empty()) {
     int64_t billing_customer_id = 0;
     if (base::StringToInt64(std::string_view(customer_data->customer_id),

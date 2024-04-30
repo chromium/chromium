@@ -30,6 +30,7 @@
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/ui/address_combobox_model.h"
@@ -486,15 +487,18 @@ void PaymentRequestBrowserTestBase::AddCreditCard(
     const autofill::CreditCard& card) {
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
   if (card.record_type() != autofill::CreditCard::RecordType::kLocalCard) {
-    personal_data_manager->AddServerCreditCardForTest(
+    personal_data_manager->payments_data_manager().AddServerCreditCardForTest(
         std::make_unique<autofill::CreditCard>(card));
     return;
   }
-  size_t card_count = personal_data_manager->GetCreditCards().size();
+  size_t card_count =
+      personal_data_manager->payments_data_manager().GetCreditCards().size();
   autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
-  personal_data_manager->AddCreditCard(card);
+  personal_data_manager->payments_data_manager().AddCreditCard(card);
   std::move(waiter).Wait();
-  EXPECT_EQ(card_count + 1, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      card_count + 1,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
 }
 
 void PaymentRequestBrowserTestBase::WaitForOnPersonalDataChanged() {

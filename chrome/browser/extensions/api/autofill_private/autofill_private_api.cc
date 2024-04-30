@@ -354,7 +354,8 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
   const bool use_existing_card = !guid.empty();
   const autofill::CreditCard* existing_card = nullptr;
   if (use_existing_card) {
-    existing_card = personal_data->GetCreditCardByGUID(guid);
+    existing_card =
+        personal_data->payments_data_manager().GetCreditCardByGUID(guid);
     if (!existing_card)
       return RespondNow(Error(kErrorDataUnavailable));
   }
@@ -432,11 +433,12 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
           base::UserMetricsAction("AutofillCreditCardsEditedWithNickname"));
     }
 
-    personal_data->UpdateCreditCard(credit_card);
+    personal_data->payments_data_manager().UpdateCreditCard(credit_card);
     base::RecordAction(base::UserMetricsAction("AutofillCreditCardsEdited"));
   } else {
-    int current_card_count = personal_data->GetCreditCards().size();
-    personal_data->AddCreditCard(credit_card);
+    int current_card_count =
+        personal_data->payments_data_manager().GetCreditCards().size();
+    personal_data->payments_data_manager().AddCreditCard(credit_card);
 
     base::RecordAction(base::UserMetricsAction("AutofillCreditCardsAdded"));
     base::UmaHistogramCounts100(
@@ -478,7 +480,8 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
   if (personal_data->payments_data_manager().GetIbanByGUID(parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillIbanDeleted"));
   } else if (autofill::CreditCard* credit_card =
-                 personal_data->GetCreditCardByGUID(parameters->guid)) {
+                 personal_data->payments_data_manager().GetCreditCardByGUID(
+                     parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillCreditCardDeleted"));
     if (!credit_card->cvc().empty()) {
       base::RecordAction(
@@ -753,7 +756,8 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
     return RespondNow(Error(kErrorDataUnavailable));
 
   autofill::CreditCard* card =
-      personal_data_manager->GetCreditCardByServerId(parameters->card_id);
+      personal_data_manager->payments_data_manager().GetCreditCardByServerId(
+          parameters->card_id);
   if (!card)
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -794,7 +798,8 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
     return RespondNow(Error(kErrorDataUnavailable));
 
   autofill::CreditCard* card =
-      personal_data_manager->GetCreditCardByServerId(parameters->card_id);
+      personal_data_manager->payments_data_manager().GetCreditCardByServerId(
+          parameters->card_id);
   if (!card)
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -973,7 +978,8 @@ void AutofillPrivateGetLocalCardFunction::ReturnCreditCard() {
   std::optional<autofill_private::GetLocalCard::Params> parameters =
       autofill_private::GetLocalCard::Params::Create(args());
   if (auto* card_from_guid =
-          personal_data_manager->GetCreditCardByGUID(parameters->guid)) {
+          personal_data_manager->payments_data_manager().GetCreditCardByGUID(
+              parameters->guid)) {
     return Respond(ArgumentList(autofill_private::GetLocalCard::Results::Create(
         autofill_util::CreditCardToCreditCardEntry(
             *card_from_guid, *personal_data_manager,

@@ -7,6 +7,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
@@ -105,15 +106,16 @@ class SingleClientWalletCredentialSyncTest : public SyncTest {
 
   void WaitForNumberOfCards(size_t expected_count,
                             autofill::PersonalDataManager* pdm) {
-    while (pdm->GetCreditCards().size() != expected_count ||
-           pdm->HasPendingPaymentQueriesForTesting()) {
+    while (pdm->payments_data_manager().GetCreditCards().size() !=
+               expected_count ||
+           pdm->payments_data_manager().HasPendingPaymentQueries()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }
 
   void WaitForNoPaymentsCustomerData(autofill::PersonalDataManager* pdm) {
-    while (pdm->GetPaymentsCustomerData() != nullptr ||
-           pdm->HasPendingPaymentQueriesForTesting()) {
+    while (pdm->payments_data_manager().GetPaymentsCustomerData() != nullptr ||
+           pdm->payments_data_manager().HasPendingPaymentQueries()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }
@@ -125,7 +127,8 @@ class SingleClientWalletCredentialSyncTest : public SyncTest {
   }
 
   bool IsCvcAvailableOnAnyCard(autofill::PersonalDataManager* pdm) {
-    for (autofill::CreditCard* credit_card : pdm->GetCreditCards()) {
+    for (autofill::CreditCard* credit_card :
+         pdm->payments_data_manager().GetCreditCards()) {
       if (!credit_card->cvc().empty()) {
         return true;
       }
@@ -192,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
 
-  std::vector<autofill::CreditCard*> cards = pdm->GetCreditCards();
+  std::vector<autofill::CreditCard*> cards =
+      pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_FALSE(cards[0]->cvc().empty());
   ExpectDefaultWalletCredentialValues(*cards[0]);
@@ -232,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
 
-  std::vector<autofill::CreditCard*> cards = pdm->GetCreditCards();
+  std::vector<autofill::CreditCard*> cards =
+      pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_FALSE(cards[0]->cvc().empty());
   ExpectDefaultWalletCredentialValues(*cards[0]);
@@ -297,7 +302,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   // Check that one card is stored in the account storage.
   EXPECT_EQ(1U, GetServerCards(account_data_2).size());
 
-  std::vector<autofill::CreditCard*> cards_2 = pdm->GetCreditCards();
+  std::vector<autofill::CreditCard*> cards_2 =
+      pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards_2.size());
 
   // Check for CVC data on the correct card with the `instrument_id` of 9.
@@ -344,7 +350,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<autofill::CreditCard*> cards = pdm->GetCreditCards();
+  std::vector<autofill::CreditCard*> cards =
+      pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(2uL, cards.size());
 
   autofill::CreditCard* card_with_cvc =
@@ -369,15 +376,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest, ClearOnSignOut) {
   ASSERT_NE(nullptr, pdm);
 
   // Make sure the wallet and credential data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
-  ExpectDefaultWalletCredentialValues(*pdm->GetCreditCards()[0]);
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetCreditCards().size());
+  EXPECT_FALSE(pdm->payments_data_manager().GetCreditCards()[0]->cvc().empty());
+  ExpectDefaultWalletCredentialValues(
+      *pdm->payments_data_manager().GetCreditCards()[0]);
 
   // Signout, the wallet and credential data should be gone.
   GetClient(0)->SignOutPrimaryAccount();
   WaitForNumberOfCards(0, pdm);
 
-  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(0uL, pdm->payments_data_manager().GetCreditCards().size());
 }
 
 // Verify that card and CVC data should get cleared from the database when the
@@ -401,15 +409,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   ASSERT_NE(nullptr, pdm);
 
   // Make sure the wallet and credential data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
-  ExpectDefaultWalletCredentialValues(*pdm->GetCreditCards()[0]);
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetCreditCards().size());
+  EXPECT_FALSE(pdm->payments_data_manager().GetCreditCards()[0]->cvc().empty());
+  ExpectDefaultWalletCredentialValues(
+      *pdm->payments_data_manager().GetCreditCards()[0]);
 
   // Signout, the wallet and credential data should be gone.
   GetClient(0)->SignOutPrimaryAccount();
   WaitForNumberOfCards(0, pdm);
 
-  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(0uL, pdm->payments_data_manager().GetCreditCards().size());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -426,9 +435,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   ASSERT_NE(nullptr, pdm);
 
   // Make sure the wallet and credential data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
-  ExpectDefaultWalletCredentialValues(*pdm->GetCreditCards()[0]);
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetCreditCards().size());
+  EXPECT_FALSE(pdm->payments_data_manager().GetCreditCards()[0]->cvc().empty());
+  ExpectDefaultWalletCredentialValues(
+      *pdm->payments_data_manager().GetCreditCards()[0]);
 
   // Disable sync for `kPayments`, the wallet and credential data should be
   // gone.
@@ -436,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
       GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
   WaitForNumberOfCards(0, pdm);
 
-  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(0uL, pdm->payments_data_manager().GetCreditCards().size());
 
   // Enable sync for `kPayments`, the wallet and credential data should come
   // back.
@@ -446,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfCards(1, pdm);
 
-  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(1uL, pdm->payments_data_manager().GetCreditCards().size());
 }
 
 // Card and CVC data should get cleared from the database when the user enters
@@ -461,22 +471,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   ASSERT_NE(nullptr, pdm);
 
   // Make sure the wallet and credential data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
-  ExpectDefaultWalletCredentialValues(*pdm->GetCreditCards()[0]);
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetCreditCards().size());
+  EXPECT_FALSE(pdm->payments_data_manager().GetCreditCards()[0]->cvc().empty());
+  ExpectDefaultWalletCredentialValues(
+      *pdm->payments_data_manager().GetCreditCards()[0]);
 
   // Enter sync paused state, the wallet and credential data should be gone.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
   WaitForNumberOfCards(0, pdm);
 
-  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(0uL, pdm->payments_data_manager().GetCreditCards().size());
 
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
   WaitForNumberOfCards(1, pdm);
 
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
-  ExpectDefaultWalletCredentialValues(*pdm->GetCreditCards()[0]);
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetCreditCards().size());
+  EXPECT_FALSE(pdm->payments_data_manager().GetCreditCards()[0]->cvc().empty());
+  ExpectDefaultWalletCredentialValues(
+      *pdm->payments_data_manager().GetCreditCards()[0]);
 }
 
 // CVC data is using incremental updates. Make sure existing data doesn't get
@@ -496,7 +508,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
 
-  std::vector<autofill::CreditCard*> cards = pdm->GetCreditCards();
+  std::vector<autofill::CreditCard*> cards =
+      pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(2uL, cards.size());
 
   autofill::CreditCard* card_with_cvc_1 =
@@ -525,7 +538,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   WaitForOnPersonalDataChanged(pdm);
 
   // Make sure both the credential data is present.
-  cards = pdm->GetCreditCards();
+  cards = pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(2uL, cards.size());
 
   card_with_cvc_1 = (cards[1]->instrument_id() == 123) ? cards[0] : cards[1];
@@ -550,9 +563,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   ASSERT_NE(nullptr, pdm);
 
   // Make sure the wallet and credential data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  EXPECT_FALSE(pdm->GetCreditCards()[0]->cvc().empty());
-  ExpectDefaultWalletCredentialValues(*pdm->GetCreditCards()[0]);
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetCreditCards().size());
+  EXPECT_FALSE(pdm->payments_data_manager().GetCreditCards()[0]->cvc().empty());
+  ExpectDefaultWalletCredentialValues(
+      *pdm->payments_data_manager().GetCreditCards()[0]);
 
   // Turn off payments sync, the wallet and credential data should be gone.
   ASSERT_TRUE(
@@ -560,5 +574,5 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
   WaitForNumberOfCards(0, pdm);
 
-  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
+  EXPECT_EQ(0uL, pdm->payments_data_manager().GetCreditCards().size());
 }

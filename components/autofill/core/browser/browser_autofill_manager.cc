@@ -916,8 +916,10 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
         client().GetPersonalDataManager()->GetProfiles().size());
   }
 
-  const std::vector<CreditCard*>& credit_cards =
-      client().GetPersonalDataManager()->GetCreditCards();
+  const std::vector<CreditCard*>& credit_cards = client()
+                                                     .GetPersonalDataManager()
+                                                     ->payments_data_manager()
+                                                     .GetCreditCards();
 
   if (profiles.empty() && credit_cards.empty()) {
     return false;
@@ -1945,7 +1947,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   for (const AutofillProfile* profile : pdm->GetProfiles()) {
     profile->GetNonEmptyTypes(app_locale_, &non_empty_types);
   }
-  for (const CreditCard* card : pdm->GetCreditCards()) {
+  for (const CreditCard* card : pdm->payments_data_manager().GetCreditCards()) {
     card->GetNonEmptyTypes(app_locale_, &non_empty_types);
   }
   // As CVC is not stored, treat it separately.
@@ -1964,8 +1966,10 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
 const gfx::Image& BrowserAutofillManager::GetCardImage(
     const CreditCard& credit_card) {
   gfx::Image* card_art_image =
-      client().GetPersonalDataManager()->GetCreditCardArtImageForUrl(
-          credit_card.card_art_url());
+      client()
+          .GetPersonalDataManager()
+          ->payments_data_manager()
+          .GetCreditCardArtImageForUrl(credit_card.card_art_url());
   return card_art_image
              ? *card_art_image
              : ui::ResourceBundle::GetSharedInstance().GetImageNamed(
@@ -2069,14 +2073,19 @@ bool BrowserAutofillManager::RefreshDataModels() {
       client().GetPersonalDataManager()->GetProfiles();
   address_form_event_logger_->set_record_type_count(profiles.size());
 
-  return !profiles.empty() ||
-         !client().GetPersonalDataManager()->GetCreditCards().empty();
+  return !profiles.empty() || !client()
+                                   .GetPersonalDataManager()
+                                   ->payments_data_manager()
+                                   .GetCreditCards()
+                                   .empty();
 }
 
 CreditCard* BrowserAutofillManager::GetCreditCard(
     Suggestion::BackendId unique_id) {
-  return client().GetPersonalDataManager()->GetCreditCardByGUID(
-      absl::get<Suggestion::Guid>(unique_id).value());
+  return client()
+      .GetPersonalDataManager()
+      ->payments_data_manager()
+      .GetCreditCardByGUID(absl::get<Suggestion::Guid>(unique_id).value());
 }
 
 AutofillProfile* BrowserAutofillManager::GetProfile(
@@ -2364,8 +2373,10 @@ BrowserAutofillManager::GetVirtualCreditCardsForStandaloneCvcField(
     const url::Origin& origin) const {
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map;
-  const std::vector<CreditCard*> cards =
-      client().GetPersonalDataManager()->GetCreditCards();
+  const std::vector<CreditCard*> cards = client()
+                                             .GetPersonalDataManager()
+                                             ->payments_data_manager()
+                                             .GetCreditCards();
   const std::vector<VirtualCardUsageData*> usage_data =
       client()
           .GetPersonalDataManager()

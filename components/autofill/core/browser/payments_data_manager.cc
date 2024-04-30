@@ -1613,7 +1613,7 @@ scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetLocalDatabase() {
 scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetServerDatabase() {
   return database_helper_->GetServerDatabase();
 }
-bool PaymentsDataManager::IsUsingAccountStorageForServerData() {
+bool PaymentsDataManager::IsUsingAccountStorageForServerDataForTest() {
   return database_helper_->IsUsingAccountStorageForServerData();
 }
 

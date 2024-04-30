@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 
 namespace autofill {
 
@@ -187,7 +188,8 @@ void SetData(
     }
   }
   if (!profiles_or_credit_cards->credit_cards->empty()) {
-    pdm->SetCreditCards(&*profiles_or_credit_cards->credit_cards);
+    pdm->payments_data_manager().SetCreditCards(
+        &*profiles_or_credit_cards->credit_cards);
   }
 }
 

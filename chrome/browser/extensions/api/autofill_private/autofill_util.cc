@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -228,7 +229,7 @@ CountryEntryList GenerateCountryList(
 CreditCardEntryList GenerateCreditCardList(
     const autofill::PersonalDataManager& personal_data) {
   const std::vector<autofill::CreditCard*>& cards =
-      personal_data.GetCreditCards();
+      personal_data.payments_data_manager().GetCreditCards();
 
   CreditCardEntryList list;
   for (const autofill::CreditCard* card : cards) {
@@ -309,7 +310,8 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableCardArtImage)) {
     card_art_image =
-        personal_data.GetCreditCardArtImageForUrl(credit_card.card_art_url());
+        personal_data.payments_data_manager().GetCreditCardArtImageForUrl(
+            credit_card.card_art_url());
   }
   card.image_src =
       card_art_image ? webui::GetBitmapDataUrl(card_art_image->AsBitmap())

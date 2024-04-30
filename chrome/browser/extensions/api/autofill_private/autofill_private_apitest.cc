@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/api/autofill_private.h"
-
 #include <memory>
 
 #include "base/command_line.h"
@@ -19,11 +17,13 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -146,10 +146,13 @@ IN_PROC_BROWSER_TEST_F(
   personal_data_manager->SetSyncingForTest(/*is_syncing_for_test=*/true);
 
   // Set up the personal data manager with 2 existing cards.
-  personal_data_manager->AddCreditCard(autofill::test::GetCreditCard2());
+  personal_data_manager->payments_data_manager().AddCreditCard(
+      autofill::test::GetCreditCard2());
   personal_data_manager->AddServerCreditCard(
       autofill::test::GetMaskedServerCard());
-  EXPECT_EQ(personal_data_manager->GetCreditCards().size(), 2u);
+  EXPECT_EQ(
+      personal_data_manager->payments_data_manager().GetCreditCards().size(),
+      2u);
 
   EXPECT_TRUE(RunAutofillSubtest("addNewCreditCard")) << message_;
 
@@ -342,7 +345,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
 
   autofill_client()
       ->GetPersonalDataManager()
-      ->SetPaymentMethodsMandatoryReauthEnabled(false);
+      ->payments_data_manager()
+      .SetPaymentMethodsMandatoryReauthEnabled(false);
   auto* mock_mandatory_reauth_manager =
       autofill_client()->GetOrCreatePaymentsMandatoryReauthManager();
 

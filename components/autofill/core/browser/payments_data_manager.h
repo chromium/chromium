@@ -411,7 +411,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // TODO(b/322170538): Remove.
   scoped_refptr<AutofillWebDataService> GetLocalDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();
-  bool IsUsingAccountStorageForServerData();
+  bool IsUsingAccountStorageForServerDataForTest();
 
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();

@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -681,7 +682,7 @@ void SetUpCreditCardAndBenefitData(
                     CreditCardCategoryBenefit::BenefitCategory::kSubscription));
           }},
       benefit);
-  personal_data.AddCreditCardBenefitForTest(benefit);
+  personal_data.payments_data_manager().AddCreditCardBenefitForTest(benefit);
   card.set_issuer_id(issuer_id);
   personal_data.AddServerCreditCard(card);
 }

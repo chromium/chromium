@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/test_region_data_loader.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/address_combobox_model.h"
@@ -90,9 +91,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
-  EXPECT_EQ(1u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      1u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
   autofill::CreditCard* credit_card =
-      personal_data_manager->GetCreditCards()[0];
+      personal_data_manager->payments_data_manager().GetCreditCards()[0];
   EXPECT_EQ(5, credit_card->expiration_month());
   EXPECT_EQ(2026, credit_card->expiration_year());
   EXPECT_EQ(u"1111", credit_card->LastFourDigits());
@@ -146,9 +149,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
       ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE));
   data_loop.Run();
 
-  EXPECT_EQ(1u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      1u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
   autofill::CreditCard* credit_card =
-      personal_data_manager->GetCreditCards()[0];
+      personal_data_manager->payments_data_manager().GetCreditCards()[0];
   EXPECT_EQ(5, credit_card->expiration_month());
   EXPECT_EQ(2026, credit_card->expiration_year());
   EXPECT_EQ(u"1111", credit_card->LastFourDigits());
@@ -211,7 +216,9 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
 
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  EXPECT_EQ(0u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      0u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
 
   SetComboboxValue(u"12", autofill::CREDIT_CARD_EXP_MONTH);
 
@@ -275,7 +282,9 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   EXPECT_FALSE(IsEditorComboboxInvalid(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR));
 
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  EXPECT_EQ(0u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      0u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
 }
 
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
@@ -306,7 +315,9 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   EXPECT_FALSE(IsEditorComboboxInvalid(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR));
 
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  EXPECT_EQ(0u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      0u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
 }
 
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
@@ -355,9 +366,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
-  EXPECT_EQ(1u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      1u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
   autofill::CreditCard* credit_card =
-      personal_data_manager->GetCreditCards()[0];
+      personal_data_manager->payments_data_manager().GetCreditCards()[0];
   EXPECT_EQ(5, credit_card->expiration_month());
   EXPECT_EQ(2026, credit_card->expiration_year());
   EXPECT_EQ(u"1111", credit_card->LastFourDigits());
@@ -438,9 +451,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
-  EXPECT_EQ(1u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      1u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
   autofill::CreditCard* credit_card =
-      personal_data_manager->GetCreditCards()[0];
+      personal_data_manager->payments_data_manager().GetCreditCards()[0];
   EXPECT_EQ(11, credit_card->expiration_month());
   EXPECT_EQ(2017, credit_card->expiration_year());
   // It retains other properties.
@@ -503,9 +518,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
-  EXPECT_EQ(1u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      1u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
   autofill::CreditCard* credit_card =
-      personal_data_manager->GetCreditCards()[0];
+      personal_data_manager->payments_data_manager().GetCreditCards()[0];
   EXPECT_EQ(billing_profile.guid(), credit_card->billing_address_id());
   // It retains other properties.
   EXPECT_EQ(card.guid(), credit_card->guid());
@@ -565,9 +582,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   ClickOnDialogViewAndWait(DialogViewID::EDITOR_SAVE_BUTTON);
   data_loop.Run();
 
-  EXPECT_EQ(1u, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      1u,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
   autofill::CreditCard* credit_card =
-      personal_data_manager->GetCreditCards()[0];
+      personal_data_manager->payments_data_manager().GetCreditCards()[0];
   EXPECT_EQ(u"Bob Newname",
             credit_card->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
   // It retains other properties.
@@ -844,7 +863,9 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 
   // Since this is incognito, the credit card shouldn't have been added to the
   // PersonalDataManager but it should be available in available_apps.
-  EXPECT_EQ(0U, personal_data_manager->GetCreditCards().size());
+  EXPECT_EQ(
+      0U,
+      personal_data_manager->payments_data_manager().GetCreditCards().size());
 
   // One app is available and selected.
   EXPECT_EQ(1U, request->state()->available_apps().size());

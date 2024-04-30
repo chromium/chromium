@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -259,15 +260,17 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
 
   void AddCreditCard(const autofill::CreditCard& card) {
     if (card.record_type() != autofill::CreditCard::RecordType::kLocalCard) {
-      personal_data_->AddServerCreditCardForTest(
+      personal_data_->payments_data_manager().AddServerCreditCardForTest(
           std::make_unique<autofill::CreditCard>(card));
       return;
     }
-    size_t card_count = personal_data_->GetCreditCards().size();
+    size_t card_count =
+        personal_data_->payments_data_manager().GetCreditCards().size();
     PersonalDataChangedWaiter waiter(*personal_data_);
-    personal_data_->AddCreditCard(card);
+    personal_data_->payments_data_manager().AddCreditCard(card);
     std::move(waiter).Wait();
-    EXPECT_EQ(card_count + 1, personal_data_->GetCreditCards().size());
+    EXPECT_EQ(card_count + 1,
+              personal_data_->payments_data_manager().GetCreditCards().size());
   }
 
   content::RenderFrameHost* main_rfh() {

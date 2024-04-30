@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -212,7 +213,8 @@ void FullCardRequest::OnUnmaskPromptAccepted(
   if (request_->card.record_type() == CreditCard::RecordType::kLocalCard &&
       !request_->card.guid().empty() &&
       (!user_response.exp_month.empty() || !user_response.exp_year.empty())) {
-    personal_data_manager_->UpdateCreditCard(request_->card);
+    personal_data_manager_->payments_data_manager().UpdateCreditCard(
+        request_->card);
   }
 
   if (!should_unmask_card_) {

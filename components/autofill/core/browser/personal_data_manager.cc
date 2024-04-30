@@ -142,10 +142,6 @@ void PersonalDataManager::AddServerCreditCardForTest(
       std::move(credit_card));  // IN-TEST
 }
 
-bool PersonalDataManager::IsUsingAccountStorageForServerDataForTest() const {
-  return payments_data_manager_->IsUsingAccountStorageForServerData();
-}
-
 void PersonalDataManager::SetSyncServiceForTest(
     syncer::SyncService* sync_service) {
   address_data_manager_->SetSyncServiceForTest(sync_service);   // IN-TEST
@@ -232,10 +228,6 @@ GURL PersonalDataManager::GetCardArtURL(const CreditCard& credit_card) const {
 gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
     const GURL& card_art_url) const {
   return payments_data_manager_->GetCreditCardArtImageForUrl(card_art_url);
-}
-
-bool PersonalDataManager::HasPendingPaymentQueriesForTesting() const {
-  return payments_data_manager_->HasPendingPaymentQueries();
 }
 
 void PersonalDataManager::SetSyncingForTest(bool is_syncing_for_test) {

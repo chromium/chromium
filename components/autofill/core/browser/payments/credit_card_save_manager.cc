@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/validation.h"
@@ -149,12 +150,14 @@ bool CreditCardSaveManager::ShouldOfferCvcSave(
   if (credit_card_import_type ==
       FormDataImporter::CreditCardImportType::kLocalCard) {
     existing_credit_card =
-        personal_data_manager_->GetCreditCardByGUID(card.guid());
+        personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
+            card.guid());
   } else if (credit_card_import_type ==
                  FormDataImporter::CreditCardImportType::kServerCard &&
              is_credit_card_upstream_enabled) {
-    existing_credit_card = personal_data_manager_->GetCreditCardByInstrumentId(
-        card.instrument_id());
+    existing_credit_card =
+        personal_data_manager_->payments_data_manager()
+            .GetCreditCardByInstrumentId(card.instrument_id());
   }
   return existing_credit_card && existing_credit_card->cvc() != card.cvc();
 }
@@ -189,7 +192,8 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
     CreditCard* existing_credit_card = nullptr;
     if (card.record_type() == CreditCard::RecordType::kLocalCard) {
       existing_credit_card =
-          personal_data_manager_->GetCreditCardByGUID(card.guid());
+          personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
+              card.guid());
       if (existing_credit_card && existing_credit_card->cvc() != card.cvc()) {
         AttemptToOfferCvcLocalSave(card);
         return true;
@@ -198,8 +202,8 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
                    CreditCard::RecordType::kMaskedServerCard &&
                is_credit_card_upstream_enabled) {
       existing_credit_card =
-          personal_data_manager_->GetCreditCardByInstrumentId(
-              card.instrument_id());
+          personal_data_manager_->payments_data_manager()
+              .GetCreditCardByInstrumentId(card.instrument_id());
       if (existing_credit_card && existing_credit_card->cvc() != card.cvc()) {
         AttemptToOfferCvcUploadSave(card);
         return true;
@@ -745,7 +749,8 @@ void CreditCardSaveManager::OfferCardUploadSave() {
     if (observer_for_testing_) {
       observer_for_testing_->OnOfferUploadSave();
     }
-    auto server_cards = personal_data_manager_->GetServerCreditCards();
+    auto server_cards =
+        personal_data_manager_->payments_data_manager().GetServerCreditCards();
     // At this point of the flow, we know there are no masked server cards with
     // the same last four digits and expiration date as the card we are
     // attempting to save, since if there were any we would have matched it and
@@ -1147,8 +1152,9 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
       }
       CHECK(card_save_candidate_.instrument_id());
       if (CreditCard* old_credit_card =
-              personal_data_manager_->GetCreditCardByInstrumentId(
-                  card_save_candidate_.instrument_id())) {
+              personal_data_manager_->payments_data_manager()
+                  .GetCreditCardByInstrumentId(
+                      card_save_candidate_.instrument_id())) {
         CHECK(old_credit_card->cvc() != card_save_candidate_.cvc());
         // If existing card doesn't have CVC, we insert CVC into
         // `kServerStoredCvcTable` table. If the existing card does have CVC, we

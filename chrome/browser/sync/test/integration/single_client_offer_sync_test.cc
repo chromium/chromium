@@ -11,6 +11,7 @@
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
@@ -61,8 +62,9 @@ class SingleClientOfferSyncTest : public SyncTest {
 
   void WaitForNumberOfOffers(size_t expected_count,
                              autofill::PersonalDataManager* pdm) {
-    while (pdm->GetAutofillOffers().size() != expected_count ||
-           pdm->HasPendingPaymentQueriesForTesting()) {
+    while (pdm->payments_data_manager().GetAutofillOffers().size() !=
+               expected_count ||
+           pdm->payments_data_manager().HasPendingPaymentQueries()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }
@@ -97,18 +99,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSyncPaused) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   // Make sure the offer data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetAutofillOffers().size());
 
   // Pause sync, the offer data should be gone.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
   WaitForNumberOfOffers(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
+  EXPECT_EQ(0uL, pdm->payments_data_manager().GetAutofillOffers().size());
 
   // Resume (unpause) sync, the data should come back.
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfOffers(1, pdm);
-  EXPECT_EQ(1uL, pdm->GetAutofillOffers().size());
+  EXPECT_EQ(1uL, pdm->payments_data_manager().GetAutofillOffers().size());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -121,12 +123,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   // Make sure the data & metadata is in the DB.
-  ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetAutofillOffers().size());
 
   // Signout, the data & metadata should be gone.
   GetClient(0)->SignOutPrimaryAccount();
   WaitForNumberOfOffers(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
+  EXPECT_EQ(0uL, pdm->payments_data_manager().GetAutofillOffers().size());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -141,7 +143,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest,
   // Make sure the data is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers = pdm->GetAutofillOffers();
+  std::vector<AutofillOfferData*> offers =
+      pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(999, offers[0]->GetOfferId());
 
@@ -151,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest,
   WaitForOnPersonalDataChanged(pdm);
 
   // Make sure only the new data is present.
-  offers = pdm->GetAutofillOffers();
+  offers = pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(888, offers[0]->GetOfferId());
 }
@@ -167,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   // Make sure the card is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers = pdm->GetAutofillOffers();
+  std::vector<AutofillOfferData*> offers =
+      pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(999, offers[0]->GetOfferId());
 
@@ -187,12 +191,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   // changes from sync in the DB propagate into pdm. As we don't expect anything
   // to change, we have no better specific condition to wait for.
   pdm->Refresh();
-  while (pdm->HasPendingPaymentQueriesForTesting()) {
+  while (pdm->payments_data_manager().HasPendingPaymentQueries()) {
     WaitForOnPersonalDataChanged(pdm);
   }
 
   // Make sure the same data is present on the client.
-  offers = pdm->GetAutofillOffers();
+  offers = pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(999, offers[0]->GetOfferId());
 }
@@ -208,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
   // Make sure the card is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers = pdm->GetAutofillOffers();
+  std::vector<AutofillOfferData*> offers =
+      pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(999, offers[0]->GetOfferId());
   EXPECT_EQ(1U, offers[0]->GetEligibleInstrumentIds().size());
@@ -221,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
   // Make sure the data is present on the client.
   pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  offers = pdm->GetAutofillOffers();
+  offers = pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(999, offers[0]->GetOfferId());
   EXPECT_EQ(2U, offers[0]->GetEligibleInstrumentIds().size());
@@ -236,11 +241,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableWalletSync) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   // Make sure the data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
+  ASSERT_EQ(1uL, pdm->payments_data_manager().GetAutofillOffers().size());
 
   // Turn off payments sync, the data should be gone.
   ASSERT_TRUE(
       GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
   WaitForNumberOfOffers(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
+  EXPECT_EQ(0uL, pdm->payments_data_manager().GetAutofillOffers().size());
 }

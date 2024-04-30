@@ -97,6 +97,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
@@ -929,13 +930,16 @@ class RemoveAutofillTester {
   // Returns true if there is at least one address and one card.
   bool HasProfileAndCard() const {
     return !personal_data_manager_->GetProfiles().empty() &&
-           !personal_data_manager_->GetCreditCards().empty();
+           !personal_data_manager_->payments_data_manager()
+                .GetCreditCards()
+                .empty();
   }
 
   // Add one profile and one credit cards to the database.
   void AddProfileAndCard() {
     personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
-    personal_data_manager_->AddCreditCard(autofill::test::GetCreditCard());
+    personal_data_manager_->payments_data_manager().AddCreditCard(
+        autofill::test::GetCreditCard());
     autofill::PersonalDataChangedWaiter(*personal_data_manager_).Wait();
   }
 

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
@@ -529,8 +530,8 @@ void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
   // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image|
   // from the local cache.
   gfx::Image* card_art_image =
-      personal_data_manager_->GetCreditCardArtImageForUrl(
-          credit_card.card_art_url());
+      personal_data_manager_->payments_data_manager()
+          .GetCreditCardArtImageForUrl(credit_card.card_art_url());
   if (card_art_image && !card_art_image->IsEmpty()) {
     state_.virtual_card_enrollment_fields.card_art_image =
         card_art_image->ToImageSkia();

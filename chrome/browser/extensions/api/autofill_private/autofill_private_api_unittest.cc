@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
@@ -208,13 +209,14 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
       autofill::test::WithCvc(autofill::test::GetMaskedServerCard(), u"098");
   autofill::TestPersonalDataManager* personal_data =
       autofill_client()->GetPersonalDataManager();
-  personal_data->AddCreditCard(local_card);
+  personal_data->payments_data_manager().AddCreditCard(local_card);
   personal_data->AddServerCreditCard(server_card);
 
   // Verify that cards are same as above and the CVCs are present for both of
   // them.
-  ASSERT_EQ(personal_data->GetCreditCards().size(), 2u);
-  for (const autofill::CreditCard* card : personal_data->GetCreditCards()) {
+  ASSERT_EQ(personal_data->payments_data_manager().GetCreditCards().size(), 2u);
+  for (const autofill::CreditCard* card :
+       personal_data->payments_data_manager().GetCreditCards()) {
     EXPECT_FALSE(card->cvc().empty());
     if (card->record_type() ==
         autofill::CreditCard::RecordType::kMaskedServerCard) {
@@ -230,8 +232,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, BulkDeleteAllCvcs) {
 
   // Verify that cards are same as above and the CVCs are deleted for both of
   // them.
-  ASSERT_EQ(personal_data->GetCreditCards().size(), 2u);
-  for (const autofill::CreditCard* card : personal_data->GetCreditCards()) {
+  ASSERT_EQ(personal_data->payments_data_manager().GetCreditCards().size(), 2u);
+  for (const autofill::CreditCard* card :
+       personal_data->payments_data_manager().GetCreditCards()) {
     EXPECT_TRUE(card->cvc().empty());
     if (card->record_type() ==
         autofill::CreditCard::RecordType::kMaskedServerCard) {

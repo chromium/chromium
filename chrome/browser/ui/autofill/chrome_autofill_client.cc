@@ -82,6 +82,7 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
@@ -984,11 +985,12 @@ void ChromeAutofillClient::UpdateOfferNotification(
     const AutofillOfferData* offer,
     const OfferNotificationOptions& options) {
   DCHECK(offer);
-  CreditCard* card =
-      offer->GetEligibleInstrumentIds().empty()
-          ? nullptr
-          : GetPersonalDataManager()->GetCreditCardByInstrumentId(
-                offer->GetEligibleInstrumentIds()[0]);
+  CreditCard* card = offer->GetEligibleInstrumentIds().empty()
+                         ? nullptr
+                         : GetPersonalDataManager()
+                               ->payments_data_manager()
+                               .GetCreditCardByInstrumentId(
+                                   offer->GetEligibleInstrumentIds()[0]);
 
   if (offer->IsCardLinkedOffer() && !card)
     return;

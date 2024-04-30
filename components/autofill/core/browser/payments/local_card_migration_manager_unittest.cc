@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -148,7 +149,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
                             billing_address_id);
     local_card.set_record_type(CreditCard::RecordType::kLocalCard);
     local_card.set_guid(guid.AsLowercaseString());
-    personal_data.AddCreditCard(local_card);
+    personal_data.payments_data_manager().AddCreditCard(local_card);
   }
 
   // Set the parsed response |result| for the provided |guid|.
@@ -701,7 +702,8 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_MigrationSuccess) {
                      base::Uuid::GenerateRandomV4());
 
   // Verify that it exists in the local database.
-  EXPECT_TRUE(personal_data().GetCreditCardByNumber("4111111111111111"));
+  EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByNumber(
+      "4111111111111111"));
 
   // Get the migratable credit cards.
   local_card_migration_manager_->GetMigratableCreditCards();
@@ -724,7 +726,8 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_MigrationSuccess) {
             autofill::MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD);
 
   // Local card should *not* be present as it is migrated already.
-  EXPECT_FALSE(personal_data().GetCreditCardByNumber("4111111111111111"));
+  EXPECT_FALSE(personal_data().payments_data_manager().GetCreditCardByNumber(
+      "4111111111111111"));
 }
 
 // Verify that given the parsed response from the PaymentsNetworkInterface, the
@@ -743,7 +746,8 @@ TEST_F(LocalCardMigrationManagerTest,
                      base::Uuid::GenerateRandomV4());
 
   // Verify that it exists in local database.
-  EXPECT_TRUE(personal_data().GetCreditCardByNumber("4111111111111111"));
+  EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByNumber(
+      "4111111111111111"));
 
   // Get the migratable credit cards.
   local_card_migration_manager_->GetMigratableCreditCards();
@@ -767,7 +771,8 @@ TEST_F(LocalCardMigrationManagerTest,
             autofill::MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD);
 
   // Local card should be present as it is not migrated.
-  EXPECT_TRUE(personal_data().GetCreditCardByNumber("4111111111111111"));
+  EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByNumber(
+      "4111111111111111"));
 }
 
 // Verify that given the parsed response from the PaymentsNetworkInterface, the
@@ -786,7 +791,8 @@ TEST_F(LocalCardMigrationManagerTest,
                      base::Uuid::GenerateRandomV4());
 
   // Verify that it exists in local database.
-  EXPECT_TRUE(personal_data().GetCreditCardByNumber("4111111111111111"));
+  EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByNumber(
+      "4111111111111111"));
 
   // Get the migratable credit cards.
   local_card_migration_manager_->GetMigratableCreditCards();
@@ -810,7 +816,8 @@ TEST_F(LocalCardMigrationManagerTest,
             autofill::MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD);
 
   // Local card should be present as it is not migrated.
-  EXPECT_TRUE(personal_data().GetCreditCardByNumber("4111111111111111"));
+  EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByNumber(
+      "4111111111111111"));
 }
 
 // Verify selected cards are correctly passed to manager.
@@ -849,12 +856,14 @@ TEST_F(LocalCardMigrationManagerTest, DeleteLocalCardViaMigrationDialog) {
                      test::NextYear().c_str(), "1", guid);
 
   const std::string guid_str = guid.AsLowercaseString();
-  EXPECT_TRUE(personal_data().GetCreditCardByGUID(guid_str));
+  EXPECT_TRUE(
+      personal_data().payments_data_manager().GetCreditCardByGUID(guid_str));
 
   local_card_migration_manager_->OnUserDeletedLocalCardViaMigrationDialog(
       guid_str);
 
-  EXPECT_FALSE(personal_data().GetCreditCardByGUID(guid_str));
+  EXPECT_FALSE(
+      personal_data().payments_data_manager().GetCreditCardByGUID(guid_str));
 }
 
 // Use one local card with more valid local cards available, don't show prompt

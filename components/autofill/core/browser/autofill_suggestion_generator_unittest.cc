@@ -995,14 +995,16 @@ class AutofillCreditCardBenefitsLabelTest
     if (absl::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
       CreditCardFlatRateBenefit benefit =
           absl::get<CreditCardFlatRateBenefit>(GetBenefit());
-      personal_data().AddCreditCardBenefitForTest(benefit);
+      personal_data().payments_data_manager().AddCreditCardBenefitForTest(
+          benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
     } else if (absl::holds_alternative<CreditCardMerchantBenefit>(
                    GetBenefit())) {
       CreditCardMerchantBenefit benefit =
           absl::get<CreditCardMerchantBenefit>(GetBenefit());
-      personal_data().AddCreditCardBenefitForTest(benefit);
+      personal_data().payments_data_manager().AddCreditCardBenefitForTest(
+          benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
       // Set the page URL in order to ensure that the merchant benefit is
@@ -1018,7 +1020,8 @@ class AutofillCreditCardBenefitsLabelTest
               CreditCardCategoryBenefit::BenefitCategory::kSubscription));
       CreditCardCategoryBenefit benefit =
           absl::get<CreditCardCategoryBenefit>(GetBenefit());
-      personal_data().AddCreditCardBenefitForTest(benefit);
+      personal_data().payments_data_manager().AddCreditCardBenefitForTest(
+          benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
     } else {
@@ -2160,7 +2163,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       features::kAutofillForUnclassifiedFieldsAvailable);
   CreditCard card = test::GetIncompleteCreditCard();
   ASSERT_FALSE(card.HasRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  personal_data().AddCreditCard(card);
+  personal_data().payments_data_manager().AddCreditCard(card);
 
   bool with_offer;
   bool with_cvc;
@@ -2297,7 +2300,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
         credit_card.set_use_date(is_disused ? kDisuseTime : kNow);
         if (is_local) {
           credit_card.set_record_type(CreditCard::RecordType::kLocalCard);
-          personal_data().AddCreditCard(credit_card);
+          personal_data().payments_data_manager().AddCreditCard(credit_card);
         } else {
           credit_card.set_record_type(
               CreditCard::RecordType::kMaskedServerCard);
@@ -2330,7 +2333,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   local_card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2000");
   local_card.set_use_date(AutofillClock::Now() - kDisusedDataModelTimeDelta -
                           base::Days(1));
-  personal_data().AddCreditCard(local_card);
+  personal_data().payments_data_manager().AddCreditCard(local_card);
 
   bool with_offer;
   bool with_cvc;
@@ -2533,7 +2536,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     auto local_card = CreateLocalCard(
         /*guid=*/"00000000-0000-0000-0000-000000000001");
     local_card.SetNumber(u"5454545454545454");
-    personal_data().AddCreditCard(local_card);
+    personal_data().payments_data_manager().AddCreditCard(local_card);
     personal_data().AddServerCreditCard(CreateServerCard(
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
@@ -2564,7 +2567,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     local_card.SetNumber(u"5454545454545454");
     local_card.SetExpirationYear(2020);
     local_card.set_use_date(AutofillClock::Now() - base::Days(365));
-    personal_data().AddCreditCard(local_card);
+    personal_data().payments_data_manager().AddCreditCard(local_card);
     personal_data().AddServerCreditCard(CreateServerCard(
         /*guid=*/"00000000-0000-0000-0000-000000000002",
         /*server_id=*/"server_id2", /*instrument_id=*/2));
@@ -2602,7 +2605,7 @@ TEST_F(AutofillSuggestionGeneratorTest, NoSuggestionsWhenNoUserData) {
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, ShouldShowScanCreditCard) {
-  personal_data().AddCreditCard(test::GetCreditCard());
+  personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2626,7 +2629,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowScanCreditCard) {
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
-  personal_data().AddCreditCard(test::GetCreditCard());
+  personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -2652,7 +2655,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
 #if !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
-  personal_data().AddCreditCard(test::GetCreditCard());
+  personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
   bool with_offer;
   bool with_cvc;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
@@ -3589,7 +3592,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // We used last 4 to deduplicate local card and server card so we should set
   // local card with different last 4.
   local_card.SetNumber(u"5454545454545454");
-  personal_data().AddCreditCard(std::move(local_card));
+  personal_data().payments_data_manager().AddCreditCard(std::move(local_card));
   personal_data().AddServerCreditCard(CreateServerCard());
 
   bool with_offer;
@@ -3625,7 +3628,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 TEST_F(AutofillCreditCardSuggestionContentTest,
        GetSuggestionsForCreditCards_Duplicate_CvcField) {
   // Create 2 duplicate local and server card with same last 4.
-  personal_data().AddCreditCard(CreateLocalCard());
+  personal_data().payments_data_manager().AddCreditCard(CreateLocalCard());
   personal_data().AddServerCreditCard(CreateServerCard());
 
   bool with_offer;
@@ -3692,7 +3695,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   personal_data().AddServerCreditCard(std::move(server_card));
-  personal_data().AddCreditCard(CreateLocalCard());
+  personal_data().payments_data_manager().AddCreditCard(CreateLocalCard());
 
   bool with_offer;
   bool with_cvc;

@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -1240,7 +1241,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
       SuggestionType::kAutocompleteEntry, u"baz foo"));
 
   CreditCard card = test::GetMaskedServerCard();
-  pdm().AddCreditCard(card);
+  pdm().payments_data_manager().AddCreditCard(card);
   // Ensure selecting a virtual card entry will cause any previews to
   // get cleared.
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
@@ -1684,7 +1685,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_PreviewCreditCard) {
   const CreditCard local_card = test::GetCreditCard();
-  pdm().AddCreditCard(local_card);
+  pdm().payments_data_manager().AddCreditCard(local_card);
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       local_card.guid(), CREDIT_CARD_NAME_FULL);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
@@ -1702,7 +1703,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_FillCreditCardName) {
   const CreditCard local_card = test::GetCreditCard();
-  pdm().AddCreditCard(local_card);
+  pdm().payments_data_manager().AddCreditCard(local_card);
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       local_card.guid(), CREDIT_CARD_NAME_FULL);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
@@ -1722,7 +1723,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_FillCreditCardNumber_FetchingFailed) {
   const CreditCard server_card = test::GetMaskedServerCard();
-  pdm().AddCreditCard(server_card);
+  pdm().payments_data_manager().AddCreditCard(server_card);
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       server_card.guid(), CREDIT_CARD_NUMBER);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
@@ -1745,7 +1746,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_FillCreditCardNumber_Fetched) {
   const CreditCard server_card = test::GetMaskedServerCard();
-  pdm().AddCreditCard(server_card);
+  pdm().payments_data_manager().AddCreditCard(server_card);
   Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
       server_card.guid(), CREDIT_CARD_NUMBER);
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
@@ -1776,7 +1777,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_ManualFallback_CreditCardForm_Preview) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  pdm().AddCreditCard(enrolled_card);
+  pdm().payments_data_manager().AddCreditCard(enrolled_card);
   Suggestion suggestion =
       test::CreateAutofillSuggestion(SuggestionType::kVirtualCreditCardEntry,
                                      /*main_text_value=*/u"Virtual credit card",
@@ -1804,7 +1805,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_ManualFallback_NonCreditCardForm_NoPreview) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  pdm().AddCreditCard(enrolled_card);
+  pdm().payments_data_manager().AddCreditCard(enrolled_card);
 
   Suggestion suggestion =
       test::CreateAutofillSuggestion(SuggestionType::kVirtualCreditCardEntry,
@@ -1822,7 +1823,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_MerchantOptOut_CreditCardForm_NoPreview) {
   IssueOnQuery();
   CreditCard card = test::GetMaskedServerCard();
-  pdm().AddCreditCard(card);
+  pdm().payments_data_manager().AddCreditCard(card);
 
   EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
 
@@ -1837,7 +1838,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_MerchantOptOut_CreditCardForm_NoAccept) {
   IssueOnQuery();
   CreditCard card = test::GetMaskedServerCard();
-  pdm().AddCreditCard(card);
+  pdm().payments_data_manager().AddCreditCard(card);
   EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
   EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
@@ -1853,7 +1854,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_ManualFallback_CreditCardForm_FullFormFilling) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  pdm().AddCreditCard(enrolled_card);
+  pdm().payments_data_manager().AddCreditCard(enrolled_card);
   Suggestion suggestion =
       test::CreateAutofillSuggestion(SuggestionType::kVirtualCreditCardEntry,
                                      /*main_text_value=*/u"Virtual credit card",
@@ -1881,7 +1882,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_ManualFallback_FetchingFails) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  pdm().AddCreditCard(enrolled_card);
+  pdm().payments_data_manager().AddCreditCard(enrolled_card);
   Suggestion suggestion =
       test::CreateAutofillSuggestion(SuggestionType::kVirtualCreditCardEntry,
                                      /*main_text_value=*/u"Virtual credit card",
@@ -1911,7 +1912,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_ManualFallback_FetchingSucceeds) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  pdm().AddCreditCard(enrolled_card);
+  pdm().payments_data_manager().AddCreditCard(enrolled_card);
   Suggestion suggestion =
       test::CreateAutofillSuggestion(SuggestionType::kVirtualCreditCardEntry,
                                      /*main_text_value=*/u"Virtual credit card",
@@ -2456,7 +2457,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
   IssueOnQuery();
   FormData form;
   CreditCard card = test::GetMaskedServerCard();
-  pdm().AddCreditCard(card);
+  pdm().payments_data_manager().AddCreditCard(card);
   EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
                              HasQueriedFormId(), HasQueriedFieldId(), _, _));
   Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
@@ -2468,7 +2469,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
 TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
   IssueOnQuery();
   CreditCard card = test::GetMaskedServerCard();
-  pdm().AddCreditCard(card);
+  pdm().payments_data_manager().AddCreditCard(card);
   EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
                              mojom::ActionPersistence::kPreview,
                              HasQueriedFormId(), HasQueriedFieldId(), _, _, _));

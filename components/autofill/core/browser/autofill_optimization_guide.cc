@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
@@ -79,7 +80,8 @@ void AddCreditCardOptimizationTypes(
     const PersonalDataManager* personal_data_manager,
     base::flat_set<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-  for (const CreditCard* card : personal_data_manager->GetServerCreditCards()) {
+  for (const CreditCard* card :
+       personal_data_manager->payments_data_manager().GetServerCreditCards()) {
     auto vcn_merchant_opt_out_optimization_type =
         GetVcnMerchantOptOutOptimizationTypeForCard(*card);
     if (vcn_merchant_opt_out_optimization_type !=

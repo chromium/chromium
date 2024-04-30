@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -35,8 +36,9 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
   // profile is not OTR, show the promo code offers.
   if (!is_off_the_record_ && personal_data_manager_) {
     const std::vector<const AutofillOfferData*> promo_code_offers =
-        personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
-            context.form_structure->main_frame_origin().GetURL());
+        personal_data_manager_->payments_data_manager()
+            .GetActiveAutofillPromoCodeOffersForOrigin(
+                context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
       SendPromoCodeSuggestions(std::move(promo_code_offers), field,
                                std::move(on_suggestions_returned));

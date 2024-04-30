@@ -60,6 +60,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
@@ -817,7 +818,8 @@ class BrowserAutofillManagerTest : public testing::Test {
           mojom::ActionPersistence::kFill, form, field, *profile,
           trigger_details);
     } else if (const CreditCard* card =
-                   personal_data().GetCreditCardByGUID(guid)) {
+                   personal_data().payments_data_manager().GetCreditCardByGUID(
+                       guid)) {
       browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
           form, field, *card, trigger_details);
     }
@@ -1240,7 +1242,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     credit_card1.set_guid(MakeGuid(4));
     credit_card1.set_use_count(10);
     credit_card1.set_use_date(AutofillClock::Now() - base::Days(5));
-    personal_data().AddCreditCard(credit_card1);
+    personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
     CreditCard credit_card2;
     test::SetCreditCardInfo(&credit_card2, "Buddy Holly",
@@ -1249,12 +1251,12 @@ class BrowserAutofillManagerTest : public testing::Test {
     credit_card2.set_guid(MakeGuid(5));
     credit_card2.set_use_count(5);
     credit_card2.set_use_date(AutofillClock::Now() - base::Days(4));
-    personal_data().AddCreditCard(credit_card2);
+    personal_data().payments_data_manager().AddCreditCard(credit_card2);
 
     CreditCard credit_card3;
     test::SetCreditCardInfo(&credit_card3, "", "", "08", "2999", "");
     credit_card3.set_guid(MakeGuid(6));
-    personal_data().AddCreditCard(credit_card3);
+    personal_data().payments_data_manager().AddCreditCard(credit_card3);
   }
 };
 
@@ -2428,7 +2430,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "5255667890168765",  // Mastercard
                           "10", "2098", "1");
   credit_card.set_guid(MakeGuid(7));
-  personal_data().AddCreditCard(credit_card);
+  personal_data().payments_data_manager().AddCreditCard(credit_card);
 
   // Set up our form data.
   FormData form =
@@ -2657,7 +2659,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "10", "2098", "1");
   credit_card.set_guid(MakeGuid(7));
   credit_card.set_use_date(AutofillClock::Now() - base::Days(15));
-  personal_data().AddCreditCard(credit_card);
+  personal_data().payments_data_manager().AddCreditCard(credit_card);
 
   // Set up our form data.
   FormData form =
@@ -2690,7 +2692,8 @@ TEST_F(BrowserAutofillManagerTest,
   masked_server_card.set_guid(MakeGuid(7));
   masked_server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   personal_data().AddServerCreditCard(masked_server_card);
-  EXPECT_EQ(1U, personal_data().GetCreditCards().size());
+  EXPECT_EQ(1U,
+            personal_data().payments_data_manager().GetCreditCards().size());
 
   // Set up our form data.
   FormData form =
@@ -2717,7 +2720,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "5105105105108765" /* Mastercard */, "10", "2098",
                           "1");
   credit_card0.set_guid(MakeGuid(1));
-  personal_data().AddCreditCard(credit_card0);
+  personal_data().payments_data_manager().AddCreditCard(credit_card0);
 
   // Add an expired card with a higher ranking score.
   CreditCard credit_card1("287151C8-6AB1-487C-9095-28E80BE5DA15",
@@ -2728,7 +2731,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   credit_card1.set_guid(MakeGuid(2));
   credit_card1.set_use_count(300);
   credit_card1.set_use_date(AutofillClock::Now() - base::Days(10));
-  personal_data().AddCreditCard(credit_card1);
+  personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
   // Add an expired card with a lower ranking score.
   CreditCard credit_card2("1141084B-72D7-4B73-90CF-3D6AC154673B",
@@ -2738,9 +2741,10 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "4234567890123456" /* Visa */, "04", "2011", "1");
   credit_card2.set_guid(MakeGuid(3));
-  personal_data().AddCreditCard(credit_card2);
+  personal_data().payments_data_manager().AddCreditCard(credit_card2);
 
-  ASSERT_EQ(3U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(3U,
+            personal_data().payments_data_manager().GetCreditCards().size());
 
   // Set up our form data.
   FormData form =
@@ -2767,14 +2771,15 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_SuppressDisusedCreditCardsOnEmptyField) {
   personal_data().test_payments_data_manager().ClearCreditCards();
-  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(0U,
+            personal_data().payments_data_manager().GetCreditCards().size());
 
   // Add a never used non expired local credit card.
   CreditCard credit_card0(MakeGuid(0), test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card0, "Bonnie Parker",
                           "5105105105105100" /* Mastercard */, "04", "2999",
                           "1");
-  personal_data().AddCreditCard(credit_card0);
+  personal_data().payments_data_manager().AddCreditCard(credit_card0);
 
   auto now = AutofillClock::Now();
 
@@ -2783,7 +2788,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   test::SetCreditCardInfo(&credit_card1, "Clyde Barrow",
                           "4234567890123456" /* Visa */, "04", "2010", "1");
   credit_card1.set_use_date(now - base::Days(10));
-  personal_data().AddCreditCard(credit_card1);
+  personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
   // Add an expired local card last used 180 days ago.
   CreditCard credit_card2(MakeGuid(2), test::kEmptyOrigin);
@@ -2791,9 +2796,10 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "378282246310005" /* American Express */, "01",
                           "2010", "1");
-  personal_data().AddCreditCard(credit_card2);
+  personal_data().payments_data_manager().AddCreditCard(credit_card2);
 
-  ASSERT_EQ(3U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(3U,
+            personal_data().payments_data_manager().GetCreditCards().size());
 
   // Set up our form data.
   FormData form =
@@ -2876,7 +2882,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   // Create one normal credit card and one credit card with the number
   // missing.
   personal_data().test_payments_data_manager().ClearCreditCards();
-  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(0U,
+            personal_data().payments_data_manager().GetCreditCards().size());
 
   CreditCard credit_card0("287151C8-6AB1-487C-9095-28E80BE5DA15",
                           test::kEmptyOrigin);
@@ -2885,16 +2892,17 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "2910", "1");
   credit_card0.set_guid(MakeGuid(1));
   credit_card0.set_use_date(AutofillClock::Now() - base::Days(1));
-  personal_data().AddCreditCard(credit_card0);
+  personal_data().payments_data_manager().AddCreditCard(credit_card0);
 
   CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
                           test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2999",
                           "1");
   credit_card1.set_guid(MakeGuid(2));
-  personal_data().AddCreditCard(credit_card1);
+  personal_data().payments_data_manager().AddCreditCard(credit_card1);
 
-  ASSERT_EQ(2U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(2U,
+            personal_data().payments_data_manager().GetCreditCards().size());
 
   // Set up our form data.
   FormData form =
@@ -3146,7 +3154,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
                                   << static_cast<int>(form_type));
 
   if (!params.run_with_data_on_file) {
-    personal_data().ClearAllServerDataForTesting();
+    personal_data().payments_data_manager().ClearAllServerDataForTesting();
     personal_data().ClearAllLocalData();
   }
 
@@ -5241,12 +5249,13 @@ TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
 TEST_F(BrowserAutofillManagerTest, RemoveLocalCreditCard) {
   // Add and remove an Autofill credit card.
   CreditCard local_card = test::GetCreditCard();
-  personal_data().AddCreditCard(local_card);
+  personal_data().payments_data_manager().AddCreditCard(local_card);
 
   EXPECT_TRUE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
       Suggestion::Guid(local_card.guid())));
 
-  EXPECT_FALSE(personal_data().GetCreditCardByGUID(local_card.guid()));
+  EXPECT_FALSE(personal_data().payments_data_manager().GetCreditCardByGUID(
+      local_card.guid()));
 }
 
 TEST_F(BrowserAutofillManagerTest, RemoveServerCreditCard) {
@@ -5256,7 +5265,8 @@ TEST_F(BrowserAutofillManagerTest, RemoveServerCreditCard) {
   EXPECT_FALSE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
       Suggestion::Guid(server_card.guid())));
 
-  EXPECT_TRUE(personal_data().GetCreditCardByGUID(server_card.guid()));
+  EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByGUID(
+      server_card.guid()));
 }
 
 // Test our external delegate is called at the right time.
@@ -7292,11 +7302,13 @@ INSTANTIATE_TEST_SUITE_P(,
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
        VerifySuggestion_DuplicateCards) {
   personal_data().test_payments_data_manager().ClearCreditCards();
-  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(0U,
+            personal_data().payments_data_manager().GetCreditCards().size());
   CreditCard local_card = GetLocalCard();
-  personal_data().AddCreditCard(local_card);
+  personal_data().payments_data_manager().AddCreditCard(local_card);
   personal_data().AddServerCreditCard(GetServerCard());
-  ASSERT_EQ(2U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(2U,
+            personal_data().payments_data_manager().GetCreditCards().size());
 
   // Set up our form data.
   FormData form =
@@ -7317,9 +7329,10 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
        VerifySuggestion_UnrelatedCards) {
   personal_data().test_payments_data_manager().ClearCreditCards();
-  ASSERT_EQ(0U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(0U,
+            personal_data().payments_data_manager().GetCreditCards().size());
   CreditCard local_card = GetLocalCard();
-  personal_data().AddCreditCard(local_card);
+  personal_data().payments_data_manager().AddCreditCard(local_card);
 
   std::vector<CreditCard> server_cards;
   CreditCard server_card = GetServerCard();
@@ -7327,7 +7340,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   server_card.SetNumber(u"371449635320005");
   personal_data().AddServerCreditCard(server_card);
 
-  ASSERT_EQ(2U, personal_data().GetCreditCards().size());
+  ASSERT_EQ(2U,
+            personal_data().payments_data_manager().GetCreditCards().size());
 
   // Set up our form data.
   FormData form =

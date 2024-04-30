@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -66,8 +67,9 @@ AutofillOfferManager::GetCardLinkedOffersMap(
   }
 
   const std::vector<AutofillOfferData*> offers =
-      personal_data_->GetAutofillOffers();
-  const std::vector<CreditCard*> cards = personal_data_->GetCreditCards();
+      personal_data_->payments_data_manager().GetAutofillOffers();
+  const std::vector<CreditCard*> cards =
+      personal_data_->payments_data_manager().GetCreditCards();
   AutofillOfferManager::CardLinkedOffersMap card_linked_offers_map;
 
   for (AutofillOfferData* offer : offers) {
@@ -120,7 +122,8 @@ AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
     }
   }
 
-  for (AutofillOfferData* offer : personal_data_->GetAutofillOffers()) {
+  for (AutofillOfferData* offer :
+       personal_data_->payments_data_manager().GetAutofillOffers()) {
     if (offer->IsActiveAndEligibleForOrigin(
             last_committed_primary_main_frame_url.DeprecatedGetOriginAsURL())) {
       return offer;
@@ -144,7 +147,8 @@ void AutofillOfferManager::GetShoppingServiceOfferForUrl(
 
 void AutofillOfferManager::UpdateEligibleMerchantDomains() {
   eligible_merchant_domains_.clear();
-  std::vector<AutofillOfferData*> offers = personal_data_->GetAutofillOffers();
+  std::vector<AutofillOfferData*> offers =
+      personal_data_->payments_data_manager().GetAutofillOffers();
 
   for (auto* offer : offers) {
     eligible_merchant_domains_.insert(offer->GetMerchantOrigins().begin(),

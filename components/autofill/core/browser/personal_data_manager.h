@@ -168,7 +168,6 @@ class PersonalDataManager : public KeyedService,
   void UpdateCreditCard(const CreditCard& credit_card);
   void ClearAllServerDataForTesting();
   void AddServerCreditCardForTest(std::unique_ptr<CreditCard> credit_card);
-  bool IsUsingAccountStorageForServerDataForTest() const;
   CreditCard* GetCreditCardByGUID(const std::string& guid);
   CreditCard* GetCreditCardByNumber(const std::string& number);
   CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id);
@@ -188,7 +187,6 @@ class PersonalDataManager : public KeyedService,
   GURL GetCardArtURL(const CreditCard& credit_card) const;
   gfx::Image* GetCreditCardArtImageForUrl(const GURL& card_art_url) const;
   std::vector<CreditCard*> GetCreditCardsToSuggest() const;
-  bool HasPendingPaymentQueriesForTesting() const;
   void SetSyncingForTest(bool is_syncing_for_test);
   void SetCreditCards(std::vector<CreditCard>* credit_cards);
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled);

@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
@@ -863,8 +864,10 @@ void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
                                            ->address_data_manager()
                                            .GetProfileByGUID(guid)) {
     PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
-  } else if (manager_->client().GetPersonalDataManager()->GetCreditCardByGUID(
-                 guid)) {
+  } else if (manager_->client()
+                 .GetPersonalDataManager()
+                 ->payments_data_manager()
+                 .GetCreditCardByGUID(guid)) {
     PreviewCreditCardFieldByFieldFillingSuggestion(suggestion);
   }
 }
@@ -883,7 +886,8 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
     FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position);
   } else if (const CreditCard* credit_card = manager_->client()
                                                  .GetPersonalDataManager()
-                                                 ->GetCreditCardByGUID(guid)) {
+                                                 ->payments_data_manager()
+                                                 .GetCreditCardByGUID(guid)) {
     FillCreditCardFieldByFieldFillingSuggestion(*credit_card, suggestion);
   }
 }
@@ -1050,8 +1054,9 @@ void AutofillExternalDelegate::FillAutofillFormData(
   if (profile) {
     manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
                                        query_field_, *profile, trigger_details);
-  } else if (const CreditCard* credit_card = pdm->GetCreditCardByGUID(
-                 absl::get<Suggestion::Guid>(backend_id).value())) {
+  } else if (const CreditCard* credit_card =
+                 pdm->payments_data_manager().GetCreditCardByGUID(
+                     absl::get<Suggestion::Guid>(backend_id).value())) {
     is_preview
         ? manager_->FillOrPreviewCreditCardForm(
               mojom::ActionPersistence::kPreview, query_form_, query_field_,
@@ -1239,7 +1244,8 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
         if (const CreditCard* credit_card =
                 manager_->client()
                     .GetPersonalDataManager()
-                    ->GetCreditCardByGUID(
+                    ->payments_data_manager()
+                    .GetCreditCardByGUID(
                         suggestion.GetBackendId<Suggestion::Guid>().value())) {
           CreditCard virtual_card = CreditCard::CreateVirtualCard(*credit_card);
           manager_->GetCreditCardAccessManager().FetchCreditCard(

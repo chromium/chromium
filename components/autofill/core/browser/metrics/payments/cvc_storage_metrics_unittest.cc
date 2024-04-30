@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 
 namespace autofill::autofill_metrics {
 
@@ -89,7 +90,8 @@ TEST_F(CvcStorageMetricsTest, LogSelectedMetrics) {
                              SuggestionType::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.back(),
-      *personal_data().GetCreditCardByInstrumentId(card().instrument_id()),
+      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
+          card().instrument_id()),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
@@ -103,7 +105,8 @@ TEST_F(CvcStorageMetricsTest, LogSelectedMetrics) {
   // Simulate selecting the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByInstrumentId(card().instrument_id()),
+      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
+          card().instrument_id()),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
@@ -127,7 +130,8 @@ TEST_F(CvcStorageMetricsTest, LogFilledMetrics) {
   // Simulate filling the suggestion with CVC.
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByInstrumentId(card().instrument_id()),
+      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
+          card().instrument_id()),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -143,7 +147,8 @@ TEST_F(CvcStorageMetricsTest, LogFilledMetrics) {
   // Fill the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByInstrumentId(card().instrument_id()),
+      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
+          card().instrument_id()),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -169,7 +174,8 @@ TEST_F(CvcStorageMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByInstrumentId(card().instrument_id()),
+      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
+          card().instrument_id()),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());

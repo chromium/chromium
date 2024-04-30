@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -107,7 +108,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
@@ -126,7 +127,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   // Simulate selecting the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
@@ -151,7 +152,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -172,7 +173,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   // Fill the suggestion again.
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -198,7 +199,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.front(),
-      *personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());

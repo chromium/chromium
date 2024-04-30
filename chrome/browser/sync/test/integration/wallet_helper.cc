@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
@@ -479,7 +480,7 @@ void ExpectDefaultWalletCredentialValues(const CreditCard& card) {
 std::vector<CreditCard*> GetServerCreditCards(int profile) {
   WaitForPDMToRefresh(profile);
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  return pdm->GetServerCreditCards();
+  return pdm->payments_data_manager().GetServerCreditCards();
 }
 
 }  // namespace wallet_helper
@@ -518,8 +519,9 @@ bool AutofillWalletChecker::IsExitConditionSatisfied(std::ostream* os) {
       wallet_helper::GetPersonalDataManager(profile_a_);
   autofill::PersonalDataManager* pdm_b =
       wallet_helper::GetPersonalDataManager(profile_b_);
-  return WalletDataAndMetadataMatch(profile_a_, pdm_a->GetServerCreditCards(),
-                                    profile_b_, pdm_b->GetServerCreditCards());
+  return WalletDataAndMetadataMatch(
+      profile_a_, pdm_a->payments_data_manager().GetServerCreditCards(),
+      profile_b_, pdm_b->payments_data_manager().GetServerCreditCards());
 }
 
 void AutofillWalletChecker::OnPaymentsDataChanged() {

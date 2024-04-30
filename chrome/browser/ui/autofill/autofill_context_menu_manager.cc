@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -449,7 +450,9 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
     add_payments_fallback =
         personal_data_manager_->payments_data_manager()
             .IsAutofillPaymentMethodsEnabled() &&
-        !personal_data_manager_->GetCreditCardsToSuggest().empty() &&
+        !personal_data_manager_->payments_data_manager()
+             .GetCreditCardsToSuggest()
+             .empty() &&
         base::FeatureList::IsEnabled(
             features::kAutofillForUnclassifiedFieldsAvailable);
   }
