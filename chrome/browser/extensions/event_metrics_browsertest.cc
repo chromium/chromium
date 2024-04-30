@@ -32,6 +32,7 @@ namespace {
 
 using ContextType = ExtensionBrowserTest::ContextType;
 using EventMetricsBrowserTest = ExtensionBrowserTest;
+using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
 // TODO(crbug.com/40909770): combine this observer with
 // extensions/browser/service_worker/service_worker_test_utils.h and
@@ -92,34 +93,6 @@ class TestWorkerStatusObserver : public content::ServiceWorkerContextObserver {
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
-};
-
-// A helper class to wait for a service worker for an extension with
-// `extension_id` to be initialized or stopped (to indirectly know that the
-// new/previous worker should've been added/remove to/from `WorkerIdSet`).
-class ServiceWorkerReadyWaiter : public ServiceWorkerTaskQueue::TestObserver {
- public:
-  explicit ServiceWorkerReadyWaiter(const ExtensionId& extension_id)
-      : extension_id_(extension_id) {
-    ServiceWorkerTaskQueue::SetObserverForTest(this);
-  }
-
-  ~ServiceWorkerReadyWaiter() override {
-    ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
-  }
-
-  void Wait() { worker_ready_run_loop.Run(); }
-
- private:
-  // ServiceWorkerTaskQueue::TestObserver:
-  void DidStartWorker(const ExtensionId& extension_id) override {
-    if (extension_id == extension_id_) {
-      worker_ready_run_loop.Quit();
-    }
-  }
-
-  const std::string extension_id_;
-  base::RunLoop worker_ready_run_loop;
 };
 
 // Tests that the only the dispatch time histogram provided to the test is
@@ -661,7 +634,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
       GetServiceWorkerContext(), /*service_worker_version_id=*/0));
 
   base::HistogramTester histogram_tester;
-  ServiceWorkerReadyWaiter ready_waiter(extension->id());
+  TestServiceWorkerTaskQueueObserver ready_observer;
   ExtensionTestMessageListener test_event_listener_fired("listener fired");
   // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
   // the extension listener.
@@ -682,7 +655,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
   } else {
     {
       SCOPED_TRACE("Waiting for the worker to start.");
-      ready_waiter.Wait();
+      ready_observer.WaitForWorkerStarted(extension->id());
     }
     // TODO(crbug.com/40909770): Additionally test the case when
     // BrowserState::kReady but !RendererState::kStarted.

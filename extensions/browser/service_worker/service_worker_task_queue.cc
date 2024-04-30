@@ -655,7 +655,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
         "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
         success);
     if (g_test_observer) {
-      g_test_observer->RegistrationMismatchMitigated(success);
+      g_test_observer->RegistrationMismatchMitigated(extension_id, success);
     }
   }
 

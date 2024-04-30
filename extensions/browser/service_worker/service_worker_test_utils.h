@@ -5,6 +5,12 @@
 #ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TEST_UTILS_H_
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_TEST_UTILS_H_
 
+#include <stddef.h>
+
+#include <map>
+#include <optional>
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -12,7 +18,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -102,6 +110,68 @@ class UnregisterWorkerObserver : public ProcessManagerObserver {
   base::ScopedObservation<ProcessManager, ProcessManagerObserver> observation_{
       this};
   base::RunLoop run_loop_;
+};
+
+class TestServiceWorkerTaskQueueObserver
+    : public ServiceWorkerTaskQueue::TestObserver {
+ public:
+  TestServiceWorkerTaskQueueObserver();
+  ~TestServiceWorkerTaskQueueObserver() override;
+
+  TestServiceWorkerTaskQueueObserver(
+      const TestServiceWorkerTaskQueueObserver&) = delete;
+  TestServiceWorkerTaskQueueObserver& operator=(
+      const TestServiceWorkerTaskQueueObserver&) = delete;
+
+  struct WorkerStartFailedData {
+    size_t num_pending_tasks = 0;
+    blink::ServiceWorkerStatusCode status_code =
+        blink::ServiceWorkerStatusCode::kOk;
+  };
+
+  void WaitForWorkerStarted(const ExtensionId& extension_id);
+  void WaitForWorkerStopped(const ExtensionId& extension_id);
+  void WaitForWorkerContextInitialized(const ExtensionId& extension_id);
+  WorkerStartFailedData WaitForDidStartWorkerFail(
+      const ExtensionId& extension_id);
+  void WaitForOnActivateExtension(const ExtensionId& extension_id);
+  bool WaitForRegistrationMismatchMitigation(const ExtensionId& extension_id);
+
+  std::optional<bool> WillRegisterServiceWorker(
+      const ExtensionId& extension_id) const;
+
+  int GetRequestedWorkerStartedCount(const ExtensionId& extension_id) const;
+
+  // ServiceWorkerTaskQueue::TestObserver
+  void DidStartWorker(const ExtensionId& extension_id) override;
+  void DidInitializeServiceWorkerContext(
+      const ExtensionId& extension_id) override;
+  void DidStartWorkerFail(const ExtensionId& extension_id,
+                          size_t num_pending_tasks,
+                          blink::ServiceWorkerStatusCode status_code) override;
+  void OnActivateExtension(const ExtensionId& extension_id,
+                           bool will_register_service_worker) override;
+  void RegistrationMismatchMitigated(const ExtensionId& extension_id,
+                                     bool success) override;
+  void RequestedWorkerStart(const ExtensionId& extension_id) override;
+  void DidStopServiceWorkerContext(const ExtensionId& extension_id) override;
+
+ private:
+  std::map<ExtensionId, bool> activated_map_;
+
+  std::map<ExtensionId, WorkerStartFailedData> failed_map_;
+
+  std::set<ExtensionId> inited_set_;
+
+  std::map<ExtensionId, bool> mitigated_map_;
+
+  std::map<ExtensionId, int> requested_worker_started_map_;
+
+  std::set<ExtensionId> started_set_;
+
+  std::set<ExtensionId> stopped_set_;
+
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace service_worker_test_utils

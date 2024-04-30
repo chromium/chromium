@@ -194,7 +194,8 @@ class ServiceWorkerTaskQueue
 
     // Called when SW was re-registered to fix missing registration, and that
     // step finished to mitigate the problem.
-    virtual void RegistrationMismatchMitigated(bool mitigation_succeeded) {}
+    virtual void RegistrationMismatchMitigated(const ExtensionId& extension_id,
+                                               bool mitigation_succeeded) {}
 
     // Called when a service worker is registered for the extension with the
     // associated `extension_id`.

@@ -16,7 +16,6 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -31,38 +30,7 @@ namespace {
 constexpr char kTestExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
 
 using DispatchWebNavigationEventCallback = base::OnceCallback<void()>;
-
-// Observes service worker start requests via
-// ServiceWorkerTaskQueue::DidStartWorkerForScope.
-class ServiceWorkerStartCountObserver
-    : public ServiceWorkerTaskQueue::TestObserver {
- public:
-  explicit ServiceWorkerStartCountObserver(const ExtensionId& extension_id)
-      : extension_id_(extension_id) {
-    ServiceWorkerTaskQueue::SetObserverForTest(this);
-  }
-  ~ServiceWorkerStartCountObserver() override {
-    ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
-  }
-
-  ServiceWorkerStartCountObserver(const ServiceWorkerStartCountObserver&) =
-      delete;
-  ServiceWorkerStartCountObserver& operator=(
-      const ServiceWorkerStartCountObserver&) = delete;
-
-  int GetStartWorkerRequestCount() { return extension_worker_start_count_; }
-
-  // ServiceWorkerTaskQueue::TestObserver:
-  void RequestedWorkerStart(const ExtensionId& extension_id) override {
-    if (extension_id == extension_id_) {
-      extension_worker_start_count_++;
-    }
-  }
-
- private:
-  int extension_worker_start_count_ = 0;
-  ExtensionId extension_id_;
-};
+using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
 // TODO(crbug.com/40276609): Combine with service_worker_apitest.cc
 // TestWorkerObserver.
@@ -523,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
   base::HistogramTester histogram_tester;
   ExtensionTestMessageListener extension_event_listener_fired_three_times(
       "listener fired three times");
-  ServiceWorkerStartCountObserver start_count_observer(extension->id());
+  TestServiceWorkerTaskQueueObserver start_count_observer;
 
   // This dispatch will start the worker with the existing event routing and
   // task queueing logic.
@@ -543,7 +511,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
   // Confirm the expected number of start requests that are sent to the
   // extension during the multi event dispatch. Should only need one start to
   // process the multiple events.
-  EXPECT_EQ(1, start_count_observer.GetStartWorkerRequestCount());
+  EXPECT_EQ(
+      1, start_count_observer.GetRequestedWorkerStartedCount(extension->id()));
 }
 
 // Tests the behavior of service worker start requests when a worker is already
@@ -571,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
 
   // Setup listeners for confirming the event ran successfully.
   ExtensionTestMessageListener extension_event_listener_fired("listener fired");
-  ServiceWorkerStartCountObserver start_count_observer(extension->id());
+  TestServiceWorkerTaskQueueObserver start_count_observer;
 
   DispatchWebNavigationEvent();
 
@@ -583,13 +552,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
     // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch true
     // No start is requested when dispatching to the worker since the worker is
     // running ready to receive tasks.
-    EXPECT_EQ(0, start_count_observer.GetStartWorkerRequestCount());
+    EXPECT_EQ(0, start_count_observer.GetRequestedWorkerStartedCount(
+                     extension->id()));
   } else {
     // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch false
     // Since the feature is disabled, we will attempt to start a worker on every
     // event dispatch even though it is already started/running and can run the
     // event.
-    EXPECT_EQ(1, start_count_observer.GetStartWorkerRequestCount());
+    EXPECT_EQ(1, start_count_observer.GetRequestedWorkerStartedCount(
+                     extension->id()));
   }
 }
 

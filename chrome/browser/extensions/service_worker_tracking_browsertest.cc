@@ -20,6 +20,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/service_worker/worker_id_set.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/service_worker_host.mojom-test-utils.h"
@@ -37,6 +38,8 @@
 namespace extensions {
 
 namespace {
+
+using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
 // A helper class that intercepts the
 // `ServiceWorkerHost::DidStopServiceWorkerContext()` mojom receiver method and
@@ -89,47 +92,7 @@ class ServiceWorkerHostInterceptorForWorkerStop
   const WorkerId worker_id_;
 };
 
-// A helper class to wait for a service worker for an extension with
-// `extension_id` to be initialized or stopped (to indirectly know that the
-// new/previous worker should've been added/removed to/from `WorkerIdSet`).
-class ServiceWorkerNotificationWaiter
-    : public ServiceWorkerTaskQueue::TestObserver {
- public:
-  explicit ServiceWorkerNotificationWaiter(const ExtensionId& extension_id)
-      : extension_id_(extension_id) {
-    ServiceWorkerTaskQueue::SetObserverForTest(this);
-  }
-  ~ServiceWorkerNotificationWaiter() override {
-    ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
-  }
-
-  void WaitForInit() {
-    SCOPED_TRACE("Waiting for test worker to initialize");
-    worker_inited_run_loop.Run();
-  }
-  void WaitForStop() {
-    SCOPED_TRACE("Waiting for test worker context to be stopped");
-    did_stop_context_run_loop.Run();
-  }
-
- private:
-  // ServiceWorkerTaskQueue::TestObserver:
-  void DidInitializeServiceWorkerContext(
-      const ExtensionId& extension_id) override {
-    if (extension_id == extension_id_) {
-      worker_inited_run_loop.Quit();
-    }
-  }
-  void DidStopServiceWorkerContext(const ExtensionId& extension_id) override {
-    if (extension_id == extension_id_) {
-      did_stop_context_run_loop.Quit();
-    }
-  }
-
-  const std::string extension_id_;
-  base::RunLoop worker_inited_run_loop;
-  base::RunLoop did_stop_context_run_loop;
-};
+using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
 class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
  public:
@@ -245,7 +208,7 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
 
     // Add an observer to the task queue to detect when the new worker instance
     // `WorkerId` is added to `WorkerIdSet`.
-    ServiceWorkerNotificationWaiter worker_id_added_observer(extension()->id());
+    TestServiceWorkerTaskQueueObserver worker_id_added_observer;
 
     // Navigate somewhere to trigger the start of the worker to handle the
     // webNavigation.onBeforeRequest event.
@@ -257,7 +220,7 @@ class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
     // in the process manager).
     SCOPED_TRACE(
         "Waiting for worker to restart in response to extensions event.");
-    worker_id_added_observer.WaitForInit();
+    worker_id_added_observer.WaitForWorkerContextInitialized(extension()->id());
   }
 
   ProcessManager* process_manager() { return process_manager_; }
@@ -364,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(
   ServiceWorkerTaskQueue::Get(profile())->StopObservingContextForTest(
       GetServiceWorkerContext(profile()));
 
-  ServiceWorkerNotificationWaiter worker_id_removed_observer(extension()->id());
+  TestServiceWorkerTaskQueueObserver worker_id_removed_observer;
 
   // Stop the service worker.
   browsertest_util::StopServiceWorkerForExtensionGlobalScope(
@@ -372,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::CheckServiceWorkerIsStopped(
       GetServiceWorkerContext(), previous_service_worker_id->version_id));
 
-  worker_id_removed_observer.WaitForStop();
+  worker_id_removed_observer.WaitForWorkerStopped(extension()->id());
 
   // Confirm after stopping we no longer have the previous `WorkerId` (it was
   // removed by the renderer stop notification).

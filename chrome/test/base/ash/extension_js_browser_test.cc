@@ -29,27 +29,24 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
-#include "extensions/browser/service_worker/service_worker_task_queue.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace {
+using extensions::service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 
 // Class to observe service worker readiness for the execution of test JS.
-class ExtensionTestObserver
-    : public extensions::ServiceWorkerTaskQueue::TestObserver,
-      public extensions::ExtensionRegistryObserver {
+class ExtensionTestObserver : public extensions::ExtensionRegistryObserver {
  public:
   explicit ExtensionTestObserver(const char* extension_id,
                                  content::BrowserContext* context)
       : extension_id_(extension_id), context_(context) {
     extensions::ExtensionRegistry::Get(context_)->AddObserver(this);
-    extensions::ServiceWorkerTaskQueue::SetObserverForTest(this);
   }
 
   ~ExtensionTestObserver() override {
     extensions::ExtensionRegistry::Get(context_)->RemoveObserver(this);
-    extensions::ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
   }
 
   int WaitForManifestVersion() {
@@ -63,12 +60,7 @@ class ExtensionTestObserver
   }
 
   void WaitForServiceWorkerStart() {
-    if (started_) {
-      return;
-    }
-    base::RunLoop waiter;
-    started_quit_ = waiter.QuitClosure();
-    waiter.Run();
+    started_observer.WaitForWorkerStarted(extension_id_);
   }
 
   // extensions::ExtensionRegistryObserver:
@@ -82,24 +74,13 @@ class ExtensionTestObserver
     }
   }
 
-  // extensions::ServiceWorkerTaskQueue::TestObserver:
-  void DidStartWorker(const std::string& extension_id) override {
-    if (extension_id == extension_id_) {
-      started_ = true;
-      if (started_quit_) {
-        std::move(started_quit_).Run();
-      }
-    }
-  }
-
  private:
   const std::string extension_id_;
   // Not owned.
   raw_ptr<content::BrowserContext> context_;
   size_t manifest_version_ = 0;
-  bool started_ = false;
   base::OnceClosure manifest_quit_;
-  base::OnceClosure started_quit_;
+  TestServiceWorkerTaskQueueObserver started_observer;
 };
 
 const std::vector<std::string>& GetExtensionIdsToCollectCoverage() {
