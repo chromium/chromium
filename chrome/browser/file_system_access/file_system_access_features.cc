@@ -23,7 +23,7 @@ BASE_FEATURE(kFileSystemAccessPersistentPermissions,
 // Enables the updated Page Info UI for the persistent permissions feature.
 BASE_FEATURE(kFileSystemAccessPersistentPermissionsUpdatedPageInfo,
              "kFileSystemAccessPersistentPermissionsUpdatedPageInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables performing the blocklist check on a full absolute path, which
 // resolves any symbolic link.
