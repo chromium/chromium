@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TPCD_METADATA_PARSER_TEST_HELPER_H_
-#define COMPONENTS_TPCD_METADATA_PARSER_TEST_HELPER_H_
+#ifndef COMPONENTS_TPCD_METADATA_BROWSER_TEST_SUPPORT_H_
+#define COMPONENTS_TPCD_METADATA_BROWSER_TEST_SUPPORT_H_
 
 #include <cstdint>
 
@@ -28,4 +28,4 @@ class DeterministicGenerator : public Manager::RandGenerator {
   uint32_t rand_;
 };
 }  // namespace tpcd::metadata
-#endif  // COMPONENTS_TPCD_METADATA_PARSER_TEST_HELPER_H_
+#endif  // COMPONENTS_TPCD_METADATA_BROWSER_TEST_SUPPORT_H_

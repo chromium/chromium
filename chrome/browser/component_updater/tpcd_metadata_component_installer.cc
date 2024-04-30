@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/component_updater/installer_policies/tpcd_metadata_component_installer_policy.h"
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace component_updater {

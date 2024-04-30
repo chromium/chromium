@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/version.h"
 #include "components/component_updater/android/loader_policies/first_party_sets_component_loader_policy.h"
-#include "components/tpcd/metadata/parser.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "services/network/public/cpp/features.h"
 

@@ -15,7 +15,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"

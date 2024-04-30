@@ -39,7 +39,7 @@
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

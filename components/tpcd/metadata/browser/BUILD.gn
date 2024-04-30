@@ -2,12 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(b/333550405): Finally move BUILD to the browser subdir.
-
 static_library("prefs") {
   sources = [
-    "browser/prefs.cc",
-    "browser/prefs.h",
+    "prefs.cc",
+    "prefs.h",
   ]
 
   deps = [
@@ -18,16 +16,16 @@ static_library("prefs") {
   public_deps = [ "//base" ]
 }
 
-source_set("metadata") {
+source_set("browser") {
   sources = [
-    "browser/manager.cc",
-    "browser/manager.h",
+    "manager.cc",
+    "manager.h",
     "parser.cc",
     "parser.h",
   ]
   deps = [
-    ":prefs",
     "//components/tpcd/metadata/common/proto",
+    ":prefs",
   ]
   public_deps = [
     "//base",
@@ -46,8 +44,8 @@ source_set("metadata") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "parser_test_helper.cc",
-    "parser_test_helper.h",
+    "test_support.cc",
+    "test_support.h",
   ]
 
   public_deps = [
@@ -59,7 +57,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    ":metadata",
+    ":browser",
     "//components/tpcd/metadata/common/proto",
   ]
 }
@@ -67,17 +65,17 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "browser/manager_unittest.cc",
+    "manager_unittest.cc",
     "parser_unittest.cc",
   ]
 
   deps = [
-    ":metadata",
+    ":browser",
+    "//components/tpcd/metadata/common/proto",
     ":prefs",
     ":test_support",
     "//base/test:test_support",
     "//components/content_settings/core/common:features",
     "//components/prefs:test_support",
-    "//components/tpcd/metadata/common/proto",
   ]
 }

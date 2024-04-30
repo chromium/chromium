@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/tpcd/metadata/parser_test_helper.h"
+#include "components/tpcd/metadata/browser/test_support.h"
 
 #include "base/base64.h"
 #include "components/tpcd/metadata/common/proto/metadata.pb.h"

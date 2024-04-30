@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TPCD_METADATA_PARSER_H_
-#define COMPONENTS_TPCD_METADATA_PARSER_H_
+#ifndef COMPONENTS_TPCD_METADATA_BROWSER_PARSER_H_
+#define COMPONENTS_TPCD_METADATA_BROWSER_PARSER_H_
 
 #include <cstdint>
 #include <optional>
@@ -146,4 +146,4 @@ MetadataEntry* AddEntryToMetadata(
     const std::optional<uint32_t>& dtrp_override = std::nullopt);
 }  // namespace helpers
 }  // namespace tpcd::metadata
-#endif  // COMPONENTS_TPCD_METADATA_PARSER_H_
+#endif  // COMPONENTS_TPCD_METADATA_BROWSER_PARSER_H_

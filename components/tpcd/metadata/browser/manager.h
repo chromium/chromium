@@ -14,8 +14,8 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "components/tpcd/metadata/common/manager_base.h"
-#include "components/tpcd/metadata/parser.h"
 #include "net/base/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

@@ -8,7 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/tpcd/metadata/browser/manager.h"
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"

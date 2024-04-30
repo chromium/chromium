@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 
 #include <string>
 #include <utility>
@@ -18,7 +18,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/tpcd/metadata/common/proto/metadata.pb.h"
-#include "components/tpcd/metadata/parser.h"
 #include "net/base/features.h"
 #include "third_party/zlib/google/compression_utils.h"
 

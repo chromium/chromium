@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 
 #include <memory>
 #include <string>
@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/tpcd/metadata/common/proto/metadata.pb.h"
-#include "components/tpcd/metadata/parser_test_helper.h"
+#include "components/tpcd/metadata/browser/test_support.h"
 #include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

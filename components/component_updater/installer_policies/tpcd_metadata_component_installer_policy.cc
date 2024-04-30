@@ -18,7 +18,7 @@
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "net/base/features.h"
 
 using component_updater::ComponentUpdateService;

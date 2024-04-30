@@ -40,7 +40,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
-#include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/browser/parser.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
