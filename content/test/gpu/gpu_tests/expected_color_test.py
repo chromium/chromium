@@ -14,6 +14,7 @@ from gpu_tests import common_typing as ct
 from gpu_tests import expected_color_test_cases
 from gpu_tests import gpu_integration_test
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
+from gpu_tests.util import host_information
 
 from py_utils import cloud_storage
 from telemetry.util import image_util
@@ -69,6 +70,15 @@ class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'expected_color_expectations.txt')
     ]
+
+  @classmethod
+  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+    browser_args = super().GenerateBrowserArgs(additional_args)
+    if host_information.IsMac():
+      # TODO(crbug.com/337904207): Remove this once the feature no longer causes
+      # test failures
+      browser_args.append('--disable-features=UseScreenCaptureKitForSnapshots')
+    return browser_args
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     super().RunActualGpuTest(test_path, args)
