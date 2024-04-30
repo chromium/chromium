@@ -23,9 +23,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /**
- * Contains the logic for the FastCheckout component. It sets the state of the model and reacts
- * to events like clicks.
+ * Contains the logic for the FastCheckout component. It sets the state of the model and reacts to
+ * events like clicks.
  */
 public class FastCheckoutMediator implements FastCheckoutSheetState {
     private PropertyModel mModel;
@@ -94,7 +96,7 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
     }
 
     public void showOptions(
-            FastCheckoutAutofillProfile[] profiles, FastCheckoutCreditCard[] creditCards) {
+            List<FastCheckoutAutofillProfile> profiles, List<FastCheckoutCreditCard> creditCards) {
         setAutofillProfileItems(profiles);
         setCreditCardItems(creditCards);
         setCurrentScreen(mModel.get(FastCheckoutProperties.CURRENT_SCREEN));
@@ -132,19 +134,19 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
     }
 
     /**
-     * Sets the Autofill profile items and creates the corresponding models for the
-     * profile item entries on the Autofill profiles page.
-     * If there is a selected Autofill profile prior to calling this method, the profile
-     * with the same GUID will remain selected. If no prior selection was made or this
-     * GUID no longer exists, the first Autofill profile is selected.
+     * Sets the Autofill profile items and creates the corresponding models for the profile item
+     * entries on the Autofill profiles page. If there is a selected Autofill profile prior to
+     * calling this method, the profile with the same GUID will remain selected. If no prior
+     * selection was made or this GUID no longer exists, the first Autofill profile is selected.
+     *
      * @param profiles The array of FastCheckoutAutofillProfile to set as Autofill profiles.
      */
-    public void setAutofillProfileItems(FastCheckoutAutofillProfile[] profiles) {
-        assert profiles != null && profiles.length != 0;
+    public void setAutofillProfileItems(List<FastCheckoutAutofillProfile> profiles) {
+        assert profiles != null && profiles.size() != 0;
 
         FastCheckoutAutofillProfile previousSelection =
                 mModel.get(FastCheckoutProperties.SELECTED_PROFILE);
-        FastCheckoutAutofillProfile newSelection = profiles[0];
+        FastCheckoutAutofillProfile newSelection = profiles.get(0);
 
         // Populate all model entries.
         ModelList profileItems = new ModelList();
@@ -220,19 +222,19 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
     }
 
     /**
-     * Sets the credit card items and creates the corresponding models for the
-     * credit card item entries on the credit card page.
-     * If there is a selected credit card prior to calling this method, the card
-     * with the same GUID will remain selected. If no prior selection was made or this
-     * GUID no longer exists, the first credit card is selected.
+     * Sets the credit card items and creates the corresponding models for the credit card item
+     * entries on the credit card page. If there is a selected credit card prior to calling this
+     * method, the card with the same GUID will remain selected. If no prior selection was made or
+     * this GUID no longer exists, the first credit card is selected.
+     *
      * @param creditCards The array of FastCheckoutCreditCard to set as credit cards.
      */
-    public void setCreditCardItems(FastCheckoutCreditCard[] creditCards) {
-        assert creditCards != null && creditCards.length != 0;
+    public void setCreditCardItems(List<FastCheckoutCreditCard> creditCards) {
+        assert creditCards != null && creditCards.size() != 0;
 
         FastCheckoutCreditCard previousSelection =
                 mModel.get(FastCheckoutProperties.SELECTED_CREDIT_CARD);
-        FastCheckoutCreditCard newSelection = creditCards[0];
+        FastCheckoutCreditCard newSelection = creditCards.get(0);
 
         // Populate all model entries.
         ModelList cardItems = new ModelList();

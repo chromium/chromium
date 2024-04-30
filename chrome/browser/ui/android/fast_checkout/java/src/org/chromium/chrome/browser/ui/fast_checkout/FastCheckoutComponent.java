@@ -10,6 +10,8 @@ import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillPro
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
+import java.util.List;
+
 /**
  * This component supports the user during checkout flows by offering a pre-selection of addresses
  * and credit cards and autofilling the chosen data. Data is selected via a bottom sheet that
@@ -52,7 +54,8 @@ public interface FastCheckoutComponent {
     void initialize(Context context, BottomSheetController sheetController, Delegate delegate);
 
     /** Displays the given options in a new bottom sheet. */
-    void showOptions(FastCheckoutAutofillProfile[] profiles, FastCheckoutCreditCard[] creditCards);
+    void showOptions(
+            List<FastCheckoutAutofillProfile> profiles, List<FastCheckoutCreditCard> creditCards);
 
     /** Hides the bottom sheet. No-op if the sheet is already hidden. */
     void destroy();

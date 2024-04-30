@@ -159,9 +159,7 @@ public class FastCheckoutRenderTest {
     public void testShowsHomeScreenWithLocalCreditCard() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showOptions(
-                            new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
-                            new FastCheckoutCreditCard[] {LOCAL_CREDIT_CARD});
+                    mCoordinator.showOptions(List.of(AUTOFILL_PROFILE), List.of(LOCAL_CREDIT_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -176,8 +174,7 @@ public class FastCheckoutRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showOptions(
-                            new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
-                            new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
+                            List.of(AUTOFILL_PROFILE), List.of(SERVER_CREDIT_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -195,8 +192,7 @@ public class FastCheckoutRenderTest {
                             .getModelForTesting()
                             .set(FastCheckoutProperties.CURRENT_SCREEN, AUTOFILL_PROFILE_SCREEN);
                     mCoordinator.showOptions(
-                            new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
-                            new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
+                            List.of(AUTOFILL_PROFILE), List.of(SERVER_CREDIT_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -214,8 +210,7 @@ public class FastCheckoutRenderTest {
                             .getModelForTesting()
                             .set(FastCheckoutProperties.CURRENT_SCREEN, CREDIT_CARD_SCREEN);
                     mCoordinator.showOptions(
-                            new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
-                            new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
+                            List.of(AUTOFILL_PROFILE), List.of(SERVER_CREDIT_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

@@ -65,28 +65,23 @@ void FastCheckoutViewImpl::Show(
   }
 
   JNIEnv* env = AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobjectArray> autofill_profiles_array =
-      Java_FastCheckoutBridge_createAutofillProfilesArray(
-          env, autofill_profiles.size());
-  for (size_t i = 0; i < autofill_profiles.size(); ++i) {
-    Java_FastCheckoutBridge_setAutofillProfile(
-        env, autofill_profiles_array, i,
-        CreateFastCheckoutAutofillProfile(
-            env, *autofill_profiles[i],
-            g_browser_process->GetApplicationLocale()));
+  std::vector<base::android::ScopedJavaLocalRef<jobject>>
+      autofill_profiles_array;
+  autofill_profiles_array.reserve(autofill_profiles.size());
+  for (const autofill::AutofillProfile* profile : autofill_profiles) {
+    autofill_profiles_array.push_back(CreateFastCheckoutAutofillProfile(
+        env, *profile, g_browser_process->GetApplicationLocale()));
+  }
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> credit_cards_array;
+  credit_cards_array.reserve(credit_cards.size());
+  for (const autofill::CreditCard* card : credit_cards) {
+    autofill_profiles_array.push_back(CreateFastCheckoutCreditCard(
+        env, *card, g_browser_process->GetApplicationLocale()));
   }
 
-  base::android::ScopedJavaLocalRef<jobjectArray> credit_cards_array =
-      Java_FastCheckoutBridge_createCreditCardsArray(env, credit_cards.size());
-  for (size_t i = 0; i < credit_cards.size(); ++i) {
-    Java_FastCheckoutBridge_setCreditCard(
-        env, credit_cards_array, i,
-        CreateFastCheckoutCreditCard(
-            env, *credit_cards[i], g_browser_process->GetApplicationLocale()));
-  }
-
-  Java_FastCheckoutBridge_showBottomSheet(
-      env, java_object_internal_, autofill_profiles_array, credit_cards_array);
+  Java_FastCheckoutBridge_showBottomSheet(env, java_object_internal_,
+                                          std::move(autofill_profiles_array),
+                                          std::move(credit_cards_array));
 }
 
 void FastCheckoutViewImpl::OpenAutofillProfileSettings(JNIEnv* env) {
