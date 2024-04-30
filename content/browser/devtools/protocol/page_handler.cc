@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -271,10 +272,6 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
     return icons;
   };
 
-  auto enum_to_str = [](auto e) -> std::string {
-    return (std::stringstream() << e).str();
-  };
-
   auto manifest = Page::WebAppManifest::Create();
   if (input_manifest->has_background_color) {
     manifest.SetBackgroundColor(color_utils::SkColorToRgbaString(
@@ -285,11 +282,11 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
         base::UTF16ToUTF8(input_manifest->description.value()));
   }
   // TODO(crbug.com/331214986): Fill the WebAppManifest.dir (direction).
-  manifest.SetDisplay(enum_to_str(input_manifest->display));
+  manifest.SetDisplay(base::ToString(input_manifest->display));
   if (!input_manifest->display_override.empty()) {
     auto display_overrides = std::make_unique<protocol::Array<std::string>>();
     for (const auto& display_override : input_manifest->display_override) {
-      display_overrides->push_back(enum_to_str(display_override));
+      display_overrides->push_back(base::ToString(display_override));
     }
     manifest.SetDisplayOverrides(std::move(display_overrides));
   }
@@ -320,7 +317,7 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
           file_handler
               .SetAction(input_file_handler->action.possibly_invalid_spec())
               .SetName(base::UTF16ToUTF8(input_file_handler->name))
-              .SetLaunchType(enum_to_str(input_file_handler->launch_type))
+              .SetLaunchType(base::ToString(input_file_handler->launch_type))
               .Build());
     }
   }
@@ -332,14 +329,14 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
   if (input_manifest->launch_handler) {
     manifest.SetLaunchHandler(
         Page::LaunchHandler::Create()
-            .SetClientMode(
-                enum_to_str(input_manifest->launch_handler.value().client_mode))
+            .SetClientMode(base::ToString(
+                input_manifest->launch_handler.value().client_mode))
             .Build());
   }
   if (input_manifest->name) {
     manifest.SetName(base::UTF16ToUTF8(input_manifest->name.value()));
   }
-  manifest.SetOrientation(enum_to_str(input_manifest->orientation));
+  manifest.SetOrientation(base::ToString(input_manifest->orientation));
   manifest.SetPreferRelatedApplications(
       input_manifest->prefer_related_applications);
   if (!input_manifest->protocol_handlers.empty()) {
@@ -376,7 +373,7 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
       }
       screenshots->push_back(
           screenshot.SetImage(convert_icon(input_screenshot->image))
-              .SetFormFactor(enum_to_str(input_screenshot->form_factor))
+              .SetFormFactor(base::ToString(input_screenshot->form_factor))
               .Build());
     }
     manifest.SetScreenshots(std::move(screenshots));
@@ -400,8 +397,8 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
         share_target
             .SetAction(
                 input_manifest->share_target->action.possibly_invalid_spec())
-            .SetMethod(enum_to_str(input_manifest->share_target->method))
-            .SetEnctype(enum_to_str(input_manifest->share_target->action))
+            .SetMethod(base::ToString(input_manifest->share_target->method))
+            .SetEnctype(base::ToString(input_manifest->share_target->action))
             .Build());
   }
   if (!input_manifest->related_applications.empty()) {

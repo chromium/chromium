@@ -143,6 +143,8 @@ std::ostream& operator<<(std::ostream& os, WebappUninstallSource source) {
       return os << "Healthcare User Install Cleanup";
     case webapps::WebappUninstallSource::kIwaEnterprisePolicy:
       return os << "Isolated Web Apps Enterprise Policy";
+    case webapps::WebappUninstallSource::kDevtools:
+      return os << "Devtools";
   }
 }
 
@@ -172,6 +174,7 @@ bool IsUserUninstall(WebappUninstallSource source) {
     case webapps::WebappUninstallSource::kAppList:
     case webapps::WebappUninstallSource::kShelf:
     case webapps::WebappUninstallSource::kExternalLockScreen:
+    case webapps::WebappUninstallSource::kDevtools:
       return true;
   }
 }

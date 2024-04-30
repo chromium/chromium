@@ -112,6 +112,12 @@ class WebAppCommandScheduler {
       webapps::ManifestId parent_manifest_id,
       base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
 
+  // Same as the overload above, but without parent_manifest_id.
+  void FetchInstallInfoFromInstallUrl(
+      webapps::ManifestId manifest_id,
+      GURL install_url,
+      base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
+
   // Install with provided `WebAppInstallInfo` instead of fetching data from
   // manifest.
   // `InstallFromInfo` doesn't install OS hooks. `InstallFromInfoWithParams`

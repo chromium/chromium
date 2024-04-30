@@ -57,7 +57,7 @@
             },
             {
                 "domain": "PWA",
-                "async": [ "getOsAppState" ]
+                "async": [ "getOsAppState", "install", "uninstall" ]
             }
         ]
     },

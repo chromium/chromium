@@ -124,6 +124,16 @@ void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
           std::move(parent_manifest_id), std::move(callback)));
 }
 
+void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
+    webapps::ManifestId manifest_id,
+    GURL install_url,
+    base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<FetchInstallInfoFromInstallUrlCommand>(
+          std::move(manifest_id), std::move(install_url), std::nullopt,
+          std::move(callback)));
+}
+
 void WebAppCommandScheduler::InstallFromInfoNoIntegrationForTesting(
     std::unique_ptr<WebAppInstallInfo> install_info,
     bool overwrite_existing_manifest_fields,

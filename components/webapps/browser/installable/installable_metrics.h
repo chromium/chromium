@@ -238,8 +238,11 @@ enum class WebappUninstallSource {
   // Isolated Web App Enterprise policy.
   kIwaEnterprisePolicy = 22,
 
+  // Via devtools PWA.uninstall or similar commands.
+  kDevtools = 23,
+
   // Add any new values above this one.
-  kMaxValue = kIwaEnterprisePolicy,
+  kMaxValue = kDevtools,
 };
 
 std::ostream& operator<<(std::ostream& os, WebappUninstallSource source);

@@ -1,0 +1,13 @@
+{
+  "name": "Web app with specified manifest id",
+  "icons": [
+    {
+      "src": "basic-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "basic.html",
+  "display": "standalone",
+  "id": "web_apps/has_manifest_id_unique_id"
+}

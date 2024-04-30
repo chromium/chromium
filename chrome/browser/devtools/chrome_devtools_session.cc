@@ -110,7 +110,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
       channel->GetClient()->IsTrusted()) {
     system_info_handler_ = std::make_unique<SystemInfoHandler>(&dispatcher_);
   }
-  if (agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser &&
+  if ((agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser ||
+       agent_host->GetType() == content::DevToolsAgentHost::kTypePage) &&
       channel->GetClient()->AllowUnsafeOperations()) {
     if (IsDomainAvailableToUntrustedClient<PWAHandler>() ||
         channel->GetClient()->IsTrusted()) {
