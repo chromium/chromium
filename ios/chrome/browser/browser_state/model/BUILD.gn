@@ -189,3 +189,20 @@ source_set("constants") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_browser_state_manager_impl_unittest.mm" ]
+  deps = [
+    ":ios_thread",
+    ":model",
+    "//base",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/thread",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+  ]
+}

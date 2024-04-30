@@ -12,6 +12,7 @@
 #import "base/time/default_tick_clock.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
@@ -96,6 +97,12 @@ void TestingApplicationContext::SetUpgradeCenter(
     UpgradeCenter* upgrade_center) {
   DCHECK(thread_checker_.CalledOnValidThread());
   upgrade_center_ = upgrade_center;
+}
+
+void TestingApplicationContext::SetIOSChromeIOThread(
+    IOSChromeIOThread* ios_chrome_io_thread) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  ios_chrome_io_thread_ = ios_chrome_io_thread;
 }
 
 void TestingApplicationContext::OnAppEnterForeground() {
@@ -201,7 +208,7 @@ TestingApplicationContext::GetNetworkTimeTracker() {
 
 IOSChromeIOThread* TestingApplicationContext::GetIOSChromeIOThread() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return nullptr;
+  return ios_chrome_io_thread_.get();
 }
 
 gcm::GCMDriver* TestingApplicationContext::GetGCMDriver() {

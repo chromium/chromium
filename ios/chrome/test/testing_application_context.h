@@ -55,6 +55,9 @@ class TestingApplicationContext : public ApplicationContext {
   // Must be set before `GetUpgradeCenter` is called.
   void SetUpgradeCenter(UpgradeCenter* upgrade_center);
 
+  // Sets the IOSChromeIOThread.
+  void SetIOSChromeIOThread(IOSChromeIOThread* ios_chrome_io_thread);
+
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;
@@ -115,6 +118,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
   __strong UpgradeCenter* upgrade_center_ = nil;
+  raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_
