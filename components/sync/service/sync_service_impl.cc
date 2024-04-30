@@ -465,6 +465,22 @@ void SyncServiceImpl::GetThrottledDataTypesForTest(
   engine_->GetThrottledDataTypesForTest(std::move(cb));
 }
 
+// static
+ShutdownReason SyncServiceImpl::ShutdownReasonForResetEngineReason(
+    ResetEngineReason reset_reason) {
+  switch (reset_reason) {
+    case ResetEngineReason::kShutdown:
+      return ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA;
+    case ResetEngineReason::kCredentialsChanged:
+      return ShutdownReason::STOP_SYNC_AND_KEEP_DATA;
+    case ResetEngineReason::kUnrecoverableError:
+    case ResetEngineReason::kDisabledAccount:
+    case ResetEngineReason::kResetLocalData:
+    case ResetEngineReason::kStopAndClear:
+      return ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
+  }
+}
+
 void SyncServiceImpl::AccountStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -500,8 +516,7 @@ void SyncServiceImpl::CredentialsChanged() {
       DVLOG(2) << "Notify observers on credentials changed";
       NotifyObservers();
     }
-    ResetEngine(ShutdownReason::STOP_SYNC_AND_KEEP_DATA,
-                ResetEngineReason::kCredentialsChanged);
+    ResetEngine(ResetEngineReason::kCredentialsChanged);
     return;
   }
 
@@ -641,8 +656,7 @@ void SyncServiceImpl::Shutdown() {
   // Ensure the DataTypeManager is destroyed before the engine, since it has a
   // pointer to the engine.
   std::unique_ptr<SyncEngine> engine =
-      ResetEngine(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA,
-                  ResetEngineReason::kShutdown);
+      ResetEngine(ResetEngineReason::kShutdown);
   data_type_manager_.reset();
   engine.reset();
 
@@ -668,9 +682,11 @@ void SyncServiceImpl::RecordReasonIfWaitingForUpdates(
 }
 
 std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
-    ShutdownReason shutdown_reason,
     ResetEngineReason reset_reason) {
   CHECK(data_type_manager_);
+
+  const ShutdownReason shutdown_reason =
+      ShutdownReasonForResetEngineReason(reset_reason);
 
   if (!engine_) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
@@ -966,8 +982,7 @@ void SyncServiceImpl::OnUnrecoverableErrorImpl(
   // Shut the Sync machinery down. The existence of
   // |unrecoverable_error_reason_| and thus |DISABLE_REASON_UNRECOVERABLE_ERROR|
   // will prevent Sync from starting up again (even in transport-only mode).
-  ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
-              ResetEngineReason::kUnrecoverableError);
+  ResetEngine(ResetEngineReason::kUnrecoverableError);
 }
 
 void SyncServiceImpl::DataTypePreconditionChanged(ModelType type) {
@@ -1148,12 +1163,10 @@ void SyncServiceImpl::OnActionableProtocolError(
     case STOP_SYNC_FOR_DISABLED_ACCOUNT:
       // Sync disabled by domain admin. Stop syncing until next restart.
       sync_disabled_by_admin_ = true;
-      ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
-                  ResetEngineReason::kDisabledAccount);
+      ResetEngine(ResetEngineReason::kDisabledAccount);
       break;
     case RESET_LOCAL_SYNC_DATA:
-      ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
-                  ResetEngineReason::kResetLocalData);
+      ResetEngine(ResetEngineReason::kResetLocalData);
       break;
     case UNKNOWN_ACTION:
       NOTREACHED();
@@ -2179,9 +2192,8 @@ void SyncServiceImpl::StopAndClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ClearUnrecoverableError();
-  ResetEngine(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA,
-              ResetEngineReason::kStopAndClear);
-  // Note: ResetEngine(DISABLE_SYNC_AND_CLEAR_DATA) does *not* clear prefs which
+  ResetEngine(ResetEngineReason::kStopAndClear);
+  // Note: ResetEngine(kStopAndClear) does *not* clear prefs which
   // are directly user-controlled such as the set of selected types here, so
   // that if the user ever chooses to enable Sync again, they start off with
   // their previous settings by default. We do however require going through

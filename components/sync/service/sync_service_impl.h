@@ -274,7 +274,7 @@ class SyncServiceImpl : public SyncService,
     kShutdown = 0,
     kUnrecoverableError = 1,
     kDisabledAccount = 2,
-    kRequestedPrefChange = 3,
+    // kRequestedPrefChange = 3,
     kStopAndClear = 4,
     // kSetSyncAllowedByPlatform = 5,
     kCredentialsChanged = 6,
@@ -283,6 +283,10 @@ class SyncServiceImpl : public SyncService,
     kMaxValue = kResetLocalData
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncResetEngineReason)
+
+  // static
+  ShutdownReason ShutdownReasonForResetEngineReason(
+      ResetEngineReason reset_reason);
 
   // Records UMA histograms related to download status during browser startup.
   class DownloadStatusRecorder : public SyncServiceObserver {
@@ -343,12 +347,11 @@ class SyncServiceImpl : public SyncService,
 
   void UpdateDataTypesForInvalidations();
 
-  // Shuts down and destroys the engine. |reason| dictates if sync metadata
-  // should be kept or not.
+  // Shuts down and destroys the engine. |reset_reason| specifies the reason for
+  // the shutdown, and dictates if sync metadata should be kept or not.
   // If the engine is still allowed to run (per IsEngineAllowedToRun()), it will
   // soon start up again (possibly in transport-only mode).
-  std::unique_ptr<SyncEngine> ResetEngine(ShutdownReason shutdown_reason,
-                                          ResetEngineReason reset_reason);
+  std::unique_ptr<SyncEngine> ResetEngine(ResetEngineReason reset_reason);
 
   // Helper for OnUnrecoverableError.
   void OnUnrecoverableErrorImpl(const base::Location& from_here,
