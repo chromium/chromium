@@ -137,8 +137,10 @@ message GetHintsResponse {
   repeated MatchedHintInfo hints_to_remove = 3;
 }
 
-// Must sync with enum OptimizationType in enums.xml and
-// optimization/histograms.xml for metric recording.
+// These values must reflect the values defined in the server-side
+// OptimizationType enum at http://shortn/_t8G1sv8yAS (Google-internal link).
+// Additionally, these values must be synchronized with the OptimizationType
+// enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
   reserved 11, 12, 16, 29;
