@@ -32,6 +32,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
@@ -251,11 +252,13 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   }
 
   void AddAutofillProfile(const autofill::AutofillProfile& profile) {
-    size_t profile_count = personal_data_->GetProfiles().size();
+    size_t profile_count =
+        personal_data_->address_data_manager().GetProfiles().size();
     PersonalDataChangedWaiter waiter(*personal_data_);
-    personal_data_->AddProfile(profile);
+    personal_data_->address_data_manager().AddProfile(profile);
     std::move(waiter).Wait();
-    EXPECT_EQ(profile_count + 1, personal_data_->GetProfiles().size());
+    EXPECT_EQ(profile_count + 1,
+              personal_data_->address_data_manager().GetProfiles().size());
   }
 
   void AddCreditCard(const autofill::CreditCard& card) {

@@ -1214,7 +1214,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         FillDataToAutofillProfile(GetElvisAddressFillData());
     profile1.set_guid(kElvisProfileGuid);
     profile1.set_use_date(AutofillClock::Now() - base::Days(2));
-    personal_data().AddProfile(profile1);
+    personal_data().address_data_manager().AddProfile(profile1);
 
     AutofillProfile profile2(
         i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -1223,7 +1223,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                          "Lubbock", "Texas", "79401", "US", "23456789012");
     profile2.set_guid(MakeGuid(2));
     profile2.set_use_date(AutofillClock::Now() - base::Days(1));
-    personal_data().AddProfile(profile2);
+    personal_data().address_data_manager().AddProfile(profile2);
 
     AutofillProfile profile3(
         i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -1231,7 +1231,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                          "US", "");
     profile3.set_guid(MakeGuid(3));
     profile3.set_use_date(AutofillClock::Now());
-    personal_data().AddProfile(profile3);
+    personal_data().address_data_manager().AddProfile(profile3);
   }
 
   void CreateTestCreditCards() {
@@ -1672,7 +1672,8 @@ TEST_F(BrowserAutofillManagerTest,
   check.Call(2);
 
   personal_data().ClearProfiles();
-  personal_data().AddProfile(test::GetIncompleteProfile2());
+  personal_data().address_data_manager().AddProfile(
+      test::GetIncompleteProfile2());
 
   // IPH should not be shown if the profiles don't have values for that field.
   GetAutofillSuggestions(form, form.fields[2]);
@@ -1894,7 +1895,7 @@ TEST_P(SuggestionMatchingTest,
   profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
   profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
-  personal_data().AddProfile(profile1);
+  personal_data().address_data_manager().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.set_guid(MakeGuid(124));
@@ -1902,7 +1903,7 @@ TEST_P(SuggestionMatchingTest,
   profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
   profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
-  personal_data().AddProfile(profile2);
+  personal_data().address_data_manager().AddProfile(profile2);
 
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile3.set_guid(MakeGuid(126));
@@ -1910,7 +1911,7 @@ TEST_P(SuggestionMatchingTest,
   profile3.SetInfo(NAME_FIRST, u"Aaron", "en-US");
   profile3.SetInfo(NAME_LAST, u"Googler", "en-US");
   profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
-  personal_data().AddProfile(profile3);
+  personal_data().address_data_manager().AddProfile(profile3);
 
   FormFieldData field = CreateTestFormField("Last Name", "lastname", "G",
                                             FormControlType::kInputText);
@@ -2100,7 +2101,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
   // Add a duplicate profile.
   AutofillProfile duplicate_profile =
       *personal_data().address_data_manager().GetProfileByGUID(MakeGuid(1));
-  personal_data().AddProfile(duplicate_profile);
+  personal_data().address_data_manager().AddProfile(duplicate_profile);
 
   GetAutofillSuggestions(form, form.fields[0]);
 
@@ -3400,7 +3401,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
   test::SetProfileInfo(&profile, "Elvis", "", "", "", "", "", "", "", "", "",
                        "", "");
   profile.set_guid(MakeGuid(101));
-  personal_data().AddProfile(profile);
+  personal_data().address_data_manager().AddProfile(profile);
 
   FormFieldData& field = form.fields[0];
   field.set_is_autofilled(true);
@@ -3453,7 +3454,7 @@ TEST_F(BrowserAutofillManagerTest,
   profile.set_guid(MakeGuid(103));
   profile.SetRawInfo(NAME_FULL, u"Natty Bumppo");
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
-  personal_data().AddProfile(profile);
+  personal_data().address_data_manager().AddProfile(profile);
 
   GetAutofillSuggestions(form, form.fields[2]);
   external_delegate()->CheckSuggestions(
@@ -3558,12 +3559,13 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
   // `personal_data()`'s auto accept imports for testing is enabled, expect
   // that the profile is imported again.
   personal_data().ClearAllLocalData();
-  ASSERT_TRUE(personal_data().GetProfiles().empty());
+  ASSERT_TRUE(personal_data().address_data_manager().GetProfiles().empty());
   FormSubmitted(response_data);
   // Since the imported profile has a random GUID, AutofillProfile::operator==
   // cannot be used.
-  ASSERT_EQ(personal_data().GetProfiles().size(), 1u);
-  EXPECT_TRUE(personal_data().GetProfiles()[0]->Compare(filled_profile));
+  ASSERT_EQ(personal_data().address_data_manager().GetProfiles().size(), 1u);
+  EXPECT_TRUE(personal_data().address_data_manager().GetProfiles()[0]->Compare(
+      filled_profile));
 }
 
 // Test that the user perception of autofill survey is triggered after a form
@@ -3809,7 +3811,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       /*email=*/"", "RCA");
   AutofillProfile profile1 = FillDataToAutofillProfile(address_fill_data);
   profile1.set_guid(MakeGuid(100));
-  personal_data().AddProfile(profile1);
+  personal_data().address_data_manager().AddProfile(profile1);
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(100));
 
@@ -4011,7 +4013,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       /*email=*/"", "RCA");
   AutofillProfile profile1 = FillDataToAutofillProfile(address_fill_data);
   profile1.set_guid(MakeGuid(100));
-  personal_data().AddProfile(profile1);
+  personal_data().address_data_manager().AddProfile(profile1);
   FormData response_data = FillAutofillFormDataAndGetResults(
       form, *form.fields.begin(), MakeGuid(100));
 
@@ -5237,7 +5239,7 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
   // Add and remove an Autofill profile.
   AutofillProfile profile = test::GetFullProfile();
-  personal_data().AddProfile(profile);
+  personal_data().address_data_manager().AddProfile(profile);
 
   EXPECT_TRUE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
       Suggestion::Guid(profile.guid())));
@@ -7651,7 +7653,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   AutofillProfile profile = test::GetFullProfile();
   profile.set_use_date(AutofillClock::Now());
   profile.set_use_count(1u);
-  personal_data().AddProfile(profile);
+  personal_data().address_data_manager().AddProfile(profile);
   AutofillProfile* pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
@@ -7673,7 +7675,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.
   profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data().AddProfile(profile);
+  personal_data().address_data_manager().AddProfile(profile);
   AutofillProfile* pdm_profile =
       personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);

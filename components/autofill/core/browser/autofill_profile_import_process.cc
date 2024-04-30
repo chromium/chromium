@@ -105,7 +105,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
   // We don't offer an import if `observed_profile_` is a duplicate of an
   // existing profile.
   const std::vector<AutofillProfile*> existing_profiles =
-      personal_data_manager_->GetProfiles(
+      personal_data_manager_->address_data_manager().GetProfiles(
           AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
 
   // If we have reason to believe that the country was complemented incorrectly,
@@ -296,7 +296,8 @@ void ProfileImportProcess::ApplyImport() {
 
   // Apply silent updates.
   for (const AutofillProfile& updated_profile : silently_updated_profiles_) {
-    personal_data_manager_->UpdateProfile(updated_profile);
+    personal_data_manager_->address_data_manager().UpdateProfile(
+        updated_profile);
   }
 
   if (!confirmed_import_candidate_.has_value()) {
@@ -309,9 +310,11 @@ void ProfileImportProcess::ApplyImport() {
     personal_data_manager_->address_data_manager().MigrateProfileToAccount(
         confirmed_profile);
   } else if (is_confirmable_update()) {
-    personal_data_manager_->UpdateProfile(confirmed_profile);
+    personal_data_manager_->address_data_manager().UpdateProfile(
+        confirmed_profile);
   } else {
-    personal_data_manager_->AddProfile(confirmed_profile);
+    personal_data_manager_->address_data_manager().AddProfile(
+        confirmed_profile);
   }
 }
 

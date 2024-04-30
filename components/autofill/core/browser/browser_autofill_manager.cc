@@ -910,10 +910,14 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
   std::vector<AutofillProfile*> profiles =
-      client().GetPersonalDataManager()->GetProfiles();
+      client().GetPersonalDataManager()->address_data_manager().GetProfiles();
   if (observed_submission && form_structure->IsAutofillable()) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
-        client().GetPersonalDataManager()->GetProfiles().size());
+        client()
+            .GetPersonalDataManager()
+            ->address_data_manager()
+            .GetProfiles()
+            .size());
   }
 
   const std::vector<CreditCard*>& credit_cards = client()
@@ -1225,7 +1229,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
           FieldTypeGroupToFormType(autofill_field->Type().group()) ==
               FormType::kAddressForm &&
           base::ranges::any_of(
-              client().GetPersonalDataManager()->GetProfiles(),
+              client()
+                  .GetPersonalDataManager()
+                  ->address_data_manager()
+                  .GetProfiles(),
               [field_type = autofill_field->Type().GetStorableType()](
                   AutofillProfile* profile) {
                 return profile->HasInfo(field_type);
@@ -1944,7 +1951,8 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   }
   const PersonalDataManager* pdm = client().GetPersonalDataManager();
   FieldTypeSet non_empty_types;
-  for (const AutofillProfile* profile : pdm->GetProfiles()) {
+  for (const AutofillProfile* profile :
+       pdm->address_data_manager().GetProfiles()) {
     profile->GetNonEmptyTypes(app_locale_, &non_empty_types);
   }
   for (const CreditCard* card : pdm->payments_data_manager().GetCreditCards()) {
@@ -2070,7 +2078,7 @@ bool BrowserAutofillManager::RefreshDataModels() {
   credit_card_access_manager_->UpdateCreditCardFormEventLogger();
 
   const std::vector<AutofillProfile*>& profiles =
-      client().GetPersonalDataManager()->GetProfiles();
+      client().GetPersonalDataManager()->address_data_manager().GetProfiles();
   address_form_event_logger_->set_record_type_count(profiles.size());
 
   return !profiles.empty() || !client()

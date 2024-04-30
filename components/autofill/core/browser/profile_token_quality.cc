@@ -128,7 +128,8 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     const PersonalDataManager& pdm) {
   CHECK_EQ(form_structure.field_count(), form_data.fields.size());
 
-  std::vector<AutofillProfile*> other_profiles = pdm.GetProfiles();
+  std::vector<AutofillProfile*> other_profiles =
+      pdm.address_data_manager().GetProfiles();
   std::erase_if(other_profiles, [&](AutofillProfile* p) {
     return p->guid() == profile_->guid();
   });
@@ -199,7 +200,7 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
         *field->autofill_source_profile_guid());
     if (profile && profile->token_quality().AddObservationsForFilledForm(
                        form_structure, form_data, pdm)) {
-      pdm.UpdateProfile(*profile);
+      pdm.address_data_manager().UpdateProfile(*profile);
     }
   }
 }

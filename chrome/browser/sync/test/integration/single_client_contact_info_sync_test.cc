@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, UploadProfile) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   ASSERT_TRUE(SetupSync());
-  GetPersonalDataManager()->AddProfile(kProfile);
+  GetPersonalDataManager()->address_data_manager().AddProfile(kProfile);
   EXPECT_TRUE(FakeServerSpecificsChecker(
                   UnorderedElementsAre(
                       AsContactInfoSpecifics(kProfile).SerializeAsString()))
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
   // verified by adding a dummy profile. It will only reach the server after any
   // already pending changes.
   const AutofillProfile kDummyProfile = BuildTestAccountProfile();
-  GetPersonalDataManager()->AddProfile(kDummyProfile);
+  GetPersonalDataManager()->address_data_manager().AddProfile(kDummyProfile);
   EXPECT_TRUE(
       FakeServerSpecificsChecker(
           UnorderedElementsAre(
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
   EXPECT_TRUE(GetPersonalDataManager()
                   ->address_data_manager()
                   .IsAutofillSyncToggleAvailable());
-  GetPersonalDataManager()->AddProfile(kProfile);
+  GetPersonalDataManager()->address_data_manager().AddProfile(kProfile);
   EXPECT_TRUE(AddressDataManagerProfileChecker(
                   &GetPersonalDataManager()->address_data_manager(),
                   UnorderedElementsAre(kProfile))
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   // Apply a change to the profile.
   profile.SetRawInfoWithVerificationStatus(
       autofill::NAME_FULL, u"New Name", autofill::VerificationStatus::kParsed);
-  GetPersonalDataManager()->UpdateProfile(profile);
+  GetPersonalDataManager()->address_data_manager().UpdateProfile(profile);
 
   autofill::AutofillProfile profile2(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 
   // Add an obsolete profile to make sure that the server has received the
   // update.
-  GetPersonalDataManager()->AddProfile(profile2);
+  GetPersonalDataManager()->address_data_manager().AddProfile(profile2);
 
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::CONTACT_INFO, 2).Wait());
   // Verifies that the profile with `profile.guid()` has preserved

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/payments/validating_combobox.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -97,7 +98,8 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
   if (!profile_to_edit_) {
     // Add the profile (will not add a duplicate).
     if (!is_incognito())
-      state()->GetPersonalDataManager()->AddProfile(profile);
+      state()->GetPersonalDataManager()->address_data_manager().AddProfile(
+          profile);
     std::move(on_added_).Run(profile);
     on_edited_.Reset();
   } else {
@@ -107,7 +109,8 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
                                        /*ignore_errors=*/false);
     DCHECK(success);
     if (!is_incognito())
-      state()->GetPersonalDataManager()->UpdateProfile(*profile_to_edit_);
+      state()->GetPersonalDataManager()->address_data_manager().UpdateProfile(
+          *profile_to_edit_);
     state()->profile_comparator()->Invalidate(*profile_to_edit_);
     std::move(on_edited_).Run();
     on_added_.Reset();

@@ -229,10 +229,10 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     profile.set_language_code(*address->language_code);
 
   if (use_existing_profile) {
-    personal_data->UpdateProfile(profile);
+    personal_data->address_data_manager().UpdateProfile(profile);
   } else {
     profile.FinalizeAfterImport();
-    personal_data->AddProfile(profile);
+    personal_data->address_data_manager().AddProfile(profile);
     autofill::autofill_metrics::LogManuallyAddedAddress(
         autofill::autofill_metrics::AutofillManuallyAddedAddressSurface::
             kSettings);

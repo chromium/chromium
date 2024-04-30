@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -72,7 +73,7 @@ class PaymentRequestStateTest : public testing::Test,
 
     test_personal_data_manager_.SetAutofillProfileEnabled(true);
     test_personal_data_manager_.SetAutofillWalletImportEnabled(true);
-    test_personal_data_manager_.AddProfile(address_);
+    test_personal_data_manager_.address_data_manager().AddProfile(address_);
   }
   ~PaymentRequestStateTest() override = default;
 

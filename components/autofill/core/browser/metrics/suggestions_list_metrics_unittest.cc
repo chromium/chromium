@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -40,8 +41,8 @@ TEST_F(SuggestionsListMetricsTest, SuggestionsCount) {
                   {.role = CREDIT_CARD_NUMBER,
                    .autocomplete_attribute = "cc-number"}}});
   autofill_manager().OnFormsSeen({form}, {});
-  personal_data().AddProfile(test::GetFullProfile());
-  personal_data().AddProfile(test::GetFullProfile2());
+  personal_data().address_data_manager().AddProfile(test::GetFullProfile());
+  personal_data().address_data_manager().AddProfile(test::GetFullProfile2());
   personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
   {
     base::HistogramTester histogram_tester;

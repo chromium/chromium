@@ -46,6 +46,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -1648,7 +1649,8 @@ IN_PROC_BROWSER_TEST_F(
   AutofillProfile address_profile = test::GetFullProfile();
   address_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"91111");
   PersonalDataManagerFactory::GetForProfile(GetProfile(0))
-      ->AddProfile(address_profile);
+      ->address_data_manager()
+      .AddProfile(address_profile);
 
   // Submitting the form should start the flow of asking Payments if Chrome
   // should offer to save the card to Google, even though the postal codes in

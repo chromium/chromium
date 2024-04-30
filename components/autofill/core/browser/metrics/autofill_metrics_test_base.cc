@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -127,14 +128,14 @@ void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {
                        "Company", "123 Main St.", "unit 7", "Springfield",
                        "Texas", "79401", "US", "2345678901");
   profile.set_guid("00000000-0000-0000-0000-000000000003");
-  personal_data().AddProfile(profile);
+  personal_data().address_data_manager().AddProfile(profile);
 }
 
 void AutofillMetricsBaseTest::RecreateProfile() {
   personal_data().ClearProfiles();
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   SetProfileTestData(&profile);
-  personal_data().AddProfile(profile);
+  personal_data().address_data_manager().AddProfile(profile);
 }
 
 void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
@@ -318,14 +319,14 @@ void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {
                        "Apt. 10", "Memphis", "Tennessee", "38116", "US",
                        "12345678901");
   profile1.set_guid(kTestProfileId);
-  personal_data().AddProfile(profile1);
+  personal_data().address_data_manager().AddProfile(profile1);
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Charles", "Hardin", "Holley",
                        "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                        "Lubbock", "Texas", "79401", "US", "2345678901");
   profile2.set_guid(kTestProfile2Id);
-  personal_data().AddProfile(profile2);
+  personal_data().address_data_manager().AddProfile(profile2);
 }
 
 }  // namespace autofill::autofill_metrics

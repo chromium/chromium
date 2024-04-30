@@ -30,6 +30,7 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -656,12 +657,13 @@ class FormDataImporterTest : public testing::Test {
         output << p << std::endl;
       }
       output << "Observed:" << std::endl;
-      for (const AutofillProfile* p : personal_data_manager_->GetProfiles()) {
+      for (const AutofillProfile* p :
+           personal_data_manager_->address_data_manager().GetProfiles()) {
         output << *p << std::endl;
       }
       return output.str();
     };
-    EXPECT_THAT(personal_data_manager_->GetProfiles(),
+    EXPECT_THAT(personal_data_manager_->address_data_manager().GetProfiles(),
                 UnorderedElementsCompareEqualArray(expected_profiles))
         << print_profiles();
   }
@@ -892,10 +894,12 @@ TEST_F(FormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
 
   ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                              {expected_profile});
-  ASSERT_EQ(personal_data_manager_->GetProfiles().size(), 1u);
+  ASSERT_EQ(personal_data_manager_->address_data_manager().GetProfiles().size(),
+            1u);
   EXPECT_EQ(base::UTF8ToUTF16(kInternationalNumber),
-            personal_data_manager_->GetProfiles()[0]->GetRawInfo(
-                PHONE_HOME_WHOLE_NUMBER));
+            personal_data_manager_->address_data_manager()
+                .GetProfiles()[0]
+                ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
 }
 
 // Tests that invalid countries in submitted forms are ignored, and that the
@@ -976,7 +980,7 @@ TEST_F(FormDataImporterTest, ImportStructuredNameProfile) {
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"21");
@@ -1020,7 +1024,7 @@ TEST_F(FormDataImporterTest,
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"21");
@@ -1067,7 +1071,7 @@ TEST_F(
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"21");
@@ -1109,7 +1113,7 @@ TEST_F(FormDataImporterTest,
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
   EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"23");
@@ -1244,7 +1248,7 @@ TEST_F(FormDataImporterTest, ImportStructuredNameAddressProfile) {
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
   const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
 
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Pablo Diego Ruiz y Picasso");
@@ -1818,7 +1822,7 @@ TEST_F(FormDataImporterTest,
                        "theprez@gmail.com", nullptr,
                        "No. 43 Bo Aung Gyaw Street", nullptr, "Yangon", "",
                        "11181", "MM", nullptr);
-  EXPECT_THAT(personal_data_manager_->GetProfiles(),
+  EXPECT_THAT(personal_data_manager_->address_data_manager().GetProfiles(),
               UnorderedElementsCompareEqual(expected));
 }
 
@@ -3042,7 +3046,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
   // Test that the address has been saved.
   AutofillProfile expected_address = ConstructDefaultProfile();
   const std::vector<AutofillProfile*>& results_addr =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
 
@@ -3076,7 +3080,8 @@ TEST_F(FormDataImporterTest, ExtractFormData_TwoAddressesOneCreditCard) {
       *extracted_data.extracted_credit_card);
 
   // Test that both addresses have been saved.
-  EXPECT_EQ(2U, personal_data_manager_->GetProfiles().size());
+  EXPECT_EQ(
+      2U, personal_data_manager_->address_data_manager().GetProfiles().size());
 
   // Test that the credit card has been saved.
   CreditCard expected_card = test::CreateCreditCardWithInfo(
@@ -3212,7 +3217,8 @@ TEST_F(FormDataImporterTest, ExtractFormData_AddressesDisabledOneCreditCard) {
       *extracted_data.extracted_credit_card);
 
   // Test that addresses were not saved.
-  EXPECT_EQ(0U, personal_data_manager_->GetProfiles().size());
+  EXPECT_EQ(
+      0U, personal_data_manager_->address_data_manager().GetProfiles().size());
 
   // Test that the credit card has been saved.
   CreditCard expected_card = test::CreateCreditCardWithInfo(
@@ -3241,7 +3247,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_OneAddressCreditCardDisabled) {
   // Test that the address has been saved.
   AutofillProfile expected_address = ConstructDefaultProfile();
   const std::vector<AutofillProfile*>& results_addr =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
 
@@ -3267,7 +3273,8 @@ TEST_F(FormDataImporterTest, ExtractFormData_AddressCreditCardDisabled) {
   ASSERT_FALSE(extracted_data.extracted_credit_card);
 
   // Test that addresses were not saved.
-  EXPECT_EQ(0U, personal_data_manager_->GetProfiles().size());
+  EXPECT_EQ(
+      0U, personal_data_manager_->address_data_manager().GetProfiles().size());
 
   // Test that the credit card was not saved.
   const std::vector<CreditCard*>& results_cards =
@@ -3696,7 +3703,7 @@ TEST_F(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
   profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
                                            VerificationStatus::kParsed);
 
-  personal_data_manager_->AddProfile(profile);
+  personal_data_manager_->address_data_manager().AddProfile(profile);
 
   // Simulate a form submission with conflicting info.
   FormData form;
@@ -3716,7 +3723,7 @@ TEST_F(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
 
   // Expect that no new profile is saved.
   const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_NE(0, profile.Compare(*results[0]));
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
@@ -3745,7 +3752,7 @@ TEST_F(
   profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
                                            VerificationStatus::kParsed);
 
-  personal_data_manager_->AddProfile(profile);
+  personal_data_manager_->address_data_manager().AddProfile(profile);
 
   // Simulate a form submission with conflicting info.
   FormData form;
@@ -3766,7 +3773,7 @@ TEST_F(
 
   // Expect that no new profile is saved and the existing profile is updated.
   const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_NE(0, profile.Compare(*results[0]));
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
@@ -3793,7 +3800,7 @@ TEST_F(FormDataImporterTest, UnusableIncompleteProfile) {
   profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
                                            VerificationStatus::kParsed);
 
-  personal_data_manager_->AddProfile(profile);
+  personal_data_manager_->address_data_manager().AddProfile(profile);
 
   // Simulate a form submission with conflicting info.
   FormData form;
@@ -3813,7 +3820,7 @@ TEST_F(FormDataImporterTest, UnusableIncompleteProfile) {
 
   // Expect that no new profile is saved.
   const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
+      personal_data_manager_->address_data_manager().GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(profile));
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
@@ -3896,10 +3903,11 @@ TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
       {ConstructProfileFromTypeValuePairs(type_value_pairs)});
 
   // Update the profile's ZIP through external means.
-  AutofillProfile profile = *personal_data_manager_->GetProfiles()[0];
+  AutofillProfile profile =
+      *personal_data_manager_->address_data_manager().GetProfiles()[0];
   profile.SetInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"12345", kLocale,
                                         VerificationStatus::kObserved);
-  personal_data_manager_->UpdateProfile(profile);
+  personal_data_manager_->address_data_manager().UpdateProfile(profile);
 
   // Expect that the updated profile is complemented with an email address.
   form_structure = ConstructDefaultEmailFormStructure();
@@ -3925,7 +3933,7 @@ TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
 
   // Remove the profile through external means.
   personal_data_manager_->RemoveByGUID(
-      personal_data_manager_->GetProfiles()[0]->guid());
+      personal_data_manager_->address_data_manager().GetProfiles()[0]->guid());
 
   // Expect that the removed profile cannot be updated with an email address.
   form_structure = ConstructDefaultEmailFormStructure();

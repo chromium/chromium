@@ -94,6 +94,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -929,7 +930,9 @@ class RemoveAutofillTester {
 
   // Returns true if there is at least one address and one card.
   bool HasProfileAndCard() const {
-    return !personal_data_manager_->GetProfiles().empty() &&
+    return !personal_data_manager_->address_data_manager()
+                .GetProfiles()
+                .empty() &&
            !personal_data_manager_->payments_data_manager()
                 .GetCreditCards()
                 .empty();
@@ -937,7 +940,8 @@ class RemoveAutofillTester {
 
   // Add one profile and one credit cards to the database.
   void AddProfileAndCard() {
-    personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
+    personal_data_manager_->address_data_manager().AddProfile(
+        autofill::test::GetFullProfile());
     personal_data_manager_->payments_data_manager().AddCreditCard(
         autofill::test::GetCreditCard());
     autofill::PersonalDataChangedWaiter(*personal_data_manager_).Wait();

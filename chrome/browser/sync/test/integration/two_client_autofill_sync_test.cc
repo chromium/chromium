@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -524,7 +525,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientProfileTokenQualityAutofillProfileSyncTest,
 
   // Expect that only the observations for NAME_FIRST were reset on client 0.
   const autofill::ProfileTokenQuality& token_quality =
-      GetPersonalDataManager(0)->GetProfiles()[0]->token_quality();
+      GetPersonalDataManager(0)
+          ->address_data_manager()
+          .GetProfiles()[0]
+          ->token_quality();
   EXPECT_TRUE(
       token_quality.GetObservationTypesForFieldType(autofill::NAME_FIRST)
           .empty());

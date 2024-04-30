@@ -58,11 +58,13 @@ class AutofillProfilesEqualChecker
     }
     // Compare the profiles of `pdms_[0]` with every other PDM's profiles.
     testing::Matcher<std::vector<AutofillProfile*>> matcher =
-        testing::UnorderedPointwise(PointeeEquals(), pdms_[0]->GetProfiles());
+        testing::UnorderedPointwise(
+            PointeeEquals(), pdms_[0]->address_data_manager().GetProfiles());
     for (size_t i = 1; i < pdms_.size(); i++) {
       testing::StringMatchResultListener listener;
-      if (!testing::ExplainMatchResult(matcher, pdms_[i]->GetProfiles(),
-                                       &listener)) {
+      if (!testing::ExplainMatchResult(
+              matcher, pdms_[i]->address_data_manager().GetProfiles(),
+              &listener)) {
         *os << listener.str();
         return false;
       }
@@ -86,7 +88,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {
   ASSERT_TRUE(SetupSync());
   // Add `profile` on client 0 and expect it to appear on client 1.
   AutofillProfile profile = BuildTestAccountProfile();
-  GetPersonalDataManager(GetProfile(0))->AddProfile(profile);
+  GetPersonalDataManager(GetProfile(0))
+      ->address_data_manager()
+      .AddProfile(profile);
   // Here and below `AutofillProfilesEqualChecker()` cannot be used directly.
   // Since `AddProfile()` happens asynchronously, the condition would be true
   // immediately, because no profiles are stored in either PDM yet.
@@ -98,7 +102,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, SyncAddUpdateDelete) {
   // Now update it from client 1 and expect the update on client 0.
   profile.SetRawInfo(autofill::EMAIL_ADDRESS,
                      u"new-" + profile.GetRawInfo(autofill::EMAIL_ADDRESS));
-  GetPersonalDataManager(GetProfile(1))->UpdateProfile(profile);
+  GetPersonalDataManager(GetProfile(1))
+      ->address_data_manager()
+      .UpdateProfile(profile);
   EXPECT_TRUE(
       AddressDataManagerProfileChecker(
           &GetPersonalDataManager(GetProfile(0))->address_data_manager(),
@@ -136,8 +142,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientContactInfoSyncTest, DuplicateGUID) {
   // Since `AddProfile()` happens asynchronously, wait for the change to
   // propagate locally.
   fake_server::FakeServerHttpPostProvider::DisableNetwork();
-  GetPersonalDataManager(GetProfile(0))->AddProfile(kProfile0);
-  GetPersonalDataManager(GetProfile(1))->AddProfile(kProfile1);
+  GetPersonalDataManager(GetProfile(0))
+      ->address_data_manager()
+      .AddProfile(kProfile0);
+  GetPersonalDataManager(GetProfile(1))
+      ->address_data_manager()
+      .AddProfile(kProfile1);
   EXPECT_TRUE(
       AddressDataManagerProfileChecker(
           &GetPersonalDataManager(GetProfile(0))->address_data_manager(),

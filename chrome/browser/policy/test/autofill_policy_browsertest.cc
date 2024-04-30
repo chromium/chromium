@@ -18,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -66,7 +67,8 @@ class AutofillPolicyTest : public PolicyTest {
   }
 
   [[nodiscard]] testing::AssertionResult ImportAddress() {
-    if (personal_data_manager()->GetProfiles().size() != 0u) {
+    if (personal_data_manager()->address_data_manager().GetProfiles().size() !=
+        0u) {
       return testing::AssertionFailure() << "Should be empty profile.";
     }
     autofill::AddTestProfile(browser()->profile(),
@@ -77,7 +79,10 @@ class AutofillPolicyTest : public PolicyTest {
     expected_suggestions_["city"] = u"Elysium";
     expected_suggestions_["phone"] = u"+1 650-211-1111";
     expected_suggestions_["email"] = u"johndoe@hades.com";
-    return personal_data_manager()->GetProfiles().size() == 1u
+    return personal_data_manager()
+                       ->address_data_manager()
+                       .GetProfiles()
+                       .size() == 1u
                ? testing::AssertionSuccess()
                : testing::AssertionFailure() << "Should be one profile.";
   }

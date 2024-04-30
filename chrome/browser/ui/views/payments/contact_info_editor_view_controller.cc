@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
@@ -95,7 +96,8 @@ bool ContactInfoEditorViewController::ValidateModelAndSave() {
   if (profile_to_edit_) {
     PopulateProfile(profile_to_edit_);
     if (!is_incognito())
-      state()->GetPersonalDataManager()->UpdateProfile(*profile_to_edit_);
+      state()->GetPersonalDataManager()->address_data_manager().UpdateProfile(
+          *profile_to_edit_);
     state()->profile_comparator()->Invalidate(*profile_to_edit_);
     std::move(on_edited_).Run();
     on_added_.Reset();
@@ -107,7 +109,8 @@ bool ContactInfoEditorViewController::ValidateModelAndSave() {
             autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     PopulateProfile(profile.get());
     if (!is_incognito())
-      state()->GetPersonalDataManager()->AddProfile(*profile);
+      state()->GetPersonalDataManager()->address_data_manager().AddProfile(
+          *profile);
     std::move(on_added_).Run(*profile);
     on_edited_.Reset();
   }

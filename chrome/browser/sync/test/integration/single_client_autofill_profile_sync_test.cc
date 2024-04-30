@@ -7,6 +7,7 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -57,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAutofillProfileSyncTest,
                                      autofill_helper::PROFILE_HOMER));
   autofill::PersonalDataManager* pdm =
       autofill_helper::GetPersonalDataManager(0);
-  ASSERT_EQ(1uL, pdm->GetProfiles().size());
+  ASSERT_EQ(1uL, pdm->address_data_manager().GetProfiles().size());
 
   // Disable autofill (e.g. via chrome://settings).
   autofill::prefs::SetAutofillProfileEnabled(GetProfile(0)->GetPrefs(), false);
@@ -72,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAutofillProfileSyncTest,
   EXPECT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_PROFILE));
   // The autofill profile itself should still be there.
-  EXPECT_EQ(1uL, pdm->GetProfiles().size());
+  EXPECT_EQ(1uL, pdm->address_data_manager().GetProfiles().size());
 }
 
 }  // namespace

@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
@@ -84,7 +85,7 @@ class TestAddressProfileSaveManager : public AddressProfileSaveManager {
       UserDecision decision,
       AutofillProfile edited_profile) {
     if (profile_added_while_waiting_for_user_response_) {
-      personal_data_manager()->AddProfile(
+      personal_data_manager()->address_data_manager().AddProfile(
           profile_added_while_waiting_for_user_response_.value());
     }
 
@@ -240,7 +241,8 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     ImportScenarioTestCase& test_scenario) {
   // Assert that there is not a single profile stored in the personal data
   // manager.
-  ASSERT_TRUE(personal_data_manager_.GetProfiles().empty());
+  ASSERT_TRUE(
+      personal_data_manager_.address_data_manager().GetProfiles().empty());
 
   TestAddressProfileSaveManager save_manager(&autofill_client_,
                                              &personal_data_manager_);
@@ -292,9 +294,10 @@ void AddressProfileSaveManagerTest::TestImportScenario(
   }
 
   // Add the existing profiles to the personal data manager.
-  ASSERT_TRUE(personal_data_manager_.GetProfiles().empty());
+  ASSERT_TRUE(
+      personal_data_manager_.address_data_manager().GetProfiles().empty());
   for (const AutofillProfile& profile : test_scenario.existing_profiles) {
-    personal_data_manager_.AddProfile(profile);
+    personal_data_manager_.address_data_manager().AddProfile(profile);
   }
 
   // Initiate the profile import.
@@ -327,7 +330,8 @@ void AddressProfileSaveManagerTest::VerifyFinalProfiles(
   // comparison.
   std::vector<AutofillProfile> final_profiles;
   final_profiles.reserve(test_scenario.expected_final_profiles.size());
-  for (const AutofillProfile* profile : personal_data_manager_.GetProfiles()) {
+  for (const AutofillProfile* profile :
+       personal_data_manager_.address_data_manager().GetProfiles()) {
     final_profiles.push_back(*profile);
   }
 

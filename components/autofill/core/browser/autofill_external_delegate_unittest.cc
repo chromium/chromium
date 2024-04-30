@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -550,7 +551,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForExistingProfile) {
   IssueOnQuery();
 
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _));
 
   auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
@@ -566,7 +567,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
 
   base::HistogramTester histogram;
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
@@ -596,7 +597,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing_ManualFallback) {
 
   base::HistogramTester histogram;
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
@@ -625,7 +626,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
 
   base::HistogramTester histogram;
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
@@ -658,7 +659,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery();
 
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .Times(2)
       .WillRepeatedly([](auto profile, auto save_prompt_callback) {
@@ -687,7 +688,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery();
 
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto save_prompt_callback) {
         std::move(save_prompt_callback)
@@ -733,7 +734,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShowDeleteDialog) {
   IssueOnQuery();
 
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _));
   auto suggestion = Suggestion(SuggestionType::kDeleteAddressProfile);
   suggestion.payload = Suggestion::Guid(profile.guid());
@@ -749,7 +750,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion) {
 
   base::HistogramTester histogram;
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto delete_dialog_callback) {
         std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/false);
@@ -778,7 +779,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserCancelsDeletion_ManualFallback) {
 
   base::HistogramTester histogram;
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto delete_dialog_callback) {
         std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/false);
@@ -807,7 +808,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UserAcceptsDeletion) {
 
   base::HistogramTester histogram;
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
       .WillOnce([](auto profile, auto delete_dialog_callback) {
         std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/true);
@@ -838,7 +839,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery();
 
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
       .Times(2)
       .WillRepeatedly([](auto profile, auto delete_dialog_callback) {
@@ -868,7 +869,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 
   // This should call ShowAutofillSuggestions.
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   std::vector<Suggestion> autofill_item = {
       Suggestion(SuggestionType::kAddressEntry)};
   autofill_item[0].payload = Suggestion::Guid(profile.guid());
@@ -1223,7 +1224,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
                              mojom::ActionPersistence::kPreview,
                              HasQueriedFormId(), HasQueriedFieldId(), _, _));
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   external_delegate().DidSelectSuggestion(
       test::CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"baz foo",
                                      Suggestion::Guid(profile.guid())));
@@ -1379,7 +1380,7 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
   IssueOnQuery();
   const FillingMethodMetricsTestParams& params = GetParam();
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   const Suggestion suggestion =
       params.type == SuggestionType::kAddressFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
@@ -1450,7 +1451,7 @@ TEST_P(GroupFillingUnitTest, GroupFillingTests_FillAndPreview) {
   IssueOnQuery();
   const GroupFillingTestParams& params = GetParam();
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   const Suggestion suggestion =
       params.type == SuggestionType::kAddressFieldByFieldFilling
           ? CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST)
@@ -1502,7 +1503,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
                              HasQueriedFormId(), HasQueriedFieldId(), _, _));
 
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(SuggestionType::kAddressEntry,
                                      u"John Legend",
@@ -1562,7 +1563,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        AcceptFirstPopupLevelSuggestion_LogSuggestionAcceptedMetric) {
   IssueOnQuery();
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   const int suggestion_accepted_row = 2;
   base::HistogramTester histogram_tester;
 
@@ -1581,7 +1582,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateAccept_FillEverythingSuggestion_FillAndPreview) {
   IssueOnQuery();
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   const Suggestion suggestion = test::CreateAutofillSuggestion(
       SuggestionType::kFillEverythingFromAddressProfile, u"John Legend",
       Suggestion::Guid(profile.guid()));
@@ -1608,7 +1609,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
   // Expect that `kFormControlElementClicked` translates to source `kPopup` or
   // `kKeyboardAccessory`, depending on the platform.
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   Suggestion suggestion = test::CreateAutofillSuggestion(
       SuggestionType::kAddressEntry, /*main_text_value=*/u"",
       Suggestion::Guid(profile.guid()));
@@ -1649,7 +1650,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_SubPopup_EmitsTypeMetric) {
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   Suggestion suggestion =
       CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
   IssueOnQuery();
@@ -1667,7 +1668,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_RootPopup_DoNotEmitTypeMetric) {
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   Suggestion suggestion =
       CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
   IssueOnQuery();
@@ -1998,7 +1999,7 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
       features::kAutofillGranularFillingAvailable);
 
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   IssueOnQuery();
   ON_CALL(address_data_manager(), IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
@@ -2433,7 +2434,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateFillFieldWithValue_FieldByFieldFilling) {
   const AutofillProfile profile = test::GetFullProfile();
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
   IssueOnQuery();
   Suggestion suggestion =
       CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
@@ -2516,7 +2517,7 @@ TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
   const AutofillProfile profile = test::GetFullProfile();
   const Suggestion& suggestion = test::CreateAutofillSuggestion(
       GetParam(), u"autofill suggestion", Suggestion::Guid(profile.guid()));
-  pdm().AddProfile(profile);
+  pdm().address_data_manager().AddProfile(profile);
 
   if (suggestion.type == SuggestionType::kAutocompleteEntry) {
     EXPECT_CALL(single_field_form_fill_router(),

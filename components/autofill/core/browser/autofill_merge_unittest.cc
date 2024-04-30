@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -240,7 +241,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
   }
 
   std::vector<AutofillProfile*> imported_profiles =
-      personal_data_.GetProfiles();
+      personal_data_.address_data_manager().GetProfiles();
   // To ensure a consistent order with the output files, sort the profiles by
   // modification date. This corresponds to the order in which the profiles
   // were imported (or updated).

@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -106,7 +107,7 @@ TEST_F(ProfileTokenQualityMetricsTest,
   test_api(profile.token_quality())
       .AddObservation(NAME_LAST, ObservationType::kEditedFallback);
   TestPersonalDataManager test_pdm;
-  test_pdm.AddProfile(profile);
+  test_pdm.address_data_manager().AddProfile(profile);
 
   // Create a dummy FormStructure and simulate that the first two fields were
   // filled.

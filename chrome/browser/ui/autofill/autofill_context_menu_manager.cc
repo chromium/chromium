@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -306,7 +307,7 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
     return;
   }
 
-  if (personal_data_manager_->GetProfiles().empty() &&
+  if (personal_data_manager_->address_data_manager().GetProfiles().empty() &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
     content::RenderFrameHost* rfh = driver.render_frame_host();
@@ -546,11 +547,11 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
     // Show the context menu entry for address fields, which can be filled
     // with at least one of the user's profiles.
     CHECK(personal_data_manager_);
-    if (base::ranges::any_of(personal_data_manager_->GetProfiles(),
-                             [field](AutofillProfile* profile) {
-                               return profile->HasInfo(
-                                   field->Type().GetStorableType());
-                             })) {
+    if (base::ranges::any_of(
+            personal_data_manager_->address_data_manager().GetProfiles(),
+            [field](AutofillProfile* profile) {
+              return profile->HasInfo(field->Type().GetStorableType());
+            })) {
       return true;
     }
   }
@@ -559,7 +560,8 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
   // 1. The user has a profile stored, or
   // 2. The user does not have a profile stored and is not in incognito mode.
   // This is done so that users can be prompted to create an address profile.
-  const bool has_profile = !personal_data_manager_->GetProfiles().empty();
+  const bool has_profile =
+      !personal_data_manager_->address_data_manager().GetProfiles().empty();
   const bool is_incognito =
       autofill_driver.GetAutofillManager().client().IsOffTheRecord();
   return (has_profile || !is_incognito) &&

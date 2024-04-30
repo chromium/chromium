@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "client_behavior_constants.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -901,7 +902,8 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
 
   // Second, collect all of the already stored addresses used or modified
   // recently.
-  for (AutofillProfile* profile : personal_data_manager_->GetProfiles()) {
+  for (AutofillProfile* profile :
+       personal_data_manager_->address_data_manager().GetProfiles()) {
     has_profile = true;
     if ((now - profile->use_date()) < fifteen_minutes ||
         (now - profile->modification_date()) < fifteen_minutes) {

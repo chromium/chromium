@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -32,7 +33,7 @@ class PaymentResponseHelperTest : public testing::Test,
             &test_personal_data_manager_) {
     address_ = std::make_unique<autofill::AutofillProfile>(
         autofill::test::GetFullProfile());
-    test_personal_data_manager_.AddProfile(*address_);
+    test_personal_data_manager_.address_data_manager().AddProfile(*address_);
     test_app_ = std::make_unique<TestPaymentApp>("method-name");
   }
   ~PaymentResponseHelperTest() override {}

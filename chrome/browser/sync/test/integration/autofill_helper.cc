@@ -297,7 +297,7 @@ void SetCreditCards(int profile, std::vector<CreditCard>* credit_cards) {
 void AddProfile(int profile, const AutofillProfile& autofill_profile) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
   autofill::PersonalDataChangedWaiter waiter(*pdm);
-  pdm->AddProfile(autofill_profile);
+  pdm->address_data_manager().AddProfile(autofill_profile);
   std::move(waiter).Wait();
 }
 
@@ -323,7 +323,7 @@ void UpdateProfile(int profile,
   updated_profile.SetRawInfoWithVerificationStatus(type.GetStorableType(),
                                                    value, status);
   autofill::PersonalDataChangedWaiter waiter(*pdm);
-  pdm->UpdateProfile(updated_profile);
+  pdm->address_data_manager().UpdateProfile(updated_profile);
   std::move(waiter).Wait();
 }
 
@@ -347,7 +347,7 @@ std::vector<AutofillProfile*> GetAllAutoFillProfiles(int profile) {
   // which we are about to block, which means we are safe.
   WaitForCurrentTasksToComplete(GetWebDataService(profile)->GetDBTaskRunner());
   std::move(waiter).Wait();
-  return pdm->GetProfiles();
+  return pdm->address_data_manager().GetProfiles();
 }
 
 size_t GetProfileCount(int profile) {
@@ -438,9 +438,13 @@ bool AutofillProfileChecker::Wait() {
 bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for matching autofill profiles";
   const std::vector<AutofillProfile*>& autofill_profiles_a =
-      autofill_helper::GetPersonalDataManager(profile_a_)->GetProfiles();
+      autofill_helper::GetPersonalDataManager(profile_a_)
+          ->address_data_manager()
+          .GetProfiles();
   const std::vector<AutofillProfile*>& autofill_profiles_b =
-      autofill_helper::GetPersonalDataManager(profile_b_)->GetProfiles();
+      autofill_helper::GetPersonalDataManager(profile_b_)
+          ->address_data_manager()
+          .GetProfiles();
   return ProfilesMatchImpl(expected_count_, profile_a_, autofill_profiles_a,
                            profile_b_, autofill_profiles_b, os);
 }

@@ -30,7 +30,7 @@ class CategoryResolvedKeyMetricsTest
       AutofillProfileSourceCategory category) {
     AutofillProfile profile = test::GetFullProfile();
     test::SetProfileCategory(profile, category);
-    personal_data().AddProfile(profile);
+    personal_data().address_data_manager().AddProfile(profile);
     return profile;
   }
 

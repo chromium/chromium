@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/payments/view_stack.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/payments/payment_app_install_util.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -476,11 +477,13 @@ autofill::PersonalDataManager* PaymentRequestBrowserTestBase::GetDataManager() {
 void PaymentRequestBrowserTestBase::AddAutofillProfile(
     const autofill::AutofillProfile& profile) {
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
-  size_t profile_count = personal_data_manager->GetProfiles().size();
+  size_t profile_count =
+      personal_data_manager->address_data_manager().GetProfiles().size();
   autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
-  personal_data_manager->AddProfile(profile);
+  personal_data_manager->address_data_manager().AddProfile(profile);
   std::move(waiter).Wait();
-  EXPECT_EQ(profile_count + 1, personal_data_manager->GetProfiles().size());
+  EXPECT_EQ(profile_count + 1,
+            personal_data_manager->address_data_manager().GetProfiles().size());
 }
 
 void PaymentRequestBrowserTestBase::AddCreditCard(
