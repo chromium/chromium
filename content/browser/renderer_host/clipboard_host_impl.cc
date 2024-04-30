@@ -203,6 +203,21 @@ void ClipboardHostImpl::IsPasteAllowedRequest::Complete(
   InvokeCallbacks();
 }
 
+void ClipboardHostImpl::IsPasteAllowedRequest::InvokeCallback(
+    ClipboardPasteData data,
+    IsClipboardPasteAllowedCallback callback) {
+  DCHECK(is_complete());
+
+  if (*data_allowed_) {
+    // It's possible the completed request had its `data_` replaced, so merging
+    // will override `data` with any non-empty field in `data_` as needed.
+    data.Merge(data_);
+    std::move(callback).Run(std::move(data));
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
+}
+
 bool ClipboardHostImpl::IsPasteAllowedRequest::IsObsolete(base::Time now) {
   return (now - completed_time_) > kIsPasteAllowedRequestTooOld;
 }
@@ -788,7 +803,8 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
   // If this request has already completed, invoke the callback immediately
   // and return.
   if (request.is_complete()) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
+    request.InvokeCallback(std::move(clipboard_paste_data),
+                           std::move(callback));
     return;
   }
 

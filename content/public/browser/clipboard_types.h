@@ -46,7 +46,7 @@ struct CONTENT_EXPORT ClipboardPasteData {
   // Override the members of `this` with non-empty members in `other`. This is
   // used to merge `ClipboardPasteData` objects representing a single type of
   // clipboard data into one representing all of them.
-  void Merge(ClipboardPasteData&& other);
+  void Merge(ClipboardPasteData other);
 
   // UTF-16 encoded plain text data to scan.
   std::u16string text;

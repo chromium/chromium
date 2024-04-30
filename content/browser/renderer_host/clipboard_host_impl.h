@@ -100,6 +100,12 @@ class CONTENT_EXPORT ClipboardHostImpl
     // Invoke all callbacks now.
     void Complete(IsClipboardPasteAllowedCallbackArgType data);
 
+    // Invokes `callback` immediately for a completed request as no
+    // asynchronous work is required to check if `data` is allowed to be pasted.
+    // Should only be invoked is `is_complete()` returns true.
+    void InvokeCallback(content::ClipboardPasteData data,
+                        IsClipboardPasteAllowedCallback callback);
+
     // Returns true if the request has completed.
     bool is_complete() const { return data_allowed_.has_value(); }
 
@@ -158,7 +164,7 @@ class CONTENT_EXPORT ClipboardHostImpl
       const ui::ClipboardSequenceNumberToken& seqno,
       std::optional<ClipboardPasteData> clipboard_paste_data);
 
-  const std::map<ui::ClipboardSequenceNumberToken, IsPasteAllowedRequest>&
+  std::map<ui::ClipboardSequenceNumberToken, IsPasteAllowedRequest>&
   is_paste_allowed_requests_for_testing() {
     return is_allowed_requests_;
   }

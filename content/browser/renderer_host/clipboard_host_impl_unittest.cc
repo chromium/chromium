@@ -392,7 +392,7 @@ TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_EmptyData) {
   EXPECT_EQ(1, count);
 }
 
-TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed) {
+TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_Allowed) {
   int count = 0;
   ClipboardHostImpl::ClipboardPasteData clipboard_paste_data;
   clipboard_paste_data.text = u"data";
@@ -423,6 +423,75 @@ TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed) {
       1u,
       clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
   EXPECT_EQ(1, count);
+
+  // Attempting to start a new request when there is an allowed cached request
+  // with the same seqno should allow again, but not by making a new request.
+  clipboard_host_impl()->PasteIfPolicyAllowed(
+      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
+      clipboard_paste_data,
+      base::BindLambdaForTesting(
+          [&count](std::optional<ClipboardHostImpl::ClipboardPasteData>
+                       clipboard_paste_data) {
+            ++count;
+            ASSERT_TRUE(clipboard_paste_data);
+            ASSERT_EQ(clipboard_paste_data->text, u"data");
+          }));
+
+  EXPECT_EQ(
+      1u,
+      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
+  EXPECT_EQ(2, count);
+}
+
+TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_Blocked) {
+  int count = 0;
+  ClipboardHostImpl::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = u"data";
+
+  clipboard_host_impl()->PasteIfPolicyAllowed(
+      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
+      clipboard_paste_data,
+      base::BindLambdaForTesting(
+          [&count](std::optional<ClipboardHostImpl::ClipboardPasteData>
+                       clipboard_paste_data) {
+            ++count;
+            ASSERT_FALSE(clipboard_paste_data);
+          }));
+
+  EXPECT_EQ(
+      1u,
+      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
+  EXPECT_EQ(0, count);
+
+  // Completing the request invokes the callback.  The request will
+  // remain pending until it is cleaned up.
+  clipboard_host_impl()
+      ->is_paste_allowed_requests_for_testing()
+      .at(system_clipboard()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste))
+      .Complete(std::nullopt);
+
+  EXPECT_EQ(
+      1u,
+      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
+  EXPECT_EQ(1, count);
+
+  // Attempting to start a new request when there is a blocked cached request
+  // with the same seqno should block again, but not by making a new request.
+  clipboard_host_impl()->PasteIfPolicyAllowed(
+      ui::ClipboardBuffer::kCopyPaste, ui::ClipboardFormatType::PlainTextType(),
+      clipboard_paste_data,
+      base::BindLambdaForTesting(
+          [&count](std::optional<ClipboardHostImpl::ClipboardPasteData>
+                       clipboard_paste_data) {
+            ++count;
+            ASSERT_FALSE(clipboard_paste_data);
+          }));
+
+  EXPECT_EQ(
+      1u,
+      clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
+  EXPECT_EQ(2, count);
 }
 
 TEST_F(ClipboardHostImplScanTest, CleanupObsoleteScanRequests) {
