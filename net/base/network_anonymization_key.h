@@ -21,39 +21,40 @@ class Value;
 
 namespace net {
 
-// NetworkAnonymizationKey will be used to partition shared network state based
-// on the context on which they were made. This class is an expiremental key
-// that contains properties that will be changed via feature flags.
-
+// NetworkAnonymizationKey (NAK) is used to partition shared network state based
+// on the context in which requests were made. Most network state is divided
+// by NAK, with some instead using NetworkIsolationKey.
+//
 // NetworkAnonymizationKey contains the following properties:
-
+//
 // `top_frame_site` represents the SchemefulSite of the pages top level frame.
 // In order to separate first and third party context from each other this field
 // will always be populated.
-
+//
 // `is_cross_site` indicates whether the key is cross-site or same-site. A
 // same-site key indicates that he schemeful site of the top frame and the frame
 // are the same. Intermediary frames between the two may be cross-site to them.
 // The effect of this property is to partition first-party and third-party
 // resources within a given `top_frame_site`.
-
+//
 // The following show how the `is_cross_site` boolean is populated for the
 // innermost frame in the chain.
 // a->a => is_cross_site = false
 // a->b => is_cross_site = true
 // a->b->a => is_cross_site = false
 // a->(sandboxed a [has nonce]) => is_cross_site = true
-
+//
 // The `nonce` value creates a key for anonymous iframes by giving them a
 // temporary `nonce` value which changes per top level navigation. For now, any
 // NetworkAnonymizationKey with a nonce will be considered transient. This is
 // being considered to possibly change in the future in an effort to allow
 // anonymous iframes with the same partition key access to shared resources.
 // The nonce value will be empty except for anonymous iframes.
-
-// TODO @brgoldstein, add link to public documentation of key scheme naming
-// conventions.
-
+//
+// This is referred to as "2.5-keyed", to contrast with "double key" (top frame
+// site, URL) and "triple key" (top frame site, frame site, and URL). The
+// `is_cross_site` bit carries more information than a double key, but less than
+// a triple key.
 class NET_EXPORT NetworkAnonymizationKey {
  public:
   // Construct an empty key.
