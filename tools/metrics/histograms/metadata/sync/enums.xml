@@ -156,6 +156,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/protocol/password_sharing_invitation_specifics.proto:OutgoingPasswordSharingInvitationCommitError) -->
 
+<!-- LINT.IfChange(PassphraseTypeForMetrics) -->
+
+<enum name="PassphraseTypeForMetrics">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Inconsistent state across profiles"/>
+  <int value="2" label="Implicit passphrase"/>
+  <int value="3" label="Keystore passphrase"/>
+  <int value="4" label="Frozen implicit passphrase"/>
+  <int value="5" label="Custom passphrase"/>
+  <int value="6" label="Trusted vault passphrase"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/passphrase_type_metrics_provider.h:PassphraseTypeForMetrics) -->
+
 <!-- LINT.IfChange(PendingInvalidationStatus) -->
 
 <enum name="PendingInvalidationStatus">
@@ -979,20 +993,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/passphrase_enums.h:SyncPassphraseType) -->
-
-<!-- LINT.IfChange(SyncPassphraseTypeTwo) -->
-
-<enum name="SyncPassphraseType2">
-  <int value="0" label="No active syncing profiles"/>
-  <int value="1" label="Inconsistent state across profiles"/>
-  <int value="2" label="Implicit passphrase"/>
-  <int value="3" label="Keystore passphrase"/>
-  <int value="4" label="Frozen implicit passphrase"/>
-  <int value="5" label="Custom passphrase"/>
-  <int value="6" label="Trusted vault passphrase"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/service/passphrase_type_metrics_provider.h:SyncPassphraseTypeTwo) -->
 
 <!-- LINT.IfChange(SyncPasswordNotesStateInUpdate) -->
 

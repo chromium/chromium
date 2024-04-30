@@ -16,10 +16,12 @@ namespace syncer {
 
 namespace {
 
-std::optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
-    const SyncService& sync_service) {
-  if (sync_service.GetTransportState() != SyncService::TransportState::ACTIVE) {
-    return std::nullopt;
+PassphraseTypeForMetrics GetPassphraseTypeForSingleProfile(
+    const SyncService& sync_service,
+    bool wait_transport_active) {
+  if (sync_service.GetTransportState() != SyncService::TransportState::ACTIVE &&
+      wait_transport_active) {
+    return PassphraseTypeForMetrics::kUnknown;
   }
 
   const SyncUserSettings* user_settings = sync_service.GetUserSettings();
@@ -43,22 +45,24 @@ std::optional<PassphraseTypeForMetrics> GetPassphraseTypeForSingleProfile(
   }
 
   NOTREACHED();
-  return std::nullopt;
+  return PassphraseTypeForMetrics::kUnknown;
 }
 
 PassphraseTypeForMetrics GetPassphraseTypeForAllProfiles(
-    const std::vector<const SyncService*>& sync_services) {
+    const std::vector<const SyncService*>& sync_services,
+    bool wait_transport_active) {
   base::flat_set<std::optional<PassphraseTypeForMetrics>> passphrase_types;
   for (const SyncService* sync_service : sync_services) {
     DCHECK(sync_service);
-    passphrase_types.insert(GetPassphraseTypeForSingleProfile(*sync_service));
+    passphrase_types.insert(GetPassphraseTypeForSingleProfile(
+        *sync_service, wait_transport_active));
   }
 
   if (passphrase_types.size() > 1) {
     return PassphraseTypeForMetrics::kInconsistentStateAcrossProfiles;
   }
-  if (passphrase_types.empty() || !passphrase_types.begin()->has_value()) {
-    return PassphraseTypeForMetrics::kNoActiveSyncingProfiles;
+  if (passphrase_types.empty()) {
+    return PassphraseTypeForMetrics::kUnknown;
   }
   return **passphrase_types.begin();
 }
@@ -72,9 +76,16 @@ PassphraseTypeMetricsProvider::PassphraseTypeMetricsProvider(
 PassphraseTypeMetricsProvider::~PassphraseTypeMetricsProvider() = default;
 
 bool PassphraseTypeMetricsProvider::ProvideHistograms() {
+  // TODO(crbug.com/338027160): Remove Sync.PassphraseType2 once
+  // Sync.PassphraseType3 reaches the stable channel.
   base::UmaHistogramEnumeration(
       "Sync.PassphraseType2",
-      GetPassphraseTypeForAllProfiles(get_all_sync_services_callback_.Run()));
+      GetPassphraseTypeForAllProfiles(get_all_sync_services_callback_.Run(),
+                                      /*wait_transport_active=*/true));
+  base::UmaHistogramEnumeration(
+      "Sync.PassphraseType3",
+      GetPassphraseTypeForAllProfiles(get_all_sync_services_callback_.Run(),
+                                      /*wait_transport_active=*/false));
   return true;
 }
 
