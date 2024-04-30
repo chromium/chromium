@@ -2166,6 +2166,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface URL
 [Worker]     static method canParse
 [Worker]     static method createObjectURL
+[Worker]     static method parse
 [Worker]     static method revokeObjectURL
 [Worker]     attribute @@toStringTag
 [Worker]     getter hash

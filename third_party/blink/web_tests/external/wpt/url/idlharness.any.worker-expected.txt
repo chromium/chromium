@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] URL interface: operation parse(USVString, optional USVString)
-  assert_own_property: interface object missing static operation expected property "parse" missing
-[FAIL] URL interface: calling parse(USVString, optional USVString) on new URL("http://foo") with too few arguments must throw TypeError
-  assert_own_property: interface object must have static operation as own property expected property "parse" missing
-Harness: the test ran to completion.
-

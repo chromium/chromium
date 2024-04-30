@@ -1934,6 +1934,7 @@ interface TrustedTypePolicyFactory : EventTarget
     setter onbeforecreatepolicy
 interface URL
     static method canParse
+    static method parse
     attribute @@toStringTag
     getter hash
     getter host

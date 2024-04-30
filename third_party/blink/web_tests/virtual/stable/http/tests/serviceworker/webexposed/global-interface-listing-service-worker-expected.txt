@@ -1756,6 +1756,7 @@ interface TrustedTypePolicyFactory : EventTarget
     method isScriptURL
 interface URL
     static method canParse
+    static method parse
     attribute @@toStringTag
     getter hash
     getter host
