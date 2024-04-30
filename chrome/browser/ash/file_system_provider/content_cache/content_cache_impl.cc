@@ -137,7 +137,7 @@ void ContentCacheImpl::Evict(const base::FilePath& file_path) {
 
   ContentLRUCache::iterator it = lru_cache_.Get(file_path);
   if (it == lru_cache_.end()) {
-    VLOG(1) << "Item is not in the cache";
+    VLOG(1) << "Path '" << file_path << "' is not in the cache";
     return;
   }
 
