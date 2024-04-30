@@ -15,6 +15,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,6 +35,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Glue-level class that manages the lifetime of {@link TabPersistentStore} and {@link
@@ -74,6 +79,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private final TabCreatorManager mArchivedTabCreatorManager;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
 
+    private TaskRunner mTaskRunner;
     private WindowAndroid mWindow;
     private TabArchiver mTabArchiver;
     private TabArchiveSettings mTabArchiveSettings;
@@ -82,7 +88,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private boolean mLoadStateCalled;
     private boolean mRestoreTabsCalled;
     private boolean mDestroyCalled;
-    private boolean mBeginDeclutterCalled;
+    private boolean mDeclutterInitializationCalled;
     private boolean mRescueTabsCalled;
 
     /**
@@ -100,7 +106,12 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                             ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
             ApplicationStatus.registerApplicationStateListener(sApplicationStateListener);
         }
-        return sProfileMap.getForProfile(profile, ArchivedTabModelOrchestrator::new);
+        return sProfileMap.getForProfile(
+                profile,
+                (originalProfile) ->
+                        new ArchivedTabModelOrchestrator(
+                                originalProfile,
+                                PostTask.createTaskRunner(TaskTraits.UI_BEST_EFFORT)));
     }
 
     /** Destroys the singleton profile keyed map for testing. */
@@ -109,8 +120,9 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         sProfileMap = null;
     }
 
-    private ArchivedTabModelOrchestrator(Profile profile) {
+    private ArchivedTabModelOrchestrator(Profile profile, TaskRunner taskRunner) {
         mProfile = profile;
+        mTaskRunner = taskRunner;
         mArchivedTabCreatorManager =
                 new TabCreatorManager() {
                     @Override
@@ -170,13 +182,25 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     /** Begins the process of decluttering tabs if it hasn't been started already. */
     public void maybeBeginDeclutter() {
-        if (mBeginDeclutterCalled) return;
+        if (mDeclutterInitializationCalled) return;
 
         assert ChromeFeatureList.sAndroidTabDeclutter.isEnabled();
         assert mTabArchiver != null;
-        mTabArchiver.beginDeclutter();
+        mTabArchiver.initDeclutter();
+        runDeclutterAndScheduleNext();
 
-        mBeginDeclutterCalled = true;
+        mDeclutterInitializationCalled = true;
+    }
+
+    /**
+     * Schedules a declutter event to happen after a certain interval. See {@link
+     * TabArchiveSettings#getDeclutterIntervalTimeDeltaHours} for details.
+     */
+    private void runDeclutterAndScheduleNext() {
+        mTabArchiver.triggerScheduledDeclutter();
+        mTaskRunner.postDelayedTask(
+                this::runDeclutterAndScheduleNext,
+                TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
     }
 
     /**
@@ -238,18 +262,17 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         return mArchivedTabCreatorManager.getTabCreator(false);
     }
 
-    /** Returns the {@link TabArchiver}. */
-    public TabArchiver getTabArchiver() {
-        return mTabArchiver;
-    }
-
     // Testing-specific methods
 
     public void resetBeginDeclutterForTesting() {
-        mBeginDeclutterCalled = false;
+        mDeclutterInitializationCalled = false;
     }
 
-    public void resetArchiveSettingsForTesting() {
-        mTabArchiveSettings.resetSettingsForTesting();
+    public TabArchiveSettings getArchiveSettingsForTesting() {
+        return mTabArchiveSettings;
+    }
+
+    public void setTaskRunnerForTesting(TaskRunner taskRunner) {
+        mTaskRunner = taskRunner;
     }
 }

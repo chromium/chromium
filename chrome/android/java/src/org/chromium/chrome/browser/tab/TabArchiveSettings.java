@@ -82,6 +82,11 @@ public class TabArchiveSettings {
                 ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS, timeDeltaHours);
     }
 
+    /** Returns the interval to perform declutter in hours. */
+    public int getDeclutterIntervalTimeDeltaHours() {
+        return ChromeFeatureList.sAndroidTabDeclutterIntervalTimeDeltaHours.getValue();
+    }
+
     public void resetSettingsForTesting() {
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_ENABLED);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS);

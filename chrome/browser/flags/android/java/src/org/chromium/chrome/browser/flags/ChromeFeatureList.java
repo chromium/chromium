@@ -819,4 +819,7 @@ public abstract class ChromeFeatureList {
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
                     sAndroidTabDeclutter.newIntParam(
                             "android_tab_declutter_auto_delete_time_delta_hours", 60 * 24);
+    public static final MutableIntParamWithSafeDefault sAndroidTabDeclutterIntervalTimeDeltaHours =
+            sAndroidTabDeclutter.newIntParam(
+                    "android_tab_declutter_interval_time_delta_hours", 7 * 24);
 }

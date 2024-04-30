@@ -37,6 +37,8 @@ public class TabArchiver implements TabWindowManager.Observer {
     private final TabArchiveSettings mTabArchiveSettings;
     private final Clock mClock;
 
+    private boolean mDeclutterInitCalled;
+
     /**
      * @param archivedTabModel The archived {@link TabModel}.
      * @param archivedTabCreator The {@link TabCreator} for the archived TabModel.
@@ -60,22 +62,28 @@ public class TabArchiver implements TabWindowManager.Observer {
         mClock = clock;
     }
 
+    /** Initialize the archiving process by observing TabWindowManager for new TabModelSelectors. */
+    public void initDeclutter() {
+        // Observe new TabModelSelectors being added so inactive tabs are archived automatically
+        // as new selectors are activated.
+        mTabWindowManager.addObserver(this);
+
+        mDeclutterInitCalled = true;
+    }
+
     /**
-     * Begin the archiving process by (1) iterating through all current TabModelSelectors, and
-     * archiving all eligible tabs. Then (2) observing TabWindowManager for new TabModelSelectors,
-     * and archiving all eligible tabs.
+     * 1. Iterates through all known tab model selects, and archives inactive tabs. 2. Iterates
+     * through all archived tabs, and automatically deletes those old enough.
      */
-    public void beginDeclutter() {
-        // Catch ourselves up since it's possible that selectors were added prior to observation.
+    public void triggerScheduledDeclutter() {
+        assert mDeclutterInitCalled;
+
+        // Trigger archival of inactive tabs for the current selectors.
         for (int i = 0; i < mTabWindowManager.getMaxSimultaneousSelectors(); i++) {
             TabModelSelector selector = mTabWindowManager.getTabModelSelectorById(i);
             if (selector == null) continue;
             onTabModelSelectorAdded(selector);
         }
-
-        // After the class is fully initialized, observe the tab models of all running CTAs. This
-        // will scan all current/future tabs for inactivity and archive those eligible.
-        mTabWindowManager.addObserver(this);
 
         // Trigger auto-deletion after archiving tabs.
         deleteEligibleArchivedTabs();
@@ -162,6 +170,8 @@ public class TabArchiver implements TabWindowManager.Observer {
         TabModelUtils.runOnTabStateInitialized(
                 selector, this::archiveEligibleTabsFromTabModelSelector);
     }
+
+    // Private functions.
 
     private void archiveEligibleTabsFromTabModelSelector(TabModelSelector selector) {
         TabModel model = selector.getModel(/* isIncognito= */ false);

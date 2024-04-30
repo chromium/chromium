@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
+import android.util.Pair;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -17,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -27,6 +30,9 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Tests for ArchivedTabModelOrchestrator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -39,10 +45,26 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 public class ArchivedTabModelOrchestratorTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
+    private static class FakeTaskRunner implements TaskRunner {
+
+        public final List<Pair<Runnable, Long>> mDelayedTasks = new ArrayList<>();
+
+        @Override
+        public void postTask(Runnable task) {
+            assert false;
+        }
+
+        @Override
+        public void postDelayedTask(Runnable task, long delay) {
+            mDelayedTasks.add(new Pair<>(task, delay));
+        }
+    }
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private Profile mProfile;
+    private FakeTaskRunner mTaskRunner;
     private ArchivedTabModelOrchestrator mOrchestrator;
     private TabModel mArchivedTabModel;
     private TabModel mRegularTabModel;
@@ -66,7 +88,9 @@ public class ArchivedTabModelOrchestratorTest {
                                     .get()
                                     .getOriginalProfile();
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
-                    mOrchestrator.resetArchiveSettingsForTesting();
+                    mOrchestrator.getArchiveSettingsForTesting().resetSettingsForTesting();
+                    mTaskRunner = new FakeTaskRunner();
+                    mOrchestrator.setTaskRunnerForTesting(mTaskRunner);
                     mArchivedTabModel = mOrchestrator.getTabModelSelector().getModel(false);
                     mRegularTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
                     mRegularTabCreator = mActivityTestRule.getActivity().getTabCreator(false);
@@ -85,8 +109,38 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
+        assertEquals(1, mTaskRunner.mDelayedTasks.size());
         assertEquals(0, mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testScheduledDeclutter() {
+        mOrchestrator.getArchiveSettingsForTesting().setArchiveEnabled(false);
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
+        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
+
+        assertEquals(1, mTaskRunner.mDelayedTasks.size());
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        mOrchestrator.getArchiveSettingsForTesting().setArchiveEnabled(true);
+        // A task was scheduled to perform a scheduled declutter, get it and run it.
+        runOnUiThreadBlocking(() -> mTaskRunner.mDelayedTasks.get(0).first.run());
+
+        assertEquals(0, mRegularTabModel.getCount());
+        // The new tab should be archived now.
+        assertEquals(2, mArchivedTabModel.getCount());
+
+        // The schedule call should queue up another runnable.
+        assertEquals(2, mTaskRunner.mDelayedTasks.size());
     }
 
     @Test
