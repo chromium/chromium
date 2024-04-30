@@ -14,7 +14,7 @@ items:
 - caption: Do not allow unaffiliated users to use Android apps
   value: false
 owners:
-- phweiss@chromium.org
+- giovax@chromium.org
 schema:
   type: boolean
 supported_on:

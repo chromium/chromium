@@ -15,7 +15,6 @@ items:
 owners:
 - cros-reporting-eng@google.com
 - lbaraz@chromium.org
-- phweiss@chromium.org
 schema:
   type: boolean
 supported_on:

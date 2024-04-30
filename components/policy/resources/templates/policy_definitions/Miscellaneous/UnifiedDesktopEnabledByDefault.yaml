@@ -14,7 +14,7 @@ items:
 - caption: Do not make Unified Desktop mode available to the user
   value: false
 owners:
-- phweiss@chromium.org
+- giovax@chromium.org
 schema:
   type: boolean
 supported_on:

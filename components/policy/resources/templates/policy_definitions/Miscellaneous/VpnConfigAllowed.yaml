@@ -13,7 +13,7 @@ items:
 - caption: Do not allow the user to manually disconnect or modify a VPN
   value: false
 owners:
-- phweiss@chromium.org
+- giovax@chromium.org
 schema:
   type: boolean
 supported_on:
