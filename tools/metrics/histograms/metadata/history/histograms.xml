@@ -1849,6 +1849,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.UserActions" enum="EmbeddingsUserActions"
+    expires_after="2025-04-15">
+  <owner>tommycli@chromium.org</owner>
+  <owner>orinj@chromium.org</owner>
+  <summary>
+    Tracks user actions related to History Embeddings in various bins within a
+    single histogram.
+
+    The first bucket of this histogram is logged for users with History
+    Embeddings disabled too, to provide a baseline, and to serve as a guardian
+    metric for the Embeddings experiments.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.VisibilityModelAvailableAtQuery"
     enum="Boolean" expires_after="2024-12-31">
   <owner>sophiechang@chromium.org</owner>

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {HistoryEmbeddingsUserActions, QUERY_RESULT_MINIMUM_AGE} from 'chrome://resources/cr_components/history/constants.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -59,10 +60,17 @@ export class HistoryQueryManagerElement extends PolymerElement {
     return ['searchTermChanged_(queryState.searchTerm)'];
   }
 
-  private eventTracker_: EventTracker = new EventTracker();
   queryState: QueryState;
   queryResult: QueryResult;
   router?: HistoryRouterElement;
+  private eventTracker_: EventTracker = new EventTracker();
+  /**
+   * When this is non-null, that means there's a QueryResult that's pending
+   * metrics logging since this debouncer timestamp. The debouncing is needed
+   * because queries are issued as the user types, and we want to skip logging
+   * these trivial queries the user typed through.
+   */
+  private resultPendingMetricsTimestamp_: number|null = null;
 
   constructor() {
     super();
@@ -82,10 +90,16 @@ export class HistoryQueryManagerElement extends PolymerElement {
         document, 'change-query', this.onChangeQuery_.bind(this));
     this.eventTracker_.add(
         document, 'query-history', this.onQueryHistory_.bind(this));
+    this.eventTracker_.add(document, 'visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        this.flushDebouncedQueryResultMetric_();
+      }
+    });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.flushDebouncedQueryResultMetric_();
     this.eventTracker_.removeAll();
   }
 
@@ -155,10 +169,31 @@ export class HistoryQueryManagerElement extends PolymerElement {
   }
 
   private searchTermChanged_() {
+    this.flushDebouncedQueryResultMetric_();
+
     // TODO(tsergeant): Ignore incremental searches in this metric.
     if (this.queryState.searchTerm) {
       BrowserServiceImpl.getInstance().recordAction('Search');
+      this.resultPendingMetricsTimestamp_ = performance.now();
     }
+  }
+
+  /**
+   * Flushes any pending query result metric waiting to be logged.
+   */
+  private flushDebouncedQueryResultMetric_() {
+    if (this.resultPendingMetricsTimestamp_ &&
+        (performance.now() - this.resultPendingMetricsTimestamp_) >=
+            QUERY_RESULT_MINIMUM_AGE) {
+      BrowserServiceImpl.getInstance().recordHistogram(
+          'History.Embeddings.UserActions',
+          HistoryEmbeddingsUserActions.NON_EMPTY_QUERY_HISTORY_SEARCH,
+          HistoryEmbeddingsUserActions.END);
+    }
+
+    // Clear this regardless if it was recorded or not, because we don't want
+    // to "try again" to record the same query.
+    this.resultPendingMetricsTimestamp_ = null;
   }
 }
 

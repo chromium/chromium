@@ -50,4 +50,8 @@ struct SearchResult {
 interface PageHandler {
   // Search method to retrieve history embeddings search results.
   Search(SearchQuery query) => (SearchResult result);
+
+  // Records the results from an embeddings query: whether the UI received
+  // non-empty embeddings results, and if the user clicked one of the results.
+  RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult);
 };

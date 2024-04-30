@@ -133,6 +133,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both"/>
 </enum>
 
+<enum name="EmbeddingsUserActions">
+  <int value="0" label="Non-empty query History search"/>
+  <int value="1" label="Embeddings search"/>
+  <int value="2" label="Embeddings non-empty results shown"/>
+  <int value="3" label="Embeddings result clicked"/>
+</enum>
+
 <enum name="HistoryInitStep">
   <int value="0" label="Open"/>
   <int value="1" label="Transaction begin"/>

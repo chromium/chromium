@@ -11,11 +11,12 @@ import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
-import {HistoryResultType} from '//resources/cr_components/history/constants.js';
+import {HistoryResultType, QUERY_RESULT_MINIMUM_AGE} from '//resources/cr_components/history/constants.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -86,9 +87,32 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
   private loading_ = false;
   private searchResult_: SearchResult;
+  /**
+   * When this is non-null, that means there's a SearchResult that's pending
+   * metrics logging since this debouncer timestamp. The debouncing is needed
+   * because queries are issued as the user types, and we want to skip logging
+   * these trivial queries the user typed through.
+   */
+  private resultPendingMetricsTimestamp_: number|null = null;
+  private eventTracker_: EventTracker = new EventTracker();
   isEmpty: boolean;
   searchQuery: string;
   timeRangeStart?: Date;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker_.add(document, 'visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        this.flushDebouncedUserMetrics_(/*userClickedResult=*/ false);
+      }
+    });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.flushDebouncedUserMetrics_(/*userClickedResult=*/ false);
+    this.eventTracker_.removeAll();
+  }
 
   private computeIsEmpty_(): boolean {
     return !this.loading_ && this.searchResult_?.items.length === 0;
@@ -138,6 +162,8 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         index: e.model.index,
       },
     }));
+
+    this.flushDebouncedUserMetrics_(/*userClickedResult=*/ true);
   }
 
   private onSearchQueryChanged_() {
@@ -148,9 +174,37 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
           this.timeRangeStart ? jsDateToMojoDate(this.timeRangeStart) : null,
     };
     this.browserProxy_.search(query).then((result) => {
+      // Flush any old results metrics before overwriting the member variable.
+      this.flushDebouncedUserMetrics_(/*userClickedResult=*/ false);
+
       this.searchResult_ = result;
       this.loading_ = false;
+
+      this.resultPendingMetricsTimestamp_ = performance.now();
     });
+  }
+
+  /**
+   * Flushes any pending query result metric waiting to be logged.
+   * @param userClickedResult Set to true if the flush was triggered by the user
+   * clicking a result.
+   */
+  private flushDebouncedUserMetrics_(userClickedResult: boolean) {
+    if (this.resultPendingMetricsTimestamp_ === null) {
+      return;
+    }
+    if (userClickedResult ||
+        (performance.now() - this.resultPendingMetricsTimestamp_) >=
+            QUERY_RESULT_MINIMUM_AGE) {
+      const nonEmptyResults: boolean =
+          this.searchResult_.items && this.searchResult_.items.length > 0;
+      this.browserProxy_.recordSearchResultsMetrics(
+          nonEmptyResults, userClickedResult);
+    }
+
+    // Clear this regardless if it was recorded or not, because we don't want
+    // to "try again" to record the same query.
+    this.resultPendingMetricsTimestamp_ = null;
   }
 }
 

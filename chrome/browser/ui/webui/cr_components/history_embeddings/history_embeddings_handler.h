@@ -27,6 +27,8 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   // history_embeddings::mojom::PageHandler:
   void Search(history_embeddings::mojom::SearchQueryPtr query,
               SearchCallback callback) override;
+  void RecordSearchResultsMetrics(bool non_empty_results,
+                                  bool user_clicked_results) override;
 
  private:
   mojo::Receiver<history_embeddings::mojom::PageHandler> page_handler_;
