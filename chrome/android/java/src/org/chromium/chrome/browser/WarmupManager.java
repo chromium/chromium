@@ -6,9 +6,11 @@ package org.chromium.chrome.browser;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
 import android.view.InflateException;
@@ -19,6 +21,7 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.asynclayoutinflater.appcompat.AsyncAppCompatFactory;
 
@@ -117,6 +120,23 @@ public class WarmupManager {
             mOwnedWindowAndroid.destroy();
             mOwnedWindowAndroid = null;
             tab.removeObserver(this);
+        }
+    }
+
+    /** Context wrapper that routes APIs via Activity context once it's available. */
+    private static class CctContextWrapper extends ContextThemeWrapper {
+        Context mActivityContext;
+
+        public CctContextWrapper(Context base, int themeResId) {
+            super(base, themeResId);
+        }
+
+        @Override
+        public void startActivity(Intent intent, @Nullable Bundle options) {
+            // Starting activities generally requires an Activity context.
+            // https://crbug.com/334755104
+            Context target = mActivityContext != null ? mActivityContext : getBaseContext();
+            target.startActivity(intent, options);
         }
     }
 
@@ -339,7 +359,9 @@ public class WarmupManager {
         ThreadUtils.assertOnUiThread();
         if (mMainView != null && mToolbarContainerId == toolbarContainerId) return;
 
-        Context context = applyContextOverrides(baseContext);
+        CctContextWrapper context =
+                new CctContextWrapper(
+                        applyContextOverrides(baseContext), ActivityUtils.getThemeId());
         mMainView = inflateViewHierarchy(context, toolbarContainerId, toolbarId);
         mToolbarContainerId = toolbarContainerId;
     }
@@ -356,17 +378,16 @@ public class WarmupManager {
     }
 
     /**
-     * Inflates and constructs the view hierarchy that the app will use.
-     * Calls to this are not restricted to the UI thread.
-     * @param baseContext The base context to use for creating the ContextWrapper.
+     * Inflates and constructs the view hierarchy that the app will use. Calls to this are not
+     * restricted to the UI thread.
+     *
+     * @param context The context to use for inflation.
      * @param toolbarContainerId Id of the toolbar container.
      * @param toolbarId The toolbar's layout ID.
      */
-    public static ViewGroup inflateViewHierarchy(
-            Context baseContext, int toolbarContainerId, int toolbarId) {
+    private static ViewGroup inflateViewHierarchy(
+            CctContextWrapper context, int toolbarContainerId, int toolbarId) {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.inflateViewHierarchy")) {
-            ContextThemeWrapper context =
-                    new ContextThemeWrapper(baseContext, ActivityUtils.getThemeId());
             FrameLayout contentHolder = new FrameLayout(context);
             var layoutInflater = LayoutInflater.from(context);
             layoutInflater.setFactory2(new AsyncAppCompatFactory());
@@ -406,26 +427,19 @@ public class WarmupManager {
     /**
      * Transfers all the children in the local view hierarchy {@link #mMainView} to the given
      * ViewGroup {@param contentView} as child.
+     *
      * @param contentView The parent ViewGroup to use for the transfer.
      */
     public void transferViewHierarchyTo(ViewGroup contentView) {
         ThreadUtils.assertOnUiThread();
-        ViewGroup viewHierarchy = mMainView;
+        ViewGroup from = mMainView;
         mMainView = null;
-        if (viewHierarchy == null) return;
-        transferViewHierarchy(viewHierarchy, contentView);
-    }
-
-    /**
-     * Transfers all the children in one view hierarchy {@param from} to another {@param to}.
-     * @param from The parent ViewGroup to transfer children from.
-     * @param to The parent ViewGroup to transfer children to.
-     */
-    public static void transferViewHierarchy(ViewGroup from, ViewGroup to) {
+        if (from == null) return;
+        ((CctContextWrapper) from.getContext()).mActivityContext = contentView.getContext();
         while (from.getChildCount() > 0) {
             View currentChild = from.getChildAt(0);
             from.removeView(currentChild);
-            to.addView(currentChild);
+            contentView.addView(currentChild);
         }
     }
 
