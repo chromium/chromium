@@ -52,7 +52,7 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
 
   // Adds `extension_id` to the set of extension with site access requests that
   // have been dismissed by the user. Request must be existent in
-  // `requesting_extensions_` for user to be able to dismiss it.
+  // `extensions_with_requests_` for user to be able to dismiss it.
   // An extension's request cannot be undismissed by the user. Requests will be
   // reset on cross-origin navigation, along with their dismissals if existent.
   void UserDismissedRequest(const ExtensionId& extension_id);
@@ -82,7 +82,7 @@ class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
   int tab_id_;
 
   // Extensions that have a site access request for this tab's origin.
-  std::set<ExtensionId> requesting_extensions_;
+  std::set<ExtensionId> extensions_with_requests_;
 
   // Extensions that have a site access request for this tab's origin which was
   // dismissed by the user.

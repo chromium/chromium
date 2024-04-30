@@ -35,15 +35,15 @@ void SiteAccessRequestsHelper::AddRequest(const Extension& extension) {
       extension, web_contents_->GetLastCommittedURL());
   CHECK(!site_access.has_site_access && !site_access.has_all_sites_access);
 
-  requesting_extensions_.insert(extension.id());
+  extensions_with_requests_.insert(extension.id());
 }
 
 bool SiteAccessRequestsHelper::RemoveRequest(const ExtensionId& extension_id) {
-  if (!requesting_extensions_.contains(extension_id)) {
+  if (!extensions_with_requests_.contains(extension_id)) {
     return false;
   }
 
-  requesting_extensions_.erase(extension_id);
+  extensions_with_requests_.erase(extension_id);
   // TODO(crbug.com/330588494): Remove request from dismissed set, if existent,
   // once dismissed requests are moved to SiteAccessRequestsHelper.
   return true;
@@ -65,18 +65,18 @@ bool SiteAccessRequestsHelper::RemoveRequestIfGrantedAccess(
 
 void SiteAccessRequestsHelper::UserDismissedRequest(
     const ExtensionId& extension_id) {
-  CHECK(requesting_extensions_.contains(extension_id));
+  CHECK(extensions_with_requests_.contains(extension_id));
   extensions_with_requests_dismissed_.insert(extension_id);
 }
 
 bool SiteAccessRequestsHelper::HasActiveRequest(
     const ExtensionId& extension_id) {
-  return requesting_extensions_.contains(extension_id) &&
+  return extensions_with_requests_.contains(extension_id) &&
          !extensions_with_requests_dismissed_.contains(extension_id);
 }
 
 bool SiteAccessRequestsHelper::HasRequests() {
-  return !requesting_extensions_.empty();
+  return !extensions_with_requests_.empty();
 }
 
 void SiteAccessRequestsHelper::OnExtensionUnloaded(
@@ -105,7 +105,7 @@ void SiteAccessRequestsHelper::DidFinishNavigation(
     return;
   }
 
-  requesting_extensions_.clear();
+  extensions_with_requests_.clear();
   extensions_with_requests_dismissed_.clear();
 
   permissions_manager_->NotifySiteAccessRequestsCleared(tab_id_);
@@ -117,7 +117,7 @@ void SiteAccessRequestsHelper::WebContentsDestroyed() {
   // Delete web contents pointer so it's not dangling at helper's destruction.
   web_contents_ = nullptr;
 
-  requesting_extensions_.clear();
+  extensions_with_requests_.clear();
   extensions_with_requests_dismissed_.clear();
 
   permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);
