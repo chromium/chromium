@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -293,7 +294,9 @@ class ProfileTokenQualityObservationDroppingTest
 TEST_P(ProfileTokenQualityObservationDroppingTest,
        AddObservationsForFilledForm_DropObservations) {
   const DropObservationTest& test = GetParam();
-  AutofillProfile profile = test::GetFullProfile();
+  // Use a profile with an address model that contains all the field types used
+  // in the tests.
+  AutofillProfile profile = test::GetFullProfile(AddressCountryCode("AT"));
   pdm_.address_data_manager().AddProfile(profile);
   ProfileTokenQuality quality(&profile);
 
