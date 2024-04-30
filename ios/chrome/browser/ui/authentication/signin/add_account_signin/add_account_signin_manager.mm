@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_manager.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 
@@ -21,31 +24,65 @@
 @end
 
 @implementation AddAccountSigninManager {
+  // The user pref service.
+  raw_ptr<PrefService> _prefService;
+  // The identity manager.
+  raw_ptr<signin::IdentityManager> _identityManager;
   // YES if the add account if done, and the delegate has been called.
   BOOL _addAccountFlowDone;
 }
 
 #pragma mark - Public
 
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                identityInteractionManager:
-                    (id<SystemIdentityInteractionManager>)
-                        identityInteractionManager {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)baseViewController
+                   prefService:(PrefService*)prefService
+               identityManager:(signin::IdentityManager*)identityManager
+    identityInteractionManager:
+        (id<SystemIdentityInteractionManager>)identityInteractionManager {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
+    _prefService = prefService;
+    _identityManager = identityManager;
     _identityInteractionManager = identityInteractionManager;
   }
   return self;
 }
 
-- (void)showSigninWithDefaultUserEmail:(NSString*)defaultUserEmail {
+- (void)showSigninWithIntent:(AddAccountSigninIntent)signinIntent {
   DCHECK(!_addAccountFlowDone);
   DCHECK(self.identityInteractionManager);
+
+  CoreAccountInfo primaryAccount =
+      _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  NSString* userEmail = nil;
+  switch (signinIntent) {
+    case AddAccountSigninIntent::kPrimaryAccountReauth:
+      DUMP_WILL_BE_CHECK(!primaryAccount.IsEmpty())
+          << base::SysNSStringToUTF8([self description]);
+      userEmail = base::SysUTF8ToNSString(primaryAccount.email);
+      break;
+    case AddAccountSigninIntent::kAddAccount:
+      // The user wants to add a new account, don't pre-fill any email.
+      break;
+    case AddAccountSigninIntent::kSigninAndSyncReauth:
+      DUMP_WILL_BE_CHECK(primaryAccount.IsEmpty())
+          << base::SysNSStringToUTF8([self description]);
+      std::string userEmailString =
+          _prefService->GetString(prefs::kGoogleServicesLastSignedInUsername);
+      // Note(crbug/1443096): Gracefully handle an empty `userEmailString` by
+      // showing the sign-in screen without a prefilled email.
+      if (!userEmailString.empty()) {
+        userEmail = base::SysUTF8ToNSString(userEmailString);
+      }
+      break;
+  }
+
   __weak AddAccountSigninManager* weakSelf = self;
   [self.identityInteractionManager
       startAuthActivityWithViewController:self.baseViewController
-                                userEmail:defaultUserEmail
+                                userEmail:userEmail
                                completion:^(id<SystemIdentity> identity,
                                             NSError* error) {
                                  [weakSelf
