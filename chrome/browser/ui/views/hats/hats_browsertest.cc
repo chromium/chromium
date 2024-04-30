@@ -343,11 +343,11 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, DialogResize) {
   // Depending on renderer warm-up, an initial empty size may additionally be
   // reported before hats_next_mock.html has had a chance to resize.
   dialog->WaitForUpdateWidgetSize();
-  auto size = dialog->CalculatePreferredSize();
+  auto size = dialog->CalculatePreferredSize({});
   EXPECT_TRUE(size == kTargetSize || size == dialog->kMinSize);
   if (size != kTargetSize) {
     dialog->WaitForUpdateWidgetSize();
-    EXPECT_EQ(kTargetSize, dialog->CalculatePreferredSize());
+    EXPECT_EQ(kTargetSize, dialog->CalculatePreferredSize({}));
   }
 }
 
@@ -371,11 +371,11 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
   // may additionally be reported before hats_next_mock.html has had a chance
   // to resize.
   dialog->WaitForUpdateWidgetSize();
-  auto size = dialog->CalculatePreferredSize();
+  auto size = dialog->CalculatePreferredSize({});
   EXPECT_TRUE(size == HatsNextWebDialog::kMaxSize || size == dialog->kMinSize);
   if (size != HatsNextWebDialog::kMaxSize) {
     dialog->WaitForUpdateWidgetSize();
-    EXPECT_EQ(HatsNextWebDialog::kMaxSize, dialog->CalculatePreferredSize());
+    EXPECT_EQ(HatsNextWebDialog::kMaxSize, dialog->CalculatePreferredSize({}));
   }
 }
 

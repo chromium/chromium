@@ -153,8 +153,10 @@ HatsNextWebDialog::HatsNextWebDialog(
           product_specific_bits_data,
           product_specific_string_data) {}
 
-gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
-  gfx::Size preferred_size = views::View::CalculatePreferredSize();
+gfx::Size HatsNextWebDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size preferred_size =
+      views::View::CalculatePreferredSize(available_size);
   preferred_size.SetToMax(kMinSize);
   preferred_size.SetToMin(kMaxSize);
   return preferred_size;
