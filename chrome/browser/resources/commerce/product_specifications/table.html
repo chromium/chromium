@@ -26,7 +26,9 @@
   <thead>
     <template is="dom-repeat" items="[[columns]]" as="column">
       <th class="col">
-        <product-selector selected-item="[[column.selectedItem]]">
+        <product-selector
+            selected-item="[[column.selectedItem]]"
+            on-selected-url-change="onSelectedUrlChange_">
         </product-selector>
         <img is="cr-auto-img"
             auto-src="[[column.selectedItem.imageUrl]]"

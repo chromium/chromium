@@ -209,6 +209,28 @@ suite('AppTest', () => {
         [{title: rowTitle, values: [dimensionValues.join(',')]}], rows);
   });
 
+  test('updates on selection change', async () => {
+    const testUrls = ['https://example.com/', 'https://example2.com/'];
+    const promiseValues = createAppPromiseValues({urls: testUrls});
+    await createAppElementWithPromiseValues(promiseValues);
+
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+
+    const table =
+        appElement.shadowRoot!.querySelector('product-specifications-table');
+    assertTrue(!!table);
+    table.dispatchEvent(new CustomEvent('url-change', {
+      detail: {
+        url: 'https://example3.com',
+        index: 0,
+      },
+    }));
+
+    assertEquals(
+        2, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+  });
+
   suite('EmptyState', () => {
     test('shows empty state if app loads without urls', () => {
       router.setResultFor('getCurrentQuery', '');

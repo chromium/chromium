@@ -105,7 +105,8 @@
             <template is="dom-repeat" items="[[openTabs]]">
               <cr-url-list-item class="dropdown-item" size="medium"
                   url="[[item.url]]" title="[[item.title]]"
-                  description="[[getAbbreviatedUrl_(item.url)]]" no-hover>
+                  description="[[getAbbreviatedUrl_(item.url)]]" no-hover
+                  on-click="onSelect_">
               </cr-url-list-item>
             </template>
             <!-- Add spacer instead of adding margin or padding to the -->

@@ -17,6 +17,7 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './product_selector.html.js';
@@ -102,6 +103,17 @@ export class ProductSelectorElement extends PolymerElement {
       e.stopPropagation();
       this.onShowMenu_();
     }
+  }
+
+  private onSelect_(e: DomRepeatEvent<UrlListEntry>) {
+    this.$.productSelectionMenu.get().close();
+    this.dispatchEvent(new CustomEvent('selected-url-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        url: e.model.item.url,
+      },
+    }));
   }
 }
 

@@ -29,8 +29,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Table) {
   RunTest("commerce/product_specifications/table_test.js", "mocha.run()");
 }
 
-// TODO(https://crbug.com/336414352): Flaky.
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DISABLED_ProductSelector) {
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ProductSelector) {
   RunTest("commerce/product_specifications/product_selector_test.js",
           "mocha.run()");
 }

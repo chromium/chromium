@@ -80,9 +80,10 @@
   </div>
   <div id="specs" class="summary" hidden$="[[showEmptyState_]]">
     <product-specifications-table
-      id="summaryTable"
-      columns="[[specsTable_.columns]]"
-      rows="[[specsTable_.rows]]">
+        id="summaryTable"
+        columns="[[specsTable_.columns]]"
+        rows="[[specsTable_.rows]]"
+        on-url-change="onUrlChange_">
     </product-specifications-table>
   </div>
 </div>

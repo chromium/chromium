@@ -74,7 +74,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     ColorChangeUpdater.forDocument().start();
   }
 
-  override async connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     const router = Router.getInstance();
     const params = new URLSearchParams(router.getCurrentQuery());
@@ -91,6 +91,10 @@ export class ProductSpecificationsElement extends PolymerElement {
       return;
     }
 
+    this.populateTable_(urls);
+  }
+
+  private async populateTable_(urls: string[]) {
     const {productSpecs} =
         await this.shoppingApi_.getProductSpecificationsForUrls(
             urls.map(url => ({url})));
@@ -133,6 +137,20 @@ export class ProductSpecificationsElement extends PolymerElement {
       }
     }
     return infos;
+  }
+
+  private onUrlChange_(e: CustomEvent<{url: string, index: number}>) {
+    let urls;
+    if (this.specsTable_.columns) {
+      // Until b/335637140 is resolved, these will all be the same placeholder
+      // URL and the table will not update as expected.
+      urls = this.specsTable_.columns.map(
+          (column: TableColumn) => column.selectedItem.url);
+      urls[e.detail.index] = e.detail.url;
+    } else {
+      urls = [e.detail.url];
+    }
+    this.populateTable_(urls);
   }
 }
 

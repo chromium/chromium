@@ -10,6 +10,7 @@ import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('ProductSelectorTest', () => {
   const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
@@ -42,7 +43,7 @@ suite('ProductSelectorTest', () => {
     BrowserProxyImpl.setInstance(shoppingServiceApi);
   });
 
-  test('OpenTabsShown', async () => {
+  test('open tabs shown', async () => {
     const titleString = 'title';
     const openTabs = [{
       title: titleString,
@@ -68,7 +69,7 @@ suite('ProductSelectorTest', () => {
     assertEquals(openTabs[0]!.url.url, selector.openTabs[0]!.url);
   });
 
-  test('MenuShownOnEnter', async () => {
+  test('menu shown on enter', async () => {
     initUrlInfos();
     const selector = await createSelector();
     const showingMenuClass = 'showing-menu';
@@ -86,7 +87,7 @@ suite('ProductSelectorTest', () => {
         showingMenuClass));
   });
 
-  test('UpdatesShowingMenuClass', async () => {
+  test('updates showing menu class', async () => {
     initUrlInfos();
     const selector = await createSelector();
     const showingMenuClass = 'showing-menu';
@@ -101,13 +102,13 @@ suite('ProductSelectorTest', () => {
         showingMenuClass));
 
     selector.$.productSelectionMenu.get().close();
-    await flushTasks();
+    await eventToPromise('close', selector.$.productSelectionMenu.get());
 
     assertFalse(selector.$.currentProductContainer.classList.contains(
         showingMenuClass));
   });
 
-  test('AbbreviatesUrls', async () => {
+  test('abbreviates URLs', async () => {
     initUrlInfos();
     const selector = await createSelector();
     selector.$.currentProductContainer.click();
@@ -123,7 +124,7 @@ suite('ProductSelectorTest', () => {
     assertEquals('example.com', tabUrl.textContent);
   });
 
-  test('ExcludesCurrentSelection', async () => {
+  test('excludes current selection', async () => {
     const titleString = 'title';
     const openTabs = [
       {
@@ -150,5 +151,24 @@ suite('ProductSelectorTest', () => {
         '.description-text');
     assertTrue(!!tabUrl);
     assertEquals('example.com', tabUrl.textContent);
+  });
+
+  test('fires selector event', async () => {
+    initUrlInfos();
+    const selector = await createSelector();
+    selector.$.currentProductContainer.click();
+    await flushTasks();
+
+    const menu = selector.$.productSelectionMenu.get();
+    assertTrue(menu.open);
+    const listElement = menu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!listElement);
+    const eventPromise = eventToPromise('selected-url-change', selector);
+    listElement.click();
+    const event = await eventPromise;
+
+    assertTrue(!!event);
+    assertEquals('http://example.com', event.detail.url);
+    assertFalse(menu.open);
   });
 });

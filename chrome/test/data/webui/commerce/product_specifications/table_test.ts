@@ -6,8 +6,9 @@ import 'chrome://compare/table.js';
 
 import type {TableElement} from 'chrome://compare/table.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('ProductSpecificationsTableTest', () => {
   let tableElement: TableElement;
@@ -90,5 +91,31 @@ suite('ProductSpecificationsTableTest', () => {
     assertEquals(row1.values[0], rowContents[0]!.textContent);
     assertEquals(row1.values[1], rowContents[1]!.textContent);
     assertEquals(row2.values[0], rowContents[2]!.textContent);
+  });
+
+  test('fires url change event', async () => {
+    // Arrange
+    tableElement.columns = [
+      {selectedItem: {title: 'title', url: 'https://foo.com', imageUrl: ''}},
+      {selectedItem: {title: 'title2', url: 'https://bar.com', imageUrl: ''}},
+    ];
+    await waitAfterNextRender(tableElement);
+
+    // Act
+    const productSelector =
+        tableElement.shadowRoot!.querySelector('product-selector');
+    assertTrue(!!productSelector);
+    const eventPromise = eventToPromise('url-change', tableElement);
+    productSelector.dispatchEvent(new CustomEvent('selected-url-change', {
+      detail: {
+        url: 'https://foo.com',
+      },
+    }));
+
+    // Assert.
+    const event = await eventPromise;
+    assertTrue(!!event);
+    assertEquals('https://foo.com', event.detail.url);
+    assertEquals(0, event.detail.index);
   });
 });
