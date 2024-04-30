@@ -38,7 +38,7 @@ PrerenderAttributes::PrerenderAttributes(
       trigger_type(trigger_type),
       embedder_histogram_suffix(embedder_histogram_suffix),
       target_hint(target_hint),
-      referrer(referrer),
+      referrer(std::move(referrer)),
       eagerness(eagerness),
       initiator_origin(std::move(initiator_origin)),
       initiator_process_id(initiator_process_id),
@@ -57,29 +57,11 @@ PrerenderAttributes::PrerenderAttributes(
 }
 
 PrerenderAttributes::~PrerenderAttributes() = default;
-
-PrerenderAttributes::PrerenderAttributes(
-    const PrerenderAttributes& attributes) = default;
-
-PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&& attributes)
-    : prerendering_url(attributes.prerendering_url),
-      trigger_type(attributes.trigger_type),
-      embedder_histogram_suffix(attributes.embedder_histogram_suffix),
-      target_hint(attributes.target_hint),
-      referrer(attributes.referrer),
-      eagerness(attributes.eagerness),
-      initiator_origin(attributes.initiator_origin),
-      initiator_process_id(attributes.initiator_process_id),
-      initiator_web_contents(std::move(attributes.initiator_web_contents)),
-      initiator_frame_token(attributes.initiator_frame_token),
-      initiator_frame_tree_node_id(attributes.initiator_frame_tree_node_id),
-      initiator_ukm_id(attributes.initiator_ukm_id),
-      transition_type(attributes.transition_type),
-      holdback_status_override(attributes.holdback_status_override),
-      url_match_predicate(attributes.url_match_predicate),
-      prerender_navigation_handle_callback(
-          attributes.prerender_navigation_handle_callback),
-      initiator_devtools_navigation_token(
-          attributes.initiator_devtools_navigation_token) {}
+PrerenderAttributes::PrerenderAttributes(const PrerenderAttributes&) = default;
+PrerenderAttributes& PrerenderAttributes::operator=(
+    const PrerenderAttributes&) = default;
+PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&&) = default;
+PrerenderAttributes& PrerenderAttributes::operator=(PrerenderAttributes&&) =
+    default;
 
 }  // namespace content

@@ -28,7 +28,6 @@ struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationEagerness eagerness;
   int prerender_host_id;
   GURL url;
-  Referrer referrer;
 };
 
 PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
@@ -261,17 +260,17 @@ bool PrerendererImpl::MaybePrerender(
             url::Origin::Create(candidate->url).Serialize().c_str()));
   }
 
-  Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
       candidate->url,
       PreloadingTriggerTypeFromSpeculationInjectionType(
           candidate->injection_type),
       /*embedder_histogram_suffix=*/"",
-      candidate->target_browsing_context_name_hint, referrer,
-      candidate->eagerness, rfhi.GetLastCommittedOrigin(),
-      rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
-      rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
-      rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      candidate->target_browsing_context_name_hint,
+      Referrer{*candidate->referrer}, candidate->eagerness,
+      rfhi.GetLastCommittedOrigin(), rfhi.GetProcess()->GetID(),
+      web_contents->GetWeakPtr(), rfhi.GetFrameToken(),
+      rfhi.GetFrameTreeNodeId(), rfhi.GetPageUkmSourceId(),
+      ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
       rfhi.GetDevToolsNavigationToken());
@@ -332,8 +331,7 @@ bool PrerendererImpl::MaybePrerender(
   started_prerenders_.insert(end, {.injection_type = candidate->injection_type,
                                    .eagerness = candidate->eagerness,
                                    .prerender_host_id = prerender_host_id,
-                                   .url = candidate->url,
-                                   .referrer = referrer});
+                                   .url = candidate->url});
 
   return true;
 }

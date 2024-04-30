@@ -45,9 +45,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   ~PrerenderAttributes();
   PrerenderAttributes(const PrerenderAttributes&);
-  PrerenderAttributes& operator=(const PrerenderAttributes&) = delete;
+  PrerenderAttributes& operator=(const PrerenderAttributes&);
   PrerenderAttributes(PrerenderAttributes&&);
-  PrerenderAttributes& operator=(PrerenderAttributes&&) = delete;
+  PrerenderAttributes& operator=(PrerenderAttributes&&);
 
   bool IsBrowserInitiated() const { return !initiator_origin.has_value(); }
 
