@@ -208,14 +208,6 @@
       <cr-button class="action-button" on-click="checkTetheringReadiness_">
         $i18n{checkTetheringReadinessButtonText}
       </cr-button>
-
-      <h2>$i18n{setTetheringEnabledLabel}</h2>
-      <cr-toggle id="enable-tethering-toggle"
-            checked="{{isTetheringEnabled_}}"
-            disabled="[[tetheringChangeInProgress_]]"
-            on-change="onTetheringToggleChanged_">
-      </cr-toggle>
-      <div id="set-tethering-enabled-result"></div>
     </div>
   </template>
 
