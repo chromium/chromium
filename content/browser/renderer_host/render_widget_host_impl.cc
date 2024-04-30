@@ -180,10 +180,12 @@ using RoutingIDWidgetMap =
 base::LazyInstance<RoutingIDWidgetMap>::DestructorAtExit
     g_routing_id_widget_map = LAZY_INSTANCE_INITIALIZER;
 
-// Implements the RenderWidgetHostIterator interface. It keeps a list of
-// RenderWidgetHosts, and makes sure it returns a live RenderWidgetHost at each
-// iteration (or NULL if there isn't any left).
-class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator {
+// Implements the RenderWidgetHostIterator and RenderInputRouterIterator
+// interface. It keeps a list of RenderWidgetHosts, and makes sure it returns a
+// live RenderWidgetHost (or corresponding RenderInputRouter) at each iteration
+// (or NULL if there isn't any left).
+class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator,
+                                     public RenderInputRouterIterator {
  public:
   RenderWidgetHostIteratorImpl() = default;
 
@@ -206,6 +208,15 @@ class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator {
       ++current_index_;
     }
     return host;
+  }
+
+  // RenderInputRouterIterator:
+  RenderInputRouter* GetNextRouter() override {
+    RenderWidgetHost* host = GetNextHost();
+    if (!host) {
+      return nullptr;
+    }
+    return static_cast<RenderWidgetHostImpl*>(host)->GetRenderInputRouter();
   }
 
  private:
@@ -309,6 +320,29 @@ BrowserUIThreadScheduler::ScrollState GetScrollStateUpdateFromGestureEvent(
       return BrowserUIThreadScheduler::ScrollState::kNone;
   }
 }
+
+// Retrieve an iterator over any RenderWidgetHosts that are immediately
+// embedded within this one. This does not return hosts that are embedded
+// indirectly (i.e. nested within embedded hosts).
+std::unique_ptr<RenderWidgetHostIteratorImpl> GetEmbeddedRenderWidgetHosts(
+    RenderWidgetHostViewBase* parent_view) {
+  // This iterates over all RenderWidgetHosts and returns those whose Views
+  // are children of this host's View.
+  auto hosts = std::make_unique<RenderWidgetHostIteratorImpl>();
+  for (auto& it : g_routing_id_widget_map.Get()) {
+    RenderWidgetHost* widget = it.second;
+
+    auto* view = static_cast<RenderWidgetHostViewBase*>(widget->GetView());
+    if (view && view->IsRenderWidgetHostViewChildFrame() &&
+        static_cast<RenderWidgetHostViewChildFrame*>(view)
+                ->GetParentViewInput() == parent_view) {
+      hosts->Add(widget);
+    }
+  }
+
+  return hosts;
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3630,7 +3664,7 @@ bool RenderWidgetHostImpl::HasGestureStopped() {
   }
 
   std::unique_ptr<RenderWidgetHostIterator> child_widgets(
-      GetEmbeddedRenderWidgetHosts());
+      GetEmbeddedRenderWidgetHosts(GetView()));
   while (RenderWidgetHost* child = child_widgets->GetNextHost()) {
     auto* child_impl = static_cast<RenderWidgetHostImpl*>(child);
     if (!child_impl->HasGestureStopped()) {
@@ -3813,24 +3847,9 @@ RenderWidgetHostImpl::CollectSurfaceIdsForEviction() {
   return rvh->CollectSurfaceIdsForEviction();
 }
 
-std::unique_ptr<RenderWidgetHostIterator>
-RenderWidgetHostImpl::GetEmbeddedRenderWidgetHosts() {
-  // This iterates over all RenderWidgetHosts and returns those whose Views
-  // are children of this host's View.
-  auto hosts = std::make_unique<RenderWidgetHostIteratorImpl>();
-  auto* parent_view = static_cast<RenderWidgetHostViewBase*>(GetView());
-  for (auto& it : g_routing_id_widget_map.Get()) {
-    RenderWidgetHost* widget = it.second;
-
-    auto* view = static_cast<RenderWidgetHostViewBase*>(widget->GetView());
-    if (view && view->IsRenderWidgetHostViewChildFrame() &&
-        static_cast<RenderWidgetHostViewChildFrame*>(view)
-                ->GetParentViewInput() == parent_view) {
-      hosts->Add(widget);
-    }
-  }
-
-  return std::move(hosts);
+std::unique_ptr<RenderInputRouterIterator>
+RenderWidgetHostImpl::GetEmbeddedRenderInputRouters() {
+  return GetEmbeddedRenderWidgetHosts(GetView());
 }
 
 namespace {

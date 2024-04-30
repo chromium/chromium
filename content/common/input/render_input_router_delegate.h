@@ -10,6 +10,7 @@
 namespace content {
 
 class RenderWidgetHostViewInput;
+class RenderInputRouterIterator;
 
 class CONTENT_EXPORT RenderInputRouterDelegate {
  public:
@@ -19,6 +20,9 @@ class CONTENT_EXPORT RenderInputRouterDelegate {
   // TODO(b/331419617): Use a new FrameMetadataBase class instead of
   // RenderFrameMetadata.
   virtual const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() = 0;
+
+  virtual std::unique_ptr<RenderInputRouterIterator>
+  GetEmbeddedRenderInputRouters() = 0;
 };
 
 }  // namespace content

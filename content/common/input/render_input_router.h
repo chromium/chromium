@@ -17,6 +17,7 @@
 #include "content/common/input/input_injector.mojom-shared.h"
 #include "content/common/input/input_router_impl.h"
 #include "content/common/input/render_input_router_delegate.h"
+#include "content/common/input/render_input_router_iterator.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -108,6 +109,12 @@ class CONTENT_EXPORT RenderInputRouter : public InputRouterImplClient {
   void ForwardWheelEventWithLatencyInfo(
       const blink::WebMouseWheelEvent& wheel_event,
       const ui::LatencyInfo& latency_info) override;
+
+  // Retrieve an iterator over any RenderInputRouters that are
+  // immediately embedded within this one. This does not return
+  // RenderInputRouters that are embedded indirectly (i.e. nested within
+  // embedded hosts).
+  std::unique_ptr<RenderInputRouterIterator> GetEmbeddedRenderInputRouters();
 
   // |point| specifies the location in RenderWidget's coordinates for invoking
   // the context menu.

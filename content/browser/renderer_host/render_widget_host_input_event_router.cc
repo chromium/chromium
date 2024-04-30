@@ -21,8 +21,7 @@
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
-#include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/public/browser/render_widget_host_iterator.h"
+#include "content/common/input/render_input_router.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/compositor/compositor.h"
@@ -1782,16 +1781,12 @@ bool RenderWidgetHostInputEventRouter::ShouldContinueHitTesting(
     RenderWidgetHostViewInput* target_view) const {
   // Determine if |view| has any embedded children that could potentially
   // receive the event.
-  // TODO(b/335168501): Remove GetEmbeddedRenderWidgetHosts() and instead
-  // introduce GetEmbeddedRenderInputRouters() implemented by RenderInputRouter,
-  // removing dependency on RenderWidgetHostImpl in this function.
-  auto* widget_host = static_cast<RenderWidgetHostImpl*>(
-      static_cast<RenderWidgetHostViewBase*>(target_view)
-          ->GetRenderWidgetHost());
-  std::unique_ptr<RenderWidgetHostIterator> child_widgets(
-      widget_host->GetEmbeddedRenderWidgetHosts());
-  if (child_widgets->GetNextHost())
+  auto* rir = target_view->GetViewRenderInputRouter();
+  std::unique_ptr<RenderInputRouterIterator> child_rirs(
+      rir->GetEmbeddedRenderInputRouters());
+  if (child_rirs->GetNextRouter()) {
     return true;
+  }
 
   return false;
 }

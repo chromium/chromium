@@ -357,6 +357,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // RenderInputRouterDelegate implementation.
   RenderWidgetHostViewInput* GetPointerLockView() override;
   const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() override;
+  std::unique_ptr<RenderInputRouterIterator> GetEmbeddedRenderInputRouters()
+      override;
 
   // Update the stored set of visual properties for the renderer. If 'propagate'
   // is true, the new properties will be sent to the renderer process.
@@ -565,11 +567,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // have been fully realized (i.e. resulting compositor frame has been drawn,
   // swapped, and presented).
   void WaitForInputProcessed(base::OnceClosure callback);
-
-  // Retrieve an iterator over any RenderWidgetHosts that are immediately
-  // embedded within this one. This does not return hosts that are embedded
-  // indirectly (i.e. nested within embedded hosts).
-  std::unique_ptr<RenderWidgetHostIterator> GetEmbeddedRenderWidgetHosts();
 
   // Returns an emulator for this widget. See TouchEmulator for more details.
   TouchEmulator* GetTouchEmulator();

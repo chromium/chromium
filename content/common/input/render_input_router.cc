@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "content/common/input/input_router_config_helper.h"
+#include "content/common/input/render_widget_host_view_input.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,6 +22,7 @@
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 
+namespace content {
 namespace {
 
 class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
@@ -102,9 +104,7 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 
 }  // namespace
 
-namespace content {
-
-RenderInputRouter::~RenderInputRouter() {}
+RenderInputRouter::~RenderInputRouter() = default;
 
 RenderInputRouter::RenderInputRouter(
     InputRouterImplClient* host,
@@ -279,6 +279,11 @@ void RenderInputRouter::ForwardWheelEventWithLatencyInfo(
     const ui::LatencyInfo& latency_info) {
   input_router_impl_client_->ForwardWheelEventWithLatencyInfo(wheel_event,
                                                               latency_info);
+}
+
+std::unique_ptr<RenderInputRouterIterator>
+RenderInputRouter::GetEmbeddedRenderInputRouters() {
+  return delegate_->GetEmbeddedRenderInputRouters();
 }
 
 void RenderInputRouter::ShowContextMenuAtPoint(
