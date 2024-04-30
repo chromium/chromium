@@ -4,6 +4,7 @@
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -54,17 +55,15 @@ bool TouchToFillPaymentMethodViewImpl::Show(
   if (!java_object_)
     return false;
 
-  base::android::ScopedJavaLocalRef<jobjectArray> credit_cards_array =
-      Java_TouchToFillPaymentMethodViewBridge_createCreditCardsArray(
-          env, cards_to_suggest.size());
-  for (size_t i = 0; i < cards_to_suggest.size(); ++i) {
-    Java_TouchToFillPaymentMethodViewBridge_setCreditCard(
-        env, credit_cards_array, i,
-        PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
-            env, cards_to_suggest[i]));
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> credit_cards_array;
+  credit_cards_array.reserve(cards_to_suggest.size());
+  for (const autofill::CreditCard& card : cards_to_suggest) {
+    credit_cards_array.push_back(
+        PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(env, card));
   }
   Java_TouchToFillPaymentMethodViewBridge_showSheet(
-      env, java_object_, credit_cards_array, should_show_scan_credit_card);
+      env, java_object_, std::move(credit_cards_array),
+      should_show_scan_credit_card);
   return true;
 }
 

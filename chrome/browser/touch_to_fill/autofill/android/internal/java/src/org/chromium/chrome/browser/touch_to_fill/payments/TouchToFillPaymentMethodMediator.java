@@ -110,41 +110,41 @@ class TouchToFillPaymentMethodMediator {
     }
 
     void showSheet(
-            CreditCard[] cards,
+            List<CreditCard> cards,
             boolean shouldShowScanCreditCard,
             Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
                     cardImageFunction) {
         mInputProtector.markShowTime();
 
         assert cards != null;
-        mCards = Arrays.asList(cards);
+        mCards = cards;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
-        for (int i = 0; i < cards.length; ++i) {
-            CreditCard card = cards[i];
+        for (int i = 0; i < mCards.size(); ++i) {
+            CreditCard card = cards.get(i);
             final PropertyModel model =
                     createCardModel(
                             card,
-                            new FillableItemCollectionInfo(i + 1, cards.length),
+                            new FillableItemCollectionInfo(i + 1, mCards.size()),
                             cardImageFunction);
             sheetItems.add(new ListItem(CREDIT_CARD, model));
         }
 
-        if (cards.length == 1) {
+        if (cards.size() == 1) {
             // Use the credit card model as the property model for the fill button too
             assert sheetItems.get(0).type == CREDIT_CARD;
             sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));
         }
 
-        sheetItems.add(0, buildHeader(hasOnlyLocalCards(cards)));
+        sheetItems.add(0, buildHeader(hasOnlyLocalCards(mCards)));
         sheetItems.add(buildFooterForCreditCard(shouldShowScanCreditCard));
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(VISIBLE, true);
 
-        RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, cards.length);
+        RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, mCards.size());
     }
 
     public void showSheet(Iban[] ibans) {
@@ -327,7 +327,7 @@ class TouchToFillPaymentMethodMediator {
                         .build());
     }
 
-    private static boolean hasOnlyLocalCards(CreditCard[] cards) {
+    private static boolean hasOnlyLocalCards(List<CreditCard> cards) {
         for (CreditCard card : cards) {
             if (!card.getIsLocal()) return false;
         }

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -18,6 +19,9 @@ import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** JNI wrapper for C++ TouchToFillPaymentMethodViewImpl. Delegates calls from native to Java. */
 @JNINamespace("autofill")
@@ -60,25 +64,14 @@ class TouchToFillPaymentMethodViewBridge {
 
     @CalledByNative
     private void showSheet(
-            PersonalDataManager.CreditCard[] cards, boolean shouldShowScanCreditCard) {
-        mComponent.showSheet(cards, shouldShowScanCreditCard);
+            @JniType("std::vector") Object[] cards, boolean shouldShowScanCreditCard) {
+        mComponent.showSheet(
+                (List<PersonalDataManager.CreditCard>) (List<?>) Arrays.asList(cards),
+                shouldShowScanCreditCard);
     }
 
     @CalledByNative
     private void hideSheet() {
         mComponent.hideSheet();
-    }
-
-    @CalledByNative
-    private static PersonalDataManager.CreditCard[] createCreditCardsArray(int size) {
-        return new PersonalDataManager.CreditCard[size];
-    }
-
-    @CalledByNative
-    private static void setCreditCard(
-            PersonalDataManager.CreditCard[] creditCards,
-            int index,
-            PersonalDataManager.CreditCard creditCard) {
-        creditCards[index] = creditCard;
     }
 }
