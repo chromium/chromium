@@ -182,8 +182,6 @@ bool WaylandBubble::OnInitialize(PlatformWindowInitProperties properties,
   state->size_px = gfx::ScaleToEnclosingRectIgnoringError(
                        gfx::Rect(state->bounds_dip.size()), state->window_scale)
                        .size();
-  set_ui_scale(parent_window()->ui_scale());
-
   activatable_ = properties.activatable;
   accept_events_ = properties.accept_events;
 

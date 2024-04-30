@@ -161,8 +161,6 @@ class WaylandWindow : public PlatformWindow,
   // display changes. This is not sent via a configure.
   void SetWindowScale(float new_scale);
 
-  float ui_scale() const { return ui_scale_; }
-
   // Returns the preferred entered output id, if any. The preferred output is
   // the one with the largest scale. This is needed to properly render contents
   // as it seems like an expectation of Wayland. However, if all the entered
@@ -422,8 +420,6 @@ class WaylandWindow : public PlatformWindow,
   // send a request to the compositor even if the screen coordinate is enabled.
   void UpdateBoundsInDIP(const gfx::Rect& bounds_dip);
 
-  void set_ui_scale(float ui_scale) { ui_scale_ = ui_scale; }
-
   // Updates mask for this window.
   virtual void UpdateWindowMask() = 0;
 
@@ -635,10 +631,6 @@ class WaylandWindow : public PlatformWindow,
 #endif
 
   bool has_touch_focus_ = false;
-  // The UI scale may be forced through the command line, which means that it
-  // replaces the default value that is equal to the natural device scale.
-  // We need it to place and size the menus properly.
-  float ui_scale_ = 1.0f;
 
   // Stores current opacity of the window. Set on ::Initialize call.
   ui::PlatformWindowOpacity opacity_;

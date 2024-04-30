@@ -164,7 +164,6 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
   }
 
   float new_scale = output->scale_factor();
-  ui_scale_ = output->GetUIScaleFactor();
   SetWindowScale(new_scale);
 
   // Propagate update to the child windows
@@ -423,7 +422,6 @@ void WaylandWindow::DumpState(std::ostream& out) const {
   if (has_touch_focus_) {
     out << ", has_touch_focus";
   }
-  out << ", ui_scale=" << ui_scale_;
   constexpr auto kOpacityToString =
       base::MakeFixedFlatMap<PlatformWindowOpacity, const char*>(
           {{PlatformWindowOpacity::kInferOpacity, "infer"},
