@@ -23,7 +23,6 @@
 #include <memory>
 
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -35,7 +34,6 @@
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/cronet_buildflags.h"
-#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -67,12 +65,9 @@ namespace net {
 
 namespace {
 
-const int kBindRetries = 10;
-const int kPortStart = 1024;
-const int kPortEnd = 65535;
-const int kActivityMonitorBytesThreshold = 65535;
-const int kActivityMonitorMinimumSamplesForThroughputEstimate = 2;
-const base::TimeDelta kActivityMonitorMsThreshold = base::Milliseconds(100);
+constexpr int kBindRetries = 10;
+constexpr int kPortStart = 1024;
+constexpr int kPortEnd = 65535;
 
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
@@ -120,9 +115,7 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
       read_watcher_(this),
       write_watcher_(this),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::UDP_SOCKET)),
-      bound_network_(handles::kInvalidNetworkHandle),
-      always_update_bytes_received_(base::FeatureList::IsEnabled(
-          features::kUdpSocketPosixAlwaysUpdateBytesReceived)) {
+      bound_network_(handles::kInvalidNetworkHandle) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
 
@@ -135,9 +128,7 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
       read_watcher_(this),
       write_watcher_(this),
       net_log_(source_net_log),
-      bound_network_(handles::kInvalidNetworkHandle),
-      always_update_bytes_received_(base::FeatureList::IsEnabled(
-          features::kUdpSocketPosixAlwaysUpdateBytesReceived)) {
+      bound_network_(handles::kInvalidNetworkHandle) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE,
                                        net_log_.source());
 }
@@ -199,51 +190,6 @@ int UDPSocketPosix::ConfigureOpenedSocket() {
   return OK;
 }
 
-void UDPSocketPosix::ReceivedActivityMonitor::Increment(uint32_t bytes) {
-  if (!bytes)
-    return;
-  bool timer_running = timer_.IsRunning();
-  bytes_ += bytes;
-  increments_++;
-  // Allow initial updates to make sure throughput estimator has
-  // enough samples to generate a value. (low water mark)
-  // Or once the bytes threshold has be met. (high water mark)
-  if (increments_ < kActivityMonitorMinimumSamplesForThroughputEstimate ||
-      bytes_ > kActivityMonitorBytesThreshold) {
-    Update();
-    if (timer_running)
-      timer_.Reset();
-  }
-  if (!timer_running) {
-    timer_.Start(FROM_HERE, kActivityMonitorMsThreshold, this,
-                 &UDPSocketPosix::ReceivedActivityMonitor::OnTimerFired);
-  }
-}
-
-void UDPSocketPosix::ReceivedActivityMonitor::Update() {
-  if (!bytes_)
-    return;
-  activity_monitor::IncrementBytesReceived(bytes_);
-  bytes_ = 0;
-}
-
-void UDPSocketPosix::ReceivedActivityMonitor::OnClose() {
-  timer_.Stop();
-  Update();
-}
-
-void UDPSocketPosix::ReceivedActivityMonitor::OnTimerFired() {
-  increments_ = 0;
-  if (!bytes_) {
-    // Can happen if the socket has been idle and have had no
-    // increments since the timer previously fired.  Don't bother
-    // keeping the timer running in this case.
-    timer_.Stop();
-    return;
-  }
-  Update();
-}
-
 void UDPSocketPosix::Close() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -297,8 +243,6 @@ void UDPSocketPosix::Close() {
   addr_family_ = 0;
   is_connected_ = false;
   tag_ = SocketTag();
-
-  received_activity_monitor_.OnClose();
 }
 
 int UDPSocketPosix::GetPeerAddress(IPEndPoint* address) const {
@@ -721,10 +665,7 @@ void UDPSocketPosix::LogRead(int result,
                           bytes, is_address_valid ? &address : nullptr);
   }
 
-  if (always_update_bytes_received_)
-    activity_monitor::IncrementBytesReceived(result);
-  else
-    received_activity_monitor_.Increment(result);
+  activity_monitor::IncrementBytesReceived(result);
 }
 
 void UDPSocketPosix::DidCompleteWrite() {
