@@ -64,6 +64,18 @@ public class OmniboxFeatures {
                     "QueryTilesShowAsCarousel",
                     false);
 
+    public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
+            newBooleanParam(
+                    OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS,
+                    "AnswerActionsShowAboveKeyboard",
+                    false);
+
+    public static final BooleanCachedFieldTrialParameter sAnswerActionsShowIfUrlsPresent =
+            newBooleanParam(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowIfUrlsPresent", false);
+
+    public static final BooleanCachedFieldTrialParameter sAnswerActionsShowRichCard =
+            newBooleanParam(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowRichCard", false);
+
     /**
      * Create an instance of a CachedFeatureFlag.
      *
@@ -180,11 +192,7 @@ public class OmniboxFeatures {
 
     /** Returns whether answers with actions should be re-ordered to just above the keyboard */
     public static boolean shouldShowAnswerWithActionsAboveKeyboard() {
-        return shouldShowAnswerActions()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS,
-                        "AnswerActionsShowAboveKeyboard",
-                        false);
+        return shouldShowAnswerActions() && sAnswerActionsShowAboveKeyboard.getValue();
     }
 
     /**
@@ -192,16 +200,12 @@ public class OmniboxFeatures {
      * present.
      */
     public static boolean shouldShowAnswerWithActionsIfUrlsPresent() {
-        return shouldShowAnswerActions()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowIfUrlsPresent", false);
+        return shouldShowAnswerActions() && sAnswerActionsShowIfUrlsPresent.getValue();
     }
 
     /** Returns whether answers with actions should be presented as a rich card */
     public static boolean shouldShowRichAnswerCard() {
-        return shouldShowAnswerActions()
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowRichCard", false);
+        return shouldShowAnswerActions() && sAnswerActionsShowRichCard.getValue();
     }
 
     /**

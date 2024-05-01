@@ -105,6 +105,9 @@ public class ChromeCachedFlags {
                         MultiWindowUtils.BACK_TO_BACK_CTA_CREATION_TIMESTAMP_DIFF_THRESHOLD_MS,
                         OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE,
                         OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL,
+                        OmniboxFeatures.sAnswerActionsShowAboveKeyboard,
+                        OmniboxFeatures.sAnswerActionsShowIfUrlsPresent,
+                        OmniboxFeatures.sAnswerActionsShowRichCard,
                         ShoppingPersistedTabDataService
                                 .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
                         StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
