@@ -5,14 +5,12 @@ agrieve@chromium.org
 brucedawson@chromium.org
 dpranke@google.com
 jochen@chromium.org
-jwata@google.com
-philwo@chromium.org
-richardwa@google.com
 sdefresne@chromium.org
 thakis@chromium.org
 thomasanderson@chromium.org
-tikuta@chromium.org
-ukai@google.com
+
+# Chrome Build Team members
+file://infra/config/groups/chrome-build/OWNERS
 
 # Clang build config changes:
 file://tools/clang/scripts/OWNERS
