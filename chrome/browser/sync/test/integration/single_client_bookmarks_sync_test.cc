@@ -2328,6 +2328,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   const std::string kInitiallyLocalTitle = "Initially Local";
   const std::string kInitiallyAccountTitle = "Initially Account";
 
+  const std::string kInitiallyLocalNestedBookmarkTitle =
+      "Initially Local Nested";
+  const GURL kInitiallyLocalNestedBookmarkUrl("https://test.com");
+
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(kInitiallyAccountTitle);
@@ -2337,8 +2341,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
 
-  model->AddFolder(/*parent=*/model->bookmark_bar_node(), /*index=*/0,
-                   base::UTF8ToUTF16(kInitiallyLocalTitle));
+  {
+    const BookmarkNode* folder =
+        model->AddFolder(/*parent=*/model->bookmark_bar_node(), /*index=*/0,
+                         base::UTF8ToUTF16(kInitiallyLocalTitle));
+    model->AddURL(/*parent=*/folder, /*index=*/0,
+                  base::UTF8ToUTF16(kInitiallyLocalNestedBookmarkTitle),
+                  kInitiallyLocalNestedBookmarkUrl);
+  }
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
   // that Sync will start in transport mode).
@@ -2377,12 +2387,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
               ElementsAre(IsFolderWithTitle(kInitiallyLocalTitle),
                           IsFolderWithTitle(kInitiallyAccountTitle)));
 
-  // Move one local bookmark to the account.
+  // Move one local folder with a child bookmark to the account.
   model->Move(model->bookmark_bar_node()->children().front().get(),
               model->account_bookmark_bar_node(),
               /*index=*/0);
   EXPECT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  {{kInitiallyLocalTitle, GURL()}},
+                  {{kInitiallyLocalTitle, GURL()},
+                   {kInitiallyLocalNestedBookmarkTitle,
+                    kInitiallyLocalNestedBookmarkUrl}},
                   /*cryptographer=*/nullptr)
                   .Wait());
   EXPECT_THAT(model->account_bookmark_bar_node()->children(),

@@ -41,6 +41,7 @@ namespace sync_bookmarks {
 
 namespace {
 
+using testing::AtLeast;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
@@ -429,6 +430,107 @@ TEST_P(BookmarkModelObserverImplTest,
   EXPECT_TRUE(folder_entity->IsUnsynced());
   EXPECT_FALSE(folder_entity->metadata().is_deleted());
   EXPECT_THAT(folder_entity->bookmark_node(), Eq(folder_node));
+
+  model.RemoveObserver(&observer);
+}
+
+TEST_P(BookmarkModelObserverImplTest,
+       BookmarkFolderMovedWithChildrenThatBecameSyncableShouldIssueCreations) {
+  auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+  bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
+  TestBookmarkModelView model(GetParam(), std::move(client));
+  model.EnsurePermanentNodesExist();
+
+  // Add one managed folder, which is considered unsyncable.
+  const bookmarks::BookmarkNode* folder_node = model.AddFolder(
+      /*parent=*/managed_node, /*index=*/0, u"folder1");
+
+  // Add two children to the unsyncable folder.
+  const bookmarks::BookmarkNode* bookmark1_node = model.AddURL(
+      /*parent=*/folder_node, /*index=*/0, u"bookmark1",
+      GURL("http://url1.com"));
+  const bookmarks::BookmarkNode* bookmark2_node = model.AddURL(
+      /*parent=*/folder_node, /*index=*/1, u"bookmark2",
+      GURL("http://url2.com"));
+
+  const syncer::ClientTagHash folder_client_tag_hash =
+      SyncedBookmarkTracker::GetClientTagHashFromUuid(folder_node->uuid());
+  const syncer::ClientTagHash bookmark1_client_tag_hash =
+      SyncedBookmarkTracker::GetClientTagHashFromUuid(bookmark1_node->uuid());
+  const syncer::ClientTagHash bookmark2_client_tag_hash =
+      SyncedBookmarkTracker::GetClientTagHashFromUuid(bookmark2_node->uuid());
+
+  // Build a tracker that already tracks all syncable nodes (i.e. permanent
+  // nodes only).
+  std::unique_ptr<SyncedBookmarkTracker> bookmark_tracker =
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+  AddPermanentFoldersToTracker(&model, bookmark_tracker.get());
+
+  BookmarkModelObserverImpl observer(
+      &model, nudge_for_commit_closure()->Get(),
+      /*on_bookmark_model_being_deleted_closure=*/base::DoNothing(),
+      bookmark_tracker.get());
+  model.AddObserver(&observer);
+
+  ASSERT_FALSE(model.IsNodeSyncable(folder_node));
+  ASSERT_FALSE(model.IsNodeSyncable(bookmark1_node));
+  ASSERT_FALSE(model.IsNodeSyncable(bookmark2_node));
+  ASSERT_THAT(bookmark_tracker->GetEntityForBookmarkNode(folder_node),
+              IsNull());
+  ASSERT_THAT(bookmark_tracker->GetEntityForBookmarkNode(bookmark1_node),
+              IsNull());
+  ASSERT_THAT(bookmark_tracker->GetEntityForBookmarkNode(bookmark2_node),
+              IsNull());
+  ASSERT_THAT(
+      bookmark_tracker->GetEntityForClientTagHash(folder_client_tag_hash),
+      IsNull());
+  ASSERT_THAT(
+      bookmark_tracker->GetEntityForClientTagHash(bookmark1_client_tag_hash),
+      IsNull());
+  ASSERT_THAT(
+      bookmark_tracker->GetEntityForClientTagHash(bookmark2_client_tag_hash),
+      IsNull());
+  ASSERT_THAT(bookmark_tracker->TrackedEntitiesCountForTest(), 3U);
+
+  // Mimic the folder becoming syncable by moving it from the managed node to
+  // the bookmark bar. This isn't very realistic but is good enough for
+  // unit-testing.
+  EXPECT_CALL(*nudge_for_commit_closure(), Run()).Times(AtLeast(1));
+  model.Move(folder_node, model.bookmark_bar_node(), /*index=*/0);
+  ASSERT_TRUE(model.IsNodeSyncable(folder_node));
+  ASSERT_TRUE(model.IsNodeSyncable(bookmark1_node));
+  ASSERT_TRUE(model.IsNodeSyncable(bookmark2_node));
+
+  EXPECT_THAT(bookmark_tracker->TrackedEntitiesCountForTest(), 6U);
+
+  const SyncedBookmarkTrackerEntity* folder_entity =
+      bookmark_tracker->GetEntityForClientTagHash(folder_client_tag_hash);
+  ASSERT_THAT(folder_entity, NotNull());
+  EXPECT_THAT(bookmark_tracker->GetEntityForBookmarkNode(folder_node),
+              Eq(folder_entity));
+
+  const SyncedBookmarkTrackerEntity* bookmark1_entity =
+      bookmark_tracker->GetEntityForClientTagHash(bookmark1_client_tag_hash);
+  ASSERT_THAT(bookmark1_entity, NotNull());
+  EXPECT_THAT(bookmark_tracker->GetEntityForBookmarkNode(bookmark1_node),
+              Eq(bookmark1_entity));
+
+  const SyncedBookmarkTrackerEntity* bookmark2_entity =
+      bookmark_tracker->GetEntityForClientTagHash(bookmark2_client_tag_hash);
+  ASSERT_THAT(bookmark2_entity, NotNull());
+  EXPECT_THAT(bookmark_tracker->GetEntityForBookmarkNode(bookmark2_node),
+              Eq(bookmark2_entity));
+
+  // Three pending creations should be tracked.
+  EXPECT_TRUE(folder_entity->IsUnsynced());
+  EXPECT_FALSE(folder_entity->metadata().is_deleted());
+  EXPECT_THAT(folder_entity->bookmark_node(), Eq(folder_node));
+  EXPECT_TRUE(bookmark1_entity->IsUnsynced());
+  EXPECT_FALSE(bookmark1_entity->metadata().is_deleted());
+  EXPECT_THAT(bookmark1_entity->bookmark_node(), Eq(bookmark1_node));
+  EXPECT_TRUE(bookmark2_entity->IsUnsynced());
+  EXPECT_FALSE(bookmark2_entity->metadata().is_deleted());
+  EXPECT_THAT(bookmark2_entity->bookmark_node(), Eq(bookmark2_node));
 
   model.RemoveObserver(&observer);
 }

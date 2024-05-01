@@ -88,6 +88,11 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   // over all children before processing the folder itself.
   void ProcessDelete(const bookmarks::BookmarkNode* node);
 
+  // Recursive function to deal for the case where a moved folder becomes
+  // syncable, which requires that all descendants are also newly tracked.
+  void ProcessMovedDescendentsAsBookmarkNodeAddedRecursive(
+      const bookmarks::BookmarkNode* node);
+
   // Returns current unique_position from sync metadata for the tracked |node|.
   syncer::UniquePosition GetUniquePositionForNode(
       const bookmarks::BookmarkNode* node) const;
