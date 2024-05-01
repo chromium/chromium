@@ -540,9 +540,13 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
   test::Image output_image(BuildSourceFilePath(std::get<1>(GetParam())));
   ASSERT_TRUE(input_image.Load());
   ASSERT_TRUE(output_image.LoadMetadata());
-  auto ip_client = CreateImageProcessorClient(
-      input_image, VideoFrame::STORAGE_OWNED_MEMORY, &output_image,
-      VideoFrame::STORAGE_OWNED_MEMORY);
+
+  const bool is_scaling = (input_image.PixelFormat() == PIXEL_FORMAT_NV12 &&
+                           output_image.PixelFormat() == PIXEL_FORMAT_NV12);
+  const auto storage = is_scaling ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+                                  : VideoFrame::STORAGE_OWNED_MEMORY;
+  auto ip_client =
+      CreateImageProcessorClient(input_image, storage, &output_image, storage);
   if (!ip_client && g_backend_type.has_value()) {
     GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
                  << " does not support this test";
@@ -569,9 +573,12 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
   ASSERT_TRUE(output_image.LoadMetadata());
   if (!IsFormatTestedForDmabufAndGbm(input_image.PixelFormat()))
     GTEST_SKIP() << "Skipping Dmabuf format " << input_image.PixelFormat();
-  auto ip_client = CreateImageProcessorClient(
-      input_image, VideoFrame::STORAGE_DMABUFS, &output_image,
-      VideoFrame::STORAGE_OWNED_MEMORY);
+  const bool is_scaling = (input_image.PixelFormat() == PIXEL_FORMAT_NV12 &&
+                           output_image.PixelFormat() == PIXEL_FORMAT_NV12);
+  const auto storage = is_scaling ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+                                  : VideoFrame::STORAGE_OWNED_MEMORY;
+  auto ip_client =
+      CreateImageProcessorClient(input_image, storage, &output_image, storage);
   if (!ip_client && g_backend_type.has_value()) {
     GTEST_SKIP() << "Forced backend " << ToString(*g_backend_type)
                  << " does not support this test";
