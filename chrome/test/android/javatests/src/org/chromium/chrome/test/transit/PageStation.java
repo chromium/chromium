@@ -107,13 +107,13 @@ public class PageStation extends TransitStation {
     protected final String mPath;
     protected final String mTitle;
 
-    // TODO(crbug.com/41497463): This should be owned, but the tab_switcher_button exists in the
-    // tab switcher, even though the tab switcher's toolbar is drawn over it.
+    // TODO(crbug.com/41497463): These should be shared, not unscoped, but for now they need to be
+    // unscoped since they unintentionally still exist in the non-Hub tab switcher. They are mostly
+    // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still visible.
+    public static final ViewElement HOME_BUTTON = unscopedViewElement(withId(R.id.home_button));
     public static final ViewElement TAB_SWITCHER_BUTTON =
             unscopedViewElement(withId(R.id.tab_switcher_button));
-    public static final ViewElement MENU_BUTTON =
-            unscopedViewElement(withId(R.id.menu_button_wrapper));
-    public static final ViewElement MENU_BUTTON2 = unscopedViewElement(withId(R.id.menu_button));
+    public static final ViewElement MENU_BUTTON = unscopedViewElement(withId(R.id.menu_button));
 
     protected PageStationTabModelObserver mTabModelObserver;
     protected PageLoadedCondition mPageLoadedEnterCondition;
@@ -170,9 +170,9 @@ public class PageStation extends TransitStation {
 
     @Override
     public void declareElements(Elements.Builder elements) {
+        elements.declareView(HOME_BUTTON);
         elements.declareView(TAB_SWITCHER_BUTTON);
         elements.declareView(MENU_BUTTON);
-        elements.declareView(MENU_BUTTON2);
 
         if (mIsOpeningTab) {
             elements.declareEnterCondition(
@@ -303,12 +303,13 @@ public class PageStation extends TransitStation {
         return StationFacility.enterSync(menu, () -> TAB_SWITCHER_BUTTON.perform(longClick()));
     }
 
+    /** Opens the app menu by pressing the toolbar "..." button */
     public PageAppMenuFacility openAppMenu() {
         recheckActiveConditions();
 
         PageAppMenuFacility menu = new PageAppMenuFacility(this);
 
-        return StationFacility.enterSync(menu, () -> MENU_BUTTON2.perform(click()));
+        return StationFacility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
