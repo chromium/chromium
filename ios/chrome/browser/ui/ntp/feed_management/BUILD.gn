@@ -73,7 +73,6 @@ source_set("follow_management_ui") {
   ]
   deps = [
     ":feed_management_ui",
-    "resources:following_empty",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/follow/model:enums",
@@ -83,6 +82,7 @@ source_set("follow_management_ui") {
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",
+    "//ios/chrome/browser/ui/ntp/feed_management/resources",
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/common/ui/favicon",
     "//ui/base",

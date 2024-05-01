@@ -34,8 +34,6 @@ source_set("download") {
   deps = [
     ":constants",
     ":features",
-    "resources:background_compact",
-    "resources:background_regular",
     "//base",
     "//components/infobars/core",
     "//components/strings",
@@ -63,6 +61,7 @@ source_set("download") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/ui/download/activities",
+    "//ios/chrome/browser/ui/download/resources",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/presenters",

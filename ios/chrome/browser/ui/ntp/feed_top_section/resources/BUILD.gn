@@ -2,16 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-imageset("notifications_promo_icon") {
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
   sources = [
-    "notifications_promo_icon.imageset/Contents.json",
-    "notifications_promo_icon.imageset/notifications_promo_icon.png",
-    "notifications_promo_icon.imageset/notifications_promo_icon@2x.png",
-    "notifications_promo_icon.imageset/notifications_promo_icon@3x.png",
-    "notifications_promo_icon.imageset/notifications_promo_icon_dark.png",
-    "notifications_promo_icon.imageset/notifications_promo_icon_dark@2x.png",
-    "notifications_promo_icon.imageset/notifications_promo_icon_dark@3x.png",
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/notifications_promo_icon.imageset/Contents.json",
+    "Assets.xcassets/notifications_promo_icon.imageset/notifications_promo_icon.png",
+    "Assets.xcassets/notifications_promo_icon.imageset/notifications_promo_icon@2x.png",
+    "Assets.xcassets/notifications_promo_icon.imageset/notifications_promo_icon@3x.png",
+    "Assets.xcassets/notifications_promo_icon.imageset/notifications_promo_icon_dark.png",
+    "Assets.xcassets/notifications_promo_icon.imageset/notifications_promo_icon_dark@2x.png",
+    "Assets.xcassets/notifications_promo_icon.imageset/notifications_promo_icon_dark@3x.png",
   ]
 }

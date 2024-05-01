@@ -65,12 +65,12 @@ source_set("feed_top_section_promos_ui") {
   ]
   deps = [
     ":constants",
-    "resources:notifications_promo_icon",
     "//build:branding_buildflags",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols:symbols",
     "//ios/chrome/browser/shared/ui/util:util",
+    "//ios/chrome/browser/ui/ntp/feed_top_section/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util:util",
     "//ui/base:base",

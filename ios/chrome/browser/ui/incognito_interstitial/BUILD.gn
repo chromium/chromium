@@ -17,11 +17,11 @@ source_set("incognito_interstitial_ui") {
   ]
   deps = [
     ":constants",
-    "resources:incognito_interstitial_screen_banner",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:elements",
     "//ios/chrome/browser/shared/ui/util:util",
+    "//ios/chrome/browser/ui/incognito_interstitial/resources",
     "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/promo_style:promo_style",

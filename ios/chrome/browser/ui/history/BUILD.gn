@@ -69,7 +69,6 @@ source_set("history_ui") {
   deps = [
     ":constants",
     "public",
-    "resources:history_empty",
     "//base",
     "//base:i18n",
     "//components/history/core/browser",
@@ -94,6 +93,7 @@ source_set("history_ui") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/history/resources",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/window_activities/model",
