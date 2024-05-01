@@ -7,7 +7,7 @@ import 'chrome://os-settings/os_settings.js';
 import {SettingsDropdownV2Element} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../../utils.js';
 
@@ -218,6 +218,25 @@ suite('<settings-dropdown-v2>', () => {
 
       dropdownElement.set('pref.value', 9001);
       assertEquals(9001, dropdownElement.value);
+    });
+
+    test('policy indicator does not show if pref is not enforced', () => {
+      const policyIndicator =
+          dropdownElement.shadowRoot!.querySelector('cr-policy-pref-indicator');
+      assertFalse(isVisible(policyIndicator));
+    });
+
+    test('policy indicator shows if pref is enforced', async () => {
+      dropdownElement.pref = {
+        ...fakeNumberPrefObject,
+        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+        controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+      };
+      await flushTasks();
+
+      const policyIndicator =
+          dropdownElement.shadowRoot!.querySelector('cr-policy-pref-indicator');
+      assertTrue(isVisible(policyIndicator));
     });
 
     test('Selecting an option updates local pref value', () => {
