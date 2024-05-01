@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox;
+package org.chromium.components.omnibox;
 
 import android.content.Context;
 
@@ -14,9 +14,6 @@ import org.chromium.base.cached_flags.CachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatureMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +24,7 @@ public class OmniboxFeatures {
     // on devices that have less RAM than this to avoid bloat and reduce user-visible
     // slowdown while spinning up an image decompression process.
     // We set the threshold to 1.5GB to reduce number of users affected by this restriction.
-    private static final int LOW_MEMORY_THRESHOLD_KB =
-            (int) (1.5 * ConversionUtils.KILOBYTES_PER_GIGABYTE);
+    private static final int LOW_MEMORY_THRESHOLD_KB = (int) (1.5 * 1024 * 1024);
 
     // Maximum number of attempts to retrieve page behind the default match per Omnibox input
     // session.

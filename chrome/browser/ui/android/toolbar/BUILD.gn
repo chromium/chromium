@@ -167,6 +167,7 @@ android_library("java") {
     "//components/feature_engagement:feature_engagement_java",
     "//components/omnibox/browser:browser_java",
     "//components/omnibox/browser:java_resources",
+    "//components/omnibox/common:features_java",
     "//components/prefs/android:java",
     "//components/profile_metrics:browser_profile_type_enum_java",
     "//components/search_engines/android:java",

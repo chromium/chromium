@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.util.ArrayList;

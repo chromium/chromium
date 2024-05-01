@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotificationManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.ArrayList;
 import java.util.Arrays;

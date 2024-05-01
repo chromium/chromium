@@ -24,12 +24,12 @@ import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
 

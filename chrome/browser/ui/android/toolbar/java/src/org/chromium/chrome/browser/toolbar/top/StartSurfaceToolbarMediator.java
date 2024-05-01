@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoView;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -55,6 +54,7 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlph
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.interpolators.Interpolators;

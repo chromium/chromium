@@ -601,6 +601,7 @@ if (current_toolchain == default_toolchain) {
       "//components/navigation_interception/android:navigation_interception_java",
       "//components/offline_items_collection/core:core_java",
       "//components/omnibox/browser:browser_java",
+      "//components/omnibox/common:features_java",
       "//components/optimization_guide/proto:optimization_guide_proto_java",
       "//components/page_info/android:java",
       "//components/page_info/android:page_info_action_enum_java",

@@ -10,7 +10,6 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -19,6 +18,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSugg
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;

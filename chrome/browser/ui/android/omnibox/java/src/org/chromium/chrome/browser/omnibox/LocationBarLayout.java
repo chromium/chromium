@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;

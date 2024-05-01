@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -33,6 +32,7 @@ import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorLi
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;

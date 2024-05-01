@@ -13,7 +13,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
