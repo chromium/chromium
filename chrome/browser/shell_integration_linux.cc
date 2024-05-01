@@ -531,20 +531,10 @@ std::optional<base::SafeBaseName> GetUniqueWebShortcutFilename(
   // guaranteed by `ReplaceIllegalCharactersInPath`.
   DCHECK(base::i18n::IsFilenameLegal(base_name_no_extension.AsUTF16Unsafe()));
 
-  // TODO(crbug.com/336633543): Evaluate unique file selection code after other
-  // OS implementations of create shortcut are complete.
   base::FilePath filepath =
       desktop_path.Append(base_name_no_extension.AddExtension(".desktop"));
-  for (size_t i = 1; i < 100; ++i) {
-    if (base::PathExists(filepath)) {
-      filepath = desktop_path.Append(
-          base::StrCat({base_name_no_extension.value(), "_",
-                        base::NumberToString(i), ".desktop"}));
-    } else {
-      return base::SafeBaseName::Create(filepath);
-    }
-  }
-  return std::nullopt;
+  return base::SafeBaseName::Create(
+      base::GetUniquePathWithSuffixFormat(filepath, "_%d"));
 }
 
 std::vector<base::FilePath> GetExistingProfileShortcutFilenames(

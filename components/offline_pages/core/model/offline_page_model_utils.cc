@@ -69,29 +69,21 @@ base::FilePath GenerateUniqueFilenameForOfflinePage(
       target_dir.Append(filename_generation::GenerateFilename(
           title, url, false /* can_save_as_complete */, kMHTMLMimeType));
 
-  // Find a unique name based on |suggested_path|.
-  int uniquifier = base::GetUniquePathNumber(suggested_path);
-  std::string suffix;
-  if (uniquifier > 0) {
-    suffix = base::StringPrintf(" (%d)", uniquifier);
-  }
-
-  // Truncation.
+  // Truncation based on the maximum length the suffix may have " (99)".
+  const int kMaxSuffixLength = 5;
   int max_path_component_length =
       base::GetMaximumPathComponentLength(target_dir);
   if (max_path_component_length != -1) {
     int limit = max_path_component_length -
-                suggested_path.Extension().length() - suffix.length();
+                suggested_path.Extension().length() - kMaxSuffixLength;
     if (limit <= 0 ||
         !filename_generation::TruncateFilename(&suggested_path, limit)) {
       return base::FilePath();
     }
   }
 
-  // Adding uniquifier suffix if needed.
-  if (!suffix.empty()) {
-    suggested_path = suggested_path.InsertBeforeExtensionASCII(suffix);
-  }
+  // Find a unique name based on |suggested_path|.
+  suggested_path = base::GetUniquePath(suggested_path);
 
   return suggested_path;
 }

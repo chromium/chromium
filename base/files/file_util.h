@@ -23,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
+#include "base/strings/cstring_view.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 
@@ -619,20 +620,21 @@ BASE_EXPORT bool GetCurrentDirectory(FilePath* path);
 // Sets the current working directory for the process.
 BASE_EXPORT bool SetCurrentDirectory(const FilePath& path);
 
-// The largest value attempted by GetUniquePath{Number,}.
+// The largest value attempted by GetUniquePath.
 enum { kMaxUniqueFiles = 100 };
-
-// Returns the number N that makes |path| unique when formatted as " (N)" in a
-// suffix to its basename before any file extension, where N is a number between
-// 1 and 100 (inclusive). Returns 0 if |path| does not exist (meaning that it is
-// unique as-is), or -1 if no such number can be found.
-BASE_EXPORT int GetUniquePathNumber(const FilePath& path);
 
 // Returns |path| if it does not exist. Otherwise, returns |path| with the
 // suffix " (N)" appended to its basename before any file extension, where N is
 // a number between 1 and 100 (inclusive). Returns an empty path if no such
 // number can be found.
 BASE_EXPORT FilePath GetUniquePath(const FilePath& path);
+
+// Same as `GetUniquePath()`, except this method allows specifying a custom
+// suffix printf format string in cases where the default format doesn't work
+// (for example because you need a filename without spaces in it). Passing
+// " (%d)" as `suffix_format` makes this behave identical to `GetUniquePath()`.
+BASE_EXPORT FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
+                                                   cstring_view suffix_format);
 
 // Sets the given |fd| to non-blocking mode.
 // Returns true if it was able to set it in the non-blocking mode, otherwise

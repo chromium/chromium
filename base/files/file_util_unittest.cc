@@ -2845,13 +2845,9 @@ TEST_F(FileUtilTest, CreateAndOpenTemporaryStreamTest) {
   }
 }
 
-TEST_F(FileUtilTest, GetUniquePathTest) {
-  // Create a unique temp directory and use it to generate a unique file path.
-  base::ScopedTempDir temp_dir;
-  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
-  EXPECT_TRUE(temp_dir.IsValid());
-  FilePath base_name(FILE_PATH_LITERAL("Unique_Base_Name.txt"));
-  FilePath base_path = temp_dir.GetPath().Append(base_name);
+TEST_F(FileUtilTest, GetUniquePath) {
+  FilePath base_name(FPL("Unique_Base_Name.txt"));
+  FilePath base_path = temp_dir_.GetPath().Append(base_name);
   EXPECT_FALSE(PathExists(base_path));
 
   // GetUniquePath() should return unchanged path if file does not exist.
@@ -2865,14 +2861,14 @@ TEST_F(FileUtilTest, GetUniquePathTest) {
   }
 
   static const FilePath::CharType* const kExpectedNames[] = {
-      FILE_PATH_LITERAL("Unique_Base_Name (1).txt"),
-      FILE_PATH_LITERAL("Unique_Base_Name (2).txt"),
-      FILE_PATH_LITERAL("Unique_Base_Name (3).txt"),
+      FPL("Unique_Base_Name (1).txt"),
+      FPL("Unique_Base_Name (2).txt"),
+      FPL("Unique_Base_Name (3).txt"),
   };
 
   // Call GetUniquePath() three times against this existing file name.
   for (const FilePath::CharType* expected_name : kExpectedNames) {
-    FilePath expected_path = temp_dir.GetPath().Append(expected_name);
+    FilePath expected_path = temp_dir_.GetPath().Append(expected_name);
     FilePath path = GetUniquePath(base_path);
     EXPECT_EQ(expected_path, path);
 
@@ -2885,6 +2881,68 @@ TEST_F(FileUtilTest, GetUniquePathTest) {
     File file(path, File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
     EXPECT_TRUE(PathExists(path));
   }
+}
+
+TEST_F(FileUtilTest, GetUniquePathTooManyFiles) {
+  // Create a file with the desired path.
+  const FilePath some_file = temp_dir_.GetPath().Append(FPL("SomeFile.txt"));
+  ASSERT_TRUE(File(some_file, File::FLAG_CREATE | File::FLAG_WRITE).IsValid());
+
+  // Now create 100 collisions.
+  for (int i = 1; i <= kMaxUniqueFiles; ++i) {
+    FilePath path =
+        temp_dir_.GetPath().AppendASCII(StringPrintf("SomeFile (%d).txt", i));
+    ASSERT_EQ(GetUniquePath(some_file), path);
+    ASSERT_TRUE(File(path, File::FLAG_CREATE | File::FLAG_WRITE).IsValid());
+  }
+
+  // Verify that the limit has been reached.
+  EXPECT_EQ(GetUniquePath(some_file), base::FilePath());
+}
+
+TEST_F(FileUtilTest, GetUniquePathWithSuffixFormat) {
+  const char kSuffix[] = "_%d";
+  FilePath base_name(FPL("Unique_Base_Name.txt"));
+  FilePath base_path = temp_dir_.GetPath().Append(base_name);
+  EXPECT_FALSE(PathExists(base_path));
+
+  // GetUniquePathWithSuffixFormat() should return unchanged path if file does
+  // not exist.
+  EXPECT_EQ(base_path, GetUniquePathWithSuffixFormat(base_path, kSuffix));
+
+  // Create the file.
+  {
+    File file(base_path,
+              File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
+    EXPECT_TRUE(PathExists(base_path));
+  }
+
+  static const FilePath::CharType* const kExpectedNames[] = {
+      FPL("Unique_Base_Name_1.txt"),
+      FPL("Unique_Base_Name_2.txt"),
+      FPL("Unique_Base_Name_3.txt"),
+  };
+
+  // Call GetUniquePathWithSuffixFormat() three times against this existing file
+  // name.
+  for (const FilePath::CharType* expected_name : kExpectedNames) {
+    FilePath expected_path = temp_dir_.GetPath().Append(expected_name);
+    FilePath path = GetUniquePathWithSuffixFormat(base_path, kSuffix);
+    EXPECT_EQ(expected_path, path);
+
+    // Verify that a file with this path indeed does not exist on the file
+    // system.
+    EXPECT_FALSE(PathExists(path));
+
+    // Create the file so it exists for the next call to
+    // GetUniquePathWithSuffixFormat() in the loop.
+    File file(path, File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
+    EXPECT_TRUE(PathExists(path));
+  }
+
+  // Verify that a different suffix still ends up with number 1.
+  EXPECT_EQ(temp_dir_.GetPath().Append(FPL("Unique_Base_Name (1).txt")),
+            GetUniquePathWithSuffixFormat(base_path, " (%d)"));
 }
 
 TEST_F(FileUtilTest, FileToFILE) {
@@ -4344,54 +4402,6 @@ TEST_F(FileUtilTest, NonExistentContentUriTest) {
   EXPECT_FALSE(file.IsValid());
 }
 #endif
-
-TEST_F(FileUtilTest, GetUniquePathNumberNoFile) {
-  // This file does not exist.
-  const FilePath some_file = temp_dir_.GetPath().Append(FPL("SomeFile.txt"));
-
-  // The path is unique as-is.
-  EXPECT_EQ(GetUniquePathNumber(some_file), 0);
-}
-
-TEST_F(FileUtilTest, GetUniquePathNumberFileExists) {
-  // Create a file with the desired path.
-  const FilePath some_file = temp_dir_.GetPath().Append(FPL("SomeFile.txt"));
-  ASSERT_TRUE(File(some_file, File::FLAG_CREATE | File::FLAG_WRITE).IsValid());
-
-  // The file exists, so the number 1 is needed to make it unique.
-  EXPECT_EQ(GetUniquePathNumber(some_file), 1);
-}
-
-TEST_F(FileUtilTest, GetUniquePathNumberFilesExist) {
-  // Create a file with the desired path and with it suffixed with " (1)"
-  const FilePath some_file = temp_dir_.GetPath().Append(FPL("SomeFile.txt"));
-  ASSERT_TRUE(File(some_file, File::FLAG_CREATE | File::FLAG_WRITE).IsValid());
-  const FilePath some_file_one =
-      temp_dir_.GetPath().Append(FPL("SomeFile (1).txt"));
-  ASSERT_TRUE(
-      File(some_file_one, File::FLAG_CREATE | File::FLAG_WRITE).IsValid());
-
-  // This time the number 2 is needed to make it unique.
-  EXPECT_EQ(GetUniquePathNumber(some_file), 2);
-}
-
-TEST_F(FileUtilTest, GetUniquePathNumberTooManyFiles) {
-  // Create a file with the desired path.
-  const FilePath some_file = temp_dir_.GetPath().Append(FPL("SomeFile.txt"));
-  ASSERT_TRUE(File(some_file, File::FLAG_CREATE | File::FLAG_WRITE).IsValid());
-
-  // Now create 100 collisions.
-  for (int i = 1; i <= kMaxUniqueFiles; ++i) {
-    ASSERT_EQ(GetUniquePathNumber(some_file), i);
-    ASSERT_TRUE(File(temp_dir_.GetPath().AppendASCII(
-                         StringPrintf("SomeFile (%d).txt", i)),
-                     File::FLAG_CREATE | File::FLAG_WRITE)
-                    .IsValid());
-  }
-
-  // Verify that the limit has been reached.
-  EXPECT_EQ(GetUniquePathNumber(some_file), -1);
-}
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     defined(ARCH_CPU_32_BITS)
