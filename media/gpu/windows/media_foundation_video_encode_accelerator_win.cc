@@ -1698,6 +1698,12 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
                                            : input_stream_info.cbAlignment - 1,
         &input_buffer);
     RETURN_ON_HR_FAILURE(hr, "Failed to create memory buffer", hr);
+    hr = input_buffer->SetCurrentLength(
+        input_stream_info.cbSize
+            ? input_stream_info.cbSize
+            : VideoFrame::AllocationSize(kTargetPixelFormat,
+                                         input_visible_size_));
+    RETURN_ON_HR_FAILURE(hr, "Failed to set length on buffer", hr);
     hr = input_sample_->AddBuffer(input_buffer.Get());
     RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
   }
