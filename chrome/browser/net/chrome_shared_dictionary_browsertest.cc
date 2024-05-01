@@ -1058,14 +1058,8 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
                       "match=\"/test/*\", type=\"raw\"");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/333756098): Flaky on ChromeOS-Ash.
-#define MAYBE_WriteErrorRequestAborted DISABLED_WriteErrorRequestAborted
-#else
-#define MAYBE_WriteErrorRequestAborted WriteErrorRequestAborted
-#endif
 IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
-                       MAYBE_WriteErrorRequestAborted) {
+                       WriteErrorRequestAborted) {
   auto dictionary_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           embedded_test_server(), "/test.dict");
@@ -1101,7 +1095,6 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
             }
           })();
         )"));
-  dictionary_response->Done();
   WaitForSharedDictionaryIssueAdded("WriteErrorRequestAborted");
 }
 
