@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <map>
 #include <utility>
 #include <vector>
@@ -22,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/base_session_service_commands.h"
@@ -408,6 +410,8 @@ struct GroupCommandFields {
   int browser_id = 0;
   std::u16string title;
   uint32_t color = 0;
+  bool is_saved;
+  std::string saved_id;
 };
 
 std::unique_ptr<sessions::tab_restore::Group> CreateGroupEntryFromCommand(
@@ -432,6 +436,14 @@ std::unique_ptr<sessions::tab_restore::Group> CreateGroupEntryFromCommand(
     return nullptr;
   }
 
+  if (it.ReadBool(&parsed_fields.is_saved) && parsed_fields.is_saved) {
+    if (!it.ReadString(&parsed_fields.saved_id) ||
+        parsed_fields.saved_id.empty()) {
+      // A saved group must have a saved id.
+      return nullptr;
+    }
+  }
+
   // Copy the parsed data.
   GroupCommandFields fields = parsed_fields;
 
@@ -440,6 +452,10 @@ std::unique_ptr<sessions::tab_restore::Group> CreateGroupEntryFromCommand(
       std::make_unique<sessions::tab_restore::Group>();
   group->group_id =
       tab_groups::TabGroupId::FromRawToken(fields.tab_group_token.value());
+  if (fields.is_saved) {
+    group->saved_group_id = base::Uuid::ParseLowercase(fields.saved_id);
+  }
+
   group->browser_id = fields.browser_id;
   group->visual_data =
       tab_groups::TabGroupVisualData(fields.title, fields.color);
@@ -531,6 +547,7 @@ class TabRestoreServiceImpl::PersistenceDelegate
       SessionID session_id,
       size_t num_tabs,
       tab_groups::TabGroupId group_id,
+      std::optional<base::Uuid> saved_group_id,
       SessionID::id_type browser_id,
       tab_groups::TabGroupVisualData visual_data);
 
@@ -820,9 +837,9 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForGroup(
     const tab_restore::Group& group) {
   DCHECK(!group.tabs.empty());
 
-  command_storage_manager_->ScheduleCommand(
-      CreateGroupCommand(group.id, group.tabs.size(), group.group_id,
-                         group.browser_id, group.visual_data));
+  command_storage_manager_->ScheduleCommand(CreateGroupCommand(
+      group.id, group.tabs.size(), group.group_id, group.saved_group_id,
+      group.browser_id, group.visual_data));
   ScheduleCommandsForTabs(group.tabs);
 }
 
@@ -874,6 +891,13 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForTab(
         &tab.group_visual_data.value();
     pickle.WriteString16(visual_data->title());
     pickle.WriteUInt32(static_cast<int>(visual_data->color()));
+
+    // Added in M126. Write the saved group id to the pickle if there is one.
+    pickle.WriteBool(tab.saved_group_id.has_value());
+    if (tab.saved_group_id.has_value()) {
+      pickle.WriteString(tab.saved_group_id.value().AsLowercaseString());
+    }
+
     std::unique_ptr<SessionCommand> command(
         new SessionCommand(kCommandSetTabGroupData, pickle));
     command_storage_manager_->ScheduleCommand(std::move(command));
@@ -953,6 +977,7 @@ TabRestoreServiceImpl::PersistenceDelegate::CreateGroupCommand(
     SessionID session_id,
     size_t num_tabs,
     tab_groups::TabGroupId tab_group_id,
+    std::optional<base::Uuid> saved_group_id,
     SessionID::id_type browser_id,
     tab_groups::TabGroupVisualData visual_data) {
   static_assert(sizeof(SessionID::id_type) == sizeof(int),
@@ -965,6 +990,12 @@ TabRestoreServiceImpl::PersistenceDelegate::CreateGroupCommand(
   pickle.WriteInt(static_cast<int>(browser_id));
   pickle.WriteString16(visual_data.title());
   pickle.WriteUInt32(static_cast<int>(visual_data.color()));
+
+  // Added in M126. Write the saved group id to the pickle if there is one.
+  pickle.WriteBool(saved_group_id.has_value());
+  if (saved_group_id.has_value()) {
+    pickle.WriteString(saved_group_id.value().AsLowercaseString());
+  }
 
   std::unique_ptr<SessionCommand> command(
       new SessionCommand(kCommandCreateGroup, pickle));
@@ -1221,11 +1252,16 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         std::optional<base::Token> group_token = ReadTokenFromPickle(&iter);
         std::u16string title;
         uint32_t color_int;
-        if (!iter.ReadString16(&title)) {
+        bool is_saved;
+        std::string saved_id;
+        if (!iter.ReadString16(&title) || !iter.ReadUInt32(&color_int)) {
           break;
         }
-        if (!iter.ReadUInt32(&color_int)) {
-          break;
+        if (iter.ReadBool(&is_saved) && is_saved) {
+          if (!iter.ReadString(&saved_id) || saved_id.empty()) {
+            break;
+          }
+          current_tab->saved_group_id = base::Uuid::ParseLowercase(saved_id);
         }
 
         current_tab->group =
