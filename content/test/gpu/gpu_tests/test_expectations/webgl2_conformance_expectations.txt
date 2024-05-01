@@ -430,7 +430,7 @@ crbug.com/337904214 [ win ] conformance/textures/misc/image-decoder-to-texture.h
 crbug.com/337904214 [ win11 angle-d3d11 qualcomm-0x41333430 passthrough release ] conformance2/textures/image_bitmap_from_video/tex-2d-r32f-red-float.html [ Failure ]
 crbug.com/337904214 [ win11 angle-d3d11 qualcomm-0x41333430 passthrough release ] conformance2/textures/image_bitmap_from_video/tex-3d-rg16f-rg-float.html [ Failure ]
 crbug.com/337904214 [ win angle-d3d9 intel-0x4680 passthrough release ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
-
+crbug.com/337904214 [ win angle-d3d11 nvidia-0x2184 passthrough release ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 
 # Failing new updated tests
 crbug.com/1131224 [ angle-d3d11 desktop no-asan oop-c passthrough release win10 ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
