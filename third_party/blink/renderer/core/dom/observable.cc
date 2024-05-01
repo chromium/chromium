@@ -2064,7 +2064,8 @@ Observable* Observable::from(ScriptState* script_state,
 
   // 4. Try to convert to a Promise.
   if (v8_value->IsPromise()) {
-    ScriptPromiseUntyped promise(script_state->GetIsolate(), v8_value);
+    ScriptPromiseUntyped promise(script_state->GetIsolate(),
+                                 v8_value.As<v8::Promise>());
     return MakeGarbageCollected<Observable>(
         ExecutionContext::From(script_state),
         MakeGarbageCollected<OperatorFromPromiseSubscribeDelegate>(promise));

@@ -159,18 +159,8 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
 }  // namespace
 
 ScriptPromiseUntyped::ScriptPromiseUntyped(v8::Isolate* isolate,
-                                           v8::Local<v8::Value> value) {
-  if (value.IsEmpty())
-    return;
-
-  if (!value->IsPromise()) {
-    promise_ = ScriptValue();
-    V8ThrowException::ThrowTypeError(isolate,
-                                     "the given value is not a Promise");
-    return;
-  }
-  promise_ = ScriptValue(isolate, value);
-}
+                                           v8::Local<v8::Promise> promise)
+    : promise_(isolate, promise) {}
 
 ScriptPromiseUntyped::ScriptPromiseUntyped(const ScriptPromiseUntyped& other) {
   promise_ = other.promise_;
@@ -222,7 +212,8 @@ ScriptPromiseUntyped ScriptPromiseUntyped::FromUntypedValueForBindings(
   if (value.IsEmpty())
     return ScriptPromiseUntyped();
   if (value->IsPromise()) {
-    return ScriptPromiseUntyped(script_state->GetIsolate(), value);
+    return ScriptPromiseUntyped(script_state->GetIsolate(),
+                                value.As<v8::Promise>());
   }
   return ScriptPromiseUntyped(script_state->GetIsolate(),
                               ResolveRaw(script_state, value));

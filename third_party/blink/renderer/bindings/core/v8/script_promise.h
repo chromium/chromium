@@ -71,8 +71,7 @@ class CORE_EXPORT ScriptPromiseUntyped {
   ScriptPromiseUntyped() = default;
 
   // Constructs a ScriptPromiseUntyped from |promise|.
-  // If |promise| is not a Promise object, throws a v8 TypeError.
-  ScriptPromiseUntyped(v8::Isolate*, v8::Local<v8::Value> promise);
+  ScriptPromiseUntyped(v8::Isolate*, v8::Local<v8::Promise> promise);
 
   ScriptPromiseUntyped(const ScriptPromiseUntyped&);
 

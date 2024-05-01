@@ -61,12 +61,13 @@ class RejectedPromises::Message final {
       return;
 
     ScriptState::Scope scope(script_state_);
-    v8::Local<v8::Value> value = promise_.NewLocal(script_state_->GetIsolate());
+    v8::Local<v8::Promise> promise =
+        promise_.NewLocal(script_state_->GetIsolate());
     v8::Local<v8::Value> reason =
         exception_.NewLocal(script_state_->GetIsolate());
-    // Either collected or https://crbug.com/450330
-    if (value.IsEmpty() || !value->IsPromise())
+    if (promise.IsEmpty()) {
       return;
+    }
     DCHECK(!HasHandler());
 
     EventTarget* target = execution_context->ErrorEventTarget();
@@ -74,7 +75,7 @@ class RejectedPromises::Message final {
         sanitize_script_errors_ == SanitizeScriptErrors::kDoNotSanitize) {
       PromiseRejectionEventInit* init = PromiseRejectionEventInit::Create();
       init->setPromise(
-          ScriptPromiseUntyped(script_state_->GetIsolate(), value));
+          ScriptPromiseUntyped(script_state_->GetIsolate(), promise));
       init->setReason(ScriptValue(script_state_->GetIsolate(), reason));
       init->setCancelable(true);
       PromiseRejectionEvent* event = PromiseRejectionEvent::Create(
@@ -108,19 +109,20 @@ class RejectedPromises::Message final {
       return;
 
     ScriptState::Scope scope(script_state_);
-    v8::Local<v8::Value> value = promise_.NewLocal(script_state_->GetIsolate());
+    v8::Local<v8::Promise> promise =
+        promise_.NewLocal(script_state_->GetIsolate());
     v8::Local<v8::Value> reason =
         exception_.NewLocal(script_state_->GetIsolate());
-    // Either collected or https://crbug.com/450330
-    if (value.IsEmpty() || !value->IsPromise())
+    if (promise.IsEmpty()) {
       return;
+    }
 
     EventTarget* target = execution_context->ErrorEventTarget();
     if (target &&
         sanitize_script_errors_ == SanitizeScriptErrors::kDoNotSanitize) {
       PromiseRejectionEventInit* init = PromiseRejectionEventInit::Create();
       init->setPromise(
-          ScriptPromiseUntyped(script_state_->GetIsolate(), value));
+          ScriptPromiseUntyped(script_state_->GetIsolate(), promise));
       init->setReason(ScriptValue(script_state_->GetIsolate(), reason));
       PromiseRejectionEvent* event = PromiseRejectionEvent::Create(
           script_state_, event_type_names::kRejectionhandled, init);

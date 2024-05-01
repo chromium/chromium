@@ -124,16 +124,6 @@ Vector<String> ToStringArray(v8::Isolate* isolate, const ScriptValue& value) {
       isolate, value.V8Value(), exception_state);
 }
 
-TEST(ScriptPromiseTest, ConstructFromNonPromise) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  v8::TryCatch try_catch(scope.GetIsolate());
-  ScriptPromiseUntyped promise(scope.GetIsolate(),
-                               v8::Undefined(scope.GetIsolate()));
-  ASSERT_TRUE(try_catch.HasCaught());
-  ASSERT_TRUE(promise.IsEmpty());
-}
-
 TEST(ScriptPromiseTest, ThenResolve) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
