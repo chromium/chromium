@@ -66,15 +66,15 @@ void SendStatusAsResponse(
     result.error().SaveTo(response_message.mutable_status());
   }
 
-  // Encode whole `response_message`
-  dbus::MessageWriter writer(response.get());
-  writer.AppendProtoAsArrayOfBytes(response_message);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Turn on/off the debug state flag (for Ash only).
   response_message.set_health_data_logging_enabled(
       ::reporting::HistoryTracker::Get()->debug_state());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Encode whole `response_message`
+  dbus::MessageWriter writer(response.get());
+  writer.AppendProtoAsArrayOfBytes(response_message);
 
   // Send `response`
   std::move(response_sender).Run(std::move(response));
