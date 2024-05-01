@@ -127,6 +127,7 @@ std::string VaapiImageProcessorBackend::type() const {
 const VASurface* VaapiImageProcessorBackend::GetSurfaceForFrame(
     const FrameResource& frame,
     bool use_protected) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
   const gfx::GenericSharedMemoryId shared_memory_id = frame.GetSharedMemoryId();
   if (base::Contains(allocated_va_surfaces_, shared_memory_id)) {
     const VASurface* surface = allocated_va_surfaces_[shared_memory_id].get();

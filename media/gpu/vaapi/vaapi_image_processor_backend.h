@@ -59,8 +59,9 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
   const VASurface* GetSurfaceForFrame(const FrameResource& frame,
                                       bool use_protected);
 
-  scoped_refptr<VaapiWrapper> vaapi_wrapper_;
-  bool needs_context_ = false;
+  scoped_refptr<VaapiWrapper> vaapi_wrapper_
+      GUARDED_BY_CONTEXT(backend_sequence_checker_);
+  bool needs_context_ GUARDED_BY_CONTEXT(backend_sequence_checker_) = false;
 
   // VASurfaces are created via importing dma-bufs into libva using
   // |vaapi_wrapper_|->CreateVASurfaceForPixmap(). The following map keeps those
@@ -69,7 +70,7 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
   // using these surfaces have been destroyed."
   base::small_map<
       std::map<gfx::GenericSharedMemoryId, scoped_refptr<VASurface>>>
-      allocated_va_surfaces_;
+      allocated_va_surfaces_ GUARDED_BY_CONTEXT(backend_sequence_checker_);
 };
 
 }  // namespace media
