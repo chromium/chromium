@@ -34,6 +34,7 @@
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -689,13 +690,31 @@ void DownloadsDOMHandler::OpenEsbSettings() {
 void DownloadsDOMHandler::IsEligibleForEsbPromo(
     IsEligibleForEsbPromoCallback callback) {
   content::DownloadManager* manager = GetMainNotifierManager();
-  if (manager) {
-    std::move(callback).Run(
-        safe_browsing::SafeBrowsingService::IsUserEligibleForESBPromo(
-            Profile::FromBrowserContext(manager->GetBrowserContext())));
-  } else {
+  if (!manager) {
     std::move(callback).Run(false);
+    return;
   }
+
+  content::BrowserContext* browser_context = manager->GetBrowserContext();
+
+  if (!safe_browsing::SafeBrowsingService::IsUserEligibleForESBPromo(
+          Profile::FromBrowserContext(browser_context))) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool should_show_esb_promo = false;
+  if (feature_engagement::Tracker* tracker =
+          feature_engagement::TrackerFactory::GetForBrowserContext(
+              browser_context);
+      tracker && tracker->ShouldTriggerHelpUI(
+                     feature_engagement::kEsbDownloadRowPromoFeature)) {
+    should_show_esb_promo = true;
+    // since the promotion row is not an IPH, it never calls dismissed, so we
+    // need to do it artificially here or we can trigger a DCHECK.
+    tracker->Dismissed(feature_engagement::kEsbDownloadRowPromoFeature);
+  }
+  std::move(callback).Run(should_show_esb_promo);
 }
 
 // DownloadsDOMHandler, private: --------------------------------------------
