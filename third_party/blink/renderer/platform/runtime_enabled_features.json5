@@ -2380,6 +2380,12 @@
       status: "test",
     },
     {
+      name: "MediaPreviewsOptOut",
+      base_feature: "none",
+      origin_trial_feature_name: "MediaPreviewsOptOutPersistent",
+      origin_trial_allows_third_party: true,
+    },
+    {
       name: "MediaQueryNavigationControls",
     },
     {

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -58,6 +57,10 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/media_preview/media_preview_feature.h"
+#endif
 
 namespace {
 
@@ -255,7 +258,9 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     std::vector<std::string> requested_video_capture_device_ids,
     size_t index) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
+  // Unit tests call this without initializing `browser_`, but this should not
+  // happen in production code.
+  if (!browser_) {
     return;
   }
 
@@ -265,6 +270,13 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
   }
 
   if (!camera_permission_label_ && !mic_permission_label_) {
+    return;
+  }
+
+  // Check this last, as it queries the origin trials service.
+  if (!media_preview_feature::ShouldShowMediaPreview(
+          *browser_->profile(), delegate()->GetRequestingOrigin(),
+          delegate()->GetEmbeddingOrigin())) {
     return;
   }
 
