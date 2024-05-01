@@ -840,6 +840,8 @@ TEST_F(WorkerWatcherTest, SimpleDedicatedWorker) {
     EXPECT_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
     EXPECT_EQ(worker_node->process_node(), process_node);
     EXPECT_EQ(worker_node->GetOrigin(), origin);
+    // Script URL not available until script loads.
+    EXPECT_FALSE(worker_node->GetURL().is_valid());
     EXPECT_TRUE(IsWorkerClient(worker_node, client_frame_node));
   });
 
@@ -886,6 +888,8 @@ TEST_F(WorkerWatcherTest, NestedDedicatedWorker) {
                   WorkerNode::WorkerType::kDedicated);
         EXPECT_EQ(nested_worker_node->process_node(), process_node);
         EXPECT_EQ(nested_worker_node->GetOrigin(), nested_origin);
+        // Script URL not available until script loads.
+        EXPECT_FALSE(nested_worker_node->GetURL().is_valid());
         // The ancestor frame is not directly a client of the nested worker.
         EXPECT_FALSE(IsWorkerClient(nested_worker_node, ancestor_frame_node));
         EXPECT_TRUE(IsWorkerClient(nested_worker_node, parent_worker_node));
@@ -925,6 +929,8 @@ TEST_F(WorkerWatcherTest, SimpleSharedWorker) {
     EXPECT_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kShared);
     EXPECT_EQ(worker_node->process_node(), process_node);
     EXPECT_EQ(worker_node->GetOrigin(), origin);
+    // Script URL not available until script loads.
+    EXPECT_FALSE(worker_node->GetURL().is_valid());
     EXPECT_TRUE(IsWorkerClient(worker_node, client_frame_node));
   });
 
@@ -970,6 +976,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
     EXPECT_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kService);
     EXPECT_EQ(worker_node->process_node(), process_node);
     EXPECT_EQ(worker_node->GetOrigin(), url::Origin::Create(scope_url));
+    EXPECT_EQ(worker_node->GetURL(), worker_url);
 
     // The frame can not be connected to the service worker until its
     // RenderFrameHost is available, which happens when the navigation
@@ -1065,6 +1072,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
         EXPECT_EQ(first_worker_node->process_node(), process_node);
         EXPECT_EQ(first_worker_node->GetOrigin(),
                   url::Origin::Create(first_scope_url));
+        EXPECT_EQ(first_worker_node->GetURL(), first_worker_url);
         // The frame was never added as a client of the service worker.
         EXPECT_TRUE(first_worker_node->client_frames().empty());
 
@@ -1074,6 +1082,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClientOfTwoWorkers) {
         EXPECT_EQ(second_worker_node->process_node(), process_node);
         EXPECT_EQ(second_worker_node->GetOrigin(),
                   url::Origin::Create(second_scope_url));
+        EXPECT_EQ(second_worker_node->GetURL(), second_worker_url);
         // The frame was never added as a client of the service worker.
         EXPECT_TRUE(second_worker_node->client_frames().empty());
       });

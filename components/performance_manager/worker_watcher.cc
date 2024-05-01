@@ -421,6 +421,10 @@ void WorkerWatcher::OnVersionStartedRunning(
   // (OnControlleeAdded) may have been received before the worker started.
   // Add those clients to the service worker on the PM graph.
   ConnectAllServiceWorkerClients(worker_node, version_id);
+
+  // Unlike other workers, the service worker script url is already set when its
+  // added to the graph.
+  SetFinalResponseURL(worker_node, running_info.script_url);
 }
 
 void WorkerWatcher::OnVersionStoppedRunning(int64_t version_id) {
