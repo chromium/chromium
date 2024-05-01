@@ -1204,7 +1204,7 @@
     ],
     "args": ["--test-third-party-cookie-phaseout",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Mar 1, 2024"
+    "expires": "May 1, 2025"
   },
   {
     "prefix": "third-party-storage-partitioning",
