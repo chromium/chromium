@@ -13,6 +13,8 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -43,7 +45,7 @@ class PageTextAgent
   // this class would like to get a page dump. If so, the returned callback
   // should be ran with the text, and |max_size| will be updated to a bigger
   // value iff this class wants more text than that.
-  base::OnceCallback<void(const std::u16string&)>
+  base::OnceCallback<void(scoped_refptr<const base::RefCountedString16>)>
   MaybeRequestTextDumpOnLayoutEvent(blink::WebMeaningfulLayout event,
                                     uint32_t* max_size);
 
@@ -69,7 +71,7 @@ class PageTextAgent
  private:
   // Called when the text dump is done and it can be sent to |consumer|.
   void OnPageTextDump(mojo::PendingRemote<mojom::PageTextConsumer> consumer,
-                      const std::u16string& content);
+                      scoped_refptr<const base::RefCountedString16> content);
 
   // Keeps track of the text dump events that have been requested. Entries are
   // only present between being added in |RequestPageTextDump| and

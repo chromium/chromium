@@ -658,13 +658,14 @@ void ChromeRenderFrameObserver::CapturePageText(
   }
   DCHECK_GT(capture_max_size, 0U);
 
-  std::u16string contents;
+  scoped_refptr<const base::RefCountedString16> contents;
+
   {
     TRACE_EVENT0("renderer", "ChromeRenderFrameObserver::CapturePageText");
-
-    contents = WebFrameContentDumper::DumpFrameTreeAsText(
-                   render_frame()->GetWebFrame(), capture_max_size)
-                   .Utf16();
+    contents = base::MakeRefCounted<const base::RefCountedString16>(
+        WebFrameContentDumper::DumpFrameTreeAsText(
+            render_frame()->GetWebFrame(), capture_max_size)
+            .Utf16());
   }
 
   // Language detection should run only once. Parsing finishes before the page
@@ -682,7 +683,7 @@ void ChromeRenderFrameObserver::CapturePageText(
   // Will swap out the string.
   if (phishing_classifier_) {
     phishing_classifier_->PageCaptured(
-        &contents, layout_type == blink::WebMeaningfulLayout::kFinishedParsing);
+        contents, layout_type == blink::WebMeaningfulLayout::kFinishedParsing);
   }
   if (phishing_image_embedder_) {
     phishing_image_embedder_->PageCaptured(

@@ -165,7 +165,8 @@ void TranslateAgent::PrepareForUrl(const GURL& url) {
   ResetPage();
 }
 
-void TranslateAgent::PageCaptured(const std::u16string& contents) {
+void TranslateAgent::PageCaptured(
+    scoped_refptr<const base::RefCountedString16> contents) {
   // Get the document language as set by WebKit from the http-equiv
   // meta tag for "content-language".  This may or may not also
   // have a value derived from the actual Content-Language HTTP
@@ -173,8 +174,11 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
   // original intent of http-equiv to be an equivalent) with the former
   // being the language of the document and the latter being the
   // language of the intended audience (a distinction really only
-  // relevant for things like language textbooks).  This distinction
+  // relevant for things like language textbooks). This distinction
   // shouldn't affect translation.
+  if (!contents) {
+    return;
+  }
   WebLocalFrame* main_frame = render_frame()->GetWebFrame();
   if (!main_frame)
     return;
@@ -193,7 +197,7 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
     return;
   }
 
-  page_contents_length_ = contents.size();
+  page_contents_length_ = contents->as_string().size();
 
   WebLanguageDetectionDetails web_detection_details =
       WebLanguageDetectionDetails::CollectLanguageDetectionDetails(document);
@@ -211,7 +215,7 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
     std::string language = "fr";
     LanguageDetectionDetails details;
     details.adopted_language = language;
-    details.contents = contents;
+    details.contents = contents->as_string();
     details.has_run_lang_detection = true;
     ResetPage();
 
@@ -232,11 +236,12 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
     translate::LanguageDetectionModel& language_detection_model =
         GetLanguageDetectionModel();
     bool is_available = language_detection_model.IsAvailable();
-    language = is_available ? language_detection_model.DeterminePageLanguage(
-                                  content_language, html_lang, contents,
-                                  &model_detected_language, &is_model_reliable,
-                                  model_reliability_score)
-                            : translate::kUnknownLanguageCode;
+    language = is_available
+                   ? language_detection_model.DeterminePageLanguage(
+                         content_language, html_lang, contents->as_string(),
+                         &model_detected_language, &is_model_reliable,
+                         model_reliability_score)
+                   : translate::kUnknownLanguageCode;
     UMA_HISTOGRAM_BOOLEAN(
         "LanguageDetection.TFLiteModel.WasModelAvailableForDetection",
         is_available);
@@ -248,8 +253,8 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
   } else {
     // Use CLD3 and page contents to assist with language detection.
     language = DeterminePageLanguage(
-        content_language, html_lang, contents, &model_detected_language,
-        &is_model_reliable, model_reliability_score);
+        content_language, html_lang, contents->as_string(),
+        &model_detected_language, &is_model_reliable, model_reliability_score);
     detection_model_version = kCLDModelVersion;
     details.has_run_lang_detection = true;
   }
@@ -270,7 +275,7 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
 
   // TODO(hajimehoshi): If this affects performance, it should be set only if
   // translate-internals tab exists.
-  details.contents = contents;
+  details.contents = contents->as_string();
 
   // For the same render frame with the same url, each time when its texts are
   // captured, it should be treated as a new page to do translation.

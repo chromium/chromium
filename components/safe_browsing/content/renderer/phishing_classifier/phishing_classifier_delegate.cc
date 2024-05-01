@@ -59,7 +59,6 @@ PhishingClassifierDelegate::PhishingClassifierDelegate(
     PhishingClassifier* classifier)
     : content::RenderFrameObserver(render_frame),
       last_main_frame_transition_(ui::PAGE_TRANSITION_LINK),
-      have_page_text_(false),
       is_classifying_(false),
       awaiting_retry_(false) {
   if (!classifier) {
@@ -135,8 +134,9 @@ bool PhishingClassifierDelegate::is_ready() {
   return classifier_->is_ready();
 }
 
-void PhishingClassifierDelegate::PageCaptured(std::u16string* page_text,
-                                              bool preliminary_capture) {
+void PhishingClassifierDelegate::PageCaptured(
+    scoped_refptr<const base::RefCountedString16> page_text,
+    bool preliminary_capture) {
   RecordEvent(SBPhishingClassifierEvent::kPageTextCaptured);
 
   if (preliminary_capture) {
@@ -149,8 +149,7 @@ void PhishingClassifierDelegate::PageCaptured(std::u16string* page_text,
   // classification in this case.  We may want to adjust this.
   CancelPendingClassification(PAGE_RECAPTURED);
   last_finished_load_url_ = render_frame()->GetWebFrame()->GetDocument().Url();
-  classifier_page_text_.swap(*page_text);
-  have_page_text_ = true;
+  classifier_page_text_ = std::move(page_text);
 
   GURL stripped_last_load_url(StripRef(last_finished_load_url_));
   // Check if toplevel URL has changed.
@@ -171,8 +170,7 @@ void PhishingClassifierDelegate::CancelPendingClassification(
   if (classifier_->is_ready()) {
     classifier_->CancelPendingClassification();
   }
-  classifier_page_text_.clear();
-  have_page_text_ = false;
+  classifier_page_text_ = nullptr;
   awaiting_retry_ = false;
 }
 
@@ -261,8 +259,7 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
     // last URL sent to the classifier, so that we'll properly detect
     // same-document navigations.
     last_url_sent_to_classifier_ = last_finished_load_url_;
-    classifier_page_text_.clear();  // we won't need this.
-    have_page_text_ = false;
+    classifier_page_text_ = nullptr;  // we won't need this.
     is_phishing_detection_running_ = false;
     if (!callback_.is_null())
       std::move(callback_).Run(
@@ -270,7 +267,7 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
     return;
   }
 
-  if (!have_page_text_) {
+  if (!classifier_page_text_) {
     RecordEvent(SBPhishingClassifierEvent::kPageTextNotLoaded);
     return;
   }
@@ -296,7 +293,7 @@ void PhishingClassifierDelegate::MaybeStartClassification() {
 
   is_classifying_ = true;
   classifier_->BeginClassification(
-      &classifier_page_text_,
+      classifier_page_text_,
       base::BindOnce(&PhishingClassifierDelegate::ClassificationDone,
                      base::Unretained(this)));
 }

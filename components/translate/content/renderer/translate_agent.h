@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -42,7 +43,7 @@ class TranslateAgent : public content::RenderFrameObserver,
   void WasShown() override;
 
   // Informs us that the page's text has been extracted.
-  void PageCaptured(const std::u16string& contents);
+  void PageCaptured(scoped_refptr<const base::RefCountedString16> contents);
 
   // Updates page registration in translate driver.
   void RenewPageRegistration();

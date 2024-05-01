@@ -69,8 +69,9 @@ bool PhishingClassifier::is_ready() const {
   return !!ScorerStorage::GetInstance()->GetScorer();
 }
 
-void PhishingClassifier::BeginClassification(const std::u16string* page_text,
-                                             DoneCallback done_callback) {
+void PhishingClassifier::BeginClassification(
+    scoped_refptr<const base::RefCountedString16> page_text,
+    DoneCallback done_callback) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "PhishingClassification",
                                     this);
   DCHECK(is_ready());
@@ -91,7 +92,7 @@ void PhishingClassifier::BeginClassification(const std::u16string* page_text,
       scorer->max_words_per_term(), scorer->murmurhash3_seed(),
       scorer->max_shingles_per_page(), scorer->shingle_size());
   visual_extractor_ = std::make_unique<PhishingVisualFeatureExtractor>();
-  page_text_ = page_text;
+  page_text_ = std::move(page_text);
   done_callback_ = std::move(done_callback);
 
   // For consistency, we always want to invoke the DoneCallback
@@ -151,7 +152,7 @@ void PhishingClassifier::DOMExtractionFinished(bool success) {
     // Term feature extraction can take awhile, so it runs asynchronously
     // in several chunks of work and invokes the callback when finished.
     term_extractor_->ExtractFeatures(
-        page_text_, features_.get(), shingle_hashes_.get(),
+        &page_text_->as_string(), features_.get(), shingle_hashes_.get(),
         base::BindOnce(&PhishingClassifier::TermExtractionFinished,
                        base::Unretained(this)));
   } else {

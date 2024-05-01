@@ -27,6 +27,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
@@ -102,8 +104,9 @@ class PhishingClassifier {
   //
   // It is an error to call BeginClassification if the classifier is not yet
   // ready.
-  virtual void BeginClassification(const std::u16string* page_text,
-                                   DoneCallback callback);
+  virtual void BeginClassification(
+      scoped_refptr<const base::RefCountedString16> page_text,
+      DoneCallback callback);
 
   // Called by the RenderView (on the render thread) when a page is unloading
   // or the RenderView is being destroyed.  This cancels any extraction that
@@ -172,7 +175,7 @@ class PhishingClassifier {
   // State for any in-progress extraction.
   std::unique_ptr<FeatureMap> features_;
   std::unique_ptr<std::set<uint32_t>> shingle_hashes_;
-  raw_ptr<const std::u16string> page_text_;  // owned by the caller
+  scoped_refptr<const base::RefCountedString16> page_text_;
   std::unique_ptr<SkBitmap> bitmap_;
   std::unique_ptr<VisualFeatures> visual_features_;
   DoneCallback done_callback_;
