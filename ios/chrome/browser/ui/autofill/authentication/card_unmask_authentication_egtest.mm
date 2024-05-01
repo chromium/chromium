@@ -52,6 +52,17 @@ NSString* const kUnmaskCardResponseSuccessOtpAndEmailAndCvc =
     @"option\":{\"challenge_id\":\"hardcoded_3CSC_challenge_id\",\"cvc_"
     @"length\":3,\"cvc_position\":\"CVC_POSITION_BACK\"}}]}";
 
+// The url to intercept in order to inject select challenge option responses.
+// These tests do not make requests to the real server.
+NSString* const kSelectChallengeOptionRequestUrl =
+    @"https://payments.google.com/payments/apis/chromepaymentsservice/"
+    @"selectchallengeoption";
+
+// The fake response from the payment server when an OTP code is successfully
+// sent out.
+NSString* const kSelectChallengeOptionResponseSuccess =
+    @"{\"context_token\":\"fake_context_token\"}";
+
 // The masked phone number associated with the OTP card unmask option.
 NSString* const kUnmaskOptionMaskedPhoneNumber = @"*******1234";
 
@@ -270,6 +281,32 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
   [[EarlGrey
       selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testDismissInputViaSwipe {
+  [self showAuthenticationSelection];
+
+  // The initial access token has been used up, set another fake access token.
+  [AutofillAppInterface setAccessToken];
+  // Set a fake response for the select challenge option request.
+  [AutofillAppInterface
+      setPaymentsResponse:kSelectChallengeOptionResponseSuccess
+               forRequest:kSelectChallengeOptionRequestUrl
+            withErrorCode:net::HTTP_OK];
+
+  // Select the text message otp challenge option.
+  [[EarlGrey
+      selectElementWithMatcher:CardUnmaskTextMessageChallengeOptionLabel()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:CardUnmaskAuthenticationSelectionSendButton()]
+      performAction:grey_tap()];
+
+  // Swipe the input sheet down to close it.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabelId(
+                     IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_TITLE)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 }
 
 @end

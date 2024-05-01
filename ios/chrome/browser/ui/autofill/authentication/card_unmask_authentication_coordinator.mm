@@ -15,6 +15,10 @@
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 
+@interface CardUnmaskAuthenticationCoordinator () <
+    UIAdaptivePresentationControllerDelegate>
+@end
+
 @implementation CardUnmaskAuthenticationCoordinator {
   // This coordinator will present sub-coordinators in a UINavigationController.
   UINavigationController* _navigationController;
@@ -30,6 +34,18 @@
   // This view bridge is used to prompt the user to type in the CVC value for
   // the card verification purpose.
   std::unique_ptr<autofill::CardUnmaskPromptViewBridge> _cvcInputViewBridge;
+
+  id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _browserCoordinatorCommands = HandlerForProtocol(
+        browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  }
+  return self;
 }
 
 - (void)continueWithOtpAuth {
@@ -86,6 +102,7 @@
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
+  _navigationController.presentationController.delegate = self;
 }
 
 - (void)stop {
@@ -97,6 +114,13 @@
   [_otpInputCoordinator stop];
   _otpInputCoordinator = nil;
   _cvcInputViewBridge.reset();
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [_browserCoordinatorCommands dismissCardUnmaskAuthentication];
 }
 
 #pragma mark - Private

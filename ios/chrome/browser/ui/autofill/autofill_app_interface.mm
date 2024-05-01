@@ -303,6 +303,8 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
         static_cast<net::HttpStatusCode>(error));
   }
 
+  void ClearPaymentsResponses() { test_url_loader_factory_->ClearResponses(); }
+
   void SetPaymentsRiskData(const std::string& risk_data) {
     GetCreditCardSaveManager()->OnDidGetUploadRiskData(risk_data);
   }
@@ -502,6 +504,20 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
               withErrorCode:(int)error {
   return autofill::FakeCreditCardServer::SharedInstance()->SetPaymentsResponse(
       request, response, error);
+}
+
++ (void)clearPaymentsResponses {
+  return autofill::FakeCreditCardServer::SharedInstance()
+      ->ClearPaymentsResponses();
+}
+
++ (void)setAccessToken {
+  if (autofill::payments::PaymentsNetworkInterface* payments_network_interface =
+          autofill::FakeCreditCardServer::GetPaymentsNetworkInterface()) {
+    // Set a fake access token to avoid fetch requests.
+    payments_network_interface->set_access_token_for_testing(
+        "fake_access_token");
+  }
 }
 
 + (void)setFormFillMaxStrikes:(int)max forCard:(NSString*)card {
