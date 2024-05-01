@@ -1223,7 +1223,14 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
           "runMochaSuite('SecurityPageHappinessTrackingSurveys')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, SafeBrowsing) {
+// TODO(crbug/338155508): Enable this flaky test. This is flaky on Linux debug
+// build.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_SafeBrowsing DISABLED_SafeBrowsing
+#else
+#define MAYBE_SafeBrowsing SafeBrowsing
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, MAYBE_SafeBrowsing) {
   RunTest("settings/security_page_test.js", "runMochaSuite('SafeBrowsing')");
 }
 
