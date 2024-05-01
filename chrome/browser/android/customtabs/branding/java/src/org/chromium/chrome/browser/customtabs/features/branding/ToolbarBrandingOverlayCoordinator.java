@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.animation.Animator;
 import androidx.core.animation.AnimatorListenerAdapter;
 import androidx.core.animation.ValueAnimator;
@@ -24,7 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * url.
  */
 public class ToolbarBrandingOverlayCoordinator {
-    private static final int HIDING_DURATION_MS = 300;
+    @VisibleForTesting static final int HIDING_DURATION_MS = 300;
 
     private View mView;
     private PropertyModel mModel;
@@ -47,7 +48,8 @@ public class ToolbarBrandingOverlayCoordinator {
         if (mHidingAnimator != null) {
             mHidingAnimator.cancel();
             mHidingAnimator = null;
-            mView = null;
+        } else {
+            destroyView();
         }
     }
 
@@ -68,11 +70,17 @@ public class ToolbarBrandingOverlayCoordinator {
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        ((ViewGroup) mView.getParent()).removeView(mView);
-                        mView = null;
+                        destroyView();
                         mHidingAnimator = null;
                     }
                 });
         mHidingAnimator.start();
+    }
+
+    private void destroyView() {
+        if (mView != null) {
+            ((ViewGroup) mView.getParent()).removeView(mView);
+            mView = null;
+        }
     }
 }

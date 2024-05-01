@@ -52,6 +52,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingCheckerUnitTest.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/SharedPreferencesBrandingTimeStorageUnitTest.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayCoordinatorUnitTest.java",
   ]
 
   deps = [
@@ -62,13 +63,17 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/theme:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/crash/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_animation_testing_java",
     "//third_party/androidx:androidx_test_core_java",
-    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
