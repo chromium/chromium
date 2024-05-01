@@ -127,8 +127,14 @@ public class DownloadController {
         if (!PdfUtils.shouldOpenPdfInline()) {
             return;
         }
+        // TODO(b/338138743): Cancel download and skip loadUrl if there is another navigation before
+        //  pdf download started.
         LoadUrlParams param = new LoadUrlParams(downloadInfo.getUrl());
         param.setIsPdf(true);
+        // If the download url matches the tab’s url, avoid duplicate navigation entries by
+        // replacing the current entry.
+        param.setShouldReplaceCurrentEntry(
+                downloadInfo.getUrl().getSpec().equals(tab.getUrl().getSpec()));
         tab.loadUrl(param);
         tab.addObserver(
                 new EmptyTabObserver() {
