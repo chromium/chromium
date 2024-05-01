@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -195,7 +194,6 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
-    @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingEnabledPermissionAllow() {
         setPermission(ContentSettingValues.ALLOW);
         checkHeaderPriming(/* shouldPrimeHeader= */ true);
@@ -204,7 +202,6 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
-    @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingDisabledPermissionBlock() {
         setPermission(ContentSettingValues.BLOCK);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
@@ -213,7 +210,6 @@ public class GeolocationHeaderTest {
     @Test
     @SmallTest
     @Feature({"Location"})
-    @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingDisabledPermissionAsk() {
         setPermission(ContentSettingValues.ASK);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
@@ -223,7 +219,6 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @RequiresRestart(value = "Needs to reset cached geolocation from previous tests")
-    @DisabledTest(message = "http://crbug/1479552")
     public void testGeolocationHeaderPrimingDisabledOSPermissionBlocked() {
         setPermission(ContentSettingValues.ALLOW);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
