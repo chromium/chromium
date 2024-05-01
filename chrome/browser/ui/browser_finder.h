@@ -29,6 +29,21 @@ class ElementContext;
 }
 
 // Collection of functions to find Browsers based on various criteria.
+//
+// WARNING: Most functions in this file should not be used.
+//
+// Functions in this file typically create non-local control flow. This is hard
+// to stub for tests, hard to debug, and hard to maintain due to imprecise API
+// surfaces. See
+// https://source.chromium.org/chromium/chromium/src/+/main:docs/chrome_browser_design_principles.md
+// for details. See TabInterface and TabFeatures for a common structure that
+// avoids these functions.
+//
+// There are a few functions that have valid use cases. For example, we can
+// imagine a hypothetical feature of the task manager (which is not conceptually
+// associated with any given browser window) which wants to display the number
+// of browser windows to the user. This would be a valid use case for
+// GetTotalBrowserCount().
 
 namespace chrome {
 
@@ -92,16 +107,19 @@ Browser* FindBrowserWithActiveWindow();
 // WARNING: This only will find a browser for which the specified contents is a
 // tab. Other uses of WebContents within the browser will not cause the browser
 // to be found via this method.
+// WARNING: Do not use this method. See comment at top of file.
 Browser* FindBrowserWithTab(const content::WebContents* web_contents);
 
 // Returns the browser containing the group with ID `group` within the given
 // `profile`. If the specified profile is nullptr, returns any browser
 // containing a group with the given group ID. Returns nullptr if no such
 // browser currently exists.
+// WARNING: Do not use this method. See comment at top of file.
 Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile);
 
 // Returns the browser for the given element context. Returns nullptr if no such
 // browser currently exists.
+// WARNING: Do not use this method. See comment at top of file.
 Browser* FindBrowserWithUiElementContext(ui::ElementContext context);
 
 // Returns the browser owned by `profile` whose window was most recently active.
