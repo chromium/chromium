@@ -56,10 +56,6 @@ export class FakeReadingMode {
   // The base language code that should be used for speech synthesis voices.
   baseLanguageForSpeech: string = '';
 
-  // The fallback language, corresponding to the browser language, that
-  // should only be used when baseLanguageForSpeech is unavailable.
-  defaultLanguageForSpeech: string = '';
-
   // TTS voice language preferences saved in database
   savedLanguagePref: Set<string> = new Set<string>();
 
