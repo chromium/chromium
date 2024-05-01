@@ -785,8 +785,7 @@ TEST_F(FormatConvertTest, Uint128) {
 }
 
 template <typename Floating>
-void TestWithMultipleFormatsHelper(const std::vector<Floating> &floats,
-                                   const std::set<Floating> &skip_verify) {
+void TestWithMultipleFormatsHelper(const std::vector<Floating> &floats) {
   const NativePrintfTraits &native_traits = VerifyNativeImplementation();
   // Reserve the space to ensure we don't allocate memory in the output itself.
   std::string str_format_result;
@@ -834,6 +833,9 @@ void TestWithMultipleFormatsHelper(const std::vector<Floating> &floats,
           AppendPack(&str_format_result, format, absl::MakeSpan(args));
         }
 
+        // For values that we know won't match the standard library
+        // implementation we skip verification, but still run the algorithm to
+        // catch asserts/sanitizer bugs.
 #ifdef _MSC_VER
         // MSVC has a different rounding policy than us so we can't test our
         // implementation against the native one there.
@@ -842,8 +844,7 @@ void TestWithMultipleFormatsHelper(const std::vector<Floating> &floats,
         // Apple formats NaN differently (+nan) vs. (nan)
         if (std::isnan(d)) continue;
 #endif
-        if (string_printf_result != str_format_result &&
-            skip_verify.find(d) == skip_verify.end()) {
+        if (string_printf_result != str_format_result) {
           // We use ASSERT_EQ here because failures are usually correlated and a
           // bug would print way too many failed expectations causing the test
           // to time out.
@@ -904,14 +905,10 @@ TEST_F(FormatConvertTest, Float) {
   });
   floats.erase(std::unique(floats.begin(), floats.end()), floats.end());
 
-  TestWithMultipleFormatsHelper(floats, {});
+  TestWithMultipleFormatsHelper(floats);
 }
 
 TEST_F(FormatConvertTest, Double) {
-  // For values that we know won't match the standard library implementation we
-  // skip verification, but still run the algorithm to catch asserts/sanitizer
-  // bugs.
-  std::set<double> skip_verify;
   std::vector<double> doubles = {0.0,
                                  -0.0,
                                  .99999999999999,
@@ -959,7 +956,7 @@ TEST_F(FormatConvertTest, Double) {
   });
   doubles.erase(std::unique(doubles.begin(), doubles.end()), doubles.end());
 
-  TestWithMultipleFormatsHelper(doubles, skip_verify);
+  TestWithMultipleFormatsHelper(doubles);
 }
 
 TEST_F(FormatConvertTest, DoubleRound) {

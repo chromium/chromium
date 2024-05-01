@@ -98,7 +98,7 @@ absl_source_set("flat_hash_map") {
   public = [ "flat_hash_map.h" ]
   deps = [
     ":container_memory",
-    ":hash_function_defaults",
+    ":hash_container_defaults",
     ":raw_hash_map",
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/base:core_headers",
@@ -126,7 +126,7 @@ absl_source_set("flat_hash_set") {
   public = [ "flat_hash_set.h" ]
   deps = [
     ":container_memory",
-    ":hash_function_defaults",
+    ":hash_container_defaults",
     ":raw_hash_set",
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/base:core_headers",
@@ -156,7 +156,7 @@ absl_source_set("node_hash_map") {
   public = [ "node_hash_map.h" ]
   deps = [
     ":container_memory",
-    ":hash_function_defaults",
+    ":hash_container_defaults",
     ":node_slot_policy",
     ":raw_hash_map",
     "//third_party/abseil-cpp/absl/algorithm:container",
@@ -169,7 +169,7 @@ absl_source_set("node_hash_set") {
   public = [ "node_hash_set.h" ]
   deps = [
     ":container_memory",
-    ":hash_function_defaults",
+    ":hash_container_defaults",
     ":node_slot_policy",
     ":raw_hash_set",
     "//third_party/abseil-cpp/absl/algorithm:container",
@@ -211,6 +211,15 @@ absl_source_set("hash_function_defaults") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:cord",
     "//third_party/abseil-cpp/absl/strings:string_view",
+  ]
+}
+
+absl_source_set("hash_container_defaults") {
+  public = [ "hash_container_defaults.h" ]
+  visibility = [ "//third_party/abseil-cpp/absl/container:*" ]
+  deps = [
+    ":hash_function_defaults",
+    "//third_party/abseil-cpp/absl/base:config",
   ]
 }
 

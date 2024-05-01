@@ -65,6 +65,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "cleanup/internal/cleanup.h"
   "container/btree_map.h"
   "container/btree_set.h"
+  "container/hash_container_defaults.h"
   "container/fixed_array.h"
   "container/flat_hash_map.h"
   "container/flat_hash_set.h"

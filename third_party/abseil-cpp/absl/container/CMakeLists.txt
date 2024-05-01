@@ -289,7 +289,7 @@ absl_cc_library(
   DEPS
     absl::container_memory
     absl::core_headers
-    absl::hash_function_defaults
+    absl::hash_container_defaults
     absl::raw_hash_map
     absl::algorithm_container
     absl::memory
@@ -326,7 +326,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::container_memory
-    absl::hash_function_defaults
+    absl::hash_container_defaults
     absl::raw_hash_set
     absl::algorithm_container
     absl::core_headers
@@ -368,7 +368,7 @@ absl_cc_library(
   DEPS
     absl::container_memory
     absl::core_headers
-    absl::hash_function_defaults
+    absl::hash_container_defaults
     absl::node_slot_policy
     absl::raw_hash_map
     absl::algorithm_container
@@ -404,7 +404,7 @@ absl_cc_library(
   DEPS
     absl::container_memory
     absl::core_headers
-    absl::hash_function_defaults
+    absl::hash_container_defaults
     absl::node_slot_policy
     absl::raw_hash_set
     absl::algorithm_container
@@ -428,6 +428,19 @@ absl_cc_test(
     absl::unordered_set_members_test
     absl::unordered_set_modifiers_test
     GTest::gmock_main
+)
+
+absl_cc_library(
+  NAME
+    hash_container_defaults
+  HDRS
+    "hash_container_defaults.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+    absl::hash_function_defaults
+  PUBLIC
 )
 
 # Internal-only target, do not depend on directly.

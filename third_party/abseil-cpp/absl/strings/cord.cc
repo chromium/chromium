@@ -75,7 +75,7 @@ using ::absl::cord_internal::kMinFlatLength;
 using ::absl::cord_internal::kInlinedVectorSize;
 using ::absl::cord_internal::kMaxBytesToCopy;
 
-static void DumpNode(absl::Nonnull<CordRep*> rep, bool include_data,
+static void DumpNode(absl::Nonnull<CordRep*> nonnull_rep, bool include_data,
                      absl::Nonnull<std::ostream*> os, int indent = 0);
 static bool VerifyNode(absl::Nonnull<CordRep*> root,
                        absl::Nonnull<CordRep*> start_node);
@@ -1457,12 +1457,13 @@ absl::string_view Cord::FlattenSlowPath() {
   }
 }
 
-static void DumpNode(absl::Nonnull<CordRep*> rep, bool include_data,
+static void DumpNode(absl::Nonnull<CordRep*> nonnull_rep, bool include_data,
                      absl::Nonnull<std::ostream*> os, int indent) {
+  CordRep* rep = nonnull_rep;
   const int kIndentStep = 1;
   for (;;) {
-    *os << std::setw(3) << rep->refcount.Get();
-    *os << " " << std::setw(7) << rep->length;
+    *os << std::setw(3) << (rep == nullptr ? 0 : rep->refcount.Get());
+    *os << " " << std::setw(7) << (rep == nullptr ? 0 : rep->length);
     *os << " [";
     if (include_data) *os << static_cast<void*>(rep);
     *os << "]";

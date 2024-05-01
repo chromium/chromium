@@ -89,7 +89,8 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED SpinLock {
   // acquisition was successful.  If the lock was not acquired, false is
   // returned.  If this SpinLock is free at the time of the call, TryLock
   // will return true with high probability.
-  inline bool TryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+  ABSL_MUST_USE_RESULT inline bool TryLock()
+      ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
     ABSL_TSAN_MUTEX_PRE_LOCK(this, __tsan_mutex_try_lock);
     bool res = TryLockImpl();
     ABSL_TSAN_MUTEX_POST_LOCK(
@@ -120,7 +121,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED SpinLock {
   // Determine if the lock is held.  When the lock is held by the invoking
   // thread, true will always be returned. Intended to be used as
   // CHECK(lock.IsHeld()).
-  inline bool IsHeld() const {
+  ABSL_MUST_USE_RESULT inline bool IsHeld() const {
     return (lockword_.load(std::memory_order_relaxed) & kSpinLockHeld) != 0;
   }
 

@@ -1075,6 +1075,7 @@ absl_cc_test(
     absl::function_ref
     absl::hash
     absl::hash_testing
+    absl::no_destructor
     absl::log
     absl::optional
     absl::random_random

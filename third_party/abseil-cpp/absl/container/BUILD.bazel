@@ -248,7 +248,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":container_memory",
-        ":hash_function_defaults",
+        ":hash_container_defaults",
         ":raw_hash_map",
         "//absl/algorithm:container",
         "//absl/base:core_headers",
@@ -285,7 +285,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":container_memory",
-        ":hash_function_defaults",
+        ":hash_container_defaults",
         ":raw_hash_set",
         "//absl/algorithm:container",
         "//absl/base:core_headers",
@@ -324,7 +324,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":container_memory",
-        ":hash_function_defaults",
+        ":hash_container_defaults",
         ":node_slot_policy",
         ":raw_hash_map",
         "//absl/algorithm:container",
@@ -359,7 +359,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":container_memory",
-        ":hash_function_defaults",
+        ":hash_container_defaults",
         ":node_slot_policy",
         ":raw_hash_set",
         "//absl/algorithm:container",
@@ -430,6 +430,17 @@ cc_library(
         "//absl/meta:type_traits",
         "//absl/strings",
         "//absl/strings:cord",
+    ],
+)
+
+cc_library(
+    name = "hash_container_defaults",
+    hdrs = ["hash_container_defaults.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":hash_function_defaults",
+        "//absl/base:config",
     ],
 )
 

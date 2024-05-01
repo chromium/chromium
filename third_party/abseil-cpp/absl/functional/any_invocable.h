@@ -98,9 +98,9 @@ ABSL_NAMESPACE_BEGIN
 // `AnyInvocable` also properly respects `const` qualifiers, reference
 // qualifiers, and the `noexcept` specification (only in C++ 17 and beyond) as
 // part of the user-specified function type (e.g.
-// `AnyInvocable<void()&& const noexcept>`). These qualifiers will be applied to
-// the `AnyInvocable` object's `operator()`, and the underlying invocable must
-// be compatible with those qualifiers.
+// `AnyInvocable<void() const && noexcept>`). These qualifiers will be applied
+// to the `AnyInvocable` object's `operator()`, and the underlying invocable
+// must be compatible with those qualifiers.
 //
 // Comparison of const and non-const function types:
 //

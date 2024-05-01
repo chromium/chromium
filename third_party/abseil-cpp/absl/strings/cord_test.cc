@@ -38,6 +38,7 @@
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
 #include "absl/base/macros.h"
+#include "absl/base/no_destructor.h"
 #include "absl/base/options.h"
 #include "absl/container/fixed_array.h"
 #include "absl/functional/function_ref.h"
@@ -2796,34 +2797,15 @@ class AfterExitCordTester {
   absl::string_view expected_;
 };
 
-// Deliberately prevents the destructor for an absl::Cord from running. The cord
-// is accessible via the cord member during the lifetime of the CordLeaker.
-// After the CordLeaker is destroyed, pointers to the cord will remain valid
-// until the CordLeaker's memory is deallocated.
-struct CordLeaker {
-  union {
-    absl::Cord cord;
-  };
-
-  template <typename Str>
-  constexpr explicit CordLeaker(const Str& str) : cord(str) {}
-
-  ~CordLeaker() {
-    // Don't do anything, including running cord's destructor. (cord's
-    // destructor won't run automatically because cord is hidden inside a
-    // union.)
-  }
-};
-
 template <typename Str>
-void TestConstinitConstructor(Str) {
+void TestAfterExit(Str) {
   const auto expected = Str::value;
   // Defined before `cord` to be destroyed after it.
   static AfterExitCordTester exit_tester;  // NOLINT
-  ABSL_CONST_INIT static CordLeaker cord_leaker(Str{});  // NOLINT
+  static absl::NoDestructor<absl::Cord> cord_leaker(Str{});
   // cord_leaker is static, so this reference will remain valid through the end
   // of program execution.
-  static absl::Cord& cord = cord_leaker.cord;
+  static absl::Cord& cord = *cord_leaker;
   static bool init_exit_tester = exit_tester.Set(&cord, expected);
   (void)init_exit_tester;
 
@@ -2875,11 +2857,9 @@ struct LongView {
 };
 
 
-TEST_P(CordTest, ConstinitConstructor) {
-  TestConstinitConstructor(
-      absl::strings_internal::MakeStringConstant(ShortView{}));
-  TestConstinitConstructor(
-      absl::strings_internal::MakeStringConstant(LongView{}));
+TEST_P(CordTest, AfterExit) {
+  TestAfterExit(absl::strings_internal::MakeStringConstant(ShortView{}));
+  TestAfterExit(absl::strings_internal::MakeStringConstant(LongView{}));
 }
 
 namespace {
