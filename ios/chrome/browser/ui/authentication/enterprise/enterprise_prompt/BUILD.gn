@@ -12,7 +12,7 @@ source_set("enterprise_prompt") {
   ]
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/policy/model/resources:enterprise_grey_icon_large",
+    "//ios/chrome/browser/policy/model/resources",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",

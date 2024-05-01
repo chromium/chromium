@@ -59,7 +59,7 @@ source_set("idle_timeout_policy_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/policy/model/resources:enterprise_grey_icon_large",
+    "//ios/chrome/browser/policy/model/resources",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

@@ -65,7 +65,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/promo_style",
-    "//ios/chrome/common/ui/resources:default_world_favicon",
+    "//ios/chrome/common/ui/resources",
     "//ios/chrome/common/ui/table_view",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",

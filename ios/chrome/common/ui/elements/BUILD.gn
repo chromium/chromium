@@ -45,11 +45,10 @@ source_set("form_input_accessory") {
   ]
   deps = [
     ":elements",
-    "resources:mf_arrow_down",
-    "resources:mf_arrow_up",
     "//base",
     "//base:i18n",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements/resources",
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]

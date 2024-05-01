@@ -18,7 +18,7 @@ source_set("user_policy") {
     "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/policy/model/resources:enterprise_grey_icon_large",
+    "//ios/chrome/browser/policy/model/resources",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",

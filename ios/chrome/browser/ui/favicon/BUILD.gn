@@ -16,7 +16,7 @@ source_set("favicon") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/favicon",
-    "//ios/chrome/common/ui/resources:default_world_favicon",
+    "//ios/chrome/common/ui/resources",
     "//url",
   ]
 }
