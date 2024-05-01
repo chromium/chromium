@@ -1335,20 +1335,12 @@ void BaseRenderingContext2D::DrawPathInternal(
     return;
   }
 
-  if (path.IsArc()) {
-    const auto& arc = path.arc();
-    const SkScalar x = WebCoreFloatToSkScalar(arc.x);
-    const SkScalar y = WebCoreFloatToSkScalar(arc.y);
-    const SkScalar radius = WebCoreFloatToSkScalar(arc.radius);
-    const SkScalar diameter = radius + radius;
-    const SkRect oval =
-        SkRect::MakeXYWH(x - radius, y - radius, diameter, diameter);
-    const SkScalar start_degrees =
-        WebCoreFloatToSkScalar(arc.start_angle_radians * 180 / kPiFloat);
-    const SkScalar sweep_degrees =
-        WebCoreFloatToSkScalar(arc.sweep_angle_radians * 180 / kPiFloat);
-    const SkArc sk_arc =
-        SkArc::Make(oval, start_degrees, sweep_degrees, SkArc::Type::kArc);
+  SkPath sk_path = path.GetPath().GetSkPath();
+  sk_path.setFillType(fill_type);
+
+  SkArc sk_arc;
+  if (RuntimeEnabledFeatures::CanvasUsesArcPaintOpEnabled() &&
+      sk_path.isArc(&sk_arc)) {
     Draw<OverdrawOp::kNone>(
         [sk_arc](cc::PaintCanvas* c,
                  const cc::PaintFlags* flags)  // draw lambda
@@ -1362,9 +1354,6 @@ void BaseRenderingContext2D::DrawPathInternal(
         CanvasPerformanceMonitor::DrawType::kPath);
     return;
   }
-
-  SkPath sk_path = path.GetPath().GetSkPath();
-  sk_path.setFillType(fill_type);
 
   Draw<OverdrawOp::kNone>(
       [sk_path, use_paint_cache](cc::PaintCanvas* c,

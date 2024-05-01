@@ -55,14 +55,6 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
     gfx::PointF end;
   };
 
-  struct PLATFORM_EXPORT Arc {
-    float x;
-    float y;
-    float radius;
-    float start_angle_radians;
-    float sweep_angle_radians;
-  };
-
   virtual ~CanvasPath() = default;
 
   void closePath();
@@ -132,7 +124,7 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
   virtual ExecutionContext* GetTopExecutionContext() const = 0;
 
   const Path& GetPath() const {
-    UpdatePathFromLineOrArcIfNecessary();
+    UpdatePathFromLineIfNecessary();
     return path_;
   }
 
@@ -141,26 +133,13 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
   // path is a line.
   bool IsLine() const { return line_builder_.HasLineTo(); }
 
-  // Returns true if the CanvasPath represents an arc. In some cases (such as
-  // using constructor that takes a Path) this can return false even though the
-  // path is an arc
-  bool IsArc() const { return arc_builder_.HasArc(); }
-
   // Returns the points that make up the line. Only valid if IsLine() is true.
   const Line& line() const {
     DCHECK(IsLine());
     return line_builder_.line();
   }
 
-  // Returns the details of an arc. Only valid if IsArc() is true.
-  const Arc& arc() const {
-    DCHECK(IsArc());
-    return arc_builder_.arc();
-  }
-
-  bool IsEmpty() const {
-    return line_builder_.IsEmpty() && arc_builder_.IsEmpty() && path_.IsEmpty();
-  }
+  bool IsEmpty() const { return line_builder_.IsEmpty() && path_.IsEmpty(); }
 
   // The returned rectangle is not necessarily exact, and may contain much more
   // than if you extract the SkPath and get the bounding rectangle from it. This
@@ -181,12 +160,11 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
 
   void Clear() {
     line_builder_.Clear();
-    arc_builder_.Clear();
     path_.Clear();
   }
 
   Path& GetModifiablePath() {
-    UpdatePathFromLineOrArcIfNecessaryForMutation();
+    UpdatePathFromLineIfNecessaryForMutation();
     return path_;
   }
 
@@ -252,64 +230,19 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
     Line line_;
   };
 
-  // Tracks building an arc.
-  class ArcBuilder {
-   public:
-    bool IsEmpty() const { return state_ == State::kEmpty; }
-
-    ALWAYS_INLINE void Clear() { state_ = State::kEmpty; }
-
-    void ArcTo(float x,
-               float y,
-               float radius,
-               float start_angle_radians,
-               float sweep_angle_radians) {
-      DCHECK(IsEmpty());
-      state_ = State::kArc;
-      arc_.x = x;
-      arc_.y = y;
-      arc_.radius = radius;
-      arc_.start_angle_radians = start_angle_radians;
-      arc_.sweep_angle_radians = sweep_angle_radians;
-    }
-
-    bool HasArc() const { return state_ == State::kArc; }
-
-    gfx::RectF BoundingRect() const;
-
-    ALWAYS_INLINE const Arc& arc() const {
-      DCHECK_NE(state_, State::kEmpty);
-      return arc_;
-    }
-
-    void UpdatePath(Path& path) const;
-
-   private:
-    enum class State {
-      kEmpty,
-      kArc,     // ArcTo() was called.
-    };
-
-    State state_ = State::kEmpty;
-    Arc arc_;
-  };
-
-  bool DoesPathNeedUpdatingFromLineOrArc() const {
-    return (!line_builder_.IsEmpty() || !arc_builder_.IsEmpty()) &&
-           path_.IsEmpty();
+  bool DoesPathNeedUpdatingFromLine() const {
+    return !line_builder_.IsEmpty() && path_.IsEmpty();
   }
 
-  // Updates `path_` from one of the builders if necessary.
-  void UpdatePathFromLineOrArcIfNecessary() const;
+  // Updates `path_` from `line_builder_` if necessary.
+  void UpdatePathFromLineIfNecessary() const;
 
-  // Same as UpdatePathFromLineOrArcIfNecessary(), but also clears the builders.
-  void UpdatePathFromLineOrArcIfNecessaryForMutation();
+  // Same as UpdatePathFromLineIfNecessary(), but also clears `line_builder_`.
+  void UpdatePathFromLineIfNecessaryForMutation();
 
   LineBuilder line_builder_;
 
-  ArcBuilder arc_builder_;
-
-  // `path_` may be lazily updated from one of the builders. As such, it needs
+  // `path_` may be lazily updated from `line_builder_`. As such, it needs
   // to be mutable.
   mutable Path path_;
 };
