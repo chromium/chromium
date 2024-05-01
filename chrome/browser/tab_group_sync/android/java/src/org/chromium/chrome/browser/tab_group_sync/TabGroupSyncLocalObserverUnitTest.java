@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -138,7 +139,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testFinishedClosingTabGroup_Hiding() {
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .finishedClosingTabGroup(TOKEN_1, /* wasHiding= */ true);
+                .committedTabGroupClosure(TOKEN_1, /* wasHiding= */ true);
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
     }
 
@@ -146,7 +147,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testFinishedClosingTabGroup_Deleted() {
         mTabGroupModelFilterObserverCaptor
                 .getValue()
-                .finishedClosingTabGroup(TOKEN_1, /* wasHiding= */ false);
+                .committedTabGroupClosure(TOKEN_1, /* wasHiding= */ false);
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
         verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
     }
@@ -273,8 +274,29 @@ public class TabGroupSyncLocalObserverUnitTest {
     }
 
     @Test
-    public void testDidRemoveGroup() {
-        mTabGroupModelFilterObserverCaptor.getValue().didRemoveTabGroup(ROOT_ID_1, TOKEN_1);
-        verify(mTabGroupSyncService, times(1)).removeLocalTabGroupMapping(eq(LOCAL_TAB_GROUP_ID_1));
+    public void testDidRemoveGroup_Close() {
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.CLOSE);
+        verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+        verify(mTabGroupSyncService, never()).removeGroup(LOCAL_TAB_GROUP_ID_1);
+    }
+
+    @Test
+    public void testDidRemoveGroup_Merge() {
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.MERGE);
+        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+        verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
+    }
+
+    @Test
+    public void testDidRemoveGroup_Ungroup() {
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.UNGROUP);
+        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+        verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
     }
 }

@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -192,24 +193,32 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void finishedClosingTabGroup(Token tabGroupId, boolean wasHiding) {
+            public void committedTabGroupClosure(Token tabGroupId, boolean wasHiding) {
                 StringBuilder builder =
-                        new StringBuilder("finishedClosingTabGroup, tabGroupId = ")
+                        new StringBuilder("committedTabGroupClosure, tabGroupId = ")
                                 .append(tabGroupId)
                                 .append(" wasHiding = ")
                                 .append(wasHiding);
                 LogUtils.log(TAG, builder.toString());
 
-                mRemoteTabGroupMutationHelper.handleTabGroupClosed(
+                mRemoteTabGroupMutationHelper.handleCommittedTabGroupClosure(
                         new LocalTabGroupId(tabGroupId), wasHiding);
             }
 
             @Override
-            public void didRemoveTabGroup(int oldRootId, @Nullable Token oldTabGroupId) {
+            public void didRemoveTabGroup(
+                    int oldRootId,
+                    @Nullable Token oldTabGroupId,
+                    @DidRemoveTabGroupReason int removalReason) {
                 LogUtils.log(TAG, "didRemoveTabGroup, oldRootId " + oldRootId);
                 if (oldTabGroupId == null) return;
 
-                mRemoteTabGroupMutationHelper.unmapTabGroupId(new LocalTabGroupId(oldTabGroupId));
+                LocalTabGroupId localTabGroupId = new LocalTabGroupId(oldTabGroupId);
+                if (removalReason == DidRemoveTabGroupReason.MERGE
+                        || removalReason == DidRemoveTabGroupReason.UNGROUP) {
+                    mRemoteTabGroupMutationHelper.unmapTabGroupId(localTabGroupId);
+                    mRemoteTabGroupMutationHelper.removeGroup(localTabGroupId);
+                }
             }
         };
     }

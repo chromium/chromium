@@ -137,7 +137,7 @@ public class RemoteTabGroupMutationHelper {
      * @param groupId The group ID being closed.
      * @param wasHiding Whether the group is hiding instead of being deleted.
      */
-    public void handleTabGroupClosed(LocalTabGroupId groupId, boolean wasHiding) {
+    public void handleCommittedTabGroupClosure(LocalTabGroupId groupId, boolean wasHiding) {
         unmapTabGroupId(groupId);
         if (!wasHiding) {
             // When deleting drop the group from sync entirely.

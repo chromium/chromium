@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -350,7 +351,8 @@ public class TabGroupModelFilter extends TabModelFilter {
                 }
 
                 for (Pair<Integer, Token> removedGroup : removedGroups) {
-                    observer.didRemoveTabGroup(removedGroup.first, removedGroup.second);
+                    observer.didRemoveTabGroup(
+                            removedGroup.first, removedGroup.second, DidRemoveTabGroupReason.MERGE);
                 }
             }
         }
@@ -492,7 +494,8 @@ public class TabGroupModelFilter extends TabModelFilter {
             }
 
             for (Pair<Integer, Token> removedGroup : removedGroups) {
-                observer.didRemoveTabGroup(removedGroup.first, removedGroup.second);
+                observer.didRemoveTabGroup(
+                        removedGroup.first, removedGroup.second, DidRemoveTabGroupReason.MERGE);
             }
         }
     }
@@ -521,7 +524,10 @@ public class TabGroupModelFilter extends TabModelFilter {
             if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()
                     && sourceTab.getTabGroupId() != null) {
                 for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                    observer.didRemoveTabGroup(sourceTab.getRootId(), sourceTab.getTabGroupId());
+                    observer.didRemoveTabGroup(
+                            sourceTab.getRootId(),
+                            sourceTab.getTabGroupId(),
+                            DidRemoveTabGroupReason.UNGROUP);
                 }
             }
             sourceTab.setTabGroupId(null);
@@ -888,7 +894,8 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         if (didRemoveGroup) {
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.didRemoveTabGroup(rootId, tab.getTabGroupId());
+                observer.didRemoveTabGroup(
+                        rootId, tab.getTabGroupId(), DidRemoveTabGroupReason.CLOSE);
             }
         }
     }
@@ -1601,7 +1608,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
             boolean wasHiding = mHidingTabGroups.remove(tabGroupId);
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.finishedClosingTabGroup(tabGroupId, wasHiding);
+                observer.committedTabGroupClosure(tabGroupId, wasHiding);
             }
         }
     }
