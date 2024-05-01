@@ -157,6 +157,7 @@
 /swiftshader/
 /syzygy
 /syzygy/binaries
+/tfhub_models/.*
 /tfhub_models/*.tar.gz
 /tfhub_models/models/
 /tint/src
