@@ -20,11 +20,12 @@ namespace {
 // Returns the root prerender frame tree node associated with navigation_request
 // of ongoing prerender activation.
 FrameTreeNode* GetRootPrerenderFrameTreeNode(int prerender_frame_tree_node_id) {
-  FrameTreeNode* prerender_frame_tree_node =
+  FrameTreeNode* root =
       FrameTreeNode::GloballyFindByID(prerender_frame_tree_node_id);
-  return prerender_frame_tree_node
-             ? prerender_frame_tree_node->frame_tree().root()
-             : nullptr;
+  if (root) {
+    CHECK(root->IsOutermostMainFrame());
+  }
+  return root;
 }
 
 }  // namespace

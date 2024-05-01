@@ -1437,4 +1437,32 @@ void LocalFrameMojoHandler::RequestFullscreenVideoElement() {
   }
 }
 
+void LocalFrameMojoHandler::UpdatePrerenderURL(
+    const KURL& matched_url,
+    UpdatePrerenderURLCallback callback) {
+  CHECK(SecurityOrigin::Create(matched_url)
+            ->IsSameOriginWith(
+                &*GetDocument()->GetExecutionContext()->GetSecurityOrigin()));
+  auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+      matched_url, NavigateEventType::kPrerenderNoVarySearchActivation,
+      WebFrameLoadType::kReplaceCurrentItem);
+  params->is_browser_initiated = true;
+
+  // TODO(crbug.com/41494389): Add test for how the navigation API can intercept
+  // this update.
+  if (frame_->DomWindow()->navigation()->DispatchNavigateEvent(params) !=
+      NavigationApi::DispatchResult::kContinue) {
+    std::move(callback).Run();
+    return;
+  }
+
+  GetDocument()->Loader()->RunURLAndHistoryUpdateSteps(
+      matched_url, nullptr,
+      mojom::blink::SameDocumentNavigationType::
+          kPrerenderNoVarySearchActivation,
+      /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
+      /*is_browser_initiated=*/true);
+  std::move(callback).Run();
+}
+
 }  // namespace blink

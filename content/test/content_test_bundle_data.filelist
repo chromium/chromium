@@ -6950,6 +6950,8 @@ data/net/cache/file_enumerator/dir/another.txt
 data/net/cache/file_enumerator/test.txt
 data/net_info.html
 data/no_color_scheme_meta_slow.html
+data/no_vary_search_a.html
+data/no_vary_search_a.html.mock-http-headers
 data/nocache-with-etag.html
 data/nocache-with-etag.html.mock-http-headers
 data/nosniff-test.html

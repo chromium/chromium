@@ -200,6 +200,8 @@ class LocalFrameMojoHandler
   void SetNavigationApiHistoryEntriesForRestore(
       mojom::blink::NavigationApiHistoryEntryArraysPtr,
       mojom::blink::NavigationApiEntryRestoreReason) final;
+  void UpdatePrerenderURL(const KURL& matched_url,
+                          UpdatePrerenderURLCallback callback) final;
   void NotifyNavigationApiOfDisposedEntries(
       const WTF::Vector<WTF::String>&) final;
   void TraverseCancelled(const String& navigation_api_key,

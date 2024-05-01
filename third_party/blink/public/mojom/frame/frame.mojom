@@ -1084,6 +1084,10 @@ interface LocalFrame {
       NavigationApiHistoryEntryArrays entry_arrays,
       NavigationApiEntryRestoreReason restore_reason);
 
+  // Updates the URL for a prerender ready to be activated via No-Vary-Search
+  // matching.
+  UpdatePrerenderURL(url.mojom.Url matched_url) => ();
+
   // Updates navigation.entries() when entries are disposed from the session
   // history.
   NotifyNavigationApiOfDisposedEntries(array<string> keys);

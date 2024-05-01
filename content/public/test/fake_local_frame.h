@@ -176,6 +176,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const std::string& normalized_server_timing,
       const ::network::URLLoaderCompletionStatus& completion_status) override;
   void RequestFullscreenDocumentElement() override;
+  void UpdatePrerenderURL(const ::GURL& matched_url,
+                          UpdatePrerenderURLCallback callback) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

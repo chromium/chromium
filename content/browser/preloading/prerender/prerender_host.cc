@@ -847,7 +847,11 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   if (attributes_.url_match_predicate) {
     CHECK(attributes_.url_match_predicate.Run(potential_activation.url));
   } else {
-    CHECK_EQ(potential_activation.url, common_params_->url);
+    // TODO(crbug.com/41494389): We should check for No-Vary-Search match
+    // here.
+    if (!base::FeatureList::IsEnabled(features::kPrerender2NoVarySearch)) {
+      CHECK_EQ(potential_activation.url, common_params_->url);
+    }
   }
   if (potential_activation.initiator_origin !=
       common_params_->initiator_origin) {
@@ -1150,17 +1154,23 @@ void PrerenderHost::SetFailureReason(
 }
 
 bool PrerenderHost::IsUrlMatch(const GURL& url) const {
-  if (!attributes_.url_match_predicate) {
-    return GetInitialUrl() == url;
-  }
-
   // Triggers are not allowed to treat a cross-origin url as a matched url. It
   // would cause security risks.
   if (!url::IsSameOriginWith(attributes_.prerendering_url, url)) {
     return false;
   }
 
-  return attributes_.url_match_predicate.Run(url);
+  if (attributes_.url_match_predicate) {
+    return attributes_.url_match_predicate.Run(url);
+  }
+
+  if (GetInitialUrl() == url) {
+    return true;
+  }
+
+  // Check No-Vary-Search header and try and match.
+  return no_vary_search_.has_value() &&
+         no_vary_search_->AreEquivalent(GetInitialUrl(), url);
 }
 
 void PrerenderHost::OnAcceptClientHintChanged(

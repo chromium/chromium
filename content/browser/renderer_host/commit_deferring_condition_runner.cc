@@ -6,6 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "content/browser/preloading/prerender/prerender_commit_deferring_condition.h"
+#include "content/browser/preloading/prerender/prerender_no_vary_search_commit_deferring_condition.h"
 #include "content/browser/renderer_host/back_forward_cache_commit_deferring_condition.h"
 #include "content/browser/renderer_host/concurrent_navigations_commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -110,6 +112,10 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
   }
 
   AddCondition(PrerenderCommitDeferringCondition::MaybeCreate(
+      navigation_request, navigation_type_,
+      candidate_prerender_frame_tree_node_id_));
+
+  AddCondition(PrerenderNoVarySearchCommitDeferringCondition::MaybeCreate(
       navigation_request, navigation_type_,
       candidate_prerender_frame_tree_node_id_));
 

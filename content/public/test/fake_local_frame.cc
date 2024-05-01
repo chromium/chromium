@@ -235,4 +235,9 @@ void FakeLocalFrame::BindFrameHostReceiver(
       std::move(handle)));
 }
 
+void FakeLocalFrame::UpdatePrerenderURL(const ::GURL& matched_url,
+                                        UpdatePrerenderURLCallback callback) {
+  std::move(callback).Run();
+}
+
 }  // namespace content
