@@ -2096,7 +2096,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkTiming) {
 }
 
 // Tests network size.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSize) {
+// TODO(crbug/40218872): Enable this flaky test. This is flaky on Linux debug
+// build. See also: https://crrev.com/c/2772698
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_TestNetworkSize DISABLED_TestNetworkSize
+#else
+#define MAYBE_TestNetworkSize TestNetworkSize
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSize) {
   RunTest("testNetworkSize", kChunkedTestPage);
 }
 
