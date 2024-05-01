@@ -656,7 +656,7 @@ void LensOverlayController::OnSuggestionAccepted(const GURL& destination_url) {
   net::QueryIterator query_iterator(destination_url);
   while (!query_iterator.IsAtEnd()) {
     std::string_view key = query_iterator.GetKey();
-    std::string_view value = query_iterator.GetValue();
+    std::string_view value = query_iterator.GetUnescapedValue();
     if (kTextQueryParameterKey == key) {
       query_text = value;
     } else {
@@ -678,7 +678,7 @@ void LensOverlayController::OnPageBound() {
 
   // Send any pending inputs for the searchbox.
   if (pending_text_query_.has_value()) {
-    SetSearchboxInputText(*pending_text_query_);
+    searchbox_handler_->SetInputText(*pending_text_query_);
     pending_text_query_.reset();
   }
   if (pending_thumbnail_uri_.has_value()) {
