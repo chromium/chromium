@@ -73,6 +73,9 @@ class UserEducationService : public KeyedService {
   RecentSessionTracker* recent_session_tracker() {
     return recent_session_tracker_.get();
   }
+  RecentSessionObserver* recent_session_observer() {
+    return recent_session_observer_.get();
+  }
 
   // Utility methods for when a browser [window] isn't available; for example,
   // when only a WebContents is available:

@@ -27,12 +27,9 @@ void RecentSessionObserverImpl::Init(RecentSessionTracker& tracker) {
 void RecentSessionObserverImpl::OnRecentSessionsUpdated(
     const RecentSessionData& recent_sessions) {
   policy_->RecordRecentUsageMetrics(recent_sessions);
-
-  // TODO(dfried): use the return value of this to change User Education
-  // behavior.
-  //
-  // Note: this is called to ensure that unit tests are consistent.
-  policy_->ShouldEnableLowUsagePromoMode(recent_sessions);
+  if (policy_->ShouldEnableLowUsagePromoMode(recent_sessions)) {
+    NotifyLowUsageSession();
+  }
 }
 
 // Method that will be imported by `UserEducationServiceFactory` to create the

@@ -31,8 +31,7 @@ class RecentSessionObserverImpl : public RecentSessionObserver {
   void Init(RecentSessionTracker& tracker) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(RecentSessionObserverImplTest,
-                           OnRecentSessionsUpdated);
+  friend class RecentSessionObserverImplTest;
 
   void OnRecentSessionsUpdated(const RecentSessionData& recent_sessions);
 
