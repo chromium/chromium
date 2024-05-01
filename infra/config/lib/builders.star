@@ -107,7 +107,8 @@ reclient = struct(
         LOW_JOBS_FOR_CI = 80,
         HIGH_JOBS_FOR_CI = 500,
         LOW_JOBS_FOR_CQ = 150,
-        HIGH_JOBS_FOR_CQ = 500,
+        # Calculated based on the number of CPUs inside Siso.
+        HIGH_JOBS_FOR_CQ = -1,
     ),
 )
 

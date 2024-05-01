@@ -108,7 +108,7 @@ defaults = args.defaults(
     # to the standard default.
     compilator_cores = args.DEFAULT,
     orchestrator_cores = args.DEFAULT,
-    orchestrator_reclient_jobs = args.DEFAULT,
+    orchestrator_siso_remote_jobs = args.DEFAULT,
 )
 
 def tryjob(
@@ -422,7 +422,7 @@ def _orchestrator_builder(
     kwargs.setdefault("service_account", "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com")
     kwargs.setdefault("ssd", None)
 
-    kwargs.setdefault("reclient_jobs", defaults.orchestrator_reclient_jobs.get())
+    kwargs.setdefault("siso_remote_jobs", defaults.orchestrator_siso_remote_jobs.get())
 
     ret = try_.builder(name = name, **kwargs)
     if ret:

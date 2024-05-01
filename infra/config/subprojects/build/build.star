@@ -100,7 +100,8 @@ def cq_build_perf_builder(description_html, **kwargs):
         kwargs["siso_configs"] = ["builder", "remote-library-link", "remote-exec-link"]
     return ci.builder(
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
-        reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+        reclient_jobs = 500,
+        siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
         reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
         use_clang_coverage = True,
         **kwargs
