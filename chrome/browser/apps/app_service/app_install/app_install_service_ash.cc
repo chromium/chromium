@@ -43,25 +43,24 @@ namespace apps {
 namespace {
 
 struct AppInstallDataFailure {
-  AppInstallAlmanacConnector::Error request_error;
+  DownloadError::Type download_error;
   AppInstallResult install_result;
 };
 
 std::optional<AppInstallDataFailure> VerifyAppInstallData(
-    const base::expected<AppInstallData, AppInstallAlmanacConnector::Error>&
-        data,
+    const base::expected<AppInstallData, DownloadError>& data,
     const PackageId& expected_package_id) {
   if (data.has_value()) {
     if (data->package_id != expected_package_id) {
       return AppInstallDataFailure{
-          AppInstallAlmanacConnector::Error::kBadRequest,
+          DownloadError::kBadRequest,
           AppInstallResult::kAppDataCorrupted,
       };
     }
     if (expected_package_id.package_type() == PackageType::kWeb &&
         !absl::holds_alternative<WebAppInstallData>(data->app_type_data)) {
       return AppInstallDataFailure{
-          AppInstallAlmanacConnector::Error::kBadRequest,
+          DownloadError::kBadRequest,
           AppInstallResult::kAppDataCorrupted,
       };
     }
@@ -69,12 +68,12 @@ std::optional<AppInstallDataFailure> VerifyAppInstallData(
   }
 
   return AppInstallDataFailure{
-      data.error(),
+      data.error().type,
       [&]() {
-        switch (data.error()) {
-          case AppInstallAlmanacConnector::Error::kBadRequest:
+        switch (data.error().type) {
+          case DownloadError::kBadRequest:
             return AppInstallResult::kBadAppRequest;
-          case AppInstallAlmanacConnector::Error::kConnectionFailure:
+          case DownloadError::kConnectionError:
             return AppInstallResult::kAlmanacFetchFailed;
         }
       }(),
@@ -287,7 +286,7 @@ void AppInstallServiceAsh::PerformInstallHeadless(
     AppInstallSurface surface,
     PackageId expected_package_id,
     base::OnceCallback<void(bool success)> callback,
-    base::expected<AppInstallData, AppInstallAlmanacConnector::Error> data) {
+    base::expected<AppInstallData, DownloadError> data) {
   // TODO(b/327535848): Record metrics for headless installs.
   if (!data.has_value()) {
     std::move(callback).Run(false);
@@ -303,7 +302,7 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     std::optional<gfx::NativeWindow> anchor_window,
     std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
     base::OnceCallback<void(AppInstallResult)> callback,
-    base::expected<AppInstallData, AppInstallAlmanacConnector::Error> data) {
+    base::expected<AppInstallData, DownloadError> data) {
   gfx::NativeWindow parent =
       anchor_window.has_value() &&
               !anchor_window_tracker->WasNativeWindowDestroyed()
@@ -315,11 +314,11 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     if (ash::app_install::AppInstallDialog::IsEnabled()) {
       base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
           ash::app_install::AppInstallDialog::CreateDialog();
-      switch (data_failure->request_error) {
-        case AppInstallAlmanacConnector::Error::kBadRequest:
+      switch (data_failure->download_error) {
+        case DownloadError::kBadRequest:
           dialog->ShowNoAppError(parent);
           break;
-        case AppInstallAlmanacConnector::Error::kConnectionFailure:
+        case DownloadError::kConnectionError:
           dialog->ShowConnectionError(
               parent, base::BindOnce(&AppInstallServiceAsh::InstallApp,
                                      weak_ptr_factory_.GetWeakPtr(), surface,

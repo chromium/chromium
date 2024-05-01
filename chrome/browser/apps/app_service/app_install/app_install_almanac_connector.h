@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 
 class GURL;
 
@@ -44,7 +45,7 @@ class AppInstallAlmanacConnector {
     kBadRequest,
   };
   using GetAppInstallInfoCallback =
-      base::OnceCallback<void(base::expected<AppInstallData, Error>)>;
+      base::OnceCallback<void(base::expected<AppInstallData, DownloadError>)>;
 
   void GetAppInstallInfo(PackageId package_id,
                          DeviceInfo device_info,

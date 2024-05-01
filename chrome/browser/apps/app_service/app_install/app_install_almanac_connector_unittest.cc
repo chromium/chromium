@@ -30,8 +30,8 @@ namespace apps {
 
 namespace {
 
-using ResponseFuture = base::test::TestFuture<
-    base::expected<AppInstallData, AppInstallAlmanacConnector::Error>>;
+using ResponseFuture =
+    base::test::TestFuture<base::expected<AppInstallData, DownloadError>>;
 
 const PackageId kTestPackageId(PackageType::kWeb, "https://example.com/");
 
@@ -180,8 +180,8 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoIncompleteResponse) {
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_EQ(response_future.Get().error(),
-            AppInstallAlmanacConnector::Error::kConnectionFailure);
+  EXPECT_EQ(response_future.Get().error().type,
+            DownloadError::kConnectionError);
 }
 
 TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoMalformedResponse) {
@@ -193,8 +193,8 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoMalformedResponse) {
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_EQ(response_future.Get().error(),
-            AppInstallAlmanacConnector::Error::kConnectionFailure);
+  EXPECT_EQ(response_future.Get().error().type,
+            DownloadError::kConnectionError);
 }
 
 TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoServerError) {
@@ -206,8 +206,8 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoServerError) {
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_EQ(response_future.Get().error(),
-            AppInstallAlmanacConnector::Error::kConnectionFailure);
+  EXPECT_EQ(response_future.Get().error().type,
+            DownloadError::kConnectionError);
 }
 
 TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoNetworkError) {
@@ -220,8 +220,8 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoNetworkError) {
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_EQ(response_future.Get().error(),
-            AppInstallAlmanacConnector::Error::kConnectionFailure);
+  EXPECT_EQ(response_future.Get().error().type,
+            DownloadError::kConnectionError);
 }
 
 TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoNotFound) {
@@ -235,8 +235,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoNotFound) {
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_EQ(response_future.Get().error(),
-            AppInstallAlmanacConnector::Error::kBadRequest);
+  EXPECT_EQ(response_future.Get().error().type, DownloadError::kBadRequest);
 }
 
 }  // namespace apps

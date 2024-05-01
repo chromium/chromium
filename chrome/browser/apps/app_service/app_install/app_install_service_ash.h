@@ -87,7 +87,7 @@ class AppInstallServiceAsh : public AppInstallService {
       AppInstallSurface surface,
       PackageId expected_package_id,
       base::OnceCallback<void(bool success)> callback,
-      base::expected<AppInstallData, AppInstallAlmanacConnector::Error> data);
+      base::expected<AppInstallData, DownloadError> data);
 
   void ShowDialogAndInstall(
       AppInstallSurface surface,
@@ -95,7 +95,7 @@ class AppInstallServiceAsh : public AppInstallService {
       std::optional<gfx::NativeWindow> anchor_window,
       std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
       base::OnceCallback<void(AppInstallResult)> callback,
-      base::expected<AppInstallData, AppInstallAlmanacConnector::Error> data);
+      base::expected<AppInstallData, DownloadError> data);
   void InstallIfDialogAccepted(
       AppInstallSurface surface,
       PackageId expected_package_id,

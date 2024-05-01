@@ -45,13 +45,23 @@ std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
     const std::string& request_body,
     std::string_view endpoint_suffix);
 
-// Returns an InternalError with a descriptive message if an error occurred
+struct DownloadError {
+  enum Type {
+    kBadRequest,
+    kConnectionError,
+  } type;
+  std::string message;
+};
+
+std::ostream& operator<<(std::ostream& out, const DownloadError& error);
+
+// Returns a DownloadError with a descriptive message if an error occurred
 // during downloading. Note the response_body can be a nullptr even if no other
-// error occurred. So if the method returns OK, response_body is guaranteed to
-// be non-null (but can be empty).
+// error occurred. So if the method returns std::nullopt, response_body is
+// guaranteed to be non-null (but can be empty).
 // Adds the error to UMA if a histogram name is specified. The histogram must be
 // defined in histograms.xml using enum "CombinedHttpResponseAndNetErrorCode".
-absl::Status GetDownloadError(
+std::optional<DownloadError> GetDownloadError(
     int net_error,
     const network::mojom::URLResponseHead* response_info,
     const std::string* response_body,

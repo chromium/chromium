@@ -170,26 +170,25 @@ void AppInstallAlmanacConnector::OnAppInstallResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
     GetAppInstallInfoCallback callback,
     std::unique_ptr<std::string> response_body) {
-  absl::Status error = GetDownloadError(
+  std::optional<DownloadError> error = GetDownloadError(
       loader->NetError(), loader->ResponseInfo(), response_body.get());
-  if (!error.ok()) {
-    LOG(ERROR) << error.message();
-    std::move(callback).Run(
-        base::unexpected(error.code() == absl::StatusCode::kUnavailable
-                             ? Error::kConnectionFailure
-                             : Error::kBadRequest));
+  if (error) {
+    LOG(ERROR) << *error;
+    std::move(callback).Run(base::unexpected(std::move(error).value()));
     return;
   }
 
   proto::AppInstallResponse response;
   if (!response.ParseFromString(*response_body)) {
-    std::move(callback).Run(base::unexpected(Error::kConnectionFailure));
+    std::move(callback).Run(
+        base::unexpected(DownloadError{DownloadError::kConnectionError}));
     return;
   }
 
   std::optional<AppInstallData> data = ParseAppInstallResponseProto(response);
   if (!data) {
-    std::move(callback).Run(base::unexpected(Error::kConnectionFailure));
+    std::move(callback).Run(
+        base::unexpected(DownloadError{DownloadError::kConnectionError}));
     return;
   }
   std::move(callback).Run(base::ok(std::move(data).value()));

@@ -32,11 +32,11 @@ TEST_F(AlmanacApiUtilTest, NoDownloadError) {
   response_info->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   std::string response_body;
-  EXPECT_TRUE(GetDownloadError(net::OK, response_info.get(), &response_body,
-                               "histogram")
-                  .ok());
-  EXPECT_TRUE(
-      GetDownloadError(net::OK, nullptr, &response_body, std::nullopt).ok());
+  EXPECT_FALSE(GetDownloadError(net::OK, response_info.get(), &response_body,
+                                "histogram")
+                   .has_value());
+  EXPECT_FALSE(GetDownloadError(net::OK, nullptr, &response_body, std::nullopt)
+                   .has_value());
 }
 
 TEST_F(AlmanacApiUtilTest, NetDownloadError) {
@@ -44,13 +44,12 @@ TEST_F(AlmanacApiUtilTest, NetDownloadError) {
   response_info->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   std::string response_body;
-  EXPECT_FALSE(GetDownloadError(net::ERR_INSUFFICIENT_RESOURCES,
-                                response_info.get(), &response_body,
-                                "histogram")
-                   .ok());
-  EXPECT_FALSE(GetDownloadError(net::ERR_CONNECTION_FAILED, nullptr,
-                                &response_body, std::nullopt)
-                   .ok());
+  EXPECT_TRUE(GetDownloadError(net::ERR_INSUFFICIENT_RESOURCES,
+                               response_info.get(), &response_body, "histogram")
+                  .has_value());
+  EXPECT_TRUE(GetDownloadError(net::ERR_CONNECTION_FAILED, nullptr,
+                               &response_body, std::nullopt)
+                  .has_value());
 }
 
 TEST_F(AlmanacApiUtilTest, ServerDownloadError) {
@@ -58,14 +57,14 @@ TEST_F(AlmanacApiUtilTest, ServerDownloadError) {
   response_info->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 404");
   std::string response_body;
-  EXPECT_FALSE(GetDownloadError(net::OK, response_info.get(), &response_body,
-                                "histogram")
-                   .ok());
+  EXPECT_TRUE(GetDownloadError(net::OK, response_info.get(), &response_body,
+                               "histogram")
+                  .has_value());
   response_info->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 502");
-  EXPECT_FALSE(GetDownloadError(net::OK, response_info.get(), &response_body,
-                                std::nullopt)
-                   .ok());
+  EXPECT_TRUE(GetDownloadError(net::OK, response_info.get(), &response_body,
+                               std::nullopt)
+                  .has_value());
 }
 
 TEST_F(AlmanacApiUtilTest, NoRequestBodyDownloadError) {
@@ -73,11 +72,11 @@ TEST_F(AlmanacApiUtilTest, NoRequestBodyDownloadError) {
   response_info->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   std::string* response_body = nullptr;
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       GetDownloadError(net::OK, response_info.get(), response_body, "histogram")
-          .ok());
-  EXPECT_FALSE(
-      GetDownloadError(net::OK, nullptr, response_body, std::nullopt).ok());
+          .has_value());
+  EXPECT_TRUE(GetDownloadError(net::OK, nullptr, response_body, std::nullopt)
+                  .has_value());
 }
 }  // namespace
 }  // namespace apps

@@ -97,10 +97,10 @@ void LauncherAppAlmanacConnector::OnGetAppsResponse(
     std::unique_ptr<network::SimpleURLLoader> loader,
     GetAppsCallback callback,
     std::unique_ptr<std::string> response_body) {
-  absl::Status error = GetDownloadError(
+  std::optional<DownloadError> error = GetDownloadError(
       loader->NetError(), loader->ResponseInfo(), response_body.get());
-  if (!error.ok()) {
-    LOG(ERROR) << error.message();
+  if (error) {
+    LOG(ERROR) << *error;
     std::move(callback).Run(std::nullopt);
     return;
   }

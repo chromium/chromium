@@ -165,13 +165,13 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
     base::TimeTicks request_start_time,
     GetInitialAppsCallback callback,
     std::unique_ptr<std::string> response_body) {
-  absl::Status error =
+  std::optional<DownloadError> error =
       GetDownloadError(loader->NetError(), loader->ResponseInfo(),
                        response_body.get(), kServerErrorHistogramName);
   LauncherOrdering launcher_ordering;
   ShelfPinOrdering shelf_pin_ordering;
-  if (!error.ok()) {
-    LOG(ERROR) << error.message();
+  if (error) {
+    LOG(ERROR) << *error;
     std::move(callback).Run(std::nullopt, std::move(launcher_ordering),
                             std::move(shelf_pin_ordering));
     return;

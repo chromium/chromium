@@ -83,7 +83,20 @@ std::unique_ptr<network::SimpleURLLoader> GetAlmanacUrlLoader(
   return loader;
 }
 
-absl::Status GetDownloadError(
+std::ostream& operator<<(std::ostream& out, const DownloadError& error) {
+  switch (error.type) {
+    case DownloadError::kBadRequest:
+      out << "Bad request: ";
+      break;
+    case DownloadError::kConnectionError:
+      out << "Connection error: ";
+      break;
+  }
+  out << error.message;
+  return out;
+}
+
+std::optional<DownloadError> GetDownloadError(
     int net_error,
     const network::mojom::URLResponseHead* response_info,
     const std::string* response_body,
@@ -99,23 +112,28 @@ absl::Status GetDownloadError(
   }
   if (net_error != net::OK &&
       net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    return absl::UnavailableError(
-        base::StrCat({"net error: ", net::ErrorToString(net_error)}));
+    return DownloadError{
+        DownloadError::kConnectionError,
+        base::StrCat({"net error: ", net::ErrorToString(net_error)})};
   }
 
   if ((response_code >= 200 && response_code < 300) || response_code == 0) {
     if (!response_body) {
-      return absl::UnavailableError("request body is nullptr");
+      return DownloadError{DownloadError::kConnectionError,
+                           "request body is nullptr"};
     }
-    return absl::OkStatus();
+    return std::nullopt;
   }
 
   if (response_code >= 400 && response_code < 500) {
-    return absl::InvalidArgumentError(base::StrCat(
-        {"HTTP error code: ", base::NumberToString(response_code)}));
+    return DownloadError{DownloadError::kBadRequest,
+                         base::StrCat({"HTTP error code: ",
+                                       base::NumberToString(response_code)})};
   }
 
-  return absl::UnavailableError(
-      base::StrCat({"HTTP error code: ", base::NumberToString(response_code)}));
+  return DownloadError{
+      DownloadError::kConnectionError,
+      base::StrCat({"HTTP error code: ", base::NumberToString(response_code)})};
 }
+
 }  // namespace apps
