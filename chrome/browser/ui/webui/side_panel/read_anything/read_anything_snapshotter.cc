@@ -25,12 +25,15 @@ constexpr size_t kMaxScreenshotFileSize = 50 * 1000L * 1000L;  // 50 MB.
 
 namespace {
 
+int debug_file_sequencer = 0;
+
 void WriteBitmapToPng(const SkBitmap& bitmap) {
   base::FilePath temp_dir;
   CHECK(base::PathService::Get(base::DIR_TEMP, &temp_dir));
+  std::string screenshot_filename = base::StringPrintf(
+      "csai_main_content_web_screenshot_%i.png", debug_file_sequencer++);
   std::string screenshot_filepath =
-      temp_dir.AppendASCII("csai_main_content_web_screenshot.png")
-          .MaybeAsASCII();
+      temp_dir.AppendASCII(screenshot_filename).MaybeAsASCII();
   SkFILEWStream out_file(screenshot_filepath.c_str());
   if (!out_file.isValid()) {
     VLOG(2) << "Unable to create: " << screenshot_filepath;
