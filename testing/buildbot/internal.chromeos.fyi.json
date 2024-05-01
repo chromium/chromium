@@ -1019,7 +1019,6 @@
       },
       {
         "args": [
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--stop-ui",
           "--gtest_filter=\"VaapiTest.*\"",
           "--env-var",
@@ -1027,7 +1026,8 @@
           "./",
           "--env-var",
           "LIBVA_DRIVER_NAME",
-          "libfake"
+          "libfake",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1193,9 +1193,9 @@
       {
         "args": [
           "--target-platform=cros",
+          "--git-revision=${got_revision}",
           "--board=betty-pi-arc",
-          "--magic-vm-cache=magic_cros_vm_cache",
-          "--git-revision=${got_revision}"
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

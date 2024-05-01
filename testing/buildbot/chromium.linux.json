@@ -2216,10 +2216,10 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--git-revision=${got_revision}"
+          "--ozone-platform=wayland"
         ],
         "isolate_profile_data": true,
         "merge": {

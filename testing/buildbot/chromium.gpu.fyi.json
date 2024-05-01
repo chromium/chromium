@@ -5947,8 +5947,8 @@
           "--use-gpu-in-tests",
           "--stop-ui",
           "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.gl_unittests.filter",
-          "--magic-vm-cache=magic_cros_vm_cache",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5997,10 +5997,10 @@
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6050,11 +6050,11 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--git-revision=${got_revision}",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6106,10 +6106,10 @@
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6156,10 +6156,10 @@
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6206,10 +6206,10 @@
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
           "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache",
           "--expected-vendor-id",
           "1af4",
           "--expected-device-id",
@@ -6263,11 +6263,11 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--git-revision=${got_revision}",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6320,10 +6320,10 @@
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6370,10 +6370,10 @@
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6420,10 +6420,10 @@
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6472,10 +6472,10 @@
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6524,10 +6524,10 @@
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

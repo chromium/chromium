@@ -1156,7 +1156,6 @@
       },
       {
         "args": [
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--stop-ui",
           "--gtest_filter=\"VaapiTest.*\"",
           "--env-var",
@@ -1164,7 +1163,8 @@
           "./",
           "--env-var",
           "LIBVA_DRIVER_NAME",
-          "libfake"
+          "libfake",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

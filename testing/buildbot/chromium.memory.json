@@ -160,8 +160,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2942,8 +2942,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4624,8 +4624,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6254,8 +6254,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7758,8 +7758,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9238,8 +9238,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -12593,12 +12593,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12641,12 +12641,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12689,12 +12689,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12737,12 +12737,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12785,12 +12785,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12833,12 +12833,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12881,12 +12881,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12929,12 +12929,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -12977,12 +12977,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13025,12 +13025,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13073,12 +13073,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13121,12 +13121,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13169,12 +13169,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13217,12 +13217,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13265,12 +13265,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13313,12 +13313,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13361,12 +13361,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13409,12 +13409,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13457,12 +13457,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13505,12 +13505,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13553,12 +13553,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13601,12 +13601,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13649,12 +13649,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -13698,12 +13698,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -13747,12 +13747,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13795,12 +13795,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13843,12 +13843,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13891,12 +13891,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13939,12 +13939,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -13987,12 +13987,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14035,12 +14035,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14083,12 +14083,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14131,12 +14131,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14179,12 +14179,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14227,12 +14227,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14275,12 +14275,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14323,12 +14323,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14371,12 +14371,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14419,12 +14419,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14467,12 +14467,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14515,12 +14515,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14563,12 +14563,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14611,12 +14611,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14659,12 +14659,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14707,12 +14707,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14755,12 +14755,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14803,12 +14803,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -14851,12 +14851,12 @@
           },
           "named_caches": [
             {
-              "name": "xcode_ios_15c500b",
-              "path": "Xcode.app"
-            },
-            {
               "name": "runtime_ios_16_4",
               "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_15c500b",
+              "path": "Xcode.app"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -15043,10 +15043,10 @@
       },
       {
         "args": [
+          "--git-revision=${got_revision}",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
-          "--asan-symbolize-output",
-          "--git-revision=${got_revision}"
+          "--asan-symbolize-output"
         ],
         "isolate_profile_data": true,
         "merge": {

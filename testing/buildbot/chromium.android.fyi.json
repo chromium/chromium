@@ -459,8 +459,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -828,8 +828,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -880,8 +880,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3813,8 +3813,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -4135,8 +4135,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -4188,8 +4188,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_unit_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -6826,8 +6826,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -7148,8 +7148,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -7201,8 +7201,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
           "--git-revision=${got_revision}",
+          "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_unit_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -9981,8 +9981,8 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--emulator-enable-network",
+          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

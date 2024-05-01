@@ -1380,6 +1380,11 @@
         # trybot once the device offline issue is resolved.
         'ci_only': True,
         'experiment_percentage': 100,
+        'swarming': {
+          'dimensions': {
+            'cores': "8",
+          },
+        },
       },
       'android-12-x64-rel': {
         'args': [
@@ -1447,6 +1452,9 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter',
         ],
         'swarming': {
+          'dimensions': {
+            'cores': "8",
+          },
           # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
           'shards': 30,
         },

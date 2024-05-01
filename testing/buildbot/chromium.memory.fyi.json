@@ -168,8 +168,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2893,8 +2893,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3210,8 +3210,8 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

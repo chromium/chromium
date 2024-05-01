@@ -808,7 +808,6 @@
       },
       {
         "args": [
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--stop-ui",
           "--gtest_filter=\"VaapiTest.*\"",
           "--env-var",
@@ -816,7 +815,8 @@
           "./",
           "--env-var",
           "LIBVA_DRIVER_NAME",
-          "libfake"
+          "libfake",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -982,10 +982,10 @@
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
-          "--magic-vm-cache=magic_cros_vm_cache",
           "--jobs=1",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--magic-vm-cache=magic_cros_vm_cache"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

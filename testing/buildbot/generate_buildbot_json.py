@@ -640,13 +640,18 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.ensure_valid_mixin_list(mixins_to_ignore,
                                  f'test {test_name} remove_mixins')
 
+    # Expand any conditional values
+    self.resolve_os_conditional_values(test, builder)
+
+    # Apply mixins from the test
+    test_mixins = test.pop('mixins', [])
+    self.ensure_valid_mixin_list(test_mixins, f'test {test_name} mixins')
+    test = self.apply_mixins(test, test_mixins, mixins_to_ignore, builder)
+
     # Add any swarming or args from the builder
     self.dictionary_merge(test['swarming'], builder.get('swarming', {}))
     if supports_args:
       test.setdefault('args', []).extend(builder.get('args', []))
-
-    # Expand any conditional values
-    self.resolve_os_conditional_values(test, builder)
 
     # Apply mixins from the waterfall
     waterfall_mixins = waterfall.get('mixins', [])
@@ -659,11 +664,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.ensure_valid_mixin_list(builder_mixins,
                                  f"builder {builder_name} mixins")
     test = self.apply_mixins(test, builder_mixins, mixins_to_ignore, builder)
-
-    # Apply mixins from the test
-    test_mixins = test.pop('mixins', [])
-    self.ensure_valid_mixin_list(test_mixins, f'test {test_name} mixins')
-    test = self.apply_mixins(test, test_mixins, mixins_to_ignore, builder)
 
     # See if there are any exceptions that need to be merged into this
     # test's specification.
