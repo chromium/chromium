@@ -804,6 +804,9 @@
       <message name="IDS_NEWLY_SYNCED_TAB_GROUP_IPH" desc="IPH text highlighting a tab group that was synced from another device">
         New group from your other device
       </message>
+      <message name="IDS_OPEN_TAB_GROUP_MENU_ITEM" desc="Menu item to open a more detailed view of a tab group.">
+        Open
+      </message>
 
       <!-- Tabs Settings Strings -->
       <message name="IDS_TABS_SETTINGS_TITLE" desc="A title to show in the top toolbar when the Tabs settings page is open.">

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -19,8 +21,13 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.Clock;
 
@@ -81,13 +88,36 @@ public class TabGroupRowView extends LinearLayout {
         drawable.setColor(color);
     }
 
-    void setOpenRunnable(@Nullable Runnable openRunnable) {
-        // TODO(b:324934166): Adjust the more button menu.
+    void setMenuRunnables(@Nullable Runnable openRunnable, @Nullable Runnable deleteRunnable) {
         setOnClickListener(openRunnable == null ? null : v -> openRunnable.run());
+        mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable));
     }
 
-    void setDeleteRunnable(@Nullable Runnable deleteRunnable) {
-        // TODO(b:324934166): Adjust the more button menu.
+    private ListMenu getListMenu(
+            @Nullable Runnable openRunnable, @Nullable Runnable deleteRunnable) {
+        ModelList listItems = new ModelList();
+        if (openRunnable != null) {
+            listItems.add(buildMenuListItem(R.string.open_tab_group_menu_item, 0, 0));
+        }
+        if (deleteRunnable != null) {
+            listItems.add(buildMenuListItem(R.string.delete_tab_group_menu_item, 0, 0));
+        }
+        return BrowserUiListMenuUtils.getBasicListMenu(
+                getContext(),
+                listItems,
+                (item) -> onItemSelected(item, openRunnable, deleteRunnable));
+    }
+
+    private void onItemSelected(
+            PropertyModel item,
+            @Nullable Runnable openRunnable,
+            @Nullable Runnable deleteRunnable) {
+        int textId = item.get(ListMenuItemProperties.TITLE_ID);
+        if (textId == R.string.open_tab_group_menu_item && openRunnable != null) {
+            openRunnable.run();
+        } else if (textId == R.string.delete_tab_group_menu_item && deleteRunnable != null) {
+            deleteRunnable.run();
+        }
     }
 
     private TabGroupFaviconQuarter getTabGroupFaviconQuarter(@Corner int corner) {

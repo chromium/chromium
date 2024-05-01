@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -17,6 +21,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_BOTTOM_RIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_LEFT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_RIGHT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
@@ -32,7 +37,6 @@ import androidx.core.util.Pair;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +48,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -84,6 +89,8 @@ public class TabGroupRowViewUnitTest {
 
         PropertyModelChangeProcessor.create(
                 mPropertyModel, mTabGroupRowView, new TabGroupRowViewBinder());
+
+        mActivity.setContentView(mTabGroupRowView);
     }
 
     private <T> void remakeWithProperty(ReadableObjectPropertyKey<T> key, T value) {
@@ -137,6 +144,26 @@ public class TabGroupRowViewUnitTest {
 
     @Test
     @SmallTest
+    public void testOpenRunnableFromMenu() {
+        remakeWithProperty(OPEN_RUNNABLE, mRunnable);
+        ListMenuButton menu = mTabGroupRowView.findViewById(R.id.more);
+        menu.showMenu();
+        onView(withText("Open")).perform(click());
+        verify(mRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseRunnableFromMenu() {
+        remakeWithProperty(DELETE_RUNNABLE, mRunnable);
+        ListMenuButton menu = mTabGroupRowView.findViewById(R.id.more);
+        menu.showMenu();
+        onView(withText("Delete")).perform(click());
+        verify(mRunnable).run();
+    }
+
+    @Test
+    @SmallTest
     public void testSetFavicon_topLeft() {
         remakeWithProperty(ASYNC_FAVICON_TOP_LEFT, (callback) -> callback.onResult(mDrawable));
         ImageView imageView =
@@ -144,7 +171,7 @@ public class TabGroupRowViewUnitTest {
         assertEquals(mDrawable, imageView.getDrawable());
 
         mPropertyModel.set(ASYNC_FAVICON_TOP_LEFT, null);
-        Assert.assertNull(imageView.getDrawable());
+        assertNull(imageView.getDrawable());
 
         mPropertyModel.set(ASYNC_FAVICON_TOP_LEFT, (callback) -> callback.onResult(mDrawable));
         assertEquals(mDrawable, imageView.getDrawable());

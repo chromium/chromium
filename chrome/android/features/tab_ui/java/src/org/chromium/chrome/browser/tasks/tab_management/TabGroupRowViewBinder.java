@@ -51,10 +51,8 @@ public class TabGroupRowViewBinder
             view.setTitleData(model.get(TITLE_DATA));
         } else if (propertyKey == CREATION_MILLIS) {
             view.setCreationMillis(model.get(CREATION_MILLIS));
-        } else if (propertyKey == OPEN_RUNNABLE) {
-            view.setOpenRunnable(model.get(OPEN_RUNNABLE));
-        } else if (propertyKey == DELETE_RUNNABLE) {
-            view.setDeleteRunnable(model.get(DELETE_RUNNABLE));
+        } else if (propertyKey == OPEN_RUNNABLE || propertyKey == DELETE_RUNNABLE) {
+            view.setMenuRunnables(model.get(OPEN_RUNNABLE), model.get(DELETE_RUNNABLE));
         }
     }
 
