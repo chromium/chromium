@@ -26,7 +26,12 @@
   #container-parent {
     background: var(--background-color);
     height: 100%;
-    min-width: fit-content;
+  }
+
+  @media (min-resolution: 200dpi) {
+    #container-parent {
+      min-width: fit-content;
+    }
   }
 
   .sp-scroller::-webkit-scrollbar-track {
@@ -55,6 +60,7 @@
     /* max-width should match line width limit in read_anything_constants.h. */
     max-width: 60ch;
     margin: 0 auto;
+    overflow-wrap: break-word;
   }
 
   a:link {
