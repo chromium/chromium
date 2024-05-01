@@ -4408,6 +4408,41 @@ TEST_F(SnapGroupDesksTest, DeskSwitchingInOverview) {
   UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), snap_group_divider());
 }
 
+TEST_F(SnapGroupDesksTest, DeskSwitchingWithKeyboardShortcut) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  // Use `Search + ]` to switch to `desk1`, `w0` and `w1` will remain on `desk0`
+  // with `TargetVisibility()` equals to true.
+  PressAndReleaseKey(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  EXPECT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+  EXPECT_TRUE(w0->TargetVisibility());
+  EXPECT_TRUE(w1->TargetVisibility());
+
+  // Use `Search + [` to switch back to `desk0`, `w0` and `w1` will remain on
+  // `desk0` with `TargetVisibility()` equals to true.
+  PressAndReleaseKey(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN);
+  EXPECT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  EXPECT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+  EXPECT_TRUE(w0->TargetVisibility());
+  EXPECT_TRUE(w1->TargetVisibility());
+}
+
 // Tests that after a Snap Group is resized and then moved to a different desk,
 // the relative positions of the snapped windows within the group remain
 // unchanged. See the regression details at http://b/335303673.
