@@ -39,6 +39,7 @@ build_webui_tests("build") {
     "cr_policy_indicator_test.ts",
     "cr_policy_strings.ts",
     "cr_profile_avatar_selector_test.ts",
+    "cr_progress_test.ts",
     "cr_radio_button_test.ts",
     "cr_radio_group_test.ts",
     "cr_ripple_mixin_test.ts",

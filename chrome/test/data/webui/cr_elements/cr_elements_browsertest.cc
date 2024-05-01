@@ -149,6 +149,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyIndicator) {
   RunTest("cr_elements/cr_policy_indicator_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrProgress) {
+  RunTest("cr_elements/cr_progress_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrAutoImg) {
   RunTest("cr_elements/cr_auto_img_test.js", "mocha.run()");
 }
