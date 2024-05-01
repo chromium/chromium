@@ -4,14 +4,15 @@
 
 from typing import Optional
 
-from blinkpy.common.net.git_cl import CLStatus, GitCL
+from blinkpy.common.net.git_cl import CLStatus, CLSummary, GitCL
 from blinkpy.common.net.rpc import BuildbucketClient
 from blinkpy.common.system.executive import ScriptError
 
 # pylint: disable=unused-argument
 
 
-class MockGitCL(object):
+class MockGitCL:
+
     def __init__(self,
                  host,
                  try_job_results={},
@@ -58,8 +59,8 @@ class MockGitCL(object):
     def get_issue_number(self):
         return self._issue_number
 
-    def get_cl_status(self, issue: Optional[int] = None) -> str:
-        return self._status
+    def get_cl_status(self, issue: Optional[int] = None) -> Optional[CLStatus]:
+        return CLStatus(self._status)
 
     def try_job_results(self, **_):
         return self._try_job_results
@@ -67,17 +68,19 @@ class MockGitCL(object):
     def wait_for_try_jobs(self, **_):
         if self._time_out:
             return None
-        return CLStatus(self._status,
-                        self.filter_latest(self._try_job_results))
+        status = self.get_cl_status()
+        assert status, status
+        return CLSummary(status, self.filter_latest(self._try_job_results))
 
-    def wait_for_closed_status(self,
-                               poll_delay_seconds: float = 2 * 60,
-                               timeout_seconds: float = 30 * 60,
-                               issue: Optional[int] = None,
-                               start: Optional[float] = None) -> Optional[str]:
+    def wait_for_closed_status(
+            self,
+            poll_delay_seconds: float = 2 * 60,
+            timeout_seconds: float = 30 * 60,
+            issue: Optional[int] = None,
+            start: Optional[float] = None) -> Optional[CLStatus]:
         if self._time_out:
             return None
-        return 'closed'
+        return CLStatus.CLOSED
 
     def latest_try_jobs(self,
                         issue_number: Optional[str] = None,

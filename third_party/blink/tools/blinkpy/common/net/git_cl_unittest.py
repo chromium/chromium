@@ -8,7 +8,7 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.rpc import (RESPONSE_PREFIX as
                                     SEARCHBUILDS_RESPONSE_PREFIX)
-from blinkpy.common.net.git_cl import CLStatus
+from blinkpy.common.net.git_cl import CLStatus, CLSummary
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.web_mock import MockWeb
@@ -154,6 +154,7 @@ class GitCLTest(unittest.TestCase):
         # Specify the same response 10 times to ensure each poll gets ones.
         web = MockWeb(responses=[response] * 10)
         host = MockHost(web=web)
+        host.executive = MockExecutive(output='dry-run\n')
         git_cl = GitCL(host)
         self.assertIsNone(git_cl.wait_for_try_jobs())
         self.assertEqual(
@@ -175,6 +176,7 @@ class GitCLTest(unittest.TestCase):
         # Specify the same response 10 times to ensure each poll gets ones.
         web = MockWeb(responses=[response] * 10)
         host = MockHost(web=web)
+        host.executive = MockExecutive(output='dry-run\n')
         git_cl = GitCL(host)
         self.assertIsNone(git_cl.wait_for_try_jobs())
         self.assertEqual(
@@ -209,8 +211,8 @@ class GitCLTest(unittest.TestCase):
         git_cl = GitCL(host)
         self.assertEqual(
             git_cl.wait_for_try_jobs(),
-            CLStatus(
-                status='closed',
+            CLSummary(
+                status=CLStatus.CLOSED,
                 try_job_results={
                     Build('some-builder', None): BuildStatus.STARTED,
                 },
@@ -240,10 +242,10 @@ class GitCLTest(unittest.TestCase):
         git_cl = GitCL(host)
         self.assertEqual(
             git_cl.wait_for_try_jobs(),
-            CLStatus(status='lgtm',
-                     try_job_results={
-                         Build('some-builder', 100): BuildStatus.FAILURE,
-                     }))
+            CLSummary(status=CLStatus.LGTM,
+                      try_job_results={
+                          Build('some-builder', 100): BuildStatus.FAILURE,
+                      }))
         self.assertEqual(host.stdout.getvalue(),
                          'Waiting for try jobs, timeout: 7200 seconds.\n')
 
@@ -283,7 +285,8 @@ class GitCLTest(unittest.TestCase):
         host = MockHost(time_return_val=2000)
         host.executive = MockExecutive(output='closed')
         git_cl = GitCL(host)
-        self.assertEqual(git_cl.wait_for_closed_status(start=0), 'closed')
+        self.assertEqual(git_cl.wait_for_closed_status(start=0),
+                         CLStatus.CLOSED)
         self.assertEqual(
             host.stdout.getvalue(),
             'Waiting for closed status, timeout: 1800 seconds.\n'
@@ -294,7 +297,7 @@ class GitCLTest(unittest.TestCase):
         host = MockHost()
         host.executive = MockExecutive(output='closed')
         git_cl = GitCL(host)
-        self.assertEqual(git_cl.wait_for_closed_status(), 'closed')
+        self.assertEqual(git_cl.wait_for_closed_status(), CLStatus.CLOSED)
         self.assertEqual(
             host.stdout.getvalue(),
             'Waiting for closed status, timeout: 1800 seconds.\n'

@@ -54,13 +54,28 @@ class CLRevisionID(NamedTuple):
         return f'{base_url}/{self.patchset}' if self.patchset else base_url
 
 
-class CLStatus(NamedTuple):
-    """The current status of a particular CL.
+class CLStatus(enum.Enum):
+    """A "best effort status" of a CL [0].
+
+    [0]: https://chromium.googlesource.com/chromium/tools/depot_tools/+/85e409e/git_cl.py#2397
+    """
+    ERROR = 'error'
+    UNSENT = 'unsent'
+    WAITING = 'waiting'
+    REPLY = 'reply'
+    LGTM = 'lgtm'
+    DRY_RUN = 'dry-run'
+    COMMIT = 'commit'
+    CLOSED = 'closed'
+
+
+class CLSummary(NamedTuple):
+    """The current status of a particular CL and its associated builds.
 
     It contains both the CL's status as reported by `git-cl status' as well as
     a mapping of Build objects to BuildStatus objects.
     """
-    status: str
+    status: CLStatus
     try_job_results: BuildStatuses
 
 
@@ -134,11 +149,20 @@ class GitCL:
             return output[output.index('number:') + 1]
         return 'None'
 
-    def get_cl_status(self, issue: Optional[int] = None) -> str:
+    def get_cl_status(self, issue: Optional[int] = None) -> Optional[CLStatus]:
+        """Get the status of a CL.
+
+        Arguments:
+            issue: The issue number, or `None` for the current issue.
+
+        Returns:
+            The status of the CL, or `None` if no current issue is set.
+        """
         command = ['status', '--field=status']
         if issue:
             command.append(f'--issue={issue}')
-        return self.run(command).strip()
+        raw_status = self.run(command).strip().lower()
+        return None if raw_status == 'none' else CLStatus(raw_status)
 
     def _get_latest_patchset(self):
         return self.run(['status', '--field=patch']).strip()
@@ -153,19 +177,19 @@ class GitCL:
         closed while the try jobs are still running.
 
         Returns:
-            None if a timeout occurs, a CLStatus tuple otherwise.
+            None if a timeout occurs, a CLSummary tuple otherwise.
         """
 
         def finished_try_job_results_or_none():
             cl_status = self.get_cl_status()
-            _log.debug('Fetched CL status: %s', cl_status)
+            _log.debug(f'Fetched CL status: {cl_status.value}')
             issue_number = self.get_issue_number()
             try_job_results = self.latest_try_jobs(
                 issue_number, cq_only=cq_only)
-            if (cl_status == 'closed' or
+            if (cl_status is CLStatus.CLOSED or
                 (try_job_results and self.all_finished(try_job_results))):
-                return CLStatus(
-                    status=cl_status, try_job_results=try_job_results)
+                return CLSummary(status=cl_status,
+                                 try_job_results=try_job_results)
             return None
 
         return self._wait_for(
@@ -174,17 +198,18 @@ class GitCL:
             timeout_seconds,
             message=' for try jobs')
 
-    def wait_for_closed_status(self,
-                               poll_delay_seconds: float = 2 * 60,
-                               timeout_seconds: float = 30 * 60,
-                               issue: Optional[int] = None,
-                               start: Optional[float] = None) -> Optional[str]:
+    def wait_for_closed_status(
+            self,
+            poll_delay_seconds: float = 2 * 60,
+            timeout_seconds: float = 30 * 60,
+            issue: Optional[int] = None,
+            start: Optional[float] = None) -> Optional[CLStatus]:
         """Waits until git cl reports that the current CL is closed."""
 
         def closed_status_or_none():
             status = self.get_cl_status(issue)
             _log.debug('CL status is: %s', status)
-            if status == 'closed':
+            if status is CLStatus.CLOSED:
                 self._host.print_('CL is closed.')
                 return status
             return None

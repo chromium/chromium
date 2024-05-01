@@ -19,7 +19,12 @@ from functools import cached_property
 from typing import List, Mapping, Optional, Set
 
 from blinkpy.common.checkout.git import CommitRange
-from blinkpy.common.net.git_cl import CLRevisionID, GitCL
+from blinkpy.common.net.git_cl import (
+    BuildStatus,
+    CLRevisionID,
+    CLStatus,
+    GitCL,
+)
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
@@ -221,14 +226,14 @@ class TestImporter:
         return 0
 
     def _ensure_cl_closed(self, issue: Optional[int] = None):
-        if self.git_cl.get_cl_status(issue).lower() != 'closed':
+        if self.git_cl.get_cl_status(issue) is not CLStatus.CLOSED:
             self.git_cl.close(issue)
 
     def log_try_job_results(self, try_job_results) -> None:
         if try_job_results:
             _log.info('Failing builder results:')
             for builder, try_job_status in try_job_results.items():
-                if try_job_status.status != 'COMPLETED' or try_job_status.result != 'SUCCESS':
+                if try_job_status is not BuildStatus.SUCCESS:
                     _log.info(f'{builder}: {try_job_status}')
 
     def update_expectations_for_cl(self) -> bool:
@@ -255,7 +260,7 @@ class TestImporter:
             self.log_try_job_results(try_job_results)
             return False
 
-        if cl_status.status == 'closed':
+        if cl_status.status is CLStatus.CLOSED:
             _log.error('The CL was closed, aborting.')
             return False
 
@@ -300,7 +305,7 @@ class TestImporter:
             _log.error('Timed out waiting for CQ; aborting.')
             return False
 
-        if cl_status.status == 'closed':
+        if cl_status.status is CLStatus.CLOSED:
             _log.error('The CL was closed; aborting.')
             return False
 
