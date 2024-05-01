@@ -675,6 +675,78 @@ void SoftwareRenderer::CopyDrawnRenderPass(
       return;
   }
 
+  bitmap.setImmutable();
+
+  // Returning kNativeTextures results is only supported with blit requests, so
+  // we copy to client provided image.
+  if (request->result_destination() ==
+          CopyOutputResult::Destination::kNativeTextures &&
+      request->has_blit_request()) {
+    const auto& blit_request = request->blit_request();
+
+    auto representation = resource_provider()->GetSharedImageRepresentation(
+        blit_request.mailbox(0).mailbox, blit_request.mailbox(0).sync_token);
+
+    if (!representation) {
+      DLOG(ERROR) << "BlitRequest: Couldn't create shared image representation";
+    }
+
+    const auto dest_rect =
+        gfx::Rect(blit_request.destination_region_offset(),
+                  gfx::Size(bitmap.width(), bitmap.height()));
+
+    if (!gfx::Rect(representation->size()).Contains(dest_rect)) {
+      DLOG(ERROR) << "BlitRequest: Destination is outside of shared image";
+      return;
+    }
+
+    // TODO(crbug.com/330920521): This should be write access, but
+    // MemoryImageRepresentation doesn't have one and there are no
+    // synchronization requirements.
+    auto read_access = representation->BeginScopedReadAccess();
+    if (!read_access) {
+      DLOG(ERROR) << "BlitRequest: Couldn't access the shared image";
+      return;
+    }
+
+    auto surface = SkSurfaces::WrapPixels(
+        read_access->pixmap().info(), read_access->pixmap().writable_addr(),
+        read_access->pixmap().rowBytes(), nullptr);
+
+    CHECK(surface);
+
+    if (blit_request.letterboxing_behavior() ==
+        LetterboxingBehavior::kLetterbox) {
+      surface->getCanvas()->clear(SK_ColorBLACK);
+    }
+
+    SkPaint blit_request_paint;
+    blit_request_paint.setBlendMode(SkBlendMode::kSrc);
+    surface->getCanvas()->drawImage(SkImages::RasterFromBitmap(bitmap),
+                                    dest_rect.x(), dest_rect.y(),
+                                    SkSamplingOptions(), &blit_request_paint);
+
+    for (const BlendBitmap& blend_bitmap : blit_request.blend_bitmaps()) {
+      SkPaint blend_bitmap_paint;
+      blend_bitmap_paint.setBlendMode(SkBlendMode::kSrcOver);
+
+      surface->getCanvas()->drawImageRect(
+          blend_bitmap.image(), gfx::RectToSkRect(blend_bitmap.source_region()),
+          gfx::RectToSkRect(blend_bitmap.destination_region()),
+          SkSamplingOptions(SkFilterMode::kLinear), &blend_bitmap_paint,
+          SkCanvas::kFast_SrcRectConstraint);
+    }
+
+    request->SendResult(std::make_unique<CopyOutputTextureResult>(
+        CopyOutputResult::Format::RGBA, geometry.result_selection,
+        CopyOutputResult::TextureResult(
+            request->blit_request().mailbox(0).mailbox, gpu::SyncToken(),
+            representation->color_space()),
+        CopyOutputResult::ReleaseCallbacks()));
+
+    return;
+  }
+
   // Deliver the result. SoftwareRenderer supports system memory destinations
   // only. For legacy reasons, if a RGBA texture request is being made, clients
   // are prepared to accept system memory results.

@@ -58,6 +58,12 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     sk_sp<SkImage> sk_image_;
   };
 
+  // Waits on the SyncToken and returns MemoryImageRepresentation of the
+  // SharedImage pointed by mailbox.
+  std::unique_ptr<gpu::MemoryImageRepresentation> GetSharedImageRepresentation(
+      const gpu::Mailbox& mailbox,
+      const gpu::SyncToken& sync_token);
+
  private:
   // These functions are used by ScopedReadLockSkImage to lock and unlock
   // resources.
