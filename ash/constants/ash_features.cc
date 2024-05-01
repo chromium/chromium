@@ -1585,7 +1585,7 @@ BASE_FEATURE(kImeRuleConfig, "ImeRuleConfig", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables IME downloader experiment logic.
 BASE_FEATURE(kImeDownloaderExperiment,
              "ImeDownloaderExperiment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, use the updated logic for downloading IME artifacts.
 BASE_FEATURE(kImeDownloaderUpdate,
