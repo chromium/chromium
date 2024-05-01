@@ -15,13 +15,12 @@ namespace syncer {
 class SyncService;
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with SyncPassphraseType2
+// numeric values should never be reused. Keep in sync with the homonym enum
 // in tools/metrics/histograms/metadata/sync/enums.xml.
 // Exposed in the header file for testing.
 enum class PassphraseTypeForMetrics {
-  // Used if there are no syncing profiles or all syncing profiles are not in
-  // ACTIVE sync transport state.
-  kNoActiveSyncingProfiles = 0,
+  // Passphrase type is unknown.
+  kUnknown = 0,
   // Used if there are multiple syncing profiles with different passphrase
   // types or with different sync transport state is ACTIVE values.
   kInconsistentStateAcrossProfiles = 1,

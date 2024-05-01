@@ -1225,14 +1225,34 @@ chromium-metrics-reviews@google.com.
   <summary>The active sync passphrase type at sync startup.</summary>
 </histogram>
 
-<histogram name="Sync.PassphraseType2" enum="SyncPassphraseType2"
-    expires_after="never">
-<!-- expires-never: important for UMA filtering. -->
-
+<histogram name="Sync.PassphraseType2" enum="PassphraseTypeForMetrics"
+    expires_after="2025-04-30">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
-  <summary>Sync passphrase type collected at each metrics upload.</summary>
+  <summary>
+    TODO(crbug.com/338027160): Remove this histogram once the new
+    PassphraseType3 reaches the stable channel. That one relies on a pref that
+    caches the passphrase type and thus can record the correct value before sync
+    engine initialization.
+
+    Sync passphrase type collected at each metrics upload. Also used for the
+    &quot;Sync passphrase type&quot; filter in the dashboard.
+  </summary>
+</histogram>
+
+<histogram name="Sync.PassphraseType3" enum="PassphraseTypeForMetrics"
+    expires_after="never">
+<!-- expires-never: important for UMA filtering. -->
+
+  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Sync passphrase type collected at each metrics upload. The implementation
+    relies on the kSyncCachedPassphraseType pref, and thus can record the
+    correct value before sync engine initialization.
+  </summary>
 </histogram>
 
 <histogram name="Sync.PassphraseTypeUponNotMyBirthdayOrEncryptionObsolete"

@@ -128,6 +128,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Not a family member"/>
 </enum>
 
+<enum name="PassphraseTypeForMetrics">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Inconsistent state across profiles"/>
+  <int value="2" label="Implicit passphrase"/>
+  <int value="3" label="Keystore passphrase"/>
+  <int value="4" label="Frozen implicit passphrase"/>
+  <int value="5" label="Custom passphrase"/>
+  <int value="6" label="Trusted vault passphrase"/>
+</enum>
+
 <enum name="PendingInvalidationStatus">
   <int value="0" label="Acknowledged invalidation"/>
   <int value="1" label="Lost invalidation"/>
@@ -859,16 +869,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="FROZEN_IMPLICIT_PASSPHRASE"/>
   <int value="3" label="CUSTOM_PASSPHRASE"/>
   <int value="4" label="TRUSTED_VAULT_PASSPHRASE"/>
-</enum>
-
-<enum name="SyncPassphraseType2">
-  <int value="0" label="No active syncing profiles"/>
-  <int value="1" label="Inconsistent state across profiles"/>
-  <int value="2" label="Implicit passphrase"/>
-  <int value="3" label="Keystore passphrase"/>
-  <int value="4" label="Frozen implicit passphrase"/>
-  <int value="5" label="Custom passphrase"/>
-  <int value="6" label="Trusted vault passphrase"/>
 </enum>
 
 <enum name="SyncPasswordNotesStateInUpdate">

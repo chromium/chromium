@@ -48,10 +48,8 @@ class PassphraseTypeMetricsProviderTest : public testing::Test {
         .WillByDefault(Return(passphrase_type));
   }
 
-  void ExpectRecordedPassphraseType(PassphraseTypeForMetrics expected) {
-    base::HistogramTester histogram_tester;
-    metrics_provider_->OnDidCreateMetricsLog();
-    histogram_tester.ExpectUniqueSample("Sync.PassphraseType2", expected, 1);
+  PassphraseTypeMetricsProvider* metrics_provider() {
+    return metrics_provider_.get();
   }
 
  private:
@@ -67,58 +65,110 @@ class PassphraseTypeMetricsProviderTest : public testing::Test {
   std::unique_ptr<PassphraseTypeMetricsProvider> metrics_provider_;
 };
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordNoSyncingProfiles) {
-  ExpectRecordedPassphraseType(
-      PassphraseTypeForMetrics::kNoActiveSyncingProfiles);
+// Corresponds to a user in SyncService::TransportState::DISABLED, for whom the
+// engine will never initialize.
+TEST_F(PassphraseTypeMetricsProviderTest, TransportDisabled) {
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample("Sync.PassphraseType2",
+                                      PassphraseTypeForMetrics::kUnknown, 1);
+  histogram_tester.ExpectUniqueSample("Sync.PassphraseType3",
+                                      PassphraseTypeForMetrics::kUnknown, 1);
 }
 
-TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordSyncTransportInactive) {
+// The sync engine wasn't initialized yet, but will eventually be. This test
+// captures the difference between Sync.PassphraseType2 (should record kUnknown)
+// and Sync.PassphraseType3 (should check the cached passphrase type and
+// record the correct value).
+TEST_F(PassphraseTypeMetricsProviderTest, TransportInitializing) {
   AddSyncService(PassphraseType::kKeystorePassphrase,
                  /*sync_transport_active=*/false);
-  ExpectRecordedPassphraseType(
-      PassphraseTypeForMetrics::kNoActiveSyncingProfiles);
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample("Sync.PassphraseType2",
+                                      PassphraseTypeForMetrics::kUnknown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType3", PassphraseTypeForMetrics::kKeystorePassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordMultipleSyncingProfiles) {
   AddSyncService(PassphraseType::kImplicitPassphrase);
   AddSyncService(PassphraseType::kKeystorePassphrase);
-  ExpectRecordedPassphraseType(
-      PassphraseTypeForMetrics::kInconsistentStateAcrossProfiles);
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType2",
+      PassphraseTypeForMetrics::kInconsistentStateAcrossProfiles, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType3",
+      PassphraseTypeForMetrics::kInconsistentStateAcrossProfiles, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest,
        ShouldRecordKeystorePassphraseWithMultipleProfiles) {
   AddSyncService(PassphraseType::kKeystorePassphrase);
   AddSyncService(PassphraseType::kKeystorePassphrase);
-  ExpectRecordedPassphraseType(PassphraseTypeForMetrics::kKeystorePassphrase);
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType2", PassphraseTypeForMetrics::kKeystorePassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType3", PassphraseTypeForMetrics::kKeystorePassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordImplicitPassphrase) {
   AddSyncService(PassphraseType::kImplicitPassphrase);
-  ExpectRecordedPassphraseType(PassphraseTypeForMetrics::kImplicitPassphrase);
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType2", PassphraseTypeForMetrics::kImplicitPassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType3", PassphraseTypeForMetrics::kImplicitPassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordKeystorePassphrase) {
   AddSyncService(PassphraseType::kKeystorePassphrase);
-  ExpectRecordedPassphraseType(PassphraseTypeForMetrics::kKeystorePassphrase);
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType2", PassphraseTypeForMetrics::kKeystorePassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType3", PassphraseTypeForMetrics::kKeystorePassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest,
        ShouldRecordFrozenImplicitPassphrase) {
   AddSyncService(PassphraseType::kFrozenImplicitPassphrase);
-  ExpectRecordedPassphraseType(
-      PassphraseTypeForMetrics::kFrozenImplicitPassphrase);
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType2",
+      PassphraseTypeForMetrics::kFrozenImplicitPassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType3",
+      PassphraseTypeForMetrics::kFrozenImplicitPassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordCustomPassphrase) {
   AddSyncService(PassphraseType::kCustomPassphrase);
-  ExpectRecordedPassphraseType(PassphraseTypeForMetrics::kCustomPassphrase);
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType2", PassphraseTypeForMetrics::kCustomPassphrase, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType3", PassphraseTypeForMetrics::kCustomPassphrase, 1);
 }
 
 TEST_F(PassphraseTypeMetricsProviderTest, ShouldRecordTrustedVaultPassphrase) {
   AddSyncService(PassphraseType::kTrustedVaultPassphrase);
-  ExpectRecordedPassphraseType(
-      PassphraseTypeForMetrics::kTrustedVaultPassphrase);
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType2", PassphraseTypeForMetrics::kTrustedVaultPassphrase,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PassphraseType3", PassphraseTypeForMetrics::kTrustedVaultPassphrase,
+      1);
 }
 
 }  // namespace
