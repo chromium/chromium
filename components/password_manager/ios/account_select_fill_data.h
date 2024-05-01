@@ -52,6 +52,7 @@ struct Credential {
 struct FillData {
   FillData();
   ~FillData();
+  FillData(const FillData& other);
 
   GURL origin;
   autofill::FormRendererId form_id;

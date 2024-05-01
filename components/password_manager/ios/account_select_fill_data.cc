@@ -46,6 +46,7 @@ bool AreCredentialsEligibleForFilling(
 
 FillData::FillData() = default;
 FillData::~FillData() = default;
+FillData::FillData(const FillData& other) = default;
 
 FormInfo::FormInfo() = default;
 FormInfo::~FormInfo() = default;

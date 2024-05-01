@@ -19,6 +19,7 @@
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -243,46 +244,71 @@ const char kFrameIdKey[] = "frame_id";
               }));
 }
 
-- (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
+// Handles the result from filling with fill data. Returns YES if the fill
+// operation is considered as a success.
+- (BOOL)handleFillResult:(const base::Value*)result
+            fromFillData:(password_manager::FillData)fillData
+    withFieldDataManager:(autofill::FieldDataManager*)manager {
+  if (!result->is_dict()) {
+    return NO;
+  }
+
+  std::optional<bool> did_attempt_fill =
+      result->GetDict().FindBool("didAttemptFill");
+  std::optional<bool> did_fill_username =
+      result->GetDict().FindBool("didFillUsername");
+  std::optional<bool> did_fill_password =
+      result->GetDict().FindBool("didFillPassword");
+
+  if (!did_attempt_fill || !did_fill_username || !did_fill_password) {
+    return NO;
+  }
+  const bool success = *did_attempt_fill;
+
+  [self recordFormFillingSuccessMetrics:success];
+
+  if (fillData.username_element_id && success && *did_fill_username) {
+    manager->UpdateFieldDataMap(fillData.username_element_id,
+                                fillData.username_value,
+                                FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  }
+  if (fillData.password_element_id && success && *did_fill_password) {
+    manager->UpdateFieldDataMap(fillData.password_element_id,
+                                fillData.password_value,
+                                FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  }
+
+  return success;
+}
+
+- (void)fillPasswordFormWithFillData:(password_manager::FillData)fillData
                              inFrame:(web::WebFrame*)frame
                     triggeredOnField:(FieldRendererId)fieldRendererID
                    completionHandler:
                        (nullable void (^)(BOOL))completionHandler {
-  // Necessary copy so the values can be used inside a block.
-  FieldRendererId usernameID = fillData.username_element_id;
-  FieldRendererId passwordID = fillData.password_element_id;
-  std::u16string usernameValue = fillData.username_value;
-  std::u16string passwordValue = fillData.password_value;
-
   const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::GetRetainable(frame);
 
   // Do not fill the username if filling was triggered on a password field and
   // the username field has user typed input.
-  BOOL fillUsername = fieldRendererID == usernameID ||
-                      !fieldDataManager->DidUserType(usernameID);
+  BOOL fillUsername =
+      fieldRendererID == fillData.username_element_id ||
+      !fieldDataManager->DidUserType(fillData.username_element_id);
   __weak PasswordFormHelper* weakSelf = self;
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
-      ->FillPasswordForm(
-          frame, fillData, fillUsername, UTF16ToUTF8(usernameValue),
-          UTF16ToUTF8(passwordValue), base::BindOnce(^(BOOL success) {
-            PasswordFormHelper* strongSelf = weakSelf;
-            if (!strongSelf) {
-              return;
-            }
-            [strongSelf recordFormFillingSuccessMetrics:success];
-            if (success) {
-              fieldDataManager->UpdateFieldDataMap(
-                  usernameID, usernameValue,
-                  FieldPropertiesFlags::kAutofilledOnUserTrigger);
-              fieldDataManager->UpdateFieldDataMap(
-                  passwordID, passwordValue,
-                  FieldPropertiesFlags::kAutofilledOnUserTrigger);
-            }
-            if (completionHandler) {
-              completionHandler(success);
-            }
-          }));
+      ->FillPasswordForm(frame, fillData, fillUsername,
+                         UTF16ToUTF8(fillData.username_value),
+                         UTF16ToUTF8(fillData.password_value),
+                         base::BindOnce(^(const base::Value* result) {
+                           const BOOL success = [weakSelf
+                                   handleFillResult:result
+                                       fromFillData:fillData
+                               withFieldDataManager:fieldDataManager.get()];
+
+                           if (completionHandler) {
+                             completionHandler(success);
+                           }
+                         }));
 }
 
 // Finds the password form named |formName| and calls

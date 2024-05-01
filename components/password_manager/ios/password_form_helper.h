@@ -94,7 +94,7 @@ enum class HandleSubmittedFormStatus {
 // Credentials and input fields are specified by |fillData|. |fieldRendererID|
 // specifies the unput on which the suggestion was accepted. Invokes
 // |completionHandler| when finished with YES if successful and NO otherwise.
-- (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
+- (void)fillPasswordFormWithFillData:(password_manager::FillData)fillData
                              inFrame:(web::WebFrame*)frame
                     triggeredOnField:(autofill::FieldRendererId)fieldRendererID
                    completionHandler:(nullable void (^)(BOOL))completionHandler;
