@@ -18,10 +18,30 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/win/object_watcher.h"
+#include "base/win/scoped_handle.h"
 
 namespace base {
-
 namespace {
+class NotificationHandleTraits {
+ public:
+  using Handle = HANDLE;
+
+  NotificationHandleTraits() = delete;
+  NotificationHandleTraits(const NotificationHandleTraits&) = delete;
+  NotificationHandleTraits& operator=(const NotificationHandleTraits&) = delete;
+
+  static bool CloseHandle(HANDLE handle) {
+    return FindCloseChangeNotification(handle) != 0;
+  }
+  static bool IsHandleValid(HANDLE handle) {
+    return handle != INVALID_HANDLE_VALUE;
+  }
+  static HANDLE NullHandle() { return INVALID_HANDLE_VALUE; }
+};
+
+using ScopedNotificationHandle =
+    win::GenericScopedHandle<NotificationHandleTraits,
+                             win::DummyVerifierTraits>;
 
 class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
                             public base::win::ObjectWatcher::Delegate {
@@ -47,7 +67,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   // INVALID_HANDLE_VALUE.
   [[nodiscard]] static bool SetupWatchHandle(const FilePath& dir,
                                              bool recursive,
-                                             HANDLE& handle);
+                                             ScopedNotificationHandle& handle);
 
   // Sets up a watch handle in `watched_handle_` for either `target_` or one of
   // its ancestors. Returns true on success.
@@ -62,7 +82,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   FilePath target_;
 
   // Handle for FindFirstChangeNotification.
-  HANDLE watched_handle_ = INVALID_HANDLE_VALUE;
+  ScopedNotificationHandle watched_handle_;
 
   // ObjectWatcher to watch handle_ for events.
   base::win::ObjectWatcher watcher_;
@@ -105,7 +125,7 @@ bool FilePathWatcherImpl::Watch(const FilePath& path,
     return false;
   }
 
-  watcher_.StartWatchingOnce(watched_handle_, this);
+  watcher_.StartWatchingOnce(watched_handle_.get(), this);
 
   return true;
 }
@@ -127,7 +147,7 @@ void FilePathWatcherImpl::Cancel() {
 
 void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
-  DCHECK_EQ(object, watched_handle_);
+  DCHECK_EQ(object, watched_handle_.get());
 
   auto self = weak_factory_.GetWeakPtr();
 
@@ -193,27 +213,26 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
 
   // The watch may have been cancelled by the callback.
   if (self) {
-    watcher_.StartWatchingOnce(watched_handle_, this);
+    watcher_.StartWatchingOnce(watched_handle_.get(), this);
   }
 }
 
 // static
 bool FilePathWatcherImpl::SetupWatchHandle(const FilePath& dir,
                                            bool recursive,
-                                           HANDLE& handle) {
+                                           ScopedNotificationHandle& handle) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  handle = FindFirstChangeNotification(
+  handle.Set(FindFirstChangeNotification(
       dir.value().c_str(), recursive,
       FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_SIZE |
           FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME |
-          FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SECURITY);
-  if (handle != INVALID_HANDLE_VALUE) {
+          FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SECURITY));
+  if (handle.is_valid()) {
     // Make sure the handle we got points to an existing directory. It seems
     // that windows sometimes hands out watches to directories that are about to
     // go away, but doesn't send notifications if that happens.
     if (!DirectoryExists(dir)) {
-      FindCloseChangeNotification(handle);
-      handle = INVALID_HANDLE_VALUE;
+      handle.Close();
     }
     return true;
   }
@@ -250,7 +269,7 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
     }
 
     // Break if a valid handle is returned. Try the parent directory otherwise.
-    if (watched_handle_ != INVALID_HANDLE_VALUE) {
+    if (watched_handle_.is_valid()) {
       break;
     }
 
@@ -270,28 +289,26 @@ bool FilePathWatcherImpl::SetupWatchHandleForTarget() {
   while (!child_dirs.empty()) {
     path_to_watch = path_to_watch.Append(child_dirs.back());
     child_dirs.pop_back();
-    HANDLE temp_handle = INVALID_HANDLE_VALUE;
+    ScopedNotificationHandle temp_handle;
     if (!SetupWatchHandle(path_to_watch, type_ == Type::kRecursive,
                           temp_handle)) {
       return false;
     }
-    if (temp_handle == INVALID_HANDLE_VALUE) {
+    if (!temp_handle.is_valid()) {
       break;
     }
-    FindCloseChangeNotification(watched_handle_);
-    watched_handle_ = temp_handle;
+    watched_handle_ = std::move(temp_handle);
   }
 
   return true;
 }
 
 void FilePathWatcherImpl::CloseWatchHandle() {
-  if (watched_handle_ != INVALID_HANDLE_VALUE) {
+  if (watched_handle_.is_valid()) {
     watcher_.StopWatching();
 
     ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-    FindCloseChangeNotification(watched_handle_);
-    watched_handle_ = INVALID_HANDLE_VALUE;
+    watched_handle_.Close();
   }
 }
 
