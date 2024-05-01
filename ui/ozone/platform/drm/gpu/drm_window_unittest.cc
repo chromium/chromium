@@ -165,8 +165,6 @@ void DrmWindowTest::TearDown() {
 }
 
 void DrmWindowTest::InitializeDrmState(FakeDrmDevice* drm, bool is_atomic) {
-  drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-      kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
   drm->ResetStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
   drm->InitializeState(/*use_atomic=*/false);

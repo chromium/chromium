@@ -102,46 +102,40 @@ class ScreenManagerTest : public testing::Test {
             {.formats = 1, .offset = 0, .pad = 0, .modifier = modifier});
       }
     }
-
     drm->ResetStateWithAllProperties();
 
-    // Set up the default format property ID for the cursor planes:
-    drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-        kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, drm_format_modifiers));
-
     std::vector<uint32_t> crtc_ids;
-    uint32_t blob_id = kInFormatsBlobIdBase + 1;
     for (const auto& crtc_state : crtc_states) {
       uint32_t crtc_id = drm->AddCrtcAndConnector().first.id;
       crtc_ids.push_back(crtc_id);
 
       for (size_t i = 0; i < crtc_state.planes.size(); ++i) {
-        uint32_t new_blob_id = blob_id++;
-        drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-            new_blob_id, crtc_state.planes[i].formats, drm_format_modifiers));
+        auto in_formats_blob = drm->CreateInFormatsBlob(
+            crtc_state.planes[i].formats, drm_format_modifiers);
 
         auto& plane = drm->AddPlane(
             crtc_id, i == 0 ? DRM_PLANE_TYPE_PRIMARY : DRM_PLANE_TYPE_OVERLAY);
-        plane.SetProp(kInFormatsPropId, new_blob_id);
+        drm->AddProperty(
+            plane.id, {.id = kInFormatsPropId, .value = in_formats_blob->id()});
       }
     }
     for (const auto& movable_plane : movable_planes) {
-      uint32_t new_blob_id = blob_id++;
-      drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-          new_blob_id, movable_plane.formats, drm_format_modifiers));
+      auto in_formats_blob =
+          drm->CreateInFormatsBlob(movable_plane.formats, drm_format_modifiers);
       auto& plane = drm->AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY);
-      plane.SetProp(kInFormatsPropId, new_blob_id);
+      drm->AddProperty(
+          plane.id, {.id = kInFormatsPropId, .value = in_formats_blob->id()});
     }
 
     drm->SetModifiersOverhead(modifiers_overhead_);
     drm->InitializeState(is_atomic);
   }
 
-  void AddPlaneToCrtc(uint32_t crtc_id, uint32_t plane_type, uint32_t blob_id) {
-    drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-        blob_id, {DRM_FORMAT_XRGB8888}, {}));
+  void AddPlaneToCrtc(uint32_t crtc_id, uint32_t plane_type) {
+    auto in_formats_blob = drm_->CreateInFormatsBlob({DRM_FORMAT_XRGB8888}, {});
     auto& plane = drm_->AddPlane(crtc_id, plane_type);
-    plane.SetProp(kInFormatsPropId, blob_id);
+    drm_->AddProperty(plane.id,
+                      {.id = kInFormatsPropId, .value = in_formats_blob->id()});
   }
 
   void InitializeDrmStateWithDefault(FakeDrmDevice* drm,
@@ -2133,21 +2127,16 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcsComplex) {
 
   drm_->ResetStateWithAllProperties();
 
-  // Set up the default format property ID for the cursor planes:
-  drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-      kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
-  uint32_t blob_id = kInFormatsBlobIdBase + 1;
-
   // Create 3 CRTCs
   uint32_t crtc_1 = drm_->AddCrtc().id;
-  AddPlaneToCrtc(crtc_1, DRM_PLANE_TYPE_PRIMARY, blob_id++);
-  AddPlaneToCrtc(crtc_1, DRM_PLANE_TYPE_OVERLAY, blob_id++);
+  AddPlaneToCrtc(crtc_1, DRM_PLANE_TYPE_PRIMARY);
+  AddPlaneToCrtc(crtc_1, DRM_PLANE_TYPE_OVERLAY);
   uint32_t crtc_2 = drm_->AddCrtc().id;
-  AddPlaneToCrtc(crtc_2, DRM_PLANE_TYPE_PRIMARY, blob_id++);
-  AddPlaneToCrtc(crtc_2, DRM_PLANE_TYPE_OVERLAY, blob_id++);
+  AddPlaneToCrtc(crtc_2, DRM_PLANE_TYPE_PRIMARY);
+  AddPlaneToCrtc(crtc_2, DRM_PLANE_TYPE_OVERLAY);
   uint32_t crtc_3 = drm_->AddCrtc().id;
-  AddPlaneToCrtc(crtc_3, DRM_PLANE_TYPE_PRIMARY, blob_id++);
-  AddPlaneToCrtc(crtc_3, DRM_PLANE_TYPE_OVERLAY, blob_id++);
+  AddPlaneToCrtc(crtc_3, DRM_PLANE_TYPE_PRIMARY);
+  AddPlaneToCrtc(crtc_3, DRM_PLANE_TYPE_OVERLAY);
 
   // Create 2 Connectors that can use all 3 CRTCs.
   uint32_t connector_1, connector_2;

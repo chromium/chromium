@@ -193,11 +193,10 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(
     drm_format_modifiers.push_back(
         {.formats = 1, .offset = 0, .pad = 0, .modifier = modifier});
   }
-  drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-      kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, drm_format_modifiers));
 
   drm_->ResetStateWithDefaultObjects(
-      /*crtc_count=*/2, /*planes_per_crtc*/ 2, movable_planes);
+      /*crtc_count=*/2, /*planes_per_crtc*/ 2, movable_planes,
+      {DRM_FORMAT_XRGB8888}, drm_format_modifiers);
 
   // Add one connected connector with no modes (sterile).
   auto& connector_props = drm_->AddConnector();

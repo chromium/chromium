@@ -177,8 +177,6 @@ class DrmGpuDisplayManagerTest : public testing::Test {
     device_manager_->AddDrmDevice(file_path, base::ScopedFD());
     FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(
         device_manager_->GetDrmDevices().back().get());
-    fake_drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-        kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
     return scoped_refptr<FakeDrmDevice>(fake_drm);
   }
 

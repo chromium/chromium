@@ -147,35 +147,11 @@ FakeDrmDevice::PlaneProperties::PlaneProperties(const PlaneProperties&) =
     default;
 FakeDrmDevice::PlaneProperties::~PlaneProperties() = default;
 
-uint32_t FakeDrmDevice::PlaneProperties::type() const {
-  auto prop = GetProp(kTypePropId);
-  CHECK(prop);
-  return prop.value()->value;
-}
-
-std::optional<const DrmDevice::Property*>
-FakeDrmDevice::PlaneProperties::GetProp(uint32_t prop_id) const {
-  for (const auto& prop : properties) {
-    if (prop.id == prop_id)
-      return {&prop};
-  }
-  return std::nullopt;
-}
-
-void FakeDrmDevice::PlaneProperties::SetProp(uint32_t prop_id, uint32_t value) {
-  for (auto& prop : properties) {
-    if (prop.id == prop_id) {
-      prop.value = value;
-      return;
-    }
-  }
-  properties.push_back({prop_id, value});
-}
-
 FakeDrmDevice::FakeDrmState::FakeDrmState() = default;
 FakeDrmDevice::FakeDrmState::~FakeDrmState() = default;
 
 void FakeDrmDevice::ResetStateWithNoProperties() {
+  allocated_blobs_.clear();
   plane_manager_.reset();
 
   drm_state_.crtc_properties.clear();
@@ -203,8 +179,11 @@ void FakeDrmDevice::ResetStateWithAllProperties() {
 FakeDrmDevice::FakeDrmState& FakeDrmDevice::ResetStateWithDefaultObjects(
     size_t crtc_count,
     size_t planes_per_crtc,
-    size_t movable_planes) {
+    size_t movable_planes,
+    std::vector<uint32_t> plane_supported_formats,
+    std::vector<drm_format_modifier> plane_supported_format_modifiers) {
   ResetStateWithAllProperties();
+
   std::vector<uint32_t> crtc_ids;
   for (size_t i = 0; i < crtc_count; ++i) {
     const auto& props = AddCrtcAndConnector();
@@ -218,15 +197,19 @@ FakeDrmDevice::FakeDrmState& FakeDrmDevice::ResetStateWithDefaultObjects(
     uint32_t crtc_id = props.first.id;
     crtc_ids.push_back(crtc_id);
 
-    AddPlane(crtc_id, DRM_PLANE_TYPE_PRIMARY);
+    AddPlane(crtc_id, DRM_PLANE_TYPE_PRIMARY, plane_supported_formats,
+             plane_supported_format_modifiers);
     for (size_t j = 0; j < planes_per_crtc - 1; ++j) {
-      AddPlane(crtc_id, DRM_PLANE_TYPE_OVERLAY);
+      AddPlane(crtc_id, DRM_PLANE_TYPE_OVERLAY, plane_supported_formats,
+               plane_supported_format_modifiers);
     }
-    AddPlane(crtc_id, DRM_PLANE_TYPE_CURSOR);
+    AddPlane(crtc_id, DRM_PLANE_TYPE_CURSOR, plane_supported_formats,
+             plane_supported_format_modifiers);
   }
 
   for (size_t i = 0; i < movable_planes; ++i) {
-    AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY);
+    AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY, plane_supported_formats,
+             plane_supported_format_modifiers);
   }
 
   return drm_state_;
@@ -280,15 +263,21 @@ FakeDrmDevice::AddCrtcAndConnector() {
   return {AddCrtc(), AddConnector()};
 }
 
-FakeDrmDevice::PlaneProperties& FakeDrmDevice::AddPlane(uint32_t crtc_id,
-                                                        uint32_t type) {
+FakeDrmDevice::PlaneProperties& FakeDrmDevice::AddPlane(
+    uint32_t crtc_id,
+    uint32_t type,
+    std::vector<uint32_t> supported_formats,
+    std::vector<drm_format_modifier> supported_format_modifiers) {
   DCHECK(!IsInitialized());
-  return AddPlane(std::vector<uint32_t>{crtc_id}, type);
+  return AddPlane(std::vector<uint32_t>{crtc_id}, type, supported_formats,
+                  supported_format_modifiers);
 }
 
 FakeDrmDevice::PlaneProperties& FakeDrmDevice::AddPlane(
     const std::vector<uint32_t>& crtc_ids,
-    uint32_t type) {
+    uint32_t type,
+    std::vector<uint32_t> supported_formats,
+    std::vector<drm_format_modifier> supported_format_modifiers) {
   DCHECK(!IsInitialized());
   uint32_t next_plane_id = GetNextId(drm_state_.plane_properties, kPlaneOffset);
 
@@ -310,8 +299,12 @@ FakeDrmDevice::PlaneProperties& FakeDrmDevice::AddPlane(
     }
   }
 
-  plane.SetProp(kTypePropId, type);
-  plane.SetProp(kInFormatsPropId, kInFormatsBlobIdBase);
+  AddProperty(plane.id, {.id = kTypePropId, .value = type});
+
+  auto in_formats_blob =
+      CreateInFormatsBlob(supported_formats, supported_format_modifiers);
+  AddProperty(plane.id,
+              {.id = kInFormatsPropId, .value = in_formats_blob->id()});
 
   return plane;
 }
@@ -352,9 +345,7 @@ FakeDrmDevice::~FakeDrmDevice() {
   }
 }
 
-// static
-ScopedDrmPropertyBlobPtr FakeDrmDevice::AllocateInFormatsBlob(
-    uint32_t id,
+ScopedDrmPropertyBlob FakeDrmDevice::CreateInFormatsBlob(
     const std::vector<uint32_t>& supported_formats,
     const std::vector<drm_format_modifier>& supported_format_modifiers) {
   drm_format_modifier_blob header;
@@ -364,20 +355,17 @@ ScopedDrmPropertyBlobPtr FakeDrmDevice::AllocateInFormatsBlob(
   header.modifiers_offset =
       header.formats_offset + sizeof(uint32_t) * header.count_formats;
 
-  ScopedDrmPropertyBlobPtr blob(DrmAllocator<drmModePropertyBlobRes>());
-  blob->id = id;
-  blob->length = header.modifiers_offset +
-                 sizeof(drm_format_modifier) * header.count_modifiers;
-  blob->data = drmMalloc(blob->length);
-
-  memcpy(blob->data, &header, sizeof(header));
-  memcpy(static_cast<uint8_t*>(blob->data) + header.formats_offset,
-         supported_formats.data(), sizeof(uint32_t) * header.count_formats);
-  memcpy(static_cast<uint8_t*>(blob->data) + header.modifiers_offset,
+  std::vector<uint8_t> data(header.modifiers_offset +
+                            sizeof(drm_format_modifier) *
+                                header.count_modifiers);
+  memcpy(data.data(), &header, sizeof(header));
+  memcpy(data.data() + header.formats_offset, supported_formats.data(),
+         sizeof(uint32_t) * header.count_formats);
+  memcpy(data.data() + header.modifiers_offset,
          supported_format_modifiers.data(),
          sizeof(drm_format_modifier) * header.count_modifiers);
 
-  return blob;
+  return CreatePropertyBlob(data.data(), data.size());
 }
 
 void FakeDrmDevice::InitializeState(bool use_atomic) {
@@ -937,19 +925,6 @@ void FakeDrmDevice::RunCallbacks() {
     callbacks_.pop();
     std::move(callback).Run(0, base::TimeTicks());
   }
-}
-
-void FakeDrmDevice::SetPropertyBlob(ScopedDrmPropertyBlobPtr blob) {
-  BlobState& blob_state = allocated_blobs_[blob->id];
-  // Blobs set by SetPropertyBlob just exist forever. Set the refcount to
-  // something huge (999) to be emphatic about this. This blob may be
-  // retained if a property is set to it.
-  // TODO(b/335542790): Remove SetPropertyBlob entirely.
-  DCHECK(blob_state.ref_count == 0 || blob_state.ref_count == 999);
-  blob_state.ref_count = 999;
-
-  const uint8_t* blob_uint8 = reinterpret_cast<const uint8_t*>(blob->data);
-  blob_state.data.assign(blob_uint8, blob_uint8 + blob->length);
 }
 
 void FakeDrmDevice::AddProperty(uint32_t object_id,

@@ -121,8 +121,6 @@ void HardwareDisplayPlaneManagerTest::SetUp() {
 
   auto gbm_device = std::make_unique<MockGbmDevice>();
   fake_drm_ = new FakeDrmDevice(std::move(gbm_device));
-  fake_drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-      kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
 
   fake_buffer_ = CreateBuffer(kDefaultBufferSize);
 }
@@ -676,17 +674,15 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, SharedPlanes) {
   assigns.push_back(DrmOverlayPlane::TestPlane(fake_buffer_));
   assigns.push_back(DrmOverlayPlane::TestPlane(buffer));
 
-  auto& drm_state = fake_drm_->ResetStateWithDefaultObjects(
+  fake_drm_->ResetStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/1);
 
-  FakeDrmDevice::PlaneProperties& plane_prop =
-      drm_state.plane_properties.emplace_back();
-  plane_prop.id = 102;
-  plane_prop.crtc_mask = (1 << 0) | (1 << 1);
-  plane_prop.properties = {
-      {.id = kTypePropId, .value = DRM_PLANE_TYPE_OVERLAY},
-      {.id = kInFormatsPropId, .value = kInFormatsBlobIdBase},
-  };
+  auto in_formats_blob =
+      fake_drm_->CreateInFormatsBlob({DRM_FORMAT_XRGB8888}, {});
+
+  auto plane_prop = fake_drm_->AddPlane(
+      {fake_drm_->crtc_property(0).id, fake_drm_->crtc_property(1).id},
+      DRM_PLANE_TYPE_OVERLAY);
   fake_drm_->InitializeState(use_atomic_);
 
   EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
@@ -1327,10 +1323,9 @@ TEST_P(HardwareDisplayPlaneManagerTest, ForceOpaqueFormatsForAddFramebuffer) {
   // If DRM supports high-bitdepth formats with Alpha, there's no need for
   // opaque decaying. Note that we have to support all |kFourCCFormats|.
   fake_drm_->ResetStateWithDefaultObjects(
-      /*crtc_count=*/3, /*planes_per_crtc=*/1);
-  fake_drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-      kInFormatsBlobIdBase, {DRM_FORMAT_ARGB2101010, DRM_FORMAT_ABGR2101010},
-      {}));
+      /*crtc_count=*/3, /*planes_per_crtc=*/1, /*movable_planes=*/0,
+      {DRM_FORMAT_ARGB2101010, DRM_FORMAT_ABGR2101010}, {});
+
   fake_drm_->InitializeState(use_atomic_);
 
   for (const auto& format_pair : kFourCCFormats) {
@@ -1631,11 +1626,9 @@ TEST_P(HardwareDisplayPlaneManagerTest,
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {
-  fake_drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
-      kInFormatsBlobIdBase, {DRM_FORMAT_NV12}, {}));
-
   fake_drm_->ResetStateWithDefaultObjects(
-      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+      /*crtc_count=*/1, /*planes_per_crtc=*/1, /*movable_planes=*/0,
+      {DRM_FORMAT_NV12}, {});
   fake_drm_->InitializeState(use_atomic_);
 
   {

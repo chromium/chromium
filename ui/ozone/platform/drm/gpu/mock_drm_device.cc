@@ -13,8 +13,6 @@ scoped_refptr<MockDrmDevice> MockDrmDevice::Create() {
   auto gbm_device = std::make_unique<MockGbmDevice>();
   auto drm_device = base::MakeRefCounted<testing::NiceMock<MockDrmDevice>>(
       base::FilePath(), std::move(gbm_device), true);
-  drm_device->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
-      kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
   return drm_device;
 }
 
