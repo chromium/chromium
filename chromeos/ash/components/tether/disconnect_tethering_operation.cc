@@ -14,9 +14,7 @@
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // static
 DisconnectTetheringOperation::Factory*
@@ -25,16 +23,16 @@ DisconnectTetheringOperation::Factory*
 // static
 std::unique_ptr<DisconnectTetheringOperation>
 DisconnectTetheringOperation::Factory::Create(
-    multidevice::RemoteDeviceRef device_to_connect,
+    const TetherHost& tether_host,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client) {
   if (factory_instance_) {
-    return factory_instance_->CreateInstance(
-        device_to_connect, device_sync_client, secure_channel_client);
+    return factory_instance_->CreateInstance(tether_host, device_sync_client,
+                                             secure_channel_client);
   }
 
   return base::WrapUnique(new DisconnectTetheringOperation(
-      device_to_connect, device_sync_client, secure_channel_client));
+      tether_host, device_sync_client, secure_channel_client));
 }
 
 // static
@@ -46,10 +44,10 @@ void DisconnectTetheringOperation::Factory::SetFactoryForTesting(
 DisconnectTetheringOperation::Factory::~Factory() = default;
 
 DisconnectTetheringOperation::DisconnectTetheringOperation(
-    multidevice::RemoteDeviceRef device_to_connect,
+    const TetherHost& tether_host,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client)
-    : MessageTransferOperation(device_to_connect,
+    : MessageTransferOperation(tether_host,
                                secure_channel::ConnectionPriority::kHigh,
                                device_sync_client,
                                secure_channel_client),
@@ -69,7 +67,8 @@ void DisconnectTetheringOperation::RemoveObserver(Observer* observer) {
 void DisconnectTetheringOperation::NotifyObserversOperationFinished(
     bool success) {
   for (auto& observer : observer_list_) {
-    observer.OnOperationFinished(remote_device().GetDeviceId(), success);
+    observer.OnOperationFinished(GetDeviceId(/*truncate_for_logs=*/false),
+                                 success);
   }
 }
 
@@ -108,6 +107,4 @@ void DisconnectTetheringOperation::SetClockForTest(
   clock_ = clock_for_test;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

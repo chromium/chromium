@@ -24,11 +24,8 @@ class FakeTetherAvailabilityOperationOrchestrator
 
   void Start() override {}
 
-  void start_operation_for_devices(
-      const multidevice::RemoteDeviceRefList& devices) {
-    for (auto& device : devices) {
-      StartOperation(device);
-    }
+  void start_operation_for_device(const TetherHost& tether_host) {
+    StartOperation(tether_host);
   }
 };
 
@@ -73,15 +70,13 @@ TEST_F(TetherAvailabilityOperationOrchestratorTest,
           fake_tether_availability_operation_initializer));
 
   orchestrator.AddObserver(this);
-
-  multidevice::RemoteDeviceRef remote_device =
-      multidevice::CreateRemoteDeviceRefForTest();
-  orchestrator.start_operation_for_devices(
-      multidevice::RemoteDeviceRefList{remote_device});
+  TetherHost tether_host =
+      TetherHost(multidevice::CreateRemoteDeviceRefForTest());
+  orchestrator.start_operation_for_device(tether_host);
 
   fake_tether_availability_operation_initializer->send_result(
-      remote_device,
-      ScannedDeviceInfo(remote_device.GetDeviceId(), remote_device.name(),
+      tether_host,
+      ScannedDeviceInfo(tether_host.GetDeviceId(), tether_host.GetName(),
                         /*device_status=*/std::nullopt,
                         /*setup_required=*/false,
                         /*notifications_enabled=*/false));

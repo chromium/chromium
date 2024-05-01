@@ -10,9 +10,7 @@
 #include "chromeos/ash/components/tether/host_scan_cache.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // static
 const uint32_t KeepAliveScheduler::kKeepAliveIntervalMinutes = 3;
@@ -114,11 +112,10 @@ void KeepAliveScheduler::SendKeepAliveTickle() {
   DCHECK(active_host_device_);
 
   keep_alive_operation_ = KeepAliveOperation::Factory::Create(
-      *active_host_device_, device_sync_client_, secure_channel_client_);
+      TetherHost(*active_host_device_), device_sync_client_,
+      secure_channel_client_);
   keep_alive_operation_->AddObserver(this);
   keep_alive_operation_->Initialize();
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

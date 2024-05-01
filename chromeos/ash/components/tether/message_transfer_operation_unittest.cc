@@ -42,7 +42,7 @@ class TestOperation : public MessageTransferOperation {
   TestOperation(const multidevice::RemoteDeviceRef& device_to_connect,
                 device_sync::DeviceSyncClient* device_sync_client,
                 secure_channel::SecureChannelClient* secure_channel_client)
-      : MessageTransferOperation(device_to_connect,
+      : MessageTransferOperation(TetherHost(device_to_connect),
                                  secure_channel::ConnectionPriority::kLow,
                                  device_sync_client,
                                  secure_channel_client) {}

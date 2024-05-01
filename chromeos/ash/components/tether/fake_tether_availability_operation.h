@@ -18,19 +18,18 @@ class FakeTetherAvailabilityOperation : public TetherAvailabilityOperation {
 
     // TetherAvailabilityOperation::Initializer:
     std::unique_ptr<TetherAvailabilityOperation> Initialize(
-        const multidevice::RemoteDeviceRef& device_to_connect,
+        const TetherHost& tether_host,
         TetherAvailabilityOperation::
             OnTetherAvailabilityOperationFinishedCallback callback) override;
 
-    void send_result(const multidevice::RemoteDeviceRef& remote_device,
+    void send_result(const TetherHost& tether_host,
                      std::optional<ScannedDeviceInfo> result);
-    bool has_active_operation_for_device(
-        const multidevice::RemoteDeviceRef& remote_device);
+    bool has_active_operation_for_device(const TetherHost& tether_host);
 
    private:
-    void OnOperationDestroyed(const multidevice::RemoteDeviceRef remote_device);
+    void OnOperationDestroyed(const TetherHost& tether_host);
 
-    base::flat_map<multidevice::RemoteDeviceRef,
+    base::flat_map<std::string,
                    TetherAvailabilityOperation::
                        OnTetherAvailabilityOperationFinishedCallback>
         pending_callbacks_;
@@ -39,9 +38,8 @@ class FakeTetherAvailabilityOperation : public TetherAvailabilityOperation {
         weak_ptr_factory_{this};
   };
 
-  FakeTetherAvailabilityOperation(
-      const multidevice::RemoteDeviceRef remote_device,
-      base::OnceClosure on_destroyed_callback);
+  FakeTetherAvailabilityOperation(const TetherHost& tether_host,
+                                  base::OnceClosure on_destroyed_callback);
   ~FakeTetherAvailabilityOperation() override;
 
  private:

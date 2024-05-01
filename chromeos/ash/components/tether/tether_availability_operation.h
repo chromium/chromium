@@ -13,9 +13,9 @@
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/message_transfer_operation.h"
 #include "chromeos/ash/components/tether/scanned_device_info.h"
+#include "chromeos/ash/components/tether/tether_host.h"
 
 namespace ash::device_sync {
 class DeviceSyncClient;
@@ -50,7 +50,7 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
         raw_ptr<ConnectionPreserver> connection_preserver);
 
     virtual std::unique_ptr<TetherAvailabilityOperation> Initialize(
-        const multidevice::RemoteDeviceRef& device_to_connect,
+        const TetherHost& tether_host,
         OnTetherAvailabilityOperationFinishedCallback callback);
 
     virtual ~Initializer();
@@ -67,7 +67,7 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
       delete;
 
   TetherAvailabilityOperation(
-      const multidevice::RemoteDeviceRef& device_to_connect,
+      const TetherHost& tether_host,
       OnTetherAvailabilityOperationFinishedCallback on_operation_finished,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
@@ -85,6 +85,8 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
   MessageType GetMessageTypeForConnection() override;
 
  private:
+  TetherHost tether_host_;
+
   friend class TetherAvailabilityOperationTest;
   FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
                            DevicesArePrioritizedDuringConstruction);

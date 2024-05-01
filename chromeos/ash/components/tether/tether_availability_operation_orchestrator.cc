@@ -21,26 +21,26 @@ TetherAvailabilityOperationOrchestrator::
     ~TetherAvailabilityOperationOrchestrator() = default;
 
 void TetherAvailabilityOperationOrchestrator::StartOperation(
-    const multidevice::RemoteDeviceRef& remote_device) {
+    const TetherHost& tether_host) {
   PA_LOG(VERBOSE) << "Starting TetherAvailabilityOperation for "
-                  << remote_device.GetTruncatedDeviceIdForLogs() << ".";
-  if (base::Contains(active_operations_, remote_device)) {
+                  << tether_host.GetTruncatedDeviceIdForLogs() << ".";
+  if (base::Contains(active_operations_, tether_host.GetDeviceId())) {
     PA_LOG(ERROR)
         << "Unable to start TetherAvailability operation for "
-        << remote_device.GetTruncatedDeviceIdForLogs()
+        << tether_host.GetTruncatedDeviceIdForLogs()
         << " since there is already an active operation for this device.";
     return;
   }
 
-  active_operations_[remote_device] =
+  active_operations_[tether_host.GetDeviceId()] =
       tether_availability_operation_initializer_->Initialize(
-          remote_device,
+          tether_host,
           base::BindOnce(
               &TetherAvailabilityOperationOrchestrator::OnScannedDeviceResult,
-              weak_ptr_factory_.GetWeakPtr(), remote_device));
+              weak_ptr_factory_.GetWeakPtr(), tether_host));
 
   PA_LOG(VERBOSE) << "Started TetherAvailabilityOperation for "
-                  << remote_device.GetTruncatedDeviceIdForLogs() << ".";
+                  << tether_host.GetTruncatedDeviceIdForLogs() << ".";
 }
 
 void TetherAvailabilityOperationOrchestrator::AddObserver(Observer* observer) {
@@ -53,9 +53,9 @@ void TetherAvailabilityOperationOrchestrator::RemoveObserver(
 }
 
 void TetherAvailabilityOperationOrchestrator::OnScannedDeviceResult(
-    const multidevice::RemoteDeviceRef& remote_device,
+    const TetherHost& tether_host,
     std::optional<ScannedDeviceInfo> result) {
-  CHECK(base::Contains(active_operations_, remote_device));
+  CHECK(base::Contains(active_operations_, tether_host.GetDeviceId()));
 
   if (result.has_value()) {
     ScannedDeviceInfo scanned_device_info = result.value();
@@ -63,19 +63,18 @@ void TetherAvailabilityOperationOrchestrator::OnScannedDeviceResult(
     if (scanned_device_info.notifications_enabled) {
       PA_LOG(INFO) << "Received successful TetherAvailabilityResponse from "
                       "device with ID "
-                   << remote_device.GetTruncatedDeviceIdForLogs() << ".";
-      scanned_device_list_so_far_.push_back(scanned_device_info);
+                   << tether_host.GetTruncatedDeviceIdForLogs() << ".";
+      scanned_device_list_so_far_.push_back(result.value());
     } else {
       PA_LOG(WARNING)
           << "Received TetherAvailabilityResponse from device with ID "
-          << remote_device.GetTruncatedDeviceIdForLogs() << " which "
+          << tether_host.GetTruncatedDeviceIdForLogs() << " which "
           << "indicates that Google Play Services notifications are disabled";
-      gms_core_notifications_disabled_devices_.emplace_back(
-          scanned_device_info);
+      gms_core_notifications_disabled_devices_.emplace_back(result.value());
     }
   }
 
-  active_operations_.erase(remote_device);
+  active_operations_.erase(tether_host.GetDeviceId());
 
   bool is_final_scan_result = active_operations_.empty();
   for (auto& observer : observers_) {

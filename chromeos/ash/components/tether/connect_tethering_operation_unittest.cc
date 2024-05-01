@@ -30,9 +30,7 @@
 using testing::_;
 using testing::StrictMock;
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -90,7 +88,7 @@ class ConnectTetheringOperationTest : public testing::Test {
         remote_device_, test_local_device_, std::move(fake_connection_attempt));
 
     operation = base::WrapUnique(new ConnectTetheringOperation(
-        remote_device_, fake_device_sync_client_.get(),
+        TetherHost(remote_device_), fake_device_sync_client_.get(),
         fake_secure_channel_client_.get(), false /* setup_required */));
     operation->SetTimerFactoryForTest(
         std::make_unique<cross_device::FakeTimerFactory>());
@@ -279,7 +277,7 @@ TEST_F(ConnectTetheringOperationTest, GetMessageTimeoutSeconds) {
   // Setup required case.
   std::unique_ptr<ConnectTetheringOperation> operation(
       new ConnectTetheringOperation(
-          remote_device_, fake_device_sync_client_.get(),
+          TetherHost(remote_device_), fake_device_sync_client_.get(),
           fake_secure_channel_client_.get(), true /* setup_required */));
 
   EXPECT_EQ(ConnectTetheringOperation::kSetupRequiredResponseTimeoutSeconds,
@@ -287,7 +285,7 @@ TEST_F(ConnectTetheringOperationTest, GetMessageTimeoutSeconds) {
 
   // Setup not required case.
   operation.reset(new ConnectTetheringOperation(
-      remote_device_, fake_device_sync_client_.get(),
+      TetherHost(remote_device_), fake_device_sync_client_.get(),
       fake_secure_channel_client_.get(), false /* setup_required */));
 
   EXPECT_EQ(ConnectTetheringOperation::kSetupNotRequiredResponseTimeoutSeconds,
@@ -322,6 +320,4 @@ TEST_F(ConnectTetheringOperationTest, ConnectRequestSentOnceAuthenticated) {
   EXPECT_EQ(expected_payload, sent_messages[0].first);
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

@@ -12,9 +12,7 @@
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // When setup is not required, allow a 30-second timeout. If a host device is on
 // a slow data connection, enabling the tether hotspot may take a significant
@@ -37,19 +35,17 @@ ConnectTetheringOperation::Factory*
 // static
 std::unique_ptr<ConnectTetheringOperation>
 ConnectTetheringOperation::Factory::Create(
-    multidevice::RemoteDeviceRef device_to_connect,
+    const TetherHost& tether_host,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     bool setup_required) {
   if (factory_instance_) {
     return factory_instance_->CreateInstance(
-        device_to_connect, device_sync_client, secure_channel_client,
-        setup_required);
+        tether_host, device_sync_client, secure_channel_client, setup_required);
   }
 
-  return base::WrapUnique(
-      new ConnectTetheringOperation(device_to_connect, device_sync_client,
-                                    secure_channel_client, setup_required));
+  return base::WrapUnique(new ConnectTetheringOperation(
+      tether_host, device_sync_client, secure_channel_client, setup_required));
 }
 
 // static
@@ -61,11 +57,11 @@ void ConnectTetheringOperation::Factory::SetFactoryForTesting(
 ConnectTetheringOperation::Factory::~Factory() = default;
 
 ConnectTetheringOperation::ConnectTetheringOperation(
-    multidevice::RemoteDeviceRef device_to_connect,
+    const TetherHost& tether_host,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     bool setup_required)
-    : MessageTransferOperation(device_to_connect,
+    : MessageTransferOperation(tether_host,
                                secure_channel::ConnectionPriority::kHigh,
                                device_sync_client,
                                secure_channel_client),
@@ -105,7 +101,7 @@ void ConnectTetheringOperation::OnMessageReceived(
     if (response->has_ssid() && response->has_password()) {
       PA_LOG(VERBOSE)
           << "Received ConnectTetheringResponse from device with ID "
-          << remote_device().GetTruncatedDeviceIdForLogs() << " and "
+          << GetDeviceId(/*truncate_for_logs=*/true) << " and "
           << "response_code == SUCCESS. Config: {ssid: \"" << response->ssid()
           << "\", password: \"" << response->password() << "\"}";
 
@@ -116,7 +112,7 @@ void ConnectTetheringOperation::OnMessageReceived(
       password_to_return_ = response->password();
     } else {
       PA_LOG(ERROR) << "Received ConnectTetheringResponse from device with ID "
-                    << remote_device().GetTruncatedDeviceIdForLogs() << " and "
+                    << GetDeviceId(/*truncate_for_logs=*/true) << " and "
                     << "response_code == SUCCESS, but the response did not "
                     << "contain a Wi-Fi SSID and/or password.";
       error_code_to_return_ =
@@ -125,7 +121,7 @@ void ConnectTetheringOperation::OnMessageReceived(
   } else {
     PA_LOG(WARNING)
         << "Received failing ConnectTetheringResponse from device with ID "
-        << remote_device().GetTruncatedDeviceIdForLogs() << " and "
+        << GetDeviceId(/*truncate_for_logs=*/true) << " and "
         << "response_code == " << response->response_code() << ".";
     error_code_to_return_ = ConnectTetheringResponseCodeToHostResponseErrorCode(
         response->response_code());
@@ -240,6 +236,4 @@ void ConnectTetheringOperation::SetClockForTest(base::Clock* clock_for_test) {
   clock_ = clock_for_test;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

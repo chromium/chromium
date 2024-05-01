@@ -37,15 +37,15 @@ class OperationDeletedHandler {
 class FakeKeepAliveOperation : public KeepAliveOperation {
  public:
   FakeKeepAliveOperation(
-      multidevice::RemoteDeviceRef device_to_connect,
+      const TetherHost& tether_host,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       OperationDeletedHandler* handler)
-      : KeepAliveOperation(device_to_connect,
+      : KeepAliveOperation(tether_host,
                            device_sync_client,
                            secure_channel_client),
-        handler_(handler),
-        remote_device_(device_to_connect) {}
+        tether_host_(tether_host),
+        handler_(handler) {}
 
   ~FakeKeepAliveOperation() override { handler_->OnOperationDeleted(); }
 
@@ -54,11 +54,11 @@ class FakeKeepAliveOperation : public KeepAliveOperation {
     OnOperationFinished();
   }
 
-  multidevice::RemoteDeviceRef remote_device() { return remote_device_; }
+  const TetherHost& get_tether_host() { return tether_host_; }
 
  private:
+  TetherHost tether_host_;
   raw_ptr<OperationDeletedHandler> handler_;
-  const multidevice::RemoteDeviceRef remote_device_;
 };
 
 class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
@@ -78,12 +78,12 @@ class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
 
  protected:
   std::unique_ptr<KeepAliveOperation> CreateInstance(
-      multidevice::RemoteDeviceRef device_to_connect,
+      const TetherHost& tether_host,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client) override {
     num_created_++;
-    last_created_ = new FakeKeepAliveOperation(
-        device_to_connect, device_sync_client, secure_channel_client, this);
+    last_created_ = new FakeKeepAliveOperation(tether_host, device_sync_client,
+                                               secure_channel_client, this);
     return base::WrapUnique(last_created_.get());
   }
 
@@ -192,8 +192,9 @@ TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_OneActiveHost) {
                                             std::string(kTetherNetworkGuid),
                                             std::string(kWifiNetworkGuid));
   EXPECT_EQ(1u, fake_operation_factory_->num_created());
-  EXPECT_EQ(test_devices_[0],
-            fake_operation_factory_->last_created()->remote_device());
+  EXPECT_EQ(test_devices_[0], fake_operation_factory_->last_created()
+                                  ->get_tether_host()
+                                  .remote_device_ref());
   EXPECT_FALSE(fake_operation_factory_->num_deleted());
   VerifyTimerRunning(true /* is_running */);
 
@@ -209,8 +210,9 @@ TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_OneActiveHost) {
   // Fire the timer; this should result in tickle #2 being sent.
   mock_timer_->Fire();
   EXPECT_EQ(2u, fake_operation_factory_->num_created());
-  EXPECT_EQ(test_devices_[0],
-            fake_operation_factory_->last_created()->remote_device());
+  EXPECT_EQ(test_devices_[0], fake_operation_factory_->last_created()
+                                  ->get_tether_host()
+                                  .remote_device_ref());
   EXPECT_EQ(1u, fake_operation_factory_->num_deleted());
   VerifyTimerRunning(true /* is_running */);
 
@@ -226,8 +228,9 @@ TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_OneActiveHost) {
   // Fire the timer; this should result in tickle #3 being sent.
   mock_timer_->Fire();
   EXPECT_EQ(3u, fake_operation_factory_->num_created());
-  EXPECT_EQ(test_devices_[0],
-            fake_operation_factory_->last_created()->remote_device());
+  EXPECT_EQ(test_devices_[0], fake_operation_factory_->last_created()
+                                  ->get_tether_host()
+                                  .remote_device_ref());
   EXPECT_EQ(2u, fake_operation_factory_->num_deleted());
   VerifyTimerRunning(true /* is_running */);
 
@@ -265,8 +268,9 @@ TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_MultipleActiveHosts) {
                                             std::string(kTetherNetworkGuid),
                                             std::string(kWifiNetworkGuid));
   EXPECT_EQ(1u, fake_operation_factory_->num_created());
-  EXPECT_EQ(test_devices_[0],
-            fake_operation_factory_->last_created()->remote_device());
+  EXPECT_EQ(test_devices_[0], fake_operation_factory_->last_created()
+                                  ->get_tether_host()
+                                  .remote_device_ref());
   EXPECT_FALSE(fake_operation_factory_->num_deleted());
   VerifyTimerRunning(true /* is_running */);
 
@@ -289,8 +293,9 @@ TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_MultipleActiveHosts) {
                                             std::string(kTetherNetworkGuid),
                                             std::string(kWifiNetworkGuid));
   EXPECT_EQ(2u, fake_operation_factory_->num_created());
-  EXPECT_EQ(test_devices_[1],
-            fake_operation_factory_->last_created()->remote_device());
+  EXPECT_EQ(test_devices_[1], fake_operation_factory_->last_created()
+                                  ->get_tether_host()
+                                  .remote_device_ref());
   EXPECT_EQ(1u, fake_operation_factory_->num_deleted());
   VerifyTimerRunning(true /* is_running */);
 

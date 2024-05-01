@@ -170,7 +170,8 @@ void TetherConnectorImpl::ConnectToNetwork(
   }
 
   connect_tethering_operation_ = ConnectTetheringOperation::Factory::Create(
-      *tether_host_to_connect, device_sync_client_, secure_channel_client_,
+      TetherHost(*tether_host_to_connect), device_sync_client_,
+      secure_channel_client_,
       host_scan_cache_->DoesHostRequireSetup(tether_network_guid));
   connect_tethering_operation_->AddObserver(this);
   connect_tethering_operation_->Initialize();

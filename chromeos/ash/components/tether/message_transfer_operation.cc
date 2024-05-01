@@ -14,9 +14,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/cross_device/timer_factory/timer_factory_impl.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -25,11 +23,11 @@ const char kTetherFeature[] = "magic_tether";
 }  // namespace
 
 MessageTransferOperation::MessageTransferOperation(
-    const multidevice::RemoteDeviceRef& device_to_connect,
+    const TetherHost& tether_host,
     secure_channel::ConnectionPriority connection_priority,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client)
-    : remote_device_(device_to_connect),
+    : tether_host_(tether_host),
       device_sync_client_(device_sync_client),
       secure_channel_client_(secure_channel_client),
       connection_priority_(connection_priority),
@@ -74,7 +72,7 @@ void MessageTransferOperation::Initialize() {
 
   StartConnectionTimerForDevice();
   connection_attempt_ = secure_channel_client_->ListenForConnectionFromDevice(
-      remote_device_, *local_device, kTetherFeature,
+      tether_host_.remote_device_ref().value(), *local_device, kTetherFeature,
       secure_channel::ConnectionMedium::kBluetoothLowEnergy,
       connection_priority_);
 
@@ -123,7 +121,7 @@ uint32_t MessageTransferOperation::GetMessageTimeoutSeconds() {
 void MessageTransferOperation::OnConnectionAttemptFailure(
     secure_channel::mojom::ConnectionAttemptFailureReason reason) {
   PA_LOG(WARNING) << "Failed to connect to device "
-                  << remote_device_.GetTruncatedDeviceIdForLogs()
+                  << GetDeviceId(/*truncate_for_logs=*/true)
                   << ", error: " << reason;
   StopOperation();
 }
@@ -145,7 +143,7 @@ void MessageTransferOperation::OnConnection(
 
 void MessageTransferOperation::OnDisconnected() {
   PA_LOG(VERBOSE) << "Remote device disconnected from this device: "
-                  << remote_device_.GetTruncatedDeviceIdForLogs();
+                  << GetDeviceId(/*truncate_for_logs=*/true);
   StopOperation();
 }
 
@@ -160,7 +158,7 @@ void MessageTransferOperation::StartMessageTimerForDevice() {
 void MessageTransferOperation::StartTimerForDevice(uint32_t timeout_seconds) {
   PA_LOG(VERBOSE) << "Starting timer for operation with message type "
                   << message_type_for_connection_ << " from device with ID "
-                  << remote_device_.GetTruncatedDeviceIdForLogs() << ".";
+                  << GetDeviceId(/*truncate_for_logs=*/true) << ".";
 
   remote_device_timer_ = timer_factory_->CreateOneShotTimer();
   remote_device_timer_->Start(
@@ -181,7 +179,7 @@ void MessageTransferOperation::StopTimerForDeviceIfRunning() {
 void MessageTransferOperation::OnTimeout() {
   PA_LOG(WARNING) << "Timed out operation for message type "
                   << message_type_for_connection_ << " from device with ID "
-                  << remote_device_.GetTruncatedDeviceIdForLogs() << ".";
+                  << GetDeviceId(/*truncate_for_logs=*/true) << ".";
 
   remote_device_timer_.reset();
   StopOperation();
@@ -192,6 +190,13 @@ void MessageTransferOperation::SetTimerFactoryForTest(
   timer_factory_ = std::move(timer_factory_for_test);
 }
 
-}  // namespace tether
+const std::string MessageTransferOperation::GetDeviceId(
+    bool truncate_for_logs) const {
+  if (truncate_for_logs) {
+    return tether_host_.GetTruncatedDeviceIdForLogs();
+  } else {
+    return tether_host_.GetDeviceId();
+  }
+}
 
-}  // namespace ash
+}  // namespace ash::tether

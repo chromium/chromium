@@ -54,12 +54,11 @@ class SecureChannelTetherAvailabilityOperationOrchestratorTest
     return orchestrator;
   }
 
-  ScannedDeviceInfo CreateFakeScannedDeviceInfo(
-      const multidevice::RemoteDeviceRef& remote_device) {
+  ScannedDeviceInfo CreateFakeScannedDeviceInfo(const TetherHost& tether_host) {
     auto device_status = CreateTestDeviceStatus(
         "Google Fi", 75 /* battery_percentage */, 4 /* connection_strength */);
     return ScannedDeviceInfo(
-        remote_device.GetDeviceId(), remote_device.name(), device_status,
+        tether_host.GetDeviceId(), tether_host.GetName(), device_status,
         /*setup_required=*/false, /*notifications_enabled=*/true);
   }
 
@@ -76,9 +75,10 @@ class SecureChannelTetherAvailabilityOperationOrchestratorTest
 
 TEST_F(SecureChannelTetherAvailabilityOperationOrchestratorTest,
        HostFetcher_StartsOperation) {
-  const multidevice::RemoteDeviceRef test_device =
-      multidevice::CreateRemoteDeviceRefForTest();
-  FakeTetherHostFetcher fake_tether_host_fetcher(test_device);
+  const TetherHost test_device =
+      TetherHost(multidevice::CreateRemoteDeviceRefForTest());
+  FakeTetherHostFetcher fake_tether_host_fetcher(
+      *test_device.remote_device_ref());
   FakeTetherAvailabilityOperation::Initializer*
       fake_tether_availability_operation_initializer =
           new FakeTetherAvailabilityOperation::Initializer();

@@ -25,9 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -86,7 +84,7 @@ class DisconnectTetheringOperationTest : public testing::Test {
         remote_device_, local_device_, std::move(connection_attempt));
 
     auto operation = base::WrapUnique(new DisconnectTetheringOperation(
-        remote_device_, fake_device_sync_client_.get(),
+        TetherHost(remote_device_), fake_device_sync_client_.get(),
         fake_secure_channel_client_.get()));
     operation->AddObserver(&mock_observer_);
 
@@ -180,6 +178,4 @@ TEST_F(DisconnectTetheringOperationTest,
   EXPECT_EQ(expected_payload, sent_messages[0].first);
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

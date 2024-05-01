@@ -55,6 +55,6 @@ void SecureChannelTetherAvailabilityOperationOrchestrator::Start() {
     return;
   }
 
-  StartOperation(*tether_host);
+  StartOperation(TetherHost(*tether_host));
 }
 }  // namespace ash::tether

@@ -65,11 +65,6 @@ class TetherAvailabilityOperationTest : public testing::Test {
     ConnectAuthenticatedChannelForDevice(remote_device_);
   }
 
-  multidevice::RemoteDeviceRef GetOperationRemoteDevice(
-      TetherAvailabilityOperation* operation) const {
-    return operation->remote_device();
-  }
-
   std::unique_ptr<TetherAvailabilityOperation> ConstructOperation() {
     auto connection_attempt =
         std::make_unique<secure_channel::FakeConnectionAttempt>();
@@ -78,7 +73,7 @@ class TetherAvailabilityOperationTest : public testing::Test {
         remote_device_, local_device_, std::move(connection_attempt));
 
     auto operation = std::make_unique<TetherAvailabilityOperation>(
-        remote_device_,
+        TetherHost(remote_device_),
         base::BindOnce(&TetherAvailabilityOperationTest::OnResponse,
                        weak_ptr_factory_.GetWeakPtr()),
         &fake_device_sync_client_, &fake_secure_channel_client_,

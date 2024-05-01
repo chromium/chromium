@@ -19,40 +19,39 @@ FakeTetherAvailabilityOperation::Initializer::~Initializer() = default;
 
 std::unique_ptr<TetherAvailabilityOperation>
 FakeTetherAvailabilityOperation::Initializer::Initialize(
-    const multidevice::RemoteDeviceRef& device_to_connect,
+    const TetherHost& tether_host,
     TetherAvailabilityOperation::OnTetherAvailabilityOperationFinishedCallback
         callback) {
-  pending_callbacks_[device_to_connect] = std::move(callback);
+  pending_callbacks_[tether_host.GetDeviceId()] = std::move(callback);
   return base::WrapUnique<
       TetherAvailabilityOperation>(new FakeTetherAvailabilityOperation(
-      device_to_connect,
+      tether_host,
       base::BindOnce(
           &FakeTetherAvailabilityOperation::Initializer::OnOperationDestroyed,
-          weak_ptr_factory_.GetWeakPtr(), device_to_connect)));
+          weak_ptr_factory_.GetWeakPtr(), tether_host)));
 }
 
 void FakeTetherAvailabilityOperation::Initializer::send_result(
-    const multidevice::RemoteDeviceRef& remote_device,
+    const TetherHost& tether_host,
     std::optional<ScannedDeviceInfo> result) {
-  std::move(pending_callbacks_[remote_device]).Run(result);
-  pending_callbacks_.erase(remote_device);
+  std::move(pending_callbacks_[tether_host.GetDeviceId()]).Run(result);
+  pending_callbacks_.erase(tether_host.GetDeviceId());
 }
 
 bool FakeTetherAvailabilityOperation::Initializer::
-    has_active_operation_for_device(
-        const multidevice::RemoteDeviceRef& remote_device) {
-  return base::Contains(pending_callbacks_, remote_device);
+    has_active_operation_for_device(const TetherHost& tether_host) {
+  return base::Contains(pending_callbacks_, tether_host.GetDeviceId());
 }
 
 void FakeTetherAvailabilityOperation::Initializer::OnOperationDestroyed(
-    const multidevice::RemoteDeviceRef remote_device) {
-  pending_callbacks_.erase(remote_device);
+    const TetherHost& tether_host) {
+  pending_callbacks_.erase(tether_host.GetDeviceId());
 }
 
 FakeTetherAvailabilityOperation::FakeTetherAvailabilityOperation(
-    const multidevice::RemoteDeviceRef remote_device,
+    const TetherHost& tether_host,
     base::OnceClosure on_destroyed_callback)
-    : TetherAvailabilityOperation(remote_device,
+    : TetherAvailabilityOperation(tether_host,
                                   base::DoNothing(),
                                   /*device_sync_client=*/nullptr,
                                   /*secure_channel_client=*/nullptr,

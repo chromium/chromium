@@ -67,14 +67,15 @@ using ::testing::Optional;
 class FakeConnectTetheringOperation : public ConnectTetheringOperation {
  public:
   FakeConnectTetheringOperation(
-      multidevice::RemoteDeviceRef device_to_connect,
+      const TetherHost& tether_host,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       bool setup_required)
-      : ConnectTetheringOperation(device_to_connect,
+      : ConnectTetheringOperation(tether_host,
                                   device_sync_client,
                                   secure_channel_client,
                                   setup_required),
+        tether_host_(tether_host),
         setup_required_(setup_required) {}
 
   ~FakeConnectTetheringOperation() override = default;
@@ -93,11 +94,12 @@ class FakeConnectTetheringOperation : public ConnectTetheringOperation {
     NotifyObserversOfConnectionFailure(error_code);
   }
 
-  multidevice::RemoteDeviceRef GetRemoteDevice() { return remote_device(); }
+  TetherHost tether_host() { return tether_host_; }
 
   bool setup_required() { return setup_required_; }
 
  private:
+  TetherHost tether_host_;
   bool setup_required_;
 };
 
@@ -115,12 +117,12 @@ class FakeConnectTetheringOperationFactory
  protected:
   // ConnectTetheringOperation::Factory:
   std::unique_ptr<ConnectTetheringOperation> CreateInstance(
-      multidevice::RemoteDeviceRef device_to_connect,
+      const TetherHost& tether_host,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       bool setup_required) override {
     FakeConnectTetheringOperation* operation =
-        new FakeConnectTetheringOperation(device_to_connect, device_sync_client,
+        new FakeConnectTetheringOperation(tether_host, device_sync_client,
                                           secure_channel_client,
                                           setup_required);
     created_operations_.push_back(operation);

@@ -28,7 +28,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
   class Factory {
    public:
     static std::unique_ptr<DisconnectTetheringOperation> Create(
-        multidevice::RemoteDeviceRef device_to_connect,
+        const TetherHost& tether_host,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client);
 
@@ -37,7 +37,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<DisconnectTetheringOperation> CreateInstance(
-        multidevice::RemoteDeviceRef device_to_connect,
+        const TetherHost& tether_host,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client) = 0;
 
@@ -65,7 +65,7 @@ class DisconnectTetheringOperation : public MessageTransferOperation {
 
  protected:
   DisconnectTetheringOperation(
-      multidevice::RemoteDeviceRef device_to_connect,
+      const TetherHost& tether_host,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client);
 

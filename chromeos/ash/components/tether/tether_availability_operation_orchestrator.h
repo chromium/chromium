@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_TETHER_AVAILABILITY_OPERATION_ORCHESTRATOR_H_
 
 #include "base/observer_list.h"
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/scanned_device_info.h"
 #include "chromeos/ash/components/tether/tether_availability_operation.h"
 #include "chromeos/ash/components/tether/tether_host.h"
@@ -51,7 +50,7 @@ class TetherAvailabilityOperationOrchestrator {
   virtual void Start() = 0;
 
  protected:
-  void StartOperation(const multidevice::RemoteDeviceRef& remote_device);
+  void StartOperation(const TetherHost& tether_host);
   void NotifyObserversOfFinalScan();
 
   base::ObserverList<Observer> observers_;
@@ -59,12 +58,11 @@ class TetherAvailabilityOperationOrchestrator {
   std::vector<ScannedDeviceInfo> gms_core_notifications_disabled_devices_;
 
  private:
-  void OnScannedDeviceResult(const multidevice::RemoteDeviceRef& remote_device,
+  void OnScannedDeviceResult(const TetherHost& tether_host,
                              std::optional<ScannedDeviceInfo> result);
 
  private:
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 std::unique_ptr<TetherAvailabilityOperation>>
+  base::flat_map<std::string, std::unique_ptr<TetherAvailabilityOperation>>
       active_operations_;
 
   std::unique_ptr<TetherAvailabilityOperation::Initializer>

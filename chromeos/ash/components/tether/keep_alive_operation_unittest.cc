@@ -27,9 +27,7 @@ using testing::_;
 using testing::Invoke;
 using testing::NotNull;
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -85,9 +83,9 @@ class KeepAliveOperationTest : public testing::Test {
     fake_secure_channel_client_->set_next_listen_connection_attempt(
         remote_device_, local_device_, std::move(connection_attempt));
 
-    auto operation = base::WrapUnique(
-        new KeepAliveOperation(remote_device_, fake_device_sync_client_.get(),
-                               fake_secure_channel_client_.get()));
+    auto operation = base::WrapUnique(new KeepAliveOperation(
+        TetherHost(remote_device_), fake_device_sync_client_.get(),
+        fake_secure_channel_client_.get()));
     operation->AddObserver(&mock_observer_);
 
     operation->SetTimerFactoryForTest(
@@ -182,6 +180,4 @@ TEST_F(KeepAliveOperationTest, RecordsResponseDuration) {
       kKeepAliveTickleResponseTime, 1);
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

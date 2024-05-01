@@ -14,6 +14,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
+#include "chromeos/ash/components/tether/tether_host.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
@@ -37,7 +38,7 @@ class MessageTransferOperation
       public secure_channel::ConnectionAttempt::Delegate {
  public:
   MessageTransferOperation(
-      const multidevice::RemoteDeviceRef& device_to_connect,
+      const TetherHost& tether_host,
       secure_channel::ConnectionPriority connection_priority,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client);
@@ -91,7 +92,7 @@ class MessageTransferOperation
   // ShouldOperationUseTimeout() returns false, this method is never used.
   virtual uint32_t GetMessageTimeoutSeconds();
 
-  multidevice::RemoteDeviceRef& remote_device() { return remote_device_; }
+  const std::string GetDeviceId(bool truncate_for_logs) const;
 
   std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
   std::unique_ptr<secure_channel::ClientChannel> client_channel_;
@@ -139,7 +140,7 @@ class MessageTransferOperation
   void SetTimerFactoryForTest(
       std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test);
 
-  multidevice::RemoteDeviceRef remote_device_;
+  TetherHost tether_host_;
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
   const secure_channel::ConnectionPriority connection_priority_;

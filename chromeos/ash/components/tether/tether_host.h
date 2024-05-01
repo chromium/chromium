@@ -16,8 +16,8 @@ namespace ash::tether {
 struct TetherHost {
  public:
   explicit TetherHost(multidevice::RemoteDeviceRef remote_device_ref);
-  TetherHost(const TetherHost&) = delete;
-  TetherHost& operator=(const TetherHost&) = delete;
+  TetherHost(const TetherHost&);
+  TetherHost& operator=(const TetherHost&) = default;
 
   ~TetherHost();
 

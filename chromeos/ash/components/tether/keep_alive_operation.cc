@@ -12,9 +12,7 @@
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // static
 KeepAliveOperation::Factory* KeepAliveOperation::Factory::factory_instance_ =
@@ -22,16 +20,16 @@ KeepAliveOperation::Factory* KeepAliveOperation::Factory::factory_instance_ =
 
 // static
 std::unique_ptr<KeepAliveOperation> KeepAliveOperation::Factory::Create(
-    multidevice::RemoteDeviceRef device_to_connect,
+    const TetherHost& tether_host,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client) {
   if (factory_instance_) {
-    return factory_instance_->CreateInstance(
-        device_to_connect, device_sync_client, secure_channel_client);
+    return factory_instance_->CreateInstance(tether_host, device_sync_client,
+                                             secure_channel_client);
   }
 
   return base::WrapUnique(new KeepAliveOperation(
-      device_to_connect, device_sync_client, secure_channel_client));
+      tether_host, device_sync_client, secure_channel_client));
 }
 
 // static
@@ -42,10 +40,10 @@ void KeepAliveOperation::Factory::SetFactoryForTesting(Factory* factory) {
 KeepAliveOperation::Factory::~Factory() = default;
 
 KeepAliveOperation::KeepAliveOperation(
-    multidevice::RemoteDeviceRef device_to_connect,
+    const TetherHost& tether_host,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client)
-    : MessageTransferOperation(device_to_connect,
+    : MessageTransferOperation(tether_host,
                                secure_channel::ConnectionPriority::kMedium,
                                device_sync_client,
                                secure_channel_client),
@@ -105,6 +103,4 @@ void KeepAliveOperation::SetClockForTest(base::Clock* clock_for_test) {
   clock_ = clock_for_test;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

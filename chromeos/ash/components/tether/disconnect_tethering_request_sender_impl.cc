@@ -79,8 +79,9 @@ void DisconnectTetheringRequestSenderImpl::SendDisconnectRequestToDevice(
                          device_id);
 
   std::unique_ptr<DisconnectTetheringOperation> disconnect_tethering_operation =
-      DisconnectTetheringOperation::Factory::Create(
-          *tether_host, device_sync_client_, secure_channel_client_);
+      DisconnectTetheringOperation::Factory::Create(TetherHost(*tether_host),
+                                                    device_sync_client_,
+                                                    secure_channel_client_);
 
   // Add to the map.
   device_id_to_operation_map_.emplace(
