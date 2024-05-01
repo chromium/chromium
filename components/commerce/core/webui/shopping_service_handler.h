@@ -78,7 +78,6 @@ class ShoppingServiceHandler
       ShoppingService* shopping_service,
       PrefService* prefs,
       feature_engagement::Tracker* tracker,
-      const std::string& locale,
       std::unique_ptr<Delegate> delegate);
   ShoppingServiceHandler(const ShoppingServiceHandler&) = delete;
   ShoppingServiceHandler& operator=(const ShoppingServiceHandler&) = delete;
@@ -182,7 +181,7 @@ class ShoppingServiceHandler
   raw_ptr<ShoppingService> shopping_service_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   raw_ptr<feature_engagement::Tracker> tracker_;
-  const std::string locale_;
+  std::string locale_;
   std::unique_ptr<Delegate> delegate_;
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>

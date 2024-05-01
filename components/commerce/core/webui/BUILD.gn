@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:account_checker_test_support",
     "//components/commerce/core:shopping_service_test_support",
     "//components/feature_engagement/test:test_support",
     "//components/ukm:test_support",

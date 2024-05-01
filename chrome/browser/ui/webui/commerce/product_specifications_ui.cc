@@ -98,8 +98,7 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker,
-          g_browser_process->GetApplicationLocale(), nullptr);
+          shopping_service, profile->GetPrefs(), tracker, nullptr);
 }
 
 ProductSpecificationsUI::~ProductSpecificationsUI() = default;

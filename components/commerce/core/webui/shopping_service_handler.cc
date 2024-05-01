@@ -230,7 +230,6 @@ ShoppingServiceHandler::ShoppingServiceHandler(
     ShoppingService* shopping_service,
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
-    const std::string& locale,
     std::unique_ptr<Delegate> delegate)
     : remote_page_(std::move(remote_page)),
       receiver_(this, std::move(receiver)),
@@ -238,13 +237,16 @@ ShoppingServiceHandler::ShoppingServiceHandler(
       shopping_service_(shopping_service),
       pref_service_(prefs),
       tracker_(tracker),
-      locale_(locale),
       delegate_(std::move(delegate)) {
   scoped_subscriptions_observation_.Observe(shopping_service_);
   scoped_bookmark_model_observation_.Observe(bookmark_model_);
   // It is safe to schedule updates and observe bookmarks. If the feature is
   // disabled, no new information will be fetched or provided to the frontend.
   shopping_service_->ScheduleSavedProductUpdate();
+
+  if (shopping_service_->GetAccountChecker()) {
+    locale_ = shopping_service_->GetAccountChecker()->GetLocale();
+  }
 }
 
 ShoppingServiceHandler::~ShoppingServiceHandler() = default;

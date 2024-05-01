@@ -14,6 +14,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
@@ -179,7 +180,10 @@ class ShoppingServiceHandlerTest : public testing::Test {
         std::make_unique<MockProductSpecificationsService>();
     bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+    account_checker_ = std::make_unique<MockAccountChecker>();
+    account_checker_->SetLocale("en-us");
     shopping_service_ = std::make_unique<MockShoppingService>();
+    shopping_service_->SetAccountChecker(account_checker_.get());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterPrefs(pref_service_->registry());
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
@@ -194,12 +198,13 @@ class ShoppingServiceHandlerTest : public testing::Test {
         mojo::PendingReceiver<
             shopping_service::mojom::ShoppingServiceHandler>(),
         bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
-        &tracker_, "en-us", std::move(delegate));
+        &tracker_, std::move(delegate));
   }
 
   MockPage page_;
   std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  std::unique_ptr<MockAccountChecker> account_checker_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingServiceHandler> handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -883,17 +888,21 @@ class ShoppingServiceHandlerFeatureDisableTest : public testing::Test {
  protected:
   void SetUp() override {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+    account_checker_ = std::make_unique<MockAccountChecker>();
+    account_checker_->SetLocale("en-us");
     shopping_service_ = std::make_unique<MockShoppingService>();
+    shopping_service_->SetAccountChecker(account_checker_.get());
     handler_ = std::make_unique<commerce::ShoppingServiceHandler>(
         page_.BindAndGetRemote(),
         mojo::PendingReceiver<
             shopping_service::mojom::ShoppingServiceHandler>(),
         bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
-        &tracker_, "en-us", nullptr);
+        &tracker_, nullptr);
   }
 
   MockPage page_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  std::unique_ptr<MockAccountChecker> account_checker_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingServiceHandler> handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
