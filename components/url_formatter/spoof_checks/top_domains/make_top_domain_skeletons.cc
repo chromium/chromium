@@ -7,6 +7,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -26,7 +27,7 @@
 
 const char* kTopBucketSeparator = "###END_TOP_BUCKET###";
 
-base::FilePath GetPath(base::StringPiece basename) {
+base::FilePath GetPath(std::string_view basename) {
   base::FilePath path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return path.Append(FILE_PATH_LITERAL("components"))
@@ -36,7 +37,7 @@ base::FilePath GetPath(base::StringPiece basename) {
       .AppendASCII(basename);
 }
 
-bool WriteToFile(const std::string& content, base::StringPiece basename) {
+bool WriteToFile(const std::string& content, std::string_view basename) {
   base::FilePath path = GetPath(basename);
   bool succeeded = base::WriteFile(path, content.data());
   if (!succeeded)
@@ -155,7 +156,7 @@ int GenerateSkeletons(const char* input_file_name,
       output += GenerateNormalOutputLine(skeletons, domain);
     }
 
-    std::vector<base::StringPiece> labels = base::SplitStringPiece(
+    std::vector<std::string_view> labels = base::SplitStringPiece(
         domain, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (labels.size() > max_labels) {
       domain_with_max_labels = domain;

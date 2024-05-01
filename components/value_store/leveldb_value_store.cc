@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -25,7 +26,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-using base::StringPiece;
+using std::string_view;
 
 namespace {
 
@@ -106,7 +107,7 @@ ValueStore::ReadResult LeveldbValueStore::Get() {
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
     std::string key = it->key().ToString();
     std::optional<base::Value> value = base::JSONReader::Read(
-        StringPiece(it->value().data(), it->value().size()));
+        std::string_view(it->value().data(), it->value().size()));
     if (!value) {
       return ReadResult(Status(CORRUPTION,
                                Delete(key).ok() ? VALUE_RESTORE_DELETE_SUCCESS

@@ -6,10 +6,10 @@
 
 #include <ostream>
 #include <queue>
+#include <string_view>
 
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
@@ -171,7 +171,7 @@ void SkeletonGenerator::MaybeRemoveDiacritics(icu::UnicodeString& hostname) {
 }
 
 std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
-    base::StringPiece16 hostname) {
+    std::u16string_view hostname) {
   size_t hostname_length = hostname.length() - (hostname.back() == '.' ? 1 : 0);
   icu::UnicodeString host(false, hostname.data(), hostname_length);
   MaybeRemoveDiacritics(host);
@@ -179,16 +179,16 @@ std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
 }
 
 bool SkeletonGenerator::ShouldComputeSupplementalHostnamesWithDiacritics(
-    base::StringPiece16 input_hostname) const {
+    std::u16string_view input_hostname) const {
   for (const char16_t c : characters_with_multiple_skeletons_with_diacritics_) {
-    if (input_hostname.find(c) != base::StringPiece16::npos) {
+    if (input_hostname.find(c) != std::u16string_view::npos) {
       return true;
     }
   }
   return false;
 }
 
-Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 input_hostname) {
+Skeletons SkeletonGenerator::GetSkeletons(std::u16string_view input_hostname) {
   // Generate supplemental hostnames for the input hostname with and without
   // diacritics. We do this to cover characters whose diacritic versions can
   // look like completely other characters, such as LATIN SMALL LETTER L WITH
@@ -272,7 +272,7 @@ void SkeletonGenerator::AddSkeletonMapping(const icu::UnicodeString& host,
 
 // static
 base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
-    base::StringPiece16 input,
+    std::u16string_view input,
     size_t max_alternatives,
     const SkeletonMap& mapping) {
   base::flat_set<std::u16string> output;

@@ -7,11 +7,11 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -58,7 +58,7 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   // Returns `nullptr` if value is not found or not a string.
   const std::string* FindStringPath(const AccountId& account_id,
-                                    base::StringPiece path) const;
+                                    std::string_view path) const;
 
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
@@ -72,7 +72,7 @@ class USER_MANAGER_EXPORT KnownUser final {
                      const std::string& in_value);
 
   std::optional<bool> FindBoolPath(const AccountId& account_id,
-                                   base::StringPiece path) const;
+                                   std::string_view path) const;
 
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
@@ -88,7 +88,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   // Return std::nullopt if the value is not found or doesn't have the int
   // type.
   std::optional<int> FindIntPath(const AccountId& account_id,
-                                 base::StringPiece path) const;
+                                 std::string_view path) const;
 
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.

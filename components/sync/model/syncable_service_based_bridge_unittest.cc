@@ -4,6 +4,7 @@
 
 #include "components/sync/model/syncable_service_based_bridge.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -41,7 +42,7 @@ using testing::Pair;
 using testing::Return;
 
 const ModelType kModelType = PREFERENCES;
-const base::StringPiece kSyncableServiceStartTimeHistogramName =
+const std::string_view kSyncableServiceStartTimeHistogramName =
     "Sync.SyncableServiceStartTime.PREFERENCE";
 
 sync_pb::EntitySpecifics GetTestSpecifics(const std::string& name = "name") {

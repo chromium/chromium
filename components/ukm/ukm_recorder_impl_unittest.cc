@@ -4,6 +4,8 @@
 
 #include "components/ukm/ukm_recorder_impl.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/task_environment.h"
@@ -197,7 +199,7 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
   TestUkmRecorder recorder;
   // Enable extension sync.
   recorder.SetIsWebstoreExtensionCallback(
-      base::BindRepeating([](base::StringPiece) { return true; }));
+      base::BindRepeating([](std::string_view) { return true; }));
 
   // Record some sources, events, and web features.
   SourceId id1 = ConvertToSourceId(1, SourceIdType::NAVIGATION_ID);

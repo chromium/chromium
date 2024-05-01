@@ -4,6 +4,7 @@
 
 #include "components/url_pattern_index/fuzzy_pattern_matching.h"
 
+#include <string_view>
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,8 +60,8 @@ TEST(SubresourceFilterFuzzyPatternMatchingTest, EndsWithFuzzy) {
 
 TEST(SubresourceFilterFuzzyPatternMatchingTest, FindFuzzy) {
   const struct {
-    base::StringPiece text;
-    base::StringPiece subpattern;
+    std::string_view text;
+    std::string_view subpattern;
     std::vector<size_t> expected_occurrences;
   } kTestCases[] = {
       {"abcd", "", {0, 1, 2, 3, 4}},
@@ -96,8 +97,9 @@ TEST(SubresourceFilterFuzzyPatternMatchingTest, FindFuzzy) {
     std::vector<size_t> occurrences;
     for (size_t position = 0; position <= test_case.text.size(); ++position) {
       position = FindFuzzy(test_case.text, test_case.subpattern, position);
-      if (position == base::StringPiece::npos)
+      if (position == std::string_view::npos) {
         break;
+      }
       occurrences.push_back(position);
     }
 

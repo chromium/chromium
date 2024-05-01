@@ -6,9 +6,9 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_LIFECYCLE_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo_result.h"
@@ -32,7 +32,7 @@ class FeaturePromoLifecycle {
   using PromoType = FeaturePromoSpecification::PromoType;
 
   FeaturePromoLifecycle(FeaturePromoStorageService* storage_service,
-                        const base::StringPiece& promo_key,
+                        std::string_view promo_key,
                         const base::Feature* iph_feature,
                         PromoType promo_type,
                         PromoSubtype promo_subtype,

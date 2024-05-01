@@ -4,6 +4,8 @@
 
 #include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
 
+#include <string_view>
+
 #include "net/base/lookup_string_in_fixed_set.h"
 
 namespace url_formatter {
@@ -23,7 +25,7 @@ DafsaParams g_dafsa_params{kDafsa, sizeof(kDafsa)};
 
 }  // namespace
 
-bool IsCommonWord(base::StringPiece word) {
+bool IsCommonWord(std::string_view word) {
   return net::LookupStringInFixedSet(g_dafsa_params.dafsa,
                                      g_dafsa_params.length, word.data(),
                                      word.size()) != net::kDafsaNotFound;

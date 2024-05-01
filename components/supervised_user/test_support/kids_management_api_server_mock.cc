@@ -5,10 +5,10 @@
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
@@ -22,7 +22,7 @@ namespace supervised_user {
 namespace {
 
 std::unique_ptr<net::test_server::HttpResponse> FromProtoData(
-    base::StringPiece data) {
+    std::string_view data) {
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HttpStatusCode::HTTP_OK);
@@ -41,7 +41,7 @@ kidsmanagement::ClassifyUrlResponse ClassifyUrlResponse(
 
 void SetHttpEndpointsForKidsManagementApis(
     base::test::ScopedFeatureList& feature_list,
-    base::StringPiece hostname) {
+    std::string_view hostname) {
   feature_list.InitAndEnableFeatureWithParameters(
       kSupervisedUserProtoFetcherConfig,
       {{"service_endpoint", base::StrCat({"http://", hostname})}});

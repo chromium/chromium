@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_URL_REWRITE_COMMON_URL_LOADER_THROTTLE_H_
 #define COMPONENTS_URL_REWRITE_COMMON_URL_LOADER_THROTTLE_H_
 
+#include <string_view>
+
 #include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -21,7 +23,7 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle {
   // A callback that checks if provided header is CORS exempt. The
   // implementation must be case-insensitive.
   using IsHeaderCorsExemptCallback =
-      base::RepeatingCallback<bool(base::StringPiece)>;
+      base::RepeatingCallback<bool(std::string_view)>;
 
   URLLoaderThrottle(scoped_refptr<UrlRequestRewriteRules> rules,
                     IsHeaderCorsExemptCallback is_header_cors_exempt_callback);

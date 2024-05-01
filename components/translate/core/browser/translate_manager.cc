@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -735,7 +735,7 @@ void TranslateManager::AddTargetLanguageToAcceptLanguages(
   std::vector<std::string> languages;
   prefs->GetLanguageList(&languages);
 
-  base::StringPiece target_language, tail;
+  std::string_view target_language, tail;
   // |target_language_code| should satisfy BCP47 and consist of a language code
   // and an optional region code joined by an hyphen.
   std::tie(target_language, tail) =

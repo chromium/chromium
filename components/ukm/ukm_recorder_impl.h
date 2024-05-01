@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "components/ukm/bitset.h"
 #include "components/ukm/ukm_consent_state.h"
@@ -71,7 +71,7 @@ class UkmDebugDataExtractor;
 
 class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   using IsWebstoreExtensionCallback =
-      base::RepeatingCallback<bool(base::StringPiece id)>;
+      base::RepeatingCallback<bool(std::string_view id)>;
 
  public:
   UkmRecorderImpl();

@@ -8,11 +8,11 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
 namespace trusted_vault {
@@ -71,7 +71,7 @@ GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url,
 
 std::string GetSecurityDomainPath(SecurityDomainId domain);
 std::optional<SecurityDomainId> GetSecurityDomainByName(
-    base::StringPiece domain);
+    std::string_view domain);
 
 }  // namespace trusted_vault
 

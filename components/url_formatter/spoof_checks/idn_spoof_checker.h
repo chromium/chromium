@@ -7,15 +7,14 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "net/extras/preload_data/decoder.h"
-
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
@@ -126,9 +125,9 @@ class IDNSpoofChecker {
   // - SafeToDisplayAsUnicode(L"аррӏе", "com", "com") -> kWholeScriptConfusable
   // - SafeToDisplayAsUnicode(L"аррӏе", "xn--p1ai", "рф") -> kSafe (xn--p1ai is
   //   the punycode form of рф)
-  Result SafeToDisplayAsUnicode(base::StringPiece16 label,
-                                base::StringPiece top_level_domain,
-                                base::StringPiece16 top_level_domain_unicode);
+  Result SafeToDisplayAsUnicode(std::u16string_view label,
+                                std::string_view top_level_domain,
+                                std::u16string_view top_level_domain_unicode);
 
   // Returns the matching top domain if |hostname| or the last few components of
   // |hostname| looks similar to one of top domains listed in domains.list.
@@ -140,11 +139,11 @@ class IDNSpoofChecker {
   //   top domains.
   //   2. Look up the diacritic-free version of |hostname| in the list of
   //   top domains. Note that non-IDN hostnames will not get here.
-  TopDomainEntry GetSimilarTopDomain(base::StringPiece16 hostname);
+  TopDomainEntry GetSimilarTopDomain(std::u16string_view hostname);
 
   // Returns skeleton strings computed from |hostname|. This function can apply
   // extra mappings to some characters to produce multiple skeletons.
-  Skeletons GetSkeletons(base::StringPiece16 hostname) const;
+  Skeletons GetSkeletons(std::u16string_view hostname) const;
 
   // Returns a top domain from the top 10K list matching the given |skeleton|.
   // If |without_separators| is set, the skeleton will be compared against
@@ -169,7 +168,7 @@ class IDNSpoofChecker {
   // https://www.unicode.org/reports/tr46/tr46-27.html#Table_Deviation_Characters
   // for details.
   IDNA2008DeviationCharacter GetDeviationCharacter(
-      base::StringPiece16 hostname) const;
+      std::u16string_view hostname) const;
 
   // Used for unit tests.
   static void SetTrieParamsForTesting(const HuffmanTrieParams& trie_params);
@@ -210,8 +209,8 @@ class IDNSpoofChecker {
   // empty if |tld| is not well formed punycode.
   static bool IsWholeScriptConfusableAllowedForTLD(
       const WholeScriptConfusable& script,
-      base::StringPiece tld,
-      base::StringPiece16 tld_unicode);
+      std::string_view tld,
+      std::u16string_view tld_unicode);
 
   // Sets allowed characters in IDN labels and turns on USPOOF_CHAR_LIMIT.
   void SetAllowedUnicodeSet(UErrorCode* status);

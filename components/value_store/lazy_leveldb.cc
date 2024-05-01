@@ -4,6 +4,8 @@
 
 #include "components/value_store/lazy_leveldb.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -13,7 +15,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
-using base::StringPiece;
+using std::string_view;
 
 namespace value_store {
 

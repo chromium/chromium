@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -118,7 +119,7 @@ HashAndTime UnpackProgressMarkerToken(const std::string& token) {
   // The hash is stored as a first piece of the string (space delimited), the
   // second piece is the timestamp.
   HashAndTime hash_and_time;
-  std::vector<base::StringPiece> pieces =
+  std::vector<std::string_view> pieces =
       base::SplitStringPiece(token, base::kWhitespaceASCII,
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   uint64_t micros_since_windows_epoch = 0;

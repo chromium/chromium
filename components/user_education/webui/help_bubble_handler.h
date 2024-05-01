@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -112,7 +113,7 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   ClientProvider* client_provider() { return client_provider_.get(); }
 
   // Override to use mojo error handling; defaults to NOTREACHED().
-  virtual void ReportBadMessage(base::StringPiece error);
+  virtual void ReportBadMessage(std::string_view error);
 
  private:
   friend class VisibilityProvider;
@@ -212,7 +213,7 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
   class ClientProvider;
   class VisibilityProvider;
 
-  void ReportBadMessage(base::StringPiece error) override;
+  void ReportBadMessage(std::string_view error) override;
 
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandler> receiver_;
   const raw_ptr<content::WebUIController> controller_;

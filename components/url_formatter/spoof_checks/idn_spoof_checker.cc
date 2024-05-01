@@ -6,13 +6,13 @@
 
 #include <bit>
 #include <cstdint>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -109,7 +109,7 @@ base::ThreadLocalStorage::Slot& DangerousPatternTLS() {
 // permit the Catalan character ela geminada to be expressed.
 // See https://tools.ietf.org/html/rfc5892#appendix-A.3 for details.
 bool HasUnsafeMiddleDot(const icu::UnicodeString& label_string,
-                        base::StringPiece top_level_domain) {
+                        std::string_view top_level_domain) {
   int last_index = 0;
   while (true) {
     int index = label_string.indexOf("·", last_index);
@@ -134,7 +134,7 @@ bool HasUnsafeMiddleDot(const icu::UnicodeString& label_string,
   return false;
 }
 
-bool IsSubdomainOf(base::StringPiece16 hostname,
+bool IsSubdomainOf(std::u16string_view hostname,
                    const std::u16string& top_domain) {
   DCHECK_NE(hostname, top_domain);
   DCHECK(!hostname.empty());
@@ -357,9 +357,9 @@ IDNSpoofChecker::~IDNSpoofChecker() {
 }
 
 IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
-    base::StringPiece16 label,
-    base::StringPiece top_level_domain,
-    base::StringPiece16 top_level_domain_unicode) {
+    std::u16string_view label,
+    std::string_view top_level_domain,
+    std::u16string_view top_level_domain_unicode) {
   UErrorCode status = U_ZERO_ERROR;
   int32_t result =
       uspoof_check(checker_, label.data(),
@@ -559,7 +559,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
 }
 
 TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
-    base::StringPiece16 hostname) {
+    std::u16string_view hostname) {
   DCHECK(!hostname.empty());
   for (const std::string& skeleton : GetSkeletons(hostname)) {
     DCHECK(!skeleton.empty());
@@ -580,7 +580,7 @@ TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
   return TopDomainEntry();
 }
 
-Skeletons IDNSpoofChecker::GetSkeletons(base::StringPiece16 hostname) const {
+Skeletons IDNSpoofChecker::GetSkeletons(std::u16string_view hostname) const {
   return skeleton_generator_ ? skeleton_generator_->GetSkeletons(hostname)
                              : Skeletons();
 }
@@ -631,17 +631,17 @@ std::u16string IDNSpoofChecker::MaybeRemoveDiacritics(
 }
 
 IDNA2008DeviationCharacter IDNSpoofChecker::GetDeviationCharacter(
-    base::StringPiece16 hostname) const {
-  if (hostname.find(u"\u00df") != base::StringPiece16::npos) {
+    std::u16string_view hostname) const {
+  if (hostname.find(u"\u00df") != std::u16string_view::npos) {
     return IDNA2008DeviationCharacter::kEszett;
   }
-  if (hostname.find(u"\u03c2") != base::StringPiece16::npos) {
+  if (hostname.find(u"\u03c2") != std::u16string_view::npos) {
     return IDNA2008DeviationCharacter::kGreekFinalSigma;
   }
-  if (hostname.find(u"\u200d") != base::StringPiece16::npos) {
+  if (hostname.find(u"\u200d") != std::u16string_view::npos) {
     return IDNA2008DeviationCharacter::kZeroWidthJoiner;
   }
-  if (hostname.find(u"\u200c") != base::StringPiece16::npos) {
+  if (hostname.find(u"\u200c") != std::u16string_view::npos) {
     return IDNA2008DeviationCharacter::kZeroWidthNonJoiner;
   }
   return IDNA2008DeviationCharacter::kNone;
@@ -761,8 +761,8 @@ bool IDNSpoofChecker::IsDigitLookalike(const icu::UnicodeString& label) {
 // static
 bool IDNSpoofChecker::IsWholeScriptConfusableAllowedForTLD(
     const WholeScriptConfusable& script,
-    base::StringPiece tld,
-    base::StringPiece16 tld_unicode) {
+    std::string_view tld,
+    std::u16string_view tld_unicode) {
   icu::UnicodeString tld_string(
       false /* isTerminated */, tld_unicode.data(),
       base::checked_cast<int32_t>(tld_unicode.size()));

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -62,7 +63,7 @@ bool IsNonStandardUrlScheme(const GURL& effective_url) {
 
 bool IsAlwaysAllowedHost(const GURL& effective_url) {
   // Allow navigations to allowed origins.
-  constexpr auto kAllowedHosts = base::MakeFixedFlatSet<base::StringPiece>(
+  constexpr auto kAllowedHosts = base::MakeFixedFlatSet<std::string_view>(
       {"accounts.google.com", "families.google.com", "familylink.google.com",
        "myaccount.google.com", "policies.google.com", "support.google.com"});
 
@@ -102,10 +103,10 @@ bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
   return effective_url.SchemeIs(url::kHttpsScheme) &&
          ((effective_url.host_piece() == kPlayStoreHostOld &&
            (effective_url.path_piece().find(kPlayTermsPathOld) !=
-            base::StringPiece::npos)) ||
+            std::string_view::npos)) ||
           (effective_url.host_piece() == kPlayStoreHostNew &&
            (effective_url.path_piece().find(kPlayTermsPathNew) !=
-            base::StringPiece::npos)));
+            std::string_view::npos)));
 }
 
 namespace {

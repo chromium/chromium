@@ -6,11 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -147,7 +147,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWord) {
   // A sorted list of languages. This must start sorted to get all possible
   // permutations.
   std::string languages = "el-GR,en-US,es-ES,ru-RU";
-  std::vector<base::StringPiece> permuted_languages = base::SplitStringPiece(
+  std::vector<std::string_view> permuted_languages = base::SplitStringPiece(
       languages, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   do {

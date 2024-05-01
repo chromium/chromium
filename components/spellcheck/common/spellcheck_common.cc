@@ -4,12 +4,13 @@
 
 #include "components/spellcheck/common/spellcheck_common.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/common/unicode/urename.h"
@@ -100,7 +101,7 @@ bool IsValidRegion(const std::string& region) {
 
 // This function returns the language-region version of language name.
 // e.g. returns hi-IN for hi.
-std::string GetSpellCheckLanguageRegion(base::StringPiece input_language) {
+std::string GetSpellCheckLanguageRegion(std::string_view input_language) {
   for (const auto& lang_region : kSupportedSpellCheckerLanguages) {
     if (lang_region.language == input_language)
       return lang_region.language_region;
@@ -109,7 +110,7 @@ std::string GetSpellCheckLanguageRegion(base::StringPiece input_language) {
   return std::string(input_language);
 }
 
-base::FilePath GetVersionedFileName(base::StringPiece input_language,
+base::FilePath GetVersionedFileName(std::string_view input_language,
                                     const base::FilePath& dict_dir) {
   // The default dictionary version is 3-0. This version indicates that the bdic
   // file contains a checksum.
@@ -165,7 +166,7 @@ base::FilePath GetVersionedFileName(base::StringPiece input_language,
   return dict_dir.AppendASCII(versioned_bdict_file_name);
 }
 
-std::string GetCorrespondingSpellCheckLanguage(base::StringPiece language) {
+std::string GetCorrespondingSpellCheckLanguage(std::string_view language) {
   std::string best_match;
   // Look for exact match in the Spell Check language list.
   for (const auto& lang_region : kSupportedSpellCheckerLanguages) {

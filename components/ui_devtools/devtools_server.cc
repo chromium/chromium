@@ -5,6 +5,7 @@
 #include "components/ui_devtools/devtools_server.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -174,7 +175,7 @@ void UiDevToolsServer::AttachClient(std::unique_ptr<UiDevToolsClient> client) {
 }
 
 void UiDevToolsServer::SendOverWebSocket(int connection_id,
-                                         base::StringPiece message) {
+                                         std::string_view message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
   server_->SendOverWebSocket(connection_id, message, tag_);
 }

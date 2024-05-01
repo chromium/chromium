@@ -19,11 +19,11 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 
@@ -182,13 +182,13 @@ void AppendFormattedHost(const GURL& url, std::u16string* output);
 //
 // The input should be the canonicalized ASCII host name from GURL. This
 // function does NOT accept UTF-8!
-std::u16string IDNToUnicode(base::StringPiece host);
+std::u16string IDNToUnicode(std::string_view host);
 
 // Same as IDNToUnicode, but disables spoof checks and returns more details.
 // In particular, it doesn't fall back to punycode if |host| fails spoof checks
 // in IDN spoof checker or is a lookalike of a top domain.
 // DO NOT use this for displaying URLs.
-IDNConversionResult UnsafeIDNToUnicodeWithDetails(base::StringPiece host);
+IDNConversionResult UnsafeIDNToUnicodeWithDetails(std::string_view host);
 
 // Strips a "www." prefix from |host| if present and if |host| is eligible.
 // |host| is only eligible for www-stripping if it is not a private or intranet
@@ -223,7 +223,7 @@ std::u16string MaybeRemoveDiacritics(const std::u16string& host);
 
 // Returns the first IDNA 2008 deviation character in the `hostname`, if any.
 // See idn_spoof_checker.h for details about deviation characters.
-IDNA2008DeviationCharacter GetDeviationCharacter(base::StringPiece16 hostname);
+IDNA2008DeviationCharacter GetDeviationCharacter(std::u16string_view hostname);
 
 }  // namespace url_formatter
 

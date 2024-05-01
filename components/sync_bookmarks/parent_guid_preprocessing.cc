@@ -5,11 +5,11 @@
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
 
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
@@ -71,7 +71,7 @@ base::Uuid TryGetParentGuidFromTracker(
   return tracked_parent->bookmark_node()->uuid();
 }
 
-base::StringPiece GetGuidForEntity(const syncer::EntityData& entity) {
+std::string_view GetGuidForEntity(const syncer::EntityData& entity) {
   // Special-case permanent folders, which may not include a GUID in specifics.
   if (entity.server_defined_unique_tag == kBookmarkBarTag) {
     return bookmarks::kBookmarkBarNodeUuid;
@@ -88,8 +88,8 @@ base::StringPiece GetGuidForEntity(const syncer::EntityData& entity) {
 }
 
 // Map from sync IDs (server-provided entity IDs) to GUIDs. The
-// returned map uses StringPiece that rely on the lifetime of the strings in
-// |updates|. |updates| must not be null.
+// returned map uses std::string_view that rely on the lifetime of the strings
+// in |updates|. |updates| must not be null.
 class LazySyncIdToGuidMapInUpdates {
  public:
   // |updates| must not be null and must outlive this object.
@@ -103,11 +103,11 @@ class LazySyncIdToGuidMapInUpdates {
   LazySyncIdToGuidMapInUpdates& operator=(const LazySyncIdToGuidMapInUpdates&) =
       delete;
 
-  base::StringPiece GetGuidForSyncId(const std::string& sync_id) {
+  std::string_view GetGuidForSyncId(const std::string& sync_id) {
     InitializeIfNeeded();
     auto it = sync_id_to_guid_map_.find(sync_id);
     if (it == sync_id_to_guid_map_.end()) {
-      return base::StringPiece();
+      return std::string_view();
     }
     return it->second;
   }
@@ -119,7 +119,7 @@ class LazySyncIdToGuidMapInUpdates {
     }
     initialized_ = true;
     for (const syncer::UpdateResponseData& update : *updates_) {
-      base::StringPiece guid = GetGuidForEntity(update.entity);
+      std::string_view guid = GetGuidForEntity(update.entity);
       if (!update.entity.id.empty() && !guid.empty()) {
         const bool success =
             sync_id_to_guid_map_.emplace(update.entity.id, guid).second;
@@ -130,7 +130,7 @@ class LazySyncIdToGuidMapInUpdates {
 
   const raw_ptr<const syncer::UpdateResponseDataList> updates_;
   bool initialized_ = false;
-  std::unordered_map<base::StringPiece, base::StringPiece> sync_id_to_guid_map_;
+  std::unordered_map<std::string_view, std::string_view> sync_id_to_guid_map_;
 };
 
 base::Uuid GetParentGuidForUpdate(

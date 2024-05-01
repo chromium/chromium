@@ -6,9 +6,9 @@
 #define COMPONENTS_URL_PATTERN_INDEX_URL_RULE_TEST_SUPPORT_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "components/url_pattern_index/url_pattern.h"
 
@@ -70,7 +70,7 @@ void AddRequestDomains(const std::vector<std::string>& request_domains,
 
 // Returns the url::Origin parsed from |origin_string|, or the unique origin if
 // the string is empty.
-url::Origin GetOrigin(base::StringPiece origin_string);
+url::Origin GetOrigin(std::string_view origin_string);
 
 // Returns whether |url| is third-party resource w.r.t. |first_party_origin|.
 bool IsThirdParty(const GURL& url, const url::Origin& first_party_origin);

@@ -74,7 +74,7 @@ int HttpStatusOrNetError(const network::SimpleURLLoader& loader) {
 
 std::string CreateAuthorizationHeader(
     const signin::AccessTokenInfo& access_token_info) {
-  // Do not use StringPiece with StringPrintf, see crbug/1444165
+  // Do not use std::string_view with StringPrintf, see crbug/1444165
   return base::StrCat({kAuthorizationHeader, " ", access_token_info.token});
 }
 

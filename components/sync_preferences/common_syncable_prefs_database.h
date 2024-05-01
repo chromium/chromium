@@ -6,8 +6,8 @@
 #define COMPONENTS_SYNC_PREFERENCES_COMMON_SYNCABLE_PREFS_DATABASE_H_
 
 #include <map>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace sync_preferences {
@@ -31,7 +31,7 @@ class CommonSyncablePrefsDatabase : public SyncablePrefsDatabase {
   std::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
       const std::string& pref_name) const override;
 
-  std::map<base::StringPiece, SyncablePrefMetadata> GetAllSyncablePrefsForTest()
+  std::map<std::string_view, SyncablePrefMetadata> GetAllSyncablePrefsForTest()
       const;
 };
 

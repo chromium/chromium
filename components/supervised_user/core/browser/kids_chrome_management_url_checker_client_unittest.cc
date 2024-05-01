@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -103,13 +103,13 @@ class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
   }
 
   // Asynchronously checks the URL and waits until finished.
-  void CheckUrl(base::StringPiece url) {
+  void CheckUrl(std::string_view url) {
     StartCheckUrl(url);
     task_environment_.RunUntilIdle();
   }
 
   // Starts a URL check, but doesn't wait for ClassifyURL() to finish.
-  void CheckUrlWithoutResponse(base::StringPiece url) { StartCheckUrl(url); }
+  void CheckUrlWithoutResponse(std::string_view url) { StartCheckUrl(url); }
 
   MOCK_METHOD2(OnCheckDone,
                void(const GURL& url,
@@ -120,7 +120,7 @@ class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 
  private:
-  void StartCheckUrl(base::StringPiece url) {
+  void StartCheckUrl(std::string_view url) {
     url_classifier_->CheckURL(
         GURL(url),
         base::BindOnce(&KidsChromeManagementURLCheckerClientTest::OnCheckDone,

@@ -5,6 +5,7 @@
 #include "components/url_rewrite/common/url_loader_throttle.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -95,9 +96,8 @@ void ApplyAppendToQuery(
   request->url = request->url.ReplaceComponents(replacements);
 }
 
-bool HostMatches(const base::StringPiece& url_host,
-                 const base::StringPiece& rule_host) {
-  const base::StringPiece kWildcard("*.");
+bool HostMatches(std::string_view url_host, std::string_view rule_host) {
+  const std::string_view kWildcard("*.");
   if (base::StartsWith(rule_host, kWildcard, base::CompareCase::SENSITIVE)) {
     if (base::EndsWith(url_host, rule_host.substr(1),
                        base::CompareCase::SENSITIVE)) {
@@ -117,7 +117,7 @@ bool RuleFiltersMatchUrl(const GURL& url,
                          const mojom::UrlRequestRulePtr& rule) {
   if (rule->hosts_filter) {
     bool found = false;
-    for (const base::StringPiece host : rule->hosts_filter.value()) {
+    for (const std::string_view host : rule->hosts_filter.value()) {
       if ((found = HostMatches(url.host(), host)))
         break;
     }

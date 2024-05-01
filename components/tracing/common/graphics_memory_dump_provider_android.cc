@@ -13,12 +13,13 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include <string_view>
+
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/trace_event/process_memory_dump.h"
 
@@ -111,10 +112,10 @@ void GraphicsMemoryDumpProvider::ParseResponseAndAddToDump(
   while (true) {
     if (!tokenizer.GetNext())
       break;
-    base::StringPiece row_name = tokenizer.token_piece();
+    std::string_view row_name = tokenizer.token_piece();
     if (!tokenizer.GetNext())
       break;
-    base::StringPiece value_str = tokenizer.token_piece();
+    std::string_view value_str = tokenizer.token_piece();
     int64_t value;
     if (!base::StringToInt64(value_str, &value) || value < 0)
       continue;  // Skip invalid or negative values.

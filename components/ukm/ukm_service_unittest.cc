@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -140,7 +140,7 @@ class TestMetricsServiceClientWithClonedInstallDetector
 
 namespace {
 
-bool TestIsWebstoreExtension(base::StringPiece id) {
+bool TestIsWebstoreExtension(std::string_view id) {
   return (id == "bhcnanendmgjjeghamaccjnochlnhcgj");
 }
 

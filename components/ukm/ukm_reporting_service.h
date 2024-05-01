@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "components/metrics/reporting_service.h"
 #include "components/metrics/unsent_log_store.h"
@@ -54,7 +55,7 @@ class UkmReportingService : public metrics::ReportingService {
   GURL GetUploadUrl() const override;
   // Returns an empty string since retrying over HTTP is not enabled for UKM
   GURL GetInsecureUploadUrl() const override;
-  base::StringPiece upload_mime_type() const override;
+  std::string_view upload_mime_type() const override;
   metrics::MetricsLogUploader::MetricServiceType service_type() const override;
   void LogCellularConstraint(bool upload_canceled) override;
   void LogResponseOrErrorCode(int response_code,

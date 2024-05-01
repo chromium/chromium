@@ -21,7 +21,7 @@
 
 #include <stddef.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace url_pattern_index {
 
@@ -54,15 +54,15 @@ inline bool IsSeparator(char c) {
 }
 
 // Returns whether |text| starts with a fuzzy occurrence of |subpattern|.
-bool StartsWithFuzzy(base::StringPiece text, base::StringPiece subpattern);
+bool StartsWithFuzzy(std::string_view text, std::string_view subpattern);
 
 // Returns whether |text| ends with a fuzzy occurrence of |subpattern|.
-bool EndsWithFuzzy(base::StringPiece text, base::StringPiece subpattern);
+bool EndsWithFuzzy(std::string_view text, std::string_view subpattern);
 
 // Returns the position of the leftmost fuzzy occurrence of a |subpattern| in
 // the |text| starting no earlier than |from| the specified position.
-size_t FindFuzzy(base::StringPiece text,
-                 base::StringPiece subpattern,
+size_t FindFuzzy(std::string_view text,
+                 std::string_view subpattern,
                  size_t from = 0);
 
 }  // namespace url_pattern_index

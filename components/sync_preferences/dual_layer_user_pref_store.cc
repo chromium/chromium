@@ -6,13 +6,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -130,7 +130,7 @@ bool DualLayerUserPrefStore::IsInitializationComplete() const {
          account_pref_store_->IsInitializationComplete();
 }
 
-bool DualLayerUserPrefStore::GetValue(base::StringPiece key,
+bool DualLayerUserPrefStore::GetValue(std::string_view key,
                                       const base::Value** result) const {
   const std::string pref_name(key);
   if (!ShouldGetValueFromAccountStore(pref_name)) {

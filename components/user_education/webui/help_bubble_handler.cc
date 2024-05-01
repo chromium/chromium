@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/check.h"
@@ -176,7 +177,7 @@ help_bubble::mojom::HelpBubbleClient* HelpBubbleHandlerBase::GetClient() {
   return client_provider_->GetClient();
 }
 
-void HelpBubbleHandlerBase::ReportBadMessage(base::StringPiece error) {
+void HelpBubbleHandlerBase::ReportBadMessage(std::string_view error) {
   NOTREACHED() << error;
 }
 
@@ -591,7 +592,7 @@ content::WebUIController* HelpBubbleHandler::GetController() {
   return controller_;
 }
 
-void HelpBubbleHandler::ReportBadMessage(base::StringPiece error) {
+void HelpBubbleHandler::ReportBadMessage(std::string_view error) {
   receiver_.ReportBadMessage(std::move(error));
 }
 

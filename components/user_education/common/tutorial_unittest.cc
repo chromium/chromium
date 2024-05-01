@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -537,7 +538,7 @@ TEST_F(TutorialTest, TutorialWithNamedElement) {
       TutorialDescription::HiddenStep::WaitForShown(kElementName2)
           .NameElements(base::BindRepeating(
               [](ui::InteractionSequence* sequence, ui::TrackedElement* el) {
-                sequence->NameElement(el, base::StringPiece(kElementName3));
+                sequence->NameElement(el, std::string_view(kElementName3));
                 return true;
               })));
   description.steps.emplace_back(TutorialDescription::BubbleStep(kElementName3)

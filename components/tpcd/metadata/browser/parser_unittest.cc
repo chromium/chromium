@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -68,7 +69,7 @@ class ParserTest : public ::testing::Test {
 
   void ResetFeature() { scoped_feature_list_.Reset(); }
 
-  void ExecFakeComponentInstallation(base::StringPiece contents) {
+  void ExecFakeComponentInstallation(std::string_view contents) {
     base::FilePath path =
         fake_install_dir_.GetPath().Append(kComponentFileName);
     CHECK(base::WriteFile(path, contents));

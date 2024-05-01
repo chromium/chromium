@@ -4,6 +4,8 @@
 
 #include "components/user_notes/storage/user_note_database.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
 #include "sql/error_delegate_util.h"
@@ -95,7 +97,7 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
       DCHECK_EQ(3, statement.ColumnCount());
 
       std::string id = statement.ColumnString(0);
-      base::StringPiece string_piece(id);
+      std::string_view string_piece(id);
       uint64_t high = 0;
       uint64_t low = 0;
       if (!base::HexStringToUInt64(string_piece.substr(0, 16), &high) ||

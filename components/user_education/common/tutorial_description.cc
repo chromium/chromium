@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/tutorial_description.h"
 
+#include <string_view>
 #include <variant>
 
 #include "components/user_education/common/events.h"
@@ -50,7 +51,7 @@ TutorialDescription::Step& TutorialDescription::Step::NameElement(
   return NameElements(base::BindRepeating(
       [](std::string name, ui::InteractionSequence* sequence,
          ui::TrackedElement* element) {
-        sequence->NameElement(element, base::StringPiece(name));
+        sequence->NameElement(element, std::string_view(name));
         return true;
       },
       name));

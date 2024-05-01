@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,7 +37,7 @@ const char kMobilePrefix[] = "m.";
 constexpr size_t kMobilePrefixLength = 2;
 
 IDNConversionResult IDNToUnicodeWithAdjustments(
-    base::StringPiece host,
+    std::string_view host,
     base::OffsetAdjuster::Adjustments* adjustments);
 
 // Result of converting a single IDN component (i.e. label) to unicode.
@@ -51,9 +51,9 @@ struct ComponentResult {
 };
 
 ComponentResult IDNToUnicodeOneComponent(
-    base::StringPiece16 comp,
-    base::StringPiece top_level_domain,
-    base::StringPiece16 top_level_domain_unicode,
+    std::u16string_view comp,
+    std::string_view top_level_domain,
+    std::u16string_view top_level_domain_unicode,
     bool ignore_spoof_check_results,
     std::u16string* out);
 
@@ -238,7 +238,7 @@ std::u16string FormatViewSourceUrl(
     size_t* prefix_end,
     base::OffsetAdjuster::Adjustments* adjustments) {
   DCHECK(new_parsed);
-  static constexpr base::StringPiece16 kViewSource = u"view-source:";
+  static constexpr std::u16string_view kViewSource = u"view-source:";
 
   // The URL embedded within view-source should never have destructive elisions
   // applied to it. Users of view-source likely want to see the full URL.
@@ -281,12 +281,13 @@ base::LazyInstance<IDNSpoofChecker>::Leaky g_idn_spoof_checker =
 // Computes the top level domain from |host|. top_level_domain_unicode will
 // contain the unicode version of top_level_domain. top_level_domain_unicode can
 // remain empty if the TLD is not well formed punycode.
-void GetTopLevelDomain(base::StringPiece host,
-                       base::StringPiece* top_level_domain,
+void GetTopLevelDomain(std::string_view host,
+                       std::string_view* top_level_domain,
                        std::u16string* top_level_domain_unicode) {
   size_t last_dot = host.rfind('.');
-  if (last_dot == base::StringPiece::npos)
+  if (last_dot == std::string_view::npos) {
     return;
+  }
 
   *top_level_domain = host.substr(last_dot + 1);
   std::u16string tld16;
@@ -301,7 +302,7 @@ void GetTopLevelDomain(base::StringPiece host,
 }
 
 IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
-    base::StringPiece host,
+    std::string_view host,
     base::OffsetAdjuster::Adjustments* adjustments,
     bool ignore_spoof_check_results) {
   if (adjustments)
@@ -312,7 +313,7 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
   host16.insert(host16.end(), host.begin(), host.end());
 
   // Compute the top level domain to be used in spoof checks later.
-  base::StringPiece top_level_domain;
+  std::string_view top_level_domain;
   std::u16string top_level_domain_unicode;
   GetTopLevelDomain(host, &top_level_domain, &top_level_domain_unicode);
 
@@ -374,14 +375,14 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
 // TODO(brettw): We may want to skip this step in the case of file URLs to
 // allow unicode UNC hostnames regardless of encodings.
 IDNConversionResult IDNToUnicodeWithAdjustments(
-    base::StringPiece host,
+    std::string_view host,
     base::OffsetAdjuster::Adjustments* adjustments) {
   return IDNToUnicodeWithAdjustmentsImpl(host, adjustments,
                                          /*ignore_spoof_check_results=*/false);
 }
 
 IDNConversionResult UnsafeIDNToUnicodeWithAdjustments(
-    base::StringPiece host,
+    std::string_view host,
     base::OffsetAdjuster::Adjustments* adjustments) {
   return IDNToUnicodeWithAdjustmentsImpl(host, adjustments,
                                          /*ignore_spoof_check_results=*/true);
@@ -392,9 +393,9 @@ IDNConversionResult UnsafeIDNToUnicodeWithAdjustments(
 // all even though it's possible to make up look-alike labels with ASCII
 // characters alone.
 IDNSpoofChecker::Result SpoofCheckIDNComponent(
-    base::StringPiece16 label,
-    base::StringPiece top_level_domain,
-    base::StringPiece16 top_level_domain_unicode) {
+    std::u16string_view label,
+    std::string_view top_level_domain,
+    std::u16string_view top_level_domain_unicode) {
   return g_idn_spoof_checker.Get().SafeToDisplayAsUnicode(
       label, top_level_domain, top_level_domain_unicode);
 }
@@ -446,9 +447,9 @@ base::LazyInstance<UIDNAWrapper>::Leaky g_uidna = LAZY_INSTANCE_INITIALIZER;
 // if conversion was made. Sets |has_idn_component| to true if the input has
 // IDN, regardless of whether it was converted to unicode or not.
 ComponentResult IDNToUnicodeOneComponent(
-    base::StringPiece16 comp,
-    base::StringPiece top_level_domain,
-    base::StringPiece16 top_level_domain_unicode,
+    std::u16string_view comp,
+    std::string_view top_level_domain,
+    std::u16string_view top_level_domain_unicode,
     bool ignore_spoof_check_results,
     std::u16string* out) {
   DCHECK(out);
@@ -489,7 +490,7 @@ ComponentResult IDNToUnicodeOneComponent(
     // be safely displayed to the user.
     out->resize(original_length + output_length);
     result.spoof_check_result = SpoofCheckIDNComponent(
-        base::StringPiece16(out->data() + original_length,
+        std::u16string_view(out->data() + original_length,
                             base::checked_cast<size_t>(output_length)),
         top_level_domain, top_level_domain_unicode);
     DCHECK_NE(IDNSpoofChecker::Result::kNone, result.spoof_check_result);
@@ -510,7 +511,7 @@ ComponentResult IDNToUnicodeOneComponent(
 // Returns true iff URL-parsing `spec` would reveal that it has the
 // "view-source" scheme, and that parsing the spec minus that scheme also has
 // the "view-source" scheme.
-bool HasTwoViewSourceSchemes(base::StringPiece spec) {
+bool HasTwoViewSourceSchemes(std::string_view spec) {
   static constexpr char kViewSource[] = "view-source";
   url::Component scheme;
   if (!url::FindAndCompareScheme(spec.data(),
@@ -596,7 +597,7 @@ std::u16string FormatUrlWithAdjustments(
   // Special handling for view-source:. Don't use content::kViewSourceScheme
   // because this library shouldn't depend on chrome. Reject repeated
   // view-source schemes to avoid recursion.
-  static constexpr base::StringPiece kViewSource = "view-source";
+  static constexpr std::string_view kViewSource = "view-source";
   if (url.SchemeIs(kViewSource) &&
       !HasTwoViewSourceSchemes(url.possibly_invalid_spec())) {
     return FormatViewSourceUrl(url, format_types, unescape_rules, new_parsed,
@@ -788,11 +789,11 @@ void AppendFormattedHost(const GURL& url, std::u16string* output) {
       HostComponentTransform(false, false), output, nullptr, nullptr);
 }
 
-IDNConversionResult UnsafeIDNToUnicodeWithDetails(base::StringPiece host) {
+IDNConversionResult UnsafeIDNToUnicodeWithDetails(std::string_view host) {
   return UnsafeIDNToUnicodeWithAdjustments(host, nullptr);
 }
 
-std::u16string IDNToUnicode(base::StringPiece host) {
+std::u16string IDNToUnicode(std::string_view host) {
   return IDNToUnicodeWithAdjustments(host, nullptr).result;
 }
 
@@ -840,7 +841,7 @@ std::u16string MaybeRemoveDiacritics(const std::u16string& host) {
   return g_idn_spoof_checker.Get().MaybeRemoveDiacritics(host);
 }
 
-IDNA2008DeviationCharacter GetDeviationCharacter(base::StringPiece16 hostname) {
+IDNA2008DeviationCharacter GetDeviationCharacter(std::u16string_view hostname) {
   return g_idn_spoof_checker.Get().GetDeviationCharacter(hostname);
 }
 

@@ -8,11 +8,11 @@
 #include <stddef.h>
 
 #include <iterator>
+#include <string_view>
 #include <type_traits>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace url_pattern_index {
@@ -49,7 +49,7 @@ class NGramExtractor {
     // Creates an iterator, which points to the leftmost valid N-gram within the
     // |extractor|'s string, starting from |head|.
     Iterator(const NGramExtractor& extractor,
-             base::StringPiece::const_iterator head)
+             std::string_view::const_iterator head)
         : extractor_(extractor), head_(head), end_(extractor.string_.end()) {
       DCHECK(head >= extractor_->string_.begin());
       DCHECK(head <= end_);
@@ -105,9 +105,9 @@ class NGramExtractor {
     const raw_ref<const NGramExtractor> extractor_;
 
     // Always points to the last character included in the current |ngram_|.
-    base::StringPiece::const_iterator head_;
+    std::string_view::const_iterator head_;
     // Always points to extractor_.string_.end().
-    base::StringPiece::const_iterator end_;
+    std::string_view::const_iterator end_;
 
     // Contains the N-gram currently pointed to by the iterator. Undefined if
     // the iterator is at the end.
@@ -117,7 +117,7 @@ class NGramExtractor {
   // Constructs an extractor for iterating over N-grams contained in the
   // |string|. |is_separator| is used to determine whether a certain character
   // is a separator and should not be contained in an N-gram.
-  NGramExtractor(base::StringPiece string, IsSeparator is_separator)
+  NGramExtractor(std::string_view string, IsSeparator is_separator)
       : string_(string), is_separator_(is_separator) {}
 
   Iterator begin() const { return Iterator(*this, string_.begin()); }
@@ -129,7 +129,7 @@ class NGramExtractor {
   static_assert(N > 0u, "N should be positive.");
   static_assert(N <= sizeof(NGramType), "N-gram doesn't fit into the type.");
 
-  base::StringPiece string_;
+  std::string_view string_;
   IsSeparator is_separator_;
 };
 
@@ -149,7 +149,7 @@ template <size_t N,
           NGramCaseExtraction CasePolicy,
           typename IsSeparator>
 NGramExtractor<N, NGramType, CasePolicy, IsSeparator> CreateNGramExtractor(
-    base::StringPiece string,
+    std::string_view string,
     IsSeparator is_separator) {
   return NGramExtractor<N, NGramType, CasePolicy, IsSeparator>(string,
                                                                is_separator);

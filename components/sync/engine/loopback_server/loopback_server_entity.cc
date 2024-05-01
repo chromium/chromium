@@ -5,12 +5,12 @@
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 
 #include <limits>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -132,7 +132,7 @@ std::string LoopbackServerEntity::GetTopLevelId(const ModelType& model_type) {
 
 // static
 ModelType LoopbackServerEntity::GetModelTypeFromId(const string& id) {
-  vector<base::StringPiece> tokens = base::SplitStringPiece(
+  vector<std::string_view> tokens = base::SplitStringPiece(
       id, kIdSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   int field_number;
@@ -145,7 +145,7 @@ ModelType LoopbackServerEntity::GetModelTypeFromId(const string& id) {
 
 // static
 std::string LoopbackServerEntity::GetInnerIdFromId(const std::string& id) {
-  vector<base::StringPiece> tokens = base::SplitStringPiece(
+  vector<std::string_view> tokens = base::SplitStringPiece(
       id, kIdSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if (tokens.size() != 2) {

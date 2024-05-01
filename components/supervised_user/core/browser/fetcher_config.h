@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -38,7 +37,7 @@ struct AccessTokenConfig {
   std::optional<signin::PrimaryAccountAccessTokenFetcher::Mode> mode;
 
   // The OAuth 2.0 permission scope to request the authorization token.
-  base::StringPiece oauth2_scope;
+  std::string_view oauth2_scope;
 };
 
 // Configuration bundle for the ProtoFetcher.

@@ -8,6 +8,7 @@
 #include <limits>
 #include <map>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -82,7 +83,7 @@ class ProgressMarkerToken {
 
   static ProgressMarkerToken FromString(const std::string& s) {
     DCHECK(!s.empty());
-    const vector<base::StringPiece> splits = base::SplitStringPiece(
+    const vector<std::string_view> splits = base::SplitStringPiece(
         s, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (splits.size() != 2) {
       ProgressMarkerToken token;

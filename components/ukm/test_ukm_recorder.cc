@@ -5,6 +5,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 
 #include <iterator>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
@@ -74,14 +75,14 @@ const ukm::mojom::UkmEntry* TestUkmRecorder::GetDocumentCreatedEntryForSourceId(
 }
 
 void TestUkmRecorder::SetOnAddEntryCallback(
-    base::StringPiece entry_name,
+    std::string_view entry_name,
     base::RepeatingClosure on_add_entry) {
   on_add_entry_ = std::move(on_add_entry);
   entry_hash_to_wait_for_ = base::HashMetricName(entry_name);
 }
 
 std::vector<raw_ptr<const mojom::UkmEntry, VectorExperimental>>
-TestUkmRecorder::GetEntriesByName(base::StringPiece entry_name) const {
+TestUkmRecorder::GetEntriesByName(std::string_view entry_name) const {
   uint64_t hash = base::HashMetricName(entry_name);
   std::vector<raw_ptr<const mojom::UkmEntry, VectorExperimental>> result;
   for (const auto& it : entries()) {
@@ -92,7 +93,7 @@ TestUkmRecorder::GetEntriesByName(base::StringPiece entry_name) const {
 }
 
 std::map<ukm::SourceId, mojom::UkmEntryPtr>
-TestUkmRecorder::GetMergedEntriesByName(base::StringPiece entry_name) const {
+TestUkmRecorder::GetMergedEntriesByName(std::string_view entry_name) const {
   uint64_t hash = base::HashMetricName(entry_name);
   std::map<ukm::SourceId, mojom::UkmEntryPtr> result;
   for (const auto& it : entries()) {
@@ -117,13 +118,13 @@ void TestUkmRecorder::ExpectEntrySourceHasUrl(const mojom::UkmEntry* entry,
 
 // static
 bool TestUkmRecorder::EntryHasMetric(const mojom::UkmEntry* entry,
-                                     base::StringPiece metric_name) {
+                                     std::string_view metric_name) {
   return GetEntryMetric(entry, metric_name) != nullptr;
 }
 
 // static
 const int64_t* TestUkmRecorder::GetEntryMetric(const mojom::UkmEntry* entry,
-                                               base::StringPiece metric_name) {
+                                               std::string_view metric_name) {
   uint64_t hash = base::HashMetricName(metric_name);
   const auto it = entry->metrics.find(hash);
   if (it != entry->metrics.end())
@@ -133,7 +134,7 @@ const int64_t* TestUkmRecorder::GetEntryMetric(const mojom::UkmEntry* entry,
 
 // static
 void TestUkmRecorder::ExpectEntryMetric(const mojom::UkmEntry* entry,
-                                        base::StringPiece metric_name,
+                                        std::string_view metric_name,
                                         int64_t expected_value) {
   const int64_t* metric = GetEntryMetric(entry, metric_name);
   if (metric == nullptr) {

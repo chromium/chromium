@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -268,13 +270,13 @@ void CorrectLanguageCodeTypo(std::string* code) {
 bool IsValidLanguageCode(const std::string& code) {
   // Roughly check if the language code follows /[a-zA-Z]{2,3}(-[a-zA-Z]{2})?/.
   // TODO(hajimehoshi): How about es-419, which is used as an Accept language?
-  std::vector<base::StringPiece> chunks = base::SplitStringPiece(
+  std::vector<std::string_view> chunks = base::SplitStringPiece(
       code, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (chunks.size() < 1 || 2 < chunks.size())
     return false;
 
-  const base::StringPiece& main_code = chunks[0];
+  std::string_view main_code = chunks[0];
 
   if (main_code.size() < 1 || 3 < main_code.size())
     return false;
@@ -287,7 +289,7 @@ bool IsValidLanguageCode(const std::string& code) {
   if (chunks.size() == 1)
     return true;
 
-  const base::StringPiece& sub_code = chunks[1];
+  std::string_view sub_code = chunks[1];
 
   if (sub_code.size() != 2)
     return false;

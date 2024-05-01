@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
@@ -26,7 +26,7 @@ namespace supervised_user {
 // endpoint. See supervised_user::FetcherConfig::service_endpoint for details.
 void SetHttpEndpointsForKidsManagementApis(
     base::test::ScopedFeatureList& feature_list,
-    base::StringPiece hostname);
+    std::string_view hostname);
 
 // Component of `KidsManagementApiServerMock`. Implements ClassifyUrl as both
 // mock and fake, allowing to account the calls but also providing a default
@@ -57,8 +57,8 @@ class KidsManagementClassifyUrlMock {
 class KidsManagementApiServerMock {
  public:
   // Introduce a signature that is nicer to use with gtest/gmock expectations.
-  using RequestMonitor = void(base::StringPiece request_path,
-                              base::StringPiece request_content);
+  using RequestMonitor = void(std::string_view request_path,
+                              std::string_view request_content);
 
   KidsManagementApiServerMock();
   KidsManagementApiServerMock(KidsManagementApiServerMock&& other) = delete;

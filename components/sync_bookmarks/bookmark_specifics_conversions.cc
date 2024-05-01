@@ -5,6 +5,7 @@
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -546,7 +547,7 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
   }
 
   // Verify all keys in meta_info are unique.
-  std::unordered_set<base::StringPiece> keys;
+  std::unordered_set<std::string_view> keys;
   for (const sync_pb::MetaInfo& meta_info : specifics.meta_info()) {
     if (!keys.insert(meta_info.key()).second) {
       DLOG(ERROR) << "Invalid bookmark: keys in meta_info aren't unique.";

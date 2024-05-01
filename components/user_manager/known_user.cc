@@ -8,13 +8,13 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
@@ -147,7 +147,7 @@ const char* kObsoleteKeys[] = {
 // Checks for platform-specific known users matching given |user_email|. If
 // data matches a known account, returns it.
 std::optional<AccountId> GetPlatformKnownUserId(
-    const base::StringPiece user_email) {
+    const std::string_view user_email) {
   if (user_email == kStubUserEmail) {
     return StubAccountId();
   }
@@ -230,7 +230,7 @@ void KnownUser::SetPath(const AccountId& account_id,
 }
 
 const std::string* KnownUser::FindStringPath(const AccountId& account_id,
-                                             base::StringPiece path) const {
+                                             std::string_view path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
     return nullptr;
@@ -254,7 +254,7 @@ void KnownUser::SetStringPref(const AccountId& account_id,
 }
 
 std::optional<bool> KnownUser::FindBoolPath(const AccountId& account_id,
-                                            base::StringPiece path) const {
+                                            std::string_view path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
     return std::nullopt;
@@ -279,7 +279,7 @@ void KnownUser::SetBooleanPref(const AccountId& account_id,
 }
 
 std::optional<int> KnownUser::FindIntPath(const AccountId& account_id,
-                                          base::StringPiece path) const {
+                                          std::string_view path) const {
   const base::Value::Dict* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
     return std::nullopt;

@@ -5,11 +5,11 @@
 #include "components/storage_monitor/storage_info_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/removable_device_constants.h"
@@ -26,7 +26,7 @@ const char kRootPath[] = "/";
 // E.g. If the |storage_name| is "usb:2,2:65537", the storage identifier is
 // "65537".
 std::string GetStorageIdFromStorageName(const std::string& storage_name) {
-  std::vector<base::StringPiece> name_parts = base::SplitStringPiece(
+  std::vector<std::string_view> name_parts = base::SplitStringPiece(
       storage_name, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   return name_parts.size() == 3 ? std::string(name_parts[2]) : std::string();
 }

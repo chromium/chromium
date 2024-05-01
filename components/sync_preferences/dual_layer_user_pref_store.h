@@ -8,13 +8,13 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/value_map_pref_store.h"
 #include "components/sync/base/model_type.h"
@@ -78,7 +78,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   void RemoveObserver(Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
-  bool GetValue(base::StringPiece key,
+  bool GetValue(std::string_view key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
 

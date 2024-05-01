@@ -4,6 +4,8 @@
 
 #include "components/sync/base/sync_util.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -59,7 +61,7 @@ std::string FormatUserAgentForSync(const std::string& system,
   #ifndef SYNC_USER_AGENT_PRODUCT
   #error SYNC_USER_AGENT_PRODUCT not defined, check BUILD.gn.
   #endif
-  constexpr base::StringPiece kProduct = STRINGIZE(SYNC_USER_AGENT_PRODUCT);
+  constexpr std::string_view kProduct = STRINGIZE(SYNC_USER_AGENT_PRODUCT);
   return base::StrCat(
       {kProduct, " ", system, version_info::GetVersionNumber(), " (",
        version_info::GetLastChange(), ")",

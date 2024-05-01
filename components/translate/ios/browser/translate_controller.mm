@@ -5,13 +5,13 @@
 #import "components/translate/ios/browser/translate_controller.h"
 
 #include <cmath>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/string_escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/translate/core/common/translate_util.h"
@@ -35,7 +35,7 @@ namespace {
 // std::nullopt if the value is missing or not convertible to TranslateErrors.
 std::optional<TranslateErrors> FindTranslateErrorsKey(
     const base::Value::Dict& value,
-    base::StringPiece key) {
+    std::string_view key) {
   // Does `value` contains a double value for `key`?
   const std::optional<double> found_value = value.FindDouble(key);
   if (!found_value.has_value())

@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <optional>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
@@ -365,7 +366,7 @@ void TranslateLanguageList::GetSupportedPartialTranslateLanguages(
       std::end(kDefaultSupportedPartialTranslateLanguages));
 }
 
-std::string TranslateLanguageList::GetLanguageCode(base::StringPiece language) {
+std::string TranslateLanguageList::GetLanguageCode(std::string_view language) {
   // Only remove the country code for country specific languages we don't
   // support specifically yet.
   if (IsSupportedLanguage(language))
@@ -373,13 +374,13 @@ std::string TranslateLanguageList::GetLanguageCode(base::StringPiece language) {
   return std::string(language::ExtractBaseLanguage(language));
 }
 
-bool TranslateLanguageList::IsSupportedLanguage(base::StringPiece language) {
+bool TranslateLanguageList::IsSupportedLanguage(std::string_view language) {
   return base::ranges::binary_search(supported_languages_, language);
 }
 
 // static
 bool TranslateLanguageList::IsSupportedPartialTranslateLanguage(
-    base::StringPiece language) {
+    std::string_view language) {
   return base::ranges::binary_search(kDefaultSupportedPartialTranslateLanguages,
                                      language);
 }
@@ -478,7 +479,7 @@ void TranslateLanguageList::NotifyEvent(int line, std::string message) {
 }
 
 bool TranslateLanguageList::SetSupportedLanguages(
-    base::StringPiece language_list) {
+    std::string_view language_list) {
   // The format is in JSON as:
   // {
   //   "sl": {"XX": "LanguageName", ...},

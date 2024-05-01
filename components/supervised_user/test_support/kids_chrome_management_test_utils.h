@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_CHROME_MANAGEMENT_TEST_UTILS_H_
 #define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_CHROME_MANAGEMENT_TEST_UTILS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 
 namespace supervised_user {
@@ -13,7 +14,7 @@ namespace supervised_user {
 void SetFamilyMemberAttributesForTesting(
     kidsmanagement::FamilyMember* mutable_member,
     kidsmanagement::FamilyRole role,
-    base::StringPiece username);
+    std::string_view username);
 
 }  // namespace supervised_user
 

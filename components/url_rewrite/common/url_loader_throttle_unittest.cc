@@ -5,9 +5,9 @@
 #include "components/url_rewrite/common/url_loader_throttle.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -34,7 +34,7 @@ class URLLoaderThrottleTest : public testing::Test {
   URLLoaderThrottle::IsHeaderCorsExemptCallback CreateCorsExemptHeadersCallback(
       std::vector<std::string> cors_exempt_headers) {
     return base::BindLambdaForTesting(
-        [cors_exempt_headers](base::StringPiece header) {
+        [cors_exempt_headers](std::string_view header) {
           for (const auto& exempt_header : cors_exempt_headers) {
             if (base::EqualsCaseInsensitiveASCII(header, exempt_header)) {
               return true;
@@ -170,7 +170,7 @@ TEST_F(URLLoaderThrottleTest, DataReplacementUrl) {
   network::ResourceRequest request;
   request.url = GURL("http://test.net/style.css?query#ref");
   throttle.WillStartRequest(&request, &defer);
-  EXPECT_EQ(request.url, base::StringPiece(kCssDataURI));
+  EXPECT_EQ(request.url, std::string_view(kCssDataURI));
 }
 
 // Tests URL replacement rules do not apply more than once in a redirect chain
@@ -291,7 +291,7 @@ class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
   ~TestThrottleDelegate() override = default;
 
   bool canceled() const { return canceled_; }
-  base::StringPiece cancel_reason() const { return cancel_reason_; }
+  std::string_view cancel_reason() const { return cancel_reason_; }
 
   void Reset() {
     canceled_ = false;
@@ -300,7 +300,7 @@ class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
 
   // URLLoaderThrottle::Delegate implementation.
   void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {
+                       std::string_view custom_reason) override {
     canceled_ = true;
     cancel_reason_ = std::string(custom_reason);
   }

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -235,19 +235,19 @@ void SupervisedUserSettingsService::SaveItem(
   InformSubscribers();
 }
 
-void SupervisedUserSettingsService::SetLocalSetting(base::StringPiece key,
+void SupervisedUserSettingsService::SetLocalSetting(std::string_view key,
                                                     base::Value value) {
   local_settings_.Set(key, std::move(value));
   InformSubscribers();
 }
 
-void SupervisedUserSettingsService::SetLocalSetting(base::StringPiece key,
+void SupervisedUserSettingsService::SetLocalSetting(std::string_view key,
                                                     base::Value::Dict dict) {
   local_settings_.Set(key, std::move(dict));
   InformSubscribers();
 }
 
-void SupervisedUserSettingsService::RemoveLocalSetting(base::StringPiece key) {
+void SupervisedUserSettingsService::RemoveLocalSetting(std::string_view key) {
   local_settings_.Remove(key);
   InformSubscribers();
 }

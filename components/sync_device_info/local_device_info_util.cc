@@ -4,6 +4,8 @@
 
 #include "components/sync_device_info/local_device_info_util.h"
 
+#include <string_view>
+
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -66,7 +68,7 @@ void OnMachineStatisticsLoaded(LocalDeviceNameInfo* name_info_ptr,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |full_hardware_class| is set on Chrome OS devices if the user has UMA
   // enabled. Otherwise |full_hardware_class| is set to an empty string.
-  if (const std::optional<base::StringPiece> full_hardware_class =
+  if (const std::optional<std::string_view> full_hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               ash::system::kHardwareClassKey)) {
     name_info_ptr->full_hardware_class =

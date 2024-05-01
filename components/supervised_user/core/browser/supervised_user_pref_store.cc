@@ -6,13 +6,13 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -97,7 +97,7 @@ void SupervisedUserPrefStore::Init(
               base::Unretained(this)));
 }
 
-bool SupervisedUserPrefStore::GetValue(base::StringPiece key,
+bool SupervisedUserPrefStore::GetValue(std::string_view key,
                                        const base::Value** value) const {
   return prefs_->GetValue(key, value);
 }

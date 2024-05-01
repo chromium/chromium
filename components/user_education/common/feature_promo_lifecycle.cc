@@ -4,6 +4,8 @@
 
 #include "components/user_education/common/feature_promo_lifecycle.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -47,7 +49,7 @@ class ScopedPromoData {
 
 FeaturePromoLifecycle::FeaturePromoLifecycle(
     FeaturePromoStorageService* storage_service,
-    const base::StringPiece& promo_key,
+    std::string_view promo_key,
     const base::Feature* iph_feature,
     PromoType promo_type,
     PromoSubtype promo_subtype,

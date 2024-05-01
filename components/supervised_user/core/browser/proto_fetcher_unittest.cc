@@ -7,11 +7,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -202,7 +202,7 @@ class ProtoFetcherTestBase {
         GetUrlOfPendingRequest(index).spec(), response.SerializeAsString());
   }
   void SimulateResponseForPendingRequest(size_t index,
-                                         base::StringPiece content) {
+                                         std::string_view content) {
     Response response;
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetUrlOfPendingRequest(index).spec(), std::string(content));

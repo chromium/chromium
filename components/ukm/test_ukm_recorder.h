@@ -6,11 +6,12 @@
 #define COMPONENTS_UKM_TEST_UKM_RECORDER_H_
 
 #include <stddef.h>
-#include <iosfwd>
 
+#include <iosfwd>
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -72,17 +73,17 @@ class TestUkmRecorder : public UkmRecorderImpl {
       ukm::SourceId source_id) const;
 
   // Sets a callback that will be called when recording an entry for entry name.
-  void SetOnAddEntryCallback(base::StringPiece entry_name,
+  void SetOnAddEntryCallback(std::string_view entry_name,
                              base::RepeatingClosure on_add_entry);
 
   // Gets all of the entries recorded for entry name.
   std::vector<raw_ptr<const mojom::UkmEntry, VectorExperimental>>
-  GetEntriesByName(base::StringPiece entry_name) const;
+  GetEntriesByName(std::string_view entry_name) const;
 
   // Gets the data for all entries with given entry name, merged to one entry
   // for each source id. Intended for singular="true" metrics.
   std::map<ukm::SourceId, mojom::UkmEntryPtr> GetMergedEntriesByName(
-      base::StringPiece entry_name) const;
+      std::string_view entry_name) const;
 
   // Checks if an entry is associated with a url.
   void ExpectEntrySourceHasUrl(const mojom::UkmEntry* entry,
@@ -90,17 +91,17 @@ class TestUkmRecorder : public UkmRecorderImpl {
 
   // Expects the value of a metric from an entry.
   static void ExpectEntryMetric(const mojom::UkmEntry* entry,
-                                base::StringPiece metric_name,
+                                std::string_view metric_name,
                                 int64_t expected_value);
 
   // Checks if an entry contains a specific metric.
   static bool EntryHasMetric(const mojom::UkmEntry* entry,
-                             base::StringPiece metric_name);
+                             std::string_view metric_name);
 
   // Gets the value of a metric from an entry. Returns nullptr if the metric is
   // not found.
   static const int64_t* GetEntryMetric(const mojom::UkmEntry* entry,
-                                       base::StringPiece metric_name);
+                                       std::string_view metric_name);
 
   // A test helper returning all metrics for all entries with a given name in a
   // human-readable form, allowing to write clearer test expectations.

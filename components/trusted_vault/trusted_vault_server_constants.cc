@@ -4,9 +4,10 @@
 
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 
+#include <string_view>
+
 #include "base/base64url.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 #include "net/base/url_util.h"
 
 namespace trusted_vault {
@@ -86,13 +87,12 @@ std::string GetSecurityDomainPath(SecurityDomainId domain) {
   }
 }
 
-std::optional<SecurityDomainId> GetSecurityDomainByName(
-    base::StringPiece name) {
+std::optional<SecurityDomainId> GetSecurityDomainByName(std::string_view name) {
   static_assert(static_cast<int>(SecurityDomainId::kMaxValue) == 1,
                 "Update GetSecurityDomainByName when adding SecurityDomainId "
                 "enum values");
   static constexpr auto kSecurityDomainNames =
-      base::MakeFixedFlatMap<base::StringPiece, SecurityDomainId>({
+      base::MakeFixedFlatMap<std::string_view, SecurityDomainId>({
           {kSyncSecurityDomainName, SecurityDomainId::kChromeSync},
           {kPasskeysSecurityDomainName, SecurityDomainId::kPasskeys},
       });

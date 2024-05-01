@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -13,7 +15,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -346,8 +347,8 @@ bool HasPort(const std::string& original_text,
                                      url::ParserMode::kSpecialURL)) {
     ++port_end;
   }
-  base::StringPiece port_piece(original_text.data() + port_start,
-                               port_end - port_start);
+  std::string_view port_piece(original_text.data() + port_start,
+                              port_end - port_start);
   if (port_piece.empty())
     return false;
 

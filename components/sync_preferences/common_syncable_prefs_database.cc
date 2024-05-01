@@ -4,8 +4,9 @@
 
 #include "components/sync_preferences/common_syncable_prefs_database.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -124,7 +125,7 @@ enum {
 
 // List of syncable preferences common across platforms.
 constexpr auto kCommonSyncablePrefsAllowlist =
-    base::MakeFixedFlatMap<base::StringPiece, SyncablePrefMetadata>({
+    base::MakeFixedFlatMap<std::string_view, SyncablePrefMetadata>({
         {autofill::prefs::kAutofillCreditCardEnabled,
          {syncable_prefs_ids::kAutofillCreditCardEnabled, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
@@ -302,7 +303,7 @@ CommonSyncablePrefsDatabase::GetSyncablePrefMetadata(
   return it->second;
 }
 
-std::map<base::StringPiece, SyncablePrefMetadata>
+std::map<std::string_view, SyncablePrefMetadata>
 CommonSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
   return {kCommonSyncablePrefsAllowlist.begin(),
           kCommonSyncablePrefsAllowlist.end()};
