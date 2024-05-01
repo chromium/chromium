@@ -437,17 +437,21 @@ Vector<KURL> AttributionSrcLoader::ParseAttributionSrc(
                                  SpaceSplitString(attribution_src), element);
 }
 
-void AttributionSrcLoader::Register(const AtomicString& attribution_src,
-                                    HTMLElement* element) {
+void AttributionSrcLoader::Register(
+    const AtomicString& attribution_src,
+    HTMLElement* element,
+    network::mojom::ReferrerPolicy referrer_policy) {
   CreateAndSendRequests(ParseAttributionSrc(attribution_src, element),
-                        /*attribution_src_token=*/std::nullopt);
+                        /*attribution_src_token=*/std::nullopt,
+                        referrer_policy);
 }
 
 std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
     const KURL& navigation_url,
     Vector<KURL> attribution_src_urls,
     HTMLAnchorElement* element,
-    bool has_transient_user_activation) {
+    bool has_transient_user_activation,
+    network::mojom::ReferrerPolicy referrer_policy) {
   if (!has_transient_user_activation) {
     LogAuditIssue(local_frame_->DomWindow(),
                   AttributionReportingIssueType::
@@ -469,7 +473,8 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
   };
 
   if (CreateAndSendRequests(std::move(attribution_src_urls),
-                            impression.attribution_src_token)) {
+                            impression.attribution_src_token,
+                            referrer_policy)) {
     return impression;
   }
 
@@ -484,30 +489,33 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
     const AtomicString& attribution_src,
     HTMLAnchorElement* element,
-    bool has_transient_user_activation) {
+    bool has_transient_user_activation,
+    network::mojom::ReferrerPolicy referrer_policy) {
   CHECK(!attribution_src.IsNull());
   CHECK(element);
 
   return RegisterNavigationInternal(
       navigation_url, ParseAttributionSrc(attribution_src, element), element,
-      has_transient_user_activation);
+      has_transient_user_activation, referrer_policy);
 }
 
 std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
     const WebVector<WebString>& attribution_srcs,
-    bool has_transient_user_activation) {
+    bool has_transient_user_activation,
+    network::mojom::ReferrerPolicy referrer_policy) {
   return RegisterNavigationInternal(
       navigation_url,
       ParseAttributionSrcUrls(*this, *local_frame_->GetDocument(),
                               attribution_srcs,
                               /*element=*/nullptr),
-      /*element=*/nullptr, has_transient_user_activation);
+      /*element=*/nullptr, has_transient_user_activation, referrer_policy);
 }
 
 bool AttributionSrcLoader::CreateAndSendRequests(
     Vector<KURL> urls,
-    std::optional<AttributionSrcToken> attribution_src_token) {
+    std::optional<AttributionSrcToken> attribution_src_token,
+    network::mojom::ReferrerPolicy referrer_policy) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached() || urls.empty()) {
     return false;
@@ -515,18 +523,20 @@ bool AttributionSrcLoader::CreateAndSendRequests(
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
-        WrapPersistentIfNeeded(this), std::move(urls), attribution_src_token));
+    document->AddPostPrerenderingActivationStep(
+        WTF::BindOnce(base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
+                      WrapPersistentIfNeeded(this), std::move(urls),
+                      attribution_src_token, referrer_policy));
     return false;
   }
 
-  return DoRegistration(urls, attribution_src_token);
+  return DoRegistration(urls, attribution_src_token, referrer_policy);
 }
 
 bool AttributionSrcLoader::DoRegistration(
     const Vector<KURL>& urls,
-    const std::optional<AttributionSrcToken> attribution_src_token) {
+    const std::optional<AttributionSrcToken> attribution_src_token,
+    network::mojom::ReferrerPolicy referrer_policy) {
   DCHECK(!urls.empty());
 
   if (!local_frame_->IsAttached()) {
@@ -562,14 +572,13 @@ bool AttributionSrcLoader::DoRegistration(
   }
 
   for (const KURL& url : urls) {
-    // TODO(apaseltiner): Respect the referrerpolicy attribute of the
-    // originating <a> or <img> tag, if present.
     ResourceRequest request(url);
     request.SetHttpMethod(http_names::kGET);
 
     request.SetKeepalive(true);
     request.SetRequestContext(
         mojom::blink::RequestContextType::ATTRIBUTION_SRC);
+    request.SetReferrerPolicy(referrer_policy);
 
     request.SetAttributionReportingEligibility(
         attribution_src_token.has_value()

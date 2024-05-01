@@ -2258,7 +2258,8 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
                                     ->RegisterNavigation(
                                         /*navigation_url=*/completed_url,
                                         *window_features.attribution_srcs,
-                                        has_user_gesture));
+                                        has_user_gesture,
+                                        referrer.referrer_policy));
   }
 
   FrameTree::FindResult result =

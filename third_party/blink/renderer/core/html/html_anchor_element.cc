@@ -572,7 +572,8 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
     frame_request.SetImpression(
         frame->GetAttributionSrcLoader()->RegisterNavigation(
             /*navigation_url=*/completed_url, attribution_src,
-            /*element=*/this, request.HasUserGesture()));
+            /*element=*/this, request.HasUserGesture(),
+            request.GetReferrerPolicy()));
   }
 
   Frame* target_frame =

@@ -436,13 +436,15 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
   KURL url1 = ToKURL(kUrl);
   RegisterMockedURLLoad(url1, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr,
+                                    network::mojom::ReferrerPolicy::kDefault);
 
   static constexpr char kUrl2[] = "https://example2.com/foo.html";
   KURL url2 = ToKURL(kUrl2);
   RegisterMockedErrorURLLoad(url2);
 
-  attribution_src_loader_->Register(AtomicString(kUrl2), /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl2), /*element=*/nullptr,
+                                    network::mojom::ReferrerPolicy::kDefault);
 
   // kRequested = 0.
   histograms.ExpectUniqueSample("Conversions.AttributionSrcRequestStatus", 0,
@@ -461,20 +463,34 @@ TEST_F(AttributionSrcLoaderTest, Referrer) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr,
+                                    network::mojom::ReferrerPolicy::kDefault);
 
   url_test_helpers::ServeAsynchronousRequests();
 
   EXPECT_EQ(client_->request_head().GetReferrerPolicy(),
             network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin);
-  EXPECT_EQ(client_->request_head().ReferrerString(), String());
+}
+
+TEST_F(AttributionSrcLoaderTest, NoReferrer) {
+  KURL url = ToKURL("https://example1.com/foo.html");
+  RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
+
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr,
+                                    network::mojom::ReferrerPolicy::kNever);
+
+  url_test_helpers::ServeAsynchronousRequests();
+
+  EXPECT_EQ(client_->request_head().GetReferrerPolicy(),
+            network::mojom::ReferrerPolicy::kNever);
 }
 
 TEST_F(AttributionSrcLoaderTest, EligibleHeader_Register) {
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr,
+                                    network::mojom::ReferrerPolicy::kDefault);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -495,7 +511,8 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   std::ignore = attribution_src_loader_->RegisterNavigation(
       /*navigation_url=*/KURL(), /*attribution_src=*/AtomicString(kUrl),
       /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()),
-      /*has_transient_user_activation=*/true);
+      /*has_transient_user_activation=*/true,
+      network::mojom::ReferrerPolicy::kDefault);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -519,7 +536,8 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
-  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr,
+                                    network::mojom::ReferrerPolicy::kDefault);
   host.WaitUntilBoundAndFlush();
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -644,7 +662,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
   KURL url = ToKURL(kUrl);
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr);
+  attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr,
+                                    network::mojom::ReferrerPolicy::kDefault);
 
   url_test_helpers::ServeAsynchronousRequests();
 
@@ -664,7 +683,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   std::ignore = attribution_src_loader_->RegisterNavigation(
       /*navigation_url=*/KURL(), /*attribution_src=*/AtomicString(kUrl),
       /*element=*/MakeGarbageCollected<HTMLAnchorElement>(GetDocument()),
-      /*has_transient_user_activation=*/true);
+      /*has_transient_user_activation=*/true,
+      network::mojom::ReferrerPolicy::kDefault);
 
   url_test_helpers::ServeAsynchronousRequests();
 

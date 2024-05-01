@@ -396,8 +396,19 @@ void HTMLImageElement::ParseAttribute(
   } else if (name == html_names::kAttributionsrcAttr) {
     LocalDOMWindow* window = GetDocument().domWindow();
     if (window && window->GetFrame()) {
+      // Copied from `ImageLoader::DoUpdateFromElement()`.
+      network::mojom::ReferrerPolicy referrer_policy =
+          network::mojom::ReferrerPolicy::kDefault;
+      AtomicString referrer_policy_attribute =
+          FastGetAttribute(html_names::kReferrerpolicyAttr);
+      if (!referrer_policy_attribute.IsNull()) {
+        SecurityPolicy::ReferrerPolicyFromString(
+            referrer_policy_attribute, kSupportReferrerPolicyLegacyKeywords,
+            &referrer_policy);
+      }
       window->GetFrame()->GetAttributionSrcLoader()->Register(params.new_value,
-                                                              /*element=*/this);
+                                                              /*element=*/this,
+                                                              referrer_policy);
     }
   } else if (name == html_names::kSharedstoragewritableAttr &&
              RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(

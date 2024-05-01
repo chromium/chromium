@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
 
@@ -109,8 +110,18 @@ void HTMLScriptElement::ParseAttribute(
     }
   } else if (params.name == html_names::kAttributionsrcAttr) {
     if (GetDocument().GetFrame()) {
+      // Copied from `ScriptLoader::PrepareScript()`.
+      String referrerpolicy_attr = ReferrerPolicyAttributeValue();
+      network::mojom::ReferrerPolicy referrer_policy =
+          network::mojom::ReferrerPolicy::kDefault;
+      if (!referrerpolicy_attr.empty()) {
+        SecurityPolicy::ReferrerPolicyFromString(
+            referrerpolicy_attr, kDoNotSupportReferrerPolicyLegacyKeywords,
+            &referrer_policy);
+      }
+
       GetDocument().GetFrame()->GetAttributionSrcLoader()->Register(
-          params.new_value, /*element=*/this);
+          params.new_value, /*element=*/this, referrer_policy);
     }
   } else {
     HTMLElement::ParseAttribute(params);
