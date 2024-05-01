@@ -10,13 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
- * A best effort to give equality between two visual states of URL text. Contains a hint that
- * should be the visible text, but under edge cases this will be null, and the full URL will be
- * fallen back upon. This means callers need to be able to tolerate false negatives. Typically fine
- * for uses such as performance optimizations where this failure state is just an inefficiency.
+ * A best effort to give equality between two visual states of URL text. Contains a hint that should
+ * be the visible text, but under edge cases this will be null, and the full URL will be fallen back
+ * upon. This means callers need to be able to tolerate false negatives. Typically fine for uses
+ * such as performance optimizations where this failure state is just an inefficiency.
  */
 public class VisibleUrlText {
     private final @NonNull CharSequence mUrlText;
@@ -57,7 +57,7 @@ public class VisibleUrlText {
         // domain, we calculate the visible hint, but we don't have to capture a screenshot (even
         // though the two VisibleUrlTexts aren't equal) if the visible hint is a prefix of the
         // previous url.
-        if (OmniboxFeatures.shouldOmitVisibleHintCalculationForDifferentTLD()
+        if (ChromeFeatureList.sNoVisibleHintForDifferentTLD.isEnabled()
                 && TextUtils.isEmpty(currentVisibleUrlText.mVisibleTextPrefixHint)
                 && !TextUtils.isEmpty(nextVisibleUrlText.mVisibleTextPrefixHint)
                 && TextUtils.indexOf(

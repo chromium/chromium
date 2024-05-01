@@ -14,7 +14,6 @@ import org.chromium.base.cached_flags.CachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatureMap;
@@ -190,20 +189,6 @@ public class OmniboxFeatures {
      */
     public static int getMaxPrefetchesPerOmniboxSession() {
         return sTouchDownTriggerMaxPrefetchesPerSession.getValue();
-    }
-
-    /**
-     * Returns if we should omit calculating the visible hint if the TLD is different than the
-     * previous call to setText().
-     */
-    public static boolean shouldOmitVisibleHintCalculationForDifferentTLD() {
-        return ChromeFeatureList.sNoVisibleHintForDifferentTLD.isEnabled();
-    }
-
-    /** Returns whether to show the incognito status for tablet. */
-    public static boolean showIncognitoStatusForTablet() {
-        return ChromeFeatureList.sTabletToolbarIncognitoStatus.isEnabled()
-                || ChromeFeatureList.sDynamicTopChrome.isEnabled();
     }
 
     /** Returns whether answer suggestions should be annotated with attached action chips. */

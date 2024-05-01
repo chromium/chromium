@@ -46,6 +46,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -854,7 +855,7 @@ public abstract class UrlBar extends AutocompleteEditText {
                     // padding.
                     mVisibleTextPrefixHint = null;
                 } else {
-                    if (OmniboxFeatures.shouldOmitVisibleHintCalculationForDifferentTLD()) {
+                    if (ChromeFeatureList.sNoVisibleHintForDifferentTLD.isEnabled()) {
                         String previousTLD =
                                 mPreviousScrollText == null
                                         ? null
