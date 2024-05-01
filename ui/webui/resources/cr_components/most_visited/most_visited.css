@@ -65,9 +65,6 @@
 #addShortcutIconContainer {
   background-color:
       var(--add-shortcut-background-color, var(--tile-background-color));
-}
-
-:host-context([chrome-refresh-2023]) #addShortcutIconContainer {
   margin-inline-start: auto;
   margin-inline-end: auto;
 }
@@ -249,6 +246,6 @@ cr-icon-button {
   transition-delay: 0s;
 }
 
-:host-context([chrome-refresh-2023]) #dialogContent {
+#dialogContent {
   height: 160px;
 }
