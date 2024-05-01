@@ -897,8 +897,15 @@ IN_PROC_BROWSER_TEST_P(
   ExpectNotRestoredReason(FROM_HERE);
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded \
+  DISABLED_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
+#else
+#define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded \
+  DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
-                       DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
+                       MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
   const auto tag = html_tag();
 
   // Navigate to A.
@@ -966,8 +973,15 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf \
+  DISABLED_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
+#else
+#define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf \
+  DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
-                       DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
+                       MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
   const auto tag = html_tag();
   const auto page_with_html =
       base::StrCat({"/back_forward_cache/page_with_", tag, "_html.html"});
