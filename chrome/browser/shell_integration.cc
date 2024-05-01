@@ -144,6 +144,20 @@ base::CommandLine CommandLineArgsForLauncher(
   return new_cmd_line;
 }
 
+base::CommandLine CommandLineArgsForUrlShortcut(
+    const base::FilePath& chrome_exe_program,
+    const base::FilePath& profile_path,
+    const GURL& url) {
+  CHECK(!chrome_exe_program.empty());
+  CHECK(!profile_path.empty());
+  CHECK(url.is_valid());
+  base::CommandLine new_cmd_line(chrome_exe_program);
+  AppendProfileArgs(profile_path, &new_cmd_line);
+  new_cmd_line.AppendArg(url.spec());
+
+  return new_cmd_line;
+}
+
 void AppendProfileArgs(const base::FilePath& profile_path,
                        base::CommandLine* command_line) {
   DCHECK(command_line);

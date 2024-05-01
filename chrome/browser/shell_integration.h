@@ -143,6 +143,13 @@ base::CommandLine CommandLineArgsForLauncher(
     const base::FilePath& profile_path,
     const std::string& run_on_os_login_mode);
 
+// Set up command line arguments for launching chrome at the given url using the
+// given profile. All arguments must be non-empty and valid.
+base::CommandLine CommandLineArgsForUrlShortcut(
+    const base::FilePath& chrome_exe_program,
+    const base::FilePath& profile_path,
+    const GURL& url);
+
 // Append command line arguments for launching a new chrome.exe process
 // based on the current process.
 // The new command line reuses the current process's user data directory and
