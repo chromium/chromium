@@ -123,26 +123,6 @@ NodeAggregationType GetNodeAggregationType(const url::Origin& requesting_origin,
   }
 }
 
-// Returns |frame_node|'s origin based on its current url.
-// An about:blank iframe inherits the origin of its parent. See:
-// https://html.spec.whatwg.org/multipage/browsers.html#determining-the-origin
-url::Origin GetOrigin(const FrameNode* frame_node) {
-  if (frame_node->GetParentFrameNode()) {
-    return url::Origin::Resolve(
-        frame_node->GetURL(),
-        url::Origin::Create(frame_node->GetParentFrameNode()->GetURL()));
-  } else {
-    return url::Origin::Create(frame_node->GetURL());
-  }
-}
-
-#if DCHECK_IS_ON()
-// Returns |worker_node|'s origin based on its current url.
-url::Origin GetOrigin(const WorkerNode* worker_node) {
-  return url::Origin::Create(worker_node->GetURL());
-}
-#endif
-
 // Returns a mutable pointer to the WebMemoryAttribution structure in the given
 // |breakdown|.
 mojom::WebMemoryAttribution* GetAttributionFromBreakdown(
@@ -272,7 +252,9 @@ void AggregationPointVisitor::OnRootExited() {
 void AggregationPointVisitor::OnFrameEntered(const FrameNode* frame_node) {
   DCHECK(!enclosing_.empty());
   DCHECK(frame_node);
-  url::Origin node_origin = GetOrigin(frame_node);
+  // If the frame's origin isn't known yet, use a unique opaque origin.
+  const url::Origin node_origin =
+      frame_node->GetOrigin().value_or(url::Origin());
   NodeAggregationType aggregation_type = GetNodeAggregationType(
       requesting_origin_, enclosing_.top().origin, node_origin);
   mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
@@ -340,27 +322,21 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   // A dedicated worker is guaranteed to have the same origin as its parent,
   // which means that a dedicated worker cannot be a cross-origin aggregation
   // point.
-  // TODO(crbug.com/40165281): The URL of a worker node is currently not
-  // available without PlzDedicatedWorker, which is disabled by default.
-  // Until then we use the origin of the parent.
-  url::Origin node_origin = enclosing_.top().origin;
 #if DCHECK_IS_ON()
   auto client_frames = worker_node->GetClientFrames();
   DCHECK(base::ranges::all_of(
-      client_frames, [node_origin](const FrameNode* client) {
-        return node_origin.IsSameOriginWith(GetOrigin(client));
+      client_frames, [worker_node](const FrameNode* client) {
+        return client->GetOrigin().has_value() &&
+               client->GetOrigin()->IsSameOriginWith(worker_node->GetOrigin());
       }));
   auto client_workers = worker_node->GetClientWorkers();
   DCHECK(base::ranges::all_of(
-      client_workers, [node_origin](const WorkerNode* client) {
-        // TODO(crbug.com/40165281): Remove the is_empty guard
-        // once worker worker URLs are available.
-        return client->GetURL().is_empty() ||
-               node_origin.IsSameOriginWith(GetOrigin(client));
+      client_workers, [worker_node](const WorkerNode* client) {
+        return client->GetOrigin().IsSameOriginWith(worker_node->GetOrigin());
       }));
 #endif
   NodeAggregationType aggregation_type = GetNodeAggregationType(
-      requesting_origin_, enclosing_.top().origin, node_origin);
+      requesting_origin_, enclosing_.top().origin, worker_node->GetOrigin());
 
   mojom::WebMemoryBreakdownEntry* aggregation_point = nullptr;
   switch (aggregation_type) {
@@ -405,7 +381,7 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
       V8DetailedMemoryExecutionContextData::ForWorkerNode(worker_node),
       worker_node->GetProcessNode() == requesting_process_node_);
 
-  enclosing_.push(Enclosing{node_origin, aggregation_point});
+  enclosing_.push(Enclosing{worker_node->GetOrigin(), aggregation_point});
 }
 
 void AggregationPointVisitor::OnWorkerExited(const WorkerNode* worker_node) {
@@ -417,7 +393,7 @@ void AggregationPointVisitor::OnWorkerExited(const WorkerNode* worker_node) {
 // WebMemoryAggregator
 
 WebMemoryAggregator::WebMemoryAggregator(const FrameNode* requesting_node)
-    : requesting_origin_(GetOrigin(requesting_node)),
+    : requesting_origin_(requesting_node->GetOrigin().value()),
       requesting_process_node_(requesting_node->GetProcessNode()),
       main_process_node_(GetMainProcess(requesting_node)),
       browsing_instance_id_(requesting_node->GetBrowsingInstanceId()) {}
@@ -466,17 +442,18 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
       [&top_frames,
        browsing_instance_id = browsing_instance_id_](const FrameNode* node) {
         if (node->GetBrowsingInstanceId() == browsing_instance_id &&
-            !node->GetParentFrameNode() && !GetOrigin(node).opaque()) {
+            !node->GetParentFrameNode() && node->GetOrigin() &&
+            !node->GetOrigin()->opaque()) {
           top_frames.push_back(node);
         }
         return true;
       });
 
   CHECK(!top_frames.empty());
-  url::Origin main_origin = GetOrigin(top_frames[0]);
+  const url::Origin main_origin = top_frames.front()->GetOrigin().value();
   DCHECK(
       base::ranges::all_of(top_frames, [&main_origin](const FrameNode* node) {
-        return GetOrigin(node).IsSameOriginWith(main_origin);
+        return node->GetOrigin()->IsSameOriginWith(main_origin);
       }));
 
   AggregationPointVisitor ap_visitor(requesting_origin_,

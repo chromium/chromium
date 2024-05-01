@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -28,7 +29,9 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -267,9 +270,16 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
       frame_routing_id, frame_token,
       content::BrowsingInstanceId(browsing_instance_id));
   if (url) {
+    // "about:blank" uses the parent's origin. url::Origin::Resolve() does the
+    // right thing. Fall back to url::Origin::Create() if there's no parent
+    // origin to resolve against.
     const GURL gurl(*url);
-    frame->OnNavigationCommitted(gurl, url::Origin::Create(gurl),
-                                 /*same document=*/true);
+    const auto origin =
+        parent && parent->GetOrigin().has_value()
+            ? url::Origin::Resolve(gurl, parent->GetOrigin().value())
+            : url::Origin::Create(gurl);
+    frame->OnNavigationCommitted(gurl, origin,
+                                 /*same document=*/false);
   }
   if (memory_usage || canvas_memory_usage) {
     auto* data =
@@ -323,10 +333,12 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
 
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     WorkerNode::WorkerType worker_type,
-    std::string url,
+    std::string script_url,
     Bytes bytes,
     FrameNodeImpl* parent) {
-  auto* worker_node = AddWorkerNodeImpl(worker_type, url, bytes);
+  auto* worker_node = AddWorkerNodeImpl(
+      worker_type, parent->GetOrigin().value_or(url::Origin()), script_url,
+      bytes);
   worker_node->AddClientFrame(parent);
   return worker_node;
 }
@@ -334,28 +346,45 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeWithoutData(
     WorkerNode::WorkerType worker_type,
     FrameNodeImpl* parent) {
-  auto worker_node = CreateNode<WorkerNodeImpl>(worker_type, process_.get());
+  auto* worker_node = AddWorkerNodeImpl(
+      worker_type, parent->GetOrigin().value_or(url::Origin()));
   worker_node->AddClientFrame(parent);
-  workers_.push_back(std::move(worker_node));
-  return workers_.back().get();
+  return worker_node;
 }
 
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     WorkerNode::WorkerType worker_type,
-    std::string url,
+    std::string script_url,
     Bytes bytes,
     WorkerNodeImpl* parent) {
-  auto* worker_node = AddWorkerNodeImpl(worker_type, url, bytes);
+  auto* worker_node =
+      AddWorkerNodeImpl(worker_type, parent->GetOrigin(), script_url, bytes);
   worker_node->AddClientWorker(parent);
   return worker_node;
 }
 
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeImpl(
     WorkerNode::WorkerType worker_type,
-    std::string url,
+    const url::Origin& origin,
+    std::string script_url,
     Bytes bytes) {
-  auto worker_node = CreateNode<WorkerNodeImpl>(worker_type, process_.get());
-  worker_node->OnFinalResponseURLDetermined(GURL(url));
+  auto worker_token = [worker_type]() -> blink::WorkerToken {
+    switch (worker_type) {
+      case WorkerNode::WorkerType::kDedicated:
+        return blink::DedicatedWorkerToken();
+      case WorkerNode::WorkerType::kShared:
+        return blink::SharedWorkerToken();
+      case WorkerNode::WorkerType::kService:
+        return blink::ServiceWorkerToken();
+    }
+    NOTREACHED_NORETURN();
+  }();
+  auto worker_node = CreateNode<WorkerNodeImpl>(
+      worker_type, process_.get(), /*browser_context_id=*/std::string(),
+      worker_token, origin);
+  if (!script_url.empty()) {
+    worker_node->OnFinalResponseURLDetermined(GURL(script_url));
+  }
   if (bytes) {
     V8DetailedMemoryExecutionContextData::CreateForTesting(worker_node.get())
         ->set_v8_bytes_used(*bytes);
