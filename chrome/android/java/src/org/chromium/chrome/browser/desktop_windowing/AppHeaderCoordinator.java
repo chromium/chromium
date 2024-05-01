@@ -128,14 +128,13 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
                                 INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
 
         // Initialize mInsetsRectProvider and setup observers.
-        WindowInsets insets = mRootView.getRootWindowInsets();
-        WindowInsetsCompat initInsets =
-                insets == null ? null : WindowInsetsCompat.toWindowInsetsCompat(insets, mRootView);
         mInsetsRectProvider =
                 sInsetsRectProviderForTesting != null
                         ? sInsetsRectProviderForTesting
                         : new InsetsRectProvider(
-                                insetObserver, WindowInsets.Type.captionBar(), initInsets);
+                                insetObserver,
+                                WindowInsets.Type.captionBar(),
+                                insetObserver.getLastRawWindowInsets());
         InsetsRectProvider.Observer insetsRectUpdateRunnable = this::onInsetsRectsUpdated;
         mInsetsRectProvider.addObserver(insetsRectUpdateRunnable);
 

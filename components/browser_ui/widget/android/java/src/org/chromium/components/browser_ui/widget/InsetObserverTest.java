@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.WindowInsets;
 import android.widget.LinearLayout;
 
@@ -238,5 +241,33 @@ public class InsetObserverTest {
         mInsetObserver.updateBottomInsetForEdgeToEdge(0);
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver).onSafeAreaChanged(DISPLAY_CUTOUT_RECT);
+    }
+
+    @Test
+    public void checkLastSeenRawWindowInsets() {
+        assertNull(
+                "WindowInsets does not have initial value.",
+                mInsetObserver.getLastRawWindowInsets());
+
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        assertEquals(
+                "WindowInsets is different.", mInsets, mInsetObserver.getLastRawWindowInsets());
+
+        mInsetObserver.onApplyWindowInsets(mContentView, mModifiedInsets);
+        assertEquals(
+                "WindowInsets is different.",
+                mModifiedInsets,
+                mInsetObserver.getLastRawWindowInsets());
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.R)
+    public void initializeWithLastSeenRawWindowInsets() {
+        doReturn(mNonCompatInsets).when(mContentView).getRootWindowInsets();
+        mInsetObserver = new InsetObserver(mContentView, true);
+        assertEquals(
+                "WindowInsets is different.",
+                WindowInsetsCompat.toWindowInsetsCompat(mNonCompatInsets),
+                mInsetObserver.getLastRawWindowInsets());
     }
 }

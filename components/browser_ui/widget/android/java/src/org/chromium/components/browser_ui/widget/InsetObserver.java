@@ -168,6 +168,11 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
                     }
                 };
 
+        // Populate the root window insets if available.
+        if (mRootView.getRootWindowInsets() != null) {
+            mLastSeenRawWindowInset =
+                    WindowInsetsCompat.toWindowInsetsCompat(mRootView.getRootWindowInsets());
+        }
         ViewCompat.setWindowInsetsAnimationCallback(rootView, mWindowInsetsAnimationProxyCallback);
         ViewCompat.setOnApplyWindowInsetsListener(rootView, this);
     }
