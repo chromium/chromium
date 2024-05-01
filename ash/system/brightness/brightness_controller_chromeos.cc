@@ -144,6 +144,12 @@ void BrightnessControllerChromeos::SetAmbientLightSensorEnabled(bool enabled) {
   chromeos::PowerManagerClient::Get()->SetAmbientLightSensorEnabled(enabled);
 }
 
+void BrightnessControllerChromeos::GetAmbientLightSensorEnabled(
+    base::OnceCallback<void(std::optional<bool>)> callback) {
+  chromeos::PowerManagerClient::Get()->GetAmbientLightSensorEnabled(
+      std::move(callback));
+}
+
 void BrightnessControllerChromeos::HasAmbientLightSensor(
     base::OnceCallback<void(std::optional<bool>)> callback) {
   chromeos::PowerManagerClient::Get()->HasAmbientLightSensor(

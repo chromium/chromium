@@ -153,6 +153,10 @@ class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
   void SetAmbientLightSensorEnabled(bool enabled) override {
     is_ambient_light_sensor_enabled_ = enabled;
   }
+  void GetAmbientLightSensorEnabled(
+      base::OnceCallback<void(std::optional<bool>)> callback) override {
+    std::move(callback).Run(is_ambient_light_sensor_enabled_);
+  }
   void HasAmbientLightSensor(
       base::OnceCallback<void(std::optional<bool>)> callback) override {
     std::move(callback).Run(has_ambient_light_sensor_);

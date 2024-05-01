@@ -552,6 +552,32 @@ TEST_F(BrightnessControllerChromeosTest, SetAmbientLightSensorEnabled) {
   EXPECT_TRUE(power_manager_client()->is_ambient_light_sensor_enabled());
 }
 
+TEST_F(BrightnessControllerChromeosTest, GetAmbientLightSensorEnabled) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  SetBatteryPower();
+
+  // Disable the ambient light sensor via the BrightnessControlDelegate.
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(false);
+
+  // GetAmbientLightSensorEnabled should return that the the light sensor is
+  // currently not enabled.
+  brightness_control_delegate()->GetAmbientLightSensorEnabled(
+      base::BindOnce([](std::optional<bool> is_ambient_light_sensor_enabled) {
+        EXPECT_FALSE(is_ambient_light_sensor_enabled.value());
+      }));
+
+  // Re-enable the ambient light sensor via the BrightnessControlDelegate.
+  brightness_control_delegate()->SetAmbientLightSensorEnabled(true);
+
+  // GetAmbientLightSensorEnabled should return that the the light sensor is
+  // currently enabled.
+  brightness_control_delegate()->GetAmbientLightSensorEnabled(
+      base::BindOnce([](std::optional<bool> is_ambient_light_sensor_enabled) {
+        EXPECT_TRUE(is_ambient_light_sensor_enabled.value());
+      }));
+}
+
 TEST_F(BrightnessControllerChromeosTest, HasAmbientLightSensor) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);

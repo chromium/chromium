@@ -56,6 +56,8 @@ class ASH_EXPORT BrightnessControllerChromeos
   void GetBrightnessPercent(
       base::OnceCallback<void(std::optional<double>)> callback) override;
   void SetAmbientLightSensorEnabled(bool enabled) override;
+  void GetAmbientLightSensorEnabled(
+      base::OnceCallback<void(std::optional<bool>)> callback) override;
   void HasAmbientLightSensor(
       base::OnceCallback<void(std::optional<bool>)> callback) override;
 

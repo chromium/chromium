@@ -48,6 +48,13 @@ class BrightnessControlDelegate {
   // calculations.
   virtual void SetAmbientLightSensorEnabled(bool enabled) = 0;
 
+  // Asynchronously invokes |callback| with true if the ambient light sensor is
+  // enabled (i.e. if the ambient light sensor is currently being used in
+  // brightness calculations). In case of error, |callback| will be run with
+  // nullopt.
+  virtual void GetAmbientLightSensorEnabled(
+      base::OnceCallback<void(std::optional<bool>)> callback) = 0;
+
   // Asynchronously invokes |callback| with true if the device has at least one
   // ambient light sensor. In case of error, |callback| will be run with
   // nullopt.

@@ -199,6 +199,10 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
     std::move(callback).Run(100.0);
   }
   void SetAmbientLightSensorEnabled(bool enabled) override {}
+  void GetAmbientLightSensorEnabled(
+      base::OnceCallback<void(std::optional<bool>)> callback) override {
+    std::move(callback).Run(true);
+  }
   void HasAmbientLightSensor(
       base::OnceCallback<void(std::optional<bool>)> callback) override {
     std::move(callback).Run(true);
