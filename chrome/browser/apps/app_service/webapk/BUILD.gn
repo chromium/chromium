@@ -104,6 +104,50 @@ source_set("unit_tests") {
   }
 }
 
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+  deps = []
+
+  if (is_chromeos_ash) {
+    sources += [ "webapk_policy_browsertest.cc" ]
+
+    deps += [
+      ":prefs",
+      ":test_support",
+      ":webapk",
+      "//ash/components/arc:arc_test_support",
+      "//ash/components/arc:notification_test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ash",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/ui",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/test:test_support",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//content/test:test_support",
+      "//testing/gmock",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [ "webapk_utils_lacros_browsertest.cc" ]
+
+    deps += [
+      ":webapk",
+      "//chrome/test:test_support",
+      "//components/webapk:proto",
+      "//content/test:test_support",
+      "//net:test_support",
+    ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
