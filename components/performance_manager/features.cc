@@ -69,6 +69,10 @@ BASE_FEATURE(kMemorySaverMultistateMode,
 const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge{
     &kMemorySaverMultistateMode, "show_recommended_badge", false};
 
+BASE_FEATURE(kDiscardRingImprovements,
+             "DiscardRingImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPerformanceControlsSidePanel,
              "PerformanceControlsSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);

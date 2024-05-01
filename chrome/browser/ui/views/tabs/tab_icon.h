@@ -199,6 +199,8 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   bool is_active_tab_ = false;
 
   bool is_monochrome_favicon_ = false;
+
+  int increased_discard_indicator_radius_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_

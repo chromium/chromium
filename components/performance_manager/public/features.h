@@ -76,6 +76,13 @@ BASE_DECLARE_FEATURE(kMemorySaverMultistateMode);
 // saver option.
 extern const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge;
 
+// Round 2.5 Performance Controls features
+
+// Whether to enable showing improvements to the discarded tab indicator, namely
+// increasing the size of the favicon, as well as removing the transparency and
+// updating the color of the discard ring.
+BASE_DECLARE_FEATURE(kDiscardRingImprovements);
+
 // Round 3 Performance Controls features
 
 // This enables the performance controls side panel for learning about and

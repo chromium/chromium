@@ -52,6 +52,7 @@ namespace {
 constexpr int kAttentionIndicatorRadius = 3;
 constexpr int kLoadingAnimationStrokeWidthDp = 2;
 constexpr float kDiscardRingStrokeWidthDp = 1.5;
+constexpr int kLargerDiscardIndicatorRadiusDp = 2;
 
 // Discard Ring Segments
 constexpr int kNumSmallSegments = 4;
@@ -126,14 +127,25 @@ TabIcon::TabIcon()
       favicon_size_animation_(this),
       tab_discard_animation_(base::Seconds(1),
                              gfx::LinearAnimation::kDefaultFrameRate,
-                             this) {
+                             this),
+      increased_discard_indicator_radius_(
+          base::FeatureList::IsEnabled(
+              performance_manager::features::kDiscardRingImprovements)
+              ? kLargerDiscardIndicatorRadiusDp
+              : 0) {
   favicon_size_animation_.SetSlideDuration(base::Milliseconds(250));
 
   SetCanProcessEventsWithinSubtree(false);
 
-  // The minimum size to avoid clipping the attention indicator.
-  const int preferred_width =
-      gfx::kFaviconSize + kAttentionIndicatorRadius + GetInsets().width();
+  // Add padding to avoid clipping the attention indicator and the increased
+  // discard ring radius when kDiscardRingImprovements is enabled. Padding must
+  // be symmetric on each side so that elements will anchor to the center of the
+  // favicon.
+  const int padding =
+      std::max(increased_discard_indicator_radius_, kAttentionIndicatorRadius);
+  SetBorder(views::CreateEmptyBorder(padding));
+
+  const int preferred_width = gfx::kFaviconSize + GetInsets().width();
   SetPreferredSize(gfx::Size(preferred_width, preferred_width));
 
   // Initial state (before any data) should not be animating.
@@ -312,9 +324,17 @@ void TabIcon::PaintAttentionIndicatorAndIcon(gfx::Canvas* canvas,
 
 void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
                                       const gfx::ImageSkia& icon,
-                                      const gfx::Rect& bounds) {
+                                      const gfx::Rect& icon_bounds) {
   // Fades in the discard ring and smaller favicon
-  MaybePaintFavicon(canvas, icon, bounds);
+  MaybePaintFavicon(canvas, icon, icon_bounds);
+
+  // Increase the bounds of the discard ring beyond the icon bounds if
+  // kDiscardRingImprovements is enabled. This is safe because in the
+  // constructor, we have already added insets so that the larger discard ring
+  // can expand into them and won't be clipped, and the icon bounds will be
+  // inside those insets.
+  gfx::Rect discard_ring_bounds = icon_bounds;
+  discard_ring_bounds.Outset(increased_discard_indicator_radius_);
 
   // Painting Discard Ring
   const ui::ColorProvider* color_provider = GetColorProvider();
@@ -339,8 +359,8 @@ void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
 
   // Draw the large segment centered on the left side.
   const int large_segment_start_angle = 180 - kLargeSegmentSweepAngle / 2;
-  PaintArc(canvas, bounds, large_segment_start_angle, kLargeSegmentSweepAngle,
-           flags);
+  PaintArc(canvas, discard_ring_bounds, large_segment_start_angle,
+           kLargeSegmentSweepAngle, flags);
 
   // Draw the small segments evenly spaced around the rest of the ring.
   const int small_segments_start_angle =
@@ -349,7 +369,8 @@ void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
     const int start_angle =
         small_segments_start_angle +
         (i * (kSmallSegmentSweepAngle + kSpacingSweepAngle));
-    PaintArc(canvas, bounds, start_angle % 360, kSmallSegmentSweepAngle, flags);
+    PaintArc(canvas, discard_ring_bounds, start_angle % 360,
+             kSmallSegmentSweepAngle, flags);
   }
 }
 
@@ -425,7 +446,9 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
     // stroke + an additional dp to create some visual separation.
     const float kInitialFaviconInsetDp = 1 + kLoadingAnimationStrokeWidthDp;
     const float kInitialFaviconDiameterDp =
-        gfx::kFaviconSize - 2 * kInitialFaviconInsetDp;
+        gfx::kFaviconSize - 2 * kInitialFaviconInsetDp +
+        (was_discard_indicator_shown_ ? 2 * increased_discard_indicator_radius_
+                                      : 0);
     // This a full outset circle of the favicon square. The animation ends with
     // the entire favicon shown.
     const float kFinalFaviconDiameterDp = sqrt(2) * gfx::kFaviconSize;

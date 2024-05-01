@@ -142,17 +142,19 @@ class TabTest : public ChromeViewsTestBase {
     // centered on the contents bounds.
     const gfx::Rect contents_bounds = tab.GetContentsBounds();
     if (tab.showing_icon_) {
+      gfx::Rect icon_bounds = tab.icon_->bounds();
+      icon_bounds.Inset(tab.icon_->GetInsets());
       if (tab.center_icon_) {
-        EXPECT_LE(tab.icon_->x(), contents_bounds.x());
+        EXPECT_LE(icon_bounds.x(), contents_bounds.x());
       } else {
-        EXPECT_LE(contents_bounds.x(), tab.icon_->x());
+        EXPECT_LE(contents_bounds.x(), icon_bounds.x());
       }
       if (tab.title_->GetVisible()) {
         EXPECT_LE(tab.icon_->bounds().right(), tab.title_->x());
       }
 
       // Tab Icon content now exactly fit the content bounds.
-      EXPECT_EQ(tab.icon_->bounds().y(), contents_bounds.y());
+      EXPECT_EQ(icon_bounds.y(), contents_bounds.y());
       EXPECT_GE(tab.icon_->bounds().bottom(), contents_bounds.bottom());
     }
 
@@ -596,7 +598,7 @@ TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
 
   tab->SizeToPreferredSize();
   const views::View* icon = GetTabIcon(tab);
-  const int icon_x = icon->x();
+  const int icon_x = icon->x() + icon->GetInsets().left();
 
   // Remove the favicon.
   TabRendererData data;
