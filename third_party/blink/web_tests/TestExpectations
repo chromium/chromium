@@ -2608,7 +2608,6 @@ crbug.com/333171923 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fen
 crbug.com/332933144 [ Mac14 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.html [ Failure Timeout ]
 crbug.com/332933144 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.html [ Failure Timeout ]
 crbug.com/332933144 [ Win11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
-crbug.com/332933144 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
 crbug.com/332741532 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Timeout ]
 crbug.com/332572646 external/wpt/wasm/webapi/esm-integration/worker-import-source-phase.tentative.html [ Timeout ]
 crbug.com/332572643 external/wpt/css/css-transforms/transform-iframe-scroll-position.html [ Failure ]
@@ -6004,13 +6003,10 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/vid
 # crbug.com/1356128 Disable flaky tests for fetch keepalive migration.
 # Some of the following tests are both flaky in non-virtual and virtual versions.
 # Some of the following tests are not relevant. Consider remove them from virtual tests.
-crbug.com/626703 [ Mac13 Release ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-frame.https.sub.html [ Timeout ]
 crbug.com/1462796 [ Win ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-meta-refresh.https.optional.sub.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
-crbug.com/626703 [ Mac14 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]
 
 crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]
 
@@ -7333,3 +7329,4 @@ crbug.com/40181907 external/wpt/pointerevents/pointerevent_touch-action-pan-up-c
 crbug.com/40286318 external/wpt/html/semantics/invokers/invoketarget-on-dialog-behavior.tentative.html [ Failure Pass ]
 crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
 crbug.com/333739617 [ Win ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
+crbug.com/333395248 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Pass ]
