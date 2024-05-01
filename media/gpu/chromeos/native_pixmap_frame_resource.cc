@@ -277,23 +277,7 @@ int NativePixmapFrameResource::GetDmabufFd(size_t i) const {
   return pixmap_->GetDmaBufFd(i);
 }
 
-scoped_refptr<gfx::NativePixmapDmaBuf>
-NativePixmapFrameResource::CreateNativePixmapDmaBuf() const {
-  // Duplicate FD's into a new NativePixmapHandle
-  gfx::NativePixmapHandle native_pixmap_handle = pixmap_->ExportHandle();
-
-  // If ExportHandle() runs out of FD's, |native_pixmap_handle| will have no
-  // planes.
-  if (native_pixmap_handle.planes.empty()) {
-    return nullptr;
-  }
-
-  return base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      pixmap_->GetBufferSize(), pixmap_->GetBufferFormat(),
-      std::move(native_pixmap_handle));
-}
-
-const scoped_refptr<const gfx::NativePixmapDmaBuf>&
+scoped_refptr<const gfx::NativePixmapDmaBuf>
 NativePixmapFrameResource::GetNativePixmapDmaBuf() const {
   return pixmap_;
 }

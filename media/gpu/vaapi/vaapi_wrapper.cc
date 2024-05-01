@@ -2415,13 +2415,7 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForFrameResource(
     bool protected_content) {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
-  scoped_refptr<const gfx::NativePixmap> pixmap;
-  if (frame.HasNativePixmap()) {
-    pixmap = frame.GetNativePixmapDmaBuf();
-  } else {
-    pixmap = frame.CreateNativePixmapDmaBuf();
-  }
-
+  auto pixmap = frame.GetNativePixmapDmaBuf();
   if (!pixmap) {
     LOG(ERROR) << "Failed to create NativePixmap from FrameResource";
     return nullptr;

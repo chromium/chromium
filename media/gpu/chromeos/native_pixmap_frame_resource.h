@@ -71,9 +71,7 @@ class NativePixmapFrameResource : public FrameResource {
   uint8_t* GetWritableVisibleData(size_t plane) override;
   size_t NumDmabufFds() const override;
   int GetDmabufFd(size_t i) const override;
-  scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf()
-      const override;
-  const scoped_refptr<const gfx::NativePixmapDmaBuf>& GetNativePixmapDmaBuf()
+  scoped_refptr<const gfx::NativePixmapDmaBuf> GetNativePixmapDmaBuf()
       const override;
   // CreateGpuMemoryBufferHandle() will duplicate file descriptors to make a
   // gfx::GpuMemoryBufferHandle. The GpuMemoryBufferId will match

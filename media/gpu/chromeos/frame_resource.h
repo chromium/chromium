@@ -82,23 +82,12 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   // such use cases, use dup() to obtain your own copy of the FDs.
   virtual int GetDmabufFd(size_t i) const = 0;
 
-  // Creates a NativePixmap that duplicates the DmaBuf FDs of |this|. Ownership
-  // of the constructed NativePixmap is returned to the caller. The returned
-  // pixmap is only a DmaBuf container and should not be used for compositing or
-  // scanout.
-  virtual scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf()
+  // Creates or gets a NativePixmap. If the FrameResource is backed by a
+  // NativePixmap, then there is no duplication of file descriptors. The
+  // returned pixmap is only a DmaBuf container and should not be used for
+  // compositing or scanout.
+  virtual scoped_refptr<const gfx::NativePixmapDmaBuf> GetNativePixmapDmaBuf()
       const = 0;
-
-  // Returns true if |this| is backed by a NativePixmap.
-  bool HasNativePixmap() const {
-    return static_cast<bool>(GetNativePixmapDmaBuf());
-  }
-
-  // Gets the NativePixmapDmaBuf backing |this|. Ownership is retained by
-  // |this| unless the returned value is copied. Then a reference is taken by
-  // the caller.
-  virtual const scoped_refptr<const gfx::NativePixmapDmaBuf>&
-  GetNativePixmapDmaBuf() const = 0;
 
   // Create a shared GPU memory handle to |this|'s data.
   virtual gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const = 0;

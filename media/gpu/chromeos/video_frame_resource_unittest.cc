@@ -81,14 +81,4 @@ TEST(VideoFrameResourceTest, WrappingLifecycle) {
   ASSERT_TRUE(orig->HasAtLeastOneRef());
   ASSERT_FALSE(orig->HasOneRef());
 }
-
-TEST(VideoFrameResourceTest, HasNativePixmap) {
-  const VideoPixelFormat kPixelFormat = PIXEL_FORMAT_NV12;
-  constexpr gfx::Size kCodedSize(320, 240);
-  scoped_refptr<FrameResource> frame =
-      VideoFrameResource::Create(CreateMockDmaBufVideoFrame(
-          kPixelFormat, kCodedSize, /*visible_rect=*/gfx::Rect(kCodedSize),
-          /*natural_size=*/kCodedSize));
-  ASSERT_FALSE(frame->HasNativePixmap());
-}
 }  // namespace media

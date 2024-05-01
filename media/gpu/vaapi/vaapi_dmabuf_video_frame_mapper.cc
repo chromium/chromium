@@ -176,8 +176,8 @@ scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::MapFrame(
     return nullptr;
   }
 
-  scoped_refptr<gfx::NativePixmap> pixmap =
-      video_frame->CreateNativePixmapDmaBuf();
+  scoped_refptr<const gfx::NativePixmap> pixmap =
+      video_frame->GetNativePixmapDmaBuf();
   if (!pixmap) {
     VLOGF(1) << "Failed to create NativePixmap from VideoFrame";
     return nullptr;
