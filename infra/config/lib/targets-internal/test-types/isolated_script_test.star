@@ -16,11 +16,28 @@ def _isolated_script_test_spec_finalize(name, settings, spec_value):
     spec_value = _targets_common.spec_finalize(settings, spec_value, default_merge_script)
     return "isolated_scripts", name, spec_value
 
-_isolated_script_test_spec_handler = _targets_common.spec_handler(
-    type_name = "isolated script",
-    init = _isolated_script_test_spec_init,
-    finalize = _isolated_script_test_spec_finalize,
-)
+def create_isolated_script_test_spec_handler(type_name):
+    """Create spec handler for test type implemented via isolated scripts.
+
+    The isolated script interface is the common interface all tests should
+    implement, but ideally we would not allow directly configuring arbitrary
+    isolated scripts and instead require a more-specific test type. This
+    function allows other test types to be implemented that use the isolated
+    script interface at run time. It should not be used by files outside of this
+    directory.
+    """
+    return _targets_common.spec_handler(
+        type_name = type_name,
+        init = _isolated_script_test_spec_init,
+        finalize = _isolated_script_test_spec_finalize,
+    )
+
+def isolated_script_test_details(args = None):
+    return struct(
+        args = args,
+    )
+
+_isolated_script_test_spec_handler = create_isolated_script_test_spec_handler("isolated script")
 
 def isolated_script_test(*, name, binary = None, mixins = None, args = None):
     """Define an isolated script test.
@@ -51,7 +68,7 @@ def isolated_script_test(*, name, binary = None, mixins = None, args = None):
     test_key = _targets_common.create_test(
         name = name,
         spec_handler = _isolated_script_test_spec_handler,
-        details = struct(
+        details = isolated_script_test_details(
             args = args,
         ),
         mixins = mixins,

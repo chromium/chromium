@@ -233,6 +233,14 @@ ci.builder(
             "reclient",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_junit_tests_scripts",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     free_space = builders.free_space.high,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(

@@ -4,7 +4,11 @@
 
 """Implementation of tests for JUnit-based tests."""
 
+load("@stdlib//internal/graph.star", "graph")
 load("../common.star", _targets_common = "common")
+load("./isolated_script_test.star", "create_isolated_script_test_spec_handler", "isolated_script_test_details")
+
+_junit_test_spec_handler = create_isolated_script_test_spec_handler("junit test")
 
 def junit_test(*, name, label, skip_usage_check = False):
     """Define a junit test.
@@ -22,26 +26,23 @@ def junit_test(*, name, label, skip_usage_check = False):
         skip_usage_check: Disables checking that the target is actually
             referenced in a targets spec for some builder.
     """
-
-    # We don't need to reuse the test binary for multiple junit tests, so just
-    # define the compile target and isolate entry as part of the test
-    # declaration
-    _targets_common.create_compile_target(
-        name = name,
-    )
-    _targets_common.create_label_mapping(
+    binary_key = _targets_common.create_binary(
         name = name,
         type = "generated_script",
         label = label,
         skip_usage_check = skip_usage_check,
     )
 
-    _targets_common.create_legacy_test(
+    legacy_test_key = _targets_common.create_legacy_test(
         name = name,
         basic_suite_test_config = _targets_common.basic_suite_test_config(),
     )
 
-    _targets_common.create_test(
+    test_key = _targets_common.create_test(
         name = name,
-        spec_handler = _targets_common.spec_handler_for_unimplemented_target_type("junit_test"),
+        spec_handler = _junit_test_spec_handler,
+        details = isolated_script_test_details(),
     )
+
+    graph.add_edge(legacy_test_key, binary_key)
+    graph.add_edge(test_key, binary_key)

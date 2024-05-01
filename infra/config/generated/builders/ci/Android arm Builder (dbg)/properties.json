@@ -50,7 +50,8 @@
           "builder": "android-arm-compile-dbg",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android arm Builder (dbg)/targets"
     }
   },
   "$build/reclient": {

@@ -17,52 +17,6 @@ load("./targets-internal/test-types/isolated_script_test.star", "isolated_script
 load("./targets-internal/test-types/junit_test.star", "junit_test")
 load("./targets-internal/test-types/script_test.star", "script_test")
 
-def _create_binary(
-        *,
-        name,
-        type,
-        label,
-        label_type = None,
-        executable = None,
-        executable_suffix = None,
-        script = None,
-        skip_usage_check = False,
-        args = None,
-        test_config = None):
-    _targets_common.create_label_mapping(
-        name = name,
-        type = type,
-        label = label,
-        label_type = label_type,
-        executable = executable,
-        executable_suffix = executable_suffix,
-        script = script,
-        skip_usage_check = skip_usage_check,
-        args = args,
-    )
-
-    label_pieces = label.split(":")
-    if len(label_pieces) != 2:
-        fail((
-            "malformed label '{}' for binary '{}''," +
-            " implicit names (like //f/b meaning //f/b:b) are disallowed",
-        ).format(label, name))
-    if label_pieces[1] != name:
-        fail((
-            "binary name '{}' doesn't match GN target name in label '{}'," +
-            "see http://crbug.com/1071091 for details"
-        ).format(name, label_pieces[1]))
-    test_id_prefix = "ninja:{}/".format(label)
-
-    _targets_nodes.BINARY.add(name, props = dict(
-        test_id_prefix = test_id_prefix,
-        test_config = test_config,
-    ))
-
-    _targets_common.create_compile_target(
-        name = name,
-    )
-
 def _compile_target(*, name, label = None, skip_usage_check = False):
     """Define a compile target to use in targets specs.
 
@@ -120,7 +74,7 @@ def _console_test_launcher(
         args: The arguments to the test. These arguments will be
             included when the test is run using "mb try"
     """
-    _create_binary(
+    _targets_common.create_binary(
         name = name,
         type = "console_test_launcher",
         label = label,
@@ -161,7 +115,7 @@ def _generated_script(
         resultdb: A targets.resultdb describing the ResultDB integration
             for the test.
     """
-    _create_binary(
+    _targets_common.create_binary(
         name = name,
         type = "generated_script",
         label = label,
@@ -203,7 +157,7 @@ def _script(
         resultdb: A targets.resultdb describing the ResultDB integration
             for the test.
     """
-    _create_binary(
+    _targets_common.create_binary(
         name = name,
         type = "script",
         label = label,
@@ -250,7 +204,7 @@ def _windowed_test_launcher(
         args: The arguments to the test. These arguments will be
             included when the test is run using "mb try"
     """
-    _create_binary(
+    _targets_common.create_binary(
         name = name,
         type = "windowed_test_launcher",
         label = label,

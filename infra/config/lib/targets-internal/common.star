@@ -55,6 +55,52 @@ def _binary_test_config(*, results_handler = None, merge = None, resultdb = None
         resultdb = resultdb,
     )
 
+def _create_binary(
+        *,
+        name,
+        type,
+        label,
+        label_type = None,
+        executable = None,
+        executable_suffix = None,
+        script = None,
+        skip_usage_check = False,
+        args = None,
+        test_config = None):
+    _create_label_mapping(
+        name = name,
+        type = type,
+        label = label,
+        label_type = label_type,
+        executable = executable,
+        executable_suffix = executable_suffix,
+        script = script,
+        skip_usage_check = skip_usage_check,
+        args = args,
+    )
+
+    label_pieces = label.split(":")
+    if len(label_pieces) != 2:
+        fail((
+            "malformed label '{}' for binary '{}''," +
+            " implicit names (like //f/b meaning //f/b:b) are disallowed",
+        ).format(label, name))
+    if label_pieces[1] != name:
+        fail((
+            "binary name '{}' doesn't match GN target name in label '{}'," +
+            "see http://crbug.com/1071091 for details"
+        ).format(name, label_pieces[1]))
+    test_id_prefix = "ninja:{}/".format(label)
+
+    _create_compile_target(
+        name = name,
+    )
+
+    return _targets_nodes.BINARY.add(name, props = dict(
+        test_id_prefix = test_id_prefix,
+        test_config = test_config,
+    ))
+
 def _basic_suite_test_config(
         *,
         script = None,
@@ -410,6 +456,7 @@ common = struct(
     binary_test_config = _binary_test_config,
     create_compile_target = _create_compile_target,
     create_label_mapping = _create_label_mapping,
+    create_binary = _create_binary,
     basic_suite_test_config = _basic_suite_test_config,
     create_legacy_test = _create_legacy_test,
     create_test = _create_test,

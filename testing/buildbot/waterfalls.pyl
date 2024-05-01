@@ -417,6 +417,7 @@
     # //infra/config/subprojects/ci/chromium.android.star
     #   Android WebView O (dbg)
     #   Android WebView P (dbg)
+    #   Android arm Builder (dbg)
     #   Android arm64 Builder (dbg)
     #   Oreo Phone Tester
     #   android-pie-arm64-dbg
@@ -427,14 +428,6 @@
         'additional_compile_targets': [
           'all',
         ],
-      },
-      'Android arm Builder (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_junit_tests_scripts',
-        },
       },
       'Android arm64 Builder All Targets (dbg)': {
         'additional_compile_targets': [
