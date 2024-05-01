@@ -69,6 +69,9 @@ void DefaultBrowserPromptManager::RemoveObserver(Observer* observer) {
 
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
   CHECK(base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
+#endif
 
   if (features::kShowDefaultBrowserAppMenuItem.Get()) {
     SetAppMenuItemVisibility(true);
@@ -90,6 +93,10 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
 }
 
 void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
+#endif
+
   CloseAllInfoBars();
 
   SetShowAppMenuPromptVisibility(false);
@@ -97,57 +104,6 @@ void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
   if (close_reason == CloseReason::kAccept) {
     SetAppMenuItemVisibility(false);
   }
-}
-
-bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
-  return browser->is_type_normal() &&
-         !browser->profile()->IsIncognitoProfile() &&
-         !browser->profile()->IsGuestSession();
-}
-
-void DefaultBrowserPromptManager::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kInserted) {
-    for (const auto& contents : change.GetInsert()->contents) {
-      if (!base::Contains(infobars_, contents.contents)) {
-        CreateInfoBarForWebContents(contents.contents,
-                                    tab_strip_model->profile());
-      }
-    }
-  }
-}
-
-void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
-                                                   bool animate) {
-  auto infobars_entry = base::ranges::find(
-      infobars_, infobar, &decltype(infobars_)::value_type::second);
-  if (infobars_entry == infobars_.end()) {
-    return;
-  }
-
-  infobar->owner()->RemoveObserver(this);
-  infobars_.erase(infobars_entry);
-  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())
-      ->RemoveObserver(this);
-
-  if (user_initiated_info_bar_close_pending_.has_value()) {
-    CloseAllPrompts(user_initiated_info_bar_close_pending_.value());
-    user_initiated_info_bar_close_pending_.reset();
-  }
-}
-
-void DefaultBrowserPromptManager::OnAccept() {
-  base::UmaHistogramCounts100("DefaultBrowser.InfoBar.TimesShownBeforeAccept",
-                              g_browser_process->local_state()->GetInteger(
-                                  prefs::kDefaultBrowserDeclinedCount) +
-                                  1);
-  user_initiated_info_bar_close_pending_ = CloseReason::kAccept;
-}
-
-void DefaultBrowserPromptManager::OnDismiss() {
-  user_initiated_info_bar_close_pending_ = CloseReason::kDismiss;
 }
 
 DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
@@ -227,4 +183,55 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
 
 void DefaultBrowserPromptManager::SetAppMenuItemVisibility(bool show) {
   show_app_menu_item_ = show;
+}
+
+bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
+  return browser->is_type_normal() &&
+         !browser->profile()->IsIncognitoProfile() &&
+         !browser->profile()->IsGuestSession();
+}
+
+void DefaultBrowserPromptManager::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::kInserted) {
+    for (const auto& contents : change.GetInsert()->contents) {
+      if (!base::Contains(infobars_, contents.contents)) {
+        CreateInfoBarForWebContents(contents.contents,
+                                    tab_strip_model->profile());
+      }
+    }
+  }
+}
+
+void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                                   bool animate) {
+  auto infobars_entry = base::ranges::find(
+      infobars_, infobar, &decltype(infobars_)::value_type::second);
+  if (infobars_entry == infobars_.end()) {
+    return;
+  }
+
+  infobar->owner()->RemoveObserver(this);
+  infobars_.erase(infobars_entry);
+  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())
+      ->RemoveObserver(this);
+
+  if (user_initiated_info_bar_close_pending_.has_value()) {
+    CloseAllPrompts(user_initiated_info_bar_close_pending_.value());
+    user_initiated_info_bar_close_pending_.reset();
+  }
+}
+
+void DefaultBrowserPromptManager::OnAccept() {
+  base::UmaHistogramCounts100("DefaultBrowser.InfoBar.TimesShownBeforeAccept",
+                              g_browser_process->local_state()->GetInteger(
+                                  prefs::kDefaultBrowserDeclinedCount) +
+                                  1);
+  user_initiated_info_bar_close_pending_ = CloseReason::kAccept;
+}
+
+void DefaultBrowserPromptManager::OnDismiss() {
+  user_initiated_info_bar_close_pending_ = CloseReason::kDismiss;
 }

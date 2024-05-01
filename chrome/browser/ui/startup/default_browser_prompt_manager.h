@@ -53,6 +53,21 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
 
   void CloseAllPrompts(CloseReason close_reason);
 
+ private:
+  friend struct base::DefaultSingletonTraits<DefaultBrowserPromptManager>;
+
+  DefaultBrowserPromptManager();
+  ~DefaultBrowserPromptManager() override;
+
+  void CreateInfoBarForWebContents(content::WebContents* contents,
+                                   Profile* profile);
+
+  void CloseAllInfoBars();
+
+  void SetShowAppMenuPromptVisibility(bool show);
+
+  void SetAppMenuItemVisibility(bool show);
+
   // BrowserTabStripTrackerDelegate
   bool ShouldTrackBrowser(Browser* browser) override;
 
@@ -68,21 +83,6 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   // ConfirmInfoBarDelegate::Observer
   void OnAccept() override;
   void OnDismiss() override;
-
- private:
-  friend struct base::DefaultSingletonTraits<DefaultBrowserPromptManager>;
-
-  DefaultBrowserPromptManager();
-  ~DefaultBrowserPromptManager() override;
-
-  void CreateInfoBarForWebContents(content::WebContents* contents,
-                                   Profile* profile);
-
-  void CloseAllInfoBars();
-
-  void SetShowAppMenuPromptVisibility(bool show);
-
-  void SetAppMenuItemVisibility(bool show);
 
   std::unique_ptr<BrowserTabStripTracker> browser_tab_strip_tracker_;
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
