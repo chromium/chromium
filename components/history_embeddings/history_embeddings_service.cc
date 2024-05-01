@@ -181,6 +181,11 @@ void HistoryEmbeddingsService::OnQueryEmbeddingComputed(
   bool succeeded = !query_embeddings.empty();
   base::UmaHistogramBoolean("History.Embeddings.QueryEmbeddingSucceeded",
                             succeeded);
+
+  VLOG(1) << "History.Embeddings.QueryEmbeddingSucceeded: " << succeeded
+          << " ; Query: '"
+          << (query_passages.empty() ? "(FAILED)" : query_passages[0]) << "'";
+
   if (!succeeded) {
     // Query embedding failed. Just return no search results.
     std::move(callback).Run({});
@@ -249,14 +254,20 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
             return !weak_latest_query_id || *weak_latest_query_id != query_id;
           },
           std::move(weak_latest_query_id), query_id));
-  base::UmaHistogramTimes("History.Embeddings.Search.Duration",
-                          timer.Elapsed());
+  const base::TimeDelta elapsed = timer.Elapsed();
+  base::UmaHistogramTimes("History.Embeddings.Search.Duration", elapsed);
   base::UmaHistogramCounts1M("History.Embeddings.Search.UrlCount",
                              search_info.searched_url_count);
   base::UmaHistogramCounts10M("History.Embeddings.Search.EmbeddingCount",
                               search_info.searched_embedding_count);
   base::UmaHistogramBoolean("History.Embeddings.Search.Completed",
                             search_info.completed);
+
+  VLOG(1) << "History.Embeddings.Search.Duration (ms): "
+          << elapsed.InMilliseconds()
+          << " ; .UrlCount: " << search_info.searched_url_count
+          << " ; .EmbeddingCount: " << search_info.searched_embedding_count
+          << " ; .Completed: " << search_info.completed;
 
   // Populate source passages.
   for (ScoredUrl& scored_url : search_info.scored_urls) {
@@ -265,6 +276,8 @@ std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
     if (value &&
         scored_url.index < static_cast<size_t>(value.value().passages_size())) {
       scored_url.passage = value.value().passages(scored_url.index);
+      VLOG(2) << "- score: " << scored_url.score
+              << " ; passage: " << scored_url.passage;
     }
   }
 

@@ -82,6 +82,8 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
     std::vector<std::string> passages,
     GetEmbeddingsCallback callback) {
   if (embeddings_model_path_.empty() || sp_model_path_.empty()) {
+    VLOG(1) << "Missing model path: embeddings='" << embeddings_model_path_
+            << "'; sp='" << sp_model_path_ << "'";
     std::move(callback).Run({}, {});
     return;
   }

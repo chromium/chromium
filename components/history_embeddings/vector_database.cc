@@ -6,6 +6,8 @@
 
 #include <queue>
 
+#include "base/timer/elapsed_timer.h"
+
 namespace history_embeddings {
 
 // Standard normalized magnitude for all embeddings.
@@ -135,11 +137,16 @@ SearchInfo VectorDatabase::FindNearest(
 
   SearchInfo search_info;
   search_info.completed = true;
+
+  base::ElapsedTimer total_timer;
+  base::TimeDelta scoring_elapsed;
   while (const UrlEmbeddings* item = iterator->Next()) {
     if (is_search_halted.Run()) {
       search_info.completed = false;
       break;
     }
+
+    base::ElapsedTimer scoring_timer;
     while (q.size() > count) {
       q.pop();
     }
@@ -153,7 +160,13 @@ SearchInfo VectorDatabase::FindNearest(
     });
     search_info.searched_url_count++;
     search_info.searched_embedding_count += item->embeddings.size();
+    scoring_elapsed += scoring_timer.Elapsed();
   }
+
+  base::TimeDelta total_elapsed = total_timer.Elapsed();
+  VLOG(1) << "Inner search total (ns): " << total_elapsed.InNanoseconds()
+          << " ; scoring (ns): " << scoring_elapsed.InNanoseconds()
+          << " ; scoring %: " << scoring_elapsed * 100 / total_elapsed;
 
   // Empty queue into vector and return result.
   while (!q.empty()) {
