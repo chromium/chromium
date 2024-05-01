@@ -44,6 +44,16 @@ UrlInfo::UrlInfo(const UrlInfo&) = default;
 UrlInfo& UrlInfo::operator=(const UrlInfo& other) = default;
 UrlInfo::~UrlInfo() = default;
 
+EntryPointInfo::EntryPointInfo(const std::string& title,
+                               std::set<GURL> similar_candidate_products_urls)
+    : title(title),
+      similar_candidate_products_urls(
+          std::move(similar_candidate_products_urls)) {}
+
+EntryPointInfo::~EntryPointInfo() = default;
+EntryPointInfo::EntryPointInfo(const EntryPointInfo&) = default;
+EntryPointInfo& EntryPointInfo::operator=(const EntryPointInfo&) = default;
+
 ParcelTrackingStatus::ParcelTrackingStatus() = default;
 ParcelTrackingStatus::ParcelTrackingStatus(const ParcelTrackingStatus&) =
     default;

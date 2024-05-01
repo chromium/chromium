@@ -129,18 +129,6 @@ bool IsCandidateProductInProductGroup(
 
 }  // namespace
 
-EntryPointInfo::EntryPointInfo(const std::string& title,
-                               std::set<GURL> similar_candidate_products_urls)
-    : title(title),
-      similar_candidate_products_urls(
-          std::move(similar_candidate_products_urls)) {}
-
-EntryPointInfo::~EntryPointInfo() = default;
-
-EntryPointInfo::EntryPointInfo(const EntryPointInfo&) = default;
-
-EntryPointInfo& EntryPointInfo::operator=(const EntryPointInfo&) = default;
-
 ClusterManager::ClusterManager(
     ProductSpecificationsService* product_specification_service,
     const GetProductInfoCallback& get_product_info_cb,

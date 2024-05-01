@@ -193,6 +193,22 @@ struct UrlInfo {
   std::u16string title;
 };
 
+// Class representing the tap strip entry point.
+struct EntryPointInfo {
+  EntryPointInfo(const std::string& title,
+                 std::set<GURL> similar_candidate_products_urls);
+  ~EntryPointInfo();
+  EntryPointInfo(const EntryPointInfo&);
+  EntryPointInfo& operator=(const EntryPointInfo&);
+
+  // Title of the product group to be clustered.
+  std::string title;
+
+  // Set of URLs of candidate products that are similar and can
+  // be clustered into one product group.
+  std::set<GURL> similar_candidate_products_urls;
+};
+
 // Callbacks and typedefs for various accessors in the shopping service.
 using DiscountsMap = std::map<GURL, std::vector<DiscountInfo>>;
 using DiscountInfoCallback = base::OnceCallback<void(const DiscountsMap&)>;
