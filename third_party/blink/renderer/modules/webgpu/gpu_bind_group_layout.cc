@@ -25,18 +25,18 @@ wgpu::BindGroupLayoutEntry AsDawnType(
     Vector<std::unique_ptr<wgpu::ExternalTextureBindingLayout>>*
         externalTextureBindingLayouts,
     ExceptionState& exception_state) {
-  wgpu::BindGroupLayoutEntry dawn_binding = {};
-
-  dawn_binding.binding = webgpu_binding->binding();
-  dawn_binding.visibility =
-      AsDawnFlags<wgpu::ShaderStage>(webgpu_binding->visibility());
+  wgpu::BindGroupLayoutEntry dawn_binding = {
+      .binding = webgpu_binding->binding(),
+      .visibility =
+          AsDawnFlags<wgpu::ShaderStage>(webgpu_binding->visibility()),
+  };
 
   if (webgpu_binding->hasBuffer()) {
-    dawn_binding.buffer.type = AsDawnEnum(webgpu_binding->buffer()->type());
-    dawn_binding.buffer.hasDynamicOffset =
-        webgpu_binding->buffer()->hasDynamicOffset();
-    dawn_binding.buffer.minBindingSize =
-        webgpu_binding->buffer()->minBindingSize();
+    dawn_binding.buffer = {
+        .type = AsDawnEnum(webgpu_binding->buffer()->type()),
+        .hasDynamicOffset = webgpu_binding->buffer()->hasDynamicOffset(),
+        .minBindingSize = webgpu_binding->buffer()->minBindingSize(),
+    };
   }
 
   if (webgpu_binding->hasSampler()) {
@@ -44,12 +44,11 @@ wgpu::BindGroupLayoutEntry AsDawnType(
   }
 
   if (webgpu_binding->hasTexture()) {
-    dawn_binding.texture.sampleType =
-        AsDawnEnum(webgpu_binding->texture()->sampleType());
-    dawn_binding.texture.viewDimension =
-        AsDawnEnum(webgpu_binding->texture()->viewDimension());
-    dawn_binding.texture.multisampled =
-        webgpu_binding->texture()->multisampled();
+    dawn_binding.texture = {
+        .sampleType = AsDawnEnum(webgpu_binding->texture()->sampleType()),
+        .viewDimension = AsDawnEnum(webgpu_binding->texture()->viewDimension()),
+        .multisampled = webgpu_binding->texture()->multisampled(),
+    };
   }
 
   if (webgpu_binding->hasStorageTexture()) {
@@ -58,12 +57,12 @@ wgpu::BindGroupLayoutEntry AsDawnType(
       return {};
     }
 
-    dawn_binding.storageTexture.access =
-        AsDawnEnum(webgpu_binding->storageTexture()->access());
-    dawn_binding.storageTexture.format =
-        AsDawnEnum(webgpu_binding->storageTexture()->format());
-    dawn_binding.storageTexture.viewDimension =
-        AsDawnEnum(webgpu_binding->storageTexture()->viewDimension());
+    dawn_binding.storageTexture = {
+        .access = AsDawnEnum(webgpu_binding->storageTexture()->access()),
+        .format = AsDawnEnum(webgpu_binding->storageTexture()->format()),
+        .viewDimension =
+            AsDawnEnum(webgpu_binding->storageTexture()->viewDimension()),
+    };
   }
 
   if (webgpu_binding->hasExternalTexture()) {
@@ -118,9 +117,10 @@ GPUBindGroupLayout* GPUBindGroupLayout::Create(
     return nullptr;
   }
 
-  wgpu::BindGroupLayoutDescriptor dawn_desc = {};
-  dawn_desc.entryCount = entry_count;
-  dawn_desc.entries = entries.get();
+  wgpu::BindGroupLayoutDescriptor dawn_desc = {
+      .entryCount = entry_count,
+      .entries = entries.get(),
+  };
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {
     dawn_desc.label = label.c_str();

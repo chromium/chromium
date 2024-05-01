@@ -115,11 +115,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
   gfx::Size size = canvas_resource->Size();
 
-  wgpu::TextureDescriptor tex_desc = {};
-  tex_desc.usage = usage;
-  tex_desc.size = {base::checked_cast<uint32_t>(size.width()),
-                   base::checked_cast<uint32_t>(size.height())};
-  tex_desc.format = VizToWGPUFormat(canvas_resource->GetSharedImageFormat());
+  wgpu::TextureDescriptor tex_desc = {
+      .usage = usage,
+      .size = {base::checked_cast<uint32_t>(size.width()),
+               base::checked_cast<uint32_t>(size.height())},
+      .format = VizToWGPUFormat(canvas_resource->GetSharedImageFormat()),
+  };
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, tex_desc, mailbox, sync_token,
       gpu::webgpu::WEBGPU_MAILBOX_NONE,
@@ -167,8 +168,9 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromVideoFrame(
       },
       context_provider, base::RetainedRef(video_frame));
 
-  wgpu::TextureDescriptor desc = {};
-  desc.usage = wgpu::TextureUsage::TextureBinding;
+  wgpu::TextureDescriptor desc = {
+      .usage = wgpu::TextureUsage::TextureBinding,
+  };
   return base::AdoptRef(
       new WebGPUMailboxTexture(std::move(dawn_control_client), device, desc,
                                video_frame->mailbox_holder(0).mailbox,

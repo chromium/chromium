@@ -248,9 +248,7 @@ void GPUAdapter::OnRequestDeviceCallback(
 
     case wgpu::RequestDeviceStatus::Error:
     case wgpu::RequestDeviceStatus::Unknown:
-    default:
-      // TODO(dawn:1987): Remove the default case after handling
-      // InstanceDropped.
+    case wgpu::RequestDeviceStatus::InstanceDropped:
       if (dawn_device) {
         // Immediately force the device to be lost.
         auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(

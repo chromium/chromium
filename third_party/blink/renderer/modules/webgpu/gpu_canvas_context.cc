@@ -365,24 +365,22 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // objects (valid or invalid) and not throw.
   configured_ = true;
 
+  view_formats_ = AsDawnEnum<wgpu::TextureFormat>(descriptor->viewFormats());
+  gfx::Size host_size = Host()->Size();
+
   // Set the default values of the member corresponding to
   // GPUCanvasContext.[[texture_descriptor]] in the WebGPU spec.
-  texture_descriptor_ = {};
-
-  // Set the values from the configuration descriptor
-  texture_descriptor_.format = AsDawnEnum(descriptor->format());
-  texture_descriptor_.usage =
-      AsDawnFlags<wgpu::TextureUsage>(descriptor->usage());
-
-  view_formats_ = AsDawnEnum<wgpu::TextureFormat>(descriptor->viewFormats());
-  texture_descriptor_.viewFormats = view_formats_.get();
-  texture_descriptor_.viewFormatCount = descriptor->viewFormats().size();
-
-  // Set the size of the texture in case there was no Reshape() since the
-  // creation of the context.
-  gfx::Size host_size = Host()->Size();
-  texture_descriptor_.size = {static_cast<uint32_t>(host_size.width()),
-                              static_cast<uint32_t>(host_size.height()), 1};
+  texture_descriptor_ = {
+      // Set the values from the configuration descriptor
+      .usage = AsDawnFlags<wgpu::TextureUsage>(descriptor->usage()),
+      .size = {static_cast<uint32_t>(host_size.width()),
+               static_cast<uint32_t>(host_size.height())},
+      .format = AsDawnEnum(descriptor->format()),
+      .viewFormatCount = descriptor->viewFormats().size(),
+      .viewFormats = view_formats_.get(),
+      // Set the size of the texture in case there was no Reshape() since the
+      // creation of the context.
+  };
 
   // Reconfiguring the context discards previous drawing buffers but we also
   // destroy the swap buffers so that any validation error below will cause
@@ -451,9 +449,11 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   if (copy_to_swap_texture_required_) {
     // The texture returned to the user will require both the CopySrc and
     // TextureBinding usages in order to be used with CopyTextureForBrowser.
-    texture_internal_usage_ = {};
-    texture_internal_usage_.internalUsage =
-        wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+    texture_internal_usage_ = {{
+        .internalUsage =
+            wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding,
+    }};
+
     texture_descriptor_.nextInChain = &texture_internal_usage_;
 
     // The swap buffer texture will require both CopyDst and RenderAttachment
@@ -803,8 +803,9 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   } else {
     // Create a command encoder and call copyTextureToTexture for the image
     // copy.
-    wgpu::DawnEncoderInternalUsageDescriptor internal_usage_desc = {};
-    internal_usage_desc.useInternalUsages = true;
+    wgpu::DawnEncoderInternalUsageDescriptor internal_usage_desc = {{
+        .useInternalUsages = true,
+    }};
 
     wgpu::CommandEncoderDescriptor command_encoder_desc = {
         .nextInChain = &internal_usage_desc,

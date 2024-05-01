@@ -37,23 +37,24 @@ const char kGPUBlendComponentPartiallySpecifiedMessage[] =
 wgpu::BlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::BlendComponent dawn_desc = {};
-  dawn_desc.dstFactor = AsDawnEnum(webgpu_desc->getDstFactorOr(
-      V8GPUBlendFactor(V8GPUBlendFactor::Enum::kZero)));
-  dawn_desc.srcFactor = AsDawnEnum(webgpu_desc->getSrcFactorOr(
-      V8GPUBlendFactor(V8GPUBlendFactor::Enum::kOne)));
-  dawn_desc.operation = AsDawnEnum(webgpu_desc->getOperationOr(
-      V8GPUBlendOperation(V8GPUBlendOperation::Enum::kAdd)));
-
+  wgpu::BlendComponent dawn_desc = {
+      .operation = AsDawnEnum(webgpu_desc->getOperationOr(
+          V8GPUBlendOperation(V8GPUBlendOperation::Enum::kAdd))),
+      .srcFactor = AsDawnEnum(webgpu_desc->getSrcFactorOr(
+          V8GPUBlendFactor(V8GPUBlendFactor::Enum::kOne))),
+      .dstFactor = AsDawnEnum(webgpu_desc->getDstFactorOr(
+          V8GPUBlendFactor(V8GPUBlendFactor::Enum::kZero))),
+  };
   return dawn_desc;
 }
 
 wgpu::BlendState AsDawnType(const GPUBlendState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::BlendState dawn_desc = {};
-  dawn_desc.color = AsDawnType(webgpu_desc->color());
-  dawn_desc.alpha = AsDawnType(webgpu_desc->alpha());
+  wgpu::BlendState dawn_desc = {
+      .color = AsDawnType(webgpu_desc->color()),
+      .alpha = AsDawnType(webgpu_desc->alpha()),
+  };
 
   return dawn_desc;
 }
@@ -63,25 +64,23 @@ wgpu::BlendState AsDawnType(const GPUBlendState* webgpu_desc) {
 wgpu::ColorTargetState AsDawnType(const GPUColorTargetState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::ColorTargetState dawn_desc = {};
-  // Blend is handled in ConvertToDawnType
-  dawn_desc.blend = nullptr;
-  dawn_desc.writeMask =
-      AsDawnFlags<wgpu::ColorWriteMask>(webgpu_desc->writeMask());
-  dawn_desc.format = AsDawnEnum(webgpu_desc->format());
-
+  wgpu::ColorTargetState dawn_desc = {
+      // .blend is handled in ConvertToDawnType
+      .format = AsDawnEnum(webgpu_desc->format()),
+      .writeMask = AsDawnFlags<wgpu::ColorWriteMask>(webgpu_desc->writeMask()),
+  };
   return dawn_desc;
 }
 
 wgpu::VertexBufferLayout AsDawnType(const GPUVertexBufferLayout* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::VertexBufferLayout dawn_desc = {};
-  dawn_desc.arrayStride = webgpu_desc->arrayStride();
-  dawn_desc.stepMode = AsDawnEnum(webgpu_desc->stepMode());
-  dawn_desc.attributeCount = webgpu_desc->attributes().size();
-
-  // dawn_desc.attributes is handled outside separately
+  wgpu::VertexBufferLayout dawn_desc = {
+      .arrayStride = webgpu_desc->arrayStride(),
+      .stepMode = AsDawnEnum(webgpu_desc->stepMode()),
+      .attributeCount = webgpu_desc->attributes().size(),
+      // .attributes is handled outside separately
+  };
 
   return dawn_desc;
 }
@@ -89,10 +88,11 @@ wgpu::VertexBufferLayout AsDawnType(const GPUVertexBufferLayout* webgpu_desc) {
 wgpu::VertexAttribute AsDawnType(const GPUVertexAttribute* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::VertexAttribute dawn_desc = {};
-  dawn_desc.shaderLocation = webgpu_desc->shaderLocation();
-  dawn_desc.offset = webgpu_desc->offset();
-  dawn_desc.format = AsDawnEnum(webgpu_desc->format());
+  wgpu::VertexAttribute dawn_desc = {
+      .format = AsDawnEnum(webgpu_desc->format()),
+      .offset = webgpu_desc->offset(),
+      .shaderLocation = webgpu_desc->shaderLocation(),
+  };
 
   return dawn_desc;
 }
@@ -102,11 +102,12 @@ namespace {
 wgpu::StencilFaceState AsDawnType(const GPUStencilFaceState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::StencilFaceState dawn_desc = {};
-  dawn_desc.compare = AsDawnEnum(webgpu_desc->compare());
-  dawn_desc.depthFailOp = AsDawnEnum(webgpu_desc->depthFailOp());
-  dawn_desc.failOp = AsDawnEnum(webgpu_desc->failOp());
-  dawn_desc.passOp = AsDawnEnum(webgpu_desc->passOp());
+  wgpu::StencilFaceState dawn_desc = {
+      .compare = AsDawnEnum(webgpu_desc->compare()),
+      .failOp = AsDawnEnum(webgpu_desc->failOp()),
+      .depthFailOp = AsDawnEnum(webgpu_desc->depthFailOp()),
+      .passOp = AsDawnEnum(webgpu_desc->passOp()),
+  };
 
   return dawn_desc;
 }
@@ -177,10 +178,11 @@ void GPUDepthStencilStateAsWGPUDepthStencilState(
 wgpu::MultisampleState AsDawnType(const GPUMultisampleState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::MultisampleState dawn_desc = {};
-  dawn_desc.count = webgpu_desc->count();
-  dawn_desc.mask = webgpu_desc->mask();
-  dawn_desc.alphaToCoverageEnabled = webgpu_desc->alphaToCoverageEnabled();
+  wgpu::MultisampleState dawn_desc = {
+      .count = webgpu_desc->count(),
+      .mask = webgpu_desc->mask(),
+      .alphaToCoverageEnabled = webgpu_desc->alphaToCoverageEnabled(),
+  };
 
   return dawn_desc;
 }
@@ -234,7 +236,7 @@ void GPUVertexStateAsWGPUVertexState(GPUDevice* device,
   DCHECK(dawn_vertex);
 
   *dawn_vertex->dawn_desc = {};
-  dawn_vertex->dawn_desc->nextInChain = nullptr;
+
   GPUProgrammableStageAsWGPUProgrammableStage(descriptor, dawn_vertex);
   dawn_vertex->dawn_desc->constantCount = dawn_vertex->constantCount;
   dawn_vertex->dawn_desc->constants = dawn_vertex->constants.get();
@@ -267,7 +269,6 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
   DCHECK(dawn_fragment);
 
   dawn_fragment->dawn_desc = {};
-  dawn_fragment->dawn_desc.nextInChain = nullptr;
 
   GPUProgrammableStageAsWGPUProgrammableStage(descriptor, dawn_fragment);
   dawn_fragment->dawn_desc.constantCount = dawn_fragment->constantCount;

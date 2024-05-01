@@ -122,10 +122,8 @@ const char* FromDawnEnum(wgpu::QueryType dawn_enum) {
       return "occlusion";
     case wgpu::QueryType::Timestamp:
       return "timestamp";
-    default:
-      NOTREACHED();
   }
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 wgpu::TextureFormat AsDawnEnum(const V8GPUTextureFormat& webgpu_enum) {
@@ -579,10 +577,10 @@ const char* FromDawnEnum(wgpu::TextureDimension dawn_enum) {
       return "2d";
     case wgpu::TextureDimension::e3D:
       return "3d";
-    default:
-      NOTREACHED();
+    case wgpu::TextureDimension::Undefined:
+      break;
   }
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 wgpu::TextureViewDimension AsDawnEnum(
@@ -902,10 +900,8 @@ const char* FromDawnEnum(wgpu::BufferMapState dawn_enum) {
       return "pending";
     case wgpu::BufferMapState::Mapped:
       return "mapped";
-    default:
-      NOTREACHED();
   }
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 const char* FromDawnEnum(wgpu::BackendType dawn_enum) {
@@ -928,10 +924,8 @@ const char* FromDawnEnum(wgpu::BackendType dawn_enum) {
       return "openGL";
     case wgpu::BackendType::OpenGLES:
       return "openGLES";
-    default:
-      NOTREACHED();
   }
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 const char* FromDawnEnum(wgpu::AdapterType dawn_enum) {
@@ -944,10 +938,8 @@ const char* FromDawnEnum(wgpu::AdapterType dawn_enum) {
       return "CPU";
     case wgpu::AdapterType::Unknown:
       return "unknown";
-    default:
-      NOTREACHED();
   }
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 bool FromDawnEnum(wgpu::WGSLFeatureName dawn_enum, V8WGSLFeatureName* result) {

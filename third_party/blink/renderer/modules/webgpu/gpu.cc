@@ -75,9 +75,10 @@ wgpu::RequestAdapterOptions AsDawnType(
     const GPURequestAdapterOptions* webgpu_options) {
   DCHECK(webgpu_options);
 
-  wgpu::RequestAdapterOptions dawn_options = {};
-  dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
-  dawn_options.compatibilityMode = webgpu_options->compatibilityMode();
+  wgpu::RequestAdapterOptions dawn_options = {
+      .forceFallbackAdapter = webgpu_options->forceFallbackAdapter(),
+      .compatibilityMode = webgpu_options->compatibilityMode(),
+  };
   if (webgpu_options->hasPowerPreference()) {
     dawn_options.powerPreference =
         AsDawnType(webgpu_options->powerPreference());
@@ -204,9 +205,6 @@ void GPU::OnRequestAdapterCallback(
     case wgpu::RequestAdapterStatus::Unknown:
     case wgpu::RequestAdapterStatus::InstanceDropped:
       break;
-
-    default:
-      NOTREACHED();
   }
   if (error_message) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);

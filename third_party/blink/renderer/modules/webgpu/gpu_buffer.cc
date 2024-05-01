@@ -41,10 +41,11 @@ wgpu::BufferDescriptor AsDawnType(const GPUBufferDescriptor* webgpu_desc,
   DCHECK(webgpu_desc);
   DCHECK(label);
 
-  wgpu::BufferDescriptor dawn_desc = {};
-  dawn_desc.usage = AsDawnFlags<wgpu::BufferUsage>(webgpu_desc->usage());
-  dawn_desc.size = webgpu_desc->size();
-  dawn_desc.mappedAtCreation = webgpu_desc->mappedAtCreation();
+  wgpu::BufferDescriptor dawn_desc = {
+      .usage = AsDawnFlags<wgpu::BufferUsage>(webgpu_desc->usage()),
+      .size = webgpu_desc->size(),
+      .mappedAtCreation = webgpu_desc->mappedAtCreation(),
+  };
   *label = webgpu_desc->label().Utf8();
   if (!label->empty()) {
     dawn_desc.label = label->c_str();
@@ -385,6 +386,10 @@ void GPUBuffer::OnMapAsyncCallback(
       resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
                                        "Device is lost");
       break;
+    case wgpu::BufferMapAsyncStatus::InstanceDropped:
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       "Instance dropped");
+      break;
     case wgpu::BufferMapAsyncStatus::DestroyedBeforeCallback:
       resolver->RejectWithDOMException(
           DOMExceptionCode::kAbortError,
@@ -406,12 +411,6 @@ void GPUBuffer::OnMapAsyncCallback(
     case wgpu::BufferMapAsyncStatus::SizeOutOfRange:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        "The size is out of range");
-      break;
-    default:
-      // TODO(dawn:1987): Remove the default case after handling
-      // InstanceDropped.
-      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                       "Device is lost");
       break;
   }
 }

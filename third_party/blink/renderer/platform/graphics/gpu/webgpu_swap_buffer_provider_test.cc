@@ -114,10 +114,11 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
                                  hdr_metadata),
         alive_(alive),
         client_(client) {
-    texture_desc_ = {};
-    texture_desc_.usage = usage;
-    texture_desc_.format = format;
-    texture_desc_.size = {0, 0, 1};
+    texture_desc_ = {
+        .usage = usage,
+        .size = {0, 0, 1},
+        .format = format,
+    };
   }
   ~WebGPUSwapBufferProviderForTests() override { *alive_ = false; }
 
@@ -206,8 +207,9 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
 
     instance_ = wgpu::Instance::Acquire(reservation.instance);
 
-    wgpu::RequestAdapterOptions options = {};
-    options.backendType = wgpu::BackendType::Null;
+    wgpu::RequestAdapterOptions options = {
+        .backendType = wgpu::BackendType::Null,
+    };
     instance_.RequestAdapter(
         &options,
         [](WGPURequestAdapterStatus status, WGPUAdapter cAdapter, const char*,

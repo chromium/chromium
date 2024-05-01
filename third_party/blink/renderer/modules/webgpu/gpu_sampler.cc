@@ -17,16 +17,17 @@ wgpu::SamplerDescriptor AsDawnType(const GPUSamplerDescriptor* webgpu_desc,
   DCHECK(webgpu_desc);
   DCHECK(label);
 
-  wgpu::SamplerDescriptor dawn_desc = {};
-  dawn_desc.addressModeU = AsDawnEnum(webgpu_desc->addressModeU());
-  dawn_desc.addressModeV = AsDawnEnum(webgpu_desc->addressModeV());
-  dawn_desc.addressModeW = AsDawnEnum(webgpu_desc->addressModeW());
-  dawn_desc.magFilter = AsDawnEnum(webgpu_desc->magFilter());
-  dawn_desc.minFilter = AsDawnEnum(webgpu_desc->minFilter());
-  dawn_desc.mipmapFilter = AsDawnEnum(webgpu_desc->mipmapFilter());
-  dawn_desc.lodMinClamp = webgpu_desc->lodMinClamp();
-  dawn_desc.lodMaxClamp = webgpu_desc->lodMaxClamp();
-  dawn_desc.maxAnisotropy = webgpu_desc->maxAnisotropy();
+  wgpu::SamplerDescriptor dawn_desc = {
+      .addressModeU = AsDawnEnum(webgpu_desc->addressModeU()),
+      .addressModeV = AsDawnEnum(webgpu_desc->addressModeV()),
+      .addressModeW = AsDawnEnum(webgpu_desc->addressModeW()),
+      .magFilter = AsDawnEnum(webgpu_desc->magFilter()),
+      .minFilter = AsDawnEnum(webgpu_desc->minFilter()),
+      .mipmapFilter = AsDawnEnum(webgpu_desc->mipmapFilter()),
+      .lodMinClamp = webgpu_desc->lodMinClamp(),
+      .lodMaxClamp = webgpu_desc->lodMaxClamp(),
+      .maxAnisotropy = webgpu_desc->maxAnisotropy(),
+  };
   if (webgpu_desc->hasCompare()) {
     dawn_desc.compare = AsDawnEnum(webgpu_desc->compare());
   }

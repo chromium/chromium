@@ -34,8 +34,11 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
   DCHECK(in);
   DCHECK(out);
 
-  *out = {};
-  out->view = in->view()->GetHandle();
+  *out = {
+      .view = in->view()->GetHandle(),
+      .loadOp = AsDawnEnum(in->loadOp()),
+      .storeOp = AsDawnEnum(in->storeOp()),
+  };
   if (in->hasDepthSlice()) {
     out->depthSlice = in->depthSlice();
   }
@@ -46,8 +49,6 @@ bool ConvertToDawn(const GPURenderPassColorAttachment* in,
       !ConvertToDawn(in->clearValue(), &out->clearValue, exception_state)) {
     return false;
   }
-  out->loadOp = AsDawnEnum(in->loadOp());
-  out->storeOp = AsDawnEnum(in->storeOp());
 
   return true;
 }
@@ -131,10 +132,11 @@ std::string ValidateAndConvertTimestampWrites(
     endOfPassWriteIndex = wgpu::kQuerySetIndexUndefined;
   }
 
-  *dawn_desc = {};
-  dawn_desc->querySet = webgpu_desc->querySet()->GetHandle();
-  dawn_desc->beginningOfPassWriteIndex = beginningOfPassWriteIndex;
-  dawn_desc->endOfPassWriteIndex = endOfPassWriteIndex;
+  *dawn_desc = {
+      .querySet = webgpu_desc->querySet()->GetHandle(),
+      .beginningOfPassWriteIndex = beginningOfPassWriteIndex,
+      .endOfPassWriteIndex = endOfPassWriteIndex,
+  };
 
   return std::string();
 }
@@ -144,21 +146,22 @@ wgpu::RenderPassDepthStencilAttachment AsDawnType(
     const GPURenderPassDepthStencilAttachment* webgpu_desc) {
   DCHECK(webgpu_desc);
 
-  wgpu::RenderPassDepthStencilAttachment dawn_desc = {};
-  dawn_desc.view = webgpu_desc->view()->GetHandle();
+  wgpu::RenderPassDepthStencilAttachment dawn_desc = {
+      .view = webgpu_desc->view()->GetHandle(),
+      // NaN is the default value in Dawn
+      .depthClearValue = webgpu_desc->getDepthClearValueOr(
+          std::numeric_limits<float>::quiet_NaN()),
+      .depthReadOnly = webgpu_desc->depthReadOnly(),
+      .stencilReadOnly = webgpu_desc->stencilReadOnly(),
+  };
 
   if (webgpu_desc->hasDepthLoadOp()) {
     dawn_desc.depthLoadOp = AsDawnEnum(webgpu_desc->depthLoadOp());
   }
-  // NaN is the default value in Dawn
-  dawn_desc.depthClearValue = webgpu_desc->getDepthClearValueOr(
-      std::numeric_limits<float>::quiet_NaN());
 
   if (webgpu_desc->hasDepthStoreOp()) {
     dawn_desc.depthStoreOp = AsDawnEnum(webgpu_desc->depthStoreOp());
   }
-
-  dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
 
   if (webgpu_desc->hasStencilLoadOp()) {
     dawn_desc.stencilLoadOp = AsDawnEnum(webgpu_desc->stencilLoadOp());
@@ -169,8 +172,6 @@ wgpu::RenderPassDepthStencilAttachment AsDawnType(
     dawn_desc.stencilStoreOp = AsDawnEnum(webgpu_desc->stencilStoreOp());
   }
 
-  dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();
-
   return dawn_desc;
 }
 
@@ -180,8 +181,8 @@ wgpu::ImageCopyBuffer ValidateAndConvertImageCopyBuffer(
   DCHECK(webgpu_view);
   DCHECK(webgpu_view->buffer());
 
-  wgpu::ImageCopyBuffer dawn_view = {};
-  dawn_view.buffer = webgpu_view->buffer()->GetHandle();
+  wgpu::ImageCopyBuffer dawn_view = {.buffer =
+                                         webgpu_view->buffer()->GetHandle()};
 
   *error = ValidateTextureDataLayout(webgpu_view, &dawn_view.layout);
   return dawn_view;

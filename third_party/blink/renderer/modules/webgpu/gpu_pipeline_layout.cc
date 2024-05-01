@@ -24,9 +24,10 @@ GPUPipelineLayout* GPUPipelineLayout::Create(
       bind_group_layout_count != 0 ? AsDawnType(webgpu_desc->bindGroupLayouts())
                                    : nullptr;
 
-  wgpu::PipelineLayoutDescriptor dawn_desc = {};
-  dawn_desc.bindGroupLayoutCount = bind_group_layout_count;
-  dawn_desc.bindGroupLayouts = bind_group_layouts.get();
+  wgpu::PipelineLayoutDescriptor dawn_desc = {
+      .bindGroupLayoutCount = bind_group_layout_count,
+      .bindGroupLayouts = bind_group_layouts.get(),
+  };
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {
     dawn_desc.label = label.c_str();

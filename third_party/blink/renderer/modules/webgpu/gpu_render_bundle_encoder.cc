@@ -44,13 +44,14 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     depth_stencil_format = AsDawnEnum(webgpu_desc->depthStencilFormat());
   }
 
-  wgpu::RenderBundleEncoderDescriptor dawn_desc = {};
-  dawn_desc.colorFormatCount = color_formats_count;
-  dawn_desc.colorFormats = color_formats.get();
-  dawn_desc.depthStencilFormat = depth_stencil_format;
-  dawn_desc.sampleCount = webgpu_desc->sampleCount();
-  dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
-  dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();
+  wgpu::RenderBundleEncoderDescriptor dawn_desc = {
+      .colorFormatCount = color_formats_count,
+      .colorFormats = color_formats.get(),
+      .depthStencilFormat = depth_stencil_format,
+      .sampleCount = webgpu_desc->sampleCount(),
+      .depthReadOnly = webgpu_desc->depthReadOnly(),
+      .stencilReadOnly = webgpu_desc->stencilReadOnly(),
+  };
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {
     dawn_desc.label = label.c_str();

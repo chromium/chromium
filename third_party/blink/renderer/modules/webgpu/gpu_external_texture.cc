@@ -73,8 +73,6 @@ GPUExternalTexture* ExternalTextureCache::Import(
       }
       break;
     }
-    default:
-      NOTREACHED();
   }
 
   return external_texture;

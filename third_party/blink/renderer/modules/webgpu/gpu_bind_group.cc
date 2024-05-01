@@ -23,9 +23,9 @@ wgpu::BindGroupEntry AsDawnType(
     const GPUBindGroupEntry* webgpu_binding,
     Vector<std::unique_ptr<wgpu::ExternalTextureBindingEntry>>*
         externalTextureBindingEntries) {
-  wgpu::BindGroupEntry dawn_binding = {};
-
-  dawn_binding.binding = webgpu_binding->binding();
+  wgpu::BindGroupEntry dawn_binding = {
+      .binding = webgpu_binding->binding(),
+  };
 
   switch (webgpu_binding->resource()->GetContentType()) {
     case V8GPUBindingResource::ContentType::kGPUBufferBinding: {
@@ -92,10 +92,11 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
         AsDawnType(webgpu_desc->entries(), &externalTextureBindingEntries);
   }
 
-  wgpu::BindGroupDescriptor dawn_desc = {};
-  dawn_desc.layout = AsDawnType(webgpu_desc->layout());
-  dawn_desc.entryCount = entry_count;
-  dawn_desc.entries = entries.get();
+  wgpu::BindGroupDescriptor dawn_desc = {
+      .layout = AsDawnType(webgpu_desc->layout()),
+      .entryCount = entry_count,
+      .entries = entries.get(),
+  };
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {
     dawn_desc.label = label.c_str();

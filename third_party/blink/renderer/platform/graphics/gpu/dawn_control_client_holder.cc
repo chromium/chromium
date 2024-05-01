@@ -154,15 +154,16 @@ std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures() {
   dawn::wire::WireClient client{{.serializer = &noop_serializer}};
 
   // Control which WGSL features are exposed based on flags.
-  wgpu::DawnWireWGSLControl wgsl_control = {};
-  wgsl_control.enableUnsafe = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableUnsafeWebGPU);
+  wgpu::DawnWireWGSLControl wgsl_control = {{
+      .enableUnsafe = base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableUnsafeWebGPU),
+      // This can be changed to true for manual testing with the
+      // chromium_testing_* WGSL features.
+      .enableTesting = false,
+  }};
   wgsl_control.enableExperimental =
       wgsl_control.enableUnsafe ||
       RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled();
-  // This can be changed to true for manual testing with the chromium_testing_*
-  // WGSL features.
-  wgsl_control.enableTesting = false;
 
   // Additionally populate the WGSL blocklist based on the Finch feature.
   std::vector<std::string> wgsl_unsafe_features_owned;
@@ -177,19 +178,20 @@ std::vector<wgpu::WGSLFeatureName> GatherWGSLFeatures() {
       wgsl_unsafe_features.push_back(f.c_str());
     }
   }
-  wgpu::DawnWGSLBlocklist wgsl_blocklist = {};
-  wgsl_blocklist.nextInChain = &wgsl_control;
-  wgsl_blocklist.blocklistedFeatureCount = wgsl_unsafe_features.size();
-  wgsl_blocklist.blocklistedFeatures = wgsl_unsafe_features.data();
-
+  wgpu::DawnWGSLBlocklist wgsl_blocklist = {{
+      .nextInChain = &wgsl_control,
+      .blocklistedFeatureCount = wgsl_unsafe_features.size(),
+      .blocklistedFeatures = wgsl_unsafe_features.data(),
+  }};
   // Create the instance from all the chained structures and gather features
   // from it.
-  wgpu::InstanceDescriptor instance_desc = {};
-  instance_desc.nextInChain = &wgsl_blocklist;
+  wgpu::InstanceDescriptor instance_desc = {
+      .nextInChain = &wgsl_blocklist,
+  };
   wgpu::Instance instance = wgpu::Instance::Acquire(
       client
           .ReserveInstance(
-              reinterpret_cast<WGPUInstanceDescriptor*>(&instance_desc))
+              &static_cast<const WGPUInstanceDescriptor&>(instance_desc))
           .instance);
 
   size_t feature_count = instance.EnumerateWGSLLanguageFeatures(nullptr);

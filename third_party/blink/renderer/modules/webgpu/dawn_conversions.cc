@@ -167,10 +167,11 @@ bool ConvertToDawn(const GPUImageCopyTexture* in,
   DCHECK(in);
   DCHECK(in->texture());
 
-  *out = {};
-  out->texture = in->texture()->GetHandle();
-  out->mipLevel = in->mipLevel();
-  out->aspect = AsDawnEnum(in->aspect());
+  *out = {
+      .texture = in->texture()->GetHandle(),
+      .mipLevel = in->mipLevel(),
+      .aspect = AsDawnEnum(in->aspect()),
+  };
   return ConvertToDawn(in->origin(), &out->origin, exception_state);
 }
 
@@ -202,11 +203,11 @@ const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
     rowsPerImage = wgpu::kCopyStrideUndefined;
   }
 
-  *dawn_layout = {};
-  dawn_layout->offset = webgpu_layout->offset();
-  dawn_layout->bytesPerRow = bytesPerRow;
-  dawn_layout->rowsPerImage = rowsPerImage;
-
+  *dawn_layout = {
+      .offset = webgpu_layout->offset(),
+      .bytesPerRow = bytesPerRow,
+      .rowsPerImage = rowsPerImage,
+  };
   return nullptr;
 }
 

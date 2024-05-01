@@ -75,8 +75,7 @@ wgpu::TextureFormat SkColorTypeToDawnColorFormat(SkColorType sk_color_type) {
     case SkColorType::kBGRA_8888_SkColorType:
       return wgpu::TextureFormat::BGRA8Unorm;
     default:
-      NOTREACHED();
-      return wgpu::TextureFormat::Undefined;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -201,9 +200,6 @@ ExternalSource GetExternalSourceFromExternalImage(
       canvas_image_source = external_image->GetAsOffscreenCanvas();
       canvas = external_image->GetAsOffscreenCanvas();
       break;
-    default:
-      NOTREACHED();
-      break;
   }
 
   // Neutered external image.
@@ -309,14 +305,14 @@ wgpu::CopyTextureForBrowserOptions CreateCopyTextureForBrowserOptions(
     bool dst_premultiplied_alpha,
     bool flipY,
     ColorSpaceConversionConstants* color_space_conversion_constants) {
-  wgpu::CopyTextureForBrowserOptions options = {};
-
-  options.srcAlphaMode = image->IsPremultiplied()
-                             ? wgpu::AlphaMode::Premultiplied
-                             : wgpu::AlphaMode::Unpremultiplied;
-  options.dstAlphaMode = dst_premultiplied_alpha
-                             ? wgpu::AlphaMode::Premultiplied
-                             : wgpu::AlphaMode::Unpremultiplied;
+  wgpu::CopyTextureForBrowserOptions options = {
+      .srcAlphaMode = image->IsPremultiplied()
+                          ? wgpu::AlphaMode::Premultiplied
+                          : wgpu::AlphaMode::Unpremultiplied,
+      .dstAlphaMode = dst_premultiplied_alpha
+                          ? wgpu::AlphaMode::Premultiplied
+                          : wgpu::AlphaMode::Unpremultiplied,
+  };
 
   // Set color space conversion params
   sk_sp<SkColorSpace> sk_src_color_space =
@@ -410,10 +406,12 @@ void OnWorkDoneCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
           DOMExceptionCode::kOperationError,
           "Unknown failure in onSubmittedWorkDone");
       break;
+    case wgpu::QueueWorkDoneStatus::InstanceDropped:
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kOperationError,
+          "Instance dropped in onSubmittedWorkDone");
+      break;
     case wgpu::QueueWorkDoneStatus::DeviceLost:
-    default:
-      // TODO(dawn:1987): Remove the default case after handling
-      // InstanceDropped.
       resolver->RejectWithDOMException(
           DOMExceptionCode::kOperationError,
           "Device lost during onSubmittedWorkDone (do not use this error for "
@@ -748,15 +746,16 @@ void GPUQueue::CopyFromVideoElement(
                             external_texture_dst_color_space,
                             source.media_video_frame, source.video_renderer);
 
-  wgpu::CopyTextureForBrowserOptions options = {};
-
-  // Extracting contents from HTMLVideoElement (e.g. CreateStaticBitmapImage(),
-  // GetSourceImageForCanvas) always assume alpha mode as premultiplied. Keep
-  // this assumption here.
-  options.srcAlphaMode = wgpu::AlphaMode::Premultiplied;
-  options.dstAlphaMode = dst_premultiplied_alpha
-                             ? wgpu::AlphaMode::Premultiplied
-                             : wgpu::AlphaMode::Unpremultiplied;
+  wgpu::CopyTextureForBrowserOptions options = {
+      // Extracting contents from HTMLVideoElement (e.g.
+      // CreateStaticBitmapImage(),
+      // GetSourceImageForCanvas) always assume alpha mode as premultiplied.
+      // Keep this assumption here.
+      .srcAlphaMode = wgpu::AlphaMode::Premultiplied,
+      .dstAlphaMode = dst_premultiplied_alpha
+                          ? wgpu::AlphaMode::Premultiplied
+                          : wgpu::AlphaMode::Unpremultiplied,
+  };
 
   // Set color space conversion params
   gfx::ColorSpace gfx_dst_color_space =
@@ -779,11 +778,11 @@ void GPUQueue::CopyFromVideoElement(
 
   options.flipY = flipY;
 
-  wgpu::ImageCopyExternalTexture src = {};
-  src.externalTexture = external_texture.wgpu_external_texture;
-  src.origin = {origin.x, origin.y, 0};
-  src.naturalSize = video_frame_natural_size;
-
+  wgpu::ImageCopyExternalTexture src = {
+      .externalTexture = external_texture.wgpu_external_texture,
+      .origin = {origin.x, origin.y},
+      .naturalSize = video_frame_natural_size,
+  };
   GetHandle().CopyExternalTextureForBrowser(&src, &destination, &copy_size,
                                             &options);
 }
@@ -884,8 +883,7 @@ bool GPUQueue::CopyFromCanvasSourceImage(
             image, source_image_info, image_source_copy_rect, noop);
 
     if (mailbox_texture != nullptr) {
-      wgpu::ImageCopyTexture src = {};
-      src.texture = mailbox_texture->GetTexture();
+      wgpu::ImageCopyTexture src = {.texture = mailbox_texture->GetTexture()};
 
       wgpu::CopyTextureForBrowserOptions options =
           CreateCopyTextureForBrowserOptions(
@@ -932,12 +930,12 @@ bool GPUQueue::CopyFromCanvasSourceImage(
           : static_cast<uint32_t>(image_source_copy_rect.height());
 
   SkColorType source_color_type = source_image_info.colorType();
-  wgpu::TextureDescriptor texture_desc = {};
-  texture_desc.usage = wgpu::TextureUsage::CopySrc |
-                       wgpu::TextureUsage::CopyDst |
-                       wgpu::TextureUsage::TextureBinding;
-  texture_desc.size = {src_width, src_height, 1};
-  texture_desc.format = SkColorTypeToDawnColorFormat(source_color_type);
+  wgpu::TextureDescriptor texture_desc = {
+      .usage = wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst |
+               wgpu::TextureUsage::TextureBinding,
+      .size = {src_width, src_height, 1},
+      .format = SkColorTypeToDawnColorFormat(source_color_type),
+  };
 
   wgpu::Texture intermediate_texture =
       device_->GetHandle().CreateTexture(&texture_desc);
@@ -965,10 +963,11 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     uint32_t wgpu_bytes_per_row = bytes_per_row.ValueOrDie();
 
     // Create a mapped buffer to receive external image contents
-    wgpu::BufferDescriptor buffer_desc = {};
-    buffer_desc.usage = wgpu::BufferUsage::CopySrc;
-    buffer_desc.size = size_in_bytes.ValueOrDie();
-    buffer_desc.mappedAtCreation = true;
+    wgpu::BufferDescriptor buffer_desc = {
+        .usage = wgpu::BufferUsage::CopySrc,
+        .size = size_in_bytes.ValueOrDie(),
+        .mappedAtCreation = true,
+    };
 
     wgpu::Buffer intermediate_buffer =
         device_->GetHandle().CreateBuffer(&buffer_desc);
@@ -990,17 +989,21 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     intermediate_buffer.Unmap();
 
     // Start a B2T copy to move contents from buffer to intermediate texture
-    wgpu::ImageCopyBuffer dawn_intermediate_buffer = {};
-    dawn_intermediate_buffer.buffer = intermediate_buffer;
-    dawn_intermediate_buffer.layout.bytesPerRow = wgpu_bytes_per_row;
-    dawn_intermediate_buffer.layout.rowsPerImage = copy_size.height;
+    wgpu::ImageCopyBuffer dawn_intermediate_buffer = {
+        .layout =
+            {
+                .bytesPerRow = wgpu_bytes_per_row,
+                .rowsPerImage = copy_size.height,
+            },
+        .buffer = intermediate_buffer,
+    };
 
-    wgpu::ImageCopyTexture dawn_intermediate_texture = {};
-    dawn_intermediate_texture.texture = intermediate_texture;
-    dawn_intermediate_texture.aspect = wgpu::TextureAspect::All;
+    wgpu::ImageCopyTexture dawn_intermediate_texture = {
+        .texture = intermediate_texture,
+        .aspect = wgpu::TextureAspect::All,
+    };
 
-    wgpu::Extent3D source_image_copy_size = {copy_size.width, copy_size.height,
-                                             1};
+    wgpu::Extent3D source_image_copy_size = {copy_size.width, copy_size.height};
 
     wgpu::CommandEncoder encoder = device_->GetHandle().CreateCommandEncoder();
     encoder.CopyBufferToTexture(&dawn_intermediate_buffer,
@@ -1011,8 +1014,9 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     GetHandle().Submit(1, &commands);
   }
 
-  wgpu::ImageCopyTexture src = {};
-  src.texture = intermediate_texture;
+  wgpu::ImageCopyTexture src = {
+      .texture = intermediate_texture,
+  };
   wgpu::CopyTextureForBrowserOptions options =
       CreateCopyTextureForBrowserOptions(image, &paint_image, dst_color_space,
                                          dst_premultiplied_alpha, flipY,

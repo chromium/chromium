@@ -20,7 +20,7 @@ GPUDeviceLostInfo::GPUDeviceLostInfo(const wgpu::DeviceLostReason reason,
       reason_ = "destroyed";
       break;
     default:
-      // If this is hit, Dawn gave us a reason we haven't implemented here yet.
+      // TODO(crbug.com/dawn/2139): Handle the "Unknown" enum.
       NOTREACHED();
       reason_ = "unknown";
       break;

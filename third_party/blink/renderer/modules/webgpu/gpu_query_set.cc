@@ -17,9 +17,10 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
   DCHECK(device);
   DCHECK(webgpu_desc);
 
-  wgpu::QuerySetDescriptor dawn_desc = {};
-  dawn_desc.type = AsDawnEnum(webgpu_desc->type());
-  dawn_desc.count = webgpu_desc->count();
+  wgpu::QuerySetDescriptor dawn_desc = {
+      .type = AsDawnEnum(webgpu_desc->type()),
+      .count = webgpu_desc->count(),
+  };
 
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {

@@ -267,8 +267,9 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
     return WebGPUMailboxTextureAndSize(nullptr, gfx::Size());
   }
 
-  wgpu::TextureDescriptor desc = {};
-  desc.usage = usage_;
+  wgpu::TextureDescriptor desc = {
+      .usage = usage_,
+  };
 
   return WebGPUMailboxTextureAndSize(
       WebGPUMailboxTexture::FromExistingMailbox(

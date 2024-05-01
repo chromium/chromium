@@ -399,10 +399,8 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     case wgpu::CreatePipelineAsyncStatus::InternalError:
     case wgpu::CreatePipelineAsyncStatus::DeviceLost:
     case wgpu::CreatePipelineAsyncStatus::DeviceDestroyed:
-    case wgpu::CreatePipelineAsyncStatus::Unknown:
-    default: {
-      // TODO(dawn:1987): Remove the default case after handling
-      // InstanceDropped.
+    case wgpu::CreatePipelineAsyncStatus::InstanceDropped:
+    case wgpu::CreatePipelineAsyncStatus::Unknown: {
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
@@ -441,15 +439,8 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
     case wgpu::CreatePipelineAsyncStatus::InternalError:
     case wgpu::CreatePipelineAsyncStatus::DeviceLost:
     case wgpu::CreatePipelineAsyncStatus::DeviceDestroyed:
+    case wgpu::CreatePipelineAsyncStatus::InstanceDropped:
     case wgpu::CreatePipelineAsyncStatus::Unknown: {
-      resolver->Reject(GPUPipelineError::Create(
-          script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
-          V8GPUPipelineErrorReason::Enum::kInternal));
-      break;
-    }
-    default: {
-      // TODO(dawn:1987): Remove the default case after handling
-      // InstanceDropped.
       resolver->Reject(GPUPipelineError::Create(
           script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
           V8GPUPipelineErrorReason::Enum::kInternal));
@@ -697,8 +688,6 @@ void GPUDevice::OnPopErrorScopeCallback(
           "Device lost during popErrorScope (do not use this error for "
           "recovery - it is NOT guaranteed to happen on device loss)");
       break;
-    default:
-      NOTREACHED();
   }
 }
 

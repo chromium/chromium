@@ -25,8 +25,9 @@ wgpu::ComputePipelineDescriptor AsDawnType(
   DCHECK(label);
   DCHECK(computeStage);
 
-  wgpu::ComputePipelineDescriptor dawn_desc = {};
-  dawn_desc.layout = AsDawnType(webgpu_desc->layout());
+  wgpu::ComputePipelineDescriptor dawn_desc = {
+      .layout = AsDawnType(webgpu_desc->layout()),
+  };
   *label = webgpu_desc->label().Utf8();
   if (!label->empty()) {
     dawn_desc.label = label->c_str();

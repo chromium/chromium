@@ -123,6 +123,9 @@ void GPUShaderModule::OnCompilationInfoCallback(
   if (status != wgpu::CompilationInfoRequestStatus::Success || !info) {
     const char* message = nullptr;
     switch (status) {
+      case wgpu::CompilationInfoRequestStatus::Success:
+        NOTREACHED();
+        break;
       case wgpu::CompilationInfoRequestStatus::Error:
         message = "Unexpected error in getCompilationInfo";
         break;
@@ -131,8 +134,10 @@ void GPUShaderModule::OnCompilationInfoCallback(
             "Device lost during getCompilationInfo (do not use this error for "
             "recovery - it is NOT guaranteed to happen on device loss)";
         break;
+      case wgpu::CompilationInfoRequestStatus::InstanceDropped:
+        message = "Instance dropped error in getCompilationInfo";
+        break;
       case wgpu::CompilationInfoRequestStatus::Unknown:
-      default:
         message = "Unknown failure in getCompilationInfo";
         break;
     }

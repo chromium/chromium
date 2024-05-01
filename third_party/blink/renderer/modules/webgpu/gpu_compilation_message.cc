@@ -29,9 +29,6 @@ GPUCompilationMessage::GPUCompilationMessage(String message,
     case wgpu::CompilationMessageType::Info:
       type_string_ = "info";
       break;
-    default:
-      NOTREACHED();
-      break;
   }
 }
 
