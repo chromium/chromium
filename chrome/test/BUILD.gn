@@ -3461,6 +3461,7 @@ if (!is_android) {
       ]
       deps += [
         ":lacros_test_support_ui",
+        "//chrome/browser/apps/app_service/webapk",
         "//chrome/browser/apps/browser_instance",
         "//chrome/browser/lacros/cros_apps:all_browser_tests",
         "//chromeos/crosapi/mojom",
@@ -5125,7 +5126,8 @@ if (!is_android) {
         "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:test_support",
         "//chrome/browser/apps/app_preload_service:browser_tests",
         "//chrome/browser/apps/app_service/app_install:browser_tests",
-        "//chrome/browser/apps/app_service/app_install:browser_tests",
+        "//chrome/browser/apps/app_service/webapk:prefs",
+        "//chrome/browser/apps/app_service/webapk:test_support",
         "//chrome/browser/apps/browser_instance",
         "//chrome/browser/apps/browser_instance:browser_tests",
         "//chrome/browser/apps/link_capturing",
