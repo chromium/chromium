@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/birch/birch_model.h"
+#include "ash/calendar/calendar_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
@@ -79,8 +80,23 @@ class BirchCalendarProviderTest : public BrowserWithTestWindowTest {
     switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+
+    calendar_client_ =
+        std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
+
+    AccountId account_id = AccountId::FromUserEmail("user1@email.com");
+    Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
+        account_id);
+    Shell::Get()->calendar_controller()->RegisterClientForUser(
+        account_id, calendar_client_.get());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
 };
 
 TEST_F(BirchCalendarProviderTest, GetCalendarEvents) {

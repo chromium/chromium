@@ -10,6 +10,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
+#include "ash/system/time/calendar_utils.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -37,6 +38,12 @@ void BirchCalendarProvider::Shutdown() {
 
 void BirchCalendarProvider::RequestBirchDataFetch() {
   VLOG(1) << "BirchCalendarProvider::RequestBirchDataFetch";
+  if (!calendar_utils::ShouldFetchCalendarData()) {
+    Shell::Get()->birch_model()->SetCalendarItems({});
+    Shell::Get()->birch_model()->SetAttachmentItems({});
+    return;
+  }
+
   if (is_fetching_) {
     return;
   }

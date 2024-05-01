@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
+#include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -33,6 +34,9 @@ BirchKeyedServiceFactory::BirchKeyedServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
+
+  // Indirect dependency via calendar_utils, used by BirchCalendarProvider.
+  DependsOn(CalendarKeyedServiceFactory::GetInstance());
 }
 
 BirchKeyedService* BirchKeyedServiceFactory::GetService(
