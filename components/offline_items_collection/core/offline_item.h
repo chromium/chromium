@@ -186,6 +186,9 @@ struct OfflineItem {
   // The URL of document that is considered the referrer for the original URL.
   GURL referrer_url;
 
+  // Whether this item is triggered by user gesture.
+  bool has_user_gesture;
+
   // In Progress Metadata.
   // ---------------------------------------------------------------------------
   // The current state of the OfflineItem.

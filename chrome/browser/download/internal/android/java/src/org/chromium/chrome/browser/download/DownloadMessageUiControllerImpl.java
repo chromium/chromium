@@ -505,7 +505,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             return false;
         }
 
-        if (MimeUtils.canAutoOpenMimeType(offlineItem.mimeType)) {
+        if (MimeUtils.canAutoOpenMimeType(offlineItem.mimeType) && offlineItem.hasUserGesture) {
             return false;
         }
 
