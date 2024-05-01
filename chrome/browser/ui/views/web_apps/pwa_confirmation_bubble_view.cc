@@ -46,7 +46,6 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 // TODO(crbug.com/40147906): Enable gn check once it learns about conditional
 // includes.
 #include "components/metrics/structured/structured_events.h"  // nogncheck
@@ -210,14 +209,11 @@ void PWAConfirmationBubbleView::WindowClosing() {
     const webapps::AppId app_id =
         web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
 #if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            metrics::structured::kAppDiscoveryLogging)) {
-      metrics::structured::StructuredMetricsClient::Record(
-          cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-              .SetWebAppInstallStatus(
-                  ToLong(web_app::WebAppInstallStatus::kCancelled))
-              .SetAppId(app_id));
-    }
+    metrics::structured::StructuredMetricsClient::Record(
+        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+            .SetWebAppInstallStatus(
+                ToLong(web_app::WebAppInstallStatus::kCancelled))
+            .SetAppId(app_id));
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 
     if (iph_state_ == web_app::PwaInProductHelpState::kShown) {
@@ -245,13 +241,11 @@ bool PWAConfirmationBubbleView::Accept() {
       web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    metrics::structured::StructuredMetricsClient::Record(
-        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-            .SetWebAppInstallStatus(
-                ToLong(web_app::WebAppInstallStatus::kAccepted))
-            .SetAppId(app_id));
-  }
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+          .SetWebAppInstallStatus(
+              ToLong(web_app::WebAppInstallStatus::kAccepted))
+          .SetAppId(app_id));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (iph_state_ == web_app::PwaInProductHelpState::kShown) {

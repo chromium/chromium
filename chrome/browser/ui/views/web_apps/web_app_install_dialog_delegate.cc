@@ -29,7 +29,6 @@
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 // TODO(crbug.com/40147906): Enable gn check once it learns about conditional
 // includes.
 #include "components/metrics/structured/structured_events.h"  // nogncheck
@@ -118,15 +117,13 @@ void WebAppInstallDialogDelegate::OnAccept() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    const webapps::AppId app_id =
-        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-    metrics::structured::StructuredMetricsClient::Record(
-        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-            .SetWebAppInstallStatus(
-                ToLong(web_app::WebAppInstallStatus::kAccepted))
-            .SetAppId(app_id));
-  }
+  const webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+          .SetWebAppInstallStatus(
+              ToLong(web_app::WebAppInstallStatus::kAccepted))
+          .SetAppId(app_id));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // DIY apps get their name from the DIY install dialog and are always set to
@@ -204,16 +201,13 @@ void WebAppInstallDialogDelegate::MeasureIphOnDialogClose() {
   // If |install_info_| is populated, then the dialog was not accepted.
   if (install_info_) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            metrics::structured::kAppDiscoveryLogging)) {
-      const webapps::AppId app_id =
-          web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-      metrics::structured::StructuredMetricsClient::Record(
-          cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-              .SetWebAppInstallStatus(
-                  ToLong(web_app::WebAppInstallStatus::kCancelled))
-              .SetAppId(app_id));
-    }
+    const webapps::AppId app_id =
+        web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
+    metrics::structured::StructuredMetricsClient::Record(
+        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+            .SetWebAppInstallStatus(
+                ToLong(web_app::WebAppInstallStatus::kCancelled))
+            .SetAppId(app_id));
 #endif  // BUILDFLAG(IS_CHROMEOS)
     std::move(callback_).Run(false, std::move(install_info_));
   }

@@ -227,8 +227,7 @@ void SearchController::OnZeroStateTimedOut() {
 void SearchController::AppListViewChanging(bool is_visible) {
   // In tablet mode, the launcher is always visible so do not log launcher open
   // if the device is in tablet mode.
-  if (is_visible && !display::Screen::GetScreen()->InTabletMode() &&
-      base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
+  if (is_visible && !display::Screen::GetScreen()->InTabletMode()) {
     app_discovery_metrics_manager_->OnLauncherOpen();
   }
 
@@ -246,9 +245,7 @@ void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
   }
 
   metrics_manager_->OnOpen(result->result_type(), last_query_);
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    app_discovery_metrics_manager_->OnOpenResult(result, last_query_);
-  }
+  app_discovery_metrics_manager_->OnOpenResult(result, last_query_);
 
   const bool dismiss_view_on_open = result->dismiss_view_on_open();
 

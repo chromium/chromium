@@ -38,7 +38,6 @@
 #include "content/public/browser/navigation_entry.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 // TODO(crbug.com/40147906): Enable gn check once it handles conditional
 // includes
 #include "components/metrics/structured/structured_events.h"  // nogncheck
@@ -147,14 +146,12 @@ void OnWebAppInstallShowInstallDialog(
     case WebAppInstallFlow::kInstallSite:
       web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 #if BUILDFLAG(IS_CHROMEOS)
-      if (base::FeatureList::IsEnabled(
-              metrics::structured::kAppDiscoveryLogging) &&
-          install_source == webapps::WebappInstallSource::MENU_BROWSER_TAB) {
+      if (install_source == webapps::WebappInstallSource::MENU_BROWSER_TAB) {
         webapps::AppId app_id =
             web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
-        metrics::structured::StructuredMetricsClient::Record(std::move(
+        metrics::structured::StructuredMetricsClient::Record(
             cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu()
-                .SetAppId(app_id)));
+                .SetAppId(app_id));
       }
 #endif
       if (!screenshots.empty()) {
@@ -180,14 +177,12 @@ void OnWebAppInstallShowInstallDialog(
       }
     case WebAppInstallFlow::kCreateShortcut:
 #if BUILDFLAG(IS_CHROMEOS)
-      if (base::FeatureList::IsEnabled(
-              metrics::structured::kAppDiscoveryLogging)) {
-        webapps::AppId app_id =
-            web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
-        metrics::structured::StructuredMetricsClient::Record(std::move(
-            cros_events::AppDiscovery_Browser_CreateShortcut().SetAppId(
-                app_id)));
-      }
+    {
+      webapps::AppId app_id =
+          web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
+      metrics::structured::StructuredMetricsClient::Record(
+          cros_events::AppDiscovery_Browser_CreateShortcut().SetAppId(app_id));
+    }
 #endif
 
       ShowCreateShortcutDialog(initiator_web_contents, std::move(web_app_info),

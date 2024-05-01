@@ -44,7 +44,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 // TODO(crbug.com/40147906): Enable gn check once it learns about conditional
 // includes.
 #include "components/metrics/structured/structured_events.h"  // nogncheck
@@ -88,13 +87,11 @@ void ShowDiyAppInstallDialog(
   PrefService* prefs = profile->GetPrefs();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    webapps::AppId app_id =
-        web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
-    metrics::structured::StructuredMetricsClient::Record(
-        cros_events::AppDiscovery_Browser_AppInstallDialogShown().SetAppId(
-            app_id));
-  }
+  webapps::AppId app_id =
+      web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::AppDiscovery_Browser_AppInstallDialogShown().SetAppId(
+          app_id));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   feature_engagement::Tracker* tracker =

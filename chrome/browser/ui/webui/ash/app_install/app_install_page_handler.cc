@@ -11,7 +11,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -99,16 +98,13 @@ void AppInstallPageHandler::CloseDialog() {
       base::RecordAction(
           base::UserMetricsAction("ChromeOS.AppInstallDialog.Cancelled"));
 
-      if (base::FeatureList::IsEnabled(
-              metrics::structured::kAppDiscoveryLogging)) {
-        metrics::structured::StructuredMetricsClient::Record(
-            std::move(cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-                          .SetWebAppInstallStatus(
-                              ToLong(web_app::WebAppInstallStatus::kCancelled))
-                          // TODO(b/333643533): This should be using
-                          // AppDiscoveryMetrics::GetAppStringToRecord().
-                          .SetAppId(GetAppId(app_info_args->package_id))));
-      }
+      metrics::structured::StructuredMetricsClient::Record(
+          cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+              .SetWebAppInstallStatus(
+                  ToLong(web_app::WebAppInstallStatus::kCancelled))
+              // TODO(b/333643533): This should be using
+              // AppDiscoveryMetrics::GetAppStringToRecord().
+              .SetAppId(GetAppId(app_info_args->package_id)));
       std::move(app_info_args->dialog_accepted_callback).Run(false);
     }
   }
@@ -125,15 +121,13 @@ void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
 
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.Installed"));
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    metrics::structured::StructuredMetricsClient::Record(
-        std::move(cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-                      .SetWebAppInstallStatus(
-                          ToLong(web_app::WebAppInstallStatus::kAccepted))
-                      // TODO(b/333643533): This should be using
-                      // AppDiscoveryMetrics::GetAppStringToRecord().
-                      .SetAppId(GetAppId(app_info_args.package_id))));
-  }
+  metrics::structured::StructuredMetricsClient::Record(
+      cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+          .SetWebAppInstallStatus(
+              ToLong(web_app::WebAppInstallStatus::kAccepted))
+          // TODO(b/333643533): This should be using
+          // AppDiscoveryMetrics::GetAppStringToRecord().
+          .SetAppId(GetAppId(app_info_args.package_id)));
 
   install_app_callback_ = std::move(callback);
   std::move(app_info_args.dialog_accepted_callback).Run(true);

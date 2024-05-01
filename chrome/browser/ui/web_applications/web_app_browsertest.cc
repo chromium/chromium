@@ -129,7 +129,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -1145,10 +1144,6 @@ class WebAppBrowserCrOSEventsTest : public WebAppBrowserTest {
     return https_server()->GetURL(
         "/banners/manifest_test_page_screenshots.html");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      metrics::structured::kAppDiscoveryLogging};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserCrOSEventsTest,
