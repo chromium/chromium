@@ -116,7 +116,7 @@ class MockProductSpecificationsService : public ProductSpecificationsService {
               GetAllProductSpecifications,
               (),
               (override));
-  MOCK_METHOD(const std::optional<const ProductSpecificationsSet>,
+  MOCK_METHOD(const std::optional<ProductSpecificationsSet>,
               AddProductSpecificationsSet,
               (const std::string& name, const std::vector<GURL>& urls),
               (override));

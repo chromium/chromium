@@ -33,7 +33,7 @@ class ProductSpecificationsService : public KeyedService {
 
   // Add new product specifications set called |name| with product pages
   // corresponding to |urls|.
-  virtual const std::optional<const ProductSpecificationsSet>
+  virtual const std::optional<ProductSpecificationsSet>
   AddProductSpecificationsSet(const std::string& name,
                               const std::vector<GURL>& urls);
 

@@ -52,7 +52,7 @@ ProductSpecificationsService::GetSetByUuid(const base::Uuid& uuid) {
   return ProductSpecificationsSet::FromProto(it->second);
 }
 
-const std::optional<const ProductSpecificationsSet>
+const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
     const std::vector<GURL>& urls) {

@@ -257,7 +257,7 @@ TEST_F(ProductSpecificationsServiceTest, TestAddProductSpecificationsSuccess) {
               OnProductSpecificationsSetAdded(HasProductSpecsNameUrl(
                   kProductSpecsName, expected_product_urls)))
       .Times(1);
-  std::optional<const ProductSpecificationsSet> product_spec_set =
+  std::optional<ProductSpecificationsSet> product_spec_set =
       service()->AddProductSpecificationsSet(
           kProductSpecsName, {GURL(kProductOneUrl), GURL(kProductTwoUrl)});
   EXPECT_TRUE(product_spec_set.has_value());
