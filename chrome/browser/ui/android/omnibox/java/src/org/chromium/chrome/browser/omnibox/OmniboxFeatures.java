@@ -139,7 +139,11 @@ public class OmniboxFeatures {
      */
     public static void cacheFeatureFlags() {
         CachedFlagUtils.cacheNativeFlags(sCachedFlags);
-        CachedFlagUtils.cacheFieldTrialParameters(sCachedParams);
+    }
+
+    /** Retrieve list of FieldTrialParams that should be cached. */
+    public static List<CachedFieldTrialParameter> getFieldTrialParamsToCache() {
+        return sCachedParams;
     }
 
     /**
