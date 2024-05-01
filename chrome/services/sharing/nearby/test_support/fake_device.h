@@ -50,8 +50,16 @@ class FakeDevice : public mojom::Device {
     services_ = std::move(services);
   }
 
+  void set_characteristics(
+      std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
+          characteristics) {
+    characteristics_ = std::move(characteristics);
+  }
+
  private:
   std::vector<bluetooth::mojom::ServiceInfoPtr> services_;
+  std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
+      characteristics_;
   mojo::Receiver<mojom::Device> device_{this};
 };
 

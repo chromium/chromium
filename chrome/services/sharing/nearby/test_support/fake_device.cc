@@ -26,9 +26,7 @@ void FakeDevice::GetServices(GetServicesCallback callback) {
 
 void FakeDevice::GetCharacteristics(const std::string& service_id,
                                     GetCharacteristicsCallback callback) {
-  // TODO(b/311430390): Implement when `BleV2GattClient` calls
-  // `ReadValueForCharacteristic()` for testing.
-  NOTIMPLEMENTED();
+  std::move(callback).Run(std::move(characteristics_));
 }
 
 void FakeDevice::ReadValueForCharacteristic(

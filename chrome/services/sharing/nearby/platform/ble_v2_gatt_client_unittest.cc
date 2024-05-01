@@ -20,6 +20,8 @@ namespace {
 
 const nearby::Uuid kServiceUuid1 = nearby::Uuid("0000");
 const nearby::Uuid kServiceUuid2 = nearby::Uuid("1111");
+const nearby::Uuid kCharacteristicUuid1 = nearby::Uuid("2222");
+const nearby::Uuid kCharacteristicUuid2 = nearby::Uuid("3333");
 
 std::vector<bluetooth::mojom::ServiceInfoPtr> GenerateServiceInfo(
     nearby::Uuid service_uuid) {
@@ -29,6 +31,16 @@ std::vector<bluetooth::mojom::ServiceInfoPtr> GenerateServiceInfo(
   service_info->uuid = device::BluetoothUUID(std::string(service_uuid));
   service_infos.push_back(std::move(service_info));
   return service_infos;
+}
+
+std::vector<bluetooth::mojom::CharacteristicInfoPtr> GenerateCharacteristicInfo(
+    nearby::Uuid service_uuid) {
+  std::vector<bluetooth::mojom::CharacteristicInfoPtr> characteristic_infos;
+  bluetooth::mojom::CharacteristicInfoPtr characteristic_info =
+      bluetooth::mojom::CharacteristicInfo::New();
+  characteristic_info->uuid = device::BluetoothUUID(std::string(service_uuid));
+  characteristic_infos.push_back(std::move(characteristic_info));
+  return characteristic_infos;
 }
 
 }  // namespace
@@ -79,10 +91,10 @@ class BleV2GattClientTest : public testing::Test {
 
 TEST_F(BleV2GattClientTest, DiscoverServiceAndCharacteristics_Success) {
   fake_device_->set_services(GenerateServiceInfo(kServiceUuid1));
+  fake_device_->set_characteristics(
+      GenerateCharacteristicInfo(kCharacteristicUuid1));
 
-  // TODO(b/311430390): populate `characteristic_uuids` with characteristics
-  // once implemented in a follow up CL.
-  std::vector<Uuid> characteristic_uuids;
+  std::vector<Uuid> characteristic_uuids = {kCharacteristicUuid1};
 
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
@@ -100,6 +112,45 @@ TEST_F(BleV2GattClientTest,
        DiscoverServiceAndCharacteristics_FailureIfNoServiceUuidMatch) {
   fake_device_->set_services(GenerateServiceInfo(kServiceUuid2));
   std::vector<Uuid> characteristic_uuids;
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              &BleV2GattClientTest::CallDiscoverServiceAndCharacteristics,
+              base::Unretained(this), /*expected_success=*/false, kServiceUuid1,
+              /*characteristic_uuids=*/characteristic_uuids),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2GattClientTest,
+       DiscoverServiceAndCharacteristics_FailureIfGetCharacteristicError) {
+  fake_device_->set_services(GenerateServiceInfo(kServiceUuid1));
+  fake_device_->set_characteristics(std::nullopt);
+
+  std::vector<Uuid> characteristic_uuids = {kCharacteristicUuid1};
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(
+              &BleV2GattClientTest::CallDiscoverServiceAndCharacteristics,
+              base::Unretained(this), /*expected_success=*/false, kServiceUuid1,
+              /*characteristic_uuids=*/characteristic_uuids),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2GattClientTest,
+       DiscoverServiceAndCharacteristics_FailureIfNoCharacteristicUuidMatch) {
+  fake_device_->set_services(GenerateServiceInfo(kServiceUuid1));
+  fake_device_->set_characteristics(
+      GenerateCharacteristicInfo(kCharacteristicUuid2));
+
+  std::vector<Uuid> characteristic_uuids = {kCharacteristicUuid1};
 
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})

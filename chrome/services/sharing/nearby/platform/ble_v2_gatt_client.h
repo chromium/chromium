@@ -52,6 +52,8 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
     ~GattService();
 
     bluetooth::mojom::ServiceInfoPtr service_info;
+    std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
+        characteristics;
   };
 
   void DoDiscoverServices(
@@ -59,6 +61,15 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
   void OnGetGattServices(
       base::WaitableEvent* discover_services_waitable_event,
       std::vector<bluetooth::mojom::ServiceInfoPtr> services);
+
+  void DoGetCharacteristics(
+      GattService* gatt_service,
+      base::WaitableEvent* get_characteristics_waitable_event);
+  void OnGetCharacteristics(
+      GattService* gatt_service,
+      base::WaitableEvent* get_characteristics_waitable_event,
+      std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
+          characteristics);
 
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
 
@@ -71,6 +82,8 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::flat_set<raw_ptr<base::WaitableEvent>>
       pending_discover_services_waitable_events_;
+  base::flat_set<raw_ptr<base::WaitableEvent>>
+      pending_get_characteristics_waitable_events_;
 
   mojo::SharedRemote<bluetooth::mojom::Device> remote_device_;
 };

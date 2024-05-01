@@ -29,6 +29,26 @@ void CancelPendingTasks(
   events_to_cancel.clear();
 }
 
+bool WereAllExpectedCharacteristicsFound(
+    const std::vector<bluetooth::mojom::CharacteristicInfoPtr>&
+        found_characteristics,
+    const std::vector<nearby::Uuid>& expected_characteristic_uuids) {
+  std::set<nearby::Uuid> found_characteristic_uuids;
+  for (const auto& characteristic : found_characteristics) {
+    found_characteristic_uuids.insert(
+        nearby::chrome::BluetoothUuidToNearbyUuid(characteristic->uuid));
+  }
+
+  for (const auto& uuid : expected_characteristic_uuids) {
+    if (found_characteristic_uuids.find(uuid) ==
+        found_characteristic_uuids.end()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 namespace nearby::chrome {
@@ -78,17 +98,46 @@ bool BleV2GattClient::DiscoverServiceAndCharacteristics(
     have_gatt_services_been_discovered_ = true;
   }
 
-  if (!base::Contains(uuid_to_discovered_gatt_service_map_,
-                      std::string(service_uuid))) {
+  auto it =
+      uuid_to_discovered_gatt_service_map_.find(std::string(service_uuid));
+  if (it == uuid_to_discovered_gatt_service_map_.end()) {
     LOG(WARNING) << __func__ << ": no match for " << std::string(service_uuid)
                  << " in " << uuid_to_discovered_gatt_service_map_.size()
                  << " number of services";
     return false;
   }
 
-  // TODO(b/311430390): Kick off (2) discover GATT characteristics in the GATT
-  // service at `characteristic_uuids`.
-  return true;
+  // Next, kick off (2) discover GATT characteristics in the GATT
+  // service at `characteristic_uuids` by fetching all GATT characteristics in
+  // `service_uuid` if we haven't already. Parse the list of GATT
+  // characteristics for matches with all of the characteristic UUIDs in
+  // `characteristic_uuids`; if not all match, return false.
+  if (!it->second->characteristics.has_value()) {
+    VLOG(1) << __func__
+            << ": attempting to discover characteristics on the remote device "
+               "for service uuid = "
+            << std::string(service_uuid);
+    base::WaitableEvent get_characteristics_waitable_event;
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&BleV2GattClient::DoGetCharacteristics,
+                                  base::Unretained(this),
+                                  /*gatt_service=*/it->second.get(),
+                                  &get_characteristics_waitable_event));
+    base::ScopedAllowBaseSyncPrimitives allow_wait;
+    get_characteristics_waitable_event.Wait();
+
+    if (!it->second->characteristics.has_value()) {
+      LOG(WARNING) << __func__
+                   << ": failed to retrieve characteristics on the remote "
+                      "device for service uuid = "
+                   << std::string(service_uuid);
+      return false;
+    }
+  }
+
+  return WereAllExpectedCharacteristicsFound(
+      /*found_characteristics=*/it->second->characteristics.value(),
+      /*expected_characteristic_uuids=*/characteristic_uuids);
 }
 
 std::optional<api::ble_v2::GattCharacteristic>
@@ -172,6 +221,49 @@ void BleV2GattClient::OnGetGattServices(
   }
 }
 
+void BleV2GattClient::DoGetCharacteristics(
+    GattService* gatt_service,
+    base::WaitableEvent* get_characteristics_waitable_event) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(remote_device_.is_bound());
+
+  pending_get_characteristics_waitable_events_.insert(
+      get_characteristics_waitable_event);
+  remote_device_->GetCharacteristics(
+      gatt_service->service_info->id,
+      base::BindOnce(&BleV2GattClient::OnGetCharacteristics,
+                     base::Unretained(this), gatt_service,
+                     get_characteristics_waitable_event));
+}
+
+void BleV2GattClient::OnGetCharacteristics(
+    GattService* gatt_service,
+    base::WaitableEvent* get_characteristics_waitable_event,
+    std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
+        characteristics) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  if (characteristics.has_value()) {
+    VLOG(1) << __func__ << ": got " << characteristics.value().size()
+            << " characteristics";
+    auto it = uuid_to_discovered_gatt_service_map_.find(std::string(
+        BluetoothUuidToNearbyUuid(gatt_service->service_info->uuid)));
+    CHECK(it != uuid_to_discovered_gatt_service_map_.end())
+        << __func__
+        << ": unexpectedly retrieved characteristics for a service that is "
+           "unknown to BleV2GattClient";
+    it->second->characteristics = std::move(characteristics);
+  } else {
+    LOG(WARNING) << __func__ << ": failed to get characteristics";
+  }
+
+  if (!get_characteristics_waitable_event->IsSignaled()) {
+    get_characteristics_waitable_event->Signal();
+    pending_get_characteristics_waitable_events_.erase(
+        get_characteristics_waitable_event);
+  }
+}
+
 void BleV2GattClient::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -186,6 +278,7 @@ void BleV2GattClient::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   // changes to the pending-event sets are sequenced. Make a copy of the events
   // because elements will be removed from the sets during iteration.
   CancelPendingTasks(pending_discover_services_waitable_events_);
+  CancelPendingTasks(pending_get_characteristics_waitable_events_);
 
   shutdown_waitable_event->Signal();
 }
