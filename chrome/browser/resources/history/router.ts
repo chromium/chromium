@@ -17,6 +17,7 @@ export const Page = {
   HISTORY: 'history',
   HISTORY_CLUSTERS: 'grouped',
   SYNCED_TABS: 'syncedTabs',
+  PRODUCT_SPECIFICATIONS_LISTS: 'productSpecificationsLists',
 };
 
 // The ids of pages with corresponding tabs in the order of their tab indices.

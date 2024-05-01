@@ -8,9 +8,9 @@ export {BrowserProxyImpl} from 'chrome://resources/cr_components/history_cluster
 export {ClusterAction, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 export {MetricsProxy, MetricsProxyImpl} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
 export {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
+export {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 export {PageHandlerRemote as HistoryEmbeddingsPageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-export {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 export {ensureLazyLoaded, HistoryAppElement, listenForPrivilegedLinkClicks} from './app.js';
@@ -21,6 +21,7 @@ export {HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, HistoryEmbeddingsPromoElement} from 
 export {HistoryItemElement} from './history_item.js';
 export {ActionMenuModel, HistoryListElement} from './history_list.js';
 export {HistoryToolbarElement} from './history_toolbar.js';
+export {ProductSpecificationsListsElement} from './product_specifications_lists.js';
 export {HistorySearchedLabelElement} from './searched_label.js';
 export {HistorySideBarElement} from './side_bar.js';
 export {HistorySyncedDeviceCardElement} from './synced_device_card.js';

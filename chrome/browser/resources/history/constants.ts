@@ -22,7 +22,8 @@ export enum HistoryPageViewHistogram {
   SYNCED_TABS = 3,
   SIGNIN_PROMO = 4,
   JOURNEYS = 5,
-  END = 6,  // Should always be last.
+  PRODUCT_SPECIFICATIONS_LISTS = 6,
+  END = 7,  // Should always be last.
 }
 
 export const SYNCED_TABS_HISTOGRAM_NAME = 'HistoryPage.OtherDevicesMenu';

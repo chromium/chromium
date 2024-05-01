@@ -60,6 +60,7 @@ export function ensureLazyLoaded(): Promise<void> {
 
     lazyLoadPromise = Promise.all([
       customElements.whenDefined('history-synced-device-manager'),
+      customElements.whenDefined('product-specifications-lists'),
       customElements.whenDefined('cr-action-menu'),
       customElements.whenDefined('cr-button'),
       customElements.whenDefined('cr-checkbox'),
@@ -260,6 +261,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
         value: false,
         reflectToAttribute: true,
       },
+
+      productSpecificationsListsEnabled_: Boolean,
     };
   }
 
@@ -285,6 +288,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private scrollTarget_: HTMLElement;
   private queryStateAfterDate_?: Date;
   private hasHistoryEmbeddingsResults_: boolean;
+  private productSpecificationsListsEnabled_: boolean =
+      loadTimeData.getBoolean('productSpecificationsListsEnabled');
 
   constructor() {
     super();
@@ -369,6 +374,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
       _selectedPage: string, _showHistoryClusters: boolean): boolean {
     return this.selectedPage_ === Page.HISTORY_CLUSTERS &&
         this.showHistoryClusters_;
+  }
+
+  private productSpecificationsListsSelected_(_selectedPage: string): boolean {
+    return this.productSpecificationsListsEnabled_ &&
+        this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS;
   }
 
   private onFirstRender_() {
@@ -676,6 +686,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
         histogramValue = this.isUserSignedIn_ ?
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;
+        break;
+      case Page.PRODUCT_SPECIFICATIONS_LISTS:
+        histogramValue = HistoryPageViewHistogram.PRODUCT_SPECIFICATIONS_LISTS;
         break;
       default:
         histogramValue = HistoryPageViewHistogram.HISTORY;

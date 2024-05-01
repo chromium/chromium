@@ -49,7 +49,7 @@
         padding-inline-start: 24px;
       }
 
-      #google-account-footer iron-icon {
+      #google-account-footer cr-icon {
         align-self: flex-start;
         flex-shrink: 0;
         height: 20px;
@@ -62,8 +62,9 @@
         overflow-x: hidden;
       }
 
-      iron-icon {
+      cr-icon {
         display: block;
+        margin-inline-end: 20px;
       }
 
       #clear-browsing-data {
@@ -83,17 +84,27 @@
           href="[[getHistoryItemHref_(selectedTab, showHistoryClusters_)]]"
           path$="[[getHistoryItemPath_(selectedTab, showHistoryClusters_)]]"
           on-click="onItemClick_">
-        <iron-icon icon="cr:history"></iron-icon>
+        <cr-icon icon="cr:history"></cr-icon>
         $i18n{historyMenuItem}
         <cr-ripple></cr-ripple>
       </a>
       <a id="syncedTabs" role="menuitem" href="/syncedTabs"
           class="page-item cr-nav-menu-item"
           path="syncedTabs" on-click="onItemClick_">
-        <iron-icon icon="cr:phonelink"></iron-icon>
+        <cr-icon icon="cr:phonelink"></cr-icon>
         $i18n{openTabsMenuItem}
         <cr-ripple></cr-ripple>
       </a>
+      <template is="dom-if" if="[[productSpecificationsListsEnabled_]]">
+        <a id="productSpecificationsLists" role="menuitem"
+            href="/productSpecificationsLists"
+            class="page-item cr-nav-menu-item"
+            path="productSpecificationsLists" on-click="onItemClick_">
+          <cr-icon icon="history:table-chart-organize"></cr-icon>
+          $i18n{productSpecificationsListsMenuItem}
+          <cr-ripple></cr-ripple>
+        </a>
+      </template>
       <!-- tabindex is needed below because <a> without href attribute is not
             focusable in sequential keyboard navigation by default. -->
       <a role="menuitem" id="clear-browsing-data"
@@ -103,7 +114,7 @@
           disabled$="[[guestSession_]]"
           tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]"
           title="$i18n{clearBrowsingDataLinkTooltip}">
-        <iron-icon icon="cr:delete"></iron-icon>
+        <cr-icon icon="cr:delete"></cr-icon>
         $i18n{clearBrowsingData}
         <div class="cr-icon icon-external"></div>
         <cr-ripple></cr-ripple>
@@ -116,7 +127,7 @@
       <managed-footnote></managed-footnote>
       <div id="google-account-footer"
           hidden="[[!footerInfo.otherFormsOfHistory]]">
-        <iron-icon icon="cr:info-outline"></iron-icon>
+        <cr-icon icon="cr:info-outline"></cr-icon>
         <div>$i18nRaw{sidebarFooter}</div>
       </div>
     </div>

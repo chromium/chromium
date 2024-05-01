@@ -188,6 +188,12 @@
               path="syncedTabs">
           </history-synced-device-manager>
         </template>
+        <template is="dom-if"
+            if="[[productSpecificationsListsSelected_(selectedPage_)]]">
+          <product-specifications-lists id="product-specs-lists"
+              path="productSpecificationsLists">
+          </product-specifications-lists>
+        </template>
       </iron-pages>
     </div>
 

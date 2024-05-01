@@ -158,6 +158,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Synced Tabs"/>
   <int value="4" label="Signin Promo"/>
   <int value="5" label="Journeys"/>
+  <int value="6" label="ProductSpecificationsLists"/>
 </enum>
 
 <enum name="HistoryResultType">

@@ -23,6 +23,7 @@ build_webui("build") {
     "history_item.ts",
     "history_list.ts",
     "history_toolbar.ts",
+    "product_specifications_lists.ts",
     "router.ts",
     "side_bar.ts",
     "synced_device_card.ts",
