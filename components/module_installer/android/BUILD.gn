@@ -70,6 +70,7 @@ robolectric_binary("module_installer_junit_tests") {
 java_library("module_interface_java") {
   supports_android = true
   sources = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterface.java" ]
+  proguard_configs = [ "module_installer.flags" ]
 }
 
 java_annotation_processor("module_interface_processor") {

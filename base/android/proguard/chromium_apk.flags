@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Contains flags that we'd like all Chromium .apks to use.
+# Contains //base flags that we'd like all Chromium .apks to use. Note that
+# these rules will not be applied to Chromium code that ships in third-party
+# APKs, e.g. Cronet.
 
 # Keep line number information, useful for stack traces.
 -keepattributes SourceFile,LineNumberTable

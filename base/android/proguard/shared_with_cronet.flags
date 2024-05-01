@@ -2,18 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Contains flags that can be safely shared with Cronet, and thus would be
-# appropriate for third-party apps to include.
+# Contains flags that we want to apply not only to Chromium APKs, but also to
+# third-party apps that bundle the Cronet library.
 
-# Allow unused native methods to be removed, but prevent renaming on those that are kept.
+# WARNING: rules in this file are applied to entire third-party APKs, not just
+# Chromium code. They MUST be scoped appropriately to avoid side effects on app
+# code that we do not own.
+
+# Allow unused native methods to be removed, but prevent renaming on those that
+# are kept.
 -keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class !cr_allowunused,** {
   native <methods>;
 }
 
-# Use assumevalues block instead of assumenosideeffects block because Google3 proguard cannot parse
-# assumenosideeffects blocks which overwrite return value.
-# chromium_code.flags rather than remove_logging.flags so that it's included
-# in cronet.
+# Use assumevalues block instead of assumenosideeffects block because Google3
+# proguard cannot parse assumenosideeffects blocks which overwrite return
+# value. Keep this in shared_with_cronet.flags rather than remove_logging.flags
+# so that it's included in cronet.
 -assumevalues class org.chromium.base.Log {
   static boolean isDebug() return false;
 }
@@ -35,16 +40,6 @@
 -keepclassmembers enum !cr_allowunused,org.chromium.** {
     public static **[] values();
 }
-
-# -identifiernamestring doesn't keep the module impl around, we have to
-# explicitly keep it.
--if @org.chromium.components.module_installer.builder.ModuleInterface interface *
--keep,allowobfuscation,allowaccessmodification class !cr_allowunused,** extends <1> {
-  <init>();
-}
-# This is necessary to work around a bug: crbug.com/337905171.
--keep,allowobfuscation,allowshrinking @org.chromium.components.module_installer.builder.ModuleInterface interface !cr_allowunused,*
-
 
 # Required to remove fields until b/274802355 is resolved.
 -assumevalues class !cr_allowunused,** {
