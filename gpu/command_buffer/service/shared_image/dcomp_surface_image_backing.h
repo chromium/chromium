@@ -8,7 +8,6 @@
 #include <windows.h>
 
 #include <d3d11.h>
-#include <dawn/native/D3DBackend.h>
 #include <dcomp.h>
 #include <wrl/client.h>
 
@@ -143,10 +142,10 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
   gfx::Point dcomp_update_offset_;
 
 #if BUILDFLAG(USE_DAWN)
-  // ExternalImageDXGI is created from |dcomp_surface_|'s draw texture between
-  // |BeginDrawGraphite| and |EndDrawGraphite|. This |external_image_| wraps the
-  // ComPtr<ID3D11Texture> instead of creating from a share HANDLE.
-  std::unique_ptr<dawn::native::d3d::ExternalImageDXGI> external_image_;
+  // SharedTextureMemory is created from |dcomp_surface_|'s draw texture between
+  // |BeginDrawGraphite| and |EndDrawGraphite|. This |shared_texture_memory_|
+  // wraps the ComPtr<ID3D11Texture> instead of creating from a share HANDLE.
+  wgpu::SharedTextureMemory shared_texture_memory_;
 #endif
 
   // This is a number that increments once for every EndDraw on a surface, and

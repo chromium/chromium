@@ -1346,34 +1346,32 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
   // SharedImage / interop methods that would need specific usages.
   required_features.push_back(wgpu::FeatureName::DawnInternalUsages);
 
-  // Always require "multi-planar-formats" as long as supported, although
-  // currently this feature is not exposed to render process if unsafe apis
-  // disallowed.
-  if (adapter_obj.HasFeature(wgpu::FeatureName::DawnMultiPlanarFormats)) {
-    required_features.push_back(wgpu::FeatureName::DawnMultiPlanarFormats);
-  }
+  const wgpu::FeatureName kOptionalFeatures[] = {
+      // Always require "multi-planar-formats" as long as supported, although
+      // currently this feature is not exposed to render process if unsafe apis
+      // disallowed.
+      wgpu::FeatureName::DawnMultiPlanarFormats,
 
-  // Require platform-specific SharedTextureMemory features for use by
-  // the relevant SharedImage backings. These features should always be
-  // supported when running on the corresponding backend.
-  if (adapter_obj.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface)) {
-    CHECK(adapter_obj.HasFeature(wgpu::FeatureName::SharedFenceMTLSharedEvent));
-    required_features.push_back(
-        wgpu::FeatureName::SharedTextureMemoryIOSurface);
-    required_features.push_back(wgpu::FeatureName::SharedFenceMTLSharedEvent);
-  }
+      // Require platform-specific SharedTextureMemory features for use by
+      // the relevant SharedImage backings. These features should always be
+      // supported when running on the corresponding backend.
+      wgpu::FeatureName::SharedTextureMemoryIOSurface,
+      wgpu::FeatureName::SharedFenceMTLSharedEvent,
 
 #if BUILDFLAG(IS_ANDROID)
-  if (adapter_obj.HasFeature(
-          wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer)) {
-    required_features.push_back(
-        wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer);
-  }
-  if (adapter_obj.HasFeature(wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD)) {
-    required_features.push_back(
-        wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD);
-  }
+      wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
+      wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
 #endif
+
+      wgpu::FeatureName::SharedTextureMemoryD3D11Texture2D,
+      wgpu::FeatureName::SharedTextureMemoryDXGISharedHandle,
+      wgpu::FeatureName::SharedFenceDXGISharedHandle,
+  };
+  for (const wgpu::FeatureName& feature : kOptionalFeatures) {
+    if (adapter_obj.HasFeature(feature)) {
+      required_features.push_back(feature);
+    }
+  }
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   // On Desktop GL via ANGLE, require GL texture sharing.
@@ -2025,6 +2023,15 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   wgpu::Device device = wire_server_->GetDevice(device_id, device_generation);
   if (device == nullptr) {
     return error::kInvalidArguments;
+  }
+
+  {
+    std::tuple<uint32_t, uint32_t> id_and_generation{id, generation};
+    auto it = associated_shared_image_map_.find(id_and_generation);
+    if (it != associated_shared_image_map_.end()) {
+      DLOG(ERROR) << "AssociateMailbox to an already associated texture.";
+      return error::kInvalidArguments;
+    }
   }
 
   std::unique_ptr<SharedImageRepresentationAndAccess> representation_and_access;

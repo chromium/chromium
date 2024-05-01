@@ -177,14 +177,14 @@ void DXGISharedHandleState::ReleaseKeyedMutex(
 }
 
 #if BUILDFLAG(USE_DAWN)
-std::unique_ptr<ExternalImageDXGI>& DXGISharedHandleState::GetDawnExternalImage(
+wgpu::SharedTextureMemory& DXGISharedHandleState::GetDawnSharedTextureMemory(
     WGPUDevice device) {
-  return dawn_external_image_cache_[device];
+  return dawn_shared_texture_memory_cache_[device];
 }
 
-void DXGISharedHandleState::EraseDawnExternalImage(WGPUDevice device) {
-  DCHECK(!dawn_external_image_cache_.at(device)->IsValid());
-  dawn_external_image_cache_.erase(device);
+void DXGISharedHandleState::EraseDawnSharedTextureMemory(WGPUDevice device) {
+  DCHECK(dawn_shared_texture_memory_cache_.at(device).IsDeviceLost());
+  dawn_shared_texture_memory_cache_.erase(device);
 }
 #endif  // BUILDFLAG(USE_DAWN)
 

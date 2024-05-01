@@ -35,12 +35,6 @@
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #endif
 
-#if BUILDFLAG(USE_DAWN)
-using dawn::native::d3d::ExternalImageDXGI;
-using dawn::native::d3d::ExternalImageDXGIBeginAccessDescriptor;
-using dawn::native::d3d::ExternalImageDXGIFenceDescriptor;
-#endif
-
 namespace gpu {
 
 namespace {
@@ -479,28 +473,28 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
   update_rect_ = update_rect;
 
   // Import the texture into dawn
-  D3D11_TEXTURE2D_DESC d3d11_texture_desc;
-  dcomp_surface_draw_texture_copy_->GetDesc(&d3d11_texture_desc);
 
-  DCHECK(!external_image_);
-  external_image_ = CreateDawnExternalImageDXGI(
-      device, DCompSurfaceImageBacking::usage(), d3d11_texture_desc,
-      dcomp_surface_draw_texture_copy_,
-      /*view_formats=*/{});
-  if (!external_image_) {
-    LOG(ERROR) << "Failed to create external image.";
+  DCHECK(!shared_texture_memory_);
+  shared_texture_memory_ =
+      CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_);
+  if (!shared_texture_memory_) {
+    LOG(ERROR) << "Failed to create shared texture memory.";
     return nullptr;
   }
 
-  ExternalImageDXGIBeginAccessDescriptor descriptor;
-  descriptor.isInitialized = true;
-  descriptor.isSwapChainTexture = true;
-  descriptor.usage = static_cast<WGPUTextureUsage>(usage);
-  descriptor.waitFences = {};
+  wgpu::SharedTextureMemoryD3DSwapchainBeginState swapchain_begin_state = {};
+  swapchain_begin_state.isSwapchain = true;
 
-  wgpu::Texture texture =
-      wgpu::Texture::Acquire(external_image_->BeginAccess(&descriptor));
+  wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
+  desc.initialized = true;
+  desc.nextInChain = &swapchain_begin_state;
 
+  wgpu::Texture texture = CreateDawnSharedTexture(shared_texture_memory_, usage,
+                                                  /*view_formats=*/{});
+  if (!texture || !shared_texture_memory_.BeginAccess(texture, &desc)) {
+    LOG(ERROR) << "Failed to begin access and produce WGPUTexture";
+    return nullptr;
+  }
   return texture;
 }
 
@@ -508,9 +502,9 @@ void DCompSurfaceImageBacking::EndDrawDawn(const wgpu::Device& device,
                                            wgpu::Texture texture) {
   // We don't need any synchronization here because dawn and dcomp are using the
   // same d3d11 device.
-  ExternalImageDXGIFenceDescriptor descriptor;
-  external_image_->EndAccess(texture.Get(), &descriptor);
-  external_image_ = nullptr;
+  wgpu::SharedTextureMemoryEndAccessState end_state = {};
+  shared_texture_memory_.EndAccess(texture.Get(), &end_state);
+  shared_texture_memory_ = nullptr;
   texture.Destroy();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;

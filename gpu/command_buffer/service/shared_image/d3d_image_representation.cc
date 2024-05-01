@@ -70,10 +70,12 @@ DawnD3DImageRepresentation::DawnD3DImageRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
-    wgpu::BackendType backend_type)
+    wgpu::BackendType backend_type,
+    std::vector<wgpu::TextureFormat> view_formats)
     : DawnImageRepresentation(manager, backing, tracker),
       device_(device),
-      backend_type_(backend_type) {
+      backend_type_(backend_type),
+      view_formats_(view_formats) {
   DCHECK(device_);
 }
 
@@ -84,7 +86,8 @@ DawnD3DImageRepresentation::~DawnD3DImageRepresentation() {
 wgpu::Texture DawnD3DImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage) {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  texture_ = d3d_image_backing->BeginAccessDawn(device_, backend_type_, usage);
+  texture_ = d3d_image_backing->BeginAccessDawn(device_, backend_type_, usage,
+                                                view_formats_);
   return texture_;
 }
 

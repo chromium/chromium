@@ -8,7 +8,6 @@
 #include <windows.h>
 
 #include <d3d11.h>
-#include <dawn/native/D3DBackend.h>
 #include <dxgi1_2.h>
 #include <wrl/client.h>
 
@@ -114,10 +113,10 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   scoped_refptr<D3DImageBacking::GLTextureHolder> gl_texture_holder_;
 
 #if BUILDFLAG(USE_DAWN)
-  // ExternalImageDXGI is created from DXGISwapChain's backbuffer texture. This
-  // |external_image_| wraps the ComPtr<ID3D11Texture> instead of creating from
-  // a share HANDLE.
-  std::unique_ptr<dawn::native::d3d::ExternalImageDXGI> external_image_;
+  // SharedTextureMemory is created from DXGISwapChain's backbuffer texture.
+  // This |shared_texture_memory_| wraps the ComPtr<ID3D11Texture> instead of
+  // creating from a share HANDLE.
+  wgpu::SharedTextureMemory shared_texture_memory_;
 #endif
 
   // Count of buffers in |dxgi_swap_chain_| that need to have their alpha

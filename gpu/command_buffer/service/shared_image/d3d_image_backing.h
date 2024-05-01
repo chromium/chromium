@@ -120,7 +120,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 #if BUILDFLAG(USE_DAWN)
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::BackendType backend_type,
-                                wgpu::TextureUsage usage);
+                                wgpu::TextureUsage usage,
+                                std::vector<wgpu::TextureFormat> view_formats);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
 #endif
 
@@ -220,6 +221,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       VideoDecodeDevice device) override;
 
  private:
+  using D3DSharedFenceSet = base::flat_set<scoped_refptr<gfx::D3DSharedFence>>;
   D3DImageBacking(const Mailbox& mailbox,
                   viz::SharedImageFormat format,
                   const gfx::Size& size,
@@ -253,7 +255,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Common state tracking for both D3D11 and Dawn access.
   bool ValidateBeginAccess(bool write_access) const;
   void BeginAccessCommon(bool write_access);
-  void EndAccessCommon(scoped_refptr<gfx::D3DSharedFence> fence);
+  void EndAccessCommon(const D3DSharedFenceSet& fences);
 
   // Get a list of fences to wait on in BeginAccessD3D11/Dawn. If the waiting
   // device is backed by D3D11 (ANGLE or Dawn), |wait_d3d11_device| can be
@@ -267,9 +269,9 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       bool write_access);
 
 #if BUILDFLAG(USE_DAWN)
-  // Uses either DXGISharedHandleState or internal |dawn_external_image_|
+  // Uses either DXGISharedHandleState or internal |dawn_shared_texture_memory_|
   // depending on whether the texture has a shared handle or not.
-  std::unique_ptr<ExternalImageDXGI>& GetDawnExternalImage(
+  wgpu::SharedTextureMemory& GetDawnSharedTextureMemory(
       const wgpu::Device& device);
 #endif  // BUILDFLAG(USE_DAWN)
 
@@ -326,11 +328,11 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Fences for previous reads. These will be waited on by the subsequent write,
   // but not by reads.
-  base::flat_set<scoped_refptr<gfx::D3DSharedFence>> read_fences_;
+  D3DSharedFenceSet read_fences_;
 
-  // Fence for the previous write. These will be waited on by subsequent reads
+  // Fences for the previous write. These will be waited on by subsequent reads
   // and/or write.
-  scoped_refptr<gfx::D3DSharedFence> write_fence_;
+  D3DSharedFenceSet write_fences_;
 
   // Fences used for signaling after D3D11 access. Lazily created as needed.
   // TODO(sunnyps): This doesn't need to be per D3DImageBacking. Find a better
@@ -340,15 +342,14 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       d3d11_signaled_fence_map_;
 
 #if BUILDFLAG(USE_DAWN)
-  // If an external image exists, it means Dawn produced the D3D12 side of the
-  // D3D11 texture created by ID3D12Device::OpenSharedHandle(). Only used if
+  // If a shared texture memory exists, it means Dawn produced the D3D12 side of
+  // the D3D11 texture created by ID3D12Device::OpenSharedHandle(). Only used if
   // the backing doesn't have a shared handle e.g. for mappable D3D11 textures.
-  std::unique_ptr<ExternalImageDXGI> dawn_external_image_;
+  wgpu::SharedTextureMemory dawn_shared_texture_memory_;
 
-  // Signaled fence imported from Dawn at EndAccess. This can be reused if
+  // Signaled fences imported from Dawn at EndAccess. This can be reused if
   // D3DSharedFence::IsSameFenceAsHandle() is true for fence handle from Dawn.
-  base::flat_map<WGPUDevice, scoped_refptr<gfx::D3DSharedFence>>
-      dawn_signaled_fence_map_;
+  base::flat_map<WGPUDevice, D3DSharedFenceSet> dawn_signaled_fences_map_;
 #endif  // BUILDFLAG(USE_DAWN)
 };
 

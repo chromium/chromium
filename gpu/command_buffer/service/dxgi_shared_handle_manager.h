@@ -21,8 +21,7 @@
 // Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
 // ui/gl/buildflags.h
 #if BUILDFLAG(USE_DAWN)
-#include <dawn/native/D3DBackend.h>
-using dawn::native::d3d::ExternalImageDXGI;
+#include <webgpu/webgpu_cpp.h>
 #endif  // BUILDFLAG(USE_DAWN)
 
 namespace gpu {
@@ -82,11 +81,11 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
   void ReleaseKeyedMutex(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
 #if BUILDFLAG(USE_DAWN)
-  // Returns the Dawn ExternalImageDXGI associated with given device. It's the
-  // caller's responsibility to initialize the external image if needed.
-  std::unique_ptr<ExternalImageDXGI>& GetDawnExternalImage(WGPUDevice device);
+  // Returns the Dawn SharedTextureMemory associated with given device. It's the
+  // caller's responsibility to initialize the shared texture memory if needed.
+  wgpu::SharedTextureMemory& GetDawnSharedTextureMemory(WGPUDevice device);
 
-  void EraseDawnExternalImage(WGPUDevice device);
+  void EraseDawnSharedTextureMemory(WGPUDevice device);
 #endif  // BUILDFLAG(USE_DAWN)
 
  private:
@@ -114,15 +113,15 @@ class GPU_GLES2_EXPORT DXGISharedHandleState
 
 #if BUILDFLAG(USE_DAWN)
   // When Dawn uses keyed mutex for synchronization with the D3D11 backend, we
-  // want a single instance of ExternalImageDXGI (per device) for each unique
+  // want a single instance of SharedTextureMemory (per device) for each unique
   // texture even if we have multiple duplicated handles (and shared images)
-  // pointing to the texture. Caching the ExternalImageDXGI here enables this.
-  // Note that it's ok to use raw WGPUDevice pointers here since the external
-  // image acts like a weak pointer to the device, and we can detect if the
-  // entry is valid by checking ExternalImageDXGI::IsValid().
-  using DawnExternalImageCache =
-      base::flat_map<WGPUDevice, std::unique_ptr<ExternalImageDXGI>>;
-  DawnExternalImageCache dawn_external_image_cache_;
+  // pointing to the texture. Caching the SharedTextureMemory here enables this.
+  // Note that it's ok to use raw WGPUDevice pointers here since the shared
+  // texture memory acts like a weak pointer to the device, and we can detect if
+  // the entry is valid by checking SharedTextureMemory::IsDeviceLost().
+  using DawnSharedTextureMemoryCache =
+      base::flat_map<WGPUDevice, wgpu::SharedTextureMemory>;
+  DawnSharedTextureMemoryCache dawn_shared_texture_memory_cache_;
 #endif  // BUILDFLAG(USE_DAWN)
 
   // True if the texture has an underlying keyed mutex.

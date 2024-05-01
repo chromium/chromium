@@ -561,6 +561,18 @@ class D3DImageBackingFactoryTest : public D3DImageBackingFactoryTestBase {
                       bool use_factory_multiplanar);
   void RunCreateSharedImageFromHandleTest(DXGI_FORMAT dxgi_format);
 
+#if BUILDFLAG(USE_DAWN)
+  static constexpr wgpu::FeatureName kRequiredFeatures[] = {
+      // We need to request internal usage to be able to do operations with
+      // internal methods that would need specific usages.
+      wgpu::FeatureName::DawnInternalUsages,
+
+      // Required for Dawn interop.
+      wgpu::FeatureName::SharedTextureMemoryDXGISharedHandle,
+      wgpu::FeatureName::SharedFenceDXGISharedHandle,
+  };
+#endif
+
   scoped_refptr<SharedContextState> context_state_;
 };
 
@@ -636,12 +648,9 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
       instance.EnumerateAdapters(&adapter_options);
   ASSERT_GT(adapters.size(), 0u);
 
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-  device_descriptor.requiredFeatureCount = 1;
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
+  device_descriptor.requiredFeatureCount = std::size(kRequiredFeatures);
+  device_descriptor.requiredFeatures = kRequiredFeatures;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
@@ -820,12 +829,9 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
       instance.EnumerateAdapters(&adapter_options);
   ASSERT_GT(adapters.size(), 0u);
 
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-  device_descriptor.requiredFeatureCount = 1;
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
+  device_descriptor.requiredFeatureCount = std::size(kRequiredFeatures);
+  device_descriptor.requiredFeatures = kRequiredFeatures;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
@@ -976,12 +982,9 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
       instance.EnumerateAdapters(&adapter_options);
   ASSERT_GT(adapters.size(), 0u);
 
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-  device_descriptor.requiredFeatureCount = 1;
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
+  device_descriptor.requiredFeatureCount = std::size(kRequiredFeatures);
+  device_descriptor.requiredFeatures = kRequiredFeatures;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
@@ -1056,12 +1059,9 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
       instance.EnumerateAdapters(&adapter_options);
   ASSERT_GT(adapters.size(), 0u);
 
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-  device_descriptor.requiredFeatureCount = 1;
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
+  device_descriptor.requiredFeatureCount = std::size(kRequiredFeatures);
+  device_descriptor.requiredFeatures = kRequiredFeatures;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
@@ -1332,12 +1332,9 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
       instance.EnumerateAdapters(&adapter_options);
   ASSERT_GT(adapters.size(), 0u);
 
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-  device_descriptor.requiredFeatureCount = 1;
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
+  device_descriptor.requiredFeatureCount = std::size(kRequiredFeatures);
+  device_descriptor.requiredFeatures = kRequiredFeatures;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
@@ -1450,12 +1447,9 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
       instance.EnumerateAdapters(&adapter_options);
   ASSERT_GT(adapters.size(), 0u);
 
-  // We need to request internal usage to be able to do operations with
-  // internal methods that would need specific usages.
-  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
   wgpu::DeviceDescriptor device_descriptor;
-  device_descriptor.requiredFeatureCount = 1;
-  device_descriptor.requiredFeatures = &dawn_internal_usage;
+  device_descriptor.requiredFeatureCount = std::size(kRequiredFeatures);
+  device_descriptor.requiredFeatures = kRequiredFeatures;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));

@@ -55,7 +55,8 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
                              SharedImageBacking* backing,
                              MemoryTypeTracker* tracker,
                              const wgpu::Device& device,
-                             wgpu::BackendType backend_type);
+                             wgpu::BackendType backend_type,
+                             std::vector<wgpu::TextureFormat> view_formats);
   ~DawnD3DImageRepresentation() override;
 
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
@@ -65,6 +66,7 @@ class DawnD3DImageRepresentation : public DawnImageRepresentation {
   const wgpu::Device device_;
   const wgpu::BackendType backend_type_;
   wgpu::Texture texture_;
+  std::vector<wgpu::TextureFormat> view_formats_;
 };
 #endif  // BUILDFLAG(USE_DAWN)
 

@@ -16,7 +16,6 @@
 #include "ui/gl/buildflags.h"
 
 #if BUILDFLAG(USE_DAWN)
-#include <dawn/native/D3DBackend.h>
 #include <webgpu/webgpu_cpp.h>
 #endif
 
@@ -27,14 +26,19 @@ bool ClearD3D11TextureToColor(
     const SkColor4f& color);
 
 #if BUILDFLAG(USE_DAWN)
-std::unique_ptr<dawn::native::d3d::ExternalImageDXGI>
-CreateDawnExternalImageDXGI(
-    const wgpu::Device& device,
-    uint32_t shared_image_usage,
-    const D3D11_TEXTURE2D_DESC& d3d11_texture_desc,
-    absl::variant<HANDLE, Microsoft::WRL::ComPtr<ID3D11Texture2D>>
-        handle_or_texture,
+wgpu::Texture CreateDawnSharedTexture(
+    const wgpu::SharedTextureMemory& shared_texture_memory,
+    wgpu::TextureUsage usage,
     base::span<wgpu::TextureFormat> view_formats);
+
+wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
+    const wgpu::Device& device,
+    bool use_keyed_mutex,
+    HANDLE handle);
+
+wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
+    const wgpu::Device& device,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture);
 #endif
 
 }  // namespace gpu
