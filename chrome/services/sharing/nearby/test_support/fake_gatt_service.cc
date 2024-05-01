@@ -30,9 +30,12 @@ void FakeGattService::CreateCharacteristic(
 }
 
 void FakeGattService::Register(RegisterCallback callback) {
-  // TODO(b/311430390): Implement with `Register` is being used in
-  // `BleV2GattServer` for testing.
-  NOTIMPLEMENTED();
+  if (should_register_succeed_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(device::BluetoothGattService::GattErrorCode::kFailed);
 }
 
 void FakeGattService::SetObserver(
@@ -42,6 +45,10 @@ void FakeGattService::SetObserver(
 
 void FakeGattService::SetCreateCharacteristicResult(bool success) {
   set_create_characteristic_result_ = success;
+}
+
+void FakeGattService::SetShouldRegisterSucceed(bool should_register_succeed) {
+  should_register_succeed_ = should_register_succeed;
 }
 
 void FakeGattService::TriggerReadCharacteristicRequest(

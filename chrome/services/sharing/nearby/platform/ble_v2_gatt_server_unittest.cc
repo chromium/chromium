@@ -284,4 +284,34 @@ TEST_F(BleV2GattServerTest, Stop) {
   EXPECT_TRUE(fake_gatt_service_destroyed);
 }
 
+TEST_F(BleV2GattServerTest, Register_Success) {
+  auto fake_gatt_service = std::make_unique<bluetooth::FakeGattService>();
+  fake_gatt_service->SetShouldRegisterSucceed(true);
+  fake_gatt_service->SetCreateCharacteristicResult(/*success=*/true);
+  fake_adapter_->SetCreateLocalGattServiceResult(
+      /*gatt_service=*/std::move(fake_gatt_service));
+  CallCreateCharacteristic(
+      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*expected_success=*/true);
+
+  base::test::TestFuture<bool> future;
+  ble_v2_gatt_server_->RegisterGattServices(future.GetCallback());
+  EXPECT_TRUE(future.Take());
+}
+
+TEST_F(BleV2GattServerTest, Register_Failure) {
+  auto fake_gatt_service = std::make_unique<bluetooth::FakeGattService>();
+  fake_gatt_service->SetShouldRegisterSucceed(false);
+  fake_gatt_service->SetCreateCharacteristicResult(/*success=*/true);
+  fake_adapter_->SetCreateLocalGattServiceResult(
+      /*gatt_service=*/std::move(fake_gatt_service));
+  CallCreateCharacteristic(
+      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*expected_success=*/true);
+
+  base::test::TestFuture<bool> future;
+  ble_v2_gatt_server_->RegisterGattServices(future.GetCallback());
+  EXPECT_FALSE(future.Take());
+}
+
 }  // namespace nearby::chrome

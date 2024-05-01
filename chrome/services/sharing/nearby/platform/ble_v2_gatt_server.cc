@@ -8,6 +8,9 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "chrome/services/sharing/nearby/platform/count_down_latch.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -46,13 +49,37 @@ device::BluetoothGattCharacteristic::Properties ConvertProperty(
   }
 }
 
+std::string_view GattErrorCodeToString(
+    device::BluetoothGattService::GattErrorCode error_code) {
+  switch (error_code) {
+    case device::BluetoothGattService::GattErrorCode::kUnknown:
+      return "Unknown";
+    case device::BluetoothGattService::GattErrorCode::kFailed:
+      return "Failed";
+    case device::BluetoothGattService::GattErrorCode::kInProgress:
+      return "In Progress";
+    case device::BluetoothGattService::GattErrorCode::kInvalidLength:
+      return "Invalid Length";
+    case device::BluetoothGattService::GattErrorCode::kNotPermitted:
+      return "Not Permitted";
+    case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
+      return "Not Authorized";
+    case device::BluetoothGattService::GattErrorCode::kNotPaired:
+      return "Not Paired";
+    case device::BluetoothGattService::GattErrorCode::kNotSupported:
+      return "Not Supported";
+  }
+}
+
 }  // namespace
 
 namespace nearby::chrome {
 
 BleV2GattServer::BleV2GattServer(
     const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter)
-    : bluetooth_adapter_(std::make_unique<BluetoothAdapter>(adapter)),
+    : task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      bluetooth_adapter_(std::make_unique<BluetoothAdapter>(adapter)),
       adapter_remote_(adapter) {
   CHECK(adapter_remote_.is_bound());
 }
@@ -70,7 +97,11 @@ BleV2GattServer::CreateCharacteristic(
     const Uuid& characteristic_uuid,
     api::ble_v2::GattCharacteristic::Permission permission,
     api::ble_v2::GattCharacteristic::Property property) {
-  VLOG(1) << "BleV2GattServer::" << __func__;
+  // Characteristics can only be created and added to a `GattService` before
+  // registration has begun.
+  CHECK(!has_registration_started_);
+
+  VLOG(1) << __func__;
 
   // If there isn't a GATT Service that already exists for `service_uuid`,
   // create one in the browser process before creating a characteristic at
@@ -93,7 +124,8 @@ BleV2GattServer::CreateCharacteristic(
 
     auto gatt_service = std::make_unique<GattService>();
     gatt_service->gatt_service_remote.Bind(
-        std::move(gatt_service_pending_remote));
+        std::move(gatt_service_pending_remote),
+        /*bind_task_runner=*/task_runner_);
     service_it =
         uuid_to_gatt_service_map_.emplace(service_uuid, std::move(gatt_service))
             .first;
@@ -153,7 +185,7 @@ BleV2GattServer::CreateCharacteristic(
 bool BleV2GattServer::UpdateCharacteristic(
     const api::ble_v2::GattCharacteristic& characteristic,
     const nearby::ByteArray& value) {
-  VLOG(1) << "BleV2GattServer::" << __func__;
+  VLOG(1) << __func__;
 
   auto service_it = uuid_to_gatt_service_map_.find(characteristic.service_uuid);
   if (service_it == uuid_to_gatt_service_map_.end()) {
@@ -210,6 +242,61 @@ void BleV2GattServer::Stop() {
   uuid_to_gatt_service_map_.clear();
 }
 
+void BleV2GattServer::RegisterGattServices(
+    base::OnceCallback<void(bool)> on_registration_complete_callback) {
+  // `RegisterGattServices()` is expected to only be called once during the
+  // lifetime of its class to kick off registration of the GATT services.
+  CHECK(!has_registration_started_);
+  has_registration_started_ = true;
+
+  VLOG(1) << __func__;
+
+  if (uuid_to_gatt_service_map_.empty()) {
+    VLOG(1) << __func__ << ": no GATT services to register; returning success";
+    std::move(on_registration_complete_callback_).Run(/*success=*/true);
+    return;
+  }
+
+  on_registration_complete_callback_ =
+      std::move(on_registration_complete_callback);
+  registration_barrier_ =
+      std::make_unique<base::AtomicRefCount>(uuid_to_gatt_service_map_.size());
+
+  for (auto it = uuid_to_gatt_service_map_.begin();
+       it != uuid_to_gatt_service_map_.end(); it++) {
+    DoRegisterGattService(it->second.get());
+  }
+}
+
+void BleV2GattServer::DoRegisterGattService(GattService* gatt_service) {
+  CHECK(gatt_service->gatt_service_remote.is_bound());
+  gatt_service->gatt_service_remote->Register(base::BindOnce(
+      &BleV2GattServer::OnRegisterGattService, base::Unretained(this)));
+}
+
+void BleV2GattServer::OnRegisterGattService(
+    std::optional<device::BluetoothGattService::GattErrorCode> error_code) {
+  // If there are multiple GATT services being registered, even though the
+  // GATT server ultimately returns failure if any single one fails to be
+  // registered, we continue the registration of all the GATT services and
+  // do not early return to prevent a case where a GATT service is
+  // destroyed before its registration completes asynchronously.
+  if (error_code) {
+    LOG(WARNING) << __func__ << ": failed due to error = "
+                 << GattErrorCodeToString(*error_code);
+    did_any_gatt_services_fail_to_register_ = true;
+  }
+
+  if (!registration_barrier_->Decrement()) {
+    VLOG(1) << __func__ << ": registration result = "
+            << (!did_any_gatt_services_fail_to_register_ ? "success"
+                                                         : "failure");
+    CHECK(on_registration_complete_callback_);
+    std::move(on_registration_complete_callback_)
+        .Run(/*success=*/!did_any_gatt_services_fail_to_register_);
+  }
+}
+
 BleV2GattServer::GattService::GattService() = default;
 BleV2GattServer::GattService::~GattService() = default;
 
@@ -219,7 +306,7 @@ void BleV2GattServer::OnLocalCharacteristicRead(
     const device::BluetoothUUID& service_uuid,
     uint32_t offset,
     OnLocalCharacteristicReadCallback callback) {
-  VLOG(1) << "BleV2GattServer::" << __func__;
+  VLOG(1) << __func__;
 
   Uuid nearby_service_uuid = Uuid(service_uuid.value());
   Uuid nearby_characteristic_uuid = Uuid(characteristic_uuid.value());

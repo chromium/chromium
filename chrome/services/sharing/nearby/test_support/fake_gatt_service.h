@@ -43,6 +43,8 @@ class FakeGattService : public mojom::GattService {
     on_destroyed_callback_ = std::move(callback);
   }
 
+  void SetShouldRegisterSucceed(bool should_register_succeed);
+
  private:
   void OnLocalCharacteristicReadResponse(
       ValueCallback callback,
@@ -52,6 +54,7 @@ class FakeGattService : public mojom::GattService {
   mojo::Remote<mojom::GattServiceObserver> observer_remote_;
   bool set_create_characteristic_result_ = false;
   base::OnceClosure on_destroyed_callback_;
+  bool should_register_succeed_ = false;
   mojo::Receiver<mojom::GattService> gatt_server_{this};
 };
 
