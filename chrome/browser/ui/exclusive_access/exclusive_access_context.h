@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_CONTEXT_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_CONTEXT_H_
 
-#include "build/build_config.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 
@@ -16,29 +15,22 @@ namespace content {
 class WebContents;
 }
 
-// Context in which exclusive access operation is being performed. This
-// interface is implemented once in Browser context and in Platform Application
-// context.
+// The context for exclusive access, i.e. fullscreen, pointer and keyboard lock.
+// This interface is implemented by WebContents host views, e.g. BrowserView.
 class ExclusiveAccessContext {
  public:
-
   virtual ~ExclusiveAccessContext() = default;
 
   // Returns the current profile associated with the window.
   virtual Profile* GetProfile() = 0;
 
-  // Returns true if the window hosting the exclusive access bubble is
-  // fullscreen.
+  // Returns whether the window hosting the browser view is fullscreen.
   virtual bool IsFullscreen() const = 0;
 
   // Called when we transition between tab and browser fullscreen. This method
   // updates the UI by showing/hiding the tab strip, toolbar and bookmark bar
   // in the browser fullscreen. Currently only supported on Mac.
   virtual void UpdateUIForTabFullscreen() {}
-
-  // Updates the toolbar state to be hidden or shown in fullscreen according to
-  // the preference's state. Only supported on Mac.
-  virtual void UpdateFullscreenToolbar() {}
 
   // Enters fullscreen and updates the exclusive access bubble.
   virtual void EnterFullscreen(const GURL& url,
@@ -53,6 +45,7 @@ class ExclusiveAccessContext {
       const ExclusiveAccessBubbleParams& params,
       ExclusiveAccessBubbleHideCallback first_hide_callback) = 0;
 
+  // Returns whether the exclusive access bubble is currently shown.
   virtual bool IsExclusiveAccessBubbleDisplayed() const = 0;
 
   // Informs the exclusive access system of some user input, which may update
