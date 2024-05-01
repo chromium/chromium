@@ -24,7 +24,7 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
   pid_t peer_tid = base::FindThreadID(peer_pid, ns_tid, &ns_pid_supported);
   if (peer_tid == -1) {
     if (ns_pid_supported) {
-      DLOG(WARNING) << "Could not find tid";
+      DVLOG(1) << "Could not find tid";
     }
     return;
   }
