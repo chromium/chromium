@@ -540,6 +540,7 @@ allowed_hosts = [
 
    # TODO(337061377): Move into a separate allowed gcs bucket list.
   'chromium-nodejs',
+  'chromium-tfhub-models',
   'chrome-linux-sysroot',
   'chromium-fonts',
   'chromium-webrtc-resources',
@@ -635,6 +636,19 @@ deps = {
         'sha256sum': '5df5be9357b425cdd70d92d4697d07e7d55d7a923f037c22dc80a78e85842d2c',
         'size_bytes': 123084324,
         'generation': 1714159395960299,
+      },
+    ],
+  },
+  # Download selected models from TFHub as testdata.
+  'src/third_party/tfhub_models': {
+    'bucket': 'chromium-tfhub-models',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'object_name': '0f037afd23a02321520951afd5c2c6078d26cbf1',
+        'sha256sum': '7130f43eb9889ff4dcd36ed2c5352053b88216e6b9186dfce08ea41b7dd142f3',
+        'size_bytes': 35504613,
+        'generation': 1691086948259727,
       },
     ],
   },
@@ -4948,19 +4962,6 @@ hooks = [
                 '-s', 'src/v8/test/fuzzer/wasm_corpus.tar.gz.sha1',
     ],
   },
-  # Download selected models from TFHub as testdata.
-  {
-    'name': 'download_tfhub_models',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--extract',
-                '--bucket', 'chromium-tfhub-models',
-                '-s', 'src/third_party/tfhub_models/models.tar.gz.sha1',
-    ],
-  },
-
   # Pull down Node binaries for WebUI toolchain.
   # The Linux binary is always downloaded regardless of host os and architecture
   # since remote node actions run on Linux worker.
