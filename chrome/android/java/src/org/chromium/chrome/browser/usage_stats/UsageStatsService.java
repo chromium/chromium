@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -55,12 +54,6 @@ public class UsageStatsService implements Destroyable {
     /** Returns if the UsageStatsService is enabled on this device */
     public static boolean isEnabled() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-    }
-
-    /** Get the global instance of UsageStatsService */
-    @Deprecated // Delete once downstream clients have migrated.
-    public static UsageStatsService getInstance() {
-        return getForProfile(ProfileManager.getLastUsedRegularProfile());
     }
 
     /** Return the {@link UsageStatsService} for the given {@link Profile}. */
