@@ -731,6 +731,8 @@ crbug.com/1448743 [ android-nexus-5x ] conformance/textures/misc/texture-srgb-up
 
 crbug.com/332743717 conformance/uniforms/uniform-location.html [ Failure ]
 
+crbug.com/337904214 [ win angle-d3d9 intel-0x4680 passthrough release ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
+
 #################################################################
 # Temporary suppressions for introduction of drawingBufferStorage
 #################################################################
