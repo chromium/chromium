@@ -67,11 +67,6 @@ const char kEnableDawnFeatures[] = "enable-dawn-features";
 // Set the Dawn features(toggles) disabled on the creation of Dawn devices.
 const char kDisableDawnFeatures[] = "disable-dawn-features";
 
-// Changes the type (to kRealtimeAudio) of gpu process and compositor thread.
-// This is only to be used for perf tests on macOS for more reliable values.
-const char kUseHighGPUThreadPriorityForPerfTests[] =
-    "use-gpu-high-thread-priority-for-perf-tests";
-
 // Start the non-sandboxed GPU process for DX12 and Vulkan info collection
 // immediately after the browser starts. The default is to delay for 120
 // seconds.

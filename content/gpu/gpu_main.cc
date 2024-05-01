@@ -372,12 +372,6 @@ int GpuMain(MainFunctionParams parameters) {
   GetContentClient()->SetGpuInfo(gpu_init->gpu_info());
 
   base::ThreadType io_thread_type = base::ThreadType::kCompositing;
-#if BUILDFLAG(IS_MAC)
-  // Increase the thread priority to get more reliable values in performance
-  // test of mac_os.
-  if (command_line.HasSwitch(switches::kUseHighGPUThreadPriorityForPerfTests))
-    io_thread_type = base::ThreadType::kRealtimeAudio;
-#endif
   // ChildProcess will start the ThreadPoolInstance now that the sandbox is
   // initialized.
   ChildProcess gpu_process(io_thread_type);

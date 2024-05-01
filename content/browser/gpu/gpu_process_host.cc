@@ -286,7 +286,6 @@ static const char* const kSwitchNames[] = {
     sandbox::policy::switches::kEnableSandboxLogging,
     sandbox::policy::switches::kDisableMetalShaderCache,
     switches::kShowMacOverlayBorders,
-    switches::kUseHighGPUThreadPriorityForPerfTests,
     switches::kWebNNCoreMlDumpModel,
 #endif
 #if BUILDFLAG(IS_OZONE)

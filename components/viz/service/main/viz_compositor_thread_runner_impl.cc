@@ -67,17 +67,7 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   thread_options.message_pump_type = base::MessagePumpType::IO;
 #endif
 
-#if BUILDFLAG(IS_APPLE)
-  // Increase the thread priority to get more reliable values in performance
-  // test of macOS.
-  thread_options.thread_type =
-      (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseHighGPUThreadPriorityForPerfTests))
-          ? base::ThreadType::kRealtimeAudio
-          : thread_type;
-#else
   thread_options.thread_type = thread_type;
-#endif  // !BUILDFLAG(IS_APPLE)
 
   CHECK(thread->StartWithOptions(std::move(thread_options)));
 

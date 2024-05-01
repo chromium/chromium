@@ -26,7 +26,6 @@ GPU_EXPORT extern const char kUseWebGPUPowerPreference[];
 GPU_EXPORT extern const char kForceWebGPUCompat[];
 GPU_EXPORT extern const char kEnableDawnFeatures[];
 GPU_EXPORT extern const char kDisableDawnFeatures[];
-GPU_EXPORT extern const char kUseHighGPUThreadPriorityForPerfTests[];
 GPU_EXPORT extern const char kNoDelayForDX12VulkanInfoCollection[];
 GPU_EXPORT extern const char kEnableGpuBlockedTime[];
 GPU_EXPORT extern const char kGpuVendorId[];

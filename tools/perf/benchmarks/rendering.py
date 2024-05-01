@@ -125,14 +125,7 @@ class RenderingDesktop(_RenderingBenchmark):
 
   def SetExtraBrowserOptions(self, options):
     super(RenderingDesktop, self).SetExtraBrowserOptions(options)
-    # The feature below is only needed for macOS.
-    # We found that the normal priorities used for mac is resulting into
-    # unreliable values for avg_fps and frame_times. Increasing the priority
-    # and using it in telemetry tests can help with more accurate values.
-    # crbug.com/970607
     if sys.platform == 'darwin':
-      options.AppendExtraBrowserArgs(
-          '--use-gpu-high-thread-priority-for-perf-tests')
       # Mac bots without a physical display fallbacks to SRGB. This flag forces
       # them to use a color profile (P3), which matches the usual color profile
       # on Mac monitors and changes the cost of some overlay operations to match

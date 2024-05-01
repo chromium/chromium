@@ -113,12 +113,6 @@ const char* const kBadFlags[] = {
     switches::kEnableSpeechDispatcher,
 #endif
 
-#if BUILDFLAG(IS_MAC)
-    // This flag is only used for performance tests in mac, to ensure that
-    // calculated values are reliable. Should not be used elsewhere.
-    switches::kUseHighGPUThreadPriorityForPerfTests,
-#endif
-
     // These flags control Blink feature state, which is not supported and is
     // intended only for use by Chromium developers.
     switches::kDisableBlinkFeatures,
