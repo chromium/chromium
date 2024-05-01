@@ -42,24 +42,6 @@ const std::vector<LabInfo>& GetData() {
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;
 
-    // ChromeRefresh2023.
-    std::vector<std::u16string> chrome_refresh_variation_descriptions = {
-        l10n_util::GetStringUTF16(IDS_CHROMEREFRESH2023_WITHOUT_OMNIBOX)};
-
-    lab_info.emplace_back(
-        flag_descriptions::kChromeRefresh2023Id,
-        l10n_util::GetStringUTF16(IDS_CHROMEREFRESH2023_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_CHROMEREFRESH2023_DESCRIPTION),
-        "chrome-refresh", version_info::Channel::BETA,
-        chrome_refresh_variation_descriptions);
-
-    // ChromeWebuiRefresh2023.
-    lab_info.emplace_back(
-        flag_descriptions::kChromeWebuiRefresh2023Id,
-        l10n_util::GetStringUTF16(IDS_CHROMEWEBUIREFRESH2023_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_CHROMEWEBUIREFRESH2023_DESCRIPTION),
-        "chrome-labs-webui-refresh", version_info::Channel::BETA);
-
     // Tab Scrolling.
     std::vector<std::u16string> tab_scrolling_variation_descriptions = {
         l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH),

@@ -812,27 +812,6 @@ const char kChromeLabsDescription[] =
     "Access Chrome Labs through the toolbar menu to see featured user-facing "
     "experimental features.";
 
-const char kChromeRefresh2023Id[] = "chrome-refresh-2023";
-const char kChromeRefresh2023Name[] = "Chrome Refresh 2023";
-const char kChromeRefresh2023Description[] =
-    "Enables the new desktop design. Customize Chrome Side Panel must also be "
-    "enabled.";
-
-const char kChromeWebuiRefresh2023Id[] = "chrome-webui-refresh-2023";
-const char kChromeWebuiRefresh2023Name[] = "Chrome WebUI Refresh 2023";
-const char kChromeWebuiRefresh2023Description[] =
-    "Enables the new desktop design for WebUI. Chrome Refresh 2023 must also "
-    "be enabled.";
-
-const char kChromeRefresh2023NTBName[] = "Chrome Refresh 2023 New Tab Button";
-const char kChromeRefresh2023NTBDescription[] =
-    "Enables the variations of the new tab button for chrome refresh 2023.";
-
-const char kChromeRefresh2023TopChromeFontName[] =
-    "Chrome Refresh 2023 Top Chrome Font Style ";
-const char kChromeRefresh2023TopChromeFontDescription[] =
-    "Enables the bolder version of font styles for Top Chrome components.";
-
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";

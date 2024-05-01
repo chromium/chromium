@@ -1364,26 +1364,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "chrome-refresh-2023",
-    "owners":["chrome-views@google.com"],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "chrome-refresh-2023-ntb",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "chrome-refresh-2023-top-chrome-font",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "chrome-webui-refresh-2023",
-    "owners":["dpapad@chromium.org", "johntlee@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "chrome-wide-echo-cancellation",
     "owners": [ "olka@chromium.org", "saza@chromium.org", "fhernqvist@chromium.org" ],
     // TODO(http://crubg.com/1372451): remove when we have a proper solution.
