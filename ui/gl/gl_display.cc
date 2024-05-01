@@ -661,7 +661,7 @@ bool GLDisplayEGL::Initialize(bool supports_angle,
                          /*existing_display=*/nullptr)) {
     return false;
   }
-  InitializeCommon(/*for_unit_tests=*/false);
+  InitializeCommon(/*for_testing=*/false);
 
   return true;
 }
@@ -690,7 +690,7 @@ bool GLDisplayEGL::Initialize(GLDisplay* other_display) {
     return false;
   }
 
-  InitializeCommon(/*for_unit_tests=*/false);
+  InitializeCommon(/*for_testing=*/false);
 
   return true;
 }
@@ -698,7 +698,7 @@ bool GLDisplayEGL::Initialize(GLDisplay* other_display) {
 void GLDisplayEGL::InitializeForTesting() {
   display_ = eglGetCurrentDisplay();
   ext->InitializeExtensionSettings(display_);
-  InitializeCommon(/*for_unit_tests=*/true);
+  InitializeCommon(/*for_testing=*/true);
 }
 
 bool GLDisplayEGL::InitializeExtensionSettings() {
@@ -803,7 +803,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
   return false;
 }
 
-void GLDisplayEGL::InitializeCommon(bool for_unit_tests) {
+void GLDisplayEGL::InitializeCommon(bool for_testing) {
   // According to https://source.android.com/compatibility/android-cdd.html the
   // EGL_IMG_context_priority extension is mandatory for Virtual Reality High
   // Performance support, but due to a bug in Android Nougat the extension
@@ -874,19 +874,9 @@ void GLDisplayEGL::InitializeCommon(bool for_unit_tests) {
       base::SysInfo::GetAndroidHardwareEGL() != "emulation") {
     egl_android_native_fence_sync_supported_ = true;
   }
-
-  // TODO(https://crbug.com/337886037): ANGLE is not reporting the extension
-  // properly on Android emulators. This temporary fix should be dropped once we
-  // can fix it from ANGLE. In unittest targets however, we still respect the
-  // default value as some code paths expect the native fence support during
-  // test.
-  if (!for_unit_tests &&
-      base::SysInfo::GetAndroidHardwareEGL() == "emulation") {
-    egl_android_native_fence_sync_supported_ = false;
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (!for_unit_tests) {
+  if (!for_testing) {
     if (ext->b_EGL_ANGLE_power_preference) {
       gpu_switching_observer_ =
           std::make_unique<EGLGpuSwitchingObserver>(display_);
