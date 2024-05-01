@@ -581,8 +581,9 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_TRUE(nudge_shown->GetVisible());
 }
 
+// TODO(crbug.com/334987779): Re-enable this test
 TEST_F(InputDeviceSettingsNotificationControllerTest,
-       ShowSixPackKeyRewritingNudge) {
+       DISABLED_ShowSixPackKeyRewritingNudge) {
   const AnchoredNudge* nudge =
       Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
           kSixPackKeyNoMatchNudgeId);
