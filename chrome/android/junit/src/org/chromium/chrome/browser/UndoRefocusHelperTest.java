@@ -87,7 +87,7 @@ public class UndoRefocusHelperTest {
 
         // Act: Close fourth tab (selected) and undo closed tab.
         Tab tab = getMockedTab(3);
-        tabModelSelectorTabModelObserver.willCloseTab(tab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(tab, true);
         // When the fourth tab is closed, the third one should be selected.
         mModel.setIndex(2);
         // Undo 4th tab closure.
@@ -106,7 +106,7 @@ public class UndoRefocusHelperTest {
 
         // Act: Close fourth tab (not selected) and undo closed tab.
         Tab tab = getMockedTab(3);
-        tabModelSelectorTabModelObserver.willCloseTab(tab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(tab, true);
         // When the fourth tab is closed, the third one should be selected.
         mModel.setIndex(2);
         // Undo 4th tab closure.
@@ -125,10 +125,10 @@ public class UndoRefocusHelperTest {
 
         // Act: Close multiple tabs one after the other including selected tab and undo closure
         // once.
-        tabModelSelectorTabModelObserver.willCloseTab(mTab3, true, true);
+        tabModelSelectorTabModelObserver.willCloseTab(mTab3, true);
         // tab2 is selected after tab3 is closed.
         mModel.setIndex(2);
-        tabModelSelectorTabModelObserver.willCloseTab(mTab2, true, true);
+        tabModelSelectorTabModelObserver.willCloseTab(mTab2, true);
 
         // Last closure (mTab3) is undone
         tabModelSelectorTabModelObserver.tabClosureUndone(mTab2);
@@ -146,7 +146,7 @@ public class UndoRefocusHelperTest {
         Tab tab = getMockedTab(3);
 
         // Act 1: Close just the fourth tab and undo.
-        tabModelSelectorTabModelObserver.willCloseTab(tab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(tab, true);
         // After fourth tab is closed, the third one should be selected.
         mModel.setIndex(2);
         // Undo tab closure.
@@ -176,7 +176,7 @@ public class UndoRefocusHelperTest {
         Tab secondTab = getMockedTab(1);
 
         // Act 1: Close just the fourth tab and undo.
-        tabModelSelectorTabModelObserver.willCloseTab(tab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(tab, true);
         // After fourth tab is closed, the third one should be selected.
         mModel.setIndex(2);
 
@@ -198,13 +198,13 @@ public class UndoRefocusHelperTest {
 
         // Act 1: Close the fourth tab.
         Tab fourthTab = getMockedTab(3);
-        tabModelSelectorTabModelObserver.willCloseTab(fourthTab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(fourthTab, true);
         // After fourth tab is closed, the third one should be selected.
         mModel.setIndex(2);
 
         // Act 2: Close the third tab after it is selected.
         Tab thirdTab = getMockedTab(2);
-        tabModelSelectorTabModelObserver.willCloseTab(thirdTab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(thirdTab, true);
         // After third tab is closed, the second one should be selected.
         mModel.setIndex(1);
 
@@ -225,7 +225,7 @@ public class UndoRefocusHelperTest {
         Tab tab = getMockedTab(3);
 
         // Act: Close tab and undo closed tab.
-        tabModelSelectorTabModelObserver.willCloseTab(tab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(tab, true);
         tabModelSelectorTabModelObserver.tabClosureUndone(tab);
 
         // Assert: User action is recorded.
@@ -242,7 +242,7 @@ public class UndoRefocusHelperTest {
         mUndoRefocusHelper.setTabSwitcherVisibilityForTests(true);
 
         // Act: Close tab and undo closed tab.
-        tabModelSelectorTabModelObserver.willCloseTab(tab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(tab, true);
         tabModelSelectorTabModelObserver.tabClosureUndone(tab);
 
         // Assert: User action is not recorded.
@@ -260,9 +260,9 @@ public class UndoRefocusHelperTest {
 
         // Act: Close 2 tabs and undo, one with tab switcher open.
         mUndoRefocusHelper.setTabSwitcherVisibilityForTests(true);
-        tabModelSelectorTabModelObserver.willCloseTab(tab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(tab, true);
         mUndoRefocusHelper.setTabSwitcherVisibilityForTests(false);
-        tabModelSelectorTabModelObserver.willCloseTab(secondTab, false, true);
+        tabModelSelectorTabModelObserver.willCloseTab(secondTab, true);
 
         tabModelSelectorTabModelObserver.tabClosureUndone(secondTab);
         tabModelSelectorTabModelObserver.tabClosureUndone(tab);

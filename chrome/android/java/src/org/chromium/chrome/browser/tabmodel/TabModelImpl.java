@@ -368,7 +368,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public boolean closeTab(Tab tab) {
-        return closeTab(tab, true, false, false);
+        return closeTab(tab, false, false);
     }
 
     private Tab findTabInAllTabModels(int tabId) {
@@ -504,37 +504,32 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean closeTab(Tab tabToClose, boolean animate, boolean uponExit, boolean canUndo) {
-        return closeTab(tabToClose, null, animate, uponExit, canUndo, canUndo, TabCloseType.SINGLE);
+    public boolean closeTab(Tab tabToClose, boolean uponExit, boolean canUndo) {
+        return closeTab(tabToClose, null, uponExit, canUndo, canUndo, TabCloseType.SINGLE);
     }
 
     @Override
-    public boolean closeTab(
-            Tab tab, Tab recommendedNextTab, boolean animate, boolean uponExit, boolean canUndo) {
-        return closeTab(
-                tab, recommendedNextTab, animate, uponExit, canUndo, canUndo, TabCloseType.SINGLE);
+    public boolean closeTab(Tab tab, Tab recommendedNextTab, boolean uponExit, boolean canUndo) {
+        return closeTab(tab, recommendedNextTab, uponExit, canUndo, canUndo, TabCloseType.SINGLE);
     }
 
     /**
      * See TabModel.java documentation for description of other parameters.
+     *
      * @param notifyPending Whether or not to notify observers about the pending closure. If this is
-     *                      {@code true}, {@link #supportsPendingClosures()} is {@code true},
-     *                      and canUndo is {@code true}, observers will be notified of the pending
-     *                      closure. Observers will still be notified of a committed/cancelled
-     *                      closure even if they are not notified of a pending closure to start
-     *                      with.
-     * @param tabCloseType Used to notify observers that this tab is closing by itself for
-     *                     {@link TabModelObserver#onFinishingMultipleTabClosure} if the
-     *                     closure cannot be undone and for {@link
-     *                     TabModelObserver#willCloseTab}. This should be {@code
-     *                     TabCloseType.SINGLE} if closing the tab by itself, {@code
-     *                     TabCloseType.MULTIPLE} if closing multiple tabs or {@code
-     *                     TabCloseType.ALL} all tabs (which also does additional optimization).
+     *     {@code true}, {@link #supportsPendingClosures()} is {@code true}, and canUndo is {@code
+     *     true}, observers will be notified of the pending closure. Observers will still be
+     *     notified of a committed/cancelled closure even if they are not notified of a pending
+     *     closure to start with.
+     * @param tabCloseType Used to notify observers that this tab is closing by itself for {@link
+     *     TabModelObserver#onFinishingMultipleTabClosure} if the closure cannot be undone and for
+     *     {@link TabModelObserver#willCloseTab}. This should be {@code TabCloseType.SINGLE} if
+     *     closing the tab by itself, {@code TabCloseType.MULTIPLE} if closing multiple tabs or
+     *     {@code TabCloseType.ALL} all tabs (which also does additional optimization).
      */
     private boolean closeTab(
             Tab tabToClose,
             Tab recommendedNextTab,
-            boolean animate,
             boolean uponExit,
             boolean canUndo,
             boolean notifyPending,
@@ -551,7 +546,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         canUndo &= supportsPendingClosures();
 
-        startTabClosure(tabToClose, recommendedNextTab, animate, uponExit, canUndo, tabCloseType);
+        startTabClosure(tabToClose, recommendedNextTab, uponExit, canUndo, tabCloseType);
         if (notifyPending && canUndo) {
             mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tabToClose));
             for (TabModelObserver obs : mObservers) obs.tabPendingClosure(tabToClose);
@@ -581,7 +576,7 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         for (Tab tab : tabs) {
-            closeTab(tab, null, false, false, canUndo, false, TabCloseType.MULTIPLE);
+            closeTab(tab, null, false, canUndo, false, TabCloseType.MULTIPLE);
         }
         if (allowUndo) {
             mPendingTabClosureManager.addTabClosureEvent(tabs);
@@ -606,7 +601,7 @@ public class TabModelImpl extends TabModelJniBridge {
             notifyOnFinishingMultipleTabClosure(mTabs);
             while (getCount() > 0) {
                 Tab tab = getTabAt(0);
-                closeTab(tab, null, true, uponExit, false, false, TabCloseType.ALL);
+                closeTab(tab, null, uponExit, false, false, TabCloseType.ALL);
             }
             return;
         }
@@ -619,7 +614,7 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         while (getCount() > 0) {
             Tab tab = getTabAt(0);
-            closeTab(tab, null, false, false, true, false, TabCloseType.ALL);
+            closeTab(tab, null, false, true, false, TabCloseType.ALL);
         }
 
         if (supportsPendingClosures()) {
@@ -724,35 +719,31 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     /**
-     * Performs the necessary actions to remove this {@link Tab} from this {@link TabModel}.
-     * This does not actually destroy the {@link Tab} (see
-     * {@link #finalizeTabClosure(Tab)}.
-     *  @param tab The {@link Tab} to remove from this {@link TabModel}.
-     * @param animate Whether or not to animate the closing.
+     * Performs the necessary actions to remove this {@link Tab} from this {@link TabModel}. This
+     * does not actually destroy the {@link Tab} (see {@link #finalizeTabClosure(Tab)}.
+     *
+     * @param tab The {@link Tab} to remove from this {@link TabModel}.
      * @param uponExit Whether or not this is closing while the Activity is exiting.
      * @param canUndo Whether or not this operation can be undone. Note that if this is {@code true}
-     *                and {@link #supportsPendingClosures()} is {@code true},
-     *                {@link #commitTabClosure(int)} or {@link #commitAllTabClosures()} needs to be
-     *                called to actually delete and clean up {@code tab}.
-     * @param tabCloseType Used to notify observers that this tab is closing by itself for
-     *                     {@link TabModelObserver#onFinishingMultipleTabClosure} if the
-     *                     closure cannot be undone and for {@link
-     *                     TabModelObserver#willCloseTab}. This should be {@code
-     *                     TabCloseType.SINGLE} if closing the tab by itself, {@code
-     *                     TabCloseType.MULTIPLE} if closing multiple tabs or {@code
-     *                     TabCloseType.ALL} all tabs (which also does additional optimization).
+     *     and {@link #supportsPendingClosures()} is {@code true}, {@link #commitTabClosure(int)} or
+     *     {@link #commitAllTabClosures()} needs to be called to actually delete and clean up {@code
+     *     tab}.
+     * @param tabCloseType Used to notify observers that this tab is closing by itself for {@link
+     *     TabModelObserver#onFinishingMultipleTabClosure} if the closure cannot be undone and for
+     *     {@link TabModelObserver#willCloseTab}. This should be {@code TabCloseType.SINGLE} if
+     *     closing the tab by itself, {@code TabCloseType.MULTIPLE} if closing multiple tabs or
+     *     {@code TabCloseType.ALL} all tabs (which also does additional optimization).
      */
     private void startTabClosure(
             Tab tab,
             Tab recommendedNextTab,
-            boolean animate,
             boolean uponExit,
             boolean canUndo,
             @TabCloseType int tabCloseType) {
         tab.setClosing(true);
 
         for (TabModelObserver obs : mObservers) {
-            obs.willCloseTab(tab, animate, tabCloseType == TabCloseType.SINGLE);
+            obs.willCloseTab(tab, tabCloseType == TabCloseType.SINGLE);
         }
 
         @TabSelectionType

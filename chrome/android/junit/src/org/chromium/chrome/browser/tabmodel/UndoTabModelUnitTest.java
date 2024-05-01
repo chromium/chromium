@@ -235,7 +235,7 @@ public class UndoTabModelUnitTest {
                 });
 
         // Take action.
-        model.closeTab(tab, true, false, undoable);
+        model.closeTab(tab, false, undoable);
 
         boolean didMakePending = undoable && model.supportsPendingClosures();
 

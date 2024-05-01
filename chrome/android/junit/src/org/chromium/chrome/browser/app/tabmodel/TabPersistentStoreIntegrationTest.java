@@ -191,7 +191,7 @@ public class TabPersistentStoreIntegrationTest {
         assertTrue(tabStateFile.exists());
 
         // Close the tab
-        tabModel.closeTab(tab, false, false, true);
+        tabModel.closeTab(tab, false, true);
         runAllAsyncTasks();
 
         // Step to test: Commit tab closure
@@ -217,7 +217,7 @@ public class TabPersistentStoreIntegrationTest {
         TabModel tabModel = mTabModelSelector.getModel(false);
         Tab tab = MockTab.createAndInitialize(TAB_ID, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        tabModel.closeTab(tab, false, false, true);
+        tabModel.closeTab(tab, false, true);
         runAllAsyncTasks();
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
 
@@ -243,7 +243,7 @@ public class TabPersistentStoreIntegrationTest {
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
         // Step to test: Close tab.
-        tabModel.closeTab(tab, false, false, true);
+        tabModel.closeTab(tab, false, true);
         runAllAsyncTasks();
 
         // Step to test: Commit tab closure.

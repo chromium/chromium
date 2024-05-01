@@ -357,12 +357,12 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false, true);
+        mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), true);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
 
         doReturn(1).when(mNormalTabModel).getCount();
-        mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), false, true);
+        mTabModelObserverCaptor.getValue().willCloseTab(mock(Tab.class), true);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
     }

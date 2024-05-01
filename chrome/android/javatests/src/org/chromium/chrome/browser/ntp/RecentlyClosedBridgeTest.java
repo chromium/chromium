@@ -144,7 +144,7 @@ public class RecentlyClosedBridgeTest {
                     titles[0] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     mTabModel.closeTab(tabB);
-                    mTabModel.closeTab(tabA, false, false, true);
+                    mTabModel.closeTab(tabA, false, true);
                     mTabModel.commitTabClosure(tabA.getId());
                 });
 
@@ -485,8 +485,8 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     titleA[0] = tabA.getTitle();
                     titleB[0] = tabB.getTitle();
-                    mTabModel.closeTab(tabB, false, false, true);
-                    mTabModel.closeTab(tabA, false, false, true);
+                    mTabModel.closeTab(tabB, false, true);
+                    mTabModel.closeTab(tabA, false, true);
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -550,8 +550,8 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     titleA[0] = tabA.getTitle();
                     titleB[0] = tabB.getTitle();
-                    mTabModel.closeTab(tabB, false, false, true);
-                    mTabModel.closeTab(tabA, false, false, true);
+                    mTabModel.closeTab(tabB, false, true);
+                    mTabModel.closeTab(tabA, false, true);
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -1381,7 +1381,7 @@ public class RecentlyClosedBridgeTest {
                     groupTitles[1] = tabB.getTitle();
                     groupTitles[0] = tabC.getTitle();
                     mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabB, tabC}), true);
-                    mTabModel.closeTab(tabA, false, false, true);
+                    mTabModel.closeTab(tabA, false, true);
                     mTabModel.commitTabClosure(tabB.getId());
                     mTabModel.commitTabClosure(tabA.getId());
                     mTabModel.commitTabClosure(tabC.getId());

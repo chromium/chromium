@@ -62,7 +62,7 @@ public final class TabModelSelectorTabRegistrationObserver {
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         mTabsToClose.put(tab.getId(), tab);
                     }
 

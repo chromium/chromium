@@ -10,7 +10,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
-
 /** Observer of tab changes for tabs selected within and owned by a {@link TabModel}. */
 public class TabModelTabObserver extends EmptyTabObserver {
     private final TabModel mTabModel;
@@ -47,7 +46,7 @@ public class TabModelTabObserver extends EmptyTabObserver {
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         TabModelTabObserver.this.willCloseTab(tab);
                     }
                 };

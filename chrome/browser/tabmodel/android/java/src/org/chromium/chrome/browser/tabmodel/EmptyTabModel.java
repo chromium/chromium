@@ -129,14 +129,13 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
-    public boolean closeTab(Tab tab, boolean animate, boolean uponExit, boolean canUndo) {
+    public boolean closeTab(Tab tab, boolean uponExit, boolean canUndo) {
         return false;
     }
 
     @Override
-    public boolean closeTab(
-            Tab tab, Tab recommendedNextTab, boolean animate, boolean uponExit, boolean canUndo) {
-        return closeTab(tab, animate, uponExit, canUndo);
+    public boolean closeTab(Tab tab, Tab recommendedNextTab, boolean uponExit, boolean canUndo) {
+        return closeTab(tab, uponExit, canUndo);
     }
 
     @Override

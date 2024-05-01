@@ -209,7 +209,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     public void closeTab() {
         TabModel model = mTabFactory.getTabModelSelector().getCurrentModel();
         Tab currentTab = mTabProvider.getTab();
-        model.closeTab(currentTab, false, false, false);
+        model.closeTab(currentTab, false, false);
     }
 
     public boolean onlyOneTabRemaining() {

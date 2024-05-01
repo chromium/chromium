@@ -53,15 +53,12 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+    public final void willCloseTab(Tab tab, boolean didCloseAlone) {
         assert mNativeTabModelObserverJniBridge != 0;
         assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .willCloseTab(
-                        mNativeTabModelObserverJniBridge,
-                        TabModelObserverJniBridge.this,
-                        tab,
-                        animate);
+                        mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab);
     }
 
     @Override
@@ -227,10 +224,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 int lastId);
 
         void willCloseTab(
-                long nativeTabModelObserverJniBridge,
-                TabModelObserverJniBridge caller,
-                Tab tab,
-                boolean animate);
+                long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
 
         void onFinishingTabClosure(
                 long nativeTabModelObserverJniBridge,

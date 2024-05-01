@@ -28,7 +28,7 @@ class TabModelObserver {
   virtual void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type);
 
   // Called when a |tab| starts closing.
-  virtual void WillCloseTab(TabAndroid* tab, bool animate);
+  virtual void WillCloseTab(TabAndroid* tab);
 
   // Called right before a |tab| has been destroyed.
   virtual void OnFinishingTabClosure(int tab_id, bool incognito);

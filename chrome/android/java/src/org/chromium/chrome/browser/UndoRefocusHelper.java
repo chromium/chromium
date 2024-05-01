@@ -89,7 +89,7 @@ public class UndoRefocusHelper implements DestroyObserver {
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(mModelSelector) {
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         // Tabs not closed alone are handled in #willCloseMultipleTabs and
                         // #willCloseAllTabs
                         if (!didCloseAlone || tab.isIncognito()) return;

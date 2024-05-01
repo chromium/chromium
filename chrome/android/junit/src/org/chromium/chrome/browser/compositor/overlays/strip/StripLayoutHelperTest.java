@@ -2793,7 +2793,7 @@ public class StripLayoutHelperTest {
         // Remove tab from model and verify that the tab strip has not yet updated.
         int closedTabId = 1;
         int expectedNumTabs = tabCount;
-        mModel.closeTab(mModel.getTabAt(closedTabId), false, false, true);
+        mModel.closeTab(mModel.getTabAt(closedTabId), false, true);
         assertEquals(
                 "Tab strip should not yet have changed.",
                 expectedNumTabs,

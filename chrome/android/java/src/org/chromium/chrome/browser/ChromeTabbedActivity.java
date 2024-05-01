@@ -2935,7 +2935,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
             RecordUserAction.record("MobileMenuRecentTabs");
         } else if (id == R.id.close_tab) {
-            getCurrentTabModel().closeTab(currentTab, true, false, true);
+            getCurrentTabModel().closeTab(currentTab, false, true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
             // Close both incognito and normal tabs.
@@ -3263,14 +3263,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             // This seems improbable; however, crbug/1463397 suggests otherwise. If
                             // this happens, remain on the current tab and close the tab in the
                             // other model.
-                            tabToCloseModel.closeTab(tabToClose, null, false, true, false);
+                            tabToCloseModel.closeTab(tabToClose, null, true, false);
                             return;
                         }
 
                         Tab nextTab =
                                 currentModel.getNextTabIfClosed(
                                         tabToClose.getId(), /* uponExit= */ true);
-                        currentModel.closeTab(tabToClose, nextTab, false, true, false);
+                        currentModel.closeTab(tabToClose, nextTab, true, false);
 
                         // If there is no next tab to open, enter overview mode.
                         if (nextTab == null && !isActivityFinishingOrDestroyed()) {

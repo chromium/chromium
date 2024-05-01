@@ -565,8 +565,7 @@ public class TabsTest {
 
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> model.closeTab(tab, false, false, true));
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> model.closeTab(tab, false, true));
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -651,7 +650,7 @@ public class TabsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    model.closeTab(newTab, false, false, true);
+                    model.closeTab(newTab, false, true);
                 });
 
         Assert.assertEquals("oldTab should have been focused.", 1, focusListener.getTimesFocused());
@@ -802,8 +801,7 @@ public class TabsTest {
 
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> model.closeTab(tab, false, false, true));
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> model.closeTab(tab, false, true));
 
         Assert.assertTrue("notifyChanged() was not called", mNotifyChangedCalled);
     }

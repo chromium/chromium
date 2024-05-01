@@ -40,7 +40,6 @@ public interface TabModel extends TabList {
      * Unregisters and destroys the specified tab, and then switches to the previous tab.
      *
      * @param tab The non-null tab to close
-     * @param animate true iff the closing animation should be displayed
      * @param uponExit true iff the tab is being closed upon application exit (after user presses
      *     the system back button)
      * @param canUndo Whether or not this action can be undone. If this is {@code true} and {@link
@@ -51,7 +50,7 @@ public interface TabModel extends TabList {
      *     #getComprehensiveModel()}.
      * @return true if the tab was found
      */
-    boolean closeTab(Tab tab, boolean animate, boolean uponExit, boolean canUndo);
+    boolean closeTab(Tab tab, boolean uponExit, boolean canUndo);
 
     /**
      * Unregisters and destroys the specified tab, and then switches to {@code recommendedNextTab}
@@ -59,7 +58,6 @@ public interface TabModel extends TabList {
      *
      * @param tab The non-null tab to close.
      * @param recommendedNextTab The tab to switch to if not null.
-     * @param animate true iff the closing animation should be displayed.
      * @param uponExit true iff the tab is being closed upon application exit (after user presses
      *     the system back button).
      * @param canUndo Whether or not this action can be undone. If this is {@code true} and {@link
@@ -70,12 +68,7 @@ public interface TabModel extends TabList {
      *     #getComprehensiveModel()}.
      * @return true if the tab was found.
      */
-    boolean closeTab(
-            Tab tab,
-            @Nullable Tab recommendedNextTab,
-            boolean animate,
-            boolean uponExit,
-            boolean canUndo);
+    boolean closeTab(Tab tab, @Nullable Tab recommendedNextTab, boolean uponExit, boolean canUndo);
 
     /**
      * Returns which tab would be selected if the specified tab {@code id} were closed.

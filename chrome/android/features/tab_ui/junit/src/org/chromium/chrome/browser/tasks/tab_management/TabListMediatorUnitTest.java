@@ -725,7 +725,7 @@ public class TabListMediatorUnitTest {
                 .get(TabProperties.TAB_ACTION_BUTTON_LISTENER)
                 .run(mModel.get(1).model.get(TabProperties.TAB_ID));
 
-        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(false), eq(true));
+        verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(true));
     }
 
     @Test
@@ -876,7 +876,7 @@ public class TabListMediatorUnitTest {
     public void tabClosure() {
         assertThat(mModel.size(), equalTo(2));
 
-        mMediatorTabModelObserver.willCloseTab(mTab2, false, true);
+        mMediatorTabModelObserver.willCloseTab(mTab2, true);
 
         assertThat(mModel.size(), equalTo(1));
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -884,8 +884,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabClosure_IgnoresUpdatesForTabsOutsideOfModel() {
-        mMediatorTabModelObserver.willCloseTab(
-                prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL), false, true);
+        mMediatorTabModelObserver.willCloseTab(prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL), true);
 
         assertThat(mModel.size(), equalTo(2));
     }
@@ -1130,7 +1129,7 @@ public class TabListMediatorUnitTest {
     public void tabClosureUndone() {
         assertThat(mModel.size(), equalTo(2));
 
-        mMediatorTabModelObserver.willCloseTab(mTab2, false, true);
+        mMediatorTabModelObserver.willCloseTab(mTab2, true);
 
         assertThat(mModel.size(), equalTo(1));
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -1150,7 +1149,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(Arrays.asList(mTab2), TAB2_ID, TAB_GROUP_ID);
 
         mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mMediatorTabModelObserver.willCloseTab(mTab2, false, true);
+        mMediatorTabModelObserver.willCloseTab(mTab2, true);
 
         assertThat(mModel.size(), equalTo(1));
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -2470,7 +2469,7 @@ public class TabListMediatorUnitTest {
         initAndAssertAllProperties();
 
         assertThat(mModel.size(), equalTo(2));
-        mMediatorTabModelObserver.willCloseTab(mTab2, false, true);
+        mMediatorTabModelObserver.willCloseTab(mTab2, true);
         verify(mTab2).removeObserver(mTabObserver);
         assertThat(mModel.size(), equalTo(1));
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
@@ -2481,7 +2480,7 @@ public class TabListMediatorUnitTest {
         initAndAssertAllProperties();
 
         assertThat(mModel.size(), equalTo(2));
-        mMediatorTabModelObserver.willCloseTab(mTab2, false, true);
+        mMediatorTabModelObserver.willCloseTab(mTab2, true);
         assertThat(mModel.size(), equalTo(1));
 
         // Assume that TabModelFilter is already updated to reflect closed tab is undone.
@@ -3300,7 +3299,7 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
         doReturn(false).when(mTab1).isClosing();
 
-        mMediatorTabModelObserver.willCloseTab(tab3, false, true);
+        mMediatorTabModelObserver.willCloseTab(tab3, true);
 
         assertEquals(2, mModel.size());
 
@@ -3325,7 +3324,7 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
         doReturn(true).when(mTab1).isClosing();
 
-        mMediatorTabModelObserver.willCloseTab(tab3, false, true);
+        mMediatorTabModelObserver.willCloseTab(tab3, true);
 
         assertEquals(2, mModel.size());
 
@@ -3349,7 +3348,7 @@ public class TabListMediatorUnitTest {
         mMediator.setActionOnAllRelatedTabsForTesting(false);
         doReturn(true).when(mTabGroupModelFilter).tabGroupExistsForRootId(TAB1_ID);
 
-        mMediatorTabModelObserver.willCloseTab(mTab1, false, true);
+        mMediatorTabModelObserver.willCloseTab(mTab1, true);
 
         assertEquals(1, mModel.size());
 

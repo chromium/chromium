@@ -40,12 +40,12 @@ public class TabModelUtils {
         Tab tab = TabModelUtils.getTabById(model, tabId);
         if (tab == null || tab.isClosing()) return false;
 
-        return model.closeTab(tab, true, false, canUndo);
+        return model.closeTab(tab, false, canUndo);
     }
 
     /**
      * @param model The {@link TabModel} to act on.
-     * @return      {@code true} if the {@link Tab} was found.
+     * @return {@code true} if the {@link Tab} was found.
      */
     public static boolean closeCurrentTab(TabModel model) {
         Tab tab = TabModelUtils.getCurrentTab(model);

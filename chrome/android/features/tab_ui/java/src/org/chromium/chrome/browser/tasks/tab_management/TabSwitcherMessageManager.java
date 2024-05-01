@@ -77,7 +77,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
-                public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                public void willCloseTab(Tab tab, boolean didCloseAlone) {
                     if (mCurrentTabModelFilterSupplier.get().getTabModel().getCount() == 1) {
                         removeAllAppendedMessage();
                     } else if (mPriceMessageService != null

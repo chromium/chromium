@@ -128,7 +128,7 @@ public class RecentTabsTest {
                         new Callable<Boolean>() {
                             @Override
                             public Boolean call() {
-                                return tabModel.closeTab(tab, false, false, true);
+                                return tabModel.closeTab(tab, false, true);
                             }
                         });
         Assert.assertTrue(closeTabReturnValue);

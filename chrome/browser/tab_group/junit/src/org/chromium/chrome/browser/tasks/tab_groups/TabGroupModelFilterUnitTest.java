@@ -2141,8 +2141,8 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ false);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* didCloseAlone= */ false);
 
         mTabGroupModelFilter.tabClosureUndone(mTab2);
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
@@ -2162,8 +2162,8 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ true);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* didCloseAlone= */ false);
 
         mTabs.remove(mTab2);
         mTabs.remove(mTab3);
@@ -2185,8 +2185,8 @@ public class TabGroupModelFilterUnitTest {
 
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab4, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab4, /* didCloseAlone= */ false);
         mTabs.remove(mTab2);
         mTabs.remove(mTab4);
         mTabGroupModelFilter.onFinishingMultipleTabClosure(listWithTab2AndTab4);
@@ -2198,7 +2198,7 @@ public class TabGroupModelFilterUnitTest {
                 groupWithTab3, /* canUndo= */ true, /* hideTabGroups= */ true);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* didCloseAlone= */ false);
         mTabs.remove(mTab3);
 
         mTabGroupModelFilter.onFinishingMultipleTabClosure(groupWithTab3);
@@ -2217,8 +2217,8 @@ public class TabGroupModelFilterUnitTest {
         verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ true);
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* didCloseAlone= */ false);
 
         mTabs.remove(mTab2);
         mTabs.remove(mTab3);
@@ -2239,12 +2239,12 @@ public class TabGroupModelFilterUnitTest {
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.willCloseTab(mTab1, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab4, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab5, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab6, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab1, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab4, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab5, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab6, /* didCloseAlone= */ false);
 
         mTabs.remove(mTab2);
         mTabs.remove(mTab3);
@@ -2285,12 +2285,12 @@ public class TabGroupModelFilterUnitTest {
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.willCloseTab(mTab1, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab4, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab5, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab6, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab1, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab4, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab5, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab6, /* didCloseAlone= */ false);
 
         mTabs.remove(mTab2);
         mTabs.remove(mTab3);
@@ -2325,12 +2325,12 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.willCloseTab(mTab1, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab4, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab5, /* animate= */ false, /* didCloseAlone= */ false);
-        mTabGroupModelFilter.willCloseTab(mTab6, /* animate= */ false, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab1, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab3, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab4, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab5, /* didCloseAlone= */ false);
+        mTabGroupModelFilter.willCloseTab(mTab6, /* didCloseAlone= */ false);
 
         mTabs.remove(mTab1);
         mTabs.remove(mTab2);

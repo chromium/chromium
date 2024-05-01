@@ -121,7 +121,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         // If this is the last tab to close, make sure a signal is sent to the
                         // observers.
                         if (mTabModelSelector.getCurrentModel().getCount() <= 1) {

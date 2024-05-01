@@ -741,7 +741,7 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+        public void willCloseTab(Tab tab, boolean didCloseAlone) {
             Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;

@@ -371,7 +371,7 @@ public class TabModelImplUnitTest {
         Tab tab1 = createTab(tabModel);
         assertEquals(tab1, tabModel.getTabById(tab1.getId()));
 
-        tabModel.closeTab(tab1, /* animate= */ false, /* uponExit= */ false, /* canUndo= */ true);
+        tabModel.closeTab(tab1, /* uponExit= */ false, /* canUndo= */ true);
         assertEquals(null, tabModel.getTabById(tab1.getId()));
 
         tabModel.cancelTabClosure(tab1.getId());

@@ -937,7 +937,7 @@ public class TabSwitcherLayoutTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .closeTab(tab, false, false, true);
+                            .closeTab(tab, false, true);
                 });
         mActivityTestRule.loadUrlInTab(
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
@@ -2417,7 +2417,7 @@ public class TabSwitcherLayoutTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .closeTab(tab, false, false, true);
+                            .closeTab(tab, false, true);
                 });
 
         // Check empty view should show up.
@@ -2456,7 +2456,7 @@ public class TabSwitcherLayoutTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .closeTab(tab, false, false, true);
+                            .closeTab(tab, false, true);
                 });
 
         // Go into incognito tab switcher.
@@ -2481,7 +2481,7 @@ public class TabSwitcherLayoutTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .closeTab(incognitoTab, false, false, true);
+                            .closeTab(incognitoTab, false, true);
                 });
 
         // Incognito tab switcher should exit to go to normal tab switcher and we should see empty

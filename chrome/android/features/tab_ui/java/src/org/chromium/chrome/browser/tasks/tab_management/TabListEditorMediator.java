@@ -134,7 +134,7 @@ class TabListEditorMediator
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         if (itemType != TabProperties.UiType.CLOSABLE) {
                             hide();
                         }

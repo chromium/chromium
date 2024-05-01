@@ -139,20 +139,18 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public boolean closeTab(Tab tab, boolean animate, boolean uponExit, boolean canUndo) {
+    public boolean closeTab(Tab tab, boolean uponExit, boolean canUndo) {
         mCountOfAddingOrClosingTabs++;
-        boolean retVal = mDelegateModel.closeTab(tab, animate, uponExit, canUndo);
+        boolean retVal = mDelegateModel.closeTab(tab, uponExit, canUndo);
         mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
         return retVal;
     }
 
     @Override
-    public boolean closeTab(
-            Tab tab, Tab recommendedNextTab, boolean animate, boolean uponExit, boolean canUndo) {
+    public boolean closeTab(Tab tab, Tab recommendedNextTab, boolean uponExit, boolean canUndo) {
         mCountOfAddingOrClosingTabs++;
-        boolean retVal =
-                mDelegateModel.closeTab(tab, recommendedNextTab, animate, uponExit, canUndo);
+        boolean retVal = mDelegateModel.closeTab(tab, recommendedNextTab, uponExit, canUndo);
         mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
         return retVal;

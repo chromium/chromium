@@ -62,7 +62,7 @@ public class TestTabModel extends EmptyTabModel {
     }
 
     @Override
-    public boolean closeTab(Tab tab, boolean animate, boolean uponExit, boolean canUndo) {
+    public boolean closeTab(Tab tab, boolean uponExit, boolean canUndo) {
         // The tabId and index are the same.
         mMockTabs.remove(tab.getId());
         return true;

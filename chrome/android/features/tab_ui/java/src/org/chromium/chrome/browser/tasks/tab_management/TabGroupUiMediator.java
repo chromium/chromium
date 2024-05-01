@@ -199,7 +199,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                     // TODO(crbug/41496693): Delete this logic once tab groups with one tab are
                     // launched.
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         if (!mIsTabGroupUiVisible) return;
 
                         // Check if the group the tab was part of is still a tab group.

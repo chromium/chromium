@@ -1077,7 +1077,7 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         getStripLayoutHelper(tab.isIncognito()).willCloseTab(time(), tab);
                     }
 

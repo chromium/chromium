@@ -287,8 +287,7 @@ class StartSurfaceMediator
                 mNormalTabModelObserver =
                         new TabModelObserver() {
                             @Override
-                            public void willCloseTab(
-                                    Tab tab, boolean animate, boolean didCloseAlone) {
+                            public void willCloseTab(Tab tab, boolean didCloseAlone) {
                                 if (isHomepageShown()
                                         && mTabModelSelector.getModel(false).getCount() <= 1) {
                                     setTabCardVisibility(false);
