@@ -26,10 +26,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
     : public base::win::ObjectWatcher::Delegate,
       public base::RefCounted<CommandQueue> {
  public:
-  static scoped_refptr<CommandQueue> Create(
-      ID3D12Device* d3d12_device,
-      D3D12_COMMAND_LIST_TYPE command_list_type =
-          D3D12_COMMAND_LIST_TYPE_DIRECT);
+  static scoped_refptr<CommandQueue> Create(ID3D12Device* d3d12_device);
 
   CommandQueue(const CommandQueue&) = delete;
   CommandQueue& operator=(const CommandQueue&) = delete;
@@ -53,17 +50,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
   uint64_t GetCompletedValue() const;
   uint64_t GetLastFenceValue() const;
 
-  D3D12_COMMAND_LIST_TYPE GetCommandListType() const {
-    return command_list_type_;
-  }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNCommandQueueTest, ReferenceAndRelease);
 
   friend class base::RefCounted<CommandQueue>;
   CommandQueue(Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
-               Microsoft::WRL::ComPtr<ID3D12Fence> fence,
-               D3D12_COMMAND_LIST_TYPE command_list_type);
+               Microsoft::WRL::ComPtr<ID3D12Fence> fence);
   ~CommandQueue() override;
 
   struct QueuedObject {
@@ -146,8 +138,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandQueue
 
   base::win::ScopedHandle fence_event_;
   base::win::ObjectWatcher object_watcher_;
-
-  const D3D12_COMMAND_LIST_TYPE command_list_type_;
 };
 
 }  // namespace webnn::dml

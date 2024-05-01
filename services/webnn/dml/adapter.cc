@@ -187,28 +187,26 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
     }
   }
 
-  // Create d3d12 device.
-  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
   // D3D_FEATURE_LEVEL_1_0_CORE allows Microsoft Compute Driver Model (MCDM)
   // devices (NPUs) to be used. D3D_FEATURE_LEVEL_11_0 targets features
   // supported by Direct3D 11.0.
   // https://learn.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_feature_level
   //
-  // D3D12_COMMAND_LIST_TYPE_DIRECT specifies a command buffer that the GPU can
-  // execute. D3D12_COMMAND_LIST_TYPE_COMPUTE specifies a command buffer for
-  // computing.
+  // Prefer using D3D12_COMMAND_LIST_TYPE_COMPUTE over a direct command queue
+  // as these are easier for the windows kernel to preempt. For NPU devices,
+  // only compute command queues are supported.
   // https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ne-d3d12-d3d12_command_list_type
   D3D_FEATURE_LEVEL d3d_feature_level = D3D_FEATURE_LEVEL_11_0;
-  D3D12_COMMAND_LIST_TYPE command_list_type = D3D12_COMMAND_LIST_TYPE_DIRECT;
   Microsoft::WRL::ComPtr<IDXCoreAdapter> dxcore_adapter;
   if (SUCCEEDED(dxgi_or_dxcore_adapter->QueryInterface(
           IID_PPV_ARGS(&dxcore_adapter)))) {
     d3d_feature_level = D3D_FEATURE_LEVEL_1_0_CORE;
-    command_list_type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
   }
 
   auto d3d12_create_device_proc =
       platform_functions->d3d12_create_device_proc();
+  // Create d3d12 device.
+  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
   HRESULT hr =
       d3d12_create_device_proc(dxgi_or_dxcore_adapter.Get(), d3d_feature_level,
                                IID_PPV_ARGS(&d3d12_device));
@@ -265,7 +263,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
 
   // Create command queue.
   scoped_refptr<CommandQueue> command_queue =
-      CommandQueue::Create(d3d12_device.Get(), command_list_type);
+      CommandQueue::Create(d3d12_device.Get());
   if (!command_queue) {
     return HandleAdapterFailure(mojom::Error::Code::kUnknownError,
                                 "Failed to create command queue.");

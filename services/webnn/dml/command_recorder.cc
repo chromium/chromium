@@ -32,7 +32,7 @@ std::unique_ptr<CommandRecorder> CommandRecorder::Create(
   Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator;
   RETURN_NULL_IF_FAILED(
       GetD3D12Device(dml_device.Get())
-          ->CreateCommandAllocator(queue->GetCommandListType(),
+          ->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                    IID_PPV_ARGS(&command_allocator)));
 
   // The command list will be created upon the first call to `Open()` method.
@@ -71,8 +71,8 @@ HRESULT CommandRecorder::Open() {
   if (!command_list_) {
     // `CreateCommandList()` creates a command list in the open state.
     RETURN_IF_FAILED(d3d12_device_->CreateCommandList(
-        0, command_queue_->GetCommandListType(), command_allocator_.Get(),
-        nullptr, IID_PPV_ARGS(&command_list_)));
+        0, D3D12_COMMAND_LIST_TYPE_COMPUTE, command_allocator_.Get(), nullptr,
+        IID_PPV_ARGS(&command_list_)));
   } else {
     // It's safe to reset the command list while it is still being executed.
     RETURN_IF_FAILED(command_list_->Reset(command_allocator_.Get(), nullptr));

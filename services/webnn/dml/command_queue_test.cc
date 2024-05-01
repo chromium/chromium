@@ -43,11 +43,11 @@ TEST_F(WebNNCommandQueueTest, WaitSyncForGpuWorkCompleted) {
   ASSERT_NE(d3d12_device_.Get(), nullptr);
   ComPtr<ID3D12CommandAllocator> command_allocator;
   ASSERT_EQ(
-      (d3d12_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+      (d3d12_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                              IID_PPV_ARGS(&command_allocator))),
       S_OK);
   ComPtr<ID3D12GraphicsCommandList> command_list;
-  ASSERT_EQ(d3d12_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+  ASSERT_EQ(d3d12_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                              command_allocator.Get(), nullptr,
                                              IID_PPV_ARGS(&command_list)),
             S_OK);
@@ -59,8 +59,6 @@ TEST_F(WebNNCommandQueueTest, WaitSyncForGpuWorkCompleted) {
   EXPECT_EQ(command_queue->WaitSyncForTesting(), S_OK);
   EXPECT_EQ(command_allocator->Reset(), S_OK);
   EXPECT_EQ(command_list->Reset(command_allocator.Get(), nullptr), S_OK);
-  EXPECT_EQ(command_queue->GetCommandListType(),
-            D3D12_COMMAND_LIST_TYPE_DIRECT);
 }
 
 TEST_F(WebNNCommandQueueTest, WaitAsyncOnce) {
@@ -69,11 +67,11 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncOnce) {
   ASSERT_NE(d3d12_device_.Get(), nullptr);
   ComPtr<ID3D12CommandAllocator> command_allocator;
   ASSERT_EQ(
-      (d3d12_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+      (d3d12_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                              IID_PPV_ARGS(&command_allocator))),
       S_OK);
   ComPtr<ID3D12GraphicsCommandList> command_list;
-  ASSERT_EQ(d3d12_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+  ASSERT_EQ(d3d12_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                              command_allocator.Get(), nullptr,
                                              IID_PPV_ARGS(&command_list)),
             S_OK);
@@ -97,11 +95,11 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnIncreasingFenceValue) {
   ASSERT_NE(d3d12_device_.Get(), nullptr);
   ComPtr<ID3D12CommandAllocator> command_allocator;
   ASSERT_EQ(
-      (d3d12_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+      (d3d12_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                              IID_PPV_ARGS(&command_allocator))),
       S_OK);
   ComPtr<ID3D12GraphicsCommandList> command_list;
-  ASSERT_EQ(d3d12_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+  ASSERT_EQ(d3d12_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                              command_allocator.Get(), nullptr,
                                              IID_PPV_ARGS(&command_list)),
             S_OK);
@@ -151,11 +149,11 @@ TEST_F(WebNNCommandQueueTest, WaitAsyncMultipleTimesOnSameFenceValue) {
   ASSERT_NE(d3d12_device_.Get(), nullptr);
   ComPtr<ID3D12CommandAllocator> command_allocator;
   ASSERT_EQ(
-      (d3d12_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+      (d3d12_device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                              IID_PPV_ARGS(&command_allocator))),
       S_OK);
   ComPtr<ID3D12GraphicsCommandList> command_list;
-  ASSERT_EQ(d3d12_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+  ASSERT_EQ(d3d12_device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE,
                                              command_allocator.Get(), nullptr,
                                              IID_PPV_ARGS(&command_list)),
             S_OK);
