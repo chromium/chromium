@@ -1831,8 +1831,12 @@ class InterestGroupAuction::BuyerHelper
     DCHECK(!state->made_bid);
     DCHECK_GT(num_outstanding_bids_, 0);
 
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_generate_bid",
-                                    *state->trace_id);
+    // We may not have a trace ID if we timed out before being delivered a
+    // worklet.
+    if (state->trace_id.has_value()) {
+      TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_generate_bid",
+                                      *state->trace_id);
+    }
 
     const blink::InterestGroup& interest_group = state->bidder->interest_group;
 

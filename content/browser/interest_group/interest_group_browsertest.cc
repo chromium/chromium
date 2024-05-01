@@ -48,6 +48,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_config.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
@@ -70,6 +71,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/tracing_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -22749,6 +22751,66 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ZeroBuyerTimeout) {
   // We should get a nice warning, not a worklet crash.
   EXPECT_EQ("Worklet error: generateBid() aborted due to zero timeout.",
             console_observer.GetMessageAt(0));
+}
+
+// Cumulative timeout with lots of IGs while tracing is on,
+// see https://crbug.com/336342803
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionTraceTimeout) {
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_cars");
+
+  // Add a lot of interest groups, so that "worklet available" notifications get
+  // split up.
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_EQ(kSuccess,
+              JoinInterestGroupAndVerify(
+                  blink::TestInterestGroupBuilder(
+                      /*owner=*/test_origin,
+                      /*name=*/base::NumberToString(i))
+                      .SetBiddingUrl(embedded_https_test_server().GetURL(
+                          "a.test", "/interest_group/bidding_logic.js"))
+                      .SetAds(/*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}})
+                      .Build()));
+  }
+
+  const char kAuctionConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    perBuyerCumulativeTimeouts: {'*': 1}
+  })";
+
+  // Start tracing "fledge" category.
+  base::trace_event::TraceConfig trace_config(
+      "fledge", base::trace_event::RECORD_UNTIL_FULL);
+  base::RunLoop run_loop;
+  ASSERT_TRUE(TracingController::GetInstance()->StartTracing(
+      trace_config, run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // Run the auction.
+  std::string auction_config =
+      JsReplace(kAuctionConfigTemplate, test_origin,
+                embedded_https_test_server().GetURL(
+                    "a.test", "/interest_group/decision_logic.js"));
+  // Whether there is a winner or not is actually not predictable, since
+  // something could finish in the 1ms window. That's OK since this we only care
+  // about whether this crashes or not.
+  content::EvalJsResult result = RunAuctionAndWait(auction_config);
+
+  // Stop tracing.
+  base::RunLoop stop_run_loop;
+  bool success = TracingController::GetInstance()->StopTracing(
+      TracingController::CreateStringEndpoint(base::BindLambdaForTesting(
+          [&](std::unique_ptr<std::string> trace_data_string) {
+            stop_run_loop.Quit();
+          })));
+  EXPECT_TRUE(success);
+  stop_run_loop.Run();
 }
 
 class AuctionConfigReportingTimeoutEnabledTest
