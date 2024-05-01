@@ -90,7 +90,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
     public HubTabSwitcherAppMenuFacility openAppMenu() {
         recheckActiveConditions();
 
-        HubTabSwitcherAppMenuFacility menu = new HubTabSwitcherAppMenuFacility(this);
+        HubTabSwitcherAppMenuFacility menu = new HubTabSwitcherAppMenuFacility(this, mIsIncognito);
 
         return StationFacility.enterSync(menu, () -> HUB_MENU_BUTTON.perform(click()));
     }
