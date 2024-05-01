@@ -155,46 +155,45 @@ export class MostVisitedElement extends MostVisitedElementBase {
     };
   }
 
-  theme: MostVisitedTheme|null;
+  theme: MostVisitedTheme|null = null;
   reflowOnOverflow: boolean = false;
   singleRow: boolean = false;
-  private useWhiteTileIcon_: boolean;
-  protected columnCount_: number;
-  protected rowCount_: number;
-  protected customLinksEnabled_: boolean;
+  protected useWhiteTileIcon_: boolean = false;
+  protected columnCount_: number = 3;
+  protected rowCount_: number = 1;
+  protected customLinksEnabled_: boolean = false;
   protected dialogTileTitle_: string = '';
   protected dialogTileUrl_: string = '';
   protected dialogTileUrlInvalid_: boolean = false;
-  protected dialogTitle_: string;
+  protected dialogTitle_: string = '';
   protected dialogSaveDisabled_: boolean = true;
   private dialogShortcutAlreadyExists_: boolean = false;
-  protected dialogTileUrlError_: string;
-  private isDark_: boolean;
+  protected dialogTileUrlError_: string = '';
+  protected isDark_: boolean = false;
   private reordering_: boolean = false;
   private maxTiles_: number = 0;
   private maxVisibleTiles_: number = 0;
   protected showAdd_: boolean = false;
   protected showToastButtons_: boolean = false;
-  private maxVisibleColumnCount_: number;
+  private maxVisibleColumnCount_: number = 0;
   protected tiles_: MostVisitedTile[] = [];
-  protected toastContent_: string;
-  protected visible_: boolean;
+  protected toastContent_: string = '';
+  protected visible_: boolean = false;
   private adding_: boolean = false;
   private callbackRouter_: MostVisitedPageCallbackRouter;
   private pageHandler_: MostVisitedPageHandlerRemote;
   private windowProxy_: MostVisitedWindowProxy;
-  private setMostVisitedInfoListenerId_: number|null = null;
   private actionMenuTargetIndex_: number = -1;
   private dragOffset_: {x: number, y: number}|null;
   private tileRects_: DOMRect[] = [];
-  private isRtl_: boolean;
+  private isRtl_: boolean = false;
   private mediaEventTracker_: EventTracker;
   private eventTracker_: EventTracker;
-  private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void;
-  private prerenderTimer_: undefined|ReturnType<typeof setTimeout>;
-  private preconnectTimer_: undefined|ReturnType<typeof setTimeout>;
+  private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void = (_e) => null;
+  private prerenderTimer_: null|ReturnType<typeof setTimeout> = null;
+  private preconnectTimer_: null|ReturnType<typeof setTimeout> = null;
 
-  private info_: MostVisitedInfo;
+  private info_: MostVisitedInfo|null = null;
 
   private get tileElements_() {
     return Array.from(
@@ -231,13 +230,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
     this.onSingleRowChange_();
 
-    this.setMostVisitedInfoListenerId_ =
-        this.callbackRouter_.setMostVisitedInfo.addListener(
-            (info: MostVisitedInfo) => {
-              performance.measure(
-                  'most-visited-mojo', 'most-visited-mojo-start');
-              this.info_ = info;
-            });
+    this.callbackRouter_.setMostVisitedInfo.addListener(
+        (info: MostVisitedInfo) => {
+          performance.measure('most-visited-mojo', 'most-visited-mojo-start');
+          this.info_ = info;
+        });
     performance.mark('most-visited-mojo-start');
     this.eventTracker_.add(document, 'visibilitychange', () => {
       // This updates the most visited tiles every time the NTP tab gets
@@ -269,7 +266,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.isDark_ = this.computeIsDark_();
     }
 
-    if (changedPrivateProperties.has('info_')) {
+    if (changedPrivateProperties.has('info_') && this.info_ !== null) {
       this.visible_ = this.info_.visible;
       this.customLinksEnabled_ = this.info_.customLinksEnabled;
       this.maxTiles_ = this.customLinksEnabled_ ? 10 : 8;
@@ -330,7 +327,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   // Adds "force-hover" class to the tile element positioned at `index`.
   private enableForceHover_(index: number) {
-    this.tileElements_[index].classList.add('force-hover');
+    this.tileElements_[index]!.classList.add('force-hover');
   }
 
   private clearForceHover_() {
@@ -486,6 +483,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     const dropIndex = getHitIndex(this.tileRects_, x, y);
     if (dragIndex !== dropIndex && dropIndex > -1) {
       const [draggingTile] = this.tiles_.splice(dragIndex, 1);
+      assert(draggingTile);
       this.tiles_.splice(dropIndex, 0, draggingTile);
       this.requestUpdate();
 
@@ -534,7 +532,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       } else {
         positionIndex = i;
       }
-      setTilePosition(element, this.tileRects_[positionIndex]);
+      setTilePosition(element, this.tileRects_[positionIndex]!);
     });
   }
 
@@ -568,7 +566,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       setTilePosition(element, element.getBoundingClientRect());
     }
     tileElements.forEach((tile, i) => {
-      setTilePosition(tile, this.tileRects_[i]);
+      setTilePosition(tile, this.tileRects_[i]!);
     });
     this.reordering_ = true;
   }
@@ -734,7 +732,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected onEdit_() {
     this.$.actionMenu.close();
     this.dialogTitle_ = loadTimeData.getString('editLinkTitle');
-    const tile = this.tiles_[this.actionMenuTargetIndex_];
+    const tile = this.tiles_[this.actionMenuTargetIndex_]!;
     this.dialogTileTitle_ = tile.title;
     this.dialogTileUrl_ = tile.url.url;
     this.dialogTileUrlInvalid_ = false;
@@ -767,7 +765,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
           await this.pageHandler_.addMostVisitedTile(newUrl, newTitle);
       this.toast_(success ? 'linkAddedMsg' : 'linkCantCreate', success);
     } else {
-      const {url, title} = this.tiles_[this.actionMenuTargetIndex_];
+      const {url, title} = this.tiles_[this.actionMenuTargetIndex_]!;
       if (url.url !== newUrl.url || title !== newTitle) {
         const {success} = await this.pageHandler_.updateMostVisitedTile(
             url, newUrl, newTitle);
@@ -804,7 +802,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
 
     const index = this.getCurrentTargetIndex_(e);
-    const item = this.tiles_[index];
+    const item = this.tiles_[index]!;
     this.pageHandler_.onMostVisitedTileNavigation(
         item, index, e.button || 0, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
   }
@@ -837,6 +835,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
 
     const item = this.tiles_[this.getCurrentTargetIndex_(e)];
+    assert(item);
 
     if (loadTimeData.getBoolean('prerenderOnHoverEnabled') &&
         loadTimeData.getInteger('prerenderStartTimeThreshold') >= 0) {
@@ -864,6 +863,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
     if (loadTimeData.getBoolean('prerenderOnPressEnabled')) {
       const item = this.tiles_[this.getCurrentTargetIndex_(e)];
+      assert(item);
       this.pageHandler_.prerenderMostVisitedTile(item, false);
     }
   }
@@ -906,17 +906,17 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (!tileElement) {
       return;
     }
-    const {clientX, clientY} = e.changedTouches[0];
+    const {clientX, clientY} = e.changedTouches[0]!;
     this.dragStart_(tileElement, clientX, clientY);
     const touchMove = (e: TouchEvent) => {
-      const {clientX, clientY} = e.changedTouches[0];
+      const {clientX, clientY} = e.changedTouches[0]!;
       this.dragOver_(clientX, clientY);
     };
     const touchEnd = (e: TouchEvent) => {
       this.ownerDocument.removeEventListener('touchmove', touchMove);
       tileElement.removeEventListener('touchend', touchEnd);
       tileElement.removeEventListener('touchcancel', touchEnd);
-      const {clientX, clientY} = e.changedTouches[0];
+      const {clientX, clientY} = e.changedTouches[0]!;
       this.drop_(clientX, clientY);
       this.dragEnd_();
       this.reordering_ = false;
@@ -945,7 +945,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private async tileRemove_(index: number) {
-    const {url, isQueryTile} = this.tiles_[index];
+    const {url, isQueryTile} = this.tiles_[index]!;
     this.pageHandler_.deleteMostVisitedTile(url);
     // Do not show the toast buttons when a query tile is removed unless it is a
     // custom link. Removal is not reversible for non custom link query tiles.

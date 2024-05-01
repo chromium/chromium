@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {MostVisitedElement} from './most_visited.js';
+
+export function getHtml(this: MostVisitedElement) {
+  return html`<!--_html_template_start_-->
 <div id="container" ?hidden="${!this.visible_}"
     .style="--tile-background-color: ${this.getBackgroundColorStyle_()};
             --column-count: ${this.columnCount_};
@@ -52,7 +62,8 @@
           .value="${this.dialogTileTitle_}" spellcheck="false" autofocus
           @value-changed="${this.onDialogTileNameChange_}"></cr-input>
       <cr-input id="dialogInputUrl" label="${this.i18n('urlField')}"
-          .value="${this.dialogTileUrl_}" ?invalid="${this.dialogTileUrlInvalid_}"
+          .value="${this.dialogTileUrl_}"
+          ?invalid="${this.dialogTileUrlInvalid_}"
           .errorMessage="${this.dialogTileUrlError_}" spellcheck="false"
           type="url" @blur="${this.onDialogTileUrlBlur_}"
           @value-changed="${this.onDialogTileUrlChange_}">
@@ -80,14 +91,16 @@
 </div>
 <cr-toast id="toast" duration="10000">
   <div>${this.toastContent_}</div>
-    ${this.showToastButtons_ ? html`
-      <cr-button id="undo" aria-label="${this.i18n('undoDescription')}"
-          @click="${this.onUndoClick_}">
-        ${this.i18n('undo')}
-      </cr-button>
-      <cr-button id="restore"
-          aria-label="${this.getRestoreButtonText_()}"
-          @click="${this.onRestoreDefaultsClick_}">
-        ${this.getRestoreButtonText_()}
-      </cr-button>` : ''}
+  ${this.showToastButtons_ ? html`
+    <cr-button id="undo" aria-label="${this.i18n('undoDescription')}"
+        @click="${this.onUndoClick_}">
+      ${this.i18n('undo')}
+    </cr-button>
+    <cr-button id="restore"
+        aria-label="${this.getRestoreButtonText_()}"
+        @click="${this.onRestoreDefaultsClick_}">
+      ${this.getRestoreButtonText_()}
+    </cr-button>` : ''}
 </cr-toast>
+<!--_html_template_end_-->`;
+}
