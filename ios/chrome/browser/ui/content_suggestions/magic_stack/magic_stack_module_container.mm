@@ -73,6 +73,7 @@ const CGFloat kSeparatorHeight = 0.5;
     MagicStackModuleContentsFactory* _magicStackModuleContentsFactory;
     NSLayoutConstraint* _containerHeightAnchor;
     NSLayoutConstraint* _contentStackViewBottomMarginAnchor;
+    UIContextMenuInteraction* _contextMenuInteraction;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -238,8 +239,16 @@ const CGFloat kSeparatorHeight = 0.5;
   }
   _type = config.type;
   if ([self allowsLongPress]) {
-    [self addInteraction:[[UIContextMenuInteraction alloc]
-                             initWithDelegate:self]];
+    if (!_contextMenuInteraction) {
+      _contextMenuInteraction =
+          [[UIContextMenuInteraction alloc] initWithDelegate:self];
+      [self addInteraction:_contextMenuInteraction];
+    }
+  } else {
+    if (_contextMenuInteraction) {
+      [self removeInteraction:_contextMenuInteraction];
+      _contextMenuInteraction = nil;
+    }
   }
 
   _title.text = [MagicStackModuleContainer titleStringForModule:_type];
