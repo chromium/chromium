@@ -831,14 +831,21 @@ void DownloadProtectionService::UploadForDeepScanning(
       std::make_pair(request_raw, std::move(request)));
   DCHECK(insertion_result.second);
   insertion_result.first->second->Start();
+
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
   SafeBrowsingMetricsCollector* metrics_collector =
-      SafeBrowsingMetricsCollectorFactory::GetForProfile(
-          Profile::FromBrowserContext(
-              content::DownloadItemUtils::GetBrowserContext(item)));
+      SafeBrowsingMetricsCollectorFactory::GetForProfile(profile);
   if (metrics_collector) {
     metrics_collector->AddSafeBrowsingEventToPref(
         safe_browsing::SafeBrowsingMetricsCollector::EventType::
             DOWNLOAD_DEEP_SCAN);
+  }
+
+  if (trigger ==
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_IMMEDIATE_DEEP_SCAN) {
+    profile->GetPrefs()->SetBoolean(
+        prefs::kSafeBrowsingAutomaticDeepScanPerformed, true);
   }
 }
 

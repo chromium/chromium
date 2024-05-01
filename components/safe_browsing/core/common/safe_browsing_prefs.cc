@@ -239,6 +239,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSafeBrowsingEsbOptInWithFriendlierSettings, false);
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, false);
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingAutomaticDeepScanPerformed,
+                                false);
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {

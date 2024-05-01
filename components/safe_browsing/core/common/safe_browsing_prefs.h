@@ -246,6 +246,12 @@ inline constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
 inline constexpr char kSafeBrowsingAutomaticDeepScanningIPHSeen[] =
     "safebrowsing.automatic_deep_scanning_iph_seen";
 
+// A preference indicating that the user has already done an automatic
+// deep scan. This addresses an edge case where deep scan notices remain
+// in the bubble after the user performs an automatic deep scan.
+inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
+    "safe_browsing.automatic_deep_scan_performed";
+
 }  // namespace prefs
 
 namespace safe_browsing {
