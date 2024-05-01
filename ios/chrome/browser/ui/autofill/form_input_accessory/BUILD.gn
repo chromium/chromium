@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
-
 source_set("form_input_accessory") {
   sources = [
     "form_input_accessory_chromium_text_data.h",

@@ -263,7 +263,7 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/autofill/bottom_sheet/resources:virtual_card_enrollment_illustration",
+    "//ios/chrome/browser/ui/autofill/bottom_sheet/resources",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
     "//ios/chrome/common/ui/util:util",

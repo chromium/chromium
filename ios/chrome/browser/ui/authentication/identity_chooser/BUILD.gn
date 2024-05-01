@@ -43,7 +43,6 @@ source_set("identity_chooser_ui") {
     "identity_chooser_view_controller_presentation_delegate.h",
   ]
   deps = [
-    "resources:identity_chooser_add_account",
     "//base",
     "//base:i18n",
     "//components/google/core/common",
@@ -54,6 +53,7 @@ source_set("identity_chooser_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/identity_chooser/resources",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/resources:menu_shadow",

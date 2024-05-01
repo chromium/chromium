@@ -19,7 +19,6 @@ source_set("history_sync") {
     ":capabilities_fetcher",
     ":pref_names",
     ":ui",
-    "resources:history_sync_opt_in_background",
     "//base",
     "//components/pref_registry",
     "//components/prefs",
@@ -37,6 +36,7 @@ source_set("history_sync") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/history_sync/resources",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style:promo_style",
   ]
