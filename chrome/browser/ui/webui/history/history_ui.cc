@@ -18,7 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/image_service/image_service_factory.h"
+#include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
