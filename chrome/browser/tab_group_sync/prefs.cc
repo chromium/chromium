@@ -18,6 +18,14 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                   base::GetFieldTrialParamByFeatureAsBool(
                                       tab_groups::kTabGroupSyncAndroid,
                                       "auto_open_synced_tab_groups", true));
+    registry->RegisterBooleanPref(
+        prefs::kStopShowingTabGroupConfirmationOnClose, false);
+    registry->RegisterBooleanPref(
+        prefs::kStopShowingTabGroupConfirmationOnUngroup, false);
+    registry->RegisterBooleanPref(
+        prefs::kStopShowingTabGroupConfirmationOnTabRemove, false);
+    registry->RegisterBooleanPref(
+        prefs::kStopShowingTabGroupConfirmationOnTabClose, false);
   }
 }
 

@@ -62,6 +62,7 @@ android_resources("java_resources") {
     "java/res/drawable/tab_strip_selected_ring_incognito.xml",
     "java/res/drawable/tablet_tab_switcher_empty_state_illustration.xml",
     "java/res/drawable/ungroup_bar_background.xml",
+    "java/res/layout/action_confirmation_dialog.xml",
     "java/res/layout/bottom_tab_strip_toolbar.xml",
     "java/res/layout/closable_tab_grid_card_item.xml",
     "java/res/layout/closable_tab_list_card_item.xml",
