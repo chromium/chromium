@@ -353,6 +353,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeSingleOperatorLeakyRelu",
       "BuildAndComputeSingleOperatorRelu",
       "BuildAndComputeSingleOperatorSigmoid",
+      "BuildAndComputeSliceOperator",
       "BuildAndComputeSingleOperatorSoftsign",
       "BuildAndComputeSingleOperatorTanh",
       "BuildAndComputeSingleOperatorTranspose",

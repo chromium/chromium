@@ -261,6 +261,9 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReshape(
       const mojom::Reshape& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForSlice(
+      const mojom::Slice& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForTranspose(
       const mojom::Transpose& operation,
       CoreML::Specification::MILSpec::Block& block);

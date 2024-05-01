@@ -109,6 +109,7 @@ constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpReluTypeName[] = "relu";
 constexpr char kOpReshapeTypeName[] = "reshape";
 constexpr char kOpSigmoidTypeName[] = "sigmoid";
+constexpr char kOpSliceTypeName[] = "slice_by_size";
 constexpr char kOpSoftplusTypeName[] = "softplus";
 constexpr char kOpSoftsignTypeName[] = "softsign";
 constexpr char kOpTanhTypeName[] = "tanh";
@@ -656,6 +657,10 @@ GraphBuilder::BuildCoreMLModel() {
                                           *operation->get_tanh(), block));
         break;
       }
+      case mojom::Operation::Tag::kSlice: {
+        RETURN_IF_ERROR(AddOperationForSlice(*operation->get_slice(), block));
+        break;
+      }
       case mojom::Operation::Tag::kTranspose: {
         RETURN_IF_ERROR(
             AddOperationForTranspose(*operation->get_transpose(), block));
@@ -679,7 +684,6 @@ GraphBuilder::BuildCoreMLModel() {
       case mojom::Operation::Tag::kMatmul:
       case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kPrelu:
-      case mojom::Operation::Tag::kSlice:
       case mojom::Operation::Tag::kSoftmax:
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTriangular:
@@ -959,9 +963,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
     webnn::mojom::Operand::DataType input_data_type,
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  // Note that BOOL, INT16, and UINT16 is also supported by CoreML, but WebNN
+  // does not have corresponding types. See docs here:
   // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.elementwise_unary.cast
-  // Input can be one of the following types: int8, uint8, int16, uint16,
-  // int32, fp16, fp32, or bool.
   static constexpr auto kSupportedCastOpsTypes =
       base::MakeFixedFlatSet<webnn::mojom::Operand::DataType>(
           {webnn::mojom::Operand::DataType::kFloat32,
@@ -1695,6 +1699,52 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForReshape(
   return AddOperationForReshape(operation.input_operand_id,
                                 output_operand.coreml_name,
                                 output_operand.dimensions, block);
+}
+
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForSlice(
+    const mojom::Slice& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  // Note that BOOL, INT16, and UINT16 is also supported by CoreML, but WebNN
+  // does not have corresponding types. See docs here:
+  // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS17.tensor_transformation.slice_by_size
+  static constexpr auto kSupportedSliceOpsTypes =
+      base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+          {CoreML::Specification::MILSpec::DataType::FLOAT32,
+           CoreML::Specification::MILSpec::DataType::FLOAT16,
+           CoreML::Specification::MILSpec::DataType::INT8,
+           CoreML::Specification::MILSpec::DataType::INT32,
+           CoreML::Specification::MILSpec::DataType::UINT8});
+  if (!kSupportedSliceOpsTypes.contains(input_operand_info.mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpSliceTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+
+  constexpr char kParamBegin[] = "begin";
+  constexpr char kParamSize[] = "size";
+  std::vector<int32_t> beginnings;
+  std::vector<int32_t> sizes;
+  for (const mojom::StartAndSizePtr& start_and_size :
+       operation.starts_and_sizes) {
+    if (start_and_size->size == 0) {
+      continue;
+    }
+    beginnings.push_back(base::checked_cast<int32_t>(start_and_size->start));
+    sizes.push_back(base::checked_cast<int32_t>(start_and_size->size));
+  }
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kParamBegin, Create1DTensorImmediateValue<int32_t>(beginnings)},
+       {kParamSize, Create1DTensorImmediateValue<int32_t>(sizes)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
+  return base::ok();
 }
 
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForTranspose(
