@@ -83,6 +83,8 @@ if (is_android) {
   android_library("test_support_java") {
     testonly = true
     deps = [
+      ":payment_test_support_jni_headers_java",
+      ":test_support_jni_headers_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/feedback/android:java",
       "//chrome/browser/profiles/android:java",
@@ -97,7 +99,6 @@ if (is_android) {
       "//third_party/blink/public/mojom:android_mojo_bindings_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
-    srcjar_deps = [ ":test_support_jni_headers" ]
     sources = [
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java",
@@ -109,9 +110,12 @@ if (is_android) {
     testonly = true
     sources = [
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
-      "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/ToolbarManagerTestHelper.java",
     ]
+  }
+  generate_jni("payment_test_support_jni_headers") {
+    testonly = true
+    sources = [ "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java" ]
   }
 }
 

@@ -7,7 +7,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
-#include "chrome/test/test_support_jni_headers/PaymentRequestTestBridge_jni.h"
+#include "chrome/test/payment_test_support_jni_headers/PaymentRequestTestBridge_jni.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments {
