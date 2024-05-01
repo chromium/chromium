@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
+#include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -43,8 +45,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   TabGroupSyncServiceImpl(
       std::unique_ptr<SavedTabGroupModel> model,
       std::unique_ptr<SyncDataTypeConfiguration> saved_tab_group_configuration,
-      std::unique_ptr<SyncDataTypeConfiguration>
-          shared_tab_group_configuration);
+      std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
+      std::unique_ptr<TabGroupStore> tab_group_store);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.
@@ -102,6 +104,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const SavedTabGroup* removed_group) override;
   void SavedTabGroupModelLoaded() override;
 
+  void OnReadTabGroupStore();
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
@@ -110,6 +114,13 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // Stores SharedTabGroupData to the disk and to sync if enabled.
   std::unique_ptr<SharedTabGroupDataSyncBridge> shared_bridge_;
+
+  // Stores tab group ID mapping (Sync ID -> Local ID) and some local metadata.
+  std::unique_ptr<TabGroupStore> tab_group_store_;
+
+  // Whether the initialization has been completed, i.e. all the groups and the
+  // ID mappings have been loaded into memory.
+  bool is_initialized_ = false;
 
   // Keeps track of the ids of session restored tab groups that were once saved
   // in order to link them together again once the SavedTabGroupModelLoaded is
@@ -125,6 +136,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // Obsevers of the model.
   base::ObserverList<TabGroupSyncService::Observer> observers_;
+
+  base::WeakPtrFactory<TabGroupSyncServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace tab_groups

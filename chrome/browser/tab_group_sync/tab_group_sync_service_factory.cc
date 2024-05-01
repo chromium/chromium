@@ -7,18 +7,26 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/empty_tab_group_store_delegate.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/tab_group_store.h"
+#include "components/saved_tab_groups/tab_group_store_delegate.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/saved_tab_groups/android/tab_group_store_delegate_android.h"
+#endif
 
 namespace tab_groups {
 namespace {
@@ -83,8 +91,19 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   auto saved_config = CreateSavedTabGroupDataTypeConfiguration(profile);
   auto shared_config = MaybeCreateSharedTabGroupDataTypeConfiguration(profile);
 
+  std::unique_ptr<TabGroupStoreDelegate> tab_group_store_delegate;
+#if BUILDFLAG(IS_ANDROID)
+  tab_group_store_delegate = std::make_unique<TabGroupStoreDelegateAndroid>();
+#else
+  tab_group_store_delegate = std::make_unique<EmptyTabGroupStoreDelegate>();
+#endif
+
+  auto tab_group_store =
+      std::make_unique<TabGroupStore>(std::move(tab_group_store_delegate));
+
   return std::make_unique<TabGroupSyncServiceImpl>(
-      std::move(model), std::move(saved_config), std::move(shared_config));
+      std::move(model), std::move(saved_config), std::move(shared_config),
+      std::move(tab_group_store));
 }
 
 }  // namespace tab_groups
