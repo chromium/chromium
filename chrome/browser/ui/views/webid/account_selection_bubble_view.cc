@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
+#include "chrome/browser/ui/views/webid/webid_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/strings/grit/components_strings.h"
@@ -257,14 +258,14 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
       base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
 
   rp_context_ = rp_context;
-  title_ = GetTitle(top_frame_for_display, iframe_for_display, idp_title,
-                    rp_context);
-  accessible_title_ = GetAccessibleTitle(
+  title_ = webid::GetTitle(top_frame_for_display, iframe_for_display, idp_title,
+                           rp_context);
+  accessible_title_ = webid::GetAccessibleTitle(
       top_frame_for_display, iframe_for_display, idp_title, rp_context);
   SetAccessibleTitle(accessible_title_);
 
   if (iframe_for_display.has_value()) {
-    subtitle_ = AccountSelectionViewBase::GetSubtitle(top_frame_for_display);
+    subtitle_ = webid::GetSubtitle(top_frame_for_display);
   }
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -345,14 +346,14 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   if (!has_sheet_) {
     has_sheet_ = true;
     InitDialogWidget();
-    SendAccessibilityEvent(GetWidget(), title);
+    webid::SendAccessibilityEvent(GetWidget(), title);
     return;
   }
 
   SizeToContents();
   PreferredSizeChanged();
 
-  SendAccessibilityEvent(GetWidget(), title);
+  webid::SendAccessibilityEvent(GetWidget(), title);
 }
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
@@ -362,8 +363,8 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
   std::u16string title =
-      GetTitle(top_frame_for_display, iframe_for_display,
-               idp_display_data.idp_etld_plus_one, rp_context_);
+      webid::GetTitle(top_frame_for_display, iframe_for_display,
+                      idp_display_data.idp_etld_plus_one, rp_context_);
   UpdateHeader(idp_display_data.idp_metadata, title, subtitle_,
                show_back_button);
 
@@ -386,8 +387,8 @@ void AccountSelectionBubbleView::ShowFailureDialog(
     const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
-                                  idp_for_display, rp_context_);
+  std::u16string title = webid::GetTitle(
+      top_frame_for_display, iframe_for_display, idp_for_display, rp_context_);
   UpdateHeader(idp_metadata, title, subtitle_,
                /*show_back_button=*/false);
 
@@ -439,8 +440,8 @@ void AccountSelectionBubbleView::ShowErrorDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  std::u16string title = GetTitle(top_frame_for_display, iframe_for_display,
-                                  idp_for_display, rp_context_);
+  std::u16string title = webid::GetTitle(
+      top_frame_for_display, iframe_for_display, idp_for_display, rp_context_);
   UpdateHeader(idp_metadata, title, subtitle_,
                /*show_back_button=*/false);
 

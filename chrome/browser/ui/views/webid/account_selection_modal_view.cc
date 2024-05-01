@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
+#include "chrome/browser/ui/views/webid/webid_utils.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -84,8 +85,9 @@ AccountSelectionModalView::AccountSelectionModalView(
       kBetweenChildSpacing));
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
-  title_ = GetTitle(top_frame_for_display, /*iframe_for_display=*/std::nullopt,
-                    idp_title, rp_context);
+  title_ = webid::GetTitle(top_frame_for_display,
+                           /*iframe_for_display=*/std::nullopt, idp_title,
+                           rp_context);
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;

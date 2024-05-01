@@ -313,18 +313,6 @@ class AccountSelectionViewBase {
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
 
  protected:
-  int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context);
-  std::u16string GetTitle(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
-      const std::optional<std::u16string>& idp_title,
-      blink::mojom::RpContext rp_context);
-  std::u16string GetSubtitle(const std::u16string& top_frame_for_display);
-  std::u16string GetAccessibleTitle(
-      const std::u16string& top_frame_for_display,
-      const std::optional<std::u16string>& iframe_for_display,
-      const std::optional<std::u16string>& idp_title,
-      blink::mojom::RpContext rp_context);
   void SetLabelProperties(views::Label* label);
 
   // Returns a View containing information about an account: the picture for
@@ -348,12 +336,6 @@ class AccountSelectionViewBase {
   // download of the brand icon if necessary.
   void ConfigureBrandImageView(BrandIconImageView* image_view,
                                const GURL& brand_icon_url);
-
-  // Sends an accessibility event to make an announcement of the passed in
-  // `announcement` if available, otherwise the text in the currently focused
-  // view is announced.
-  void SendAccessibilityEvent(views::Widget* widget,
-                              std::u16string announcement = std::u16string());
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
