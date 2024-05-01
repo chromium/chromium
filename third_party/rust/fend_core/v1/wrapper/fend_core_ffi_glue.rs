@@ -5,6 +5,7 @@
 use std::time::Instant;
 
 const NOAPPROX_PREFIX: &str = "@noapprox ";
+const DECIMAL_PLACES_SUFFIX: &str = " in 2dp";
 
 #[cxx::bridge(namespace = "fend_core")]
 mod ffi {
@@ -36,7 +37,7 @@ pub fn evaluate_using_rust(query: &[u8], out_result: &mut String, timeout_in_ms:
         return false;
     };
     let mut context = fend_core::Context::new();
-    let full_query = NOAPPROX_PREFIX.to_owned() + query_str;
+    let full_query = NOAPPROX_PREFIX.to_owned() + query_str + DECIMAL_PLACES_SUFFIX;
     let result = if timeout_in_ms > 0 {
         let interrupt = TimeoutInterrupt::new_with_timeout(timeout_in_ms.into());
         fend_core::evaluate_with_interrupt(&full_query, &mut context, &interrupt)
