@@ -402,6 +402,7 @@ public class TabGroupModelFilterUnitTest {
         when(mEditor.putString(anyString(), anyString())).thenReturn(mEditor);
         when(mEditor.putInt(anyString(), anyInt())).thenReturn(mEditor);
         when(mEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mEditor);
+        when(mEditor.remove(anyString())).thenReturn(mEditor);
 
         mModelAndObserverInOrder = inOrder(mTabModel, mTabGroupModelFilterObserver);
     }
@@ -2127,6 +2128,20 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.setTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.GREY);
         verify(mTabGroupModelFilterObserver)
                 .didChangeTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.GREY);
+    }
+
+    @Test
+    public void testSetTabGroupCollapsed() {
+        mTabGroupModelFilter.setTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
+        verify(mTabGroupModelFilterObserver)
+                .didChangeTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ true);
+    }
+
+    @Test
+    public void testDeleteTabGroupCollapsed() {
+        mTabGroupModelFilter.deleteTabGroupCollapsed(TAB2_ROOT_ID);
+        verify(mTabGroupModelFilterObserver)
+                .didChangeTabGroupCollapsed(TAB2_ROOT_ID, /* isCollapsed= */ false);
     }
 
     @Test

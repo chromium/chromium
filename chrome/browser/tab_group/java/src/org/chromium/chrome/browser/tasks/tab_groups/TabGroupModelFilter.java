@@ -1458,11 +1458,17 @@ public class TabGroupModelFilter extends TabModelFilter {
     /** Sets whether the tab group is expanded or collapsed. */
     public void setTabGroupCollapsed(int rootId, boolean isCollapsed) {
         TabGroupCollapsedUtils.storeTabGroupCollapsed(rootId, isCollapsed);
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            observer.didChangeTabGroupCollapsed(rootId, isCollapsed);
+        }
     }
 
     /** Deletes the record that the group is collapsed, setting it to expanded. */
     public void deleteTabGroupCollapsed(int rootId) {
         TabGroupCollapsedUtils.deleteTabGroupCollapsed(rootId);
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            observer.didChangeTabGroupCollapsed(rootId, false);
+        }
     }
 
     /** Returns whether the tab group is expanded or collapsed. */

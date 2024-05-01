@@ -146,6 +146,14 @@ public interface TabGroupModelFilterObserver {
     default void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {}
 
     /**
+     * This method is called when a tab group is collapsed or expanded on the tab strip.
+     *
+     * @param rootId The current rootId of the tab group.
+     * @param isCollapsed Whether or not the tab group is now collapsed.
+     */
+    default void didChangeTabGroupCollapsed(int rootId, boolean isCollapsed) {}
+
+    /**
      * When a tab group's root id needs to change because the tab whose id was previously being used
      * as the root ids is no longer part of the group. This could be a tab deletion that has not yet
      * been committed. Undo operations will not reverse this operation, as it does not have any user
