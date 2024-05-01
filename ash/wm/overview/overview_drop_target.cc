@@ -171,7 +171,7 @@ void OverviewDropTarget::Restack() {}
 
 void OverviewDropTarget::StartDrag() {}
 
-void OverviewDropTarget::OnOverviewItemDragStarted(OverviewItemBase* item) {}
+void OverviewDropTarget::OnOverviewItemDragStarted() {}
 
 void OverviewDropTarget::OnOverviewItemDragEnded(bool snap) {}
 

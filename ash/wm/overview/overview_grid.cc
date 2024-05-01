@@ -1196,16 +1196,16 @@ void OverviewGrid::UpdateDropTargetBackgroundVisibility(
       gfx::ToRoundedPoint(location_in_screen));
 }
 
-void OverviewGrid::OnOverviewItemDragStarted(OverviewItemBase* item) {
+void OverviewGrid::OnOverviewItemDragStarted() {
   CommitNameChanges();
-  for (auto& overview_mode_item : item_list_) {
-    overview_mode_item->OnOverviewItemDragStarted(item);
+  for (auto& item : item_list_) {
+    item->OnOverviewItemDragStarted();
   }
 }
 
 void OverviewGrid::OnOverviewItemDragEnded(bool snap) {
-  for (auto& overview_mode_item : item_list_) {
-    overview_mode_item->OnOverviewItemDragEnded(snap);
+  for (auto& item : item_list_) {
+    item->OnOverviewItemDragEnded(snap);
   }
 }
 
@@ -1216,7 +1216,7 @@ void OverviewGrid::OnWindowDragStarted(aura::Window* dragged_window,
   // Stack the |dragged_window| at top during drag.
   dragged_window->parent()->StackChildAtTop(dragged_window);
   // Called to set caption and title visibility during dragging.
-  OnOverviewItemDragStarted(/*item=*/nullptr);
+  OnOverviewItemDragStarted();
 }
 
 void OverviewGrid::OnWindowDragContinued(

@@ -788,7 +788,7 @@ void OverviewItem::StartDrag() {
   window->parent()->StackChildAtTop(window);
 }
 
-void OverviewItem::OnOverviewItemDragStarted(OverviewItemBase* item) {
+void OverviewItem::OnOverviewItemDragStarted() {
   overview_item_view_->SetCloseButtonVisible(false);
 }
 

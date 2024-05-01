@@ -60,7 +60,7 @@ class OverviewDropTarget : public OverviewItemBase {
   void CloseWindows() override;
   void Restack() override;
   void StartDrag() override;
-  void OnOverviewItemDragStarted(OverviewItemBase* item) override;
+  void OnOverviewItemDragStarted() override;
   void OnOverviewItemDragEnded(bool snap) override;
   void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
                                       float scroll_ratio) override;

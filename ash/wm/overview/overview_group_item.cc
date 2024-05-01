@@ -349,9 +349,16 @@ void OverviewGroupItem::StartDrag() {
   }
 }
 
-void OverviewGroupItem::OnOverviewItemDragStarted(OverviewItemBase* item) {}
+void OverviewGroupItem::OnOverviewItemDragStarted() {
+  for (const auto& item : overview_items_) {
+    item->OnOverviewItemDragStarted();
+  }
+}
 
 void OverviewGroupItem::OnOverviewItemDragEnded(bool snap) {
+  for (const auto& item : overview_items_) {
+    item->OnOverviewItemDragEnded(snap);
+  }
 }
 
 void OverviewGroupItem::OnOverviewItemContinuousScroll(

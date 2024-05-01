@@ -243,7 +243,7 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // order in order to keep them visible while being dragged around.
   virtual void StartDrag() = 0;
 
-  virtual void OnOverviewItemDragStarted(OverviewItemBase* item) = 0;
+  virtual void OnOverviewItemDragStarted() = 0;
   virtual void OnOverviewItemDragEnded(bool snap) = 0;
 
   // Called when performing the continuous scroll on overview item to set

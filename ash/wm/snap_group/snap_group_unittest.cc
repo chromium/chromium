@@ -4034,6 +4034,55 @@ TEST_F(SnapGroupOverviewTest, StackingOrderWhileDraggingInOverview) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
+// Verify that when dragging the group item, the close buttons of the individual
+// items within the group are disabled with opacity set to 0, and their opacity
+// is restored once the drag ends.
+TEST_F(SnapGroupOverviewTest, HideCloseButtonsOnDragStart) {
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  auto* window_widget0 = views::Widget::GetWidgetForNativeView(window0.get());
+  views::test::TestWidgetObserver observer0(window_widget0);
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  SnapTwoTestWindows(window0.get(), window1.get());
+
+  OverviewController* overview_controller = OverviewController::Get();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  OverviewGroupItem* overview_group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(window0.get()));
+  ASSERT_TRUE(overview_group_item);
+
+  const auto& overview_items =
+      overview_group_item->overview_items_for_testing();
+  ASSERT_EQ(2u, overview_items.size());
+
+  auto* event_generator = GetEventGenerator();
+
+  // On drag starts, the close buttons of the individual items are disabled and
+  // their opacity is set to 0.
+  DragGroupItemToPoint(
+      overview_group_item,
+      Shell::GetPrimaryRootWindow()->GetBoundsInScreen().CenterPoint(),
+      event_generator, /*by_touch_gestures=*/false, /*drop=*/false);
+  for (const auto& item : overview_items) {
+    auto* close_button = item->overview_item_view()->close_button();
+    ASSERT_TRUE(item->overview_item_view()->close_button());
+    EXPECT_EQ(close_button->layer()->GetTargetOpacity(), 0.f);
+    EXPECT_FALSE(close_button->GetEnabled());
+  }
+
+  // On the drag and drop completes, the close buttons of the individual items
+  // restore to their default state.
+  event_generator->ReleaseLeftButton();
+  for (const auto& item : overview_items) {
+    auto* close_button = item->overview_item_view()->close_button();
+    ASSERT_TRUE(item->overview_item_view()->close_button());
+    EXPECT_EQ(close_button->layer()->GetTargetOpacity(), 1.f);
+    EXPECT_TRUE(close_button->GetEnabled());
+  }
+}
+
 // Tests that `OverviewGroupItem` is not snappable in overview when there are
 // two windows hosted by it however when one of the windows gets destroyed in
 // overview, the remaining item becomes snappable.

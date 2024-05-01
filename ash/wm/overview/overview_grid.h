@@ -221,7 +221,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Called when any OverviewItem on any OverviewGrid has started/ended being
   // dragged.
-  void OnOverviewItemDragStarted(OverviewItemBase* item);
+  void OnOverviewItemDragStarted();
   void OnOverviewItemDragEnded(bool snap);
 
   // Called when a window (either it's browser window or an app window)

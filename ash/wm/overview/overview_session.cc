@@ -654,7 +654,7 @@ void OverviewSession::InitiateDrag(OverviewItemBase* item,
   window_drag_controller_->InitiateDrag(location_in_screen);
 
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
-    grid->OnOverviewItemDragStarted(item);
+    grid->OnOverviewItemDragStarted();
     grid->UpdateSaveDeskButtons();
   }
 
