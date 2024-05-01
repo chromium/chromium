@@ -13,52 +13,44 @@ import {MemoryCardElement} from 'chrome://diagnostics/memory_card.js';
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {MemoryUsage} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {isChildVisible, isVisible} from '../test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('memoryCardTestSuite', function() {
-  /** @type {?MemoryCardElement} */
-  let memoryElement = null;
+  let memoryElement: MemoryCardElement|null = null;
 
-  /** @type {?FakeSystemDataProvider} */
-  let provider = null;
+  const provider = new FakeSystemDataProvider();
 
   suiteSetup(() => {
-    provider = new FakeSystemDataProvider();
     setSystemDataProviderForTesting(provider);
   });
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    if (memoryElement) {
-      memoryElement.remove();
-    }
+    memoryElement?.remove();
     memoryElement = null;
     provider.reset();
   });
 
-  /**
-   * @param {!Array<MemoryUsage>} memoryUsage
-   * @return {!Promise}
-   */
-  function initializeMemoryCard(memoryUsage) {
+  function initializeMemoryCard(memoryUsage: MemoryUsage[]): Promise<void> {
     assertFalse(!!memoryElement);
 
     // Initialize the fake data.
     provider.setFakeMemoryUsage(memoryUsage);
 
     // Add the memory card to the DOM.
-    memoryElement = /** @type {!MemoryCardElement} */ (
-        document.createElement('memory-card'));
-    assertTrue(!!memoryElement);
+    memoryElement = document.createElement('memory-card');
+    assert(memoryElement);
     document.body.appendChild(memoryElement);
 
     return flushTasks();
@@ -66,44 +58,39 @@ suite('memoryCardTestSuite', function() {
 
   /**
    * Returns the routine-section from the card.
-   * @return {!RoutineSectionElement}
    */
-  function getRoutineSection() {
-    const routineSection = /** @type {!RoutineSectionElement} */ (
-        memoryElement.shadowRoot.querySelector('routine-section'));
-    assertTrue(!!routineSection);
-    return routineSection;
+  function getRoutineSection(): RoutineSectionElement {
+    assert(memoryElement);
+    return strictQuery('routine-section', memoryElement.shadowRoot, RoutineSectionElement);
   }
 
   /**
    * Returns the Run Tests button from inside the routine-section.
-   * @return {!CrButtonElement}
    */
-  function getRunTestsButton() {
+  function getRunTestsButton(): CrButtonElement {
     const button = dx_utils.getRunTestsButtonFromSection(getRoutineSection());
-    assertTrue(!!button);
+    assert(button);
     return button;
   }
 
   /**
    * Returns whether the run tests button is disabled.
-   * @return {boolean}
    */
-  function isRunTestsButtonDisabled() {
+  function isRunTestsButtonDisabled(): boolean {
     return getRunTestsButton().disabled;
   }
 
   test('MemoryCardPopulated', () => {
     return initializeMemoryCard(fakeMemoryUsage).then(() => {
       const barChart = dx_utils.getPercentBarChartElement(memoryElement);
-      const memInUse = fakeMemoryUsage[0].totalMemoryKib -
-          fakeMemoryUsage[0].availableMemoryKib;
+      const memInUse = fakeMemoryUsage[0]!.totalMemoryKib -
+          fakeMemoryUsage[0]!.availableMemoryKib;
       const expectedChartHeader = loadTimeData.getStringF(
           'memoryAvailable',
           convertKibToGibDecimalString(
-              fakeMemoryUsage[0].availableMemoryKib, 2),
-          convertKibToGibDecimalString(fakeMemoryUsage[0].totalMemoryKib, 2));
-      assertEquals(fakeMemoryUsage[0].totalMemoryKib, barChart.max);
+              fakeMemoryUsage[0]!.availableMemoryKib, 2),
+          convertKibToGibDecimalString(fakeMemoryUsage[0]!.totalMemoryKib, 2));
+      assertEquals(fakeMemoryUsage[0]!.totalMemoryKib, barChart.max);
       assertEquals(memInUse, barChart.value);
       dx_utils.assertTextContains(barChart.header, expectedChartHeader);
 
@@ -125,8 +112,8 @@ suite('memoryCardTestSuite', function() {
           routineSectionElement.additionalMessage,
           loadTimeData.getString('notEnoughAvailableMemoryMessage'));
       assertTrue(isRunTestsButtonDisabled());
-      assertTrue(isVisible(/** @type {!HTMLElement} */ (
-          routineSectionElement.shadowRoot.querySelector('#messageIcon'))));
+      assertTrue(isVisible(
+          routineSectionElement!.shadowRoot!.querySelector('#messageIcon')));
     });
   });
 });
