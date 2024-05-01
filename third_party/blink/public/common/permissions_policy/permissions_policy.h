@@ -267,8 +267,21 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // List of features that have an explicit opt-in mechanism.
   static const mojom::PermissionsPolicyFeature defined_opt_in_features_[];
 
-  PermissionsPolicy(url::Origin origin,
-                    const PermissionsPolicyFeatureList& feature_list);
+  struct AllowlistsAndReportingEndpoints {
+    std::map<mojom::PermissionsPolicyFeature, Allowlist> allowlists_;
+    std::map<mojom::PermissionsPolicyFeature, std::string> reporting_endpoints_;
+  };
+
+  // Creates the allowlists and and reporting endpoints from the parsed
+  // Permissions-Policy HTTP header. Unrecognized features will be ignored.
+  static AllowlistsAndReportingEndpoints CreateAllowlistsAndReportingEndpoints(
+      const ParsedPermissionsPolicy& parsed_header);
+
+  PermissionsPolicy(
+      url::Origin origin,
+      AllowlistsAndReportingEndpoints allow_lists_and_reporting_endpoints,
+      PermissionsPolicyFeatureState inherited_policies,
+      const PermissionsPolicyFeatureList& feature_list);
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
       const ParsedPermissionsPolicy& container_policy,
@@ -307,12 +320,13 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       mojom::PermissionsPolicyFeature feature,
       const url::Origin& origin) const;
 
-  // Returns the inherited policy of the given feature for this document.
-  bool InheritedValueForFeature(
+  // Returns the inherited policy of the given feature.
+  static bool InheritedValueForFeature(
+      const url::Origin& origin,
       const PermissionsPolicy* parent_policy,
       std::pair<mojom::PermissionsPolicyFeature,
                 PermissionsPolicyFeatureDefault> feature,
-      const ParsedPermissionsPolicy& container_policy) const;
+      const ParsedPermissionsPolicy& container_policy);
 
   // If the feature is in the declared policy, returns whether the given origin
   // exists in its declared allowlist; otherwise, returns the value from
@@ -321,7 +335,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
                                 const url::Origin& origin) const;
 
   // The origin of the document with which this policy is associated.
-  url::Origin origin_;
+  const url::Origin origin_;
 
   // Map of feature names to declared allowlists. Any feature which is missing
   // from this map should use the inherited policy.
@@ -340,7 +354,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   // Records whether or not each feature was enabled for this frame by its
   // parent frame.
-  PermissionsPolicyFeatureState inherited_policies_;
+  const PermissionsPolicyFeatureState inherited_policies_;
 
   // The map of features to their default enable state.
   const raw_ref<const PermissionsPolicyFeatureList> feature_list_;
