@@ -174,47 +174,44 @@ class basic_cstring_view final {
   }
 
   // Produces an iterator over the cstring view, excluding the terminating NUL.
-  PURE_FUNCTION constexpr const iterator begin() const noexcept {
+  PURE_FUNCTION constexpr iterator begin() const noexcept {
     // SAFETY: `ptr_ + len_` for a cstring view always gives a pointer in
     // the same allocation as `ptr_` based on the precondition of
     // the type.
     return UNSAFE_BUFFERS(iterator(ptr_, ptr_ + len_));
   }
   // Produces an iterator over the cstring view, excluding the terminating NUL.
-  PURE_FUNCTION constexpr const iterator end() const noexcept {
+  PURE_FUNCTION constexpr iterator end() const noexcept {
     // SAFETY: `ptr_ + len_` for a cstring view always gives a pointer in
     // the same allocation as `ptr_` based on the precondition of
     // the type.
     return UNSAFE_BUFFERS(iterator(ptr_, ptr_ + len_, ptr_ + len_));
   }
   // Produces an iterator over the cstring view, excluding the terminating NUL.
-  PURE_FUNCTION constexpr const const_iterator cbegin() const noexcept {
+  PURE_FUNCTION constexpr const_iterator cbegin() const noexcept {
     return begin();
   }
   // Produces an iterator over the cstring view, excluding the terminating NUL.
-  PURE_FUNCTION constexpr const const_iterator cend() const noexcept {
-    return end();
-  }
+  PURE_FUNCTION constexpr const_iterator cend() const noexcept { return end(); }
 
   // Produces a reverse iterator over the cstring view, excluding the
   // terminating NUL.
-  PURE_FUNCTION constexpr const reverse_iterator rbegin() const noexcept {
+  PURE_FUNCTION constexpr reverse_iterator rbegin() const noexcept {
     return std::reverse_iterator(end());
   }
   // Produces a reverse iterator over the cstring view, excluding the
   // terminating NUL.
-  PURE_FUNCTION constexpr const reverse_iterator rend() const noexcept {
+  PURE_FUNCTION constexpr reverse_iterator rend() const noexcept {
     return std::reverse_iterator(begin());
   }
   // Produces a reverse iterator over the cstring view, excluding the
   // terminating NUL.
-  PURE_FUNCTION constexpr const const_reverse_iterator rcbegin()
-      const noexcept {
+  PURE_FUNCTION constexpr const_reverse_iterator rcbegin() const noexcept {
     return std::reverse_iterator(cend());
   }
   // Produces a reverse iterator over the cstring view, excluding the
   // terminating NUL.
-  PURE_FUNCTION constexpr const const_reverse_iterator rcend() const noexcept {
+  PURE_FUNCTION constexpr const_reverse_iterator rcend() const noexcept {
     return std::reverse_iterator(cbegin());
   }
 
@@ -542,6 +539,12 @@ std::basic_ostream<Char, Traits>& operator<<(
     std::basic_ostream<Char, Traits>& os,
     basic_cstring_view<Char> view) {
   return os << std::basic_string_view<Char>(view);
+}
+
+// Explicitly define PrintTo to avoid gtest printing these as containers
+// rather than strings.
+inline void PrintTo(cstring_view view, std::ostream* os) {
+  *os << view;
 }
 
 }  // namespace base

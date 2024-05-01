@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1053,6 +1054,10 @@ TEST(CStringViewTest, Example_CtorLiteral) {
   CHECK(s == "hello world");
   auto s2 = base::cstring_view("this works too");
   CHECK(s2 == "this works too");
+}
+
+TEST(CStringViewTest, CompatibleWithRanges) {
+  EXPECT_EQ(2, ranges::count(cstring_view("hello"), 'l'));
 }
 
 }  // namespace
