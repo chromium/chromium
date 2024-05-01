@@ -14,90 +14,90 @@ public class GEN_JNI {
 
 
     public static Object org_jni_1zero_SampleForAnnotationProcessor_bar(Object sample) {
-        return J.N.resolve_for_object_O(0, sample);
+        return J.N._O_O(0, sample);
     }
 
     public static void org_jni_1zero_SampleForAnnotationProcessor_foo() {
-        J.N.resolve_for_void(0);
+        J.N._V(0);
     }
 
     public static boolean org_jni_1zero_SampleForAnnotationProcessor_hasPhalange() {
-        return J.N.resolve_for_boolean(0);
+        return J.N._Z(0);
     }
 
     public static Class org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
-        return J.N.resolve_for_class(0);
+        return J.N._L(0);
     }
 
     public static Class[] org_jni_1zero_SampleForAnnotationProcessor_returnClasses() {
-        return J.N.resolve_for_class_array(0);
+        return J.N._LA(0);
     }
 
     public static Object[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(Class __arrayClazz) {
-        return J.N.resolve_for_object_array_L(0, __arrayClazz);
+        return J.N._OA_L(0, __arrayClazz);
     }
 
     public static int[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts() {
-        return J.N.resolve_for_int_array(0);
+        return J.N._IA(0);
     }
 
     public static String org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
-        return J.N.resolve_for_string(0);
+        return J.N._R(0);
     }
 
     public static String[] org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
-        return J.N.resolve_for_string_array(0);
+        return J.N._RA(0);
     }
 
     public static Object org_jni_1zero_SampleForAnnotationProcessor_returnObject() {
-        return J.N.resolve_for_object(0);
+        return J.N._O(0);
     }
 
     public static Object[] org_jni_1zero_SampleForAnnotationProcessor_returnObjects() {
-        return J.N.resolve_for_object_array(0);
+        return J.N._OA(0);
     }
 
     public static String org_jni_1zero_SampleForAnnotationProcessor_returnString() {
-        return J.N.resolve_for_string(1);
+        return J.N._R(1);
     }
 
     public static String[] org_jni_1zero_SampleForAnnotationProcessor_returnStrings() {
-        return J.N.resolve_for_string_array(1);
+        return J.N._RA(1);
     }
 
     public static Object org_jni_1zero_SampleForAnnotationProcessor_returnStruct() {
-        return J.N.resolve_for_object(1);
+        return J.N._O(1);
     }
 
     public static Object[] org_jni_1zero_SampleForAnnotationProcessor_returnStructs() {
-        return J.N.resolve_for_object_array(1);
+        return J.N._OA(1);
     }
 
     public static Throwable org_jni_1zero_SampleForAnnotationProcessor_returnThrowable() {
-        return J.N.resolve_for_throwable(0);
+        return J.N._T(0);
     }
 
     public static Throwable[] org_jni_1zero_SampleForAnnotationProcessor_returnThrowables() {
-        return J.N.resolve_for_throwable_array(0);
+        return J.N._TA(0);
     }
 
     public static String org_jni_1zero_SampleForAnnotationProcessor_revString(String stringToReverse) {
-        return J.N.resolve_for_string_R(0, stringToReverse);
+        return J.N._R_R(0, stringToReverse);
     }
 
     public static Object[] org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(Object[] strs) {
-        return J.N.resolve_for_object_array_OA(0, strs);
+        return J.N._OA_OA(0, strs);
     }
 
     public static String[] org_jni_1zero_SampleForAnnotationProcessor_sendToNative(String[] strs) {
-        return J.N.resolve_for_string_array_RA(0, strs);
+        return J.N._RA_RA(0, strs);
     }
 
     public static int[] org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools) {
-        return J.N.resolve_for_int_array_IIAJJASSACCABBADDAFFAZZA(0, zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
+        return J.N._IA_IIAJJASSACCABBADDAFFAZZA(0, zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
     }
 
     public static void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, String convertedString, String[] convertedStrings, String optionalString, Object tStruct, Object[] structs, Object obj, Object convertedObj, Object[] objects, Object nestedInterface, Object view, Object context, Object[] convertedObjects) {
-        J.N.resolve_for_void_LLATTARRARRAROOAOOOAOOOOA(0, clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, nestedInterface, view, context, convertedObjects);
+        J.N._V_LLATTARRARRAROOAOOOAOOOOA(0, clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, nestedInterface, view, context, convertedObjects);
     }
 }
