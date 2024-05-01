@@ -512,6 +512,11 @@ const std::string& ViewAccessibility::GetCachedName() const {
   return data_.GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
+ax::mojom::NameFrom ViewAccessibility::GetCachedNameFrom() const {
+  return static_cast<ax::mojom::NameFrom>(
+      data_.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
+}
+
 ax::mojom::Role ViewAccessibility::GetCachedRole() const {
   return data_.role;
 }

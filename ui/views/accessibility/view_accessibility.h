@@ -180,6 +180,15 @@ class VIEWS_EXPORT ViewAccessibility {
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
   const std::string& GetCachedName() const;
 
+  // Returns the source type of the accessible name.
+  //
+  // This function cannot currently be named GetNameFrom() because of a function
+  // of the same name in AXPlatformNodeDelegate. ViewAXPlatformNodeDelegate
+  // extends both ViewAccessibility and AXPlatformNodeDelegate.
+  // TODO(accessibility): Rename to GetNameFrom once the ViewsAX project is
+  // completed and we don't have ViewAXPlatformNodeDelegate anymore.
+  ax::mojom::NameFrom GetCachedNameFrom() const;
+
   // Sets the accessible name to the specified string and source type.
   // To indicate that this view should never have an accessible name, e.g. to
   // prevent screen readers from speaking redundant information, set the type to
