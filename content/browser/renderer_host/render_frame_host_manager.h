@@ -168,6 +168,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
         RenderFrameHostImpl* new_frame) = 0;
     // TODO(nasko): This should be removed once extensions no longer use
     // NotificationService. See https://crbug.com/462682.
+    //
+    // TODO(https://crbug.com/338233133): The extensions process manager does
+    // not use NotificationService; clean this up.
     virtual void NotifyMainFrameSwappedFromRenderManager(
         RenderFrameHostImpl* old_frame,
         RenderFrameHostImpl* new_frame) = 0;

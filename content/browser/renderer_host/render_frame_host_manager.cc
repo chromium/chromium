@@ -1811,6 +1811,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       // RenderFrameHostManager are completely initialized. This should be
       // removed once the process manager moves away from NotificationService.
       // See https://crbug.com/462682.
+      //
+      // TODO(https://crbug.com/338233133): The extensions process manager does
+      // not use NotificationService; clean this up.
       if (frame_tree_node_->IsMainFrame()) {
         delegate_->NotifyMainFrameSwappedFromRenderManager(
             nullptr, render_frame_host_.get());
@@ -2966,6 +2969,9 @@ bool RenderFrameHostManager::InitializeMainRenderFrameForImmediateUse() {
   // RenderFrameHostManager are completely initialized. This should be
   // removed once the process manager moves away from NotificationService.
   // See https://crbug.com/462682.
+  //
+  // TODO(https://crbug.com/338233133): The extensions process manager does
+  // not use NotificationService; clean this up.
   delegate_->NotifyMainFrameSwappedFromRenderManager(nullptr,
                                                      render_frame_host_.get());
   return true;
