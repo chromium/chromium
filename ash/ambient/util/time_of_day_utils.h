@@ -52,13 +52,6 @@ ASH_EXPORT void GetAmbientVideoHtmlPath(
 // downloaded and persisted on device.
 ASH_EXPORT void InstallAmbientVideoDlcInBackground();
 
-// The background install is performed at a random delay after login to avoid
-// adding to the overall large ash workload that happens at login time.
-// Delay is between `kAmbientDlcBackgroundInstallMinDelay` and
-// `2 * kAmbientDlcBackgroundInstallMinDelay` after login.
-ASH_EXPORT inline constexpr base::TimeDelta
-    kAmbientDlcBackgroundInstallMinDelay = base::Seconds(30);
-
 // TimeOfDay video file names.
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayCloudsVideo[];
 ASH_EXPORT extern const base::FilePath::CharType kTimeOfDayNewMexicoVideo[];

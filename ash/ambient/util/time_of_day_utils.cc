@@ -18,9 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -114,13 +112,8 @@ void GetAmbientVideoHtmlPath(std::string dlc_metrics_label,
 }
 
 void InstallAmbientVideoDlcInBackground() {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&GetAmbientVideoHtmlPath,
-                     ambient::kAmbientVideoDlcBackgroundLabel,
-                     base::DoNothing()),
-      base::RandTimeDelta(kAmbientDlcBackgroundInstallMinDelay,
-                          kAmbientDlcBackgroundInstallMinDelay * 2));
+  GetAmbientVideoHtmlPath(ambient::kAmbientVideoDlcBackgroundLabel,
+                          base::DoNothing());
 }
 
 const base::FilePath::CharType kTimeOfDayCloudsVideo[] =

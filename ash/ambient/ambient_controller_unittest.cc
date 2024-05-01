@@ -1732,31 +1732,6 @@ TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
-TEST_F(AmbientControllerTest, InstallsVideoDlcInBackground) {
-  task_environment()->FastForwardBy(kAmbientDlcBackgroundInstallMinDelay * 2);
-  ASSERT_FALSE(ambient_controller()->ShouldShowAmbientUi());
-  base::test::TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
-      future;
-  dlcservice_client_.GetExistingDlcs(future.GetCallback());
-  ASSERT_EQ(future.Get<0>(), dlcservice::kErrorNone);
-  EXPECT_THAT(future.Get<1>().dlc_infos(),
-              testing::Contains(HasVideoDlcPackageId()));
-}
-
-TEST_F(AmbientControllerTest, DoesNotInstallVideoDlcInBackground) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{},
-                                       {features::kTimeOfDayDlc});
-  task_environment()->FastForwardBy(kAmbientDlcBackgroundInstallMinDelay * 2);
-  ASSERT_FALSE(ambient_controller()->ShouldShowAmbientUi());
-  base::test::TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
-      future;
-  dlcservice_client_.GetExistingDlcs(future.GetCallback());
-  ASSERT_EQ(future.Get<0>(), dlcservice::kErrorNone);
-  EXPECT_THAT(future.Get<1>().dlc_infos(),
-              testing::Not(testing::Contains(HasVideoDlcPackageId())));
-}
-
 class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
  public:
   AmbientControllerForManagedScreensaverTest() {
