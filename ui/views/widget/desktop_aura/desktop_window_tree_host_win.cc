@@ -522,6 +522,11 @@ void DesktopWindowTreeHostWin::EndMoveLoop() {
 void DesktopWindowTreeHostWin::SetVisibilityChangedAnimationsEnabled(
     bool value) {
   message_handler_->SetVisibilityChangedAnimationsEnabled(value);
+  if (desktop_native_widget_aura_->widget_type() !=
+          Widget::InitParams::TYPE_WINDOW ||
+      remove_standard_frame_) {
+    content_window()->SetProperty(aura::client::kAnimationsDisabledKey, !value);
+  }
 }
 
 std::unique_ptr<NonClientFrameView>
