@@ -3117,7 +3117,7 @@
       },
       'Mac Builder Next': {
         'swarming': {
-          'shards': 5,
+          'shards': 7,
         },
       },
       'Mac12 Tests': {
