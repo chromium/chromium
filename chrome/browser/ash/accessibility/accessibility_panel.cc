@@ -48,8 +48,8 @@ class AccessibilityPanel::AccessibilityPanelWebContentsObserver
 };
 
 AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
-                                       std::string content_url,
-                                       std::string widget_name) {
+                                       const std::string& content_url,
+                                       const std::string& widget_name) {
   SetOwnedByWidget(true);
 
   views::WebView* web_view = new views::WebView(browser_context);

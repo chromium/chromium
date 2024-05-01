@@ -1157,6 +1157,7 @@ if (is_chromeos && is_chromeos_device) {
       # Note: for each test case in the below list, add a metadata file
       # in the `crosier_metadata` build rule above.
       sources += [
+        "../browser/ash/accessibility/spoken_feedback_integration_test.cc",
         "../browser/ash/assistant/assistant_integration_test.cc",
         "../browser/ash/bluetooth/bluetooth_integration_test.cc",
         "../browser/ash/child_accounts/web_approvals_integration_test.cc",

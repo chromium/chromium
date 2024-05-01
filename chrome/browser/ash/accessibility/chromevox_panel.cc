@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/constants.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -25,6 +26,8 @@ const char kWidgetName[] = "ChromeVoxPanel";
 const int kPanelHeight = 44;
 
 }  // namespace
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kChromeVoxPanelElementId);
 
 class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
     : public content::WebContentsObserver {
@@ -63,7 +66,8 @@ ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context)
     : AccessibilityPanel(browser_context, GetUrlForContent(), kWidgetName) {
   web_contents_observer_ = std::make_unique<ChromeVoxPanelWebContentsObserver>(
       GetWebContents(), this);
-
+  GetContentsView()->SetProperty(views::kElementIdentifierKey,
+                                 kChromeVoxPanelElementId);
   SetAccessibilityPanelFullscreen(false);
 }
 
