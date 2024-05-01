@@ -1441,6 +1441,14 @@ void AutocompleteController::UpdateAssociatedKeywords(
 
 void AutocompleteController::UpdateKeywordDescriptions(
     AutocompleteResult* result) {
+  // The Lens searchbox does not require the search engine name description
+  // label since all suggestions will be from a single source.
+  // TODO(crbug.com/338094774): Remove this Lens-specific change and implement a
+  // general solution.
+  if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
+    return;
+  }
+
   std::u16string last_keyword;
   for (auto i(result->begin()); i != result->end(); ++i) {
     if (AutocompleteMatch::IsSearchType(i->type)) {
