@@ -128,6 +128,45 @@ class FakeDisplayBrightnessSettingsObserver
   base::OnceClosure quit_callback_;
 };
 
+// A mock observer that counts when OnAmbientLightSensorEnabledChanged function
+// is called.
+class FakeAmbientLightSensorObserver
+    : public mojom::AmbientLightSensorObserver {
+ public:
+  uint32_t num_ambient_light_sensor_enabled_changed_calls() const {
+    return num_ambient_light_sensor_enabled_changed_calls_;
+  }
+
+  double is_ambient_light_sensor_enabled() {
+    return is_ambient_light_sensor_enabled_;
+  }
+
+  // mojom::AmbientLightSensorObserver:
+  void OnAmbientLightSensorEnabledChanged(
+      bool is_ambient_light_sensor_enabled) override {
+    ++num_ambient_light_sensor_enabled_changed_calls_;
+    is_ambient_light_sensor_enabled_ = is_ambient_light_sensor_enabled;
+
+    if (quit_callback_) {
+      std::move(quit_callback_).Run();
+    }
+  }
+
+  void WaitForAmbientLightSensorEnabledChanged() {
+    DCHECK(quit_callback_.is_null());
+    base::RunLoop loop;
+    quit_callback_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+  mojo::Receiver<mojom::AmbientLightSensorObserver> receiver{this};
+
+ private:
+  uint32_t num_ambient_light_sensor_enabled_changed_calls_ = 0;
+  bool is_ambient_light_sensor_enabled_ = true;
+  base::OnceClosure quit_callback_;
+};
+
 class FakeBrightnessControlDelegate : public BrightnessControlDelegate {
  public:
   FakeBrightnessControlDelegate() = default;
@@ -727,6 +766,64 @@ TEST_F(DisplaySettingsProviderTest,
   histogram_tester_.ExpectTotalCount(
       "ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled",
       /*expected_count=*/2);
+}
+
+// Test that the ambient light sensor observer returns the correct information
+// when the ambient light sensor status changes.
+TEST_F(DisplaySettingsProviderTest, AmbientLightSensorObservation) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(
+      ash::features::kEnableBrightnessControlInSettings);
+
+  FakeAmbientLightSensorObserver fake_observer;
+  base::test::TestFuture<bool> future;
+
+  provider_->SetInternalDisplayAmbientLightSensorEnabled(false);
+
+  provider_->ObserveAmbientLightSensor(
+      fake_observer.receiver.BindNewPipeAndPassRemote(), future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  // The TestFuture should have been called with 'false', indicating that the
+  // ambient light sensor is not enabled.
+  EXPECT_FALSE(future.Get());
+
+  // Observer should not have been called yet.
+  EXPECT_EQ(0u, fake_observer.num_ambient_light_sensor_enabled_changed_calls());
+
+  {
+    bool is_ambient_light_sensor_enabled = true;
+    power_manager::AmbientLightSensorChange change;
+    change.set_cause(
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+    change.set_sensor_enabled(is_ambient_light_sensor_enabled);
+    provider_->AmbientLightSensorEnabledChanged(change);
+
+    fake_observer.WaitForAmbientLightSensorEnabledChanged();
+
+    // Observer should have been called.
+    EXPECT_EQ(1u,
+              fake_observer.num_ambient_light_sensor_enabled_changed_calls());
+    EXPECT_EQ(is_ambient_light_sensor_enabled,
+              fake_observer.is_ambient_light_sensor_enabled());
+  }
+
+  {
+    bool is_ambient_light_sensor_enabled = false;
+    power_manager::AmbientLightSensorChange change;
+    change.set_cause(
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+    change.set_sensor_enabled(is_ambient_light_sensor_enabled);
+    provider_->AmbientLightSensorEnabledChanged(change);
+
+    fake_observer.WaitForAmbientLightSensorEnabledChanged();
+
+    // Observer should have been called a second time.
+    EXPECT_EQ(2u,
+              fake_observer.num_ambient_light_sensor_enabled_changed_calls());
+    EXPECT_EQ(is_ambient_light_sensor_enabled,
+              fake_observer.is_ambient_light_sensor_enabled());
+  }
 }
 
 // Test the behavior when setting the internal display screen brightness (when

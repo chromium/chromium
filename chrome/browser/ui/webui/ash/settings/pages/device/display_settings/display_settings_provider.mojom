@@ -102,6 +102,18 @@ interface DisplayBrightnessSettingsObserver {
   OnDisplayBrightnessChanged(double brightness_percent);
 };
 
+// Implemented by clients that wish to be notified when the status of the
+// ambient light sensor changes.
+// The ash browser process sends messages to this interface, which is hosted as
+// a part of the Settings SWA (renderer process).
+interface AmbientLightSensorObserver {
+  // OnAmbientLightSensorEnabledChanged calls are triggered when the ambient
+  // light sensor is enabled or disabled (i.e. whether the internal display will
+  // use the device's ambient light sensor to automatically set the display
+  // brightness).
+  OnAmbientLightSensorEnabledChanged(bool is_ambient_light_sensor_enabled);
+};
+
 // Interface display related OS settings.
 interface DisplaySettingsProvider {
   // Registers an observer for tablet mode changes and returns tablet mode
@@ -117,6 +129,12 @@ interface DisplaySettingsProvider {
   ObserveDisplayBrightnessSettings(
     pending_remote<DisplayBrightnessSettingsObserver> observer) =>
     (double brightness_percent);
+
+  // Registers an observer for ambient light sensor changes and returns whether
+  // the ambient light sensor is currently enabled.
+  ObserveAmbientLightSensor(
+    pending_remote<AmbientLightSensorObserver> observer) =>
+    (bool is_ambient_light_sensor_enabled);
 
   // Record metrics when clients request to change display settings.
   RecordChangingDisplaySettings(DisplaySettingsType type,

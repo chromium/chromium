@@ -18,6 +18,8 @@ type DisplayConfigurationObserverInterface =
     displaySettingsProviderMojom.DisplayConfigurationObserverInterface;
 type DisplayBrightnessSettingsObserverInterface =
     displaySettingsProviderMojom.DisplayBrightnessSettingsObserverInterface;
+type AmbientLightSensorObserverInterface =
+    displaySettingsProviderMojom.AmbientLightSensorObserverInterface;
 type DisplaySettingsType = displaySettingsProviderMojom.DisplaySettingsType;
 type DisplaySettingsValue = displaySettingsProviderMojom.DisplaySettingsValue;
 type DisplaySettingsOrientationOption =
@@ -32,6 +34,8 @@ export class FakeDisplaySettingsProvider implements
       DisplayConfigurationObserverInterface[] = [];
   private displayBrightnessSettingsObservers:
       DisplayBrightnessSettingsObserverInterface[] = [];
+  private ambientLightSensorObservers: AmbientLightSensorObserverInterface[] =
+      [];
   private isTabletMode: boolean = false;
   private brightnessPercent: number = 0;
   // Enabled by default to match system behavior.
@@ -127,6 +131,22 @@ export class FakeDisplaySettingsProvider implements
 
   getInternalDisplayAmbientLightSensorEnabled(): boolean {
     return this.isAmbientLightSensorEnabled;
+  }
+
+  // Implement DisplaySettingsProviderInterface.
+  observeAmbientLightSensor(observer: AmbientLightSensorObserverInterface):
+      Promise<{isAmbientLightSensorEnabled: boolean}> {
+    this.ambientLightSensorObservers.push(observer);
+
+    return Promise.resolve(
+        {isAmbientLightSensorEnabled: this.isAmbientLightSensorEnabled});
+  }
+
+  notifyAmbientLightSensorEnabledChanged(): void {
+    for (const observer of this.ambientLightSensorObservers) {
+      observer.onAmbientLightSensorEnabledChanged(
+          this.isAmbientLightSensorEnabled);
+    }
   }
 
   // Implement DisplaySettingsProviderInterface.

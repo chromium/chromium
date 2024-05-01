@@ -1231,4 +1231,56 @@ suite('<settings-display>', () => {
                        .getInternalDisplayAmbientLightSensorEnabled());
       });
 
+  test(
+      'Auto brightness toggle updates DisplaySettingsProvider, flag enabled',
+      async () => {
+        loadTimeData.overrideValues(
+            {enableDisplayBrightnessControlInSettings: true});
+
+        // Set auto-brightness to initially be disabled.
+        const initialAutoBrightnessEnabled = false;
+        displaySettingsProvider.setInternalDisplayAmbientLightSensorEnabled(
+            initialAutoBrightnessEnabled);
+
+        await initPage();
+
+        // Set up the internal display.
+        addDisplay(1);
+        fakeSystemDisplay.onDisplayChanged.callListeners();
+        await fakeSystemDisplay.getInfoCalled.promise;
+        await fakeSystemDisplay.getLayoutCalled.promise;
+        assertEquals(1, displayPage.displays.length);
+        flush();
+
+        // The auto-brightness toggle should be present on the internal display.
+        const displayAutoBrightnessToggle = strictQuery(
+            '#autoBrightnessToggle', displayPage.shadowRoot, CrToggleElement);
+        assertTrue(!!displayAutoBrightnessToggle);
+
+        // The auto-brightness toggle should initially match the state of the
+        // ambient light sensor (not enabled, in this case).
+        assertEquals(
+            initialAutoBrightnessEnabled, displayAutoBrightnessToggle.checked);
+
+        // Enable the ambient light sensor and notify observers.
+        displaySettingsProvider.setInternalDisplayAmbientLightSensorEnabled(
+            true);
+        displaySettingsProvider.notifyAmbientLightSensorEnabledChanged();
+        await flushTasks();
+
+        // The auto-brightness toggle should now be checked, to match the state
+        // of the ambient light sensor.
+        assertTrue(displayAutoBrightnessToggle.checked);
+
+        // Disable the ambient light sensor and notify observers.
+        displaySettingsProvider.setInternalDisplayAmbientLightSensorEnabled(
+            false);
+        displaySettingsProvider.notifyAmbientLightSensorEnabledChanged();
+        await flushTasks();
+
+        // The auto-brightness toggle should now be checked, to match the state
+        // of the ambient light sensor.
+        assertFalse(displayAutoBrightnessToggle.checked);
+      });
+
 });

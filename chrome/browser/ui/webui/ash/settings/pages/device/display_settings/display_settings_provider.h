@@ -90,6 +90,10 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
       mojo::PendingRemote<mojom::DisplayBrightnessSettingsObserver> observer,
       ObserveDisplayBrightnessSettingsCallback callback) override;
 
+  void ObserveAmbientLightSensor(
+      mojo::PendingRemote<mojom::AmbientLightSensorObserver> observer,
+      ObserveAmbientLightSensorCallback callback) override;
+
   void RecordChangingDisplaySettings(
       mojom::DisplaySettingsType type,
       mojom::DisplaySettingsValuePtr value) override;
@@ -115,6 +119,8 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
   // PowerManagerClient::Observer:
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
+  void AmbientLightSensorEnabledChanged(
+      const power_manager::AmbientLightSensorChange& change) override;
 
   // ash::ShellObserver:
   void OnShellDestroying() override;
@@ -127,6 +133,10 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
  private:
   void OnGetInitialBrightness(ObserveDisplayBrightnessSettingsCallback callback,
                               std::optional<double> percent);
+
+  void OnGetAmbientLightSensorEnabled(
+      ObserveAmbientLightSensorCallback callback,
+      std::optional<bool> is_ambient_light_sensor_enabled);
 
   void OnGetHasAmbientLightSensor(HasAmbientLightSensorCallback callback,
                                   std::optional<bool> has_ambient_light_sensor);
@@ -145,6 +155,9 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
 
   mojo::RemoteSet<mojom::DisplayBrightnessSettingsObserver>
       display_brightness_settings_observers_;
+
+  mojo::RemoteSet<mojom::AmbientLightSensorObserver>
+      ambient_light_sensor_observers_;
 
   // A map between display id and the timestamp this display is connected. Only
   // add those displays that are connected for the first time. Used to record

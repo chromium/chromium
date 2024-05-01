@@ -179,8 +179,6 @@
       if="[[showBrightnessControls_(selectedDisplay)]]">
     <template is="dom-if" restamp
         if="[[showAutoBrightnessToggle_(hasAmbientLightSensor_)]]">
-      <!-- TODO(cambickel): Update this toggle to read from the auto-brightness
-        pref. -->
       <div class="settings-box indented" id="autoBrightnessToggleRow"
           on-click="onAutoBrightnessToggleRowClicked_">
         <div class="start settings-box-text">
@@ -193,6 +191,7 @@
           </div>
         </div>
         <cr-toggle id="autoBrightnessToggle"
+            checked="[[isAmbientLightSensorEnabled_]]"
             on-change="onAutoBrightnessToggleChange_"
             aria-labelledby="autoBrightnessToggleLabel">
         </cr-toggle>

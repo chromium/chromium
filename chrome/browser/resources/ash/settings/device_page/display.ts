@@ -41,7 +41,7 @@ import {isDisplayBrightnessControlInSettingsEnabled, isRevampWayfindingEnabled} 
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsSliderElement} from '../controls/settings_slider.js';
-import {DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, DisplaySettingsValue, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {AmbientLightSensorObserverReceiver, DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, DisplaySettingsValue, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
 
@@ -216,6 +216,11 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
       currentInternalScreenBrightness_: {type: Number, value: 0},
 
+      isAmbientLightSensorEnabled_: {
+        type: Boolean,
+        value: true,
+      },
+
       hasAmbientLightSensor_: {
         type: Boolean,
         value: false,
@@ -313,6 +318,7 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private displayTabNames_: string[];
   private hasAmbientLightSensor_: boolean;
   private invalidDisplayId_: string;
+  private isAmbientLightSensorEnabled_: boolean;
   private isDisplayPerformanceEnabled_: boolean;
   private readonly isRevampWayfindingEnabled_: boolean;
   private isTabletMode_: boolean;
@@ -396,6 +402,12 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
                 .$.bindNewPipeAndPassRemote());
     this.currentInternalScreenBrightness_ = brightnessPercent;
 
+    const {isAmbientLightSensorEnabled} =
+        await this.displaySettingsProvider.observeAmbientLightSensor(
+            new AmbientLightSensorObserverReceiver(this)
+                .$.bindNewPipeAndPassRemote());
+    this.isAmbientLightSensorEnabled_ = isAmbientLightSensorEnabled;
+
     const {hasAmbientLightSensor} =
         await this.displaySettingsProvider.hasAmbientLightSensor();
     this.hasAmbientLightSensor_ = hasAmbientLightSensor;
@@ -439,6 +451,14 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   onDisplayBrightnessChanged(brightnessPercent: number): void {
     this.currentInternalScreenBrightness_ = brightnessPercent;
+  }
+
+  /**
+   * Implements AmbientLightSensorObserver.OnAmbientLightSensorEnabledChanged.
+   */
+  onAmbientLightSensorEnabledChanged(isAmbientLightSensorEnabled: boolean):
+      void {
+    this.isAmbientLightSensorEnabled_ = isAmbientLightSensorEnabled;
   }
 
   override beforeDeepLinkAttempt(_settingId: Setting): boolean {
