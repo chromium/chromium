@@ -5,6 +5,7 @@
 #include "ash/system/toast/anchored_nudge.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -76,7 +77,10 @@ bool CalculateIsCornerAnchored(views::BubbleBorder::Arrow arrow) {
 
 }  // namespace
 
-AnchoredNudge::AnchoredNudge(AnchoredNudgeData& nudge_data)
+AnchoredNudge::AnchoredNudge(
+    AnchoredNudgeData& nudge_data,
+    base::RepeatingCallback<void(/*has_hover_or_focus=*/bool)>
+        hover_or_focus_changed_callback)
     : views::BubbleDialogDelegateView(nudge_data.GetAnchorView(),
                                       nudge_data.arrow,
                                       views::BubbleBorder::NO_SHADOW),
@@ -93,8 +97,8 @@ AnchoredNudge::AnchoredNudge(AnchoredNudgeData& nudge_data)
   set_close_on_deactivate(false);
   set_highlight_button_when_shown(nudge_data.highlight_anchor_button);
   SetLayoutManager(std::make_unique<views::FlexLayout>());
-  system_nudge_view_ =
-      AddChildView(std::make_unique<SystemNudgeView>(nudge_data));
+  system_nudge_view_ = AddChildView(std::make_unique<SystemNudgeView>(
+      nudge_data, std::move(hover_or_focus_changed_callback)));
 
   // Make nudge not focus traversable if it does not have any buttons.
   if (nudge_data.primary_button_text.empty()) {

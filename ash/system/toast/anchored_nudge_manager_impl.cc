@@ -104,9 +104,10 @@ class AnchoredNudgeManagerImpl::PausableTimer {
   }
 
   void Pause() {
-    DCHECK(timer_.IsRunning());
-    timer_.Stop();
-    remaining_duration_ -= base::TimeTicks::Now() - time_last_started_;
+    if (timer_.IsRunning()) {
+      timer_.Stop();
+      remaining_duration_ -= base::TimeTicks::Now() - time_last_started_;
+    }
   }
 
   void Resume() {
@@ -153,15 +154,11 @@ class AnchoredNudgeManagerImpl::NudgeHoverObserver : public ui::EventObserver {
   void OnEvent(const ui::Event& event) override {
     switch (event.type()) {
       case ui::ET_MOUSE_ENTERED:
-        anchored_nudge_manager_->OnNudgeHoverStateChanged(nudge_id_,
-                                                          /*is_hovering=*/true);
         if (!hover_state_change_callback_.is_null()) {
           std::move(hover_state_change_callback_).Run(true);
         }
         break;
       case ui::ET_MOUSE_EXITED:
-        anchored_nudge_manager_->OnNudgeHoverStateChanged(
-            nudge_id_, /*is_hovering=*/false);
         if (!hover_state_change_callback_.is_null()) {
           std::move(hover_state_change_callback_).Run(false);
         }
@@ -411,7 +408,14 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   nudge_data.close_button_callback = base::BindRepeating(
       &AnchoredNudgeManagerImpl::Cancel, base::Unretained(this), id);
 
-  auto anchored_nudge = std::make_unique<AnchoredNudge>(nudge_data);
+  auto anchored_nudge = std::make_unique<AnchoredNudge>(
+      nudge_data, /*hover_or_focus_changed_callback=*/
+      base::BindRepeating(
+          &AnchoredNudgeManagerImpl::PauseOrResumeDismissTimer,
+          // Unretained is safe because `this` outlives any anchored nudge, as
+          // they are all deleted on the manager's destructor.
+          base::Unretained(this), id));
+
   auto* anchored_nudge_ptr = anchored_nudge.get();
   shown_nudges_[id] = anchored_nudge_ptr;
 
@@ -525,9 +529,9 @@ void AnchoredNudgeManagerImpl::HandleNudgeWidgetDestroying(
   shown_nudges_.erase(id);
 }
 
-void AnchoredNudgeManagerImpl::OnNudgeHoverStateChanged(const std::string& id,
-                                                        bool is_hovering) {
-  if (is_hovering) {
+void AnchoredNudgeManagerImpl::PauseOrResumeDismissTimer(const std::string& id,
+                                                         bool pause) {
+  if (pause) {
     dismiss_timers_[id].Pause();
   } else {
     dismiss_timers_[id].Resume();

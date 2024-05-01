@@ -54,9 +54,6 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // its widget is destroying.
   void HandleNudgeWidgetDestroying(const std::string& id);
 
-  // AnchoredNudge::Delegate:
-  void OnNudgeHoverStateChanged(const std::string& nudge_id, bool is_hovering);
-
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
@@ -113,6 +110,12 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // Closes all `shown_nudges_` immediately. Used for shutdown, when a scoped
   // nudge pause is activated, or when the session state changes.
   void CloseAllNudges();
+
+  // Pauses or resumes the dismiss timer corresponding to `nudge_id`.
+  // Called when:
+  // 1. A nudge's mouse hover state changes. OR
+  // 2. A nudge's child focus state changes.
+  void PauseOrResumeDismissTimer(const std::string& nudge_id, bool pause);
 
   // Chains the provided `callback` to a `Cancel()` call to dismiss a nudge with
   // `id`, and returns this chained callback. If the provided `callback` is
