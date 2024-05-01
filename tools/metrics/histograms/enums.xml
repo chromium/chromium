@@ -22018,6 +22018,7 @@ from previous Chrome versions.
   <int value="335976368" label="LoadCryptoTokenExtension:disabled"/>
   <int value="335976733" label="NotificationStackingBarRedesign:enabled"/>
   <int value="336105835" label="CameraAppTimeLapse:disabled"/>
+  <int value="336195550" label="AccessibilitySelectToSpeakShortcut:enabled"/>
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="337637199" label="HttpsFirstModeIncognito:disabled"/>
@@ -23710,6 +23711,7 @@ from previous Chrome versions.
   <int value="1091631619" label="disable-accelerated-video-encode"/>
   <int value="1092296990" label="EnableMultiMonitorsInCrd:disabled"/>
   <int value="1092896354" label="EnableFullscreenAppList:disabled"/>
+  <int value="1093479250" label="AccessibilitySelectToSpeakShortcut:disabled"/>
   <int value="1093763764" label="SafeSitesFilterBehaviorPolicyAndroid:enabled"/>
   <int value="1093859961" label="RelatedSearchesSimplifiedUx:disabled"/>
   <int value="1094095931" label="enable-vulkan"/>

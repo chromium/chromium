@@ -171,6 +171,10 @@ AX_BASE_EXPORT bool IsAccessibilityCaretBlinkIntervalSettingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOverscrollSettingFeature);
 AX_BASE_EXPORT bool IsAccessibilityOverscrollSettingFeatureEnabled();
 
+// Controls whether the Select to Speak keyboard shortcut is enabled.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakShortcut);
+AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakShortcutEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

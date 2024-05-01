@@ -222,6 +222,14 @@ bool IsAccessibilityOverscrollSettingFeatureEnabled() {
       ::features::kAccessibilityOverscrollSettingFeature);
 }
 
+BASE_FEATURE(kAccessibilitySelectToSpeakShortcut,
+             "AccessibilitySelectToSpeakShortcut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilitySelectToSpeakShortcutEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilitySelectToSpeakShortcut);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
