@@ -19,7 +19,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -37,6 +36,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -61,8 +62,8 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
+    private Activity mActivity;
     private BottomSheetController mBottomSheetController;
-    @Mock private AutofillSaveCardBottomSheetContent.Delegate mSaveCardBottomSheetContentDelegate;
     private AutofillSaveCardBottomSheetContent mSaveCardBottomSheetContent;
 
     @BeforeClass
@@ -74,12 +75,12 @@ public class AutofillSaveCardBottomSheetRenderTest {
     public void setUp() {
         runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = sActivityTestRule.getActivity();
-                    ViewGroup activityContentView = activity.findViewById(android.R.id.content);
+                    mActivity = sActivityTestRule.getActivity();
+                    ViewGroup activityContentView = mActivity.findViewById(android.R.id.content);
                     activityContentView.removeAllViews();
                     ScrimCoordinator scrimCoordinator =
                             new ScrimCoordinator(
-                                    activity,
+                                    mActivity,
                                     new ScrimCoordinator.SystemUiScrimDelegate() {
                                         @Override
                                         public void setStatusBarScrimFraction(
@@ -95,13 +96,9 @@ public class AutofillSaveCardBottomSheetRenderTest {
                             BottomSheetControllerFactory.createFullWidthBottomSheetController(
                                     () -> scrimCoordinator,
                                     (unused) -> {},
-                                    activity.getWindow(),
+                                    mActivity.getWindow(),
                                     KeyboardVisibilityDelegate.getInstance(),
                                     () -> activityContentView);
-
-                    mSaveCardBottomSheetContent =
-                            new AutofillSaveCardBottomSheetContent(sActivityTestRule.getActivity());
-                    mSaveCardBottomSheetContent.setDelegate(mSaveCardBottomSheetContentDelegate);
                 });
     }
 
@@ -119,7 +116,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
     @Test
     @Feature({"RenderTest"})
     public void testUploadSave() throws Exception {
-        mSaveCardBottomSheetContent.setUiInfo(
+        setUpSaveCardBottomSheetContent(
                 new AutofillSaveCardUiInfo.Builder()
                         .withIsForUpload(true)
                         .withLogoIcon(R.drawable.google_pay)
@@ -157,7 +154,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
     @Test
     @Feature({"RenderTest"})
     public void testLocalSave() throws Exception {
-        mSaveCardBottomSheetContent.setUiInfo(
+        setUpSaveCardBottomSheetContent(
                 new AutofillSaveCardUiInfo.Builder()
                         .withIsForUpload(false)
                         .withLogoIcon(R.drawable.arrow_up) // The logo should not be shown.
@@ -183,4 +180,47 @@ public class AutofillSaveCardBottomSheetRenderTest {
         // Render the activity to show the content sheet and its contents.
         mRenderTestRule.render(activityContentView, "save_card_bottom_sheet_content_local");
     }
+
+    private void setUpSaveCardBottomSheetContent(AutofillSaveCardUiInfo uiInfo) {
+        AutofillSaveCardBottomSheetView view = new AutofillSaveCardBottomSheetView(mActivity);
+        PropertyModel model =
+                new PropertyModel.Builder(AutofillSaveCardBottomSheetProperties.ALL_KEYS)
+                        .with(AutofillSaveCardBottomSheetProperties.TITLE, uiInfo.getTitleText())
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.DESCRIPTION,
+                                uiInfo.getDescriptionText())
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.LOGO_ICON,
+                                uiInfo.isForUpload() ? uiInfo.getLogoIcon() : 0)
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.CARD_DESCRIPTION,
+                                uiInfo.getCardDescription())
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.CARD_ICON,
+                                uiInfo.getCardDetail().issuerIconDrawableId)
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.CARD_LABEL,
+                                uiInfo.getCardDetail().label)
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.CARD_SUB_LABEL,
+                                uiInfo.getCardDetail().subLabel)
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.LEGAL_MESSAGE,
+                                new AutofillSaveCardBottomSheetProperties.LegalMessage(
+                                        uiInfo.getLegalMessageLines(), this::openLegalMessageLink))
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.ACCEPT_BUTTON_LABEL,
+                                uiInfo.getConfirmText())
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL,
+                                uiInfo.getCancelText())
+                        .build();
+        PropertyModelChangeProcessor.create(
+                model, view, AutofillSaveCardBottomSheetViewBinder::bind);
+
+        mSaveCardBottomSheetContent =
+                new AutofillSaveCardBottomSheetContent(view.mContentView, view.mScrollView);
+    }
+
+    void openLegalMessageLink(String url) {}
 }

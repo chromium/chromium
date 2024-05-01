@@ -24,8 +24,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
-import java.util.function.Consumer;
-
 /** Unit test for {@link AutofillSaveCardBottomSheetMediator}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,17 +34,12 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private AutofillSaveCardBottomSheetBridge mDelegate;
     private AutofillSaveCardBottomSheetMediator mMediator;
-    @Mock private Consumer<String> mOnUiLegalMessageUrlClicked;
 
     @Before
     public void setUp() {
         mMediator =
                 new AutofillSaveCardBottomSheetMediator(
-                        mBottomSheetContent,
-                        mLifeCycle,
-                        mBottomSheetController,
-                        mDelegate,
-                        mOnUiLegalMessageUrlClicked);
+                        mBottomSheetContent, mLifeCycle, mBottomSheetController, mDelegate);
     }
 
     @Test

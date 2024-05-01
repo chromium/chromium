@@ -26,8 +26,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 
 /** Unit test for {@link AutofillSaveCardBottomSheetLifecycle}. */
 @SmallTest
@@ -35,7 +35,7 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 public class AutofillSaveCardBottomSheetLifecycleTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private LayoutStateProvider mLayoutStateProvider;
-    @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private TabModel mTabModel;
     private AutofillSaveCardBottomSheetLifecycle mLifecycle;
     @Mock private AutofillSaveCardBottomSheetMediator mDelegate;
@@ -113,14 +113,12 @@ public class AutofillSaveCardBottomSheetLifecycleTest {
     @Test
     public void testStartedShowing_whenLayoutTypeIsNotBrowsing() {
         mLifecycle.onStartedShowing(LayoutType.TAB_SWITCHER);
-
         verify(mDelegate).onIgnored();
     }
 
     @Test
     public void testStartedShowing_whenLayoutTypeIsBrowsing() {
         mLifecycle.onStartedShowing(LayoutType.BROWSING);
-
         verifyNoInteractions(mDelegate);
     }
 
@@ -142,19 +140,19 @@ public class AutofillSaveCardBottomSheetLifecycleTest {
     }
 
     @Test
-    public void testSelectTab_whenTabIdIsNotLastId_whenCalledAgain() {
+    public void testSelectTab_whenTabIdIsLastId() {
         when(mTab.getId()).thenReturn(1);
-        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 2);
-        clearInvocations(mDelegate);
-        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 2);
+        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 1);
 
         verifyNoInteractions(mDelegate);
     }
 
     @Test
-    public void testSelectTab_whenTabIdIsLastId() {
+    public void testSelectTab_whenTabIdIsNotLastId_whenCalledAgain() {
         when(mTab.getId()).thenReturn(1);
-        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 1);
+        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 2);
+        clearInvocations(mDelegate);
+        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 2);
 
         verifyNoInteractions(mDelegate);
     }

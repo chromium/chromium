@@ -4,158 +4,35 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
-import android.content.Context;
-import android.text.method.LinkMovementMethod;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ScrollView;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
-import org.chromium.components.autofill.payments.LegalMessageLine;
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 /** Implements the content for the autofill save card bottom sheet. */
 /*package*/ class AutofillSaveCardBottomSheetContent implements BottomSheetContent {
-    private final View mView;
-    private Delegate mDelegate;
-
-    /** User actions delegated by this bottom sheet. */
-    /*package*/ interface Delegate {
-        /** Called when a legal message link is clicked from the legal message. */
-        void didClickLegalMessageUrl(String url);
-
-        /** Called when the bottom sheet is submitted. E.g. through a button click. */
-        void onAccepted();
-
-        /** Called when the bottom sheet is cancelled. E.g. through a button click. */
-        void onCanceled();
-    }
+    private final View mContentView;
+    private final ScrollView mScrollView;
 
     /**
-     * Creates the BottomSheetContent and inflates the view given a delegate responding to actions.
+     * Creates the save card contents.
      *
-     * @param context The activity context of the window.
+     * @param contentView The bottom sheet content.
+     * @param scrollView The view that optionally scrolls the contents within the sheet on smaller
+     *     screens.
      */
-    /*package*/ AutofillSaveCardBottomSheetContent(Context context) {
-        mView =
-                LayoutInflater.from(context)
-                        .inflate(
-                                org.chromium.chrome.browser.autofill.R.layout
-                                        .autofill_save_card_bottom_sheet,
-                                /* root= */ null);
-        setButtonDelegateAction(
-                org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button,
-                Delegate::onAccepted);
-        setButtonDelegateAction(
-                org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button,
-                Delegate::onCanceled);
-        setLinkMovementMethod(org.chromium.chrome.browser.autofill.R.id.legal_message);
-    }
-
-    private void setButtonDelegateAction(@IdRes int id, Consumer<Delegate> delegateAction) {
-        Button button = mView.findViewById(id);
-        button.setOnClickListener((View _view) -> delegateAction.accept(mDelegate));
-    }
-
-    private void setLinkMovementMethod(@IdRes int id) {
-        TextView view = mView.findViewById(id);
-        view.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
-    /** Returns the delegate set in the constructor. */
-    @VisibleForTesting
-    public Delegate getDelegate() {
-        return mDelegate;
-    }
-
-    /**
-     * Sets the delegate listening for actions the user performs on this bottom sheet.
-     *
-     * @param delegate An implementation of {@link Delegate}.
-     */
-    public void setDelegate(Delegate delegate) {
-        mDelegate = delegate;
-    }
-
-    /**
-     * Set the Icons and text from the given UiInfo.
-     *
-     * @param uiInfo Contains the UI resources to be applied to this bottom sheet content's view.
-     */
-    /*package*/ void setUiInfo(AutofillSaveCardUiInfo uiInfo) {
-        if (uiInfo.isForUpload()) {
-            setLogoIconId(uiInfo.getLogoIcon());
-        } else {
-            setLogoIconId(0);
-        }
-        mView.<ImageView>findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_icon)
-                .setImageResource(uiInfo.getCardDetail().issuerIconDrawableId);
-        setTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_label, uiInfo.getCardDetail().label);
-        setTextViewText(
-                org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_sublabel, uiInfo.getCardDetail().subLabel);
-        mView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_credit_card_chip)
-                .setContentDescription(uiInfo.getCardDescription());
-        setLegalMessage(uiInfo.getLegalMessageLines());
-        setTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_title_text, uiInfo.getTitleText());
-        mView.<Button>findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button)
-                .setText(uiInfo.getConfirmText());
-        mView.<Button>findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button)
-                .setText(uiInfo.getCancelText());
-        setTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_description_text, uiInfo.getDescriptionText());
-    }
-
-    private void setLogoIconId(@DrawableRes int iconId) {
-        ImageView imageView = mView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_icon);
-        if (iconId == 0) {
-            imageView.setVisibility(View.GONE);
-            return;
-        }
-        imageView.setVisibility(View.VISIBLE);
-        imageView.setImageResource(iconId);
-    }
-
-    private void setTextViewText(@IdRes int resourceId, CharSequence text) {
-        TextView textView = mView.findViewById(resourceId);
-        textView.setText(text);
-        if (text == null || text.length() == 0) {
-            textView.setVisibility(View.GONE);
-        } else {
-            textView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void setLegalMessage(List<LegalMessageLine> legalMessageLines) {
-        setTextViewText(
-                org.chromium.chrome.browser.autofill.R.id.legal_message,
-                AutofillUiUtils.getSpannableStringForLegalMessageLines(
-                        mView.getContext(),
-                        legalMessageLines,
-                        /* underlineLinks= */ true,
-                        /* onClickCallback= */ (url) -> mDelegate.didClickLegalMessageUrl(url)));
+    /*package*/ AutofillSaveCardBottomSheetContent(View contentView, ScrollView scrollView) {
+        mContentView = contentView;
+        mScrollView = scrollView;
     }
 
     // BottomSheetContent implementation follows:
     @Override
     public View getContentView() {
-        return mView;
-    }
-
-    @Override
-    public boolean hasCustomLifecycle() {
-        // This bottom sheet should stay open during page navigation. The
-        // AutofillSaveCardBottomSheetBridge is responsible for hiding this bottom sheet.
-        return true;
+        return mContentView;
     }
 
     @Nullable
@@ -166,23 +43,30 @@ import java.util.function.Consumer;
 
     @Override
     public int getVerticalScrollOffset() {
-        return mView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_scroll_view).getScrollY();
+        return mScrollView.getScrollY();
     }
 
     @Override
     public void destroy() {
         // In order to be able to know the reason for this bottom sheet being closed, the
-        // BottomSheetObserver interface is used by our owning class instead.
+        // BottomSheetObserver interface is used by the lifecycle class instead.
     }
 
     @Override
-    public int getPriority() {
-        return ContentPriority.HIGH;
+    public boolean hasCustomLifecycle() {
+        // This bottom sheet should stay open during page navigation. The
+        // AutofillSaveCardBottomSheetBridge is responsible for hiding this bottom sheet.
+        return true;
     }
 
     @Override
     public boolean swipeToDismissEnabled() {
         return true;
+    }
+
+    @Override
+    public int getPriority() {
+        return ContentPriority.HIGH;
     }
 
     @Override
@@ -196,18 +80,18 @@ import java.util.function.Consumer;
     }
 
     @Override
-    public boolean hideOnScroll() {
-        return true;
-    }
-
-    @Override
     public int getPeekHeight() {
         return HeightMode.DISABLED;
     }
 
     @Override
+    public boolean hideOnScroll() {
+        return true;
+    }
+
+    @Override
     public int getSheetContentDescriptionStringId() {
-        return org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_content_description;
+        return R.string.autofill_save_card_prompt_bottom_sheet_content_description;
     }
 
     @Override
@@ -218,11 +102,11 @@ import java.util.function.Consumer;
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_full_height;
+        return R.string.autofill_save_card_prompt_bottom_sheet_full_height;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return org.chromium.chrome.browser.autofill.R.string.autofill_save_card_prompt_bottom_sheet_closed;
+        return R.string.autofill_save_card_prompt_bottom_sheet_closed;
     }
 }

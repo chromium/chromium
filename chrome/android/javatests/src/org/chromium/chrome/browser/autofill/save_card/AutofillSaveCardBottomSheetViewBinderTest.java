@@ -208,13 +208,17 @@ public class AutofillSaveCardBottomSheetViewBinderTest extends BlankUiTestActivi
 
     private void verifyPropertyBoundToTextView(
             TextView view, ReadableObjectPropertyKey<String> property) {
+        bind(mModel.with(property, null));
+        assertEquals(View.GONE, view.getVisibility());
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
-        bind(mModel.with(property, null));
+        bind(mModel.with(property, ""));
+        assertEquals(View.GONE, view.getVisibility());
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
         final String messageText = "Test Message";
         bind(mModel.with(property, messageText));
+        assertEquals(View.VISIBLE, view.getVisibility());
         assertEquals(messageText, String.valueOf(view.getText()));
     }
 }

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill.save_card;
 
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -15,12 +14,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
 /**
- * The lifecycle for the virtual card number (VCN) enrollment bottom sheet. Notifies the caller when
- * a tab or layout changes (e.g., going into the "tab overview"), so the bottom sheet can be
- * dismissed. Ignores page navigations.
+ * The lifecycle for the save card bottom sheet. Notifies the caller when a tab or layout changes
+ * (e.g., going into the "tab overview"), so the bottom sheet can be dismissed. Ignores page
+ * navigation.
  */
 /*package*/ class AutofillSaveCardBottomSheetLifecycle extends EmptyBottomSheetObserver
-        implements TabModelObserver, LayoutStateObserver {
+        implements TabModelObserver, LayoutStateProvider.LayoutStateObserver {
     /** Controller callbacks from the save card bottom sheet. */
     interface ControllerDelegate {
         void onCanceled();
@@ -35,7 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     private boolean mFinished;
 
     /**
-     * Constructs the lifecycle for the virtual card number (VCN) enrollment bottom sheet.
+     * Constructs the lifecycle for the save card bottom sheet.
      *
      * @param bottomSheetController The controller to use for showing or hiding the content.
      * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
@@ -65,10 +64,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         mTabModel.addObserver(this);
     }
 
-    /**
-     * Ends the lifecycle of the virtual card number (VCN) enrollment bottom sheet. Stops observing
-     * tab and layout changes.
-     */
+    /** Ends the lifecycle of the save card bottom sheet. Stops observing tab and layout changes. */
     void end() {
         mTabModel.removeObserver(this);
         mLayoutStateProvider.removeObserver(this);
@@ -85,9 +81,8 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
                 finish(mDelegate::onCanceled);
                 break;
             case StateChangeReason.INTERACTION_COMPLETE:
-                // Expecting AutofillSaveCardBottomSheetContent.Delegate.onAccepted() and
-                // AutofillSaveCardBottomSheetContent.Delegate.onCanceled() to call
-                // AutofillSaveCardBottomSheetLifecycle.Delegate in this case.
+                // Expecting AutofillSaveCardBottomSheetCoordinator to set up the appropriate
+                // callbacks to native on button presses in this case.
                 mFinished = true;
                 break;
             default:

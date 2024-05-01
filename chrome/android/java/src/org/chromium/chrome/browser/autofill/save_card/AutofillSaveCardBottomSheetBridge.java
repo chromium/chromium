@@ -58,11 +58,11 @@ public class AutofillSaveCardBottomSheetBridge
         mCoordinator =
                 new AutofillSaveCardBottomSheetCoordinator(
                         mContext,
+                        uiInfo,
                         mBottomSheetController,
                         mLayoutStateProvider,
                         mTabModel,
-                        uiInfo,
-                        /* bridge= */ this);
+                        /* delegate= */ this);
         mCoordinator.requestShowContent();
     }
 
@@ -103,7 +103,7 @@ public class AutofillSaveCardBottomSheetBridge
     /*package*/ void destroy() {
         mNativeAutofillSaveCardBottomSheetBridge = 0;
         if (mCoordinator == null) return;
-        mCoordinator.destroy();
+        mCoordinator.hide(BottomSheetController.StateChangeReason.NONE);
         mCoordinator = null;
     }
 

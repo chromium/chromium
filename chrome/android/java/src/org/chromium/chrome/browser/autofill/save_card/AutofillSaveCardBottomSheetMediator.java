@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.autofill.save_card;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
-import java.util.function.Consumer;
-
 /**
  * Mediator class for the autofill save card UI.
  *
@@ -22,13 +20,11 @@ import java.util.function.Consumer;
  * <p>This mediator sends UI events (OnUiShown, OnUiAccepted, etc.) to the bridge.
  */
 /*package*/ class AutofillSaveCardBottomSheetMediator
-        implements AutofillSaveCardBottomSheetLifecycle.ControllerDelegate,
-                AutofillSaveCardBottomSheetContent.Delegate {
+        implements AutofillSaveCardBottomSheetLifecycle.ControllerDelegate {
     private final AutofillSaveCardBottomSheetContent mContent;
     private final AutofillSaveCardBottomSheetLifecycle mLifecycle;
     private final BottomSheetController mBottomSheetController;
     private final AutofillSaveCardBottomSheetCoordinator.NativeDelegate mDelegate;
-    private final Consumer<String> mOnUiLegalMessageUrlClicked;
 
     /**
      * Creates the mediator.
@@ -42,13 +38,11 @@ import java.util.function.Consumer;
             AutofillSaveCardBottomSheetContent content,
             AutofillSaveCardBottomSheetLifecycle lifecycle,
             BottomSheetController bottomSheetController,
-            AutofillSaveCardBottomSheetCoordinator.NativeDelegate delegate,
-            Consumer<String> onUiLegalMessageUrlClicked) {
+            AutofillSaveCardBottomSheetCoordinator.NativeDelegate delegate) {
         mContent = content;
         mLifecycle = lifecycle;
         mBottomSheetController = bottomSheetController;
         mDelegate = delegate;
-        mOnUiLegalMessageUrlClicked = onUiLegalMessageUrlClicked;
     }
 
     /** Requests to show the bottom sheet content. */
@@ -59,18 +53,6 @@ import java.util.function.Consumer;
         } else {
             mDelegate.onUiIgnored();
         }
-    }
-
-    // AutofillSaveCardBottomSheetContent.Delegate implementation follows:
-    @Override
-    public void didClickLegalMessageUrl(String url) {
-        mOnUiLegalMessageUrlClicked.accept(url);
-    }
-
-    @Override
-    public void onAccepted() {
-        hide(StateChangeReason.INTERACTION_COMPLETE);
-        mDelegate.onUiAccepted();
     }
 
     @Override
