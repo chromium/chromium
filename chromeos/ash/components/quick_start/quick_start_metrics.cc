@@ -289,6 +289,9 @@ void QuickStartMetrics::RecordWifiTransferResult(
 // static
 void QuickStartMetrics::RecordAbortFlowReason(AbortFlowReason reason) {
   base::UmaHistogramEnumeration(kAbortFlowReasonHistogramName, reason);
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::QuickStart_FlowAborted().SetReason(
+          static_cast<cros_events::QuickStartAbortFlowReason>(reason))));
 }
 
 // static
@@ -332,6 +335,19 @@ void QuickStartMetrics::RecordUpdateStarted(bool is_forced) {
 // static
 void QuickStartMetrics::RecordConsumerUpdateCancelled() {
   base::UmaHistogramBoolean(kConsumerUpdateCancelledHistogramName, true);
+}
+
+// static
+void QuickStartMetrics::RecordEstablishConnection(bool success,
+                                                  bool is_automatic_resume) {
+  if (is_automatic_resume) {
+    metrics::structured::StructuredMetricsClient::Record(std::move(
+        cros_events::QuickStart_AutomaticResumeAfterUpdate().SetSuccess(
+            success)));
+  } else {
+    metrics::structured::StructuredMetricsClient::Record(std::move(
+        cros_events::QuickStart_EstablishConnection().SetSuccess(success)));
+  }
 }
 
 QuickStartMetrics::QuickStartMetrics() = default;

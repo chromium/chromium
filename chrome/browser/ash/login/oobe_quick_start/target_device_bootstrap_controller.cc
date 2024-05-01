@@ -209,6 +209,22 @@ void TargetDeviceBootstrapController::UpdateStatus(Step step, Payload payload) {
     return;
   }
 
+  // Record metrics if establishing phone connection has succeeded or failed.
+  constexpr Step kPossibleBootstrappingConnectionSteps[] = {
+      Step::ADVERTISING_WITH_QR_CODE, Step::ADVERTISING_WITHOUT_QR_CODE,
+      Step::PIN_VERIFICATION};
+  if (step == Step::CONNECTED) {
+    QuickStartMetrics::RecordEstablishConnection(
+        /*success=*/true,
+        /*is_automatic_resume=*/session_context_.is_resume_after_update());
+  } else if (step == Step::ERROR &&
+             base::Contains(kPossibleBootstrappingConnectionSteps,
+                            status_.step)) {
+    QuickStartMetrics::RecordEstablishConnection(
+        /*success=*/false,
+        /*is_automatic_resume=*/session_context_.is_resume_after_update());
+  }
+
   status_.step = step;
   status_.payload = payload;
   NotifyObservers();

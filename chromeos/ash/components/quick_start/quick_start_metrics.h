@@ -226,9 +226,11 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
-  // reflect it (do not change one without changing the other). Entries should
-  // be never modified or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml as well as a
+  // CrOSEvents enum defined in
+  // //components/metrics/structured/structured_events.h, and should always
+  // reflect them (do not change one without changing the others). Entries
+  // should never be modified or deleted. Only additions possible.
   enum class AbortFlowReason {
     USER_CLICKED_BACK = 0,
     USER_CLICKED_CANCEL = 1,
@@ -287,6 +289,8 @@ class QuickStartMetrics {
   static void RecordUpdateStarted(bool is_forced);
 
   static void RecordConsumerUpdateCancelled();
+
+  static void RecordEstablishConnection(bool success, bool is_automatic_resume);
 
   QuickStartMetrics();
   QuickStartMetrics(const QuickStartMetrics&) = delete;

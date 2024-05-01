@@ -1130,6 +1130,15 @@
     <variant value="1">SECONDARY</variant>
   </enum>
 
+  <enum name="QuickStartAbortFlowReason">
+    <variant value="0">USER_CLICKED_BACK</variant>
+    <variant value="1">USER_CLICKED_CANCEL</variant>
+    <variant value="2">SIGNIN_SCHOOL</variant>
+    <variant value="3">ENTERPRISE_ENROLLMENT</variant>
+    <variant value="4">QS_ERROR</variant>
+    <variant value="5">ADD_CHILD</variant>
+  </enum>
+
   <enum name="QuickStartEntryPoint">
     <variant value="0">WELCOME_SCREEN</variant>
     <variant value="1">NETWORK_SCREEN</variant>
@@ -2321,6 +2330,44 @@
     <metric name="EntryPoint" type="QuickStartEntryPoint">
       <summary>
         Entry Point from where the user entered Quick Start.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.FlowAborted">
+    <summary>
+      Recorded when the Quick Start flow is prematurely aborted, either due to an
+      error or user action.
+    </summary>
+    <metric name="Reason" type="QuickStartAbortFlowReason">
+      <summary>
+        Reason the Quick Start flow is aborted.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.EstablishConnection">
+    <summary>
+      Recorded once a connection is established with the source device or an error
+      occurs attempting to bootstrap the connection.
+    </summary>
+    <metric name="Success" type="int">
+      <summary>
+        Boolean indicating whether the connection is successfully established.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.AutomaticResumeAfterUpdate">
+    <summary>
+      Recorded once a connection is automatically established with the source
+      device after an update or when an error occurs attempting to automatically
+      bootstrap the connection.
+    </summary>
+    <metric name="Success" type="int">
+      <summary>
+        Boolean indicating whether the connection is successfully established during
+        the automatic resume attempt.
       </summary>
     </metric>
   </event>
