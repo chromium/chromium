@@ -78,11 +78,7 @@ class AppInstallDialogBrowserTest : public InProcessBrowserTest {
     if (it == response_map_.end()) {
       return nullptr;
     }
-    auto http_response =
-        std::make_unique<net::test_server::BasicHttpResponse>();
-    http_response->set_code(net::HTTP_OK);
-    http_response->set_content(it->second);
-    return std::move(http_response);
+    return std::move(it->second);
   }
 
   void SetUpAlmanacPayload(const char* app_url) {
@@ -96,8 +92,20 @@ class AppInstallDialogBrowserTest : public InProcessBrowserTest {
     web_extras.set_document_url(app_url);
     web_extras.set_original_manifest_url(app_url);
     web_extras.set_scs_url(app_url);
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content(response.SerializeAsString());
     response_map_[embedded_test_server()->GetURL("/v1/app-install")] =
-        response.SerializeAsString();
+        std::move(http_response);
+  }
+
+  void SetUpAlmanacHttpResponseCode(net::HttpStatusCode response_code) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(response_code);
+    response_map_[embedded_test_server()->GetURL("/v1/app-install")] =
+        std::move(http_response);
   }
 
   std::string GetTitle(content::WebContents* web_contents) {
@@ -108,12 +116,17 @@ class AppInstallDialogBrowserTest : public InProcessBrowserTest {
         .ExtractString();
   }
 
-  std::string GetActionButton(content::WebContents* web_contents) {
-    return content::EvalJs(web_contents, R"(
-      document.querySelector('app-install-dialog').shadowRoot
-              .querySelector('.action-button').label
-    )")
-        .ExtractString();
+  std::optional<std::string> GetActionButton(
+      content::WebContents* web_contents) {
+    content::EvalJsResult result = content::EvalJs(web_contents, R"(
+      const button = document.querySelector('app-install-dialog').shadowRoot
+              .querySelector('.action-button');
+      button.style.display === 'none' ? null : button.label;
+    )");
+    if (result == base::Value()) {
+      return std::nullopt;
+    }
+    return result.ExtractString();
   }
 
   [[nodiscard]] bool ClickActionButton(content::WebContents* web_contents) {
@@ -124,7 +137,8 @@ class AppInstallDialogBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::map<GURL, std::string> response_map_;
+  std::map<GURL, std::unique_ptr<net::test_server::BasicHttpResponse>>
+      response_map_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -275,6 +289,8 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, NoAppError) {
       (GURL(chrome::kChromeUIAppInstallDialogURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
+  SetUpAlmanacHttpResponseCode(net::HTTP_NOT_FOUND);
+
   auto* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
   proxy->AppInstallService().InstallApp(
@@ -288,7 +304,31 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, NoAppError) {
 
   content::WebContents* web_contents = GetWebContentsFromDialog();
 
-  EXPECT_EQ(GetTitle(web_contents), "Can't install this app");
+  EXPECT_EQ(GetTitle(web_contents), "App not available");
+  EXPECT_EQ(GetActionButton(web_contents), std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, ConnectionError) {
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUIAppInstallDialogURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  SetUpAlmanacHttpResponseCode(net::HTTP_INTERNAL_SERVER_ERROR);
+
+  auto* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  proxy->AppInstallService().InstallApp(
+      apps::AppInstallSurface::kAppInstallUriUnknown,
+      apps::PackageId(apps::PackageType::kWeb, "invalid"),
+      /*anchor_window=*/std::nullopt,
+      /*callback=*/base::DoNothing());
+
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  content::WebContents* web_contents = GetWebContentsFromDialog();
+
+  EXPECT_EQ(GetTitle(web_contents), "Can't install app");
   EXPECT_EQ(GetActionButton(web_contents), "Try again");
 }
 

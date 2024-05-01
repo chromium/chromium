@@ -7499,11 +7499,17 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_APP_INSTALL_DIALOG_APP_ALREADY_INSTALLED_TITLE" desc="Title shown in the app install dialog after the app has finished installing.">
     App is already installed
   </message>
-  <message name="IDS_APP_INSTALL_DIALOG_NO_APP_DATA_TITLE" desc="Title shown in the app install dialog when there is no app data.">
-    Can't install this app
+  <message name="IDS_APP_INSTALL_DIALOG_NO_APP_ERROR_TITLE" desc="Title shown in the app install dialog when there is no app data.">
+    App not available
   </message>
-  <message name="IDS_APP_INSTALL_DIALOG_NO_APP_DATA_DESCRIPTION" desc="Description shown in the app install dialog when there is no app data.">
-    Couldn't download app data. Try Again.
+  <message name="IDS_APP_INSTALL_DIALOG_NO_APP_ERROR_DESCRIPTION" desc="Description shown in the app install dialog when there is no app data.">
+    Can't find app data
+  </message>
+  <message name="IDS_APP_INSTALL_DIALOG_CONNECTION_ERROR_TITLE" desc="Title shown in the app install dialog when there was a connection error downloading app data.">
+    Can't install app
+  </message>
+  <message name="IDS_APP_INSTALL_DIALOG_CONNECTION_ERROR_DESCRIPTION" desc="Description shown in the app install dialog when there was a connection error downloading app data.">
+    Check your internet connection and try again
   </message>
   <message name="IDS_APP_INSTALL_DIALOG_TRY_AGAIN_BUTTON_LABEL" desc="Button label in the app install dialog that opens the app that was just installed.">
     Try again

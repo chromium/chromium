@@ -45,9 +45,12 @@ class AppInstallDialog : public SystemWebDialogDelegate {
       std::vector<mojom::ScreenshotPtr> screenshots,
       base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
 
-  // Displays the dialog with an error message that there's no app info.
-  void ShowNoAppError(gfx::NativeWindow parent,
-                      base::OnceClosure try_again_callback);
+  // Displays the dialog with an error message that the app can't be found.
+  void ShowNoAppError(gfx::NativeWindow parent);
+
+  // Displays the dialog with an error message that the connection failed.
+  void ShowConnectionError(gfx::NativeWindow parent,
+                           base::OnceClosure try_again_callback);
 
   // Callers must call one of SetInstallSucceeded or SetInstallFailed once the
   // install has finished, passing in the app_id if the installation succeeded

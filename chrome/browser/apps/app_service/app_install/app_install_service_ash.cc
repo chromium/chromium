@@ -42,6 +42,45 @@ namespace apps {
 
 namespace {
 
+struct AppInstallDataFailure {
+  AppInstallAlmanacConnector::Error request_error;
+  AppInstallResult install_result;
+};
+
+std::optional<AppInstallDataFailure> VerifyAppInstallData(
+    const base::expected<AppInstallData, AppInstallAlmanacConnector::Error>&
+        data,
+    const PackageId& expected_package_id) {
+  if (data.has_value()) {
+    if (data->package_id != expected_package_id) {
+      return AppInstallDataFailure{
+          AppInstallAlmanacConnector::Error::kBadRequest,
+          AppInstallResult::kAppDataCorrupted,
+      };
+    }
+    if (expected_package_id.package_type() == PackageType::kWeb &&
+        !absl::holds_alternative<WebAppInstallData>(data->app_type_data)) {
+      return AppInstallDataFailure{
+          AppInstallAlmanacConnector::Error::kBadRequest,
+          AppInstallResult::kAppDataCorrupted,
+      };
+    }
+    return std::nullopt;
+  }
+
+  return AppInstallDataFailure{
+      data.error(),
+      [&]() {
+        switch (data.error()) {
+          case AppInstallAlmanacConnector::Error::kBadRequest:
+            return AppInstallResult::kBadAppRequest;
+          case AppInstallAlmanacConnector::Error::kConnectionFailure:
+            return AppInstallResult::kAlmanacFetchFailed;
+        }
+      }(),
+  };
+}
+
 AppInstallResult InstallWebAppWithBrowserInstallDialog(
     Profile& profile,
     const GURL& install_url) {
@@ -228,7 +267,7 @@ bool AppInstallServiceAsh::CanUserInstall() const {
 
 void AppInstallServiceAsh::FetchAppInstallData(
     PackageId package_id,
-    base::OnceCallback<void(std::optional<AppInstallData>)> data_callback) {
+    AppInstallAlmanacConnector::GetAppInstallInfoCallback data_callback) {
   device_info_manager_.GetDeviceInfo(
       base::BindOnce(&AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo,
                      weak_ptr_factory_.GetWeakPtr(), std::move(package_id),
@@ -237,7 +276,7 @@ void AppInstallServiceAsh::FetchAppInstallData(
 
 void AppInstallServiceAsh::FetchAppInstallDataWithDeviceInfo(
     PackageId package_id,
-    base::OnceCallback<void(std::optional<AppInstallData>)> data_callback,
+    AppInstallAlmanacConnector::GetAppInstallInfoCallback data_callback,
     DeviceInfo device_info) {
   connector_.GetAppInstallInfo(package_id, std::move(device_info),
                                *profile_->GetURLLoaderFactory(),
@@ -248,9 +287,9 @@ void AppInstallServiceAsh::PerformInstallHeadless(
     AppInstallSurface surface,
     PackageId expected_package_id,
     base::OnceCallback<void(bool success)> callback,
-    std::optional<AppInstallData> data) {
+    base::expected<AppInstallData, AppInstallAlmanacConnector::Error> data) {
   // TODO(b/327535848): Record metrics for headless installs.
-  if (!data) {
+  if (!data.has_value()) {
     std::move(callback).Run(false);
     return;
   }
@@ -264,34 +303,40 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     std::optional<gfx::NativeWindow> anchor_window,
     std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
     base::OnceCallback<void(AppInstallResult)> callback,
-    std::optional<AppInstallData> data) {
+    base::expected<AppInstallData, AppInstallAlmanacConnector::Error> data) {
   gfx::NativeWindow parent =
       anchor_window.has_value() &&
               !anchor_window_tracker->WasNativeWindowDestroyed()
           ? anchor_window.value()
           : nullptr;
 
-  if (!data || data->package_id != expected_package_id) {
+  if (std::optional<AppInstallDataFailure> data_failure =
+          VerifyAppInstallData(data, expected_package_id)) {
     if (ash::app_install::AppInstallDialog::IsEnabled()) {
-      ash::app_install::AppInstallDialog::CreateDialog()->ShowNoAppError(
-          parent, base::BindOnce(&AppInstallServiceAsh::InstallApp,
-                                 weak_ptr_factory_.GetWeakPtr(), surface,
-                                 expected_package_id, anchor_window,
-                                 base::DoNothing()));
+      base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
+          ash::app_install::AppInstallDialog::CreateDialog();
+      switch (data_failure->request_error) {
+        case AppInstallAlmanacConnector::Error::kBadRequest:
+          dialog->ShowNoAppError(parent);
+          break;
+        case AppInstallAlmanacConnector::Error::kConnectionFailure:
+          dialog->ShowConnectionError(
+              parent, base::BindOnce(&AppInstallServiceAsh::InstallApp,
+                                     weak_ptr_factory_.GetWeakPtr(), surface,
+                                     expected_package_id, anchor_window,
+                                     base::DoNothing()));
+          break;
+      }
     }
-    std::move(callback).Run(data ? AppInstallResult::kAppDataCorrupted
-                                 : AppInstallResult::kAlmanacFetchFailed);
+
+    std::move(callback).Run(data_failure->install_result);
     return;
   }
 
   // The install dialog is only used for web apps currently.
   CHECK_EQ(expected_package_id.package_type(), PackageType::kWeb);
-  const auto* web_app_data =
-      absl::get_if<WebAppInstallData>(&data->app_type_data);
-  if (!web_app_data) {
-    std::move(callback).Run(AppInstallResult::kAppDataCorrupted);
-    return;
-  }
+  const WebAppInstallData& web_app_data =
+      absl::get<WebAppInstallData>(data->app_type_data);
 
   if (!base::FeatureList::IsEnabled(
           chromeos::features::kCrosWebAppInstallDialog) &&
@@ -299,7 +344,7 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     // TODO(b/303350800): Delegate to a generic AppPublisher method
     // instead of harboring app type specific logic here.
     std::move(callback).Run(InstallWebAppWithBrowserInstallDialog(
-        *profile_, web_app_data->document_url));
+        *profile_, web_app_data.document_url));
     return;
   }
 
@@ -315,7 +360,7 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
   base::WeakPtr<ash::app_install::AppInstallDialog> dialog =
       ash::app_install::AppInstallDialog::CreateDialog();
   dialog->ShowApp(&*profile_, parent, expected_package_id, data->name,
-                  web_app_data->document_url, data->description,
+                  web_app_data.document_url, data->description,
                   data->icon ? data->icon->url : GURL::EmptyGURL(),
                   data->icon ? data->icon->width_in_pixels : 0,
                   data->icon ? data->icon->is_masking_allowed : false,

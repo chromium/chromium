@@ -32,7 +32,7 @@ namespace {
 // measure to show that the dialog is not spoofed.
 constexpr int kPaddingFromParentTop = 75;
 
-constexpr int kNoAppDataHeight = 228;
+constexpr int kErrorDialogHeight = 228;
 constexpr int kMinimumDialogHeight = 282;
 constexpr int kDescriptionContainerWidth = 408;
 constexpr int kDescriptionLineHeight = 18;
@@ -75,7 +75,7 @@ int GetDialogHeight(const AppInstallDialogArgs& dialog_args) {
     return height;
   }
 
-  return kNoAppDataHeight;
+  return kErrorDialogHeight;
 }
 
 }  // namespace
@@ -146,9 +146,14 @@ void AppInstallDialog::ShowApp(
                      weak_factory_.GetWeakPtr(), icon_width, is_icon_maskable));
 }
 
-void AppInstallDialog::ShowNoAppError(gfx::NativeWindow parent,
-                                      base::OnceClosure try_again_callback) {
-  NoAppErrorArgs args;
+void AppInstallDialog::ShowNoAppError(gfx::NativeWindow parent) {
+  Show(parent, NoAppErrorArgs());
+}
+
+void AppInstallDialog::ShowConnectionError(
+    gfx::NativeWindow parent,
+    base::OnceClosure try_again_callback) {
+  ConnectionErrorArgs args;
   args.try_again_callback = std::move(try_again_callback);
   Show(parent, std::move(args));
 }

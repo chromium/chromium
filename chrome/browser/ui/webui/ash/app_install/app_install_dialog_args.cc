@@ -11,9 +11,10 @@ AppInfoArgs::AppInfoArgs(AppInfoArgs&&) = default;
 AppInfoArgs::~AppInfoArgs() = default;
 AppInfoArgs& AppInfoArgs::operator=(AppInfoArgs&&) = default;
 
-NoAppErrorArgs::NoAppErrorArgs() = default;
-NoAppErrorArgs::NoAppErrorArgs(NoAppErrorArgs&&) = default;
-NoAppErrorArgs::~NoAppErrorArgs() = default;
-NoAppErrorArgs& NoAppErrorArgs::operator=(NoAppErrorArgs&&) = default;
+ConnectionErrorArgs::ConnectionErrorArgs() = default;
+ConnectionErrorArgs::ConnectionErrorArgs(ConnectionErrorArgs&&) = default;
+ConnectionErrorArgs::~ConnectionErrorArgs() = default;
+ConnectionErrorArgs& ConnectionErrorArgs::operator=(ConnectionErrorArgs&&) =
+    default;
 
 }  // namespace ash::app_install

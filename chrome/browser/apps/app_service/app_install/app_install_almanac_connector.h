@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 
 class GURL;
 
@@ -38,8 +39,12 @@ class AppInstallAlmanacConnector {
   ~AppInstallAlmanacConnector();
 
   // TODO(b/304681468): Report specific errors on failure for metrics.
+  enum class Error {
+    kConnectionFailure,
+    kBadRequest,
+  };
   using GetAppInstallInfoCallback =
-      base::OnceCallback<void(std::optional<AppInstallData>)>;
+      base::OnceCallback<void(base::expected<AppInstallData, Error>)>;
 
   void GetAppInstallInfo(PackageId package_id,
                          DeviceInfo device_info,

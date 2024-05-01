@@ -35,15 +35,16 @@ namespace apps {
 enum class AppInstallResult {
   kUnknown = 0,
   kSuccess = 1,
-  kAlmanacFetchFailed = 2,
-  kAppDataCorrupted = 3,
+  kAlmanacFetchFailed = 2,  // Connection error trying to contact server.
+  kAppDataCorrupted = 3,    // Server response failed validity checks.
   kAppProviderNotAvailable = 4,
   kAppTypeNotSupported = 5,
   kInstallParametersInvalid = 6,
   kInstallDialogNotAccepted = 7,
   kAppTypeInstallFailed = 8,
   kUserTypeNotPermitted = 9,
-  kMaxValue = kUserTypeNotPermitted,
+  kBadAppRequest = 10,  // Server rejected request.
+  kMaxValue = kBadAppRequest,
 };
 
 class AppInstallServiceAsh : public AppInstallService {
@@ -76,16 +77,17 @@ class AppInstallServiceAsh : public AppInstallService {
   bool MaybeLaunchApp(const PackageId& package_id);
   void FetchAppInstallData(
       PackageId package_id,
-      base::OnceCallback<void(std::optional<AppInstallData>)> data_callback);
+      AppInstallAlmanacConnector::GetAppInstallInfoCallback data_callback);
   void FetchAppInstallDataWithDeviceInfo(
       PackageId package_id,
-      base::OnceCallback<void(std::optional<AppInstallData>)> data_callback,
+      AppInstallAlmanacConnector::GetAppInstallInfoCallback data_callback,
       DeviceInfo device_info);
 
-  void PerformInstallHeadless(AppInstallSurface surface,
-                              PackageId expected_package_id,
-                              base::OnceCallback<void(bool success)> callback,
-                              std::optional<AppInstallData> data);
+  void PerformInstallHeadless(
+      AppInstallSurface surface,
+      PackageId expected_package_id,
+      base::OnceCallback<void(bool success)> callback,
+      base::expected<AppInstallData, AppInstallAlmanacConnector::Error> data);
 
   void ShowDialogAndInstall(
       AppInstallSurface surface,
@@ -93,7 +95,7 @@ class AppInstallServiceAsh : public AppInstallService {
       std::optional<gfx::NativeWindow> anchor_window,
       std::unique_ptr<views::NativeWindowTracker> anchor_window_tracker,
       base::OnceCallback<void(AppInstallResult)> callback,
-      std::optional<AppInstallData> data);
+      base::expected<AppInstallData, AppInstallAlmanacConnector::Error> data);
   void InstallIfDialogAccepted(
       AppInstallSurface surface,
       PackageId expected_package_id,

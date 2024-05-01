@@ -30,6 +30,9 @@ namespace apps {
 
 namespace {
 
+using ResponseFuture = base::test::TestFuture<
+    base::expected<AppInstallData, AppInstallAlmanacConnector::Error>>;
+
 const PackageId kTestPackageId(PackageType::kWeb, "https://example.com/");
 
 }  // namespace
@@ -124,7 +127,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoSuccessfulResponse) {
       AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<std::optional<AppInstallData>> response_future;
+  ResponseFuture response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
@@ -159,7 +162,7 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoSuccessfulResponse) {
   web_app_data.proxied_manifest_url =
       GURL("https://almanac.chromium.org/example_manifest.json");
   web_app_data.document_url = GURL("https://example.com/start.html");
-  EXPECT_EQ(base::ToString(*response_future.Get()),
+  EXPECT_EQ(base::ToString(response_future.Get().value()),
             base::ToString(expected_data));
 }
 
@@ -173,11 +176,12 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoIncompleteResponse) {
       AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<std::optional<AppInstallData>> response_future;
+  ResponseFuture response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_FALSE(response_future.Get().has_value());
+  EXPECT_EQ(response_future.Get().error(),
+            AppInstallAlmanacConnector::Error::kConnectionFailure);
 }
 
 TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoMalformedResponse) {
@@ -185,11 +189,12 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoMalformedResponse) {
       AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
       "Not a valid proto");
 
-  base::test::TestFuture<std::optional<AppInstallData>> response_future;
+  ResponseFuture response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_FALSE(response_future.Get().has_value());
+  EXPECT_EQ(response_future.Get().error(),
+            AppInstallAlmanacConnector::Error::kConnectionFailure);
 }
 
 TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoServerError) {
@@ -197,11 +202,12 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoServerError) {
       AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
       /*content=*/"", net::HTTP_INTERNAL_SERVER_ERROR);
 
-  base::test::TestFuture<std::optional<AppInstallData>> response_future;
+  ResponseFuture response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_FALSE(response_future.Get().has_value());
+  EXPECT_EQ(response_future.Get().error(),
+            AppInstallAlmanacConnector::Error::kConnectionFailure);
 }
 
 TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoNetworkError) {
@@ -210,11 +216,27 @@ TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoNetworkError) {
       network::mojom::URLResponseHead::New(), /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT));
 
-  base::test::TestFuture<std::optional<AppInstallData>> response_future;
+  ResponseFuture response_future;
   connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
                                test_url_loader_factory_,
                                response_future.GetCallback());
-  EXPECT_FALSE(response_future.Get().has_value());
+  EXPECT_EQ(response_future.Get().error(),
+            AppInstallAlmanacConnector::Error::kConnectionFailure);
+}
+
+TEST_F(AppInstallAlmanacConnectorTest, GetAppInstallInfoNotFound) {
+  test_url_loader_factory_.AddResponse(
+      AppInstallAlmanacConnector::GetEndpointUrlForTesting().spec(),
+      /*content=*/"",
+
+      net::HTTP_NOT_FOUND);
+
+  ResponseFuture response_future;
+  connector_.GetAppInstallInfo(kTestPackageId, DeviceInfo(),
+                               test_url_loader_factory_,
+                               response_future.GetCallback());
+  EXPECT_EQ(response_future.Get().error(),
+            AppInstallAlmanacConnector::Error::kBadRequest);
 }
 
 }  // namespace apps

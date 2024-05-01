@@ -22,7 +22,7 @@ namespace ash::app_install {
 // the browser process exposing various methods for the JS to invoke.
 class AppInstallPageHandler : public mojom::PageHandler,
                               public mojom::AppInfoActions,
-                              public mojom::NoAppErrorActions {
+                              public mojom::ConnectionErrorActions {
  public:
   // Whether the app install dialog is enabled and should auto accept
   // installation without actual user input.
@@ -53,7 +53,7 @@ class AppInstallPageHandler : public mojom::PageHandler,
   void InstallApp(InstallAppCallback callback) override;
   void LaunchApp() override;
 
-  // mojom::NoAppErrorActions:
+  // mojom::ConnectionErrorActions:
   void TryAgain() override;
 
  private:
@@ -63,7 +63,8 @@ class AppInstallPageHandler : public mojom::PageHandler,
   CloseDialogCallback close_dialog_callback_;
   mojo::Receiver<mojom::PageHandler> page_handler_receiver_;
   mojo::Receiver<mojom::AppInfoActions> app_info_actions_receiver_;
-  mojo::Receiver<mojom::NoAppErrorActions> no_app_error_actions_receiver_;
+  mojo::Receiver<mojom::ConnectionErrorActions>
+      connection_error_actions_receiver_;
 
   base::WeakPtrFactory<AppInstallPageHandler> weak_ptr_factory_{this};
 };

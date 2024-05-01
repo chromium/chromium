@@ -62,7 +62,7 @@ AppInstallPageHandler::AppInstallPageHandler(
       close_dialog_callback_{std::move(close_dialog_callback)},
       page_handler_receiver_{this, std::move(pending_page_handler)},
       app_info_actions_receiver_{this},
-      no_app_error_actions_receiver_{this} {
+      connection_error_actions_receiver_{this} {
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.Shown"));
 
@@ -83,8 +83,12 @@ void AppInstallPageHandler::GetDialogArgs(GetDialogArgsCallback callback) {
                 app_info_actions_receiver_.BindNewPipeAndPassRemote()));
           },
           [&](const NoAppErrorArgs& no_app_error_args) {
-            return mojom::DialogArgs::NewNoAppErrorActions(
-                no_app_error_actions_receiver_.BindNewPipeAndPassRemote());
+            return mojom::DialogArgs::NewNoAppErrorArgs(
+                mojom::NoAppErrorArgs::New());
+          },
+          [&](const ConnectionErrorArgs& connection_error_args) {
+            return mojom::DialogArgs::NewConnectionErrorActions(
+                connection_error_actions_receiver_.BindNewPipeAndPassRemote());
           }),
       dialog_args_));
 }
@@ -163,7 +167,7 @@ void AppInstallPageHandler::LaunchApp() {
 
 void AppInstallPageHandler::TryAgain() {
   base::OnceClosure& callback =
-      absl::get<NoAppErrorArgs>(dialog_args_).try_again_callback;
+      absl::get<ConnectionErrorArgs>(dialog_args_).try_again_callback;
   if (callback) {
     std::move(callback).Run();
   }

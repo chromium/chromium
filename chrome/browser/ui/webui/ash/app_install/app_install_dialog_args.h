@@ -26,18 +26,21 @@ struct AppInfoArgs {
   base::OnceCallback<void(bool accepted)> dialog_accepted_callback;
 };
 
-struct NoAppErrorArgs {
-  NoAppErrorArgs();
-  NoAppErrorArgs(NoAppErrorArgs&&);
-  NoAppErrorArgs(const NoAppErrorArgs&) = delete;
-  ~NoAppErrorArgs();
-  NoAppErrorArgs& operator=(NoAppErrorArgs&&);
-  NoAppErrorArgs& operator=(const NoAppErrorArgs&) = delete;
+struct NoAppErrorArgs {};
+
+struct ConnectionErrorArgs {
+  ConnectionErrorArgs();
+  ConnectionErrorArgs(ConnectionErrorArgs&&);
+  ConnectionErrorArgs(const ConnectionErrorArgs&) = delete;
+  ~ConnectionErrorArgs();
+  ConnectionErrorArgs& operator=(ConnectionErrorArgs&&);
+  ConnectionErrorArgs& operator=(const ConnectionErrorArgs&) = delete;
 
   base::OnceClosure try_again_callback;
 };
 
-using AppInstallDialogArgs = absl::variant<AppInfoArgs, NoAppErrorArgs>;
+using AppInstallDialogArgs =
+    absl::variant<AppInfoArgs, NoAppErrorArgs, ConnectionErrorArgs>;
 
 }  // namespace ash::app_install
 

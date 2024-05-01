@@ -9,7 +9,8 @@ import "url/mojom/url.mojom";
 
 union DialogArgs {
   AppInfoArgs app_info_args;
-  pending_remote<NoAppErrorActions> no_app_error_actions;
+  NoAppErrorArgs no_app_error_args;
+  pending_remote<ConnectionErrorActions> connection_error_actions;
 };
 
 struct AppInfoArgs {
@@ -48,9 +49,11 @@ interface AppInfoActions {
   LaunchApp();
 };
 
+struct NoAppErrorArgs {};
+
 // Lives in the browser process, provides actions the dialog can perform when
 // displaying an error to the user.
-interface NoAppErrorActions {
+interface ConnectionErrorActions {
   // Retries the install dialog flow.
   TryAgain();
 };

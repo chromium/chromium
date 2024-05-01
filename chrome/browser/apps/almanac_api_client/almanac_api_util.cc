@@ -97,19 +97,25 @@ absl::Status GetDownloadError(
     base::UmaHistogramSparse(*histogram_name,
                              response_code > 0 ? response_code : net_error);
   }
-  if (net_error != net::OK) {
-    return absl::InternalError(
+  if (net_error != net::OK &&
+      net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
+    return absl::UnavailableError(
         base::StrCat({"net error: ", net::ErrorToString(net_error)}));
   }
 
   if ((response_code >= 200 && response_code < 300) || response_code == 0) {
     if (!response_body) {
-      return absl::InternalError("request body is nullptr");
+      return absl::UnavailableError("request body is nullptr");
     }
     return absl::OkStatus();
   }
 
-  return absl::InternalError(
+  if (response_code >= 400 && response_code < 500) {
+    return absl::InvalidArgumentError(base::StrCat(
+        {"HTTP error code: ", base::NumberToString(response_code)}));
+  }
+
+  return absl::UnavailableError(
       base::StrCat({"HTTP error code: ", base::NumberToString(response_code)}));
 }
 }  // namespace apps

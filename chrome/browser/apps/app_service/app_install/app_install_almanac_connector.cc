@@ -174,17 +174,25 @@ void AppInstallAlmanacConnector::OnAppInstallResponse(
       loader->NetError(), loader->ResponseInfo(), response_body.get());
   if (!error.ok()) {
     LOG(ERROR) << error.message();
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(
+        base::unexpected(error.code() == absl::StatusCode::kUnavailable
+                             ? Error::kConnectionFailure
+                             : Error::kBadRequest));
     return;
   }
 
   proto::AppInstallResponse response;
   if (!response.ParseFromString(*response_body)) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(Error::kConnectionFailure));
     return;
   }
 
-  std::move(callback).Run(ParseAppInstallResponseProto(response));
+  std::optional<AppInstallData> data = ParseAppInstallResponseProto(response);
+  if (!data) {
+    std::move(callback).Run(base::unexpected(Error::kConnectionFailure));
+    return;
+  }
+  std::move(callback).Run(base::ok(std::move(data).value()));
 }
 
 }  // namespace apps

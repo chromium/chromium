@@ -8,7 +8,7 @@ import './strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {Button} from 'chrome://resources/cros_components/button/button.js';
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {DialogArgs} from './app_install.mojom-webui.js';
@@ -24,8 +24,9 @@ enum DialogState {
   INSTALLING = 'installing',
   INSTALLED = 'installed',
   ALREADY_INSTALLED = 'already_installed',
-  NO_DATA = 'no_data',
-  FAILED_INSTALL = 'failed_install',
+  FAILED_INSTALL_ERROR = 'failed_install_error',
+  NO_APP_ERROR = 'no_app_error',
+  CONNECTION_ERROR = 'connection_error',
 }
 
 interface StateData {
@@ -34,14 +35,18 @@ interface StateData {
     labelId: string,
   };
   content?: {
-    disabled?: boolean,
+    hidden?: boolean,
   };
   errorMessage?: {
-    enabled?: boolean, textId: string,
+    visible?: boolean, textId: string,
   };
   actionButton: {
-    disabled?: boolean, labelId: string, handler: (event: MouseEvent) => void,
-    handleOnce?: boolean, iconIdQuery: string,
+    hidden?: boolean,
+    disabled?: boolean,
+    labelId?: string,
+    handler?: () => void,
+    handleOnce?: boolean,
+    iconIdQuery?: string,
   };
   cancelButton: {
     disabled?: boolean, labelId: string,
@@ -84,7 +89,7 @@ class AppInstallDialogElement extends HTMLElement {
         },
         actionButton: {
           labelId: 'install',
-          handler: (event: MouseEvent) => this.onInstallButtonClick(event),
+          handler: () => this.onInstallButtonClick(),
           handleOnce: true,
           iconIdQuery: '#action-icon-install',
         },
@@ -100,7 +105,6 @@ class AppInstallDialogElement extends HTMLElement {
         actionButton: {
           disabled: true,
           labelId: 'installing',
-          handler() {},
           iconIdQuery: '#action-icon-installing',
         },
         cancelButton: {
@@ -136,21 +140,14 @@ class AppInstallDialogElement extends HTMLElement {
           labelId: 'close',
         },
       },
-      [DialogState.NO_DATA]: {
+      [DialogState.FAILED_INSTALL_ERROR]: {
         title: {
           iconIdQuery: '#title-icon-error',
-          labelId: 'noAppDataTitle',
-        },
-        content: {
-          disabled: true,
-        },
-        errorMessage: {
-          enabled: true,
-          textId: 'noAppDataDescription',
+          labelId: 'failedInstall',
         },
         actionButton: {
           labelId: 'tryAgain',
-          handler: () => this.onTryAgainButtonClick(),
+          handler: () => this.onInstallButtonClick(),
           handleOnce: true,
           iconIdQuery: '#action-icon-try-again',
         },
@@ -158,14 +155,40 @@ class AppInstallDialogElement extends HTMLElement {
           labelId: 'cancel',
         },
       },
-      [DialogState.FAILED_INSTALL]: {
+      [DialogState.NO_APP_ERROR]: {
         title: {
           iconIdQuery: '#title-icon-error',
-          labelId: 'failedInstall',
+          labelId: 'noAppErrorTitle',
+        },
+        content: {
+          hidden: true,
+        },
+        errorMessage: {
+          visible: true,
+          textId: 'noAppErrorDescription',
+        },
+        actionButton: {
+          hidden: true,
+        },
+        cancelButton: {
+          labelId: 'close',
+        },
+      },
+      [DialogState.CONNECTION_ERROR]: {
+        title: {
+          iconIdQuery: '#title-icon-connection-error',
+          labelId: 'connectionErrorTitle',
+        },
+        content: {
+          hidden: true,
+        },
+        errorMessage: {
+          visible: true,
+          textId: 'connectionErrorDescription',
         },
         actionButton: {
           labelId: 'tryAgain',
-          handler: (event: MouseEvent) => this.onInstallButtonClick(event),
+          handler: () => this.onTryAgainButtonClick(),
           handleOnce: true,
           iconIdQuery: '#action-icon-try-again',
         },
@@ -184,8 +207,12 @@ class AppInstallDialogElement extends HTMLElement {
     try {
       this.dialogArgs = (await this.proxy.handler.getDialogArgs()).dialogArgs;
 
-      if (this.dialogArgs.noAppErrorActions) {
-        return DialogState.NO_DATA;
+      if (this.dialogArgs.noAppErrorArgs) {
+        return DialogState.NO_APP_ERROR;
+      }
+
+      if (this.dialogArgs.connectionErrorActions) {
+        return DialogState.CONNECTION_ERROR;
       }
 
       const appInfo = this.dialogArgs.appInfoArgs!.data;
@@ -226,7 +253,7 @@ class AppInstallDialogElement extends HTMLElement {
                                           DialogState.INSTALL;
     } catch (e) {
       console.error(`Unable to get dialog arguments . Error: ${e}.`);
-      return DialogState.NO_DATA;
+      return DialogState.NO_APP_ERROR;
     }
   }
 
@@ -249,8 +276,7 @@ class AppInstallDialogElement extends HTMLElement {
     this.proxy.handler.closeDialog();
   }
 
-  private async onInstallButtonClick(event: MouseEvent) {
-    assertInstanceof(event.target, Button);
+  private async onInstallButtonClick() {
     this.changeDialogState(DialogState.INSTALLING);
 
     // Keep the installing state shown for at least 2 seconds to give the
@@ -261,7 +287,8 @@ class AppInstallDialogElement extends HTMLElement {
     ]);
 
     this.changeDialogState(
-        install_result ? DialogState.INSTALLED : DialogState.FAILED_INSTALL);
+        install_result ? DialogState.INSTALLED :
+                         DialogState.FAILED_INSTALL_ERROR);
   }
 
   private async onOpenAppButtonClick() {
@@ -270,7 +297,7 @@ class AppInstallDialogElement extends HTMLElement {
   }
 
   private async onTryAgainButtonClick() {
-    this.dialogArgs!.noAppErrorActions!.tryAgain();
+    this.dialogArgs!.connectionErrorActions!.tryAgain();
     // TODO(b/333460441): Run the retry logic within the same dialog instead of
     // creating a new one.
     this.proxy.handler.closeDialog();
@@ -288,10 +315,10 @@ class AppInstallDialogElement extends HTMLElement {
         loadTimeData.getString(data.title.labelId);
 
     const contentCard = this.$<HTMLElement>('#content-card')!;
-    contentCard.style.display = data.content?.disabled ? 'none' : 'block';
+    contentCard.style.display = data.content?.hidden ? 'none' : 'block';
 
     const errorMessage = this.$<HTMLElement>('#error-message')!;
-    errorMessage.style.display = data.errorMessage?.enabled ? 'block' : 'none';
+    errorMessage.style.display = data.errorMessage?.visible ? 'block' : 'none';
     if (data.errorMessage) {
       errorMessage.textContent =
           loadTimeData.getString(data.errorMessage.textId);
@@ -299,17 +326,23 @@ class AppInstallDialogElement extends HTMLElement {
 
     const actionButton = this.$<Button>('.action-button')!;
     assert(actionButton);
+    actionButton.style.display = data.actionButton.hidden ? 'none' : 'block';
     actionButton.disabled = Boolean(data.actionButton.disabled);
-    actionButton.label = loadTimeData.getString(data.actionButton.labelId);
-    actionButton.addEventListener(
-        'click', data.actionButton.handler,
-        {once: Boolean(data.actionButton.handleOnce)});
-
+    if (data.actionButton.labelId) {
+      actionButton.label = loadTimeData.getString(data.actionButton.labelId);
+    }
+    if (data.actionButton.handler) {
+      actionButton.addEventListener(
+          'click', data.actionButton.handler,
+          {once: Boolean(data.actionButton.handleOnce)});
+    }
     for (const icon of this.$$('.action-icon')) {
       icon.setAttribute('slot', '');
     }
-    this.$<HTMLElement>(data.actionButton.iconIdQuery)
-        .setAttribute('slot', 'leading-icon');
+    if (data.actionButton.iconIdQuery) {
+      this.$<HTMLElement>(data.actionButton.iconIdQuery)
+          .setAttribute('slot', 'leading-icon');
+    }
 
     const cancelButton = this.$<Button>('.cancel-button');
     assert(cancelButton);
