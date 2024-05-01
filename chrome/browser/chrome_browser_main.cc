@@ -1072,11 +1072,6 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // This is needed to enable ETW exporting. This is only relevant for the
-  // browser process, as other processes enable it separately.
-  base::trace_event::TraceEventETWExport::EnableETWExport();
-#endif
 #endif  // BUILDFLAG(IS_WIN)
 
   // Reset the command line in the crash report details, since we may have
