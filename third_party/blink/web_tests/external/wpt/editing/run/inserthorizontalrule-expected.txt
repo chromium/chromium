@@ -61,7 +61,7 @@ Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["inserthorizontalrule",""]] "<ruby>foo<rt>bar[baz]quz</rt></ruby>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ruby>foo<rt>bar</rt></ruby><hr><ruby><rt>quz</rt></ruby>" but got "<ruby>foo<rt>bar<hr>quz</rt></ruby>"
 [FAIL] [["inserthorizontalrule",""]] "<ruby>foo<rp>bar[baz]quz</rp><rt>qoz</rt><rp>qiz</rp></ruby>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ruby>foo<rp>bar</rp></ruby><hr><ruby><rp>quz</rp><rt>qoz</rt><rp>qiz</rp></ruby>" but got "<ruby>foo<hr><rp>barbazquz</rp><rt>qoz</rt><rp>qiz</rp></ruby>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ruby>foo<rp>bar</rp></ruby><hr><ruby><rp>quz</rp><rt>qoz</rt><rp>qiz</rp></ruby>" but got "<ruby>foo<rp>barbazquz</rp><rt><hr>qoz</rt><rp>qiz</rp></ruby>"
 [FAIL] [["inserthorizontalrule",""]] "<samp>foo[bar]baz</samp>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<samp>foo</samp><hr><samp>baz</samp>" but got "<samp>foo<hr>baz</samp>"
 [FAIL] [["inserthorizontalrule",""]] "<small>foo[bar]baz</small>" compare innerHTML

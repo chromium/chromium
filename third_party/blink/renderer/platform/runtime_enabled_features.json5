@@ -3336,6 +3336,7 @@
     {
       // crbug.com/324111880
       name: "RubyLineBreakable",
+      status: "test",
     },
     {
       // Runs a microtask checkpoint before creating custom elements in

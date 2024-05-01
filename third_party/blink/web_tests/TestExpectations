@@ -2370,7 +2370,6 @@ crbug.com/1024156 external/wpt/css/css-pseudo/active-selection-027.html [ Failur
 
 crbug.com/27659 external/wpt/css/css-ruby/block-ruby-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/empty-ruby-base-container.html [ Failure ]
-crbug.com/27659 external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/improperly-contained-annotation-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/rb-display-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/rt-display-001.html [ Failure ]
@@ -2381,7 +2380,6 @@ crbug.com/27659 external/wpt/css/css-ruby/ruby-align-002a.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-annotation-pairing-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-base-container-abs.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-base-container-float.html [ Failure ]
-crbug.com/27659 external/wpt/css/css-ruby/ruby-base-different-size.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-bidi-002.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-bidi-003.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-box-generation-001.html [ Failure ]
@@ -7207,10 +7205,8 @@ crbug.com/332068449 [ Mac ] external/wpt/focus/cross-origin-ancestor-activeeleme
 crbug.com/330761492 external/wpt/html/editing/the-hidden-attribute/beforematch-scroll-to-text-fragment.html [ Failure Pass ]
 
 # RubyLineBreakable
-crbug.com/324111880 virtual/ruby-lb/fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
-# RubyLineBreakable; Passing in the virtual suite though failing in non-virtual
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Pass ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-base-different-size.html [ Pass ]
+crbug.com/324111880 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
+crbug.com/324111880 fast/writing-mode/Kusa-Makura-background-canvas.html [ Crash Pass ]
 
 # secure-payment-confirmation tests failed due to set_spc_transaction_mode not implemented
 crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure ]
