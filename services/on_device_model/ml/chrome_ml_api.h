@@ -316,7 +316,18 @@ struct ChromeMLAPI {
 
   // Returns the GpuConfig in `config`. Returns true on success, false if there
   // was an error calculating it.
+  // Deprecated: Use QueryGPUAdapter insteed.
   bool (*GetGpuConfig)(GpuConfig& config);
+
+  // Query the GPU adapter used.
+  // Synchronously calls `adapter_callback_fn` with a non-owning pointer to the
+  // adapter. Returns false if there was an error getting an adapter at all; the
+  // callback is not called. It is not safe to save reference to this adapter as
+  // it is allocated in another dll. Use of the adapter must only be scoped to
+  // the duration of `adapter_callback_fn`.
+  bool (*QueryGPUAdapter)(void (*adapter_callback_fn)(WGPUAdapter adapter,
+                                                      void* userdata),
+                          void* userdata);
 
   // Same as SetFatalErrorFn(), but for fatal errors that occur outside of the
   // gpu.
