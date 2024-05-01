@@ -33,7 +33,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
     private final String mFullUrl;
     private final String mTitle;
     private CookieControlsBridge mBridge;
-    private PageInfoTrackingProtectionSettings mSubPage;
+    private PageInfoTrackingProtectionLaunchSettings mSubPage;
 
     private int mAllowedCookies;
     private int mBlockedCookies;
@@ -99,10 +99,11 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         assert mSubPage == null;
         if (!canCreateSubpageFragment()) return null;
 
-        mSubPage = new PageInfoTrackingProtectionSettings();
+        mSubPage = new PageInfoTrackingProtectionLaunchSettings();
         View view = addSubpageFragment(mSubPage);
-        PageInfoTrackingProtectionSettings.PageInfoTrackingProtectionViewParams params =
-                new PageInfoTrackingProtectionSettings.PageInfoTrackingProtectionViewParams();
+        PageInfoTrackingProtectionLaunchSettings.PageInfoTrackingProtectionLaunchViewParams params =
+                new PageInfoTrackingProtectionLaunchSettings
+                        .PageInfoTrackingProtectionLaunchViewParams();
         params.thirdPartyCookieBlockingEnabled = getDelegate().cookieControlsShown();
         params.onThirdPartyCookieToggleChanged = this::onThirdPartyCookieToggleChanged;
         params.onClearCallback = this::onClearCookiesClicked;
