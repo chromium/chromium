@@ -9922,12 +9922,11 @@ TEST_P(QuicSessionPoolTest, NoRetransmittableOnWireTimeout) {
   base::RunLoop().RunUntilIdle();
 
   // Verify the ping alarm is set, but not with the default timeout.
-  const quic::QuicAlarm* const ping_alarm =
+  const quic::QuicAlarm& ping_alarm =
       quic::test::QuicConnectionPeer::GetPingAlarm(session->connection());
-  ASSERT_TRUE(ping_alarm);
-  ASSERT_TRUE(ping_alarm->IsSet());
+  ASSERT_TRUE(ping_alarm.IsSet());
   quic::QuicTime::Delta delay =
-      ping_alarm->deadline() - context_.clock()->ApproximateNow();
+      ping_alarm.deadline() - context_.clock()->ApproximateNow();
   EXPECT_NE(kDefaultRetransmittableOnWireTimeout.InMilliseconds(),
             delay.ToMilliseconds());
 
@@ -10168,12 +10167,11 @@ TEST_P(QuicSessionPoolTest,
   base::RunLoop().RunUntilIdle();
 
   // Verify the ping alarm is set, but not with the default timeout.
-  const quic::QuicAlarm* const ping_alarm =
+  const quic::QuicAlarm& ping_alarm =
       quic::test::QuicConnectionPeer::GetPingAlarm(session->connection());
-  ASSERT_TRUE(ping_alarm);
-  ASSERT_TRUE(ping_alarm->IsSet());
+  ASSERT_TRUE(ping_alarm.IsSet());
   quic::QuicTime::Delta delay =
-      ping_alarm->deadline() - context_.clock()->ApproximateNow();
+      ping_alarm.deadline() - context_.clock()->ApproximateNow();
   EXPECT_NE(kDefaultRetransmittableOnWireTimeout.InMilliseconds(),
             delay.ToMilliseconds());
 
