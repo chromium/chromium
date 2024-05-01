@@ -36,7 +36,8 @@ class H265Decoder : public VideoDecoder {
                                        std::vector<uint8_t>& y_plane,
                                        std::vector<uint8_t>& u_plane,
                                        std::vector<uint8_t>& v_plane,
-                                       gfx::Size& size) override;
+                                       gfx::Size& size,
+                                       BitDepth& bit_depth) override;
 
  private:
   H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,

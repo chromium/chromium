@@ -187,13 +187,15 @@ void VideoDecoder::HandleDynamicResolutionChange(
   v4l2_ioctl_->StreamOn(CAPTURE_queue_->type());
 }
 
-void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
-                                std::vector<uint8_t>& dest_u,
-                                std::vector<uint8_t>& dest_v,
-                                const gfx::Size& dest_size,
-                                const MmappedBuffer::MmappedPlanes& planes,
-                                const gfx::Size& src_size,
-                                uint32_t fourcc) {
+// static
+VideoDecoder::BitDepth VideoDecoder::ConvertToYUV(
+    std::vector<uint8_t>& dest_y,
+    std::vector<uint8_t>& dest_u,
+    std::vector<uint8_t>& dest_v,
+    const gfx::Size& dest_size,
+    const MmappedBuffer::MmappedPlanes& planes,
+    const gfx::Size& src_size,
+    uint32_t fourcc) {
   const gfx::Size half_dest_size((dest_size.width() + 1) / 2,
                                  (dest_size.height() + 1) / 2);
   const uint32_t dest_full_stride = dest_size.width();
@@ -214,6 +216,7 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
                        &dest_y[0], dest_full_stride, &dest_u[0],
                        dest_half_stride, &dest_v[0], dest_half_stride,
                        dest_size.width(), dest_size.height());
+    return BitDepth::Depth8;
   } else if (fourcc == V4L2_PIX_FMT_MM21) {
     CHECK_EQ(planes.size(), 2u)
         << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
@@ -224,6 +227,7 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
                        &dest_y[0], dest_full_stride, &dest_u[0],
                        dest_half_stride, &dest_v[0], dest_half_stride,
                        dest_size.width(), dest_size.height());
+    return BitDepth::Depth8;
   } else if (fourcc == V4L2_PIX_FMT_MT2T) {
     CHECK_EQ(planes.size(), 2u)
         << "MT2T should have exactly 2 planes but CAPTURE queue does not.";
@@ -252,6 +256,7 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
         reinterpret_cast<uint16_t*>(&dest_v[0]), dest_half_stride,
         dest_size.width(), dest_size.height());
 
+    return BitDepth::Depth16;
   } else {
     LOG(FATAL) << "Unsupported CAPTURE queue format";
   }
@@ -260,7 +265,8 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
 std::vector<uint8_t> VideoDecoder::ConvertYUVToPNG(uint8_t* y_plane,
                                                    uint8_t* u_plane,
                                                    uint8_t* v_plane,
-                                                   const gfx::Size& size) {
+                                                   const gfx::Size& size,
+                                                   BitDepth bit_depth) {
   const size_t argb_stride = size.width() * 4;
   auto argb_data = std::make_unique<uint8_t[]>(argb_stride * size.height());
 
@@ -268,14 +274,27 @@ std::vector<uint8_t> VideoDecoder::ConvertYUVToPNG(uint8_t* y_plane,
   u_plane_padded_width = v_plane_padded_width =
       base::bits::AlignUpDeprecatedDoNotUse(size.width(), 2) / 2;
 
-  // Note that we use J420ToARGB instead of I420ToARGB so that the
-  // kYuvJPEGConstants YUV-to-RGB conversion matrix is used.
-  const int convert_to_argb_result = libyuv::J420ToARGB(
-      y_plane, size.width(), u_plane, u_plane_padded_width, v_plane,
-      v_plane_padded_width, argb_data.get(),
-      base::checked_cast<int>(argb_stride), size.width(), size.height());
+  if (bit_depth == BitDepth::Depth8) {
+    // Note that we use J420ToARGB instead of I420ToARGB so that the
+    // kYuvJPEGConstants YUV-to-RGB conversion matrix is used.
+    const int convert_to_argb_result = libyuv::J420ToARGB(
+        y_plane, size.width(), u_plane, u_plane_padded_width, v_plane,
+        v_plane_padded_width, argb_data.get(),
+        base::checked_cast<int>(argb_stride), size.width(), size.height());
 
-  LOG_ASSERT(convert_to_argb_result == 0) << "Failed to convert to ARGB";
+    LOG_ASSERT(convert_to_argb_result == 0) << "Failed to convert to ARGB";
+  } else if (bit_depth == BitDepth::Depth16) {
+    const int convert_to_argb_result = libyuv::I010ToARGB(
+        reinterpret_cast<const uint16_t*>(y_plane), size.width(),
+        reinterpret_cast<const uint16_t*>(u_plane), u_plane_padded_width,
+        reinterpret_cast<const uint16_t*>(v_plane), v_plane_padded_width,
+        argb_data.get(), base::checked_cast<int>(argb_stride), size.width(),
+        size.height());
+
+    LOG_ASSERT(convert_to_argb_result == 0) << "Failed to convert to ARGB";
+  } else {
+    LOG(FATAL) << bit_depth << " is not a valid number of bits / pixel";
+  }
 
   std::vector<uint8_t> image_buffer;
   const bool encode_to_png_result = gfx::PNGCodec::Encode(

@@ -416,7 +416,8 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
                                                  std::vector<uint8_t>& y_plane,
                                                  std::vector<uint8_t>& u_plane,
                                                  std::vector<uint8_t>& v_plane,
-                                                 gfx::Size& size) {
+                                                 gfx::Size& size,
+                                                 BitDepth& bit_depth) {
   Vp9FrameHeader frame_hdr{};
 
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
@@ -488,9 +489,10 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(const int frame_number,
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
 
-  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
-               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
-               CAPTURE_queue_->fourcc());
+  bit_depth =
+      ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+                   buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
+                   CAPTURE_queue_->fourcc());
 
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
       frame_hdr.refresh_frame_flags, CAPTURE_queue_->GetBuffer(buffer_id),

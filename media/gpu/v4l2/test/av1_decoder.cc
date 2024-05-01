@@ -953,7 +953,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
                                                  std::vector<uint8_t>& y_plane,
                                                  std::vector<uint8_t>& u_plane,
                                                  std::vector<uint8_t>& v_plane,
-                                                 gfx::Size& size) {
+                                                 gfx::Size& size,
+                                                 BitDepth& bit_depth) {
   libgav1::RefCountedBufferPtr current_frame;
   const ParsingResult parser_res = ReadNextFrame(current_frame);
 
@@ -996,9 +997,10 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
     scoped_refptr<MmappedBuffer> repeated_frame_buffer =
         ref_frames_[current_frame_header.frame_to_show];
 
-    ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
-                 repeated_frame_buffer->mmapped_planes(),
-                 CAPTURE_queue_->resolution(), CAPTURE_queue_->fourcc());
+    bit_depth =
+        ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+                     repeated_frame_buffer->mmapped_planes(),
+                     CAPTURE_queue_->resolution(), CAPTURE_queue_->fourcc());
 
     // Repeated frames normally don't need to update reference frames. But in
     // this special case when the repeated frame is pointing to a key frame, all
@@ -1083,9 +1085,10 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(const int frame_number,
   v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id);
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
-  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
-               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
-               CAPTURE_queue_->fourcc());
+  bit_depth =
+      ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+                   buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
+                   CAPTURE_queue_->fourcc());
 
   const std::set<int> reusable_buffer_ids = RefreshReferenceSlots(
       current_frame_header, current_frame, CAPTURE_queue_->GetBuffer(buffer_id),
