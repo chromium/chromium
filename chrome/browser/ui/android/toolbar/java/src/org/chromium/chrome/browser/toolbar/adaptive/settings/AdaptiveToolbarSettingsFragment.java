@@ -9,9 +9,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
@@ -24,8 +24,8 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
 
-/** Fragment that allows the user to configure toolbar shorcut preferences. */
-public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
+/** Fragment that allows the user to configure toolbar shortcut preferences. */
+public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment {
     /** The key for the switch taggle on the setting page. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final String PREF_TOOLBAR_SHORTCUT_SWITCH = "toolbar_shortcut_switch";
@@ -60,9 +60,10 @@ public class AdaptiveToolbarSettingsFragment extends PreferenceFragmentCompat {
         mRadioButtonGroup.setCanUseAddToBookmarks(
                 AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled());
         mRadioButtonGroup.setCanUseReadAloud(
-                AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled());
+                AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(getProfile()));
         mRadioButtonGroup.setStatePredictor(
                 new AdaptiveToolbarStatePredictor(
+                        getProfile(),
                         new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
         mRadioButtonGroup.setOnPreferenceChangeListener(
                 (preference, newValue) -> {

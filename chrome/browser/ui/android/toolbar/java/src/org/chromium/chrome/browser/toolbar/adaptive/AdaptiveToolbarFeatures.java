@@ -12,7 +12,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 
 import java.util.HashMap;
@@ -70,9 +69,10 @@ public class AdaptiveToolbarFeatures {
     private static Boolean sShowUiOnlyAfterReadyForTesting;
     private static HashMap<Integer, Boolean> sActionChipOverridesForTesting;
     private static HashMap<Integer, Boolean> sAlternativeColorOverridesForTesting;
-    private static Profile sProfileForTesting;
 
-    /** @return Whether the button variant is a dynamic action. */
+    /**
+     * @return Whether the button variant is a dynamic action.
+     */
     public static boolean isDynamicAction(@AdaptiveToolbarButtonVariant int variant) {
         switch (variant) {
             case AdaptiveToolbarButtonVariant.UNKNOWN:
@@ -222,14 +222,8 @@ public class AdaptiveToolbarFeatures {
                 false);
     }
 
-    // TODO: This should use a passed in reference to a Profile rather than
-    // getLastUsedRegularProfile, but for starters we use it, just like in
-    // AdaptiveStatePredictor#readFromSegmentationPlatform.
-    public static boolean isAdaptiveToolbarReadAloudEnabled() {
-        return ReadAloudFeatures.isAllowed(
-                sProfileForTesting != null
-                        ? sProfileForTesting
-                        : ProfileManager.getLastUsedRegularProfile());
+    public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {
+        return ReadAloudFeatures.isAllowed(profile);
     }
 
     /**
@@ -353,12 +347,6 @@ public class AdaptiveToolbarFeatures {
         }
         sAlternativeColorOverridesForTesting.put(buttonVariant, useAlternativeColor);
         ResettersForTesting.register(() -> sAlternativeColorOverridesForTesting = null);
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static void setProfile(Profile profile) {
-        sProfileForTesting = profile;
-        ResettersForTesting.register(() -> sProfileForTesting = null);
     }
 
     public static void clearParsedParamsForTesting() {

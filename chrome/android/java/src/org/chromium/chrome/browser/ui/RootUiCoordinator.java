@@ -1389,6 +1389,7 @@ public class RootUiCoordinator
                             mActivity,
                             new SettingsLauncherImpl(),
                             mActivityLifecycleDispatcher,
+                            mProfileSupplier,
                             new AdaptiveButtonActionMenuCoordinator(),
                             mWindowAndroid,
                             ChromeSharedPreferences.getInstance());

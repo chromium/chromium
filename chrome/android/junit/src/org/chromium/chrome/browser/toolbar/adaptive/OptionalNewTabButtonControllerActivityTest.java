@@ -105,6 +105,7 @@ public class OptionalNewTabButtonControllerActivityTest {
     public void setUp() {
         Profile originalProfile = Mockito.mock(Profile.class);
         Profile incognitoProfile = Mockito.mock(Profile.class);
+        when(originalProfile.getOriginalProfile()).thenReturn(originalProfile);
         when(incognitoProfile.isOffTheRecord()).thenReturn(true);
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
@@ -140,7 +141,7 @@ public class OptionalNewTabButtonControllerActivityTest {
                 activity -> {
                     mAdaptiveButtonController =
                             getAdaptiveButton(getOptionalButtonController(activity));
-                    mAdaptiveButtonController.onFinishNativeInitialization();
+                    mAdaptiveButtonController.setProfile(originalProfile);
                 });
     }
 

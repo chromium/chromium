@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor.UiState;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -37,6 +38,7 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 public class AdaptiveToolbarStatePredictorTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
+    @Mock private Profile mProfile;
     @Mock private AndroidPermissionDelegate mAndroidPermissionDelegate;
 
     @Before
@@ -346,7 +348,7 @@ public class AdaptiveToolbarStatePredictorTest {
             Integer manualOverride,
             boolean isReady,
             Integer segmentationResult) {
-        return new AdaptiveToolbarStatePredictor(mAndroidPermissionDelegate) {
+        return new AdaptiveToolbarStatePredictor(mProfile, mAndroidPermissionDelegate) {
             @Override
             int readManualOverrideFromPrefs() {
                 return manualOverride;

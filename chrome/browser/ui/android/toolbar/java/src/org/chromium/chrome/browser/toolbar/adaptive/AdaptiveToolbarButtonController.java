@@ -13,8 +13,10 @@ import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
@@ -22,9 +24,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
-import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -48,7 +51,6 @@ import java.util.Objects;
 public class AdaptiveToolbarButtonController
         implements ButtonDataProvider,
                 ButtonDataObserver,
-                NativeInitObserver,
                 SharedPreferences.OnSharedPreferenceChangeListener,
                 ConfigurationChangedObserver {
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
@@ -70,9 +72,12 @@ public class AdaptiveToolbarButtonController
     private boolean mIsSessionVariantRecorded;
 
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private final AdaptiveToolbarStatePredictor mAdaptiveToolbarStatePredictor;
+    private final AndroidPermissionDelegate mAndroidPermissionDelegate;
     private final SharedPreferencesManager mSharedPreferencesManager;
+    private final CallbackController mCallbackController;
+    private final Callback<AdaptiveToolbarStatePredictor.UiState> mUiStateCallback;
 
+    @Nullable private AdaptiveToolbarStatePredictor mAdaptiveToolbarStatePredictor;
     @Nullable private View.OnLongClickListener mMenuHandler;
     private final Callback<Integer> mMenuClickListener;
     private final AdaptiveButtonActionMenuCoordinator mMenuCoordinator;
@@ -88,6 +93,7 @@ public class AdaptiveToolbarButtonController
      * @param context used in {@link SettingsLauncher}
      * @param settingsLauncher opens adaptive button settings
      * @param lifecycleDispatcher notifies about native initialization
+     * @param profileSupplier Allows access to the {@link Profile} for the current session.
      */
     // Suppress to observe SharedPreferences, which is discouraged; use another messaging channel
     // instead.
@@ -96,6 +102,7 @@ public class AdaptiveToolbarButtonController
             Context context,
             SettingsLauncher settingsLauncher,
             ActivityLifecycleDispatcher lifecycleDispatcher,
+            ObservableSupplier<Profile> profileSupplier,
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
             AndroidPermissionDelegate androidPermissionDelegate,
             SharedPreferencesManager sharedPreferencesManager) {
@@ -111,12 +118,23 @@ public class AdaptiveToolbarButtonController
                 };
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
-        mAdaptiveToolbarStatePredictor =
-                new AdaptiveToolbarStatePredictor(androidPermissionDelegate);
         mMenuCoordinator = menuCoordinator;
         mSharedPreferencesManager = sharedPreferencesManager;
-        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
+        mAndroidPermissionDelegate = androidPermissionDelegate;
+        mCallbackController = new CallbackController();
+        mUiStateCallback =
+                uiState -> {
+                    mSessionButtonVariant =
+                            uiState.canShowUi
+                                    ? uiState.toolbarButtonState
+                                    : AdaptiveToolbarButtonVariant.UNKNOWN;
+                    setSingleProvider(mSessionButtonVariant);
+                    notifyObservers(uiState.canShowUi);
+                };
+
+        new OneShotCallback<>(
+                profileSupplier, mCallbackController.makeCancelable(this::setProfile));
     }
 
     /**
@@ -125,8 +143,8 @@ public class AdaptiveToolbarButtonController
      *
      * @param variant The button variant of {@code buttonProvider}.
      * @param buttonProvider The provider implementing the button variant. {@code
-     *         AdaptiveToolbarButtonController} takes ownership of the provider and will {@link
-     *         #destroy()} it, once the provider is no longer needed.
+     *     AdaptiveToolbarButtonController} takes ownership of the provider and will {@link
+     *     #destroy()} it, once the provider is no longer needed.
      */
     public void addButtonVariant(
             @AdaptiveToolbarButtonVariant int variant, ButtonDataProvider buttonProvider) {
@@ -147,6 +165,7 @@ public class AdaptiveToolbarButtonController
     public void destroy() {
         setSingleProvider(AdaptiveToolbarButtonVariant.UNKNOWN);
         mObservers.clear();
+        mCallbackController.destroy();
         ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         mLifecycleDispatcher.unregister(this);
 
@@ -251,27 +270,22 @@ public class AdaptiveToolbarButtonController
         notifyObservers(canShowHint);
     }
 
-    @Override
-    public void onFinishNativeInitialization() {
-        if (AdaptiveToolbarFeatures.isCustomizationEnabled()) {
-            mAdaptiveToolbarStatePredictor.recomputeUiState(
-                    uiState -> {
-                        mSessionButtonVariant =
-                                uiState.canShowUi
-                                        ? uiState.toolbarButtonState
-                                        : AdaptiveToolbarButtonVariant.UNKNOWN;
-                        setSingleProvider(mSessionButtonVariant);
-                        notifyObservers(uiState.canShowUi);
-                    });
-            AdaptiveToolbarStats.recordSelectedSegmentFromSegmentationPlatformAsync(
-                    mAdaptiveToolbarStatePredictor);
-            // We need the menu handler only if the customization feature is on.
-            if (mMenuHandler != null) return;
-            mMenuHandler = createMenuHandler();
-            if (mMenuHandler == null) return;
-        } else {
-            return;
-        }
+    @VisibleForTesting
+    void setProfile(Profile profile) {
+        assert mAdaptiveToolbarStatePredictor == null;
+        profile = profile.getOriginalProfile();
+        mAdaptiveToolbarStatePredictor =
+                new AdaptiveToolbarStatePredictor(profile, mAndroidPermissionDelegate);
+        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
+        if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) return;
+        mAdaptiveToolbarStatePredictor.recomputeUiState(mUiStateCallback);
+        AdaptiveToolbarStats.recordSelectedSegmentFromSegmentationPlatformAsync(
+                mAdaptiveToolbarStatePredictor);
+        // We need the menu handler only if the customization feature is on.
+        if (mMenuHandler != null) return;
+        mMenuHandler = createMenuHandler();
+        if (mMenuHandler == null) return;
 
         // Clearing mOriginalButtonSpec forces a refresh of mButtonData on the next get()
         mOriginalButtonSpec = null;
@@ -296,18 +310,11 @@ public class AdaptiveToolbarButtonController
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPrefs, @Nullable String key) {
+        assert mAdaptiveToolbarStatePredictor != null;
         if (ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS.equals(key)
                 || ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED.equals(key)) {
             assert AdaptiveToolbarFeatures.isCustomizationEnabled();
-            mAdaptiveToolbarStatePredictor.recomputeUiState(
-                    uiState -> {
-                        mSessionButtonVariant =
-                                uiState.canShowUi
-                                        ? uiState.toolbarButtonState
-                                        : AdaptiveToolbarButtonVariant.UNKNOWN;
-                        setSingleProvider(mSessionButtonVariant);
-                        notifyObservers(uiState.canShowUi);
-                    });
+            mAdaptiveToolbarStatePredictor.recomputeUiState(mUiStateCallback);
         }
     }
 

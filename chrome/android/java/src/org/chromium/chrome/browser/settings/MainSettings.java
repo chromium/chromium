@@ -245,7 +245,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             templateUrlService.load();
         }
 
-        new AdaptiveToolbarStatePredictor(null)
+        new AdaptiveToolbarStatePredictor(getProfile(), null)
                 .recomputeUiState(
                         uiState -> {
                             // We don't show the toolbar shortcut settings page if disabled from

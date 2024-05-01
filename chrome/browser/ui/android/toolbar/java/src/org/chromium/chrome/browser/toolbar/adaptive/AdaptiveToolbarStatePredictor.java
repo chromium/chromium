@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
@@ -29,6 +30,7 @@ public class AdaptiveToolbarStatePredictor {
 
     private static Integer sToolbarStateForTesting;
 
+    @NonNull private final Profile mProfile;
     @Nullable private final AndroidPermissionDelegate mAndroidPermissionDelegate;
 
     /** The result of the predictor. Contains the UI states specific to the toolbar button. */
@@ -61,10 +63,12 @@ public class AdaptiveToolbarStatePredictor {
     /**
      * Constructs {@code AdaptiveToolbarStatePredictor}
      *
+     * @param profile The {@link Profile} associated with the toolbar state.
      * @param androidPermissionDelegate used for determining if voice search can be used
      */
     public AdaptiveToolbarStatePredictor(
-            @Nullable AndroidPermissionDelegate androidPermissionDelegate) {
+            Profile profile, @Nullable AndroidPermissionDelegate androidPermissionDelegate) {
+        mProfile = profile;
         mAndroidPermissionDelegate = androidPermissionDelegate;
     }
 
@@ -207,9 +211,8 @@ public class AdaptiveToolbarStatePredictor {
             return;
         }
 
-        // TODO(shaktisahu): Try decoupling profile from this class.
         AdaptiveToolbarBridge.getSessionVariantButton(
-                ProfileManager.getLastUsedRegularProfile(), result -> callback.onResult(result));
+                mProfile, result -> callback.onResult(result));
     }
 
     /**
@@ -235,7 +238,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled();
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
-                return AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled();
+                return AdaptiveToolbarFeatures.isAdaptiveToolbarReadAloudEnabled(mProfile);
             default:
                 return true;
         }

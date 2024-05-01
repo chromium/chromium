@@ -38,6 +38,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
@@ -69,10 +71,12 @@ public class AdaptiveToolbarButtonControllerTest {
     @Mock private ButtonDataProvider mNewTabButtonController;
     @Mock private ButtonDataProvider mPriceTrackingButtonController;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private Configuration mConfiguration;
 
     private ButtonDataImpl mButtonData;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
@@ -92,6 +96,8 @@ public class AdaptiveToolbarButtonControllerTest {
                         /* tooltipTextResId= */ Resources.ID_NULL,
                         /* showHoverHighlight= */ false);
         mConfiguration.screenWidthDp = 420;
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
+        mProfileSupplier = new ObservableSupplierImpl<>();
     }
 
     @After
@@ -115,7 +121,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
         adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
         Assert.assertEquals(
@@ -137,7 +143,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
         adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
         Assert.assertEquals(
@@ -159,7 +165,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
         adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
         Assert.assertEquals(
@@ -181,7 +187,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
         adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
         Assert.assertEquals(
@@ -228,12 +234,13 @@ public class AdaptiveToolbarButtonControllerTest {
                         activity,
                         settingsLauncher,
                         mActivityLifecycleDispatcher,
+                        mProfileSupplier,
                         menuCoordinator,
                         mAndroidPermissionDelegate,
                         ChromeSharedPreferences.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         mButtonData.setCanShow(true);
         mButtonData.setEnabled(true);
@@ -280,6 +287,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         activity,
                         settingsLauncher,
                         mActivityLifecycleDispatcher,
+                        mProfileSupplier,
                         menuCoordinator,
                         mAndroidPermissionDelegate,
                         ChromeSharedPreferences.getInstance());
@@ -287,7 +295,7 @@ public class AdaptiveToolbarButtonControllerTest {
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
         adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         mButtonData.setCanShow(true);
         mButtonData.setEnabled(true);
@@ -333,7 +341,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
         adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
         Assert.assertEquals(
@@ -361,7 +369,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
         adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
         Assert.assertEquals(
@@ -390,7 +398,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
         adaptiveToolbarButtonController.addObserver(observer);
-        adaptiveToolbarButtonController.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
         Assert.assertEquals(
@@ -441,6 +449,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mockActivity,
                         mock(SettingsLauncher.class),
                         mActivityLifecycleDispatcher,
+                        mProfileSupplier,
                         mock(AdaptiveButtonActionMenuCoordinator.class),
                         mAndroidPermissionDelegate,
                         ChromeSharedPreferences.getInstance());
