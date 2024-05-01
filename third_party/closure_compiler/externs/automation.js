@@ -325,6 +325,7 @@ chrome.automation.RoleType = {
   SEARCH: 'search',
   SEARCH_BOX: 'searchBox',
   SECTION: 'section',
+  SECTION_WITHOUT_NAME: 'sectionWithoutName',
   SLIDER: 'slider',
   SPIN_BUTTON: 'spinButton',
   SPLITTER: 'splitter',

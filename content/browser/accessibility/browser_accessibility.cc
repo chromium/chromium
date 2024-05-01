@@ -1720,6 +1720,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kSearchBox:
       return content_client->GetLocalizedString(IDS_AX_ROLE_SEARCH_BOX);
     case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kSectionWithoutName:
       // While there is an IDS_AX_ROLE_SECTION, no one seems to be using it.
       return {};
     case ax::mojom::Role::kSlider:

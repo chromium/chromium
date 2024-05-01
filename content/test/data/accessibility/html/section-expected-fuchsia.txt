@@ -2,8 +2,8 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
 ++++++UNKNOWN
-++++++++STATIC_TEXT label='An unnamed section element gets the section role.'
-++++++++++UNKNOWN label='An unnamed section element gets the section role.'
+++++++++STATIC_TEXT label='An unnamed section element gets the generic role.'
+++++++++++UNKNOWN label='An unnamed section element gets the generic role.'
 ++++++UNKNOWN label='name'
 ++++++++STATIC_TEXT label='Named section element #1 gets the region role'
 ++++++++++UNKNOWN label='Named section element #1 gets the region role'

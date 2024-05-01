@@ -326,6 +326,7 @@
     search,
     searchBox,
     section,
+    sectionWithoutName,
     slider,
     spinButton,
     splitter,

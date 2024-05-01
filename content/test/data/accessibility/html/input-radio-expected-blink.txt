@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++section
+++++++sectionWithoutName
 ++++++++radioButton inputType='radio' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton
 ++++++++staticText name='Radio1'
 ++++++++++inlineTextBox name='Radio1'
@@ -10,14 +10,14 @@ rootWebArea
 ++++++++radioButton inputType='radio' setSize=2 posInSet=2 checkedState=false radioGroupIds=radioButton
 ++++++++staticText name='Radio2'
 ++++++++++inlineTextBox name='Radio2'
-++++++section
+++++++sectionWithoutName
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio3' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton
 ++++++++++staticText ignored name='Radio3'
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio4' setSize=2 posInSet=2 checkedState=true radioGroupIds=radioButton,radioButton
 ++++++++++staticText ignored name='Radio4'
-++++++section
+++++++sectionWithoutName
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio5' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton
 ++++++++++staticText ignored name='Radio5'

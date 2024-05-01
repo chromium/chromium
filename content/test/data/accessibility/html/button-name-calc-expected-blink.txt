@@ -34,7 +34,7 @@ rootWebArea
 ++++++button name='Outer grandchild'
 ++++++++staticText name='Outer'
 ++++++++++inlineTextBox name='Outer'
-++++++++section
+++++++++sectionWithoutName
 ++++++++++genericContainer
 ++++++++++++staticText name='grandchild'
 ++++++++++++++inlineTextBox name='grandchild'

@@ -13,7 +13,7 @@ rootWebArea
 ++++++++++staticText ignored invisible name='<newline>    '
 ++++++++++paragraph ignored invisible
 ++++++++++staticText ignored invisible name='<newline>  '
-++++++section
+++++++sectionWithoutName
 ++++++++details
 ++++++++++genericContainer ignored
 ++++++++++++disclosureTriangleGrouped name='materials' setSize=3 posInSet=1

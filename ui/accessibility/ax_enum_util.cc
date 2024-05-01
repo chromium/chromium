@@ -486,6 +486,8 @@ const char* ToString(ax::mojom::Role role) {
       return "rubyAnnotation";
     case ax::mojom::Role::kSection:
       return "section";
+    case ax::mojom::Role::kSectionWithoutName:
+      return "sectionWithoutName";
     case ax::mojom::Role::kStrong:
       return "strong";
     case ax::mojom::Role::kSubscript:
@@ -914,6 +916,8 @@ ax::mojom::Role StringToRole(const std::string& role) {
     return ax::mojom::Role::kRubyAnnotation;
   } else if (role == "kSection") {
     return ax::mojom::Role::kSection;
+  } else if (role == "kSectionWithoutName") {
+    return ax::mojom::Role::kSectionWithoutName;
   } else if (role == "kStrong") {
     return ax::mojom::Role::kStrong;
   } else if (role == "kSubscript") {

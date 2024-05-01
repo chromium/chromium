@@ -6,7 +6,7 @@ rootWebArea
 ++++++++++paragraph
 ++++++++++++staticText name='Header inside article.'
 ++++++++++++++inlineTextBox name='Header inside article.'
-++++++section
+++++++sectionWithoutName
 ++++++++headerAsNonLandmark
 ++++++++++paragraph
 ++++++++++++staticText name='Header inside section.'

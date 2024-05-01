@@ -3,7 +3,7 @@ Document
 ++++Group LocalizedControlType='footer'
 ++++++Group IsControlElement=false
 ++++++++Text Name='footer inside article.'
-++Group
+++Group IsControlElement=false
 ++++Group LocalizedControlType='footer'
 ++++++Group IsControlElement=false
 ++++++++Text Name='footer inside section.'

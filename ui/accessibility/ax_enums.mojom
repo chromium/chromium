@@ -112,8 +112,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next version: 6
-// Next value: 211
+// Next version: 7
+// Next value: 212
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   [Default]kUnknown = 181, // The role has not been set.
@@ -320,6 +320,7 @@ enum Role {
   kSearch = 152,
   kSearchBox = 153,
   kSection = 154,
+  [MinVersion=6] kSectionWithoutName = 211,
   kSlider = 155,
   kSpinButton = 156,
   kSplitter = 157,

@@ -13,7 +13,7 @@ rootWebArea
 ++++++footer
 ++++++++staticText name='This is a footer element.'
 ++++++++++inlineTextBox name='This is a footer element.'
-++++++section
+++++++sectionWithoutName
 ++++++++staticText name='This is a form element.'
 ++++++++++inlineTextBox name='This is a form element.'
 ++++++main
@@ -58,7 +58,7 @@ rootWebArea
 ++++++++headerAsNonLandmark
 ++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++section
+++++++sectionWithoutName
 ++++++++headerAsNonLandmark
 ++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++inlineTextBox name='This should NOT have banner role.'
@@ -81,7 +81,7 @@ rootWebArea
 ++++++++++headerAsNonLandmark
 ++++++++++++staticText name='This should NOT have banner role.'
 ++++++++++++++inlineTextBox name='This should NOT have banner role.'
-++++++section
+++++++sectionWithoutName
 ++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark
 ++++++++++++staticText name='This should NOT have banner role.'
@@ -103,7 +103,7 @@ rootWebArea
 ++++++++footerAsNonLandmark
 ++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++section
+++++++sectionWithoutName
 ++++++++footerAsNonLandmark
 ++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++inlineTextBox name='This should NOT have footer role.'
@@ -126,7 +126,7 @@ rootWebArea
 ++++++++++footerAsNonLandmark
 ++++++++++++staticText name='This should NOT have footer role.'
 ++++++++++++++inlineTextBox name='This should NOT have footer role.'
-++++++section
+++++++sectionWithoutName
 ++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark
 ++++++++++++staticText name='This should NOT have footer role.'
@@ -148,7 +148,7 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++staticText name='This should NOT have complementary role.'
 ++++++++++++inlineTextBox name='This should NOT have complementary role.'
-++++++section
+++++++sectionWithoutName
 ++++++++genericContainer
 ++++++++++staticText name='This should NOT have complementary role.'
 ++++++++++++inlineTextBox name='This should NOT have complementary role.'
@@ -171,7 +171,7 @@ rootWebArea
 ++++++++++genericContainer
 ++++++++++++staticText name='This should NOT have complementary role.'
 ++++++++++++++inlineTextBox name='This should NOT have complementary role.'
-++++++section
+++++++sectionWithoutName
 ++++++++genericContainer ignored
 ++++++++++genericContainer
 ++++++++++++staticText name='This should NOT have complementary role.'
@@ -196,7 +196,7 @@ rootWebArea
 ++++++++++complementary
 ++++++++++++staticText name='This should have complementary role.'
 ++++++++++++++inlineTextBox name='This should have complementary role.'
-++++++section
+++++++sectionWithoutName
 ++++++++genericContainer ignored
 ++++++++++complementary
 ++++++++++++staticText name='This should have complementary role.'

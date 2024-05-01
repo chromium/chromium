@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer
 ++++++++staticText name='This is a very important form full of very important form related things to fill in, it is likely the most important form you will see within the next 100 milliseconds. You may think I am just rambling, but this is rambling with a purpose! We need enough content in this div to force splitting across multiple inlineTextBox-en which we can then ignore using *-DENY-NODE.'
-++++++section
+++++++sectionWithoutName
 ++++++++paragraph
 ++++++++++staticText name='Please provide your details:'
 ++++++++labelText

@@ -10,7 +10,7 @@ rootWebArea
 ++++++++++paragraph
 ++++++++++++staticText name='Named aside inside article.'
 ++++++++++++++inlineTextBox name='Named aside inside article.'
-++++++section
+++++++sectionWithoutName
 ++++++++genericContainer
 ++++++++++paragraph
 ++++++++++++staticText name='Unnamed aside inside section.'

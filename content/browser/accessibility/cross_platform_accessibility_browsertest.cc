@@ -1516,7 +1516,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   TestLocalizedLandmarkType(3, ax::mojom::Role::kForm, "form");
   TestLocalizedLandmarkType(4, ax::mojom::Role::kMain, "main");
   TestLocalizedLandmarkType(5, ax::mojom::Role::kNavigation, "nav");
-  TestLocalizedLandmarkType(6, ax::mojom::Role::kSection, "");
+  TestLocalizedLandmarkType(6, ax::mojom::Role::kSectionWithoutName, "");
   TestLocalizedLandmarkType(7, ax::mojom::Role::kRegion, "a label", u"region");
 
   TestLocalizedLandmarkType(8, ax::mojom::Role::kBanner, "banner", u"banner");
@@ -1528,7 +1528,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   TestLocalizedLandmarkType(12, ax::mojom::Role::kMain, "role_main");
   TestLocalizedLandmarkType(13, ax::mojom::Role::kNavigation, "role_nav");
   TestLocalizedLandmarkType(14, ax::mojom::Role::kRegion, "region", u"region");
-  TestLocalizedLandmarkType(15, ax::mojom::Role::kSection, "", u"");
+  TestLocalizedLandmarkType(15, ax::mojom::Role::kSectionWithoutName, "", u"");
   TestLocalizedLandmarkType(16, ax::mojom::Role::kRegion, "a label", u"region");
   TestLocalizedLandmarkType(17, ax::mojom::Role::kSearch, "search");
 }

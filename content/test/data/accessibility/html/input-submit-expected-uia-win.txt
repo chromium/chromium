@@ -1,9 +1,9 @@
 Document
-++Group
+++Group IsControlElement=false
 ++++Edit
 ++++Button Name='First submit in a form is a valid default button'
 ++++Button Name='Second submit in a form not a valid default button'
-++Group
+++Group IsControlElement=false
 ++++Edit
 ++++Button Name='First image button in a form is a valid default button'
 ++++++Image

@@ -453,6 +453,7 @@ const RoleEntry kReverseRoles[] = {
     {"option", ax::mojom::blink::Role::kListBoxOption},
     {"group", ax::mojom::blink::Role::kDetails},
     {"generic", ax::mojom::blink::Role::kFooterAsNonLandmark},
+    {"generic", ax::mojom::blink::Role::kSectionWithoutName},
     {"combobox", ax::mojom::blink::Role::kComboBoxMenuButton},
     {"combobox", ax::mojom::blink::Role::kComboBoxSelect},
     {"combobox", ax::mojom::blink::Role::kTextFieldWithComboBox}};
@@ -2744,8 +2745,9 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
 
   // Treat a named <section> as role="region".
   if (role_ == ax::mojom::blink::Role::kSection) {
-    return IsNameFromAuthorAttribute() ? ax::mojom::blink::Role::kRegion
-                                       : ax::mojom::blink::Role::kSection;
+    return IsNameFromAuthorAttribute()
+               ? ax::mojom::blink::Role::kRegion
+               : ax::mojom::blink::Role::kSectionWithoutName;
   }
 
   // TODO(accessibility): Consider moving the image vs. image map role logic
@@ -7743,6 +7745,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kRegion:
     case ax::mojom::blink::Role::kRuby:
     case ax::mojom::blink::Role::kSection:
+    case ax::mojom::blink::Role::kSectionWithoutName:
     case ax::mojom::blink::Role::kStrong:
     case ax::mojom::blink::Role::kSubscript:
     case ax::mojom::blink::Role::kSuperscript:

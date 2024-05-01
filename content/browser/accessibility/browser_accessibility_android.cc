@@ -1189,6 +1189,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kForm:
     case ax::mojom::Role::kHeaderAsNonLandmark:
     case ax::mojom::Role::kRowGroup:
+    case ax::mojom::Role::kSectionWithoutName:
     case ax::mojom::Role::kStrong:
     case ax::mojom::Role::kSubscript:
     case ax::mojom::Role::kSuperscript:

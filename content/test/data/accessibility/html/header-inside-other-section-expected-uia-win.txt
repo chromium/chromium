@@ -3,7 +3,7 @@ Document
 ++++Group LocalizedControlType='header'
 ++++++Group IsControlElement=false
 ++++++++Text Name='Header inside article.'
-++Group
+++Group IsControlElement=false
 ++++Group LocalizedControlType='header'
 ++++++Group IsControlElement=false
 ++++++++Text Name='Header inside section.'

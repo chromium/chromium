@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++section
+++++++sectionWithoutName
 ++++++++textField
 ++++++++++genericContainer
 ++++++++button default name='First submit in a form is a valid default button'
@@ -10,7 +10,7 @@ rootWebArea
 ++++++++button name='Second submit in a form not a valid default button'
 ++++++++++staticText name='Second submit in a form not a valid default button'
 ++++++++++++inlineTextBox name='Second submit in a form not a valid default button'
-++++++section
+++++++sectionWithoutName
 ++++++++textField
 ++++++++++genericContainer
 ++++++++button default name='First button in form is a valid default button'
