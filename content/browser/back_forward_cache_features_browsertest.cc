@@ -2534,13 +2534,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithJavaScriptDetails,
 }
 
 // TODO(crbug.com/40834769): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_DoesNotCacheIfWebDatabase DISABLED_DoesNotCacheIfWebDatabase
-#else
-#define MAYBE_DoesNotCacheIfWebDatabase DoesNotCacheIfWebDatabase
-#endif
+// TODO(crbug.com/337202186): Flaky timeouts on all other platforms.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_DoesNotCacheIfWebDatabase) {
+                       DISABLED_DoesNotCacheIfWebDatabase) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page with WebDatabase usage.
