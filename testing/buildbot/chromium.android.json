@@ -20458,6 +20458,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -20504,6 +20505,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -20550,6 +20552,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -20596,6 +20599,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -20643,6 +20647,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -20691,6 +20696,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -20737,6 +20743,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -20783,6 +20790,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_34_google_apis_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -21662,6 +21670,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -21707,6 +21716,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -21752,6 +21762,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -21797,6 +21808,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -21843,6 +21855,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -21890,6 +21903,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -21935,6 +21949,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -21981,6 +21996,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",

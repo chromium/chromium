@@ -459,7 +459,15 @@ try_.builder(
         "ci/android-cronet-x64-dbg",
         "ci/android-cronet-x64-dbg-14-tests",
     ],
-    gn_args = "ci/android-cronet-x64-dbg",
+    # Replicates "ci/android-cronet-x64-dbg", with code coverage related
+    # arguments appended.
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-cronet-x64-dbg",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+        ],
+    ),
     contact_team_email = "cronet-team@google.com",
     main_list_view = "try",
     siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -471,6 +479,7 @@ try_.builder(
             "build/config/android/.+",
         ],
     ),
+    use_clang_coverage = True,
 )
 
 try_.builder(
@@ -553,8 +562,14 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-lollipop-tests",
     ],
+    # Replicates "ci/android-cronet-x86-dbg", with code coverage related
+    # arguments appended.
     gn_args = gn_args.config(
-        configs = ["ci/android-cronet-x86-dbg"],
+        configs = [
+            "ci/android-cronet-x86-dbg",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+        ],
     ),
     contact_team_email = "cronet-team@google.com",
     main_list_view = "try",
@@ -567,6 +582,7 @@ try_.builder(
             "build/config/android/.+",
         ],
     ),
+    use_clang_coverage = True,
 )
 
 try_.builder(
