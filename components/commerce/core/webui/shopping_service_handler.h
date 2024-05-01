@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,10 +40,11 @@ namespace commerce {
 class ShoppingService;
 struct PriceInsightsInfo;
 
-class ShoppingServiceHandler :
-        public shopping_service::mojom::ShoppingServiceHandler,
-        public SubscriptionsObserver,
-        public bookmarks::BaseBookmarkModelObserver {
+class ShoppingServiceHandler
+    : public shopping_service::mojom::ShoppingServiceHandler,
+      public SubscriptionsObserver,
+      public bookmarks::BaseBookmarkModelObserver,
+      public ProductSpecificationsSet::Observer {
  public:
   // Handles platform specific tasks.
   class Delegate {
@@ -134,6 +136,15 @@ class ShoppingServiceHandler :
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
 
+  // ProductSpecificationsSet::Observer
+  void OnProductSpecificationsSetAdded(
+      const ProductSpecificationsSet& set) override;
+
+  void OnProductSpecificationsSetUpdate(
+      const ProductSpecificationsSet& set) override;
+
+  void OnProductSpecificationsSetRemoved(const base::Uuid& uuid) override;
+
   static std::vector<shopping_service::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(
       bookmarks::BookmarkModel& model,
@@ -179,6 +190,9 @@ class ShoppingServiceHandler :
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>
       scoped_bookmark_model_observation_{this};
+  base::ScopedObservation<ProductSpecificationsService,
+                          ProductSpecificationsSet::Observer>
+      scoped_product_spec_observer_{this};
 
   base::WeakPtrFactory<ShoppingServiceHandler> weak_ptr_factory_{this};
 };

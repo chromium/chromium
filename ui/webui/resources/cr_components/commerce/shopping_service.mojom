@@ -246,4 +246,13 @@ interface Page {
   // Callback when a product bookmark is observed to be moved and
   // pass along the BookmarkProductInfo of the product.
   OnProductBookmarkMoved(BookmarkProductInfo bookmark_product);
+
+  // Callback when a product specifications set is created.
+  OnProductSpecificationsSetAdded(ProductSpecificationsSet set);
+
+  // Callback when a product specifications set is updated.
+  OnProductSpecificationsSetUpdated(ProductSpecificationsSet set);
+
+  // Callback when a product specifications set is removed.
+  OnProductSpecificationsSetRemoved(mojo_base.mojom.Uuid uuid);
 };

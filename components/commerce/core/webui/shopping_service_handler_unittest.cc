@@ -47,15 +47,35 @@ class MockPage : public shopping_service::mojom::Page {
   }
   mojo::Receiver<shopping_service::mojom::Page> receiver_{this};
 
-  MOCK_METHOD1(PriceTrackedForBookmark,
-               void(shopping_service::mojom::BookmarkProductInfoPtr product));
-  MOCK_METHOD1(PriceUntrackedForBookmark,
-               void(shopping_service::mojom::BookmarkProductInfoPtr product));
-  MOCK_METHOD2(OperationFailedForBookmark,
-               void(shopping_service::mojom::BookmarkProductInfoPtr product,
-                    bool is_tracked));
-  MOCK_METHOD1(OnProductBookmarkMoved,
-               void(shopping_service::mojom::BookmarkProductInfoPtr product));
+  MOCK_METHOD(void,
+              PriceTrackedForBookmark,
+              (shopping_service::mojom::BookmarkProductInfoPtr product),
+              (override));
+  MOCK_METHOD(void,
+              PriceUntrackedForBookmark,
+              (shopping_service::mojom::BookmarkProductInfoPtr product),
+              (override));
+  MOCK_METHOD(void,
+              OperationFailedForBookmark,
+              (shopping_service::mojom::BookmarkProductInfoPtr product,
+               bool is_tracked),
+              (override));
+  MOCK_METHOD(void,
+              OnProductBookmarkMoved,
+              (shopping_service::mojom::BookmarkProductInfoPtr product),
+              (override));
+  MOCK_METHOD(void,
+              OnProductSpecificationsSetAdded,
+              (shopping_service::mojom::ProductSpecificationsSetPtr set),
+              (override));
+  MOCK_METHOD(void,
+              OnProductSpecificationsSetUpdated,
+              (shopping_service::mojom::ProductSpecificationsSetPtr set),
+              (override));
+  MOCK_METHOD(void,
+              OnProductSpecificationsSetRemoved,
+              (const base::Uuid& uuid),
+              (override));
 };
 
 class MockDelegate : public ShoppingServiceHandler::Delegate {

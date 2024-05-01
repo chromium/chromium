@@ -738,4 +738,19 @@ void ShoppingServiceHandler::DeleteProductSpecificationsSet(
       ->DeleteProductSpecificationsSet(uuid.AsLowercaseString());
 }
 
+void ShoppingServiceHandler::OnProductSpecificationsSetAdded(
+    const ProductSpecificationsSet& set) {
+  remote_page_->OnProductSpecificationsSetAdded(ProductSpecsSetToMojo(set));
+}
+
+void ShoppingServiceHandler::OnProductSpecificationsSetUpdate(
+    const ProductSpecificationsSet& set) {
+  remote_page_->OnProductSpecificationsSetUpdated(ProductSpecsSetToMojo(set));
+}
+
+void ShoppingServiceHandler::OnProductSpecificationsSetRemoved(
+    const base::Uuid& uuid) {
+  remote_page_->OnProductSpecificationsSetRemoved(uuid);
+}
+
 }  // namespace commerce

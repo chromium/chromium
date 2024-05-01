@@ -11,6 +11,8 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -68,14 +70,24 @@ export class ProductSpecificationsElement extends PolymerElement {
   private specsTable_: {columns: TableColumn[], rows: TableRow[]};
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private callbackRouter_: PageCallbackRouter;
+  private listenerIds_: number[] = [];
 
   constructor() {
     super();
+    this.callbackRouter_ = this.shoppingApi_.getCallbackRouter();
     ColorChangeUpdater.forDocument().start();
   }
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.listenerIds_.push(
+        this.callbackRouter_.onProductSpecificationsSetRemoved.addListener(
+            (uuid: Uuid) => this.onSetRemoved_(uuid)),
+        this.callbackRouter_.onProductSpecificationsSetUpdated.addListener(
+            (set: ProductSpecificationsSet) => this.onSetUpdated_(set)));
+
     const router = Router.getInstance();
     const params = new URLSearchParams(router.getCurrentQuery());
     const urlsParam = params.get('urls');
@@ -128,6 +140,11 @@ export class ProductSpecificationsElement extends PolymerElement {
     };
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(id => this.callbackRouter_.removeListener(id));
+  }
+
   private async getInfoForUrls_(urls: string[]): Promise<ProductInfo[]> {
     const infos: ProductInfo[] = [];
     for (const url of urls) {
@@ -151,6 +168,16 @@ export class ProductSpecificationsElement extends PolymerElement {
       urls = [e.detail.url];
     }
     this.populateTable_(urls);
+  }
+
+  private onSetUpdated_(_: ProductSpecificationsSet) {
+    // TODO(b:333378234): If the update is for the currently shown set, apply
+    //                    the updates.
+  }
+
+  private onSetRemoved_(_: Uuid) {
+    // TODO(b:333378234): If the UUID is for the shown set, clear the UI or
+    //                    refresh to load the zero-state.
   }
 }
 
