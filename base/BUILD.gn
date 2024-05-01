@@ -3989,6 +3989,7 @@ test("base_unittests") {
       "allocator/partition_allocator/src/partition_alloc/partition_lock_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/reverse_bytes_unittest.cc",
       "allocator/partition_allocator/src/partition_alloc/thread_cache_unittest.cc",
+      "allocator/partition_allocator/src/partition_alloc/use_death_tests.h",
     ]
 
     if (use_starscan) {
