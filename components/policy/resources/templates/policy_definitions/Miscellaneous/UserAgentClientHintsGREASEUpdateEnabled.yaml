@@ -24,8 +24,8 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:98-
-- chrome.*:98-
-- android:98-
+- chrome_os:98-126
+- chrome.*:98-126
+- android:98-126
 tags: []
 type: main
