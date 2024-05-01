@@ -7327,9 +7327,8 @@ crbug.com/335003887 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/336691003 [ Linux ] external/wpt/long-animation-frame/tentative/loaf-source-location-inline-classic-script.html [ Failure ]
 
 # Gardener 2024-05-01
-# TODO(crbug.com/338109349): Re-enable this test
-virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
-# TODO(crbug.com/338109349): Re-enable this test
-virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
-# TODO(crbug.com/338109349): Re-enable this test
-virtual/view-transition/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
+crbug.com/338109349 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
+crbug.com/338109349 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
+crbug.com/338109349 virtual/view-transition/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
+crbug.com/333501264 virtual/fenced-frame-mparch/external/wpt/fenced-frame/setting-null-config-navigates-to-about-blank.https.html [ Failure Pass ]
+crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Pass ]
