@@ -92,6 +92,9 @@ found in the LICENSE file.
         <item name="android:textAppearanceLargePopupMenu">
             @style/TextAppearance.TextLarge.Primary
         </item>
+        <item name="textAppearanceLabelLarge">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
         <item name="android:textAppearanceSmallPopupMenu">
             @style/TextAppearance.TextLarge.Primary
         </item>

@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -165,19 +166,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         showColorPickerPopup(mDialogView.findViewById(R.id.tab_group_color_icon));
                     };
 
-            Runnable showInviteFlowUIRunnable =
-                    () -> {
-                        Profile profile =
-                                mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
-                        DataSharingUIDelegate uiDelegate =
-                                DataSharingServiceFactory.getUIDelegate(profile);
-                        uiDelegate.showMemberPicker(
-                                mActivity,
-                                mDataSharingBottomSheetGroup,
-                                new MemberPickerListenerImpl(),
-                                null);
-                    };
-
             mMediator =
                     new TabGridDialogMediator(
                             activity,
@@ -194,7 +182,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             showShareBottomSheetRunnable,
                             mComponentName,
                             showColorPickerPopupRunnable,
-                            showInviteFlowUIRunnable);
+                            getInviteFlowUIRunnable(bottomSheetController));
 
             // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
@@ -258,6 +246,42 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @NonNull
     RecyclerViewPosition getRecyclerViewPosition() {
         return mTabListCoordinator.getRecyclerViewPosition();
+    }
+
+    private Runnable getInviteFlowUIRunnable(@NonNull BottomSheetController bottomSheetController) {
+        Runnable showInviteFlowUIRunnable =
+                () -> {
+                    Profile profile =
+                            mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
+                    DataSharingUIDelegate uiDelegate =
+                            DataSharingServiceFactory.getUIDelegate(profile);
+                    Callback<List<String>> callback =
+                            (emails) -> {
+                                if (emails.size() > 0) {
+                                    bottomSheetController.hideContent(
+                                            mShareBottomSheetContent, false);
+                                    showAvatars(emails);
+                                }
+                            };
+                    uiDelegate.showMemberPicker(
+                            mActivity,
+                            mDataSharingBottomSheetGroup,
+                            new MemberPickerListenerImpl(callback),
+                            /* config= */ null);
+                };
+        return showInviteFlowUIRunnable;
+    }
+
+    private void showAvatars(List<String> emails) {
+        mSharedImageTilesCoordinator.updateTilesCount(emails.size());
+        Profile profile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
+        DataSharingUIDelegate uiDelegate = DataSharingServiceFactory.getUIDelegate(profile);
+        uiDelegate.showAvatars(
+                mSharedImageTilesCoordinator.getContext(),
+                mSharedImageTilesCoordinator.getAllViews(),
+                emails,
+                /* success= */ null,
+                /* config= */ null);
     }
 
     private @Nullable TabListEditorController getTabListEditorController() {

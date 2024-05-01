@@ -78,15 +78,13 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//build/android:build_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
-      jar_excluded_patterns = [
-        "*/DataSharingUIDelegateImpl.class",
-        "*/MemberPickerListenerImpl.class",
-      ]
+      jar_excluded_patterns = [ "*/DataSharingUIDelegateImpl.class" ]
     }
   }
 

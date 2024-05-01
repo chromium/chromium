@@ -5,15 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.components.browser_ui.widget.RoundedCornerImageView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/shared_image_tiles_icon_height"
     android:layout_height="@dimen/shared_image_tiles_icon_height"
-    android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative"
-    app:cornerRadiusBottomEnd="@dimen/shared_image_tiles_icon_corner_radius"
-    app:cornerRadiusBottomStart="@dimen/shared_image_tiles_icon_corner_radius"
-    app:cornerRadiusTopEnd="@dimen/shared_image_tiles_icon_corner_radius"
-    app:cornerRadiusTopStart="@dimen/shared_image_tiles_icon_corner_radius"
-    app:roundedfillColor="@color/black_alpha_5" />
+    android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative"/>

@@ -4,9 +4,34 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import android.util.Log;
+
+import org.chromium.base.Callback;
+import org.chromium.build.BuildConfig;
+
 import java.util.List;
 
 public class MemberPickerListenerImpl implements DataSharingUIDelegate.MemberPickerListener {
+
+    private final Callback<List<String>> mCallback;
+
+    public MemberPickerListenerImpl(Callback<List<String>> callback) {
+        mCallback = callback;
+    }
+
     @Override
-    public void onSelectionDone(List<String> selectedMemberIds) {}
+    public void onSelectionDone(List<String> selectedMemberIds, List<String> emails) {
+        int count = 0;
+        if (BuildConfig.ENABLE_ASSERTS) {
+            for (String selectedMember : selectedMemberIds) {
+                StringBuilder sb = new StringBuilder("MemberPickerListenerImpl selectedMemberIds ");
+                sb.append(count++);
+                sb.append(" : ");
+                sb.append(selectedMember);
+                Log.d("Logging", sb.toString());
+            }
+        }
+        // TODO(ritikagup) : Call group management APIs to create group.
+        mCallback.onResult(emails);
+    }
 }

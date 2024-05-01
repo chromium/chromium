@@ -721,9 +721,6 @@ public class TabGridDialogMediator
         return view -> {
             // TODO(b/325082444): Ask data sharing service about if the tab group is shared.
             mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
-            if (mSharedImageTilesCoordinator != null) {
-                mSharedImageTilesCoordinator.updateTilesCount(0);
-            }
             showShareBottomSheet();
 
             // TODO(b/325082444): This is used for prototyping purposes for now, should be removed

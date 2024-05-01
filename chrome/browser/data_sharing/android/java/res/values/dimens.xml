@@ -8,7 +8,6 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Dimens for shared_image_tiles view -->
     <dimen name="shared_image_tiles_icon_height">36dp</dimen>
-    <dimen name="shared_image_tiles_icon_corner_radius">18dp</dimen>
     <dimen name="shared_image_tiles_overlap_margin">10dp</dimen>
     <dimen name="shared_image_tiles_overlap_margin_negative">-10dp</dimen>
 

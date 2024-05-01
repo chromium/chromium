@@ -25,7 +25,7 @@ public interface DataSharingUIDelegate extends UserData {
     public interface MemberPickerListener {
 
         /** Called when members are selected. */
-        public void onSelectionDone(List<String> selectedMemberIds);
+        public void onSelectionDone(List<String> selectedMemberIds, List<String> emails);
 
         /** List of members picked. */
         public class MemberResult {

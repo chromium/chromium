@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.data_sharing;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A coordinator for SharedImageTiles component. This component is used to build a view and populate
@@ -100,8 +104,22 @@ public class SharedImageTilesCoordinator {
     public void updateTilesCount(int count) {
         // TODO(b/325533985): |mAvailableTileCount| should be replace by the actual number of icons
         // needed.
-        mAvailableTileCount = mAvailableTileCount + 1;
+        mAvailableTileCount = count;
         mView.removeAllViews();
         initializeSharedImageTiles();
+    }
+
+    public List<ViewGroup> getAllViews() {
+        assert (mView.getChildCount() == mAvailableTileCount);
+        List<ViewGroup> list = new ArrayList<>();
+        for (int i = 0; i < mAvailableTileCount; i++) {
+            View view = mView.getChildAt(i);
+            list.add((ViewGroup) view);
+        }
+        return list;
+    }
+
+    public @NonNull Context getContext() {
+        return mContext;
     }
 }
