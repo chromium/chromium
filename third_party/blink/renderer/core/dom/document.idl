@@ -186,10 +186,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://www.w3.org/TR/cssom-view/#dom-document-caretpositionfrompoint
     [NewObject, RuntimeEnabled=CaretPositionFromPoint] CaretPosition? caretPositionFromPoint(float x, float y);
 
-    // Storage Access API
-    [CallWith=ScriptState, NewObject, MeasureAs=StorageAccessAPI_HasStorageAccess_Method] Promise<boolean> hasStorageAccess();
-    [CallWith=ScriptState, NewObject, MeasureAs=StorageAccessAPI_requestStorageAccessFor_Method] Promise<undefined> requestStorageAccessFor(USVString requestedOrigin);
-
     // Text fragment directive API
     // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
     [SameObject, Measure, RuntimeEnabled=TextFragmentIdentifiers] readonly attribute FragmentDirective fragmentDirective;

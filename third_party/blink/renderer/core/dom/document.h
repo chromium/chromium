@@ -1274,12 +1274,6 @@ class CORE_EXPORT Document : public ContainerNode,
       ExecutionContext* execution_context);
   void PermissionServiceConnectionError();
 
-  // Storage Access API methods to check for or request access to storage that
-  // may otherwise be blocked.
-  ScriptPromise<IDLBoolean> hasStorageAccess(ScriptState* script_state);
-  ScriptPromise<IDLUndefined> requestStorageAccessFor(ScriptState* script_state,
-                                                      const AtomicString& site);
-
   // Fragment directive API, currently used to feature detect text-fragments.
   // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
   FragmentDirective& fragmentDirective() const;
@@ -2326,13 +2320,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void TrustTokenQueryAnswererConnectionError();
 
   void RunPostPrerenderingActivationSteps();
-
-  // Resolves the promise if the `status` can approve; rejects the promise
-  // otherwise, and consumes user activation.  Notably, does not modify the
-  // per-frame storage access bit.
-  void ProcessTopLevelStorageAccessPermissionState(
-      ScriptPromiseResolver<IDLUndefined>* resolver,
-      mojom::blink::PermissionStatus status);
 
   // Fetch the compression dictionary sent in the response header after the
   // document load completes.
