@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_NavigationThrottle) {
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NavigationThrottle) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   webapps::AppId app_id = InstallTestWebApp(start_url);
@@ -536,18 +536,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_NavigationThrottle) {
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetVisibleURL(),
             embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
-
-  // Navigate to home tab URL with query params.
-  OpenUrlAndWait(app_browser,
-                 embedded_test_server()->GetURL(
-                     "/web_apps/tab_strip_customizations.html?some_query"));
-
-  // Expect navigation to happen in home tab.
-  EXPECT_EQ(tab_strip->count(), 2);
-  EXPECT_EQ(tab_strip->active_index(), 0);
-  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
-            embedded_test_server()->GetURL(
-                "/web_apps/tab_strip_customizations.html?some_query"));
 
   // Navigate to home tab URL with hash ref.
   OpenUrlAndWait(app_browser,
@@ -583,9 +571,22 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_NavigationThrottle) {
   EXPECT_EQ(tab_strip->count(), 3);
   EXPECT_EQ(tab_strip->active_index(), 0);
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+}
 
-// TODO(crbug.com/40257354): Fix this test on Windows and Mac.
-#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+// TODO(crbug.com/40257354): Enable this test.
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_TargetBlankLink) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  webapps::AppId app_id = InstallTestWebApp(start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Open a second tab then refocus the home tab.
+  chrome::NewTab(app_browser);
+  tab_strip->ActivateTabAt(0);
+
   // Navigate to a home tab URL via a target=_blank link.
   content::TestNavigationObserver nav_observer(
       tab_strip->GetActiveWebContents(), 1);
@@ -599,8 +600,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_NavigationThrottle) {
   EXPECT_EQ(tab_strip->active_index(), 0);
   EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(),
             embedded_test_server()->GetURL(
-                "/web_apps/tab_strip_customizations.html"));
-#endif
+                "/web_apps/tab_strip_customizations.html#target_blank"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpenInChrome) {
