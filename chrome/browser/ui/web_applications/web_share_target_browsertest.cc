@@ -31,7 +31,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -170,8 +169,7 @@ class WebShareTargetBrowserTest : public WebAppBrowserTestBase {
                                             apps::IntentPtr&& intent,
                                             const GURL& expected_url) {
     DCHECK(intent);
-    ui_test_utils::UrlLoadObserver url_observer(
-        expected_url, content::NotificationService::AllSources());
+    ui_test_utils::UrlLoadObserver url_observer(expected_url);
 
     content::WebContents* const web_contents =
         LaunchWebAppWithIntent(profile(), app_id, std::move(intent));

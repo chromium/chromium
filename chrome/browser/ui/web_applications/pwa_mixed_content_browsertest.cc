@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -156,8 +155,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kEnabled);
 
-  ui_test_utils::UrlLoadObserver url_observer(
-      GetMixedContentAppURL(), content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver url_observer(GetMixedContentAppURL());
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   url_observer.Wait();
 
@@ -199,8 +197,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
   // loaded.
   CheckMixedContentLoaded(app_browser);
 
-  ui_test_utils::UrlLoadObserver url_observer(
-      GetMixedContentAppURL(), content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver url_observer(GetMixedContentAppURL());
   chrome::Reload(app_browser, WindowOpenDisposition::CURRENT_TAB);
   url_observer.Wait();
 

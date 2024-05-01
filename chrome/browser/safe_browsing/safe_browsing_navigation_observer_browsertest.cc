@@ -32,7 +32,6 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -2509,8 +2508,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
   auto* initial_web_contents = web_contents();
 
-  ui_test_utils::UrlLoadObserver url_observer(
-      new_window_url, content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver url_observer(new_window_url);
   ASSERT_TRUE(
       ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("var w = window.open($1, 'New Window');",

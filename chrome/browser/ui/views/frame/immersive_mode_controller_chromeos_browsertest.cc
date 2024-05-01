@@ -27,7 +27,6 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "components/permissions/request_type.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
@@ -67,8 +66,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   GURL GetAppUrl() { return https_server_.GetURL("/simple.html"); }
 
   void LaunchAppBrowser(bool wait = true) {
-    ui_test_utils::UrlLoadObserver url_observer(
-        GetAppUrl(), content::NotificationService::AllSources());
+    ui_test_utils::UrlLoadObserver url_observer(GetAppUrl());
     browser_ = LaunchWebAppBrowser(app_id);
 
     if (wait) {

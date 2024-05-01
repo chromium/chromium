@@ -20,7 +20,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -211,8 +210,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   // original bug to reproduce.
   {
     GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
-    ui_test_utils::UrlLoadObserver load_complete(
-        url, content::NotificationService::AllSources());
+    ui_test_utils::UrlLoadObserver load_complete(url);
     EXPECT_TRUE(
         content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
                         "window.open('" + url.spec() + "');"));
@@ -231,8 +229,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   // Navigate back in session history to ensure view-source mode is still
   // active.
   {
-    ui_test_utils::UrlLoadObserver load_complete(
-        url_viewsource, content::NotificationService::AllSources());
+    ui_test_utils::UrlLoadObserver load_complete(url_viewsource);
     chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
     load_complete.Wait();
   }

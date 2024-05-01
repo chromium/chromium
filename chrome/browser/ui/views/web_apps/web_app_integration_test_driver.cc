@@ -130,7 +130,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1777,8 +1776,7 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
     active_app_id_ = app_id;
   } else {
     ui_test_utils::UrlLoadObserver url_observer(
-        app_registrar.GetAppLaunchUrl(app_id),
-        content::NotificationService::AllSources());
+        app_registrar.GetAppLaunchUrl(app_id));
     LaunchBrowserForWebAppInTab(profile(), app_id);
     url_observer.Wait();
   }
@@ -1800,8 +1798,7 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
 
   BrowserAddedWaiter browser_added_waiter;
   ui_test_utils::UrlLoadObserver url_observer(
-      app_registrar.GetAppLaunchUrl(app_id),
-      content::NotificationService::AllSources());
+      app_registrar.GetAppLaunchUrl(app_id));
   app_home_page_handler.LaunchApp(app_id, std::move(event_ptr));
   url_observer.Wait();
 

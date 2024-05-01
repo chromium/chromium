@@ -72,7 +72,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -1178,8 +1177,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   // Popup to any other website outside of the same origin, and wait
   // for the page to load.
-  ui_test_utils::UrlLoadObserver observer(
-      GURL("https://google.com"), content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver observer(GURL("https://google.com"));
   BrowserView* popup_browser_view = helper()->OpenPopup(
       "window.open('https://google.com', '_blank', 'popup');");
   observer.Wait();

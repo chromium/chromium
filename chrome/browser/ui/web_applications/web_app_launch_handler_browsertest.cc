@@ -28,7 +28,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -322,8 +321,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 
   ui_test_utils::UrlLoadObserver url_observer(
       WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppLaunchUrl(
-          app_id),
-      content::NotificationService::AllSources());
+          app_id));
 
   // Launch the app three times in quick succession.
   Browser* browser_1 = LaunchWebAppBrowser(app_id);

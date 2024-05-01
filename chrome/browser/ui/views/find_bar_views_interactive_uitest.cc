@@ -27,8 +27,6 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -678,8 +676,7 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, MAYBE_CtrlEnter) {
 
   EXPECT_EQ(u"link", GetFindBarText());
 
-  ui_test_utils::UrlLoadObserver observer(
-      GURL("about:blank"), content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver observer(GURL("about:blank"));
 
   // Send Ctrl-Enter, should cause navigation to about:blank.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(

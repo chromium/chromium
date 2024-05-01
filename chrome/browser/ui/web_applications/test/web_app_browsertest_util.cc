@@ -59,7 +59,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "components/webapps/browser/uninstall_result_code.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -198,8 +197,7 @@ Browser* LaunchWebAppBrowserAndWait(Profile* profile,
                                     WindowOpenDisposition disposition) {
   ui_test_utils::UrlLoadObserver url_observer(
       WebAppProvider::GetForTest(profile)->registrar_unsafe().GetAppLaunchUrl(
-          app_id),
-      content::NotificationService::AllSources());
+          app_id));
   Browser* const app_browser =
       LaunchWebAppBrowser(profile, app_id, disposition);
   url_observer.Wait();

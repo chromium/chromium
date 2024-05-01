@@ -27,7 +27,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -137,8 +136,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
 
   const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + 3;
   ui_test_utils::UrlLoadObserver url_observer(
-      https_server()->GetURL("/web_app_shortcuts/shortcuts.html#four"),
-      content::NotificationService::AllSources());
+      https_server()->GetURL("/web_app_shortcuts/shortcuts.html#four"));
   menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id).value(),
                           ui::EF_LEFT_MOUSE_BUTTON);
   url_observer.Wait();

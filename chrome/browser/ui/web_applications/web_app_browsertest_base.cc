@@ -38,7 +38,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
@@ -226,8 +225,7 @@ WebAppBrowserTestBase::os_integration_override() {
 content::WebContents* WebAppBrowserTestBase::OpenApplication(
     const webapps::AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
-      provider().registrar_unsafe().GetAppStartUrl(app_id),
-      content::NotificationService::AllSources());
+      provider().registrar_unsafe().GetAppStartUrl(app_id));
 
   apps::AppLaunchParams params(
       app_id, apps::LaunchContainer::kLaunchContainerWindow,

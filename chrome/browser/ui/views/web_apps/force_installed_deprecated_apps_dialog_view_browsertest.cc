@@ -12,7 +12,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/test_management_policy.h"
@@ -134,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
   // Widget is shown.
   EXPECT_NE(view, nullptr);
   ui_test_utils::UrlLoadObserver url_observer(
-      embedded_test_server()->GetURL("/"),
-      content::NotificationService::AllSources());
+      embedded_test_server()->GetURL("/"));
   views::test::AcceptDialog(view);
   url_observer.Wait();
 }

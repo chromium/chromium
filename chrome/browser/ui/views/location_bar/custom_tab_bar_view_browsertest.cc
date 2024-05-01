@@ -25,7 +25,6 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -237,8 +236,7 @@ class CustomTabBarViewBrowserTest : public web_app::WebAppBrowserTestBase {
     const GURL start_url = web_app_info->start_url;
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
-    ui_test_utils::UrlLoadObserver url_observer(
-        start_url, content::NotificationService::AllSources());
+    ui_test_utils::UrlLoadObserver url_observer(start_url);
     app_browser_ = LaunchWebAppBrowser(app_id);
     url_observer.Wait();
 

@@ -26,7 +26,6 @@
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
@@ -76,8 +75,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfItemControllerBrowserTest,
 
   ASSERT_TRUE(delegate);
 
-  ui_test_utils::UrlLoadObserver url_observer(
-      app_url, content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver url_observer(app_url);
   delegate->ItemSelected(/*event=*/nullptr, display::kInvalidDisplayId,
                          ash::LAUNCH_FROM_UNKNOWN,
                          /*callback=*/base::DoNothing(),
@@ -125,8 +123,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfItemControllerBrowserTest,
                 .GetVectorIcon()
                 .vector_icon());
 
-  ui_test_utils::UrlLoadObserver url_observer(
-      app_url, content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver url_observer(app_url);
   menu_model->ActivatedAt(launch_new_command_index.value());
   url_observer.Wait();
 }
