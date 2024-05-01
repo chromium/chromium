@@ -286,6 +286,12 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // calculations.
   virtual void SetKeyboardAmbientLightSensorEnabled(bool enabled) = 0;
 
+  // Asynchronously gets whether the keyboard ambient light sensor is currently
+  // enabled. On error (e.g. powerd not running), |callback| will be run with
+  // nullopt.
+  virtual void GetKeyboardAmbientLightSensorEnabled(
+      DBusMethodCallback<bool> callback) = 0;
+
   // Returns the last power status that was received from D-Bus, if any.
   virtual const std::optional<power_manager::PowerSupplyProperties>&
   GetLastStatus() = 0;

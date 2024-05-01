@@ -227,6 +227,13 @@ void FakePowerManagerClient::SetKeyboardAmbientLightSensorEnabled(
   keyboard_ambient_light_sensor_enabled_ = enabled;
 }
 
+void FakePowerManagerClient::GetKeyboardAmbientLightSensorEnabled(
+    DBusMethodCallback<bool> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                keyboard_ambient_light_sensor_enabled_));
+}
+
 const std::optional<power_manager::PowerSupplyProperties>&
 FakePowerManagerClient::GetLastStatus() {
   return props_;

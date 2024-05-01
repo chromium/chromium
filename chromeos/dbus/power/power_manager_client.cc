@@ -582,6 +582,18 @@ class PowerManagerClientImpl : public PowerManagerClient {
                                      base::DoNothing());
   }
 
+  void GetKeyboardAmbientLightSensorEnabled(
+      DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kGetKeyboardAmbientLightSensorEnabledMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &PowerManagerClientImpl::OnGetKeyboardAmbientLightSensorEnabled,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void GetBatterySaverModeState(
       DBusMethodCallback<power_manager::BatterySaverModeState> callback)
       override {
@@ -1065,6 +1077,26 @@ class PowerManagerClientImpl : public PowerManagerClient {
     if (!response) {
       POWER_LOG(ERROR) << "Error calling "
                        << power_manager::kHasKeyboardBacklightMethod;
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    bool state = false;
+    if (!reader.PopBool(&state)) {
+      POWER_LOG(ERROR) << "Error reading response from powerd: "
+                       << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(state);
+  }
+
+  void OnGetKeyboardAmbientLightSensorEnabled(DBusMethodCallback<bool> callback,
+                                              dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR)
+          << "Error calling "
+          << power_manager::kGetKeyboardAmbientLightSensorEnabledMethod;
       std::move(callback).Run(std::nullopt);
       return;
     }

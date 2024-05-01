@@ -914,6 +914,48 @@ TEST_F(PowerManagerClientTest, SetKeyboardAmbientLightSensorEnabled) {
   client_->SetKeyboardAmbientLightSensorEnabled(expected_sensor_enabled2);
 }
 
+TEST_F(PowerManagerClientTest, GetKeyboardAmbientLightSensorEnabled) {
+  // The dbus method is set up to simulate a response of true from the service.
+  EXPECT_CALL(
+      *proxy_,
+      DoCallMethod(
+          HasMember(power_manager::kGetKeyboardAmbientLightSensorEnabledMethod),
+          _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback* callback) {
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter(response.get()).AppendBool(true);
+
+        std::move(*callback).Run(response.get());
+      });
+
+  // Verify that the callback receives and processes the true value correctly.
+  client_->GetKeyboardAmbientLightSensorEnabled(
+      base::BindOnce([](std::optional<bool> is_ambient_light_sensor_enabled) {
+        EXPECT_TRUE(is_ambient_light_sensor_enabled.value());
+      }));
+
+  // The dbus method is set up to simulate a response of false from the service.
+  EXPECT_CALL(
+      *proxy_,
+      DoCallMethod(
+          HasMember(power_manager::kGetKeyboardAmbientLightSensorEnabledMethod),
+          _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback* callback) {
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter(response.get()).AppendBool(false);
+
+        std::move(*callback).Run(response.get());
+      });
+
+  // Verify that the callback receives and processes the false value correctly.
+  client_->GetKeyboardAmbientLightSensorEnabled(
+      base::BindOnce([](std::optional<bool> is_ambient_light_sensor_enabled) {
+        EXPECT_FALSE(is_ambient_light_sensor_enabled.value());
+      }));
+}
+
 // Tests that |HasAmbientLightSensor| calls the DBus method with the same name.
 TEST_F(PowerManagerClientTest, HasAmbientLightSensor) {
   // Device has an ambient light sensor.
