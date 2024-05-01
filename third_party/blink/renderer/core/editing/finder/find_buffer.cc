@@ -59,14 +59,14 @@ bool ShouldIgnoreContents(const Node& node) {
     if (modal_element && modal_element != &node) {
       // If `modal_element` is the child of `node`, `node` should not ignore
       // contents to avoid skipping `modal_element`.
-      if (modal_element->IsDescendantOf(&node)) {
+      if (FlatTreeTraversal::IsDescendantOf(*modal_element, node)) {
         return false;
       }
       // https://html.spec.whatwg.org/multipage/interaction.html#modal-dialogs-and-inert-subtrees
       // > While document is so blocked, every node that is connected to
       // > document, with the exception of the subject element and its flat tree
       // > descendants, must become inert.
-      if (!node.IsDescendantOf(modal_element)) {
+      if (!FlatTreeTraversal::IsDescendantOf(node, *modal_element)) {
         return true;
       }
     }
