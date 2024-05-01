@@ -114,9 +114,15 @@ class GraphImpl::ComputeResources {
   Create(scoped_refptr<GraphResources> graph_resources, ContextImpl* context) {
     auto self = std::make_unique<ComputeResources>();
 
+    int num_threads =
+        context->options().thread_count_hint != 0
+            ? static_cast<int>(context->options().thread_count_hint)
+            : -1;  // Let the TFLite runtime decide.
+
     OpResolver op_resolver(context->options());
-    TfLiteStatus status = ::tflite::InterpreterBuilder(
-        graph_resources->model(), op_resolver)(&self->interpreter_);
+    ::tflite::InterpreterBuilder builder(graph_resources->model(), op_resolver);
+    builder.SetNumThreads(num_threads);
+    TfLiteStatus status = builder(&self->interpreter_);
     if (status != kTfLiteOk) {
       return base::unexpected(
           mojom::Error::New(mojom::Error::Code::kUnknownError,

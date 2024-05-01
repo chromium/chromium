@@ -74,7 +74,8 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver<MLContext>* resolver,
           webnn::mojom::features::kWebMachineLearningNeuralNetwork)) {
     auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
         ConvertBlinkDeviceTypeToMojo(options->deviceType()),
-        ConvertBlinkPowerPreferenceToMojo(options->powerPreference()));
+        ConvertBlinkPowerPreferenceToMojo(options->powerPreference()),
+        options->numThreads());
 
     ml->CreateWebNNContext(
         std::move(options_mojo),

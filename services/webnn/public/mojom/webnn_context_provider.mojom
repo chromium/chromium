@@ -45,6 +45,15 @@ struct CreateContextOptions {
   Device device;
   // The power preference for power consumption.
   PowerPreference power_preference;
+
+  // Hint for the number of threads to use for inference, with zero indicating a
+  // preference to defer this decision to the backend. A backend may also choose
+  // to ignore this value entirely.
+  //
+  // TODO(crbug.com/338162119): This is not the final expected API shape. Spec
+  // discussion on how this information should be communicated is happening
+  // here: https://github.com/webmachinelearning/webnn/issues/436
+  uint8 thread_count_hint;
 };
 
 // Represents the return value of `WebNNContext::CreateGraph()`. Let it be

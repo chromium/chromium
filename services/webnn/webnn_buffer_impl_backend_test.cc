@@ -159,7 +159,8 @@ bool WebNNBufferImplBackendTest::CreateWebNNContext(
   webnn_provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
           mojom::CreateContextOptions::Device::kGpu,
-          mojom::CreateContextOptions::PowerPreference::kDefault),
+          mojom::CreateContextOptions::PowerPreference::kDefault,
+          /*thread_count_hint=*/0),
       create_context_future.GetCallback());
   auto create_context_result = create_context_future.Take();
   if (create_context_result->is_context_remote()) {

@@ -90,7 +90,8 @@ TEST_F(WebNNContextProviderImplTest, CPUNotSupported) {
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
           mojom::CreateContextOptions::Device::kCpu,
-          mojom::CreateContextOptions::PowerPreference::kDefault),
+          mojom::CreateContextOptions::PowerPreference::kDefault,
+          /*thread_count_hint=*/0),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
@@ -111,7 +112,8 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
           mojom::CreateContextOptions::Device::kGpu,
-          mojom::CreateContextOptions::PowerPreference::kDefault),
+          mojom::CreateContextOptions::PowerPreference::kDefault,
+          /*thread_count_hint=*/0),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
