@@ -102,6 +102,20 @@ id<GREYMatcher> PasswordManualFillViewButton() {
                     nil);
 }
 
+// Matcher for the overflow menu button shown in the password cells.
+id<GREYMatcher> OverflowMenuButton() {
+  return grey_allOf(
+      ButtonWithAccessibilityLabelId(
+          IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL),
+      grey_interactable(), nullptr);
+}
+
+// Matcher for the "Edit" action made available by the overflow menu button.
+id<GREYMatcher> OverflowMenuEditAction() {
+  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_IOS_EDIT_ACTION_TITLE),
+                    grey_interactable(), nullptr);
+}
+
 // Opens the password manual fill view and verifies that the password view
 // controller is visible afterwards.
 void OpenPasswordManualFillView(bool has_suggestions) {
@@ -113,6 +127,9 @@ void OpenPasswordManualFillView(bool has_suggestions) {
                         : PasswordManualFillViewButton();
   } else {
     button_to_tap = ManualFallbackPasswordIconMatcher();
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ManualFallbackFormSuggestionViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
   }
 
   // Tap the button that'll open the password manual fill view.
@@ -1014,6 +1031,76 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Verify the 'Suggest Password...' option is not shown.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the overflow menu button is only visible when the Keyboard
+// Accessory Upgrade feature is enabled.
+- (void)testOverflowMenuVisibility {
+  // Disable the password bottom sheet.
+  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+
+  // Save password for site.
+  NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
+  [AutofillAppInterface savePasswordFormForURLSpec:URLString];
+
+  [self loadLoginPage];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Wait for the accessory icon to appear.
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the password manual fill view.
+  OpenPasswordManualFillView(/*has_suggestions=*/true);
+
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+        assertWithMatcher:grey_notVisible()];
+  }
+}
+
+// Tests the "Edit" action of the overflow menu button displays the password's
+// details in edit mode.
+- (void)testEditPasswordFromOverflowMenu {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  // Disable the password bottom sheet.
+  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+
+  // Save password for site.
+  NSString* URLString = base::SysUTF8ToNSString(self.URL.spec());
+  [AutofillAppInterface savePasswordFormForURLSpec:URLString];
+
+  [self loadLoginPage];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Wait for the accessory icon to appear.
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the password manual fill view.
+  OpenPasswordManualFillView(/*has_suggestions=*/true);
+
+  // Tap the overflow menu button and select the "Edit" action.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
+      performAction:grey_tap()];
+
+  // TODO(crbug.com/326413057): Check that the password details opened in search
+  // mode.
 }
 
 @end

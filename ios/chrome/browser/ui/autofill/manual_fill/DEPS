@@ -5,3 +5,7 @@ specific_include_rules = {
     "+ios/web/public/test/http_server",
   ],
 }
+
+include_rules = [
+  "+ios/chrome/browser/ui/menu",
+]

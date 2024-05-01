@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_consumer.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -270,11 +271,16 @@ BOOL AreCredentialsAtIndexesConnected(
             ? NO
             : AreCredentialsAtIndexesConnected(credentials, i, i + 1);
     ManualFillCredential* credential = credentials[i];
+    NSArray<UIAction*>* menuActions = IsKeyboardAccessoryUpgradeEnabled()
+                                          ? @[ [self createMenuEditAction] ]
+                                          : @[];
+
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
                initWithCredential:credential
         isConnectedToPreviousItem:isConnectedToPreviousItem
             isConnectedToNextItem:isConnectedToNextItem
-                  contentInjector:self];
+                  contentInjector:self
+                      menuActions:menuActions];
     [items addObject:item];
   }
   return items;
@@ -407,6 +413,21 @@ BOOL AreCredentialsAtIndexesConnected(
     forms.insert(forms.end(), test.begin(), test.end());
   }
   return forms;
+}
+
+// Creates an "Edit" UIAction to be used with a UIMenu.
+- (UIAction*)createMenuEditAction {
+  MenuScenarioHistogram menuScenario =
+      self.isActionSectionEnabled
+          ? kMenuScenarioHistogramAutofillManualFallbackAllPasswordsEntry
+          : kMenuScenarioHistogramAutofillManualFallbackPasswordEntry;
+  ActionFactory* actionFactory =
+      [[ActionFactory alloc] initWithScenario:menuScenario];
+  UIAction* editAction = [actionFactory actionToEditWithBlock:^{
+      // TODO(crbug.com/326413057): Handle tap.
+  }];
+
+  return editAction;
 }
 
 #pragma mark - Setters

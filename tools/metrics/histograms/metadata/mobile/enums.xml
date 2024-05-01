@@ -244,6 +244,8 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Tab Group Grid Entry"/>
   <int value="21" label="Tab Group View Menu Entry"/>
   <int value="22" label="Tab Group View Tab Entry"/>
+  <int value="23" label="Autofill Manual Fallback All Passwords Entry"/>
+  <int value="24" label="Autofill Manual Fallback Password Entry"/>
 </enum>
 
 <enum name="IOSShareAction">

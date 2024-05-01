@@ -78,7 +78,7 @@ using base::SysNSStringToUTF8;
     NSMutableArray<NSLayoutConstraint*>* dynamicConstraints;
 
 // The view displayed at the top the cell containing the card icon, the card
-// label and a 3-dot menu button.
+// label and an overflow menu button.
 @property(nonatomic, strong) UIView* headerView;
 
 // The label with bank name and network.
@@ -204,7 +204,8 @@ using base::SysNSStringToUTF8;
   self.cardIcon.translatesAutoresizingMaskIntoConstraints = NO;
   [self.cardIcon setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                    forAxis:UILayoutConstraintAxisHorizontal];
-  self.headerView = CreateHeaderView(self.cardIcon, self.cardLabel);
+  self.headerView = CreateHeaderView(self.cardIcon, self.cardLabel,
+                                     CreateOverflowMenuButton());
   [self.contentView addSubview:self.headerView];
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {

@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
@@ -53,8 +54,8 @@ constexpr CGFloat kSmallSpacingBetweenViews = 4;
 // Vertical spacing between two labeled chip buttons.
 constexpr CGFloat kVerticalSpacingBetweenLabeledChips = 8;
 
-// Height and width of the 3-dot menu button displayed in the cell's header.
-constexpr CGFloat kThreeDotMenuButtonSize = 24;
+// Height and width of the overflow menu button displayed in the cell's header.
+constexpr CGFloat kOverflowMenuButtonSize = 24;
 
 // Top and bottom padding for the virtual card instruction view.
 constexpr CGFloat kVirtualCardInstructionsVerticalPadding = 8;
@@ -122,34 +123,6 @@ void LayViewsHorizontally(NSArray<UIView*>* views,
       AppendConstraintsHorizontalSyncBaselines |
           AppendConstraintsHorizontalEqualOrSmallerThanGuide);
   [vertical_lead_views addObject:views.firstObject];
-}
-
-// Creates and configures the 3-dot menu button that's displayed in the cell's
-// header.
-ExtendedTouchTargetButton* CreateThreeDotMenuButton() {
-  ExtendedTouchTargetButton* menu_button =
-      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  menu_button.accessibilityLabel = l10n_util::GetNSString(
-      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
-
-  UIImage* menu_image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
-                                 kThreeDotMenuButtonSize),
-      @[
-        [UIColor colorNamed:kBlue600Color], [UIColor tertiarySystemFillColor]
-      ]);
-  [menu_button setImage:menu_image forState:UIControlStateNormal];
-
-  [menu_button setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                 forAxis:UILayoutConstraintAxisHorizontal];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [menu_button.heightAnchor
-        constraintEqualToConstant:kThreeDotMenuButtonSize],
-    [menu_button.widthAnchor constraintEqualToConstant:kThreeDotMenuButtonSize],
-  ]];
-
-  return menu_button;
 }
 
 }  // namespace
@@ -404,11 +377,19 @@ NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
   return attributed_title;
 }
 
-UIStackView* CreateHeaderView(UIView* icon, UILabel* label) {
-  NSArray<UIView*>* subviews =
-      IsKeyboardAccessoryUpgradeEnabled()
-          ? @[ icon, label, CreateThreeDotMenuButton() ]
-          : @[ icon, label ];
+UIStackView* CreateHeaderView(UIView* icon,
+                              UILabel* label,
+                              UIButton* overflow_menu_button) {
+  NSMutableArray<UIView*>* subviews = [[NSMutableArray alloc] init];
+  if (icon) {
+    [subviews addObject:icon];
+  }
+  CHECK(label);
+  [subviews addObject:label];
+  if (overflow_menu_button) {
+    [subviews addObject:overflow_menu_button];
+  }
+
   UIStackView* header_view =
       [[UIStackView alloc] initWithArrangedSubviews:subviews];
   header_view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -423,6 +404,34 @@ UIStackView* CreateHeaderView(UIView* icon, UILabel* label) {
   }
 
   return header_view;
+}
+
+UIButton* CreateOverflowMenuButton() {
+  ExtendedTouchTargetButton* menu_button =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  menu_button.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
+
+  UIImage* menu_image = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
+                                 kOverflowMenuButtonSize),
+      @[
+        [UIColor colorNamed:kBlue600Color], [UIColor tertiarySystemFillColor]
+      ]);
+  [menu_button setImage:menu_image forState:UIControlStateNormal];
+
+  [menu_button setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                 forAxis:UILayoutConstraintAxisHorizontal];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [menu_button.heightAnchor
+        constraintEqualToConstant:kOverflowMenuButtonSize],
+    [menu_button.widthAnchor constraintEqualToConstant:kOverflowMenuButtonSize],
+  ]];
+
+  menu_button.showsMenuAsPrimaryAction = YES;
+
+  return menu_button;
 }
 
 UIView* CreateGraySeparatorForContainer(UIView* container) {

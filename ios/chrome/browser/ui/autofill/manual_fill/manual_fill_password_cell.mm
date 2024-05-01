@@ -55,6 +55,9 @@ CGFloat GetFaviconSize() {
 @property(nonatomic, weak, readonly) id<ManualFillContentInjector>
     contentInjector;
 
+// The UIActions that should be available from the cell's overflow menu button.
+@property(nonatomic, strong) NSArray<UIAction*>* menuActions;
+
 @end
 
 @implementation ManualFillCredentialItem
@@ -63,13 +66,15 @@ CGFloat GetFaviconSize() {
          isConnectedToPreviousItem:(BOOL)isConnectedToPreviousItem
              isConnectedToNextItem:(BOOL)isConnectedToNextItem
                    contentInjector:
-                       (id<ManualFillContentInjector>)contentInjector {
+                       (id<ManualFillContentInjector>)contentInjector
+                       menuActions:(NSArray<UIAction*>*)menuActions {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _credential = credential;
     _isConnectedToPreviousItem = isConnectedToPreviousItem;
     _isConnectedToNextItem = isConnectedToNextItem;
     _contentInjector = contentInjector;
+    _menuActions = menuActions;
     self.cellClass = [ManualFillPasswordCell class];
   }
   return self;
@@ -81,7 +86,8 @@ CGFloat GetFaviconSize() {
   [cell setUpWithCredential:self.credential
       isConnectedToPreviousCell:self.isConnectedToPreviousItem
           isConnectedToNextCell:self.isConnectedToNextItem
-                contentInjector:self.contentInjector];
+                contentInjector:self.contentInjector
+                    menuActions:self.menuActions];
 }
 
 - (const GURL&)faviconURL {
@@ -115,7 +121,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* faviconContraints;
 
 // The view displayed at the top the cell containing the favicon, the site name
-// and a 3-dot menu button.
+// and an overflow button.
 @property(nonatomic, strong) UIView* headerView;
 
 // The favicon for the credential. Of type FaviconView when the Keyboard
@@ -124,6 +130,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
 
 // The label with the site name and host.
 @property(nonatomic, strong) UILabel* siteNameLabel;
+
+// The menu button displayed in the cell's header.
+@property(nonatomic, strong) UIButton* overflowMenuButton;
 
 // A button showing the username, or "No Username".
 @property(nonatomic, strong) UIButton* usernameButton;
@@ -176,7 +185,8 @@ static const CGFloat kOffsetForConnectedCell = 16;
 - (void)setUpWithCredential:(ManualFillCredential*)credential
     isConnectedToPreviousCell:(BOOL)isConnectedToPreviousCell
         isConnectedToNextCell:(BOOL)isConnectedToNextCell
-              contentInjector:(id<ManualFillContentInjector>)contentInjector {
+              contentInjector:(id<ManualFillContentInjector>)contentInjector
+                  menuActions:(NSArray<UIAction*>*)menuActions {
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
@@ -207,6 +217,12 @@ static const CGFloat kOffsetForConnectedCell = 16;
           self.grayLine, ManualFillCellView::ElementType::kHeaderSeparator,
           verticalLeadViews);
     }
+  }
+  if (menuActions && menuActions.count) {
+    self.overflowMenuButton.menu = [UIMenu menuWithChildren:menuActions];
+    self.overflowMenuButton.hidden = NO;
+  } else {
+    self.overflowMenuButton.hidden = YES;
   }
 
   // Holds the chip buttons related to the credential that are vertical leads.
@@ -287,7 +303,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
   self.faviconView.translatesAutoresizingMaskIntoConstraints = NO;
   self.faviconView.clipsToBounds = YES;
   self.faviconView.hidden = YES;
-  [self.contentView addSubview:self.faviconView];
   self.faviconContraints = @[
     [self.faviconView.widthAnchor constraintEqualToConstant:GetFaviconSize()],
     [self.faviconView.heightAnchor
@@ -295,7 +310,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
   ];
 
   self.siteNameLabel = CreateLabel();
-  self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel);
+  self.overflowMenuButton = CreateOverflowMenuButton();
+  self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel,
+                                     self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
   AppendHorizontalConstraintsForViews(staticConstraints, @[ self.headerView ],
                                       self.layoutGuide);

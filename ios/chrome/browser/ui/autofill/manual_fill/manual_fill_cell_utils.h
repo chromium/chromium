@@ -146,9 +146,16 @@ UILabel* CreateLabel();
 NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
                                                         NSString* subtitle);
 
-// Creates an horizontal stack view containing an icon, a label and a 3-dot menu
-// button. Used to create the different manual fill cells' header.
-UIStackView* CreateHeaderView(UIView* icon, UILabel* label);
+// Creates an horizontal stack view containing an icon, a label and an overflow
+// menu button. Used to create the different manual fill cells' header. `label`
+// should never be `nil`.
+UIStackView* CreateHeaderView(UIView* icon,
+                              UILabel* label,
+                              UIButton* overflow_menu_button);
+
+// Creates and configures the overflow menu button that's displayed in the
+// cell's header.
+UIButton* CreateOverflowMenuButton();
 
 // Creates a gray horizontal line separator. The gray line is added to the given
 // `container` and proper constraints are enabled to keep the line in the
