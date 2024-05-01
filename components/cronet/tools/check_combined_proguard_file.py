@@ -17,13 +17,12 @@ import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-im
 
 # Set this environment variable in order to regenerate the golden text
 # files.
-_REBASELINE_CRONET_PROGUARD = os.environ.get('REBASELINE_CRONET_PROGUARD',
-                                             '0') != '0'
+_REBASELINE_PROGUARD = os.environ.get('REBASELINE_PROGUARD', '0') != '0'
 
 def CompareGeneratedWithGolden(generated_file_path, golden_file_path):
   golden_text = cronet_utils.read_file(golden_file_path)
   generated_text = cronet_utils.read_file(generated_file_path)
-  if _REBASELINE_CRONET_PROGUARD:
+  if _REBASELINE_PROGUARD:
     if golden_text != generated_text:
       print('Updated', golden_file_path)
       with open(golden_file_path, 'w') as f:
@@ -73,7 +72,7 @@ If you wish to build the action locally in generation mode, See the instructions
 #                                                                   #
 #####################################################################
 ./components/cronet/tools/cr_cronet.py -d out/proguard_config gn && \
-REBASELINE_CRONET_PROGUARD=1 autoninja -C out/proguard_config \
+REBASELINE_PROGUARD=1 autoninja -C out/proguard_config \
 cronet_combined_proguard_flags_golden_test
 
 This will generate a GN output directory with the appropriate GN\
