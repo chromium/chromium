@@ -63,7 +63,7 @@ suite('VcBackgroundUITest', () => {
   test('initial breadcrumbs', async () => {
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
-        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel')]);
+        [getVcBackgroundBreadcrumbs().i18n('vcBackgroundLabel')]);
   });
 
   test('shows template options when template is clicked', async () => {
@@ -115,9 +115,10 @@ suite('VcBackgroundUITest', () => {
         'VC Background Classic art template id is added to url');
 
     // Breadcrumbs should show 'Classic art'.
-    assertArrayEquals(
-        getVcBackgroundBreadcrumbsText(),
-        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), 'Classic art']);
+    assertArrayEquals(getVcBackgroundBreadcrumbsText(), [
+      getVcBackgroundBreadcrumbs().i18n('vcBackgroundLabel'),
+      'Classic art',
+    ]);
   });
 
   test('verifies breadcrumbs when create button clicked', async () => {
@@ -152,9 +153,10 @@ suite('VcBackgroundUITest', () => {
         'App is on /results and Classic art template id is added to url');
 
     // Breadcrumbs should show 'Classic art'.
-    assertArrayEquals(
-        getVcBackgroundBreadcrumbsText(),
-        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), 'Classic art']);
+    assertArrayEquals(getVcBackgroundBreadcrumbsText(), [
+      getVcBackgroundBreadcrumbs().i18n('vcBackgroundLabel'),
+      'Classic art',
+    ]);
   });
 
   test('allows changing templates via breadcrumbs dropdown menu', async () => {
@@ -169,7 +171,7 @@ suite('VcBackgroundUITest', () => {
     // Breadcrumbs should show 'Classic art'.
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
-        [breadcrumbElement.i18n('seaPenLabel'), classicArtTitle]);
+        [breadcrumbElement.i18n('vcBackgroundLabel'), classicArtTitle]);
 
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
@@ -214,6 +216,6 @@ suite('VcBackgroundUITest', () => {
     // Breadcrumbs should now show 'Stylish office'.
     assertArrayEquals(
         getVcBackgroundBreadcrumbsText(),
-        [getVcBackgroundBreadcrumbs().i18n('seaPenLabel'), officeTitle]);
+        [getVcBackgroundBreadcrumbs().i18n('vcBackgroundLabel'), officeTitle]);
   });
 });

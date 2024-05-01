@@ -3104,6 +3104,9 @@
         <message name="IDS_SEA_PEN_LABEL" desc="Label for the Create with AI feature.">
           Create with AI
         </message>
+        <message name="IDS_VC_BACKGROUND_LABEL" desc="Label for the Create camera background with AI feature.">
+          Create background with AI
+        </message>
         <message name="IDS_SEA_PEN_POWERED_BY_GOOGLE_AI" desc="Subheading describing that Google made these wallpapers.">
           Powered by Google AI
         </message>
@@ -3117,7 +3120,7 @@
           Camera Background
         </message>
         <message name="IDS_VC_BACKGROUND_RECENT_WALLPAPERS_HEADING" desc="Section heading for recently-created camera backgrounds.">
-          Recent camera backgrounds powered by Google AI
+          Recent backgrounds powered by Google AI
         </message>
 
         <message name="IDS_SEA_PEN_INSPIRE_ME_BUTTON" desc="Button that randomizes selected options.">
@@ -3133,7 +3136,7 @@
           Wallpaper powered by Google AI
         </message>
         <message name="IDS_VC_BACKGROUND_POWERED_BY_GOOGLE" desc="Section heading that indicates Google made these camera backgrounds.">
-          Camera background powered by Google AI
+          Background powered by Google AI
         </message>
 
         <message name="IDS_SEA_PEN_DELETE_WALLPAPER" desc="Menu item that deletes a wallpaper.">

@@ -166,7 +166,7 @@ export class VcBackgroundBreadcrumbElement extends
   }
 
   private computeBreadcrumbs_(): string[] {
-    const breadcrumbs = [this.i18n('seaPenLabel')];
+    const breadcrumbs = [this.i18n('vcBackgroundLabel')];
 
     switch (this.path) {
       case SeaPenPaths.RESULTS:
