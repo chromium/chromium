@@ -20,6 +20,12 @@ suite('PrintTicketManager', () => {
   let mockTimer: MockTimer;
   let mockController: MockController;
 
+  const partialTicket: Partial<PrintTicket> = {
+    destination: '',
+    previewModifiable: true,  // Default to HTML document.
+    shouldPrintSelectionOnly: false,
+  };
+
   setup(() => {
     PrintTicketManager.resetInstanceForTesting();
     DestinationManager.resetInstanceForTesting();
@@ -218,8 +224,10 @@ suite('PrintTicketManager', () => {
         instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
 
         expectedTicket = {
+          ...partialTicket,
           printPreviewId: FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.printPreviewId,
-          destination: '',
+          shouldPrintSelectionOnly:
+              FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.hasSelection,
         } as PrintTicket;
         assertDeepEquals(expectedTicket, instance.getPrintTicketForTesting());
       });
@@ -291,5 +299,56 @@ suite('PrintTicketManager', () => {
         const ticket = ticketManager.getPrintTicketForTesting();
         assertNotEquals(null, ticket, 'Ticket configured');
         assertEquals('', ticket!.destination, 'destination should be empty');
+      });
+
+  // Verify default setting for previewModifiable is based on session context.
+  test('PrintTicket previewModifiable is set from session context', () => {
+    const ticketManager = PrintTicketManager.getInstance();
+    const destinationManager = DestinationManager.getInstance();
+    const getActiveDestinationFn = mockController.createFunctionMock(
+        destinationManager, 'getActiveDestination');
+    getActiveDestinationFn.returnValue = null;
+    assertEquals(null, ticketManager.getPrintTicketForTesting());
+
+    // Force isModifiable to false, isModifiable true is tested in prior
+    // test.
+    const sessionContextNotModifiable = {
+      ...FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL,
+      isModifiable: false,
+    };
+    ticketManager.initializeSession(sessionContextNotModifiable);
+
+    const ticket = ticketManager.getPrintTicketForTesting();
+    assertNotEquals(null, ticket, 'Ticket configured');
+    assertEquals(
+        sessionContextNotModifiable.isModifiable, ticket!.previewModifiable,
+        'previewModifiable should match session context');
+  });
+
+  // Verify default setting for shouldPrintSelectionOnly is based on session
+  // context.
+  test(
+      'PrintTicket shouldPrintSelectionOnly is set from session context',
+      () => {
+        const ticketManager = PrintTicketManager.getInstance();
+        const destinationManager = DestinationManager.getInstance();
+        const getActiveDestinationFn = mockController.createFunctionMock(
+            destinationManager, 'getActiveDestination');
+        getActiveDestinationFn.returnValue = null;
+        assertEquals(null, ticketManager.getPrintTicketForTesting());
+        // Force hasSelection to false, hasSelection true is tested in prior
+        // test.
+        const sessionContextNoSelection = {
+          ...FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL,
+          hasSelection: false,
+        };
+        ticketManager.initializeSession(sessionContextNoSelection);
+
+        const ticket = ticketManager.getPrintTicketForTesting();
+        assertNotEquals(null, ticket, 'Ticket configured');
+        assertEquals(
+            sessionContextNoSelection.hasSelection,
+            ticket!.shouldPrintSelectionOnly,
+            'shouldPrintSelectionOnly should default to match session context');
       });
 });

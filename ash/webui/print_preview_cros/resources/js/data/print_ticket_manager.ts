@@ -65,6 +65,8 @@ export class PrintTicketManager extends EventTarget {
     this.printTicket = {
       printPreviewId: this.sessionContext.printPreviewId,
       destination: this.destinationManager.getActiveDestination()?.id ?? '',
+      previewModifiable: this.sessionContext.isModifiable,
+      shouldPrintSelectionOnly: this.sessionContext.hasSelection,
     } as PrintTicket;
 
     this.dispatchEvent(

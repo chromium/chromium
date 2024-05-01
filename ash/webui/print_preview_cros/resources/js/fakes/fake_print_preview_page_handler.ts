@@ -29,6 +29,8 @@ const CANCEL_METHOD = 'cancel';
 const START_SESSION_METHOD = 'startSession';
 export const FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL: SessionContext = {
   printPreviewId: new UnguessableToken(),
+  isModifiable: true,
+  hasSelection: true,
 };
 
 // Fake implementation of the PrintPreviewPageHandler for tests and UI.

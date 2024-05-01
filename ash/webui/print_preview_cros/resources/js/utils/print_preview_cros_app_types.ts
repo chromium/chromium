@@ -36,6 +36,12 @@ export interface PrintTicket {
 
   // ID of the destination print job will be sent to.
   destination: string;
+
+  // Whether source document is PDF or HTML.
+  previewModifiable: boolean;
+
+  // Whether to print full document or selected section.
+  shouldPrintSelectionOnly: boolean;
 }
 
 // Immutable session configuration details for the current CrOS preview request.
@@ -43,6 +49,13 @@ export interface SessionContext {
   // ID used to map a CrOS preview session to the responsible PrintViewManager
   // and related web contents.
   printPreviewId: UnguessableToken;
+
+  // Print param which tells whether source is a PDF or HTML(modifiable).
+  isModifiable: boolean;
+
+  // Print param which tells whether source is has a selected section to
+  // determine if option to print only that selection should be provided.
+  hasSelection: boolean;
 }
 
 // Placeholder for PrintPreviewPageHandler mojo interface.
