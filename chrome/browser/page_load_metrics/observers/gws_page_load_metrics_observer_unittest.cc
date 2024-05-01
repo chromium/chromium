@@ -28,6 +28,14 @@ constexpr char kGoogleSearchResultsUrl[] = "https://www.google.com/search?q=d";
 class GWSPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
+  GWSPageLoadMetricsObserverTest()
+      // Tests in this suite need a mock clock, because they care about which
+      // histogram buckets the times of various events land inside. Using the
+      // real clock would introduce flakes depending on how long the test takes
+      // to execute. See https://issues.chromium.org/issues/327150423
+      : page_load_metrics::PageLoadMetricsObserverTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   // page_load_metrics::PageLoadMetricsObserverTestHarness:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     auto observer = std::make_unique<GWSPageLoadMetricsObserver>();
@@ -197,7 +205,7 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
   // Sleep to make sure the backgrounded time is > than the paint time, even
   // for low resolution timers.
-  base::PlatformThread::Sleep(base::Milliseconds(50));
+  task_environment()->FastForwardBy(base::Milliseconds(50));
   web_contents()->WasHidden();
   tester()->SimulateTimingUpdate(timing);
   // Navigate again to force logging.
