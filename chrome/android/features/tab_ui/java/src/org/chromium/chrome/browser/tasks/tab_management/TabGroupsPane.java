@@ -15,6 +15,7 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -41,6 +43,7 @@ public class TabGroupsPane implements Pane {
     private final LazyOneshotSupplier<TabModelFilter> mTabModelFilterSupplier;
     private final DoubleConsumer mOnToolbarAlphaChange;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private final Supplier<PaneManager> mPaneManagerSupplier;
     private final FrameLayout mRootView;
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
@@ -54,16 +57,19 @@ public class TabGroupsPane implements Pane {
      * @param tabModelFilterSupplier Used to pull tab data from.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param profileProviderSupplier Used to fetch the current profile.
+     * @param paneManagerSupplier Used to switch and communicate with other panes.
      */
     TabGroupsPane(
             @NonNull Context context,
             @NonNull LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier) {
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            @NonNull Supplier<PaneManager> paneManagerSupplier) {
         mContext = context;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mOnToolbarAlphaChange = onToolbarAlphaChange;
         mProfileProviderSupplier = profileProviderSupplier;
+        mPaneManagerSupplier = paneManagerSupplier;
         mReferenceButtonSupplier.set(
                 new ResourceButtonData(
                         R.string.accessibility_tab_groups,
@@ -119,7 +125,8 @@ public class TabGroupsPane implements Pane {
                     new TabGroupListCoordinator(
                             mContext,
                             (TabGroupModelFilter) mTabModelFilterSupplier.get(),
-                            mProfileProviderSupplier.get());
+                            mProfileProviderSupplier.get(),
+                            mPaneManagerSupplier.get());
             mRootView.addView(mTabGroupListCoordinator.getView());
         } else if (loadHint == LoadHint.COLD && mTabGroupListCoordinator != null) {
             destroy();

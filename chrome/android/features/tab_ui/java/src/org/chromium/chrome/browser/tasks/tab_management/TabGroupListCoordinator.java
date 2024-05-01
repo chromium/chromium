@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -46,8 +47,17 @@ public class TabGroupListCoordinator {
     private final SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
     private TabGroupListMediator mTabGroupListMediator;
 
+    /**
+     * @param context Used to load resources and views.
+     * @param filter Used to interact with local tab model and groups.
+     * @param profileProvider Used to fetch keyed service.
+     * @param paneManager Used to switch to show detailed tab group UI.
+     */
     public TabGroupListCoordinator(
-            Context context, TabGroupModelFilter filter, ProfileProvider profileProvider) {
+            Context context,
+            TabGroupModelFilter filter,
+            ProfileProvider profileProvider,
+            PaneManager paneManager) {
         ModelList modelList = new ModelList();
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
@@ -67,7 +77,8 @@ public class TabGroupListCoordinator {
                 buildFaviconResolver(resources, profile);
         TabGroupSyncService syncService = TabGroupSyncServiceFactory.getForProfile(profile);
         mTabGroupListMediator =
-                new TabGroupListMediator(modelList, filter, faviconResolver, syncService);
+                new TabGroupListMediator(
+                        modelList, filter, faviconResolver, syncService, paneManager);
     }
 
     private BiConsumer<GURL, Callback<Drawable>> buildFaviconResolver(

@@ -410,6 +410,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         mTabListCoordinator.waitForLayoutWithTab(tabId, r);
     }
 
+    /**
+     * Scrolls to the specified group and animates open a dialog. It is the caller's responsibility
+     * to ensure that this pane is showing before calling this.
+     *
+     * @param tabId The id of any tab in the group.
+     */
+    public void requestOpenTabGroupDialog(int tabId) {
+        mMediator.scrollToTabById(tabId);
+        mMediator.openTabGroupDialog(tabId);
+    }
+
     @Override
     public @BackPressResult int handleBackPress() {
         return mMediator.handleBackPress();

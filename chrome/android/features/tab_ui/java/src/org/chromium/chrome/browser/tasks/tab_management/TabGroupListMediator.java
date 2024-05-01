@@ -25,6 +25,8 @@ import org.chromium.base.Token;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.AsyncDrawable;
@@ -72,6 +74,7 @@ public class TabGroupListMediator {
     private final TabGroupModelFilter mFilter;
     private final BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
     private final TabGroupSyncService mSyncService;
+    private final PaneManager mPaneManager;
     private final CallbackController mCallbackController = new CallbackController();
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
@@ -111,16 +114,19 @@ public class TabGroupListMediator {
      * @param filter Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param syncService Used to fetch synced copy of tab groups.
+     * @param paneManager Used switch panes to show details of a group.
      */
     public TabGroupListMediator(
             ModelList modelList,
             TabGroupModelFilter filter,
             BiConsumer<GURL, Callback<Drawable>> faviconResolver,
-            TabGroupSyncService syncService) {
+            TabGroupSyncService syncService,
+            PaneManager paneManager) {
         mModelList = modelList;
         mFilter = filter;
         mFaviconResolver = faviconResolver;
         mSyncService = syncService;
+        mPaneManager = paneManager;
         mSyncService.addObserver(mSyncObserver);
         repopulateModelList();
     }
@@ -142,7 +148,6 @@ public class TabGroupListMediator {
 
     private void repopulateModelList() {
         mModelList.clear();
-
         for (String syncGroupId : mSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
 
@@ -151,7 +156,6 @@ public class TabGroupListMediator {
             if (state == TabGroupState.IN_ANOTHER) continue;
 
             PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
-
             int numberOfTabs = savedTabGroup.savedTabs.size();
             int numberOfCorners = FAVICON_ORDER.length;
             int standardCorners = numberOfCorners - 1;
@@ -181,14 +185,27 @@ public class TabGroupListMediator {
 
             builder.with(CREATION_MILLIS, savedTabGroup.creationTimeMs);
 
-            // TODO(b:324934166): Supply open/delete runnables.
-            // builder.with(TabGroupRowProperties.OPEN_RUNNABLE, null);
+            builder.with(TabGroupRowProperties.OPEN_RUNNABLE, () -> openGroup(savedTabGroup));
+            // TODO(crbug.com/324934166): Supply delete runnable.
             // builder.with(TabGroupRowProperties.DELETE_RUNNABLE, null);
 
             PropertyModel propertyModel = builder.build();
             ListItem listItem = new ListItem(0, propertyModel);
             mModelList.add(listItem);
         }
+    }
+
+    private void openGroup(SavedTabGroup savedTabGroup) {
+        if (savedTabGroup.localId == null) {
+            // TODO(crbug.com/324934166): Open this tab in local model first.
+            return;
+        }
+        int rootId = mFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
+        mPaneManager.focusPane(PaneId.TAB_SWITCHER);
+        TabSwitcherPaneBase tabSwitcherPaneBase =
+                (TabSwitcherPaneBase) mPaneManager.getPaneForId(PaneId.TAB_SWITCHER);
+        boolean success = tabSwitcherPaneBase.requestOpenTabGroupDialog(rootId);
+        assert success;
     }
 
     private AsyncDrawable buildAsyncDrawable(SavedTabGroupTab tab) {

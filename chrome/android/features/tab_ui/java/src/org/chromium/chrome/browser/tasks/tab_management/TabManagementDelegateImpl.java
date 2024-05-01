@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -223,7 +224,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier) {
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            @NonNull OneshotSupplier<HubManager> hubManagerSupplier) {
         LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () ->
@@ -231,7 +233,11 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                                         .getTabModelFilterProvider()
                                         .getTabModelFilter(false));
         return new TabGroupsPane(
-                context, tabModelFilterSupplier, onToolbarAlphaChange, profileProviderSupplier);
+                context,
+                tabModelFilterSupplier,
+                onToolbarAlphaChange,
+                profileProviderSupplier,
+                () -> hubManagerSupplier.get().getPaneManager());
     }
 
     @Override

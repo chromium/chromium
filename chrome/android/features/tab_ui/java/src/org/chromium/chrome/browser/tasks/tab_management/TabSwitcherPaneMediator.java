@@ -266,6 +266,18 @@ public class TabSwitcherPaneMediator
         mContainerViewModel.set(INITIAL_SCROLL_INDEX, tabIndex);
     }
 
+    /** Scroll to a given tab or tab group by id. */
+    public void scrollToTabById(int tabId) {
+        TabModelFilter filter = mTabModelFilterSupplier.get();
+        TabModel tabModel = filter.getTabModel();
+        Tab tab = tabModel.getTabById(tabId);
+        if (filter.isTabInTabGroup(tab)) {
+            tab = tabModel.getTabById(tab.getRootId());
+        }
+        int index = filter.indexOf(tab);
+        scrollToTab(index);
+    }
+
     @Override
     public void addCustomView(
             @NonNull View customView, @Nullable Runnable backPressRunnable, boolean clearTabList) {
@@ -322,12 +334,16 @@ public class TabSwitcherPaneMediator
         return filter.isIncognito() == tab.isIncognito() && filter.isTabInTabGroup(tab);
     }
 
-    private void onTabGroupClicked(int tabId) {
+    public void openTabGroupDialog(int tabId) {
         List<Tab> relatedTabs = mTabModelFilterSupplier.get().getRelatedTabList(tabId);
         if (relatedTabs.size() == 0) {
             relatedTabs = null;
         }
         mTabGridDialogControllerSupplier.get().resetWithListOfTabs(relatedTabs);
+    }
+
+    private void onTabGroupClicked(int tabId) {
+        openTabGroupDialog(tabId);
         RecordUserAction.record("TabGridDialog.ExpandedFromSwitcher");
     }
 

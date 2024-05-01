@@ -20,9 +20,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.hub.LoadHint;
+import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -44,6 +46,7 @@ public class TabGroupsPaneUnitTest {
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private Supplier<PaneManager> mPaneManagerSupplier;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
@@ -67,7 +70,8 @@ public class TabGroupsPaneUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
                         mOnToolbarAlphaChange,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mPaneManagerSupplier);
         assertEquals(0, pane.getRootView().getChildCount());
 
         pane.notifyLoadHint(LoadHint.HOT);
@@ -84,7 +88,8 @@ public class TabGroupsPaneUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
                         mOnToolbarAlphaChange,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mPaneManagerSupplier);
         pane.notifyLoadHint(LoadHint.HOT);
         pane.destroy();
         assertEquals(0, pane.getRootView().getChildCount());
@@ -97,7 +102,8 @@ public class TabGroupsPaneUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
                         mOnToolbarAlphaChange,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mPaneManagerSupplier);
         pane.notifyLoadHint(LoadHint.HOT);
         pane.notifyLoadHint(LoadHint.COLD);
         pane.destroy();
@@ -111,7 +117,8 @@ public class TabGroupsPaneUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
                         mOnToolbarAlphaChange,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mPaneManagerSupplier);
         pane.destroy();
         assertEquals(0, pane.getRootView().getChildCount());
     }

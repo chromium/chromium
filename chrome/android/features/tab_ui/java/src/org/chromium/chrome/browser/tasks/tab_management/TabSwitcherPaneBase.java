@@ -389,6 +389,23 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     /**
+     * Requests to show a dialog for a tab group.
+     *
+     * @param tabId The id of any tab in the group.
+     * @return Whether the request to show was able to be handled.
+     */
+    public boolean requestOpenTabGroupDialog(int tabId) {
+        @Nullable
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator != null) {
+            coordinator.requestOpenTabGroupDialog(tabId);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Request to show all the tabs in the pane. Subclasses should override this method to invoke
      * {@link TabSwitcherResetHandler#resetWithTabList} with their available tabs.
      */

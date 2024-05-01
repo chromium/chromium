@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -207,13 +208,15 @@ public interface TabManagementDelegate {
      * @param tabModelSelector Used to pull tab data from.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param profileProviderSupplier The supplier for profiles.
+     * @param hubManagerSupplier Supplier ultimately used to get the pane manager to switch panes.
      * @return The pane implementation that displays and allows interactions with tab groups.
      */
     Pane createTabGroupsPane(
             @NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier);
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            @NonNull OneshotSupplier<HubManager> hubManagerSupplier);
 
     /**
      * Create a TabGroupCreationDialogManager when creating a new tab group.
@@ -232,7 +235,7 @@ public interface TabManagementDelegate {
     /**
      * Create a {@link ColorPicker} when creating a custom color picker component.
      *
-     * @param activity The current Android's context.
+     * @param context The current Android's context.
      * @param colors The list of colors used for this color picker component.
      * @param colorPickerLayout The layout resource to be inflated.
      * @param colorPickerType The {@link ColorPickerType} that this color picker use.

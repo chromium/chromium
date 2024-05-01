@@ -123,6 +123,9 @@ public class TabSwitcherPaneMediatorUnitTest {
         mUngroupedTab = mTabModel.getTabAt(0);
         mGroupedTab1 = mTabModel.getTabAt(1);
         mGroupedTab2 = mTabModel.getTabAt(2);
+        mUngroupedTab.setRootId(UNGROUPED_TAB_ID);
+        mGroupedTab1.setRootId(GROUPED_TAB_1_ID);
+        mGroupedTab2.setRootId(GROUPED_TAB_1_ID);
         when(mTabModelFilter.getRelatedTabList(UNGROUPED_TAB_ID))
                 .thenReturn(List.of(mUngroupedTab));
         when(mTabModelFilter.getRelatedTabList(GROUPED_TAB_1_ID))
@@ -131,6 +134,9 @@ public class TabSwitcherPaneMediatorUnitTest {
         when(mTabModelFilter.isTabInTabGroup(mGroupedTab1)).thenReturn(true);
         when(mTabModelFilter.isTabInTabGroup(mGroupedTab2)).thenReturn(true);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelFilter.indexOf(mUngroupedTab)).thenReturn(0);
+        when(mTabModelFilter.indexOf(mGroupedTab1)).thenReturn(1);
+        when(mTabModelFilter.indexOf(mGroupedTab2)).thenReturn(2);
 
         when(mTabGridDialogController.getHandleBackPressChangedSupplier())
                 .thenReturn(mDialogBackPressChangedSupplier);
@@ -364,6 +370,9 @@ public class TabSwitcherPaneMediatorUnitTest {
         index = 3;
         mMediator.scrollToTab(index);
         assertEquals(index, mModel.get(INITIAL_SCROLL_INDEX).intValue());
+
+        mMediator.scrollToTabById(GROUPED_TAB_2_ID);
+        assertEquals(1, mModel.get(INITIAL_SCROLL_INDEX).intValue());
     }
 
     @Test
