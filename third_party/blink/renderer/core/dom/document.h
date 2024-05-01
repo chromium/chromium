@@ -1277,7 +1277,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // Storage Access API methods to check for or request access to storage that
   // may otherwise be blocked.
   ScriptPromise<IDLBoolean> hasStorageAccess(ScriptState* script_state);
-  ScriptPromise<IDLUndefined> requestStorageAccess(ScriptState* script_state);
   ScriptPromise<IDLUndefined> requestStorageAccessFor(ScriptState* script_state,
                                                       const AtomicString& site);
 
@@ -2328,23 +2327,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void RunPostPrerenderingActivationSteps();
 
-  // Attempt permission checks for unpartitioned storage access and enable
-  // unpartitioned cookie access based on success if
-  // `request_unpartitioned_cookie_access` is true.
-  ScriptPromise<IDLUndefined> RequestStorageAccessImpl(
-      ScriptState* script_state,
-      bool request_unpartitioned_cookie_access);
-
   // Resolves the promise if the `status` can approve; rejects the promise
-  // otherwise, and consumes user activation. Enables unpartitioned cookie
-  // access if `request_unpartitioned_cookie_access` is true.
-  void ProcessStorageAccessPermissionState(
-      ScriptPromiseResolver<IDLUndefined>* resolver,
-      bool request_unpartitioned_cookie_access,
-      mojom::blink::PermissionStatus status);
-
-  // Similar to `ProcessStorageAccessPermissionState`, but for the top-level
-  // variant. Notably, does not modify the per-frame storage access bit.
+  // otherwise, and consumes user activation.  Notably, does not modify the
+  // per-frame storage access bit.
   void ProcessTopLevelStorageAccessPermissionState(
       ScriptPromiseResolver<IDLUndefined>* resolver,
       mojom::blink::PermissionStatus status);

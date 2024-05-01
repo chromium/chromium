@@ -188,7 +188,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     // Storage Access API
     [CallWith=ScriptState, NewObject, MeasureAs=StorageAccessAPI_HasStorageAccess_Method] Promise<boolean> hasStorageAccess();
-    [CallWith=ScriptState, NewObject, MeasureAs=StorageAccessAPI_requestStorageAccess_Method] Promise<undefined> requestStorageAccess();
     [CallWith=ScriptState, NewObject, MeasureAs=StorageAccessAPI_requestStorageAccessFor_Method] Promise<undefined> requestStorageAccessFor(USVString requestedOrigin);
 
     // Text fragment directive API

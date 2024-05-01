@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -17,7 +18,7 @@
 namespace blink {
 class Document;
 
-class CookieJar : public GarbageCollected<CookieJar> {
+class CORE_EXPORT CookieJar : public GarbageCollected<CookieJar> {
  public:
   explicit CookieJar(blink::Document* document);
   virtual ~CookieJar();

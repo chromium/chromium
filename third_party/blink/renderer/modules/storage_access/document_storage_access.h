@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_ACCESS_DOCUMENT_STORAGE_ACCESS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_ACCESS_DOCUMENT_STORAGE_ACCESS_H_
 
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -23,6 +26,9 @@ class DocumentStorageAccess final
   static const char kSupplementName[];
   static const char kNoAccessRequested[];
   static DocumentStorageAccess& From(Document& document);
+  static ScriptPromise<IDLUndefined> requestStorageAccess(
+      ScriptState* script_state,
+      Document& document);
   static ScriptPromise<StorageAccessHandle> requestStorageAccess(
       ScriptState* script_state,
       Document& document,
@@ -34,11 +40,28 @@ class DocumentStorageAccess final
   explicit DocumentStorageAccess(Document& document);
   void Trace(Visitor*) const override;
 
+  ScriptPromise<IDLUndefined> requestStorageAccess(ScriptState* script_state);
   ScriptPromise<StorageAccessHandle> requestStorageAccess(
       ScriptState* script_state,
       const StorageAccessTypes* storage_access_types);
   ScriptPromise<IDLBoolean> hasUnpartitionedCookieAccess(
       ScriptState* script_state);
+
+ private:
+  // Attempt permission checks for unpartitioned storage access and enable
+  // unpartitioned cookie access based on success if
+  // `request_unpartitioned_cookie_access` is true.
+  ScriptPromise<IDLUndefined> RequestStorageAccessImpl(
+      ScriptState* script_state,
+      bool request_unpartitioned_cookie_access);
+
+  // Resolves the promise if the `status` can approve; rejects the promise
+  // otherwise, and consumes user activation. Enables unpartitioned cookie
+  // access if `request_unpartitioned_cookie_access` is true.
+  void ProcessStorageAccessPermissionState(
+      ScriptPromiseResolver<IDLUndefined>* resolver,
+      bool request_unpartitioned_cookie_access,
+      mojom::blink::PermissionStatus status);
 };
 
 }  // namespace blink
