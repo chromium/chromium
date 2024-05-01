@@ -107,6 +107,8 @@ def CheckExpectations(actual_data, options, custom_msg=''):
   if not diff_text:
     fail_msg = ''
   else:
+    # The space before the `patch` command is intentional, as it causes the line
+    # to not be saved in bash history for most configurations.
     fail_msg = """
 Expectations need updating:
 https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/android/expectations/README.md
