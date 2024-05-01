@@ -300,6 +300,8 @@ stage_install_common() {
       icon_regex=".*product_logo_[0-9]\+_beta\."
     elif [ "$CHANNEL" = "unstable" ]; then
       icon_regex=".*product_logo_[0-9]\+_dev\."
+    elif [ "$CHANNEL" = "canary" ]; then
+      icon_regex=".*product_logo_[0-9]\+_canary\."
     fi
   fi
   LOGO_RESOURCES_PNG=$(find "${OUTPUTDIR}/installer/theme/" \

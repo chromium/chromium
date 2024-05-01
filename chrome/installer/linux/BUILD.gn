@@ -301,23 +301,30 @@ copy("theme_files") {
     "$branding_dir_100/linux/product_logo_32.png",
   ]
   if (is_chrome_branded) {
-    # TODO(crbug.com/335306207): Add product logo for canary channel.
     sources += [
       "$branding_dir/linux/product_logo_128_beta.png",
+      "$branding_dir/linux/product_logo_128_canary.png",
       "$branding_dir/linux/product_logo_128_dev.png",
       "$branding_dir/linux/product_logo_24_beta.png",
+      "$branding_dir/linux/product_logo_24_canary.png",
       "$branding_dir/linux/product_logo_24_dev.png",
       "$branding_dir/linux/product_logo_256_beta.png",
+      "$branding_dir/linux/product_logo_256_canary.png",
       "$branding_dir/linux/product_logo_256_dev.png",
       "$branding_dir/linux/product_logo_32_beta.xpm",
+      "$branding_dir/linux/product_logo_32_canary.xpm",
       "$branding_dir/linux/product_logo_32_dev.xpm",
       "$branding_dir/linux/product_logo_48_beta.png",
+      "$branding_dir/linux/product_logo_48_canary.png",
       "$branding_dir/linux/product_logo_48_dev.png",
       "$branding_dir/linux/product_logo_64_beta.png",
+      "$branding_dir/linux/product_logo_64_canary.png",
       "$branding_dir/linux/product_logo_64_dev.png",
       "$branding_dir_100/linux/product_logo_16_beta.png",
+      "$branding_dir_100/linux/product_logo_16_canary.png",
       "$branding_dir_100/linux/product_logo_16_dev.png",
       "$branding_dir_100/linux/product_logo_32_beta.png",
+      "$branding_dir_100/linux/product_logo_32_canary.png",
       "$branding_dir_100/linux/product_logo_32_dev.png",
     ]
   }
