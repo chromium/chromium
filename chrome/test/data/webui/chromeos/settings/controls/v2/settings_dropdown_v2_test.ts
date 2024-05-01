@@ -35,14 +35,21 @@ suite('<settings-dropdown-v2>', () => {
   function assertOptionSelected(expectedValue: string|number): void {
     assertEquals(expectedValue.toString(), internalSelectElement.value);
 
-    const selectedOption =
-        Array.from(internalSelectElement.options).find((option) => {
+    const selectedOptionIndex =
+        Array.from(internalSelectElement.options).findIndex((option) => {
           return expectedValue.toString() === option.value;
         });
+    assertEquals(selectedOptionIndex, internalSelectElement.selectedIndex);
 
+    const selectedOption = internalSelectElement.options[selectedOptionIndex];
     assertTrue(
         !!selectedOption, `No matching option for value: ${expectedValue}`);
     assertTrue(selectedOption.selected, 'Option is not selected');
+  }
+
+  function assertNoOptionSelected(): void {
+    assertEquals('', internalSelectElement.value);
+    assertEquals(-1, internalSelectElement.selectedIndex);
   }
 
   setup(async () => {
@@ -118,16 +125,6 @@ suite('<settings-dropdown-v2>', () => {
     });
   });
 
-  test('Not found option is included and hidden', () => {
-    const options = Array.from(internalSelectElement.options);
-    assertEquals(testOptions.length + 1, options.length);
-    const notFoundOption = options.find((option) => {
-      return option.value === 'SETTINGS_DROPDOWN_NOT_FOUND';
-    });
-    assertTrue(!!notFoundOption);
-    assertTrue(notFoundOption.hidden);
-  });
-
   suite('with pref', () => {
     setup(async () => {
       dropdownElement.pref = {...fakeNumberPrefObject};
@@ -186,25 +183,29 @@ suite('<settings-dropdown-v2>', () => {
       });
     });
 
-    test('Pref value updates the selected option', () => {
+    test('Pref value updates the selected option', async () => {
       assertOptionSelected(1);
 
       dropdownElement.set('pref.value', 2);
+      await flushTasks();
       assertOptionSelected(2);
 
       dropdownElement.set('pref.value', 3);
+      await flushTasks();
       assertOptionSelected(3);
     });
 
     test(
-        'Not found option is selected if no matching option for pref value',
-        () => {
+        'No option is selected if no matching option for pref value',
+        async () => {
           assertOptionSelected(1);
 
           dropdownElement.set('pref.value', 9001);
-          assertOptionSelected('SETTINGS_DROPDOWN_NOT_FOUND');
+          await flushTasks();
+          assertNoOptionSelected();
 
           dropdownElement.set('pref.value', 2);
+          await flushTasks();
           assertOptionSelected(2);
         });
 
@@ -255,22 +256,30 @@ suite('<settings-dropdown-v2>', () => {
   });
 
   suite('without pref', () => {
-    test('Selected option updates according to value property', () => {
+    test('Selected option updates according to value property', async () => {
       dropdownElement.value = 1;
+      await flushTasks();
       assertOptionSelected(1);
+
       dropdownElement.value = 2;
+      await flushTasks();
       assertOptionSelected(2);
+
       dropdownElement.value = 3;
+      await flushTasks();
       assertOptionSelected(3);
     });
 
-    test('Not found option is selected if no matching option for value', () => {
+    test('No option is selected if no matching option for value', async () => {
+      assertNoOptionSelected();
+
       dropdownElement.value = 1;
+      await flushTasks();
       assertOptionSelected(1);
+
       dropdownElement.value = 9001;
-      assertOptionSelected('SETTINGS_DROPDOWN_NOT_FOUND');
-      dropdownElement.value = 2;
-      assertOptionSelected(2);
+      await flushTasks();
+      assertNoOptionSelected();
     });
 
     test('Selecting an option updates value property', () => {

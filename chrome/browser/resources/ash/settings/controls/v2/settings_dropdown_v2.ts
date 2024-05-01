@@ -13,7 +13,7 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../../assert_extras.js';
 
@@ -80,31 +80,13 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
       ariaLabel: {
         type: String,
       },
-
-      /**
-       * The value of the "not found" dropdown option. This option and value are
-       * used when there is no matching option for the dropdown's value. In this
-       * case, the selected value will appear blank in the UI.
-       */
-      notFoundValue: {
-        type: String,
-        value: 'SETTINGS_DROPDOWN_NOT_FOUND',
-        readOnly: true,
-      },
-
-      /**
-       * Determines if the "not found" option is selected or not.
-       */
-      isNotFoundOptionSelected_: {
-        type: Boolean,
-        computed: 'computeIsNotFoundOptionSelected_(options, value)',
-      },
     };
   }
 
   static get observers() {
     return [
       'syncPrefChangeToValue_(pref.*)',
+      'setSelectedOption_(options, value)',
     ];
   }
 
@@ -125,7 +107,8 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
    * `change` event containing the selected value.
    */
   private onChange_(): void {
-    const selectedOption = this.findMatchingOption_(this.$.select.value);
+    const optionIndex = this.findMatchingOptionIndex_(this.$.select.value);
+    const selectedOption = this.options[optionIndex];
     assertExists(selectedOption);
     this.value = selectedOption.value;
 
@@ -135,14 +118,6 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
 
     this.dispatchEvent(new CustomEvent(
         'change', {bubbles: true, composed: true, detail: this.value}));
-  }
-
-  /**
-   * Returns a matching option from `options` based on the given `value` string.
-   * Else, returns `undefined` if no matching option.
-   */
-  private findMatchingOption_(value: string): DropdownOption|undefined {
-    return this.options.find(option => option.value.toString() === value);
   }
 
   /**
@@ -156,30 +131,42 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
   }
 
   /**
+   * This observer watches changes to the `options` list or `value`.
+   * Programmatically sets the <select>'s value via the index of the selected
+   * option. An index of -1 means that no option is selected and the <select>
+   * should appear blank.
+   */
+  private setSelectedOption_(): void {
+    const optionIndex = this.findMatchingOptionIndex_(this.value);
+
+    // Wait for the dom-repeat to populate the <select> options before setting
+    // the value.
+    microTask.run(() => {
+      this.$.select.selectedIndex = optionIndex;
+    });
+  }
+
+  /**
+   * Returns the index of an option with the same value as `value`. Returns -1
+   * if no options match.
+   */
+  private findMatchingOptionIndex_(value: DropdownOption['value']|
+                                   undefined): number {
+    if (value === undefined) {
+      return -1;
+    }
+
+    return this.options.findIndex((option) => {
+      return option.value.toString() === value.toString();
+    });
+  }
+
+  /**
    * Determines if the internal select element should be disabled. It should be
    * disabled if there are no menu items.
    */
   private isSelectDisabled_(): boolean {
     return this.disabled || this.options.length === 0;
-  }
-
-  /**
-   * Determines if the given `option` is selected based on its value.
-   */
-  private isOptionSelected_(option: DropdownOption): boolean {
-    if (this.value === undefined) {
-      return false;
-    }
-
-    return this.value.toString() === option.value.toString();
-  }
-
-  /**
-   * Computes if the "not found" option is selected. This option should be
-   * selected only if no other options are selected.
-   */
-  private computeIsNotFoundOptionSelected_(): boolean {
-    return !this.options.some((option) => this.isOptionSelected_(option));
   }
 }
 

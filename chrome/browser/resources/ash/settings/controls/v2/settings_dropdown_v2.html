@@ -7,13 +7,8 @@
     on-change="onChange_"
     disabled="[[isSelectDisabled_(disabled, options)]]">
   <template is="dom-repeat" items="[[options]]" as="option">
-    <option value="[[option.value]]"
-        hidden="[[option.hidden]]"
-        selected="[[isOptionSelected_(option, value)]]">
+    <option value="[[option.value]]" hidden="[[option.hidden]]">
       [[option.label]]
     </option>
   </template>
-  <option value="[[notFoundValue]]" hidden aria-hidden="true"
-      selected="[[isNotFoundOptionSelected_]]">
-  </option>
 </select>
