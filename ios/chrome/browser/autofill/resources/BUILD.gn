@@ -2,146 +2,73 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-imageset("autofill_close") {
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
   sources = [
-    "autofill_close.imageset/Contents.json",
-    "autofill_close.imageset/autofill_close.png",
-    "autofill_close.imageset/autofill_close@2x.png",
-    "autofill_close.imageset/autofill_close@3x.png",
-  ]
-}
-
-imageset("autofill_close_pressed") {
-  sources = [
-    "autofill_close_pressed.imageset/Contents.json",
-    "autofill_close_pressed.imageset/autofill_close_pressed.png",
-    "autofill_close_pressed.imageset/autofill_close_pressed@2x.png",
-    "autofill_close_pressed.imageset/autofill_close_pressed@3x.png",
-  ]
-}
-
-imageset("autofill_keyboard_background") {
-  sources = [
-    "autofill_keyboard_background.imageset/Contents.json",
-    "autofill_keyboard_background.imageset/autofill_keyboard_background.png",
-    "autofill_keyboard_background.imageset/autofill_keyboard_background@2x.png",
-    "autofill_keyboard_background.imageset/autofill_keyboard_background@3x.png",
-  ]
-}
-
-imageset("autofill_keyboard_background_left") {
-  sources = [
-    "autofill_keyboard_background_left.imageset/Contents.json",
-    "autofill_keyboard_background_left.imageset/autofill_keyboard_background_left.png",
-    "autofill_keyboard_background_left.imageset/autofill_keyboard_background_left@2x.png",
-  ]
-}
-
-imageset("autofill_keyboard_background_right") {
-  sources = [
-    "autofill_keyboard_background_right.imageset/Contents.json",
-    "autofill_keyboard_background_right.imageset/autofill_keyboard_background_right.png",
-    "autofill_keyboard_background_right.imageset/autofill_keyboard_background_right@2x.png",
-  ]
-}
-
-imageset("autofill_left_sep") {
-  sources = [
-    "autofill_left_sep.imageset/Contents.json",
-    "autofill_left_sep.imageset/autofill_left_sep.png",
-    "autofill_left_sep.imageset/autofill_left_sep@2x.png",
-    "autofill_left_sep.imageset/autofill_left_sep@3x.png",
-  ]
-}
-
-imageset("autofill_left_sep_RTL") {
-  sources = [
-    "autofill_left_sep_RTL.imageset/Contents.json",
-    "autofill_left_sep_RTL.imageset/autofill_left_sep_RTL.png",
-    "autofill_left_sep_RTL.imageset/autofill_left_sep_RTL@2x.png",
-    "autofill_left_sep_RTL.imageset/autofill_left_sep_RTL@3x.png",
-  ]
-}
-
-imageset("autofill_middle_sep") {
-  sources = [
-    "autofill_middle_sep.imageset/Contents.json",
-    "autofill_middle_sep.imageset/autofill_middle_sep.png",
-    "autofill_middle_sep.imageset/autofill_middle_sep@2x.png",
-    "autofill_middle_sep.imageset/autofill_middle_sep@3x.png",
-  ]
-}
-
-imageset("autofill_next") {
-  sources = [
-    "autofill_next.imageset/Contents.json",
-    "autofill_next.imageset/autofill_next.png",
-    "autofill_next.imageset/autofill_next@2x.png",
-    "autofill_next.imageset/autofill_next@3x.png",
-  ]
-}
-
-imageset("autofill_next_inactive") {
-  sources = [
-    "autofill_next_inactive.imageset/Contents.json",
-    "autofill_next_inactive.imageset/autofill_next_inactive.png",
-    "autofill_next_inactive.imageset/autofill_next_inactive@2x.png",
-    "autofill_next_inactive.imageset/autofill_next_inactive@3x.png",
-  ]
-}
-
-imageset("autofill_next_pressed") {
-  sources = [
-    "autofill_next_pressed.imageset/Contents.json",
-    "autofill_next_pressed.imageset/autofill_next_pressed.png",
-    "autofill_next_pressed.imageset/autofill_next_pressed@2x.png",
-    "autofill_next_pressed.imageset/autofill_next_pressed@3x.png",
-  ]
-}
-
-imageset("autofill_prev") {
-  sources = [
-    "autofill_prev.imageset/Contents.json",
-    "autofill_prev.imageset/autofill_prev.png",
-    "autofill_prev.imageset/autofill_prev@2x.png",
-    "autofill_prev.imageset/autofill_prev@3x.png",
-  ]
-}
-
-imageset("autofill_prev_inactive") {
-  sources = [
-    "autofill_prev_inactive.imageset/Contents.json",
-    "autofill_prev_inactive.imageset/autofill_prev_inactive.png",
-    "autofill_prev_inactive.imageset/autofill_prev_inactive@2x.png",
-    "autofill_prev_inactive.imageset/autofill_prev_inactive@3x.png",
-  ]
-}
-
-imageset("autofill_prev_pressed") {
-  sources = [
-    "autofill_prev_pressed.imageset/Contents.json",
-    "autofill_prev_pressed.imageset/autofill_prev_pressed.png",
-    "autofill_prev_pressed.imageset/autofill_prev_pressed@2x.png",
-    "autofill_prev_pressed.imageset/autofill_prev_pressed@3x.png",
-  ]
-}
-
-imageset("autofill_right_sep") {
-  sources = [
-    "autofill_right_sep.imageset/Contents.json",
-    "autofill_right_sep.imageset/autofill_right_sep.png",
-    "autofill_right_sep.imageset/autofill_right_sep@2x.png",
-    "autofill_right_sep.imageset/autofill_right_sep@3x.png",
-  ]
-}
-
-imageset("autofill_right_sep_RTL") {
-  sources = [
-    "autofill_right_sep_RTL.imageset/Contents.json",
-    "autofill_right_sep_RTL.imageset/autofill_right_sep_RTL.png",
-    "autofill_right_sep_RTL.imageset/autofill_right_sep_RTL@2x.png",
-    "autofill_right_sep_RTL.imageset/autofill_right_sep_RTL@3x.png",
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/autofill_close.imageset/Contents.json",
+    "Assets.xcassets/autofill_close.imageset/autofill_close.png",
+    "Assets.xcassets/autofill_close.imageset/autofill_close@2x.png",
+    "Assets.xcassets/autofill_close.imageset/autofill_close@3x.png",
+    "Assets.xcassets/autofill_close_pressed.imageset/Contents.json",
+    "Assets.xcassets/autofill_close_pressed.imageset/autofill_close_pressed.png",
+    "Assets.xcassets/autofill_close_pressed.imageset/autofill_close_pressed@2x.png",
+    "Assets.xcassets/autofill_close_pressed.imageset/autofill_close_pressed@3x.png",
+    "Assets.xcassets/autofill_keyboard_background.imageset/Contents.json",
+    "Assets.xcassets/autofill_keyboard_background.imageset/autofill_keyboard_background.png",
+    "Assets.xcassets/autofill_keyboard_background.imageset/autofill_keyboard_background@2x.png",
+    "Assets.xcassets/autofill_keyboard_background.imageset/autofill_keyboard_background@3x.png",
+    "Assets.xcassets/autofill_keyboard_background_left.imageset/Contents.json",
+    "Assets.xcassets/autofill_keyboard_background_left.imageset/autofill_keyboard_background_left.png",
+    "Assets.xcassets/autofill_keyboard_background_left.imageset/autofill_keyboard_background_left@2x.png",
+    "Assets.xcassets/autofill_keyboard_background_right.imageset/Contents.json",
+    "Assets.xcassets/autofill_keyboard_background_right.imageset/autofill_keyboard_background_right.png",
+    "Assets.xcassets/autofill_keyboard_background_right.imageset/autofill_keyboard_background_right@2x.png",
+    "Assets.xcassets/autofill_left_sep.imageset/Contents.json",
+    "Assets.xcassets/autofill_left_sep.imageset/autofill_left_sep.png",
+    "Assets.xcassets/autofill_left_sep.imageset/autofill_left_sep@2x.png",
+    "Assets.xcassets/autofill_left_sep.imageset/autofill_left_sep@3x.png",
+    "Assets.xcassets/autofill_left_sep_RTL.imageset/Contents.json",
+    "Assets.xcassets/autofill_left_sep_RTL.imageset/autofill_left_sep_RTL.png",
+    "Assets.xcassets/autofill_left_sep_RTL.imageset/autofill_left_sep_RTL@2x.png",
+    "Assets.xcassets/autofill_left_sep_RTL.imageset/autofill_left_sep_RTL@3x.png",
+    "Assets.xcassets/autofill_middle_sep.imageset/Contents.json",
+    "Assets.xcassets/autofill_middle_sep.imageset/autofill_middle_sep.png",
+    "Assets.xcassets/autofill_middle_sep.imageset/autofill_middle_sep@2x.png",
+    "Assets.xcassets/autofill_middle_sep.imageset/autofill_middle_sep@3x.png",
+    "Assets.xcassets/autofill_next.imageset/Contents.json",
+    "Assets.xcassets/autofill_next.imageset/autofill_next.png",
+    "Assets.xcassets/autofill_next.imageset/autofill_next@2x.png",
+    "Assets.xcassets/autofill_next.imageset/autofill_next@3x.png",
+    "Assets.xcassets/autofill_next_inactive.imageset/Contents.json",
+    "Assets.xcassets/autofill_next_inactive.imageset/autofill_next_inactive.png",
+    "Assets.xcassets/autofill_next_inactive.imageset/autofill_next_inactive@2x.png",
+    "Assets.xcassets/autofill_next_inactive.imageset/autofill_next_inactive@3x.png",
+    "Assets.xcassets/autofill_next_pressed.imageset/Contents.json",
+    "Assets.xcassets/autofill_next_pressed.imageset/autofill_next_pressed.png",
+    "Assets.xcassets/autofill_next_pressed.imageset/autofill_next_pressed@2x.png",
+    "Assets.xcassets/autofill_next_pressed.imageset/autofill_next_pressed@3x.png",
+    "Assets.xcassets/autofill_prev.imageset/Contents.json",
+    "Assets.xcassets/autofill_prev.imageset/autofill_prev.png",
+    "Assets.xcassets/autofill_prev.imageset/autofill_prev@2x.png",
+    "Assets.xcassets/autofill_prev.imageset/autofill_prev@3x.png",
+    "Assets.xcassets/autofill_prev_inactive.imageset/Contents.json",
+    "Assets.xcassets/autofill_prev_inactive.imageset/autofill_prev_inactive.png",
+    "Assets.xcassets/autofill_prev_inactive.imageset/autofill_prev_inactive@2x.png",
+    "Assets.xcassets/autofill_prev_inactive.imageset/autofill_prev_inactive@3x.png",
+    "Assets.xcassets/autofill_prev_pressed.imageset/Contents.json",
+    "Assets.xcassets/autofill_prev_pressed.imageset/autofill_prev_pressed.png",
+    "Assets.xcassets/autofill_prev_pressed.imageset/autofill_prev_pressed@2x.png",
+    "Assets.xcassets/autofill_prev_pressed.imageset/autofill_prev_pressed@3x.png",
+    "Assets.xcassets/autofill_right_sep.imageset/Contents.json",
+    "Assets.xcassets/autofill_right_sep.imageset/autofill_right_sep.png",
+    "Assets.xcassets/autofill_right_sep.imageset/autofill_right_sep@2x.png",
+    "Assets.xcassets/autofill_right_sep.imageset/autofill_right_sep@3x.png",
+    "Assets.xcassets/autofill_right_sep_RTL.imageset/Contents.json",
+    "Assets.xcassets/autofill_right_sep_RTL.imageset/autofill_right_sep_RTL.png",
+    "Assets.xcassets/autofill_right_sep_RTL.imageset/autofill_right_sep_RTL@2x.png",
+    "Assets.xcassets/autofill_right_sep_RTL.imageset/autofill_right_sep_RTL@3x.png",
   ]
 }
