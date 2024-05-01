@@ -826,19 +826,21 @@ void CloudOpenTask::StartUpload() {
 
 void CloudOpenTask::StartNextGoogleDriveUpload() {
   DCHECK_LT(file_urls_idx_, file_urls_.size());
-  DriveUploadHandler::Upload(
+  drive_upload_handler_ = std::make_unique<DriveUploadHandler>(
       profile_, file_urls_[file_urls_idx_],
       base::BindOnce(&CloudOpenTask::FinishedDriveUpload, this),
       cloud_open_metrics_->GetSafeRef());
+  drive_upload_handler_->Run();
 }
 
 void CloudOpenTask::StartNextOneDriveUpload() {
   DCHECK_LT(file_urls_idx_, file_urls_.size());
-  OneDriveUploadHandler::Upload(
+  one_drive_upload_handler_ = std::make_unique<OneDriveUploadHandler>(
       profile_, file_urls_[file_urls_idx_],
       base::BindOnce(&CloudOpenTask::FinishedOneDriveUpload, this,
                      profile_->GetWeakPtr()),
       cloud_open_metrics_->GetSafeRef());
+  one_drive_upload_handler_->Run();
 }
 
 void CloudOpenTask::FinishedDriveUpload(OfficeTaskResult task_result,

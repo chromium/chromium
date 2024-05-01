@@ -34,36 +34,11 @@ using ash::file_system_provider::Service;
 using storage::FileSystemURL;
 
 namespace ash::cloud_upload {
-namespace {
-
-// Runs the callback provided to `OneDriveUploadHandler::Upload`.
-void OnUploadDone(scoped_refptr<OneDriveUploadHandler> one_drive_upload_handler,
-                  OneDriveUploadHandler::UploadCallback callback,
-                  OfficeTaskResult task_result,
-                  std::optional<FileSystemURL> uploaded_file_url,
-                  int64_t upload_size) {
-  std::move(callback).Run(task_result, std::move(uploaded_file_url),
-                          upload_size);
-}
-
-}  // namespace
-
-// static.
-void OneDriveUploadHandler::Upload(
-    Profile* profile,
-    const FileSystemURL& source_url,
-    UploadCallback callback,
-    base::SafeRef<CloudOpenMetrics> cloud_open_metrics) {
-  scoped_refptr<OneDriveUploadHandler> one_drive_upload_handler =
-      new OneDriveUploadHandler(profile, source_url, cloud_open_metrics);
-  // Keep `one_drive_upload_handler` alive until `UploadToCloudDone` executes.
-  one_drive_upload_handler->Run(base::BindOnce(
-      &OnUploadDone, one_drive_upload_handler, std::move(callback)));
-}
 
 OneDriveUploadHandler::OneDriveUploadHandler(
     Profile* profile,
-    const FileSystemURL source_url,
+    const storage::FileSystemURL& source_url,
+    UploadCallback callback,
     base::SafeRef<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
       file_system_context_(
@@ -77,6 +52,7 @@ OneDriveUploadHandler::OneDriveUploadHandler(
               /*num_files=*/1,
               GetUploadType(profile, source_url))),
       source_url_(source_url),
+      callback_(std::move(callback)),
       cloud_open_metrics_(cloud_open_metrics) {
   observed_task_id_ = -1;
 }
@@ -88,10 +64,8 @@ OneDriveUploadHandler::~OneDriveUploadHandler() {
   }
 }
 
-void OneDriveUploadHandler::Run(UploadCallback callback) {
-  DCHECK(callback);
-  DCHECK(!callback_);
-  callback_ = std::move(callback);
+void OneDriveUploadHandler::Run() {
+  DCHECK(callback_);
 
   if (!profile_) {
     LOG(ERROR) << "No profile";
@@ -144,8 +118,8 @@ void OneDriveUploadHandler::GetODFSMetadataAndStartIOTask() {
   GetODFSMetadata(
       file_system,
       base::BindOnce(
-          &OneDriveUploadHandler::CheckReauthenticationAndStartIOTask, this,
-          destination_folder_url));
+          &OneDriveUploadHandler::CheckReauthenticationAndStartIOTask,
+          weak_ptr_factory_.GetWeakPtr(), destination_folder_url));
 }
 
 bool OneDriveUploadHandler::FileAlreadyBeingUploaded() {
@@ -248,9 +222,7 @@ void OneDriveUploadHandler::OnSuccessfulUpload(
       operation_type_ == file_manager::io_task::OperationType::kCopy
           ? OfficeTaskResult::kCopied
           : OfficeTaskResult::kMoved;
-  if (callback_) {
-    std::move(callback_).Run(task_result, url, upload_size_);
-  }
+  std::move(callback_).Run(task_result, url, upload_size_);
 }
 
 void OneDriveUploadHandler::OnFailedUpload(
@@ -262,20 +234,16 @@ void OneDriveUploadHandler::OnFailedUpload(
     LOG(ERROR) << "Upload to OneDrive: " << error_message;
     notification_manager_->ShowUploadError(error_message);
   }
-  if (callback_) {
     std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt,
                              0);
-  }
 }
 
 void OneDriveUploadHandler::OnAbandonedUpload() {
   if (notification_manager_) {
     notification_manager_->CloseNotification();
   }
-  if (callback_) {
     std::move(callback_).Run(OfficeTaskResult::kFileAlreadyBeingUploaded,
                              std::nullopt, 0);
-  }
 }
 
 void OneDriveUploadHandler::OnIOTaskStatus(
@@ -353,7 +321,7 @@ void OneDriveUploadHandler::ShowAccessDeniedError() {
   GetODFSMetadata(
       file_system,
       base::BindOnce(&OneDriveUploadHandler::OnGetReauthenticationRequired,
-                     this));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OneDriveUploadHandler::ShowIOTaskError(

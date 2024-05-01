@@ -14,7 +14,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 

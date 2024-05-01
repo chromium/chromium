@@ -302,12 +302,13 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadFromMyFiles) {
 
   // Start the upload workflow and end the test once the upload has completed
   // successfully.
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
                      base::Unretained(this),
                      /*expected_task_result=*/OfficeTaskResult::kMoved),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   SetUpRunLoopAndWait();
 
   // Check that the source file has been moved to OneDrive.
@@ -330,12 +331,13 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UploadTrimsFileName) {
 
   // Start the upload workflow and end the test once the upload has completed
   // successfully.
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
                      base::Unretained(this),
                      /*expected_task_result=*/OfficeTaskResult::kMoved),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   SetUpRunLoopAndWait();
 
   // Check that the source file has been moved to OneDrive.
@@ -359,12 +361,13 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
 
   // Start the upload workflow and end the test once the upload has completed
   // successfully.
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
                      base::Unretained(this),
                      /*expected_task_result=*/OfficeTaskResult::kCopied),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   SetUpRunLoopAndWait();
 
   // Check that the source file has been copied to OneDrive.
@@ -411,13 +414,14 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
         }
       });
   SetOnNotificationDisplayedCallback(std::move(on_notification));
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(
           &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
           base::Unretained(this),
           /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
 
   // Check that the source file still exists only at the intended source
@@ -460,13 +464,14 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
       });
   SetOnNotificationDisplayedCallback(std::move(on_notification));
   SetUpRunLoop(/*conditions_to_end_wait=*/2);
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(
           &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
           base::Unretained(this),
           /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   Wait();
 
   // Check that the source file still exists only at the intended source
@@ -504,13 +509,14 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, FailToUploadDueToInvalidUrl) {
         EndWait();
       }));
   SetUpRunLoop(/*conditions_to_end_wait=*/2);
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(
           &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
           base::Unretained(this),
           /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   Wait();
   EXPECT_EQ(
       message,
@@ -565,12 +571,13 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest_ReauthEnabled,
             std::move(callback).Run(base::File::Error::FILE_OK);
           }));
 
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
                      base::Unretained(this),
                      /*expected_task_result=*/OfficeTaskResult::kMoved),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   SetUpRunLoopAndWait();
 
   // Check that the source file has been moved to OneDrive.
@@ -617,13 +624,14 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
       });
   SetOnNotificationDisplayedCallback(std::move(on_notification));
   SetUpRunLoop(/*conditions_to_end_wait=*/2);
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(
           &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
           base::Unretained(this),
           /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   Wait();
   // Check that the source file still exists only at the intended source
   // location and did not get uploaded to ODFS.
@@ -665,13 +673,14 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest,
         }
       });
   SetOnNotificationDisplayedCallback(std::move(on_notification));
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(
           &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
           base::Unretained(this),
           /*expected_task_result=*/OfficeTaskResult::kFailedToUpload),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler->Run();
   SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
 
   // Check that the source file still exists only at the intended source
@@ -699,22 +708,25 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, NoDuplicateUploads) {
   // Start the second upload after the first one starts.
   provided_file_system_->SetCreateFileCallback(
       base::BindLambdaForTesting([&]() {
-        OneDriveUploadHandler::Upload(
-            profile(), source_file_url,
-            base::BindOnce(
-                &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
-                base::Unretained(this), /*expected_task_result=*/
-                OfficeTaskResult::kFileAlreadyBeingUploaded),
-            cloud_open_metrics_ref_);
+        auto one_drive_upload_handler2 =
+            std::make_unique<OneDriveUploadHandler>(
+                profile(), source_file_url,
+                base::BindOnce(
+                    &OneDriveUploadHandlerTest::OnUploadFailedOrAbandoned,
+                    base::Unretained(this), /*expected_task_result=*/
+                    OfficeTaskResult::kFileAlreadyBeingUploaded),
+                cloud_open_metrics_ref_);
+        one_drive_upload_handler2->Run();
       }));
 
   // Start the first upload.
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler1 = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
                      base::Unretained(this),
                      /*expected_task_result=*/OfficeTaskResult::kMoved),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler1->Run();
 
   SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
 
@@ -742,23 +754,26 @@ IN_PROC_BROWSER_TEST_F(OneDriveUploadHandlerTest, UnrelatedUploads) {
   FileSystemURL source_file_url2 = CopyTestFile(test_file_name2, my_files_dir_);
 
   // Start the second, unrelated, upload after the first one starts.
+  std::unique_ptr<OneDriveUploadHandler> one_drive_upload_handler2;
   provided_file_system_->SetCreateFileCallback(
       base::BindLambdaForTesting([&]() {
-        OneDriveUploadHandler::Upload(
+        one_drive_upload_handler2 = std::make_unique<OneDriveUploadHandler>(
             profile(), source_file_url2,
             base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
                            base::Unretained(this),
                            /*expected_task_result=*/OfficeTaskResult::kMoved),
             cloud_open_metrics_ref_);
+        one_drive_upload_handler2->Run();
       }));
 
   // Start the first upload.
-  OneDriveUploadHandler::Upload(
+  auto one_drive_upload_handler1 = std::make_unique<OneDriveUploadHandler>(
       profile(), source_file_url1,
       base::BindOnce(&OneDriveUploadHandlerTest::OnUploadSuccessful,
                      base::Unretained(this),
                      /*expected_task_result=*/OfficeTaskResult::kMoved),
       cloud_open_metrics_ref_);
+  one_drive_upload_handler1->Run();
 
   SetUpRunLoopAndWait(/*conditions_to_end_wait=*/2);
 

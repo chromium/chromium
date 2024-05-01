@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
@@ -244,6 +246,8 @@ class CloudOpenTask : public BrowserListObserver,
   const ::file_manager::file_tasks::TaskDescriptor task_;
   CloudProvider cloud_provider_;
   std::unique_ptr<CloudOpenMetrics> cloud_open_metrics_;
+  std::unique_ptr<DriveUploadHandler> drive_upload_handler_;
+  std::unique_ptr<OneDriveUploadHandler> one_drive_upload_handler_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;
   raw_ptr<CloudUploadDialog> pending_dialog_ = nullptr;
   base::ElapsedTimer upload_timer_;

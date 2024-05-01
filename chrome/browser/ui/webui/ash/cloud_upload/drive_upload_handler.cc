@@ -41,15 +41,6 @@ const int kAlternateUrlTimeout = 15;
 // alternate URL.
 const int kAlternateUrlPollInterval = 200;
 
-// Runs the callback provided to `DriveUploadHandler::Upload`.
-void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
-                  DriveUploadHandler::UploadCallback callback,
-                  OfficeTaskResult task_result,
-                  std::optional<GURL> hosted_url,
-                  int64_t upload_size) {
-  std::move(callback).Run(task_result, std::move(hosted_url), upload_size);
-}
-
 std::string GetTargetAppName(base::FilePath file_path) {
   const std::string extension = base::ToLowerASCII(file_path.FinalExtension());
   if (base::Contains(file_manager::file_tasks::WordGroupExtensions(),
@@ -69,22 +60,10 @@ std::string GetTargetAppName(base::FilePath file_path) {
 
 }  // namespace
 
-// static.
-void DriveUploadHandler::Upload(
+DriveUploadHandler::DriveUploadHandler(
     Profile* profile,
     const FileSystemURL& source_url,
     UploadCallback callback,
-    base::SafeRef<CloudOpenMetrics> cloud_open_metrics) {
-  scoped_refptr<DriveUploadHandler> drive_upload_handler =
-      new DriveUploadHandler(profile, source_url, cloud_open_metrics);
-  // Keep `drive_upload_handler` alive until `UploadDone` executes.
-  drive_upload_handler->Run(
-      base::BindOnce(&OnUploadDone, drive_upload_handler, std::move(callback)));
-}
-
-DriveUploadHandler::DriveUploadHandler(
-    Profile* profile,
-    const FileSystemURL source_url,
     base::SafeRef<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
       file_system_context_(
@@ -101,6 +80,7 @@ DriveUploadHandler::DriveUploadHandler(
               /*num_files=*/1,
               upload_type_)),
       source_url_(source_url),
+      callback_(std::move(callback)),
       cloud_open_metrics_(cloud_open_metrics) {
   observed_copy_task_id_ = -1;
   observed_delete_task_id_ = -1;
@@ -108,10 +88,8 @@ DriveUploadHandler::DriveUploadHandler(
 
 DriveUploadHandler::~DriveUploadHandler() = default;
 
-void DriveUploadHandler::Run(UploadCallback callback) {
-  DCHECK(callback);
-  DCHECK(!callback_);
-  callback_ = std::move(callback);
+void DriveUploadHandler::Run() {
+  DCHECK(callback_);
 
   if (!profile_) {
     LOG(ERROR) << "No profile";
@@ -263,9 +241,7 @@ void DriveUploadHandler::OnSuccessfulUpload(
   const OfficeTaskResult task_result = upload_type_ == UploadType::kCopy
                                            ? OfficeTaskResult::kCopied
                                            : OfficeTaskResult::kMoved;
-  if (callback_) {
-    std::move(callback_).Run(task_result, hosted_url, upload_size_);
-  }
+  std::move(callback_).Run(task_result, hosted_url, upload_size_);
 }
 
 void DriveUploadHandler::OnFailedUpload(OfficeFilesUploadResult result_metric,
@@ -280,10 +256,7 @@ void DriveUploadHandler::OnFailedUpload(OfficeFilesUploadResult result_metric,
     LOG(ERROR) << "Upload to Google Drive: " << error_message;
     notification_manager_->ShowUploadError(error_message);
   }
-  if (callback_) {
-    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt,
-                             0);
-  }
+  std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, std::nullopt, 0);
 }
 
 void DriveUploadHandler::OnIOTaskStatus(

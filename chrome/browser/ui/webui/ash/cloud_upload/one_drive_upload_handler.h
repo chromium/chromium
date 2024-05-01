@@ -14,8 +14,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -31,31 +33,24 @@ namespace ash::cloud_upload {
 // upload is completed, which is when the `OneDriveUploadHandler` goes out of
 // scope.
 class OneDriveUploadHandler
-    : public ::file_manager::io_task::IOTaskController::Observer,
-      public base::RefCounted<OneDriveUploadHandler> {
+    : public ::file_manager::io_task::IOTaskController::Observer {
  public:
   using UploadCallback = base::OnceCallback<
       void(OfficeTaskResult, std::optional<storage::FileSystemURL>, int64_t)>;
 
-  // Starts the upload workflow for the file specified at construct time.
-  static void Upload(Profile* profile,
-                     const storage::FileSystemURL& source_url,
-                     UploadCallback callback,
-                     base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
+  OneDriveUploadHandler(Profile* profile,
+                        const storage::FileSystemURL& source_url,
+                        UploadCallback callback,
+                        base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
+  ~OneDriveUploadHandler() override;
+
+  // Starts the upload workflow.
+  void Run();
 
   OneDriveUploadHandler(const OneDriveUploadHandler&) = delete;
   OneDriveUploadHandler& operator=(const OneDriveUploadHandler&) = delete;
 
  private:
-  friend base::RefCounted<OneDriveUploadHandler>;
-  OneDriveUploadHandler(Profile* profile,
-                        const storage::FileSystemURL source_url,
-                        base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
-  ~OneDriveUploadHandler() override;
-
-  // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
-  void Run(UploadCallback callback);
-
   // Checks if there already exists an upload task for this file.
   bool FileAlreadyBeingUploaded();
 
@@ -92,7 +87,7 @@ class OneDriveUploadHandler
 
   // Find the base::File::Error error returned by the IO Task and convert it to
   // an appropriate error notification.
-  void ShowIOTaskError(const file_manager::io_task::ProgressStatus& status);
+  void ShowIOTaskError(const ::file_manager::io_task::ProgressStatus& status);
 
   // Show the correct error notification for
   // base::File::FILE_ERROR_ACCESS_DENIED. Request ODFS metadata and show the
@@ -120,7 +115,7 @@ class OneDriveUploadHandler
   scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;
   ::file_manager::io_task::IOTaskId observed_task_id_;
-  file_manager::io_task::OperationType operation_type_;
+  ::file_manager::io_task::OperationType operation_type_;
   UploadCallback callback_;
   // Total size (in bytes) required to upload.
   int64_t upload_size_ = 0;
