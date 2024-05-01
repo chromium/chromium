@@ -44,9 +44,12 @@ inline constexpr UINT16 kDriverMonitorManufacturer = 0xEC4;
 class MonitorConfig {
  public:
   // List of configs with supported monitor modes.
-  static const MonitorConfig k1024x768;
+  static const MonitorConfig k2560x1440;
+  static const MonitorConfig k2560x1440_120;
   static const MonitorConfig k1920x1080;
+  static const MonitorConfig k1920x1080_120;
   static const MonitorConfig k1440x900;
+  static const MonitorConfig k1024x768;
 
   MonitorConfig() = default;
   // Get width (horizontal resolution).
@@ -81,9 +84,12 @@ class DriverProperties {
  public:
   // Maximum number of virtual displays that may be created.
   static constexpr size_t kMaxMonitors = 10;
+
   DriverProperties() = default;
+
   // Create monitors with the specified `configs`, truncated to `kMaxMonitors`.
   explicit DriverProperties(const std::vector<MonitorConfig>& configs);
+
   // Return a vector of the requested monitor configurations.
   std::vector<MonitorConfig> requested_configs() const;
 
@@ -91,6 +97,7 @@ class DriverProperties {
   // std::vector doesn't work here due to serialization & Windows API
   // limitations so a fixed array is used instead.
   std::array<MonitorConfig, kMaxMonitors> requested_configs_ = {};
+
   size_t requested_configs_size_ = 0;
 };
 

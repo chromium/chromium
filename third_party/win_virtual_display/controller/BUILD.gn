@@ -18,3 +18,12 @@ static_library("controller") {
     "onecore.lib",
   ]
 }
+
+executable("display_driver_controller_executable") {
+  sources = [ "display_driver_controller_main.cc" ]
+  testonly = true
+  deps = [
+    ":controller",
+    "//base",
+  ]
+}
