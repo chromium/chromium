@@ -5,8 +5,10 @@
 #include "components/cdm/common/cdm_manifest.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -15,7 +17,6 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -105,7 +106,7 @@ bool CheckForCompatibleVersion(const base::Value::Dict& manifest,
   DVLOG_IF(1, version_string->empty())
       << "CDM manifest has empty " << version_name;
 
-  for (const base::StringPiece& ver_str :
+  for (std::string_view ver_str :
        base::SplitStringPiece(*version_string, kCdmValueDelimiter,
                               base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     int version = 0;
@@ -216,7 +217,7 @@ bool GetVideoCodecs(const base::Value::Dict& manifest,
     return true;
   }
 
-  const std::vector<base::StringPiece> supported_codecs =
+  const std::vector<std::string_view> supported_codecs =
       base::SplitStringPiece(codecs, kCdmValueDelimiter, base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
 

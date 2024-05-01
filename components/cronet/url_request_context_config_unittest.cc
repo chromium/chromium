@@ -5,6 +5,7 @@
 #include "components/cronet/url_request_context_config.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -13,7 +14,6 @@
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -43,13 +43,13 @@ namespace cronet {
 
 namespace {
 
-std::string WrapJsonHeader(base::StringPiece value) {
+std::string WrapJsonHeader(std::string_view value) {
   return base::StrCat({"[", value, "]"});
 }
 
 // Returns whether two JSON-encoded headers contain the same content, ignoring
 // irrelevant encoding issues like whitespace and map element ordering.
-bool JsonHeaderEquals(base::StringPiece expected, base::StringPiece actual) {
+bool JsonHeaderEquals(std::string_view expected, std::string_view actual) {
   return base::test::ParseJson(WrapJsonHeader(expected)) ==
          base::test::ParseJson(WrapJsonHeader(actual));
 }

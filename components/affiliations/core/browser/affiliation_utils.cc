@@ -6,11 +6,11 @@
 
 #include <map>
 #include <ostream>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/url_formatter/elide_url.h"
@@ -25,22 +25,22 @@ namespace {
 // The scheme used for identifying Android applications.
 const char kAndroidAppScheme[] = "android";
 
-// Returns a StringPiece corresponding to |component| in |uri|, or the empty
+// Returns a std::string_view corresponding to |component| in |uri|, or the empty
 // string in case there is no such component.
-base::StringPiece ComponentString(const std::string& uri,
+std::string_view ComponentString(const std::string& uri,
                                   const url::Component& component) {
   if (!component.is_valid())
-    return base::StringPiece();
-  return base::StringPiece(uri.c_str() + component.begin, component.len);
+    return std::string_view();
+  return std::string_view(uri.c_str() + component.begin, component.len);
 }
 
 // Returns true if the passed ASCII |input| string contains nothing else than
 // alphanumeric characters and those in |other_characters|.
-bool ContainsOnlyAlphanumericAnd(const base::StringPiece& input,
-                                 const base::StringPiece& other_characters) {
+bool ContainsOnlyAlphanumericAnd(std::string_view input,
+                                 std::string_view other_characters) {
   for (char c : input) {
     if (!base::IsAsciiAlpha(c) && !base::IsAsciiDigit(c) &&
-        other_characters.find(c) == base::StringPiece::npos)
+        other_characters.find(c) == std::string_view::npos)
       return false;
   }
   return true;
@@ -90,7 +90,7 @@ bool CanonicalizeBase64Padding(std::string* data) {
 // Canonicalizes the username component in an Android facet URI (containing the
 // certificate hash), and returns true if canonicalization was successful and
 // produced a valid non-empty component.
-bool CanonicalizeHashComponent(const base::StringPiece& input_hash,
+bool CanonicalizeHashComponent(std::string_view input_hash,
                                url::CanonOutput* canonical_output) {
   // Characters other than alphanumeric that are used in the "URL and filename
   // safe" base64 alphabet; plus the padding ('=').
@@ -114,7 +114,7 @@ bool CanonicalizeHashComponent(const base::StringPiece& input_hash,
 // package name), and returns true if canonicalization was successful and
 // produced a valid non-empty component.
 bool CanonicalizePackageNameComponent(
-    const base::StringPiece& input_package_name,
+    std::string_view input_package_name,
     url::CanonOutput* canonical_output) {
   // Characters other than alphanumeric that are permitted in the package names.
   const char kPackageNameNonAlphanumericChars[] = "._";
@@ -174,7 +174,7 @@ bool ParseAndCanonicalizeFacetURI(const std::string& input_uri,
   canonical_uri->reserve(input_uri.size() + 32);
 
   url::Parsed input_parsed = url::ParseStandardURL(input_uri);
-  base::StringPiece scheme = ComponentString(input_uri, input_parsed.scheme);
+  std::string_view scheme = ComponentString(input_uri, input_parsed.scheme);
   if (base::EqualsCaseInsensitiveASCII(scheme, url::kHttpsScheme)) {
     return CanonicalizeWebFacetURI(input_uri, input_parsed, canonical_uri);
   }

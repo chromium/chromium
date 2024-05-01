@@ -5,18 +5,18 @@
 #include "components/cast/api_bindings/scoped_api_binding.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "components/cast/api_bindings/manager.h"
 
 namespace cast_api_bindings {
 
 ScopedApiBinding::ScopedApiBinding(Manager* bindings_manager,
                                    Delegate* delegate,
-                                   base::StringPiece js_bindings_id,
-                                   base::StringPiece js_bindings)
+                                   std::string_view js_bindings_id,
+                                   std::string_view js_bindings)
     : bindings_manager_(bindings_manager),
       delegate_(delegate),
       js_bindings_id_(js_bindings_id) {
@@ -49,7 +49,7 @@ void ScopedApiBinding::OnPortConnected(
   delegate_->OnConnected();
 }
 
-bool ScopedApiBinding::SendMessage(base::StringPiece data_utf8) {
+bool ScopedApiBinding::SendMessage(std::string_view data_utf8) {
   DCHECK(delegate_);
 
   DVLOG(1) << "SendMessage: message=" << data_utf8;
@@ -67,7 +67,7 @@ bool ScopedApiBinding::SendMessage(base::StringPiece data_utf8) {
 }
 
 bool ScopedApiBinding::OnMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
   return delegate_->OnMessage(message);
 }

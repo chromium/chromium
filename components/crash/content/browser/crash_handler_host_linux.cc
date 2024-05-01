@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -444,8 +445,8 @@ void CrashHandlerHostLinux::WriteDumpFile(BreakpadInfo* info,
   // Create a temporary file holding the AddressSanitizer report.
   const base::FilePath log_path =
       base::FilePath(minidump_filename).ReplaceExtension("log");
-  base::WriteFile(log_path, base::StringPiece(info->asan_report_str,
-                                              info->asan_report_length));
+  base::WriteFile(log_path, std::string_view(info->asan_report_str,
+                                             info->asan_report_length));
 #endif
 
   // Freed in CrashDumpTask().

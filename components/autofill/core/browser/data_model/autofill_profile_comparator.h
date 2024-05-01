@@ -38,7 +38,7 @@ FieldTypeSet GetUserVisibleTypes();
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:
-  explicit AutofillProfileComparator(const std::string_view& app_locale);
+  explicit AutofillProfileComparator(std::string_view app_locale);
 
   AutofillProfileComparator(const AutofillProfileComparator&) = delete;
   AutofillProfileComparator& operator=(const AutofillProfileComparator&) =

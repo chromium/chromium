@@ -5,6 +5,7 @@
 #include "components/crash/core/common/crash_keys.h"
 
 #include <deque>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -40,8 +40,8 @@ void SetMetricsClientIdFromGUID(const std::string& metrics_client_guid) {
 #if !BUILDFLAG(USE_CRASHPAD_ANNOTATION)
   std::string stripped_guid(metrics_client_guid);
   // Remove all instance of '-' char from the GUID. So BCD-WXY becomes BCDWXY.
-  base::ReplaceSubstringsAfterOffset(
-      &stripped_guid, 0, "-", base::StringPiece());
+  base::ReplaceSubstringsAfterOffset(&stripped_guid, 0, "-",
+                                     std::string_view());
   if (stripped_guid.empty())
     return;
 

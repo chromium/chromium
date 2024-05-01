@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/numerics/safe_math.h"
@@ -82,11 +83,12 @@ std::string Base32Encode(base::span<const uint8_t> input,
   return output;
 }
 
-std::vector<uint8_t> Base32Decode(base::StringPiece input) {
+std::vector<uint8_t> Base32Decode(std::string_view input) {
   // Remove padding, if any
   const size_t padding_index = input.find(kPaddingChar);
-  if (padding_index != base::StringPiece::npos)
+  if (padding_index != std::string_view::npos) {
     input.remove_suffix(input.size() - padding_index);
+  }
 
   if (input.empty())
     return std::vector<uint8_t>();

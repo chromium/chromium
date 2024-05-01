@@ -7,10 +7,10 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "components/cast/cast_component_export.h"
 #include "components/cast/message_port/message_port.h"
 
@@ -34,25 +34,25 @@ class CAST_COMPONENT_EXPORT Manager {
   // the frame's web content. |port_name| is an alphanumeric string that is
   // consistent across JS and native code.
   // All handlers must be Unregistered() before |this| is destroyed.
-  void RegisterPortHandler(base::StringPiece port_name,
+  void RegisterPortHandler(std::string_view port_name,
                            MessagePortConnectedHandler handler);
 
   // Unregisters a previously registered handler.
   // The owner of Manager is responsible for ensuring that all
   // handlers are unregistered before |this| is deleted.
-  void UnregisterPortHandler(base::StringPiece port_name);
+  void UnregisterPortHandler(std::string_view port_name);
 
   // Registers a |binding_script| for injection in the frame.
   // Replaces registered bindings with the same |binding_name|.
-  virtual void AddBinding(base::StringPiece binding_name,
-                          base::StringPiece binding_script) = 0;
+  virtual void AddBinding(std::string_view binding_name,
+                          std::string_view binding_script) = 0;
 
  protected:
   // Called by platform-specific implementations when the content requests a
   // connection to |port_name|.
   // Returns |false| if the port was invalid or not registered in advance, at
   // which point the matchmaking port should be dropped.
-  bool OnPortConnected(base::StringPiece port_name,
+  bool OnPortConnected(std::string_view port_name,
                        std::unique_ptr<cast_api_bindings::MessagePort> port);
 
  private:

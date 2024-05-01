@@ -4,11 +4,12 @@
 
 #include "components/device_signals/test/win/scoped_executable_files.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_piece.h"
 #include "components/device_signals/test/win/files_data.h"
 
 namespace device_signals::test {
@@ -55,8 +56,8 @@ std::string ScopedExecutableFiles::GetMetadataProductVersion() {
 }
 
 base::FilePath ScopedExecutableFiles::LazilyCreateFile(
-    const base::StringPiece& file_name,
-    const base::StringPiece& file_data) {
+    std::string_view file_name,
+    std::string_view file_data) {
   auto file_path = scoped_dir_.GetPath().AppendASCII(file_name);
   if (!base::PathExists(file_path)) {
     CHECK(CreateTempFile(file_path, file_data));
@@ -65,7 +66,7 @@ base::FilePath ScopedExecutableFiles::LazilyCreateFile(
 }
 
 bool ScopedExecutableFiles::CreateTempFile(const base::FilePath& file_path,
-                                           const base::StringPiece& file_data) {
+                                           std::string_view file_data) {
   std::optional<std::vector<uint8_t>> decoded_file_data =
       base::Base64Decode(file_data);
   if (!decoded_file_data) {

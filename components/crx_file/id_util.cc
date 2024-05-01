@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,7 +25,7 @@ namespace {
 static void ConvertHexadecimalToIDAlphabet(std::string* id) {
   for (auto& ch : *id) {
     int val;
-    if (base::HexStringToInt(base::StringPiece(&ch, 1), &val)) {
+    if (base::HexStringToInt(std::string_view(&ch, 1), &val)) {
       ch = 'a' + val;
     } else {
       ch = 'a';
@@ -38,7 +40,7 @@ namespace crx_file::id_util {
 // First 16 bytes of SHA256 hashed public key.
 const size_t kIdSize = 16;
 
-std::string GenerateId(base::StringPiece input) {
+std::string GenerateId(std::string_view input) {
   uint8_t hash[kIdSize];
   crypto::SHA256HashString(input, hash, sizeof(hash));
   return GenerateIdFromHash(hash);
@@ -58,7 +60,7 @@ std::string GenerateIdFromHex(const std::string& input) {
 
 std::string GenerateIdForPath(const base::FilePath& path) {
   base::FilePath new_path = MaybeNormalizePath(path);
-  const base::StringPiece path_bytes(
+  const std::string_view path_bytes(
       reinterpret_cast<const char*>(new_path.value().data()),
       new_path.value().size() * sizeof(base::FilePath::CharType));
   return GenerateId(path_bytes);
@@ -85,7 +87,7 @@ base::FilePath MaybeNormalizePath(const base::FilePath& path) {
 #endif
 }
 
-bool IdIsValid(base::StringPiece id) {
+bool IdIsValid(std::string_view id) {
   // Verify that the id is legal.
   if (id.size() != (crx_file::id_util::kIdSize * 2))
     return false;

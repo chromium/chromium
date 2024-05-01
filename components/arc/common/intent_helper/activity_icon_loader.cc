@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -157,7 +158,7 @@ scoped_refptr<base::RefCountedData<GURL>> GeneratePNGDataUrl(
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(image.GetRepresentation(scale).GetBitmap(),
                                     false /* discard_transparency */, &output);
-  const std::string encoded = base::Base64Encode(base::StringPiece(
+  const std::string encoded = base::Base64Encode(std::string_view(
       reinterpret_cast<const char*>(output.data()), output.size()));
   return base::WrapRefCounted(
       new base::RefCountedData<GURL>(GURL(kPngDataUrlPrefix + encoded)));

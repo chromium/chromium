@@ -9,6 +9,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -318,7 +319,7 @@ void ChromeRequireCTDelegate::AddFilters(
       continue;  // If there is no host to match, can't apply the filter.
 
     std::string lc_host = base::ToLowerASCII(
-        base::StringPiece(pattern).substr(parsed.host.begin, parsed.host.len));
+        std::string_view(pattern).substr(parsed.host.begin, parsed.host.len));
     if (lc_host == "*") {
       // Wildcard hosts are not allowed and ignored.
       continue;

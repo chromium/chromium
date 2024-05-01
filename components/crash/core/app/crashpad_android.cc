@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
@@ -357,7 +358,7 @@ void MakePackagePaths(std::string* classpath, std::string* libpath) {
 
   base::android::ScopedJavaLocalRef<jstring> arch =
       base::android::ConvertUTF8ToJavaString(env,
-                                             base::StringPiece(CURRENT_ABI));
+                                             std::string_view(CURRENT_ABI));
   base::android::ScopedJavaLocalRef<jobjectArray> paths =
       Java_PackagePaths_makePackagePaths(env, arch);
 

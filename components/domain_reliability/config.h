@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_value_converter.h"
-#include "base/strings/string_piece.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -30,7 +30,7 @@ struct DOMAIN_RELIABILITY_EXPORT DomainReliabilityConfig {
 
   // Uses the JSONValueConverter to parse the JSON for a config into a struct.
   static std::unique_ptr<const DomainReliabilityConfig> FromJSON(
-      const base::StringPiece& json);
+      std::string_view json);
 
   bool IsValid() const;
 

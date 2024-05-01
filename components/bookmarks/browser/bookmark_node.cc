@@ -7,12 +7,12 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -111,9 +111,9 @@ const GURL& BookmarkNode::GetTitledUrlNodeUrl() const {
   return url_;
 }
 
-std::vector<base::StringPiece16> BookmarkNode::GetTitledUrlNodeAncestorTitles()
+std::vector<std::u16string_view> BookmarkNode::GetTitledUrlNodeAncestorTitles()
     const {
-  std::vector<base::StringPiece16> paths;
+  std::vector<std::u16string_view> paths;
   for (const BookmarkNode* n = this; n->parent(); n = n->parent())
     paths.push_back(n->parent()->GetTitle());
   return paths;

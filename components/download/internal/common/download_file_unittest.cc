@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -248,7 +249,7 @@ class DownloadFileTest : public testing::Test {
       while (len > 0) {
         int bytes_to_write = len > data_len ? data_len : len;
         base::AppendToFile(save_info->file_path,
-                           base::StringPiece(kTestData1, bytes_to_write));
+                           std::string_view(kTestData1, bytes_to_write));
         len -= bytes_to_write;
       }
     }

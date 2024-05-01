@@ -8,6 +8,7 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -64,9 +65,9 @@ class MessagePortCore : public MessagePort, public MessageConnector {
   MessagePortDescriptor Transfer(MessageConnector* replacement);
 
   // MessagePort implementation:
-  bool PostMessage(base::StringPiece message) override;
+  bool PostMessage(std::string_view message) override;
   bool PostMessageWithTransferables(
-      base::StringPiece message,
+      std::string_view message,
       std::vector<std::unique_ptr<MessagePort>> ports) override;
   void SetReceiver(MessagePort::Receiver* receiver) override;
   void Close() override;

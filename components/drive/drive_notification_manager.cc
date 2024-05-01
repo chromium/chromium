@@ -4,6 +4,7 @@
 
 #include "components/drive/drive_notification_manager.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -12,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/public/invalidation.h"
@@ -316,8 +316,8 @@ invalidation::Topic DriveNotificationManager::GetTeamDriveInvalidationTopic(
 }
 
 std::string DriveNotificationManager::ExtractTeamDriveId(
-    base::StringPiece topic_name) const {
-  base::StringPiece prefix = kTeamDriveChangePrefix;
+    std::string_view topic_name) const {
+  std::string_view prefix = kTeamDriveChangePrefix;
   if (!base::StartsWith(topic_name, prefix)) {
     return {};
   }

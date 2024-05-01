@@ -5,6 +5,7 @@
 #include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file.h"
@@ -194,7 +195,7 @@ void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
 void FirstPartySetsComponentInstallerPolicy::WriteComponentForTesting(
     base::Version version,
     const base::FilePath& install_dir,
-    base::StringPiece contents) {
+    std::string_view contents) {
   CHECK(base::WriteFile(GetInstalledPath(install_dir), contents));
 
   GetConfigPathInstance() =

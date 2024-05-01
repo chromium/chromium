@@ -6,11 +6,12 @@
 
 #include <lib/fpromise/result.h>
 
+#include <string_view>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 
 namespace cast_api_bindings {
 namespace {
@@ -241,7 +242,7 @@ MessagePortFuchsia* MessagePortFuchsia::FromMessagePort(MessagePort* port) {
 
 // static
 fuchsia::web::WebMessage MessagePortFuchsia::CreateWebMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
   fuchsia::web::WebMessage message_fidl;
   message_fidl.set_data(base::MemBufferFromString(message, message));
@@ -339,12 +340,12 @@ void MessagePortFuchsia::ReportPipeError() {
 }
 
 // cast_api_bindings::MessagePortFuchsia implementation
-bool MessagePortFuchsia::PostMessage(base::StringPiece message) {
+bool MessagePortFuchsia::PostMessage(std::string_view message) {
   return PostMessageWithTransferables(message, {});
 }
 
 bool MessagePortFuchsia::PostMessageWithTransferables(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
   CHECK(receiver_);
   message_queue_.emplace_back(CreateWebMessage(message, std::move(ports)));

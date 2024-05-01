@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/content_settings/core/common/content_settings_pattern_parser.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/content_settings/core/common/content_settings_pattern_parser.h"
 #include "third_party/icu/fuzzers/fuzzer_utils.h"
 
 IcuEnvironment* env = new IcuEnvironment();
@@ -17,7 +18,7 @@ IcuEnvironment* env = new IcuEnvironment();
 namespace content_settings {
 
 namespace {
-ContentSettingsPattern Parse(base::StringPiece pattern_spec) {
+ContentSettingsPattern Parse(std::string_view pattern_spec) {
   std::unique_ptr<ContentSettingsPattern::BuilderInterface> builder =
       ContentSettingsPattern::CreateBuilder();
   PatternParser::Parse(pattern_spec, builder.get());
@@ -26,7 +27,7 @@ ContentSettingsPattern Parse(base::StringPiece pattern_spec) {
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::StringPiece pattern_spec(reinterpret_cast<const char*>(data), size);
+  std::string_view pattern_spec(reinterpret_cast<const char*>(data), size);
 
   // Parse the fuzzer-generated |pattern_spec| to obtain |canonical_pattern|.
   ContentSettingsPattern canonical_pattern = Parse(pattern_spec);

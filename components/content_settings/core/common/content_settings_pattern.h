@@ -9,9 +9,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 class GURL;
@@ -184,7 +184,7 @@ class ContentSettingsPattern {
   //   - file://path (The path has to be an absolute path and start with a '/')
   //   - a.b.c.d (matches an exact IPv4 ip)
   //   - [a:b:c:d:e:f:g:h] (matches an exact IPv6 ip)
-  static ContentSettingsPattern FromString(base::StringPiece pattern_spec);
+  static ContentSettingsPattern FromString(std::string_view pattern_spec);
 
   // Sets schemes that do not support domain wildcards and ports.
   // Needs to be called by the embedder before using ContentSettingsPattern.
@@ -198,7 +198,7 @@ class ContentSettingsPattern {
                                                  size_t count);
 
   // Compares |scheme| against the schemes set by the embedder.
-  static bool IsNonWildcardDomainNonPortScheme(base::StringPiece scheme);
+  static bool IsNonWildcardDomainNonPortScheme(std::string_view scheme);
 
   // Convert pattern to domain wildcard pattern. If fail to extract domain from
   // the pattern, return an invalid pattern.
@@ -215,8 +215,7 @@ class ContentSettingsPattern {
   // alphabetically.
   struct CompareDomains {
     using is_transparent = void;
-    bool operator()(const std::string_view& domain_a,
-                    const std::string_view& domain_b) const;
+    bool operator()(std::string_view domain_a, std::string_view domain_b) const;
   };
 
   // Constructs an empty pattern. Empty patterns are invalid patterns. Invalid

@@ -4,6 +4,7 @@
 
 #include "components/cloud_devices/common/cloud_device_description.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -54,21 +55,21 @@ base::Value CloudDeviceDescription::ToValue() && {
 }
 
 const base::Value::Dict* CloudDeviceDescription::GetDictItem(
-    base::StringPiece path) const {
+    std::string_view path) const {
   return root_.FindDictByDottedPath(path);
 }
 
 const base::Value::List* CloudDeviceDescription::GetListItem(
-    base::StringPiece path) const {
+    std::string_view path) const {
   return root_.FindListByDottedPath(path);
 }
 
-bool CloudDeviceDescription::SetDictItem(base::StringPiece path,
+bool CloudDeviceDescription::SetDictItem(std::string_view path,
                                          base::Value::Dict dict) {
   return root_.SetByDottedPath(path, std::move(dict));
 }
 
-bool CloudDeviceDescription::SetListItem(base::StringPiece path,
+bool CloudDeviceDescription::SetListItem(std::string_view path,
                                          base::Value::List list) {
   return root_.SetByDottedPath(path, std::move(list));
 }

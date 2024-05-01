@@ -6,10 +6,11 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -31,7 +32,7 @@ const char kUrlPortAndPathSeparator[] = ":/";
 
 namespace content_settings {
 
-void PatternParser::Parse(base::StringPiece pattern_spec,
+void PatternParser::Parse(std::string_view pattern_spec,
                           ContentSettingsPattern::BuilderInterface* builder) {
   if (pattern_spec == "*") {
     builder->WithSchemeWildcard();
@@ -42,22 +43,22 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
 
   // Initialize components for the individual patterns parts to empty
   // sub-strings.
-  base::StringPiece scheme_piece;
-  base::StringPiece host_piece;
-  base::StringPiece port_piece;
-  base::StringPiece path_piece;
+  std::string_view scheme_piece;
+  std::string_view host_piece;
+  std::string_view port_piece;
+  std::string_view path_piece;
 
-  base::StringPiece::size_type start = 0;
-  base::StringPiece::size_type current_pos = 0;
+  std::string_view::size_type start = 0;
+  std::string_view::size_type current_pos = 0;
 
   if (pattern_spec.empty())
     return;
 
   // Test if a scheme pattern is in the spec.
-  const base::StringPiece standard_scheme_separator(
+  const std::string_view standard_scheme_separator(
       url::kStandardSchemeSeparator);
   current_pos = pattern_spec.find(standard_scheme_separator, start);
-  if (current_pos != base::StringPiece::npos) {
+  if (current_pos != std::string_view::npos) {
     scheme_piece = pattern_spec.substr(start, current_pos - start);
     start = current_pos + standard_scheme_separator.size();
     current_pos = start;
@@ -74,12 +75,13 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
   if (pattern_spec[current_pos] == '[')
     current_pos = pattern_spec.find("]", start);
 
-  if (current_pos == base::StringPiece::npos)
+  if (current_pos == std::string_view::npos) {
     return;  // Bad pattern spec.
+  }
 
   current_pos =
       pattern_spec.find_first_of(kUrlPortAndPathSeparator, current_pos);
-  if (current_pos == base::StringPiece::npos) {
+  if (current_pos == std::string_view::npos) {
     // No port spec found AND no path found.
     current_pos = pattern_spec.size();
     host_piece = pattern_spec.substr(start, current_pos - start);
@@ -94,7 +96,7 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
     start = current_pos + 1;
     if (start < pattern_spec.size()) {
       current_pos = pattern_spec.find(kUrlPathSeparator, start);
-      if (current_pos == base::StringPiece::npos) {
+      if (current_pos == std::string_view::npos) {
         current_pos = pattern_spec.size();
       }
       port_piece = pattern_spec.substr(start, current_pos - start);
@@ -143,7 +145,7 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
       builder->WithHost(std::string(host_piece));
     } else {
       // If the host contains a wildcard symbol then it is invalid.
-      if (host_piece.find(kHostWildcard) != base::StringPiece::npos) {
+      if (host_piece.find(kHostWildcard) != std::string_view::npos) {
         builder->Invalid();
         return;
       }

@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 #include <ostream>
+#include <string_view>
 
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -352,7 +353,7 @@ void AddressFieldParserNG::AddClassifications(
 }
 
 base::span<const MatchPatternRef> AddressFieldParserNG::GetMatchPatterns(
-    base::StringPiece name) {
+    std::string_view name) {
   return ::autofill::GetMatchPatterns(name, context_->page_language,
                                       context_->pattern_source);
 }

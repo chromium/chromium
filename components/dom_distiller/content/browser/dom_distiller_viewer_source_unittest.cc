@@ -5,6 +5,7 @@
 #include "components/dom_distiller/content/browser/dom_distiller_viewer_source.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/strings/strcat.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -16,7 +17,7 @@ namespace dom_distiller {
 namespace {
 
 // Returns `GURL("chrome-distiller://uuid/path")`.
-GURL GetURL(base::StringPiece path) {
+GURL GetURL(std::string_view path) {
   return GURL(base::StrCat(
       {kDomDistillerScheme, url::kStandardSchemeSeparator, "uuid/", path}));
 }

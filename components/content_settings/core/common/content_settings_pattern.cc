@@ -8,13 +8,13 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
@@ -42,21 +42,20 @@ const char* const kSchemeNames[] = {"wildcard",         "other",
 static_assert(std::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
               "kSchemeNames should have SCHEME_MAX elements");
 
-// Note: it is safe to return a base::StringPiece here as long as they are
+// Note: it is safe to return a std::string_view here as long as they are
 // either empty or referencing constant string literals.
-base::StringPiece GetDefaultPort(base::StringPiece scheme) {
+std::string_view GetDefaultPort(std::string_view scheme) {
   if (scheme == url::kHttpScheme)
     return "80";
   if (scheme == url::kHttpsScheme)
     return "443";
-  return base::StringPiece();
+  return std::string_view();
 }
 
 // Returns true if |sub_domain| is a sub domain or equals |domain|.  E.g.
 // "mail.google.com" is a sub domain of "google.com" but "evilhost.com" is not a
 // subdomain of "host.com".
-bool IsSubDomainOrEqual(base::StringPiece sub_domain,
-                        base::StringPiece domain) {
+bool IsSubDomainOrEqual(std::string_view sub_domain, std::string_view domain) {
   // The empty string serves as wildcard. Each domain is a subdomain of the
   // wildcard.
   if (domain.empty())
@@ -78,23 +77,24 @@ bool IsSubDomainOrEqual(base::StringPiece sub_domain,
 //      only of a single domain label.
 //  (2) The right-most domain label, which is defined as the empty string if
 //      |domain| is empty or ends in a dot.
-std::tuple<std::optional<base::StringPiece>, base::StringPiece>
-SplitDomainOnLastDot(const base::StringPiece domain) {
+std::tuple<std::optional<std::string_view>, std::string_view>
+SplitDomainOnLastDot(const std::string_view domain) {
   size_t index_of_last_dot = domain.rfind('.');
-  if (index_of_last_dot == base::StringPiece::npos)
+  if (index_of_last_dot == std::string_view::npos) {
     return std::make_tuple(std::nullopt, domain);
+  }
   return std::make_tuple(domain.substr(0, index_of_last_dot),
                          domain.substr(index_of_last_dot + 1));
 }
 
 // Compares two domain names.
-int CompareDomainNames(base::StringPiece domain_a, base::StringPiece domain_b) {
-  std::optional<base::StringPiece> rest_of_a(domain_a);
-  std::optional<base::StringPiece> rest_of_b(domain_b);
+int CompareDomainNames(std::string_view domain_a, std::string_view domain_b) {
+  std::optional<std::string_view> rest_of_a(domain_a);
+  std::optional<std::string_view> rest_of_b(domain_b);
 
   while (rest_of_a && rest_of_b) {
-    base::StringPiece rightmost_label_a;
-    base::StringPiece rightmost_label_b;
+    std::string_view rightmost_label_a;
+    std::string_view rightmost_label_b;
     std::tie(rest_of_a, rightmost_label_a) = SplitDomainOnLastDot(*rest_of_a);
     std::tie(rest_of_b, rightmost_label_b) = SplitDomainOnLastDot(*rest_of_b);
 
@@ -479,7 +479,7 @@ ContentSettingsPattern ContentSettingsPattern::FromURLToSchemefulSitePattern(
 
 // static
 ContentSettingsPattern ContentSettingsPattern::FromString(
-    base::StringPiece pattern_spec) {
+    std::string_view pattern_spec) {
   ContentSettingsPattern::Builder builder;
   content_settings::PatternParser::Parse(pattern_spec, &builder);
   return builder.Build();
@@ -503,7 +503,7 @@ void ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
 
 // static
 bool ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
-    base::StringPiece scheme) {
+    std::string_view scheme) {
   DCHECK(g_non_domain_wildcard_non_port_schemes ||
          g_non_domain_wildcard_non_port_schemes_count == 0);
   for (size_t i = 0; i < g_non_domain_wildcard_non_port_schemes_count; ++i) {
@@ -552,8 +552,8 @@ ContentSettingsPattern ContentSettingsPattern::ToHostOnlyPattern(
 }
 
 bool ContentSettingsPattern::CompareDomains::operator()(
-    const std::string_view& domain_a,
-    const std::string_view& domain_b) const {
+    std::string_view domain_a,
+    std::string_view domain_b) const {
   if (domain_a == domain_b) {
     return false;
   }
@@ -622,9 +622,9 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
   // Use the default port if the port string is empty. GURL returns an empty
   // string if no port at all was specified or if the default port was
   // specified.
-  const base::StringPiece port = local_url->port_piece().empty()
-                                     ? GetDefaultPort(local_url->scheme_piece())
-                                     : local_url->port_piece();
+  const std::string_view port = local_url->port_piece().empty()
+                                    ? GetDefaultPort(local_url->scheme_piece())
+                                    : local_url->port_piece();
   if (!parts_.is_port_wildcard && parts_.port != port) {
     return false;
   }

@@ -6,19 +6,19 @@
 
 #include <new>
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/cbor/constants.h"
 
 namespace cbor {
 
 // static
-Value Value::InvalidUTF8StringValueForTesting(base::StringPiece in_string) {
+Value Value::InvalidUTF8StringValueForTesting(std::string_view in_string) {
   return Value(
       base::span<const uint8_t>(
           reinterpret_cast<const uint8_t*>(in_string.data()), in_string.size()),
@@ -99,7 +99,7 @@ Value::Value(BinaryValue&& in_bytes) noexcept
     : type_(Type::BYTE_STRING), bytestring_value_(std::move(in_bytes)) {}
 
 Value::Value(const char* in_string, Type type)
-    : Value(base::StringPiece(in_string), type) {}
+    : Value(std::string_view(in_string), type) {}
 
 Value::Value(std::string&& in_string, Type type) noexcept : type_(type) {
   switch (type_) {
@@ -117,7 +117,7 @@ Value::Value(std::string&& in_string, Type type) noexcept : type_(type) {
   }
 }
 
-Value::Value(base::StringPiece in_string, Type type) : type_(type) {
+Value::Value(std::string_view in_string, Type type) : type_(type) {
   switch (type_) {
     case Type::STRING:
       new (&string_value_) std::string();
@@ -235,10 +235,10 @@ const Value::BinaryValue& Value::GetBytestring() const {
   return bytestring_value_;
 }
 
-base::StringPiece Value::GetBytestringAsString() const {
+std::string_view Value::GetBytestringAsString() const {
   CHECK(is_bytestring());
   const auto& bytestring_value = GetBytestring();
-  return base::StringPiece(
+  return std::string_view(
       reinterpret_cast<const char*>(bytestring_value.data()),
       bytestring_value.size());
 }

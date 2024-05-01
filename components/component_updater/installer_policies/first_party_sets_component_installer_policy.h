@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
@@ -54,7 +54,7 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   // used in testing.
   static void WriteComponentForTesting(base::Version version,
                                        const base::FilePath& install_dir,
-                                       base::StringPiece contents);
+                                       std::string_view contents);
 
   static base::FilePath GetInstalledPathForTesting(const base::FilePath& base) {
     return GetInstalledPath(base);

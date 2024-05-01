@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,7 +72,7 @@ class TestTitledUrlNode : public TitledUrlNode {
 
   const GURL& GetTitledUrlNodeUrl() const override { return url_; }
 
-  std::vector<base::StringPiece16> GetTitledUrlNodeAncestorTitles()
+  std::vector<std::u16string_view> GetTitledUrlNodeAncestorTitles()
       const override {
     return {ancestor_title_};
   }
@@ -184,9 +184,9 @@ class TitledUrlIndexTest : public testing::Test {
 
   void ExtractMatchPositions(const std::string& string,
                              TitledUrlMatch::MatchPositions* matches) {
-    for (const base::StringPiece& match : base::SplitStringPiece(
+    for (std::string_view match : base::SplitStringPiece(
              string, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      std::vector<base::StringPiece> chunks = base::SplitStringPiece(
+      std::vector<std::string_view> chunks = base::SplitStringPiece(
           match, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       ASSERT_EQ(2U, chunks.size());
       matches->push_back(TitledUrlMatch::MatchPosition());

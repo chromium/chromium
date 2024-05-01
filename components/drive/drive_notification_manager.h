@@ -10,12 +10,12 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "components/drive/drive_notification_observer.h"
@@ -118,7 +118,7 @@ class DriveNotificationManager : public KeyedService,
   invalidation::Topic GetDriveInvalidationTopic() const;
   invalidation::Topic GetTeamDriveInvalidationTopic(
       const std::string& team_drive_id) const;
-  std::string ExtractTeamDriveId(base::StringPiece topic_name) const;
+  std::string ExtractTeamDriveId(std::string_view topic_name) const;
 
   raw_ptr<invalidation::InvalidationService> invalidation_service_;
   base::ObserverList<DriveNotificationObserver>::Unchecked observers_;

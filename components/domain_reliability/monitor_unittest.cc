@@ -9,13 +9,13 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -53,7 +53,7 @@ typedef std::vector<const DomainReliabilityBeacon*> BeaconVector;
 const char kBeaconOutcomeHistogram[] = "Net.DomainReliability.BeaconOutcome";
 
 scoped_refptr<net::HttpResponseHeaders> MakeHttpResponseHeaders(
-    base::StringPiece headers) {
+    std::string_view headers) {
   return base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
 }

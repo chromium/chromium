@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_NAMED_MESSAGE_PORT_CONNECTOR_H_
 #define COMPONENTS_CAST_NAMED_MESSAGE_PORT_CONNECTOR_NAMED_MESSAGE_PORT_CONNECTOR_H_
 
+#include <string_view>
+
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port.h"
 
 namespace cast_api_bindings {
@@ -21,7 +22,7 @@ class NamedMessagePortConnector : public MessagePort::Receiver {
   // Signature of callback to be invoked when a port is connected.
   // The callback should return true if the connection request was valid.
   using PortConnectedCallback =
-      base::RepeatingCallback<bool(base::StringPiece,
+      base::RepeatingCallback<bool(std::string_view,
                                    std::unique_ptr<MessagePort>)>;
 
   NamedMessagePortConnector();
@@ -42,7 +43,7 @@ class NamedMessagePortConnector : public MessagePort::Receiver {
 
  private:
   // MessagePort::Receiver implementation.
-  bool OnMessage(base::StringPiece message,
+  bool OnMessage(std::string_view message,
                  std::vector<std::unique_ptr<MessagePort>> ports) final;
   void OnPipeError() final;
 

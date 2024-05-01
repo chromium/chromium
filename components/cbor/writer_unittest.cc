@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,26 +19,26 @@ namespace cbor {
 TEST(CBORWriterTest, TestWriteUint) {
   struct UintTestCase {
     const int64_t value;
-    const base::StringPiece cbor;
+    const std::string_view cbor;
   };
 
   static const UintTestCase kUintTestCases[] = {
       // Reminder: must specify length when creating string pieces
       // with null bytes, else the string will truncate prematurely.
-      {0, base::StringPiece("\x00", 1)},
-      {1, base::StringPiece("\x01")},
-      {10, base::StringPiece("\x0a")},
-      {23, base::StringPiece("\x17")},
-      {24, base::StringPiece("\x18\x18")},
-      {25, base::StringPiece("\x18\x19")},
-      {100, base::StringPiece("\x18\x64")},
-      {1000, base::StringPiece("\x19\x03\xe8")},
-      {1000000, base::StringPiece("\x1a\x00\x0f\x42\x40", 5)},
-      {0xFFFFFFFF, base::StringPiece("\x1a\xff\xff\xff\xff")},
+      {0, std::string_view("\x00", 1)},
+      {1, std::string_view("\x01")},
+      {10, std::string_view("\x0a")},
+      {23, std::string_view("\x17")},
+      {24, std::string_view("\x18\x18")},
+      {25, std::string_view("\x18\x19")},
+      {100, std::string_view("\x18\x64")},
+      {1000, std::string_view("\x19\x03\xe8")},
+      {1000000, std::string_view("\x1a\x00\x0f\x42\x40", 5)},
+      {0xFFFFFFFF, std::string_view("\x1a\xff\xff\xff\xff")},
       {0x100000000,
-       base::StringPiece("\x1b\x00\x00\x00\x01\x00\x00\x00\x00", 9)},
+       std::string_view("\x1b\x00\x00\x00\x01\x00\x00\x00\x00", 9)},
       {std::numeric_limits<int64_t>::max(),
-       base::StringPiece("\x1b\x7f\xff\xff\xff\xff\xff\xff\xff")}};
+       std::string_view("\x1b\x7f\xff\xff\xff\xff\xff\xff\xff")}};
 
   for (const UintTestCase& test_case : kUintTestCases) {
     auto cbor = Writer::Write(Value(test_case.value));
@@ -49,20 +50,20 @@ TEST(CBORWriterTest, TestWriteUint) {
 TEST(CBORWriterTest, TestWriteNegativeInteger) {
   static const struct {
     const int64_t negative_int;
-    const base::StringPiece cbor;
+    const std::string_view cbor;
   } kNegativeIntTestCases[] = {
-      {-1LL, base::StringPiece("\x20")},
-      {-10LL, base::StringPiece("\x29")},
-      {-23LL, base::StringPiece("\x36")},
-      {-24LL, base::StringPiece("\x37")},
-      {-25LL, base::StringPiece("\x38\x18")},
-      {-100LL, base::StringPiece("\x38\x63")},
-      {-1000LL, base::StringPiece("\x39\x03\xe7")},
-      {-4294967296LL, base::StringPiece("\x3a\xff\xff\xff\xff")},
+      {-1LL, std::string_view("\x20")},
+      {-10LL, std::string_view("\x29")},
+      {-23LL, std::string_view("\x36")},
+      {-24LL, std::string_view("\x37")},
+      {-25LL, std::string_view("\x38\x18")},
+      {-100LL, std::string_view("\x38\x63")},
+      {-1000LL, std::string_view("\x39\x03\xe7")},
+      {-4294967296LL, std::string_view("\x3a\xff\xff\xff\xff")},
       {-4294967297LL,
-       base::StringPiece("\x3b\x00\x00\x00\x01\x00\x00\x00\x00", 9)},
+       std::string_view("\x3b\x00\x00\x00\x01\x00\x00\x00\x00", 9)},
       {std::numeric_limits<int64_t>::min(),
-       base::StringPiece("\x3b\x7f\xff\xff\xff\xff\xff\xff\xff")},
+       std::string_view("\x3b\x7f\xff\xff\xff\xff\xff\xff\xff")},
   };
 
   for (const auto& test_case : kNegativeIntTestCases) {
@@ -78,12 +79,12 @@ TEST(CBORWriterTest, TestWriteNegativeInteger) {
 TEST(CBORWriterTest, TestWriteBytes) {
   struct BytesTestCase {
     const std::vector<uint8_t> bytes;
-    const base::StringPiece cbor;
+    const std::string_view cbor;
   };
 
   static const BytesTestCase kBytesTestCases[] = {
-      {{}, base::StringPiece("\x40")},
-      {{0x01, 0x02, 0x03, 0x04}, base::StringPiece("\x44\x01\x02\x03\x04")},
+      {{}, std::string_view("\x40")},
+      {{0x01, 0x02, 0x03, 0x04}, std::string_view("\x44\x01\x02\x03\x04")},
   };
 
   for (const BytesTestCase& test_case : kBytesTestCases) {
@@ -96,17 +97,17 @@ TEST(CBORWriterTest, TestWriteBytes) {
 TEST(CBORWriterTest, TestWriteString) {
   struct StringTestCase {
     const std::string string;
-    const base::StringPiece cbor;
+    const std::string_view cbor;
   };
 
   static const StringTestCase kStringTestCases[] = {
-      {"", base::StringPiece("\x60")},
-      {"a", base::StringPiece("\x61\x61")},
-      {"IETF", base::StringPiece("\x64\x49\x45\x54\x46")},
-      {"\"\\", base::StringPiece("\x62\x22\x5c")},
-      {"\xc3\xbc", base::StringPiece("\x62\xc3\xbc")},
-      {"\xe6\xb0\xb4", base::StringPiece("\x63\xe6\xb0\xb4")},
-      {"\xf0\x90\x85\x91", base::StringPiece("\x64\xf0\x90\x85\x91")}};
+      {"", std::string_view("\x60")},
+      {"a", std::string_view("\x61\x61")},
+      {"IETF", std::string_view("\x64\x49\x45\x54\x46")},
+      {"\"\\", std::string_view("\x62\x22\x5c")},
+      {"\xc3\xbc", std::string_view("\x62\xc3\xbc")},
+      {"\xe6\xb0\xb4", std::string_view("\x63\xe6\xb0\xb4")},
+      {"\xf0\x90\x85\x91", std::string_view("\x64\xf0\x90\x85\x91")}};
 
   for (const StringTestCase& test_case : kStringTestCases) {
     SCOPED_TRACE(testing::Message()
@@ -367,12 +368,12 @@ TEST(CBORWriterTest, TestSignedExchangeExample) {
 TEST(CBORWriterTest, TestWriteSimpleValue) {
   static const struct {
     Value::SimpleValue simple_value;
-    const base::StringPiece cbor;
+    const std::string_view cbor;
   } kSimpleTestCase[] = {
-      {Value::SimpleValue::FALSE_VALUE, base::StringPiece("\xf4")},
-      {Value::SimpleValue::TRUE_VALUE, base::StringPiece("\xf5")},
-      {Value::SimpleValue::NULL_VALUE, base::StringPiece("\xf6")},
-      {Value::SimpleValue::UNDEFINED, base::StringPiece("\xf7")}};
+      {Value::SimpleValue::FALSE_VALUE, std::string_view("\xf4")},
+      {Value::SimpleValue::TRUE_VALUE, std::string_view("\xf5")},
+      {Value::SimpleValue::NULL_VALUE, std::string_view("\xf6")},
+      {Value::SimpleValue::UNDEFINED, std::string_view("\xf7")}};
 
   for (const auto& test_case : kSimpleTestCase) {
     auto cbor = Writer::Write(Value(test_case.simple_value));

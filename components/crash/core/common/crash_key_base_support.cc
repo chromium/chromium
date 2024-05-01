@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
@@ -62,7 +63,7 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
   }
 
   void Set(base::debug::CrashKeyString* crash_key,
-           base::StringPiece value) override {
+           std::string_view value) override {
     SIZE_CLASS_OPERATION(crash_key->size,
                          reinterpret_cast<, *>(crash_key)->impl.Set(value));
   }
@@ -97,8 +98,8 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
 
       if (annotation->type() != crashpad::Annotation::Type::kString)
         continue;
-      base::StringPiece value(static_cast<const char*>(annotation->value()),
-                              annotation->size());
+      std::string_view value(static_cast<const char*>(annotation->value()),
+                             annotation->size());
 
       out << "  \"" << annotation->name() << "\" = \"" << value << "\"\n";
     }

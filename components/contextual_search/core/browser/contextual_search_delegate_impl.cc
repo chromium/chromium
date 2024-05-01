@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -458,7 +459,7 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
     return;
   }
 
-  auto extract_string = [&dict](base::StringPiece key, std::string* out) {
+  auto extract_string = [&dict](std::string_view key, std::string* out) {
     const std::string* string_pointer = dict->FindString(key);
     if (string_pointer)
       *out = *string_pointer;

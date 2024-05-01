@@ -5,6 +5,7 @@
 #include "components/domain_reliability/monitor.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -96,7 +97,7 @@ void DomainReliabilityMonitor::Shutdown() {
 
 void DomainReliabilityMonitor::AddBakedInConfigs() {
   for (size_t i = 0; kBakedInJsonConfigs[i]; ++i) {
-    base::StringPiece json(kBakedInJsonConfigs[i]);
+    std::string_view json(kBakedInJsonConfigs[i]);
     std::unique_ptr<const DomainReliabilityConfig> config =
         DomainReliabilityConfig::FromJSON(json);
     // Guard against accidentally checking in malformed JSON configs.

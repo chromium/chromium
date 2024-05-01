@@ -4,6 +4,7 @@
 
 #include "components/cast/message_port/cast/message_port_cast.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -71,12 +72,12 @@ blink::WebMessagePort MessagePortCast::TakePort() {
   return std::move(port_);
 }
 
-bool MessagePortCast::PostMessage(base::StringPiece message) {
+bool MessagePortCast::PostMessage(std::string_view message) {
   return PostMessageWithTransferables(message, {});
 }
 
 bool MessagePortCast::PostMessageWithTransferables(
-    base::StringPiece message,
+    std::string_view message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
   DCHECK(port_.IsValid());
   std::vector<blink::WebMessagePort> transferables;

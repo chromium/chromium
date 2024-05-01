@@ -9,10 +9,10 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -86,7 +86,7 @@ std::string StatusFromInt(int i) {
 
 template <typename ValueTypeFindResult,
           typename ValueType,
-          ValueTypeFindResult (Value::Dict::*FindValueType)(base::StringPiece)
+          ValueTypeFindResult (Value::Dict::*FindValueType)(std::string_view)
               const>
 struct HasValue {
   bool operator()(const Value::Dict& dict,

@@ -7,12 +7,12 @@
 #include <cstdint>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "components/cbor/constants.h"
 
 namespace cbor {
@@ -92,7 +92,7 @@ bool Writer::EncodeCBOR(const Value& node,
     }
 
     case Value::Type::STRING: {
-      base::StringPiece string = node.GetString();
+      std::string_view string = node.GetString();
       StartItem(Value::Type::STRING,
                 base::strict_cast<uint64_t>(string.size()));
 

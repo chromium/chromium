@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <utility>
 
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
@@ -25,7 +26,7 @@ class SearchResultExtractorImplRenderViewTest : public content::RenderViewTest {
   // `expected_results->document_url` will be overwritten with the document url
   // once the provided `html` is loaded.
   void LoadHtmlAndExpectExtractedOutput(
-      base::StringPiece html,
+      std::string_view html,
       const std::vector<mojom::ResultType>& result_types,
       mojom::SearchResultExtractor::Status expected_status,
       mojom::CategoryResultsPtr expected_results) {

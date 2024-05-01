@@ -4,13 +4,14 @@
 
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 
+#include <string_view>
+
 #include "base/fuchsia/mem_buffer_util.h"
-#include "base/strings/string_piece.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/message_port.h"
 
 fuchsia::web::WebMessage CreateWebMessage(
-    base::StringPiece message,
+    std::string_view message,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   fuchsia::web::WebMessage web_message;
   web_message.set_data(base::MemBufferFromString(message, "msg"));

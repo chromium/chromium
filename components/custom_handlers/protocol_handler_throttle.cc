@@ -4,6 +4,8 @@
 
 #include "components/custom_handlers/protocol_handler_throttle.h"
 
+#include <string_view>
+
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -33,7 +35,7 @@ void ProtocolHandlerThrottle::WillRedirectRequest(
 
 void ProtocolHandlerThrottle::TranslateUrl(GURL& url) {
   // TODO(jfernandez): We should use scheme_piece instead, which would imply
-  // adapting the ProtocolHandlerRegistry code to use StringPiece.
+  // adapting the ProtocolHandlerRegistry code to use std::string_view.
   if (!protocol_handler_registry_ ||
       !protocol_handler_registry_->IsHandledProtocol(url.scheme())) {
     return;

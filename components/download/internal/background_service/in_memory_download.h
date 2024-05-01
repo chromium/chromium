@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -192,7 +193,7 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   size_t EstimateMemoryUsage() const override;
 
   // network::SimpleURLLoaderStreamConsumer implementation.
-  void OnDataReceived(base::StringPiece string_piece,
+  void OnDataReceived(std::string_view string_piece,
                       base::OnceClosure resume) override;
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;

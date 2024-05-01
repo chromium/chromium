@@ -4,6 +4,8 @@
 
 #include "components/custom_handlers/protocol_handler.h"
 
+#include <string_view>
+
 #include "base/json/values_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
@@ -143,7 +145,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
 GURL ProtocolHandler::TranslateUrl(const GURL& url) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string clean_url;
-  base::StringPiece url_spec(url.spec());
+  std::string_view url_spec(url.spec());
 
   // Remove credentials from the url if present, in order to mitigate the risk
   // of credential leakage

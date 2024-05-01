@@ -5,6 +5,7 @@
 #include "components/affiliations/core/browser/sql_table_builder.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -338,9 +339,9 @@ std::string SQLTableBuilder::ListAllUniqueKeyNames() const {
   return result;
 }
 
-std::vector<base::StringPiece> SQLTableBuilder::AllPrimaryKeyNames() const {
+std::vector<std::string_view> SQLTableBuilder::AllPrimaryKeyNames() const {
   DCHECK(IsVersionLastAndSealed(sealed_version_));
-  std::vector<base::StringPiece> result;
+  std::vector<std::string_view> result;
   result.reserve(columns_.size());
   for (const Column& column : columns_) {
     if (IsColumnInLastVersion(column) && column.is_primary_key) {

@@ -6,9 +6,9 @@
 #define COMPONENTS_CAST_API_BINDINGS_SCOPED_API_BINDING_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "components/cast/cast_component_export.h"
 #include "components/cast/message_port/message_port.h"
 
@@ -29,7 +29,7 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding final
 
     // Expresses the name for which MessagePort connection requests should be
     // routed to the Delegate implementation.
-    virtual base::StringPiece GetPortName() const = 0;
+    virtual std::string_view GetPortName() const = 0;
 
     // Invoked when |message_port_| is connected. This allows the Delegate to do
     // work when the client first connects, e.g. sending it a message conveying
@@ -37,7 +37,7 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding final
     virtual void OnConnected() {}
 
     // Invoked for messages received over |message_port_|.
-    virtual bool OnMessage(base::StringPiece message) = 0;
+    virtual bool OnMessage(std::string_view message) = 0;
 
     // Invoked when |message_port_| is disconnected.
     // Allows the delegate to cleanup if the client unexpectedly disconnects.
@@ -56,8 +56,8 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding final
   // |js_bindings|: script to inject.
   ScopedApiBinding(Manager* bindings_manager,
                    Delegate* delegate,
-                   base::StringPiece js_bindings_id,
-                   base::StringPiece js_bindings);
+                   std::string_view js_bindings_id,
+                   std::string_view js_bindings);
   ~ScopedApiBinding() override;
 
   ScopedApiBinding(const ScopedApiBinding&) = delete;
@@ -65,14 +65,14 @@ class CAST_COMPONENT_EXPORT ScopedApiBinding final
 
   // Sends a |message| to |message_port_|.
   // Returns true if the message was sent.
-  bool SendMessage(base::StringPiece message);
+  bool SendMessage(std::string_view message);
 
  private:
   // Called when a port is received from the page.
   void OnPortConnected(std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   // cast_api_bindings::MessagePort::Receiver implementation:
-  bool OnMessage(base::StringPiece message,
+  bool OnMessage(std::string_view message,
                  std::vector<std::unique_ptr<cast_api_bindings::MessagePort>>
                      ports) override;
   void OnPipeError() override;

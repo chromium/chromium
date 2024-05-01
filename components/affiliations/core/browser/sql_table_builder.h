@@ -7,10 +7,10 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 
 namespace sql {
 class Database;
@@ -133,7 +133,7 @@ class SQLTableBuilder {
 
   // Returns a vector of all PRIMARY KEY names that are present in the last
   // version. The last version must be sealed.
-  std::vector<base::StringPiece> AllPrimaryKeyNames() const;
+  std::vector<std::string_view> AllPrimaryKeyNames() const;
 
   // Returns the number of all columns present in the last version. The last
   // version must be sealed.

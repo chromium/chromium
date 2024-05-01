@@ -5,6 +5,7 @@
 #include "components/cronet/testing/test_server/test_server.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -81,7 +82,7 @@ std::unique_ptr<net::test_server::HttpResponse> ReturnBigDataInResponse(
                           base::CompareCase::INSENSITIVE_ASCII));
   std::string data_size_str = request.relative_url.substr(strlen(kBigDataPath));
   int64_t data_size;
-  CHECK(base::StringToInt64(base::StringPiece(data_size_str), &data_size));
+  CHECK(base::StringToInt64(std::string_view(data_size_str), &data_size));
   CHECK(data_size == static_cast<int64_t>(g_big_data_body.Get().size()));
   return std::make_unique<net::test_server::RawHttpResponse>(
       std::string(), g_big_data_body.Get());

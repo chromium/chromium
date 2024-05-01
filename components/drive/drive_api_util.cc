@@ -5,6 +5,7 @@
 #include "components/drive/drive_api_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/heap_array.h"
 #include "base/files/file.h"
@@ -157,7 +158,7 @@ std::string GetMd5Digest(const base::FilePath& file_path,
     }
 
     offset += result;
-    base::MD5Update(&context, base::StringPiece(buffer.data(), result));
+    base::MD5Update(&context, std::string_view(buffer.data(), result));
   }
 
   base::MD5Digest digest;

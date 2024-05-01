@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -66,7 +67,7 @@ constexpr char kSessionModelKey[] = "model";
 //     }
 //   }
 base::Value::Dict CreateDummyContentSettingValue(
-    base::StringPiece tag,
+    std::string_view tag,
     bool expired,
     mojom::SessionModel session_model = mojom::SessionModel::DURABLE) {
   return base::Value::Dict()
