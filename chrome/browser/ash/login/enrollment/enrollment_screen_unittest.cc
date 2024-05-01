@@ -6,11 +6,13 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
@@ -199,11 +201,12 @@ class EnrollmentScreenBaseTest : public testing::Test {
     EXPECT_CALL(mock_view_, ShowEnrollmentStatus(status));
   }
 
-  void ExpectTokenBasedEnrollmentAndReportSuccess() {
+  void ExpectTokenBasedEnrollmentAndReportEnrolled() {
     EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingEnrollmentToken())
         .WillOnce([this]() {
           ExpectEnrollmentScreenIsEnrollmentStatusConsumer();
-          enrollment_screen_->ShowEnrollmentStatusOnSuccess();
+          SetupEnrolledDevice();
+          enrollment_screen_->OnDeviceEnrolled();
         });
   }
 
@@ -686,6 +689,11 @@ class EnrollmentScreenTokenBasedEnrollmentTest
     config.enrollment_token = policy::test::kEnrollmentToken;
     return config;
   }
+
+  system::ScopedFakeStatisticsProvider statistics_provider_;
+  base::test::ScopedCommandLine command_line_;
+  policy::test::EnrollmentTestHelper enrollment_test_helper_{
+      &command_line_, &statistics_provider_};
 };
 
 TEST_F(EnrollmentScreenTokenBasedEnrollmentTest, ShouldFinishEnrollmentScreen) {
@@ -694,7 +702,8 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest, ShouldFinishEnrollmentScreen) {
   ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
                          config.enrollment_token);
 
-  ExpectTokenBasedEnrollmentAndReportSuccess();
+  ExpectTokenBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(false);
   ExpectSuccessScreen();
   ExpectClearAuth();
 
@@ -703,6 +712,37 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest, ShouldFinishEnrollmentScreen) {
 
   EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
 }
+
+// Enrollment tokens are currently only retrieved from OOBE config if the device
+// is chrome-branded, so we need to have this preprocessor check in order to run
+// this test.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
+       EnrollmentTokenConfigIsDeletedAfterEnrollmentSuccess) {
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig();
+  const std::string* present_enrollment_token =
+      enrollment_test_helper_.GetEnrollmentTokenFromOobeConfiguration();
+  ASSERT_EQ(*present_enrollment_token, policy::test::kEnrollmentToken);
+
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectEnrollmentConfig(config.mode, config.auth_mechanism,
+                         config.enrollment_token);
+
+  ExpectTokenBasedEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(false);
+  ExpectSuccessScreen();
+  ExpectClearAuth();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  const std::string* missing_flex_token =
+      enrollment_test_helper_.GetEnrollmentTokenFromOobeConfiguration();
+  EXPECT_EQ(missing_flex_token, nullptr);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
        ShouldRetryEnrollmentOnUserAction) {
@@ -719,7 +759,8 @@ TEST_F(EnrollmentScreenTokenBasedEnrollmentTest,
 
     // Second view is shown after user retry.
     ExpectShowView();
-    ExpectTokenBasedEnrollmentAndReportSuccess();
+    ExpectTokenBasedEnrollmentAndReportEnrolled();
+    ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
     ExpectSuccessScreen();
   }
 
