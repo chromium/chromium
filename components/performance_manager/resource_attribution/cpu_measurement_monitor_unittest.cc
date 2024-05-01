@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -49,6 +50,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -69,6 +71,47 @@ using performance_manager::features::kResourceAttributionIncludeOrigins;
 using ProcessCPUUsageError = CPUMeasurementDelegate::ProcessCPUUsageError;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
+
+// Creates a stub WorkerNode hosted in the given `process_node`, with the given
+// `origin`, and adds it to `graph`.
+TestNodeWrapper<WorkerNodeImpl> CreateWorkerNodeWithOrigin(
+    GraphImpl* graph,
+    ProcessNodeImpl* process_node,
+    const url::Origin& origin) {
+  return TestNodeWrapper<WorkerNodeImpl>::Create(
+      graph, WorkerNode::WorkerType::kDedicated, process_node,
+      /*browser_context_id=*/std::string(), blink::DedicatedWorkerToken(),
+      origin);
+}
+
+// Like MockMultiplePagesAndWorkersWithMultipleProcessesGraph (see
+// mock_graphs.h), but assigns a fixed origin to each WorkerNode.
+struct MockMultiplePagesAndWorkersWithKnownOriginsGraph
+    : public performance_manager::MockMultiplePagesWithMultipleProcessesGraph {
+  // Creates a graph with the same structure as
+  // MockMultiplePagesAndWorkersWithMultipleProcessesGraph, assigning `origin`
+  // to `worker` and `other_origin` to `other_worker`.
+  MockMultiplePagesAndWorkersWithKnownOriginsGraph(
+      performance_manager::TestGraphImpl* graph,
+      const url::Origin& origin,
+      const url::Origin& other_origin)
+      : performance_manager::MockMultiplePagesWithMultipleProcessesGraph(graph),
+        worker(CreateWorkerNodeWithOrigin(graph, process.get(), origin)),
+        other_worker(CreateWorkerNodeWithOrigin(graph,
+                                                other_process.get(),
+                                                other_origin)) {
+    worker->AddClientFrame(frame.get());
+    other_worker->AddClientFrame(child_frame.get());
+  }
+
+  ~MockMultiplePagesAndWorkersWithKnownOriginsGraph() {
+    other_worker->RemoveClientFrame(child_frame.get());
+    worker->RemoveClientFrame(frame.get());
+  }
+
+  TestNodeWrapper<WorkerNodeImpl> worker;
+  TestNodeWrapper<WorkerNodeImpl> other_worker;
+};
 
 }  // namespace
 
@@ -582,25 +625,27 @@ TEST_F(ResourceAttrCPUMonitorTest, AllProcessTypes) {
 // workers in those processes, and correctly aggregated to pages containing
 // frames and workers from multiple processes.
 TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
-  performance_manager::MockUtilityAndMultipleRenderProcessesGraph mock_graph(
-      graph());
+  MockMultiplePagesAndWorkersWithKnownOriginsGraph mock_graph(graph(), kOrigin1,
+                                                              kOrigin2);
 
-  // Assign URL's to frames and workers in the graph so that they'll be mapped
-  // to OriginInPageContexts.
+  // Assign URL's to frames in the graph so that they'll be mapped to
+  // OriginInPageContexts.
   mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                           /*same_document=*/false);
   mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
                                                 /*same_document=*/false);
   mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                                 /*same_document=*/false);
-  mock_graph.worker->OnFinalResponseURLDetermined(kUrl1);
-  mock_graph.other_worker->OnFinalResponseURLDetermined(kUrl2);
 
   // The mock browser and utility processes should be measured, but do not
   // contain frames or workers so should not affect the distribution of
   // measurements.
   SetProcessCPUUsage(mock_graph.browser_process.get(), 0.8);
-  SetProcessCPUUsage(mock_graph.utility_process.get(), 0.7);
+
+  const TestNodeWrapper<ProcessNodeImpl> utility_process =
+      CreateMockCPUProcess(content::PROCESS_TYPE_UTILITY);
+  SetProcessId(utility_process.get());
+  SetProcessCPUUsage(utility_process.get(), 0.7);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -630,7 +675,7 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
   const ProcessContext& browser_process_context =
       mock_graph.browser_process->GetResourceContext();
   const ProcessContext& utility_process_context =
-      mock_graph.utility_process->GetResourceContext();
+      utility_process->GetResourceContext();
   const ProcessContext& process_context =
       mock_graph.process->GetResourceContext();
   const ProcessContext& other_process_context =
@@ -862,19 +907,17 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
 // Tests that CPU usage of processes is correctly distributed between FrameNodes
 // and WorkerNodes that are added and removed between measurements.
 TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
-  performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
-      mock_graph(graph());
+  MockMultiplePagesAndWorkersWithKnownOriginsGraph mock_graph(graph(), kOrigin1,
+                                                              kOrigin2);
 
-  // Assign URL's to frames and workers in the graph so that they'll be mapped
-  // to OriginInPageContexts.
+  // Assign URL's to frames in the graph so that they'll be mapped to
+  // OriginInPageContexts.
   mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                           /*same_document=*/false);
   mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
                                                 /*same_document=*/false);
   mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                                 /*same_document=*/false);
-  mock_graph.worker->OnFinalResponseURLDetermined(kUrl1);
-  mock_graph.other_worker->OnFinalResponseURLDetermined(kUrl2);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -922,9 +965,8 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   auto new_frame1 =
       CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
   new_frame1->OnNavigationCommitted(kUrl1, kOrigin1, /*same_document=*/false);
-  auto new_worker1 = CreateNode<WorkerNodeImpl>(
-      WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
-  new_worker1->OnFinalResponseURLDetermined(kUrl1);
+  auto new_worker1 = CreateWorkerNodeWithOrigin(
+      graph(), mock_graph.other_process.get(), kOrigin1);
   const auto new_frame1_context = new_frame1->GetResourceContext();
   const auto new_worker1_context = new_worker1->GetResourceContext();
   const auto node_added_time1 = base::TimeTicks::Now();
@@ -933,9 +975,8 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   auto new_frame2 =
       CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
   new_frame2->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
-  auto new_worker2 = CreateNode<WorkerNodeImpl>(
-      WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
-  new_worker2->OnFinalResponseURLDetermined(kUrl2);
+  auto new_worker2 = CreateWorkerNodeWithOrigin(
+      graph(), mock_graph.other_process.get(), kOrigin2);
   const auto new_frame2_context = new_frame2->GetResourceContext();
   const auto new_worker2_context = new_worker2->GetResourceContext();
   const auto node_added_time2 = base::TimeTicks::Now();
@@ -944,9 +985,8 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
   auto new_frame3 =
       CreateFrameNodeAutoId(mock_graph.process.get(), mock_graph.page.get());
   new_frame3->OnNavigationCommitted(kUrl2, kOrigin2, /*same_document=*/false);
-  auto new_worker3 = CreateNode<WorkerNodeImpl>(
-      WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
-  new_worker3->OnFinalResponseURLDetermined(kUrl2);
+  auto new_worker3 = CreateWorkerNodeWithOrigin(
+      graph(), mock_graph.other_process.get(), kOrigin2);
   const auto new_frame3_context = new_frame3->GetResourceContext();
   const auto new_worker3_context = new_worker3->GetResourceContext();
   const auto node_added_time3 = base::TimeTicks::Now();
@@ -1218,19 +1258,17 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
 // Tests that WorkerNode CPU usage is correctly distributed to pages as clients
 // are added and removed.
 TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
-  performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
-      mock_graph(graph());
+  MockMultiplePagesAndWorkersWithKnownOriginsGraph mock_graph(graph(), kOrigin1,
+                                                              kOrigin2);
 
-  // Assign URL's to frames and workers in the graph so that they'll be mapped
-  // to OriginInPageContexts.
+  // Assign URL's to frames in the graph so that they'll be mapped to
+  // OriginInPageContexts.
   mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                           /*same_document=*/false);
   mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
                                                 /*same_document=*/false);
   mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                                 /*same_document=*/false);
-  mock_graph.worker->OnFinalResponseURLDetermined(kUrl1);
-  mock_graph.other_worker->OnFinalResponseURLDetermined(kUrl2);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -1253,13 +1291,11 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   const auto origin2_in_other_page_context =
       OriginInPageContext(kOrigin2, other_page_context);
 
-  auto new_worker1 = CreateNode<WorkerNodeImpl>(
-      WorkerNode::WorkerType::kDedicated, mock_graph.process.get());
-  new_worker1->OnFinalResponseURLDetermined(kUrl1);
+  auto new_worker1 =
+      CreateWorkerNodeWithOrigin(graph(), mock_graph.process.get(), kOrigin1);
   const auto new_worker1_context = new_worker1->GetResourceContext();
-  auto new_worker2 = CreateNode<WorkerNodeImpl>(
-      WorkerNode::WorkerType::kDedicated, mock_graph.other_process.get());
-  new_worker2->OnFinalResponseURLDetermined(kUrl2);
+  auto new_worker2 = CreateWorkerNodeWithOrigin(
+      graph(), mock_graph.other_process.get(), kOrigin2);
   const auto new_worker2_context = new_worker2->GetResourceContext();
 
   task_env().FastForwardBy(kTimeBetweenMeasurements);
@@ -1573,13 +1609,11 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
 // Tests that CPU usage of processes is correctly distributed between
 // OriginInPageContexts when a frame origin changes between measurements.
 TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
-  performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
-      mock_graph(graph());
+  MockMultiplePagesAndWorkersWithKnownOriginsGraph mock_graph(graph(), kOrigin1,
+                                                              kOrigin2);
 
-  // Assign URL's to frames in the graph so that they'll be mapped to
+  // Assign URL's to some frames in the graph so that they'll be mapped to
   // OriginInPageContexts.
-  mock_graph.frame->OnNavigationCommitted(kUrl1, kOrigin1,
-                                          /*same_document=*/false);
   mock_graph.other_frame->OnNavigationCommitted(kUrl2, kOrigin2,
                                                 /*same_document=*/false);
   mock_graph.child_frame->OnNavigationCommitted(kUrl1, kOrigin1,
@@ -1607,23 +1641,23 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
   const auto origin2_in_other_page_context =
       OriginInPageContext(kOrigin2, other_page_context);
 
-  // Navigate a frame partway through the measurement.
+  // Navigate frames partway through the measurement.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
+
+  // No origin -> kOrigin2.
+  mock_graph.frame->OnNavigationCommitted(kUrl2, kOrigin2,
+                                          /*same_document=*/false);
+  // kOrigin2 -> kOrigin1.
   mock_graph.other_frame->OnNavigationCommitted(kUrl1, kOrigin1,
                                                 /*same_document=*/false);
-  // Same-document navigation should not change the origin.
+
+  // Same-document navigation should not change the origin (kOrigin1 ->
+  // kOrigin1).
   mock_graph.child_frame->OnNavigationCommitted(GURL("http://a.com#fragment"),
                                                 kOrigin1,
                                                 /*same_document=*/true);
-  const base::TimeTicks navigation_time = base::TimeTicks::Now();
 
-  // Finish loading workers later in the measurement, which assigns the origin
-  // for the first time.
-  task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
-  mock_graph.worker->OnFinalResponseURLDetermined(kUrl2);
-  mock_graph.other_worker->OnFinalResponseURLDetermined(kUrl1);
-
-  task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
+  task_env().FastForwardBy(kTimeBetweenMeasurements * 2 / 3);
   UpdateAndGetCPUMeasurements();
 
   // * `process` split its 60% CPU usage between 3 nodes:
@@ -1633,27 +1667,20 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
   // * `other_process` splits its 50% CPU usage between 2 nodes:
   //   * `child_frame`, `other_worker` (both part of `other_page`).
   //
-  // For the first third of the period:
+  // For the first 1/3 of the period:
   //
-  //   * `origin1_in_page` contains 1 node: `frame`.
+  //   * `origin1_in_page` contains 1 node: `worker`.
   //   * `origin2_in_page` contains 0 nodes.
   //   * `origin1_in_other_page` contains 1 node: `child_frame`.
-  //   * `origin2_in_other_page` contains 1 node: `other_frame`.
+  //   * `origin2_in_other_page` contains 2 nodes: `other_frame`,
+  //     `other_worker`.
   //
-  // For the middle third:
+  // For the last 2/3:
   //
-  //   * `origin1_in_page` contains 1 node: `frame`.
-  //   * `origin2_in_page` contains 0 nodes.
+  //   * `origin1_in_page` contains 1 node: `worker`.
+  //   * `origin2_in_page` contains 1 node: `frame`.
   //   * `origin1_in_other_page` contains 2 nodes: `child_frame`, `other_frame`.
-  //   * `origin2_in_other_page` contains 0 nodes.
-  //
-  // For the last third:
-  //
-  //   * `origin1_in_page` contains 1 node: `frame`.
-  //   * `origin2_in_page` contains 1 node: `worker`.
-  //   * `origin1_in_other_page` contains 3 nodes: `child_frame`, `other_frame`,
-  //         and `other_worker`.
-  //   * `origin2_in_other_page` contains 0 nodes.
+  //   * `origin2_in_other_page` contains 1 node: `other_worker`.
   constexpr base::TimeDelta process_split = kTimeBetweenMeasurements * 0.6 / 3;
   constexpr base::TimeDelta other_process_split =
       kTimeBetweenMeasurements * 0.5 / 2;
@@ -1664,15 +1691,14 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
 
   constexpr base::TimeDelta expected_origin1_in_page_delta = process_split;
   constexpr base::TimeDelta expected_origin2_in_page_delta =
-      /*first 2/3, 0 nodes*/ base::TimeDelta() +
-      /*last 1/3, 1 node*/ process_split / 3;
+      /*first 1/3, 0 nodes*/ base::TimeDelta() +
+      /*last 2/3, 1 node*/ process_split * 2 / 3;
   constexpr base::TimeDelta expected_origin1_in_other_page_delta =
       /*first 1/3, 1 node*/ other_process_split / 3 +
-      /*second 1/3, 2 nodes*/ (process_split + other_process_split) / 3 +
-      /*last 1/3, 3 nodes*/ (process_split + 2 * other_process_split) / 3;
+      /*last 2/3, 2 nodes*/ (process_split + other_process_split) * 2 / 3;
   constexpr base::TimeDelta expected_origin2_in_other_page_delta =
-      /*first 1/3, 1 node*/ process_split / 3 +
-      /*last 1/3, 0 nodes*/ base::TimeDelta();
+      /*first 1/3, 2 nodes*/ (process_split + other_process_split) / 3 +
+      /*last 2/3, 1 node*/ other_process_split * 2 / 3;
 
   EXPECT_THAT(current_measurements_[process_context],
               CPUDeltaMatches(process_context, kTimeBetweenMeasurements * 0.6));
@@ -1699,14 +1725,10 @@ TEST_F(ResourceAttrCPUMonitorTest, NavigateChangesOrigin) {
               CPUDeltaMatches(origin1_in_other_page_context,
                               expected_origin1_in_other_page_delta,
                               MeasurementAlgorithm::kSum));
-  // `origin2_in_other_page_context` isn't measured again after `other_frame`
-  // navigates away.
   EXPECT_THAT(current_measurements_[origin2_in_other_page_context],
-              CPUDeltaMatchesWithMeasurementTime(
-                  origin2_in_other_page_context,
-                  /*expected_delta=*/expected_origin2_in_other_page_delta,
-                  /*expected_background_delta=*/base::TimeDelta(),
-                  navigation_time, MeasurementAlgorithm::kSum));
+              CPUDeltaMatches(origin2_in_other_page_context,
+                              expected_origin2_in_other_page_delta,
+                              MeasurementAlgorithm::kSum));
 }
 
 // Tests that `cumulative_background_cpu` is correctly maintained, including

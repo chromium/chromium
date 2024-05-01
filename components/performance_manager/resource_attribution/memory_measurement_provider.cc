@@ -38,15 +38,11 @@ std::optional<OriginInPageContext> OriginInPageContextForNode(
   if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins)) {
     return std::nullopt;
   }
-  const auto url = node->GetURL();
-  if (!url.is_valid()) {
+  const std::optional<url::Origin> origin = node->GetOrigin();
+  if (!origin.has_value()) {
     return std::nullopt;
   }
-  // TODO(http://crbug.com/333248839): Instead of creating the Origin from an
-  // URL, which loses some information, should store it as a node property. See
-  // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md.
-  return OriginInPageContext(url::Origin::Create(url),
-                             page_node->GetResourceContext());
+  return OriginInPageContext(origin.value(), page_node->GetResourceContext());
 }
 
 }  // namespace

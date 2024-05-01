@@ -117,7 +117,6 @@ class CPUMeasurementMonitor
   void OnBeforeClientWorkerRemoved(
       const WorkerNode* worker_node,
       const WorkerNode* client_worker_node) override;
-  void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override;
 
   // NodeDataDescriber:
   base::Value::Dict DescribeFrameNodeData(const FrameNode* node) const override;

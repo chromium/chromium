@@ -67,17 +67,6 @@ void ValidateCPUTimeResult(const CPUTimeResult& result) {
   CHECK(!result.cumulative_cpu.is_negative());
 }
 
-std::optional<url::Origin> GetOriginForNode(const FrameNode* frame_node) {
-  return frame_node->GetOrigin();
-}
-
-std::optional<url::Origin> GetOriginForNode(const WorkerNode* worker_node) {
-  // TODO(http://crbug.com/333248839): Instead of creating the Origin from an
-  // URL, which loses some information, should store it as a node property. See
-  // https://chromium.googlesource.com/chromium/src/+/main/docs/security/origin-vs-url.md
-  return url::Origin::Create(worker_node->GetURL());
-}
-
 template <typename FrameOrWorkerNode>
 std::optional<OriginInPageContext> OriginInPageContextForNode(
     const FrameOrWorkerNode* node,
@@ -90,10 +79,12 @@ std::optional<OriginInPageContext> OriginInPageContextForNode(
   // change to the previous origin.
   GraphChangeUpdateOrigin* origin_change =
       absl::get_if<GraphChangeUpdateOrigin>(&graph_change);
-  const std::optional<url::Origin> origin =
-      (origin_change && origin_change->node == node)
-          ? origin_change->previous_origin
-          : GetOriginForNode(node);
+  std::optional<url::Origin> origin;
+  if (origin_change && origin_change->node == node) {
+    origin = origin_change->previous_origin;
+  } else {
+    origin = node->GetOrigin();
+  }
   if (!origin.has_value()) {
     return std::nullopt;
   }
@@ -504,16 +495,6 @@ void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
   UpdateCPUMeasurements(
       worker_node->GetProcessNode(),
       GraphChangeRemoveClientWorkerFromWorker(worker_node, client_worker_node));
-}
-
-void CPUMeasurementMonitor::OnFinalResponseURLDetermined(
-    const WorkerNode* worker_node) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Take a measurement of the process CPU usage, but don't assign this worker's
-  // CPU to an OriginInPageContext, since the origin wasn't defined until now.
-  UpdateCPUMeasurements(
-      worker_node->GetProcessNode(),
-      GraphChangeUpdateOrigin(worker_node, /*previous_origin=*/std::nullopt));
 }
 
 base::Value::Dict CPUMeasurementMonitor::DescribeFrameNodeData(
