@@ -192,6 +192,19 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
+            public void finishedClosingTabGroup(Token tabGroupId, boolean wasHiding) {
+                StringBuilder builder =
+                        new StringBuilder("finishedClosingTabGroup, tabGroupId = ")
+                                .append(tabGroupId)
+                                .append(" wasHiding = ")
+                                .append(wasHiding);
+                LogUtils.log(TAG, builder.toString());
+
+                mRemoteTabGroupMutationHelper.handleTabGroupClosed(
+                        new LocalTabGroupId(tabGroupId), wasHiding);
+            }
+
+            @Override
             public void didRemoveTabGroup(int oldRootId, @Nullable Token oldTabGroupId) {
                 LogUtils.log(TAG, "didRemoveTabGroup, oldRootId " + oldRootId);
                 if (oldTabGroupId == null) return;

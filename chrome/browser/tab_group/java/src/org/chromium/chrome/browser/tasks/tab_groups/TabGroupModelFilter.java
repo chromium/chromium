@@ -17,6 +17,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -1513,12 +1514,13 @@ public class TabGroupModelFilter extends TabModelFilter {
      * @param hideTabGroups Whether to hide the tab groups rather than deleting them.
      */
     public void closeAllTabs(boolean uponExit, boolean hideTabGroups) {
+        TabModel tabModel = getTabModel();
         if (hideTabGroups && canHideTabGroups()) {
             for (Token token : getAllTabGroupIds()) {
                 setTabGroupHiding(token);
             }
         }
-        getTabModel().closeAllTabs(uponExit);
+        tabModel.closeAllTabs(uponExit);
     }
 
     /**
@@ -1568,48 +1570,67 @@ public class TabGroupModelFilter extends TabModelFilter {
     private void setTabGroupHiding(@Nullable Token tabGroupId) {
         if (tabGroupId == null) return;
 
-        if (mHidingTabGroups.add(tabGroupId)) {
-            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.startHidingTabGroup(tabGroupId);
-            }
-        }
+        mHidingTabGroups.add(tabGroupId);
     }
 
     @Override
     public void tabClosureUndone(Tab tab) {
         super.tabClosureUndone(tab);
         @Nullable Token tabGroupId = tab.getTabGroupId();
-        if (tabGroupId != null && mHidingTabGroups.remove(tabGroupId)) {
-            for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-                observer.cancelledHidingTabGroup(tabGroupId);
-            }
+        if (tabGroupId != null) {
+            mHidingTabGroups.remove(tabGroupId);
         }
     }
 
     @Override
     public void onFinishingMultipleTabClosure(List<Tab> tabs) {
         super.onFinishingMultipleTabClosure(tabs);
-        Set<Token> processedTabGroupIds = new HashSet<>();
+        Set<Token> processedTabGroups = new HashSet<>();
+        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
+                getLazyAllTabGroupIdsInComprehensiveModel(tabs);
         for (Tab tab : tabs) {
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId == null) continue;
 
-            if (!processedTabGroupIds.add(tabGroupId)) continue;
+            boolean alreadyProcessed = !processedTabGroups.add(tabGroupId);
+            if (alreadyProcessed) continue;
 
-            TabList tabList = getTabModel().getComprehensiveModel();
-            boolean tabGroupIdFound = false;
-            for (int i = 0; i < tabList.getCount(); i++) {
-                tabGroupIdFound = tabGroupId.equals(tabList.getTabAt(i).getTabGroupId());
-                if (tabGroupIdFound) break;
-            }
-
-            if (tabGroupIdFound) continue;
+            // If the tab group still exists in the comprehensive tab model then we shouldn't signal
+            // that it is finished closing.
+            if (tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) continue;
 
             boolean wasHiding = mHidingTabGroups.remove(tabGroupId);
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
                 observer.finishedClosingTabGroup(tabGroupId, wasHiding);
             }
         }
+    }
+
+    /**
+     * Returns a lazy oneshot supplier that generates all the tab group IDs including those pending
+     * closure except those requested to be excluded.
+     *
+     * @param tabsToExclude The list of tabs to exclude.
+     * @return A lazy oneshot supplier containing all the tab group IDS pending closure.
+     */
+    public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIdsInComprehensiveModel(
+            List<Tab> tabsToExclude) {
+        return LazyOneshotSupplier.fromSupplier(
+                () -> {
+                    Set<Tab> tabsToExcludeSet = new HashSet<>(tabsToExclude);
+                    Set<Token> tabGroupIds = new HashSet<>();
+                    TabList tabList = getTabModel().getComprehensiveModel();
+                    for (int i = 0; i < tabList.getCount(); i++) {
+                        Tab tab = tabList.getTabAt(i);
+                        if (tabsToExcludeSet.contains(tab)) continue;
+
+                        @Nullable Token tabGroupId = tabList.getTabAt(i).getTabGroupId();
+                        if (tabGroupId != null) {
+                            tabGroupIds.add(tabGroupId);
+                        }
+                    }
+                    return tabGroupIds;
+                });
     }
 
     private static Token getOrCreateTabGroupId(@NonNull Tab tab) {

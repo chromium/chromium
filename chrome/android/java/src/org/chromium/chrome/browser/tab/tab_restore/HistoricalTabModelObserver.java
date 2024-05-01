@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -21,6 +22,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /** A tab model observer for managing bulk closures. */
 public class HistoricalTabModelObserver implements TabModelObserver {
@@ -67,11 +69,19 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         HashMap<Integer, HistoricalEntry> idToGroup = new HashMap<>();
         List<HistoricalEntry> entries = new ArrayList<>();
 
+        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
+                mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(tabs);
         for (Tab tab : tabs) {
-            // Ignore tab groups that are being hidden. They will be accessible from the tab group
-            // pane instead.
+            // Ignore complete tab groups that are being hidden. They will be accessible from the
+            // tab group pane instead. Still process closures for events that don't finish hiding
+            // the group.
             @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (mTabGroupModelFilter.isTabGroupHiding(tabGroupId)) continue;
+            if (tabGroupId != null) {
+                if (mTabGroupModelFilter.isTabGroupHiding(tabGroupId)
+                        && !tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
+                    continue;
+                }
+            }
 
             // {@link TabGroupModelFilter} removes tabs from its data model as soon as they are
             // pending closure so it cannot be directly relied upon for group structure. Instead

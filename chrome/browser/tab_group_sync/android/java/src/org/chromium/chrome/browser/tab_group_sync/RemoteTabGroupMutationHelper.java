@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.base.Token;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -13,7 +15,6 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -131,6 +132,20 @@ public class RemoteTabGroupMutationHelper {
     }
 
     /**
+     * Handle a tab group being closed.
+     *
+     * @param groupId The group ID being closed.
+     * @param wasHiding Whether the group is hiding instead of being deleted.
+     */
+    public void handleTabGroupClosed(LocalTabGroupId groupId, boolean wasHiding) {
+        unmapTabGroupId(groupId);
+        if (!wasHiding) {
+            // When deleting drop the group from sync entirely.
+            removeGroup(groupId);
+        }
+    }
+
+    /**
      * Handle tab closure and notifies sync. Note, tab groups that are closed as part of close
      * group, or close all tabs, or close multiple tabs shouldn't be removed from sync. However,
      * individual tab closures should be treated as tab removal from they synced group. This is done
@@ -144,46 +159,19 @@ public class RemoteTabGroupMutationHelper {
                         .filter(tab -> tab.getTabGroupId() != null)
                         .collect(Collectors.toList());
 
-        // Find out tab groups being closed. Don't remove them from sync, only drop the local
-        // mapping from shared prefs and the service.
-        Set<Integer> groupsClosing = findCompleteGroups(tabsInGroups);
-        for (int groupId : groupsClosing) {
-            unmapTabGroupId(TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, groupId));
-        }
+        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
+                mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(tabs);
+        for (Tab tab : tabsInGroups) {
+            Token tabGroupId = tab.getTabGroupId();
+            if (mTabGroupModelFilter.isTabGroupHiding(tabGroupId)
+                    && !tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {
+                continue;
+            }
 
-        // The rest of the tabs are the ones that are being removed from their groups. Remove them
-        // from sync.
-        Set<Tab> tabsToRemove = findTabsNotInCompleteGroups(tabsInGroups, groupsClosing);
-        for (Tab tab : tabsToRemove) {
+            // Remaining tabs will be in a tab group, but the closure event is either:
+            // 1. A subset of tabs in the group.
+            // 2. The group itself is to be deleted from sync so removing the tabs is ok.
             mTabGroupSyncService.removeTab(TabGroupSyncUtils.getLocalTabGroupId(tab), tab.getId());
         }
-    }
-
-    private Set<Integer> findCompleteGroups(List<Tab> tabs) {
-        Set<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toSet());
-
-        Set<Integer> completeGroups = new HashSet<>();
-        for (Tab tab : tabs) {
-            if (completeGroups.contains(tab.getRootId())) continue;
-
-            List<Tab> relatedTabs =
-                    mTabGroupModelFilter.getRelatedTabListForRootId(tab.getRootId());
-            if (areAllTabsInGroup(relatedTabs, tabIds)) {
-                completeGroups.add(tab.getRootId());
-            }
-        }
-
-        return completeGroups;
-    }
-
-    private static Set<Tab> findTabsNotInCompleteGroups(
-            List<Tab> tabs, Set<Integer> completeGroups) {
-        return tabs.stream()
-                .filter(tab -> !completeGroups.contains(tab.getRootId()))
-                .collect(Collectors.toSet());
-    }
-
-    private static boolean areAllTabsInGroup(List<Tab> tabs, Set<Integer> tabIdsInGroups) {
-        return tabs.stream().allMatch(tab -> tabIdsInGroups.contains(tab.getId()));
     }
 }

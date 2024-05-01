@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -48,7 +49,9 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link HistoricalTabModelObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -322,12 +325,83 @@ public class HistoricalTabModelObserverUnitTest {
         Token tabGroupId = new Token(3L, 4L);
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0});
         when(mTabGroupModelFilter.isTabGroupHiding(tabGroupId)).thenReturn(true);
+        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
 
         MockTab[] tabList = new MockTab[] {mockTab0};
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
 
         // HistoricalTabModelObserver relies on HistoricalTabSaver to simplify to a single tab
         // entry.
+        ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
+        List<HistoricalEntry> entries = arg.getValue();
+        assertEquals(0, entries.size());
+    }
+
+    @Test
+    public void testTabGroupHidingTwoPhases_SingleTabs() {
+        MockTab mockTab0 = createMockTab(0);
+        MockTab mockTab1 = createMockTab(1);
+
+        final String title = "foo";
+        @TabGroupColorId int color = TabGroupColorId.GREY;
+        Token tabGroupId = new Token(3L, 4L);
+        createGroup(tabGroupId, title, color, new MockTab[] {mockTab0, mockTab1});
+        when(mTabGroupModelFilter.isTabGroupHiding(tabGroupId)).thenReturn(true);
+        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+                .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
+
+        MockTab[] tabList = new MockTab[] {mockTab0};
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+
+        // Close tab 0 first, even though the group is hiding there are still other tabs in the
+        // comprehensive model for the group so treat as a separate closure.
+        verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab0));
+
+        // Close tab 1, since it is part of the last event "closing" the tab group and it is hiding
+        // the group so no entry should be created.
+        tabList = new MockTab[] {mockTab1};
+        createGroup(tabGroupId, title, color, tabList);
+        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+
+        ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
+        List<HistoricalEntry> entries = arg.getValue();
+        assertEquals(0, entries.size());
+    }
+
+    @Test
+    public void testTabGroupHidingTwoPhases_SingleTabThenTwo() {
+        MockTab mockTab0 = createMockTab(0);
+        MockTab mockTab1 = createMockTab(1);
+        MockTab mockTab2 = createMockTab(2);
+
+        final String title = "foo";
+        @TabGroupColorId int color = TabGroupColorId.GREY;
+        Token tabGroupId = new Token(3L, 4L);
+        createGroup(tabGroupId, title, color, new MockTab[] {mockTab0, mockTab1, mockTab2});
+        when(mTabGroupModelFilter.isTabGroupHiding(tabGroupId)).thenReturn(true);
+        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+                .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
+
+        MockTab[] tabList = new MockTab[] {mockTab0};
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+
+        // Close tab 0 first, even though the group is hiding there are still other tabs in the
+        // comprehensive model for the group so treat as a separate closure.
+        verify(mHistoricalTabSaver).createHistoricalTab(eq(mockTab0));
+
+        // Close tab 1, and tab 2, since it is part of the last event "closing" the tab group and it
+        // is hiding the group so no entry should be created.
+        tabList = new MockTab[] {mockTab1, mockTab2};
+        createGroup(tabGroupId, title, color, new MockTab[] {mockTab1, mockTab2});
+        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
+        mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList));
+
         ArgumentCaptor<List<HistoricalEntry>> arg = ArgumentCaptor.forClass((Class) List.class);
         verify(mHistoricalTabSaver).createHistoricalBulkClosure(arg.capture());
         List<HistoricalEntry> entries = arg.getValue();

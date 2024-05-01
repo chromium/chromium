@@ -1073,7 +1073,6 @@ public class RecentlyClosedBridgeTest {
                             Arrays.asList(new Tab[] {tabA}),
                             /* canUndo= */ false,
                             /* hideTabGroups= */ true);
-                    mTabModel.commitTabClosure(tabA.getId());
                 });
 
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();

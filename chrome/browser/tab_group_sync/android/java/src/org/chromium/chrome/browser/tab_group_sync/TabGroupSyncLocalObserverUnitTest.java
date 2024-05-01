@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,7 +44,9 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for the {@link TabGroupSyncLocalObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -132,11 +135,64 @@ public class TabGroupSyncLocalObserverUnitTest {
     }
 
     @Test
-    public void testCloseMultipleTabs() {
+    public void testFinishedClosingTabGroup_Hiding() {
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .finishedClosingTabGroup(TOKEN_1, /* wasHiding= */ true);
+        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+    }
+
+    @Test
+    public void testFinishedClosingTabGroup_Deleted() {
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .finishedClosingTabGroup(TOKEN_1, /* wasHiding= */ false);
+        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+        verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
+    }
+
+    @Test
+    public void testCloseMultipleTabs_EmptyList() {
+        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(new ArrayList<Tab>());
+
+        verify(mTabGroupSyncService, never()).removeTab(any(), anyInt());
+    }
+
+    @Test
+    public void testCloseMultipleTabs_HidingTabGroup() {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
+        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+                .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<Token>()));
+        when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(true);
         mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
-        // TODO(b/331466817): Set expectation after implementing close.
+
+        verify(mTabGroupSyncService, never()).removeTab(LOCAL_TAB_GROUP_ID_1, TAB_ID_1);
+    }
+
+    @Test
+    public void testCloseMultipleTabs_HidingTabGroup_NotLastTabInGroup() {
+        List<Tab> tabs = new ArrayList<>();
+        tabs.add(mTab1);
+        when(mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(any()))
+                .thenReturn(LazyOneshotSupplier.fromValue(Set.of(TOKEN_1)));
+        when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(true);
+        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+
+        // In this scenario the tab group is hiding, but tabs were closed in multiple phases. We
+        // should commit any tab removals as "deletions" from the group except for the last event
+        // that actually hides the group.
+        verify(mTabGroupSyncService).removeTab(LOCAL_TAB_GROUP_ID_1, TAB_ID_1);
+    }
+
+    @Test
+    public void testCloseMultipleTabs_DeletingTabGroup() {
+        List<Tab> tabs = new ArrayList<>();
+        tabs.add(mTab1);
+        when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(false);
+        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+
+        verify(mTabGroupSyncService).removeTab(LOCAL_TAB_GROUP_ID_1, TAB_ID_1);
     }
 
     @Test

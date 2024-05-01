@@ -2063,6 +2063,50 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void testGetLazyAllTabGroupRootIdsInComprehensiveModel() {
+        // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
+        // group.
+        Set<Token> tabGroupIds = new ArraySet<>();
+        tabGroupIds.add(mTab2.getTabGroupId());
+        tabGroupIds.add(mTab5.getTabGroupId());
+
+        assertEquals(
+                tabGroupIds,
+                mTabGroupModelFilter
+                        .getLazyAllTabGroupIdsInComprehensiveModel(new ArrayList<Tab>())
+                        .get());
+    }
+
+    @Test
+    public void testGetLazyAllTabGroupRootIdsInComprehensiveModel_ExcludePartial() {
+        // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
+        // group.
+        Set<Token> tabGroupIds = new ArraySet<>();
+        tabGroupIds.add(mTab2.getTabGroupId());
+        tabGroupIds.add(mTab5.getTabGroupId());
+
+        assertEquals(
+                tabGroupIds,
+                mTabGroupModelFilter
+                        .getLazyAllTabGroupIdsInComprehensiveModel(List.of(mTab2, mTab5))
+                        .get());
+    }
+
+    @Test
+    public void testGetLazyAllTabGroupRootIdsInComprehensiveModel_ExcludeFull() {
+        // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
+        // group.
+        Set<Token> tabGroupIds = new ArraySet<>();
+        tabGroupIds.add(mTab5.getTabGroupId());
+
+        assertEquals(
+                tabGroupIds,
+                mTabGroupModelFilter
+                        .getLazyAllTabGroupIdsInComprehensiveModel(List.of(mTab2, mTab3))
+                        .get());
+    }
+
+    @Test
     public void testSetTabGroupTitle() {
         mTabGroupModelFilter.setTabGroupTitle(TAB2_ROOT_ID, "Foo");
         verify(mTabGroupModelFilterObserver).didChangeTabGroupTitle(TAB2_ROOT_ID, "Foo");
@@ -2095,19 +2139,15 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.closeMultipleTabs(
                 groupWithTab2AndTab3, /* canUndo= */ false, /* hideTabGroups= */ true);
         verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ false);
-        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB2_TAB_GROUP_ID);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
         mTabGroupModelFilter.willCloseTab(mTab3, /* animate= */ false, /* didCloseAlone= */ false);
 
         mTabGroupModelFilter.tabClosureUndone(mTab2);
-        verify(mTabGroupModelFilterObserver).cancelledHidingTabGroup(TAB2_TAB_GROUP_ID);
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         mTabGroupModelFilter.tabClosureUndone(mTab3);
-        // Only called once.
-        verify(mTabGroupModelFilterObserver).cancelledHidingTabGroup(TAB2_TAB_GROUP_ID);
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
     }
 
@@ -2120,7 +2160,6 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.closeMultipleTabs(
                 groupWithTab2AndTab3, /* canUndo= */ true, /* hideTabGroups= */ true);
         verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ true);
-        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB2_TAB_GROUP_ID);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
@@ -2176,7 +2215,6 @@ public class TabGroupModelFilterUnitTest {
         mTabGroupModelFilter.closeMultipleTabs(
                 groupWithTab2AndTab3, /* canUndo= */ true, /* hideTabGroups= */ false);
         verify(mTabModel).closeMultipleTabs(groupWithTab2AndTab3, /* canUndo= */ true);
-        verify(mTabGroupModelFilterObserver, never()).startHidingTabGroup(TAB2_TAB_GROUP_ID);
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         mTabGroupModelFilter.willCloseTab(mTab2, /* animate= */ false, /* didCloseAlone= */ false);
@@ -2198,8 +2236,6 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
         verify(mTabModel).closeAllTabs(/* uponExit= */ false);
-        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB2_TAB_GROUP_ID);
-        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB5_TAB_GROUP_ID);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
@@ -2246,8 +2282,6 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
         verify(mTabModel).closeAllTabs(/* uponExit= */ false);
-        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB2_TAB_GROUP_ID);
-        verify(mTabGroupModelFilterObserver).startHidingTabGroup(TAB5_TAB_GROUP_ID);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
@@ -2288,8 +2322,6 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ false);
         verify(mTabModel).closeAllTabs(/* uponExit= */ false);
-        verify(mTabGroupModelFilterObserver, never()).startHidingTabGroup(TAB2_TAB_GROUP_ID);
-        verify(mTabGroupModelFilterObserver, never()).startHidingTabGroup(TAB5_TAB_GROUP_ID);
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
