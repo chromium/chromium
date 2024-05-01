@@ -53,9 +53,40 @@ constexpr int kFeedbackButtonIconSize = 20;
 
 }  // namespace
 
+// -----------------------------------------------------------------------------
+// DividerHandlerView:
+
+class DividerHandlerView : public views::View {
+  METADATA_HEADER(DividerHandlerView, views::View)
+ public:
+  explicit DividerHandlerView(bool is_horizontal)
+      : is_horizontal_(is_horizontal) {}
+  DividerHandlerView(const DividerHandlerView&) = delete;
+  DividerHandlerView& operator=(const DividerHandlerView&) = delete;
+  ~DividerHandlerView() override = default;
+
+  void set_is_horizontal(bool is_horizontal) { is_horizontal_ = is_horizontal; }
+
+  // views::View:
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
+    return is_horizontal_ ? ui::mojom::CursorType::kColumnResize
+                          : ui::mojom::CursorType::kRowResize;
+  }
+
+ private:
+  bool is_horizontal_;
+};
+
+BEGIN_METADATA(DividerHandlerView)
+END_METADATA
+
+// -----------------------------------------------------------------------------
+// SplitViewDividerView:
+
 SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
     : divider_(divider),
-      handler_view_(AddChildView(std::make_unique<views::View>())) {
+      handler_view_(AddChildView(std::make_unique<DividerHandlerView>(
+          IsLayoutHorizontal(divider_->divider_widget()->GetNativeWindow())))) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -87,7 +118,7 @@ void SplitViewDividerView::Layout(PassKey) {
   }
 
   SetBoundsRect(GetLocalBounds());
-  RefreshDividerHandler(/*hover=*/false);
+  RefreshDividerHandler(/*should_enlarge=*/false);
   RefreshFeedbackButtonBounds();
 }
 
@@ -241,7 +272,9 @@ void SplitViewDividerView::RefreshDividerHandler(bool should_enlarge) {
   const int handler_long_side = should_enlarge
                                     ? kDividerHandlerEnlargedLongSideLength
                                     : kDividerHandlerLongSideLength;
-  if (IsLayoutHorizontal(divider_->GetRootWindow())) {
+  const bool is_horizontal = IsLayoutHorizontal(divider_->GetRootWindow());
+  handler_view_->set_is_horizontal(is_horizontal);
+  if (is_horizontal) {
     handler_view_->SetBounds(divider_center.x() - handler_short_side / 2,
                              divider_center.y() - handler_long_side / 2,
                              handler_short_side, handler_long_side);

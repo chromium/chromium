@@ -11,6 +11,7 @@
 
 namespace ash {
 
+class DividerHandlerView;
 class IconButton;
 class SplitViewDivider;
 
@@ -92,7 +93,7 @@ class SplitViewDividerView : public views::View,
 
   raw_ptr<SplitViewDivider> divider_;
 
-  raw_ptr<views::View> handler_view_ = nullptr;
+  raw_ptr<DividerHandlerView> handler_view_ = nullptr;
   raw_ptr<IconButton> feedback_button_ = nullptr;
 
   base::WeakPtrFactory<SplitViewDividerView> weak_ptr_factory_{this};

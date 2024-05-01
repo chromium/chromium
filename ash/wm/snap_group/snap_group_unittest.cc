@@ -3088,6 +3088,56 @@ TEST_F(SnapGroupDividerTest, CursorUpdateAfterSnapToReplace) {
   EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
 }
 
+// Verify that the cursor changes to `kColumnResize` when hovering over the
+// divider handler view in landscape.
+TEST_F(SnapGroupDividerTest, CursorUpdateOnHandlerViewInLandscape) {
+  UpdateDisplay("900x600");
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* divider = snap_group_divider();
+  ASSERT_TRUE(divider->divider_widget());
+
+  auto divider_bounds = snap_group_divider_bounds_in_screen();
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  const auto center_point = divider_bounds.CenterPoint();
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(center_point);
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
+
+  event_generator->MoveMouseTo(center_point + gfx::Vector2d(0, 20));
+  EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
+}
+
+// Verify that the cursor changes to `kRowResize` when hovering over the divider
+// handler view in portrait.
+TEST_F(SnapGroupDividerTest, CursorUpdateOnHandlerViewInPortrait) {
+  UpdateDisplay("600x900");
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/false);
+  auto* divider = snap_group_divider();
+  ASSERT_TRUE(divider->divider_widget());
+
+  auto divider_bounds = snap_group_divider_bounds_in_screen();
+
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  const auto center_point = divider_bounds.CenterPoint();
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(center_point);
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_EQ(CursorType::kRowResize, cursor_manager->GetCursor().type());
+
+  event_generator->MoveMouseTo(center_point + gfx::Vector2d(20, 0));
+  EXPECT_EQ(CursorType::kRowResize, cursor_manager->GetCursor().type());
+}
+
 // Tests that the hit area of the snap group divider can be outside of its
 // bounds with the extra insets whose value is `kSplitViewDividerExtraInset`.
 TEST_F(SnapGroupDividerTest, SnapGroupDividerEnlargedHitArea) {
