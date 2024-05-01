@@ -4,6 +4,9 @@
 
 #include "partition_alloc/tagging.h"
 
+#include <stdint.h>
+
+#include "partition_alloc/aarch64_support.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
@@ -51,31 +54,47 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace partition_alloc {
+void ChangeMemoryTaggingModeForCurrentThreadNoOp(TagViolationReportingMode m) {}
 
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
-namespace {
-void ChangeMemoryTaggingModeInternal(unsigned prctl_mask) {
-  if (internal::base::CPU::GetInstanceNoAllocation().has_mte()) {
-    int status = prctl(PR_SET_TAGGED_ADDR_CTRL, prctl_mask, 0, 0, 0);
+using ChangeMemoryTaggingModeForCurrentThreadInternalFn =
+    void(TagViolationReportingMode);
+
+void ChangeMemoryTaggingModeForCurrentThreadForMte(
+    TagViolationReportingMode m) {
+  const auto change_memory_tagging_mode = [](unsigned long prctl_mask) {
+    const int status = prctl(PR_SET_TAGGED_ADDR_CTRL, prctl_mask, 0, 0, 0);
     PA_CHECK(status == 0);
+  };
+
+  if (m == TagViolationReportingMode::kSynchronous) {
+    change_memory_tagging_mode(PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_SYNC |
+                               (0xfffe << PR_MTE_TAG_SHIFT));
+  } else if (m == TagViolationReportingMode::kAsynchronous) {
+    change_memory_tagging_mode(PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_ASYNC |
+                               (0xfffe << PR_MTE_TAG_SHIFT));
+  } else {
+    change_memory_tagging_mode(PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_NONE);
   }
 }
-}  // namespace
+
+extern "C" ChangeMemoryTaggingModeForCurrentThreadInternalFn*
+ResolveChangeMemoryTaggingModeForCurrentThread(uint64_t hwcap,
+                                               struct __ifunc_arg_t* hw) {
+  return internal::IsMteEnabled(hwcap, hw)
+             ? &ChangeMemoryTaggingModeForCurrentThreadForMte
+             : &ChangeMemoryTaggingModeForCurrentThreadNoOp;
+}
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
-void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m) {
+void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m)
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
-  if (m == TagViolationReportingMode::kSynchronous) {
-    ChangeMemoryTaggingModeInternal(PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_SYNC |
-                                    (0xfffe << PR_MTE_TAG_SHIFT));
-  } else if (m == TagViolationReportingMode::kAsynchronous) {
-    ChangeMemoryTaggingModeInternal(PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_ASYNC |
-                                    (0xfffe << PR_MTE_TAG_SHIFT));
-  } else {
-    ChangeMemoryTaggingModeInternal(PR_TAGGED_ADDR_ENABLE | PR_MTE_TCF_NONE);
-  }
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+    __attribute__((ifunc("ResolveChangeMemoryTaggingModeForCurrentThread")));
+#else
+{
+  ChangeMemoryTaggingModeForCurrentThreadNoOp(m);
 }
+#endif
 
 namespace internal {
 
@@ -192,30 +211,31 @@ void* RemaskVoidPtrNoOp(void* ptr) {
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
 using RemaskPtrInternalFn = void*(void* ptr);
 using TagMemoryRangeIncrementInternalFn = void*(void* ptr, size_t size);
-
 using TagMemoryRangeRandomlyInternalFn = void*(void* ptr,
                                                size_t size,
                                                uint64_t mask);
 
-extern "C" TagMemoryRangeIncrementInternalFn(
-    *ResolveTagMemoryRangeIncrement(uint64_t hwcap, struct __ifunc_arg_t* hw)) {
-  if ((hwcap & _IFUNC_ARG_HWCAP) && (hw->_hwcap2 & HWCAP2_MTE)) {
+extern "C" TagMemoryRangeIncrementInternalFn* ResolveTagMemoryRangeIncrement(
+    uint64_t hwcap,
+    struct __ifunc_arg_t* hw) {
+  if (IsMteEnabled(hwcap, hw)) {
     return TagRegionIncrementForMTE;
   }
   return TagRegionIncrementNoOp;
 }
 
-extern "C" TagMemoryRangeRandomlyInternalFn(
-    *ResolveTagMemoryRandomly(uint64_t hwcap, struct __ifunc_arg_t* hw)) {
-  if ((hwcap & _IFUNC_ARG_HWCAP) && (hw->_hwcap2 & HWCAP2_MTE)) {
+extern "C" TagMemoryRangeRandomlyInternalFn* ResolveTagMemoryRandomly(
+    uint64_t hwcap,
+    struct __ifunc_arg_t* hw) {
+  if (IsMteEnabled(hwcap, hw)) {
     return TagRegionRandomlyForMTE;
   }
   return TagRegionRandomlyNoOp;
 }
 
-extern "C" RemaskPtrInternalFn(
-    *ResolveRemaskPointer(uint64_t hwcap, struct __ifunc_arg_t* hw)) {
-  if ((hwcap & _IFUNC_ARG_HWCAP) && (hw->_hwcap2 & HWCAP2_MTE)) {
+extern "C" RemaskPtrInternalFn* ResolveRemaskPointer(uint64_t hwcap,
+                                                     struct __ifunc_arg_t* hw) {
+  if (IsMteEnabled(hwcap, hw)) {
     return RemaskVoidPtrForMTE;
   }
   return RemaskVoidPtrNoOp;
@@ -229,13 +249,16 @@ void* RemaskPointerInternal(void* ptr)
     __attribute__((ifunc("ResolveRemaskPointer")));
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
-TagViolationReportingMode GetMemoryTaggingModeForCurrentThread() {
+TagViolationReportingMode GetMemoryTaggingModeForCurrentThreadNoMte() {
+  return TagViolationReportingMode::kUndefined;
+}
+
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
-  base::CPU cpu;
-  if (!cpu.has_mte()) {
-    return TagViolationReportingMode::kUndefined;
-  }
-  int status = prctl(PR_GET_TAGGED_ADDR_CTRL, 0, 0, 0, 0);
+using GetMemoryTaggingModeForCurrentThreadInternalFn =
+    TagViolationReportingMode();
+
+TagViolationReportingMode GetMemoryTaggingModeForCurrentThreadMte() {
+  const int status = prctl(PR_GET_TAGGED_ADDR_CTRL, 0, 0, 0, 0);
   PA_CHECK(status >= 0);
   // Check for Asynchronous first because ASYNC on Android sets both
   // PR_MTE_TCF_ASYNC and PR_MTE_TCF_SYNC bits.
@@ -246,10 +269,24 @@ TagViolationReportingMode GetMemoryTaggingModeForCurrentThread() {
     return TagViolationReportingMode::kSynchronous;
   }
   return TagViolationReportingMode::kDisabled;
-#else
-  return TagViolationReportingMode::kUndefined;
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 }
+
+extern "C" GetMemoryTaggingModeForCurrentThreadInternalFn*
+ResolveGetMemoryTaggingModeForCurrentThread(uint64_t hwcap,
+                                            struct __ifunc_arg_t* hw) {
+  return IsMteEnabled(hwcap, hw) ? &GetMemoryTaggingModeForCurrentThreadMte
+                                 : &GetMemoryTaggingModeForCurrentThreadNoMte;
+}
+#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+
+TagViolationReportingMode GetMemoryTaggingModeForCurrentThread()
+#if BUILDFLAG(HAS_MEMORY_TAGGING)
+    __attribute__((ifunc("ResolveGetMemoryTaggingModeForCurrentThread")));
+#else
+{
+  return GetMemoryTaggingModeForCurrentThreadNoMte();
+}
+#endif
 
 }  // namespace internal
 

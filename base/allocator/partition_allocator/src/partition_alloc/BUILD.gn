@@ -378,6 +378,7 @@ if (is_clang_or_gcc) {
     visibility = [ ":*" ]
 
     sources = [
+      "aarch64_support.h",
       "address_pool_manager.cc",
       "address_pool_manager.h",
       "address_pool_manager_bitmap.cc",
