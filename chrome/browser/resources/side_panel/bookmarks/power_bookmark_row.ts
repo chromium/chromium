@@ -98,6 +98,11 @@ export class PowerBookmarkRowElement extends PolymerElement {
         type: String,
         value: '',
       },
+      listItemSize_: {
+        type: String,
+        computed: 'computeListItemSize_(compact)',
+        observer: 'onListItemSizeChanged_',
+      },
     };
   }
 
@@ -117,6 +122,8 @@ export class PowerBookmarkRowElement extends PolymerElement {
   trailingIconAriaLabel: string;
   trailingIconTooltip: string;
   imageUrls: string[];
+
+  private listItemSize_: CrUrlListItemSize;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -158,8 +165,16 @@ export class PowerBookmarkRowElement extends PolymerElement {
     }
   }
 
-  private getItemSize_() {
+  private computeListItemSize_(): CrUrlListItemSize {
     return this.compact ? CrUrlListItemSize.COMPACT : CrUrlListItemSize.LARGE;
+  }
+
+  private async onListItemSizeChanged_() {
+    await this.$.crUrlListItem.updateComplete;
+    if (this.parentNode &&
+        (this.parentNode as HTMLElement).tagName === 'IRON-LIST') {
+      this.parentNode.dispatchEvent(new CustomEvent('iron-resize'));
+    }
   }
 
   private isBookmarksBar_(): boolean {
