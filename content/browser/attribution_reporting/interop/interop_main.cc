@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
   }
 
   auto default_config =
-      content::ParseAttributionInteropConfig(*default_config_dict);
+      content::ParseAttributionInteropConfig(std::move(*default_config_dict));
   if (!default_config.has_value()) {
     std::cerr << "failed to parse default config: " << default_config.error()
               << std::endl;

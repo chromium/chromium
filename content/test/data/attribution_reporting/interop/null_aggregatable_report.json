@@ -1,5 +1,11 @@
 {
   "description": "null aggregatable reports for triggers with aggregatable data",
+  "api_config": {
+    "aggregation_coordinator_origins": [
+      "https://c1.test",
+      "https://c2.test"
+    ]
+  },
   "input": {
     "registrations": [
       {
@@ -36,6 +42,8 @@
             "null_aggregatable_reports_days": [0, 2, 5],
             "response": {
               "Attribution-Reporting-Register-Trigger": {
+                // null reports use the same coordinator origin
+                "aggregation_coordinator_origin": "https://c2.test",
                 "aggregatable_trigger_data": [
                   {
                     "source_keys": ["a"],
@@ -175,6 +183,7 @@
       },
       {
         "payload": {
+          "aggregation_coordinator_origin": "https://c2.test",
           "attribution_destination": "https://destination.test",
           "histograms": [
             {
@@ -188,6 +197,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://c2.test",
            "attribution_destination": "https://destination.test",
            "histograms": [ {
               "key": "0x0",
@@ -199,6 +209,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://c2.test",
            "attribution_destination": "https://destination.test",
            "histograms": [ {
               "key": "0x0",
@@ -210,6 +221,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://c1.test",
            "attribution_destination": "https://destination.test",
            "histograms": [ {
               "key": "0x0",
@@ -221,6 +233,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://c1.test",
            "attribution_destination": "https://destination.test",
            "histograms": [ {
               "key": "0x0",
@@ -232,6 +245,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://c1.test",
            "attribution_destination": "https://destination.test",
            "histograms": [ {
               "key": "0x0",
@@ -243,6 +257,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://c1.test",
            "attribution_destination": "https://destination.test",
            "histograms": [ {
               "key": "0x359",
@@ -254,6 +269,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://c1.test",
            "attribution_destination": "https://destination.test",
            "histograms": [ {
               "key": "0x0",

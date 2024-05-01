@@ -90,6 +90,7 @@
     "reports": [
       {
         "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
           "attribution_destination": "https://anotherdestination.test",
           "histograms": [
             {
@@ -103,6 +104,7 @@
       },
       {
         "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
           "attribution_destination": "https://destination.test",
           "histograms": [
             {

@@ -84,5 +84,12 @@
 
   // Non-negative integer that controls the span in minutes to deliver an
   // aggregatable report. Formatted as a base-10 string.
-  "aggregatable_report_delay_span": "50"
+  "aggregatable_report_delay_span": "50",
+
+  // Non-empty list that controls which origins are allowed as aggregation
+  // coordinators. The first value is used as the default if a trigger omits
+  // the corresponding field.
+  "aggregation_coordinator_origins": [
+    "https://coordinator.test"
+  ]
 }

@@ -188,9 +188,6 @@ class Adjuster : public ReportBodyAdjuster {
     report_body.Set(kKeyAttributionDestination,
                     std::move(*attribution_destination));
 
-    // The aggregation coordinator may be platform specific.
-    report_body.Remove("aggregation_coordinator_origin");
-
     report_body.Set("histograms",
                     GetDecryptedPayloads(
                         report_body.Extract("aggregation_service_payloads"),

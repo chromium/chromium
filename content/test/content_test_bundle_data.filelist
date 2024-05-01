@@ -5619,6 +5619,7 @@ data/attribution_reporting/interop/aggregatable_reports_fake_source.json
 data/attribution_reporting/interop/aggregatable_storage_limit.json
 data/attribution_reporting/interop/aggregatable_values_filtering.json
 data/attribution_reporting/interop/aggregatable_with_event_disabled.json
+data/attribution_reporting/interop/aggregation_coordinator_origin.json
 data/attribution_reporting/interop/basic.json
 data/attribution_reporting/interop/basic_aggregatable.json
 data/attribution_reporting/interop/channel_capacity.json

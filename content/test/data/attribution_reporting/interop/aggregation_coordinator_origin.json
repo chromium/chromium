@@ -1,5 +1,11 @@
 {
-  "description": "1 navigation source and 1 trigger produce 1 report",
+  "description": "aggregation coordinator origin",
+  "api_config": {
+    "aggregation_coordinator_origins": [
+      "https://c1.test",
+      "https://c2.test"
+    ]
+  },
   "input": {
     "registrations": [
       {
@@ -24,7 +30,7 @@
         ]
       },
       {
-        "timestamp": "1000",
+        "timestamp": "1",
         "registration_request": {
           "context_origin": "https://destination.test"
         },
@@ -32,12 +38,28 @@
           {
             "url": "https://reporter.test/register-trigger",
             "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Trigger": {
-                "event_trigger_data": [
-                  {
-                    "trigger_data": "7"
-                  }
-                ],
+                // not on allowlist
+                "aggregation_coordinator_origin": "https://x.test"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Trigger": {
+                // non-default coordinator
+                "aggregation_coordinator_origin": "https://c2.test/123",
                 "aggregatable_trigger_data": [
                   {
                     "source_keys": ["a"],
@@ -57,8 +79,20 @@
   "output": {
     "reports": [
       {
+        "payload": [{
+           "body": {
+              "context_site": "https://destination.test",
+              "header": "Attribution-Reporting-Register-Trigger",
+              "value": "{\"aggregation_coordinator_origin\":\"https://x.test\"}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "1",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
         "payload": {
-          "aggregation_coordinator_origin": "https://coordinator.test",
+          "aggregation_coordinator_origin": "https://c2.test",
           "attribution_destination": "https://destination.test",
           "histograms": [
             {
@@ -68,19 +102,7 @@
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "3601000"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "172800",
-          "source_event_id": "123",
-          "source_type": "navigation",
-          "trigger_data": "7"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "172800000"
+        "report_time": "3600002"
       }
     ]
   }

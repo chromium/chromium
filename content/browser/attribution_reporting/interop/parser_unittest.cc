@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -570,7 +571,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "max_trigger_state_cardinality":"10",
         "max_aggregatable_reports_per_destination":"10",
         "aggregatable_report_min_delay":"10",
-        "aggregatable_report_delay_span":"20"
+        "aggregatable_report_delay_span":"20",
+        "aggregation_coordinator_origins":["https://c.test/123"]
       })json",
        true, [](AttributionInteropConfig& config) {
          AttributionConfig& c = config.attribution_config;
@@ -598,6 +600,9 @@ TEST(AttributionInteropParserTest, ValidConfig) {
          c.destination_rate_limit = {.max_total = 2,
                                      .max_per_reporting_site = 1,
                                      .rate_limit_window = base::Minutes(10)};
+
+         config.aggregation_coordinator_origins.emplace_back(
+             url::Origin::Create(GURL("https://c.test")));
        }}};
 
   for (const auto& test_case : kTestCases) {
@@ -612,12 +617,13 @@ TEST(AttributionInteropParserTest, ValidConfig) {
                 },
                 test_case.make_expected);
 
-    base::Value::Dict json = base::test::ParseJsonDict(test_case.json);
+    base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
     if (test_case.required) {
-      EXPECT_THAT(ParseAttributionInteropConfig(json), ValueIs(expected));
+      EXPECT_THAT(ParseAttributionInteropConfig(std::move(dict)),
+                  ValueIs(expected));
     } else {
       AttributionInteropConfig config;
-      EXPECT_THAT(MergeAttributionInteropConfig(json, config),
+      EXPECT_THAT(MergeAttributionInteropConfig(std::move(dict), config),
                   base::test::HasValue());
       EXPECT_EQ(config, expected);
     }
@@ -659,7 +665,7 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
       dict.Set(field, "0");
     }
 
-    auto result = MergeAttributionInteropConfig(dict, config);
+    auto result = MergeAttributionInteropConfig(std::move(dict), config);
 
     for (const char* field : kFields) {
       EXPECT_THAT(
@@ -695,7 +701,7 @@ TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
       dict.Set(field, "-10");
     }
 
-    auto result = MergeAttributionInteropConfig(dict, config);
+    auto result = MergeAttributionInteropConfig(std::move(dict), config);
 
     for (const char* field : kFields) {
       EXPECT_THAT(
@@ -721,7 +727,7 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxSettableEpsilon) {
     base::Value::Dict dict;
     dict.Set("max_settable_event_level_epsilon", "-1.5");
     EXPECT_THAT(
-        MergeAttributionInteropConfig(dict, config),
+        MergeAttributionInteropConfig(std::move(dict), config),
         ErrorIs(HasSubstr(
             "[\"max_settable_event_level_epsilon\"]: must be \"inf\" or a "
             "non-negative double formated as a base-10 string")));
@@ -733,7 +739,7 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
     AttributionInteropConfig config;
     base::Value::Dict dict;
     dict.Set("max_navigation_info_gain", "-1.5");
-    EXPECT_THAT(MergeAttributionInteropConfig(dict, config),
+    EXPECT_THAT(MergeAttributionInteropConfig(std::move(dict), config),
                 ErrorIs(HasSubstr(
                     "[\"max_navigation_info_gain\"]: must be \"inf\" or a "
                     "non-negative double formated as a base-10 string")));
@@ -743,9 +749,50 @@ TEST(AttributionInteropParserTest, InvalidConfigMaxInfGain) {
     base::Value::Dict dict;
     dict.Set("max_event_info_gain", "-1.5");
     EXPECT_THAT(
-        MergeAttributionInteropConfig(dict, config),
+        MergeAttributionInteropConfig(std::move(dict), config),
         ErrorIs(HasSubstr("[\"max_event_info_gain\"]: must be \"inf\" or a "
                           "non-negative double formated as a base-10 string")));
+  }
+}
+
+TEST(AttributionInteropParserTest, InvalidConfigAggregationCoordinatorOrigins) {
+  {
+    AttributionInteropConfig config;
+    base::Value::Dict dict;
+    dict.Set("aggregation_coordinator_origins", base::Value());
+    EXPECT_THAT(MergeAttributionInteropConfig(std::move(dict), config),
+                ErrorIs(HasSubstr(
+                    "[\"aggregation_coordinator_origins\"]: must be a list")));
+  }
+
+  {
+    AttributionInteropConfig config;
+    base::Value::Dict dict;
+    dict.Set("aggregation_coordinator_origins", base::Value::List());
+    EXPECT_THAT(
+        MergeAttributionInteropConfig(std::move(dict), config),
+        ErrorIs(HasSubstr(
+            "[\"aggregation_coordinator_origins\"]: must be non-empty")));
+  }
+
+  {
+    AttributionInteropConfig config;
+    base::Value::Dict dict;
+    dict.Set("aggregation_coordinator_origins",
+             base::Value::List().Append(base::Value()));
+    EXPECT_THAT(MergeAttributionInteropConfig(std::move(dict), config),
+                ErrorIs(HasSubstr("[\"aggregation_coordinator_origins\"][0]: "
+                                  "must be a valid, secure origin")));
+  }
+
+  {
+    AttributionInteropConfig config;
+    base::Value::Dict dict;
+    dict.Set("aggregation_coordinator_origins",
+             base::Value::List().Append("http://c.example"));
+    EXPECT_THAT(MergeAttributionInteropConfig(std::move(dict), config),
+                ErrorIs(HasSubstr("[\"aggregation_coordinator_origins\"][0]: "
+                                  "must be a valid, secure origin")));
   }
 }
 

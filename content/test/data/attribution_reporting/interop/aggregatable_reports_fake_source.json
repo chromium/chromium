@@ -147,6 +147,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://coordinator.test",
            "attribution_destination": "https://destination1.test",
            "histograms": [ {
               "key": "0x1",
@@ -158,6 +159,7 @@
       },
       {
         "payload": {
+           "aggregation_coordinator_origin": "https://coordinator.test",
            "attribution_destination": "https://destination2.test",
            "histograms": [ {
               "key": "0x1",

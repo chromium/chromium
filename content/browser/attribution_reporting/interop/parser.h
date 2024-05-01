@@ -28,6 +28,10 @@ namespace net {
 class HttpResponseHeaders;
 }  // namespace net
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 struct AttributionSimulationEvent {
@@ -95,16 +99,27 @@ struct AttributionInteropConfig {
   AttributionConfig attribution_config;
   double max_event_level_epsilon = 0;
   bool needs_cross_app_web = false;
+  std::vector<url::Origin> aggregation_coordinator_origins;
+
+  AttributionInteropConfig();
+
+  AttributionInteropConfig(const AttributionInteropConfig&);
+  AttributionInteropConfig& operator=(const AttributionInteropConfig&);
+
+  AttributionInteropConfig(AttributionInteropConfig&&);
+  AttributionInteropConfig& operator=(AttributionInteropConfig&&);
+
+  ~AttributionInteropConfig();
 
   friend bool operator==(const AttributionInteropConfig&,
                          const AttributionInteropConfig&) = default;
 };
 
 base::expected<AttributionInteropConfig, std::string>
-ParseAttributionInteropConfig(const base::Value::Dict&);
+    ParseAttributionInteropConfig(base::Value::Dict);
 
 base::expected<void, std::string> MergeAttributionInteropConfig(
-    const base::Value::Dict&,
+    base::Value::Dict,
     AttributionInteropConfig&);
 
 struct AttributionInteropOutput {
