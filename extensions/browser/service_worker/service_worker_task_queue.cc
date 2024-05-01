@@ -142,8 +142,7 @@ class ServiceWorkerTaskQueue::WorkerState {
   }
 
   bool ready() const {
-    return registration_state_ == RegistrationState::kRegistered &&
-           browser_state_ == BrowserState::kStarted &&
+    return browser_state_ == BrowserState::kStarted &&
            renderer_state_ == RendererState::kStarted && worker_id_.has_value();
   }
   bool has_pending_tasks() const { return !pending_tasks_.empty(); }
@@ -473,8 +472,10 @@ void ServiceWorkerTaskQueue::AddPendingTask(
   tasks.push_back(std::move(task));
 
   if (worker_state->registration_state_ != RegistrationState::kRegistered) {
-    // If the worker hasn't finished registration, wait for it to complete.
-    // DidRegisterServiceWorker will Start worker to run |task| later.
+    // If the worker hasn't finished registration, wait for it to complete. The
+    // worker can't be started until a registration is found for it in the
+    // //content layer. `DidRegisterServiceWorker()` will start the worker to
+    // run the `task` later.
     return;
   }
 
