@@ -54,7 +54,6 @@
 using metrics::OmniboxEventProto;
 
 namespace {
-
 class FakeOmniboxAction : public OmniboxAction {
  public:
   explicit FakeOmniboxAction(OmniboxActionId id)
@@ -1323,13 +1322,8 @@ TEST_F(AutocompleteResultTest, DemoteByType) {
   // Temporary while adaptive suggestion is still in experimentation on iOS.
   std::vector<size_t> expected_natural_order;
   std::vector<size_t> expected_demoted_order;
-  if (base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
-    expected_natural_order = std::vector<size_t>{1, 0, 2, 3};
-    expected_demoted_order = std::vector<size_t>{3, 0, 2, 1};
-  } else {
-    expected_natural_order = std::vector<size_t>{1, 2, 3, 0};
-    expected_demoted_order = std::vector<size_t>{3, 2, 0, 1};
-  }
+  expected_natural_order = std::vector<size_t>{1, 0, 2, 3};
+  expected_demoted_order = std::vector<size_t>{3, 0, 2, 1};
 #else
   // Note: Android and iOS performs grouping by Search vs URL at a later stage,
   // when views are built. this means the vector below will be demoted by type,

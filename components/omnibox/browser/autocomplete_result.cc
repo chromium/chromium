@@ -519,8 +519,7 @@ void AutocompleteResult::SortAndCull(
       matches_.resize(num_matches);
 
       // Group search suggestions above URL suggestions.
-      if (matches_.size() > 2 &&
-          !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
+      if (matches_.size() > 2 && !(is_android || is_ios)) {
         GroupSuggestionsBySearchVsURL(std::next(matches_.begin()),
                                       matches_.end());
       }
