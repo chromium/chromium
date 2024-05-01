@@ -1676,7 +1676,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.PoweredState.Disable.HidWarningDialogBehavior"
-    units="HidWarningDialogDisabledBehavior" expires_after="2025-02-20">
+    enum="HidWarningDialogDisabledBehavior" expires_after="2025-02-20">
   <owner>tjohnsonkanu@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
