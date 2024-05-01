@@ -2271,47 +2271,61 @@ void WebViewImpl::AdvanceFocus(bool reverse) {
               : mojom::blink::FocusType::kForward);
 }
 
-double WebViewImpl::ClampZoomLevel(double zoom_level) {
-  if (zoom_level < minimum_zoom_level_) {
-    return minimum_zoom_level_;
-  }
-  if (zoom_level > maximum_zoom_level_) {
-    return maximum_zoom_level_;
-  }
-  return zoom_level;
+double WebViewImpl::ZoomLevel() {
+  return zoom_level_;
 }
 
-double WebViewImpl::SetMainFrameZoomLevel(double zoom_level) {
+void WebViewImpl::PropagateZoomFactorToLocalFrameRoots(Frame* frame,
+                                                       float zoom_factor) {
+  auto* local_frame = DynamicTo<LocalFrame>(frame);
+  if (local_frame && local_frame->IsLocalRoot()) {
+    if (Document* document = local_frame->GetDocument()) {
+      auto* plugin_document = DynamicTo<PluginDocument>(document);
+      if (!plugin_document || !plugin_document->GetPluginView()) {
+        local_frame->SetPageZoomFactor(zoom_factor);
+      }
+    }
+  }
+
+  for (Frame* child = frame->Tree().FirstChild(); child;
+       child = child->Tree().NextSibling())
+    PropagateZoomFactorToLocalFrameRoots(child, zoom_factor);
+}
+
+double WebViewImpl::SetZoomLevel(double zoom_level) {
+  double old_zoom_level = zoom_level_;
+  if (zoom_level < minimum_zoom_level_)
+    zoom_level_ = minimum_zoom_level_;
+  else if (zoom_level > maximum_zoom_level_)
+    zoom_level_ = maximum_zoom_level_;
+  else
+    zoom_level_ = zoom_level;
+
+  float zoom_factor =
+      zoom_factor_override_
+          ? zoom_factor_override_
+          : static_cast<float>(PageZoomLevelToZoomFactor(zoom_level_));
   if (zoom_factor_for_device_scale_factor_) {
     if (compositor_device_scale_factor_override_) {
       page_->SetInspectorDeviceScaleFactorOverride(
           zoom_factor_for_device_scale_factor_ /
           compositor_device_scale_factor_override_);
-    } else {
-      page_->SetInspectorDeviceScaleFactorOverride(1.0f);
-    }
-  }
 
-  float zoom_factor =
-      zoom_factor_override_
-          ? zoom_factor_override_
-          : static_cast<float>(PageZoomLevelToZoomFactor(zoom_level));
-  if (zoom_factor_for_device_scale_factor_) {
-    if (compositor_device_scale_factor_override_) {
       zoom_factor *= compositor_device_scale_factor_override_;
     } else {
+      page_->SetInspectorDeviceScaleFactorOverride(1.0f);
       zoom_factor *= zoom_factor_for_device_scale_factor_;
     }
   }
-  return zoom_factor;
-}
+  PropagateZoomFactorToLocalFrameRoots(page_->MainFrame(), zoom_factor);
 
-void WebViewImpl::RecomputeMainFrameZoomFactor() {
-  if (auto* main_frame = MainFrameImpl()) {
-    if (auto* widget = main_frame->FrameWidgetImpl()) {
-      widget->SetZoomLevel(widget->GetZoomLevel());
-    }
+  if (old_zoom_level != zoom_level_) {
+    for (auto& observer : observers_)
+      observer.OnZoomLevelChanged();
+    CancelPagePopup();
   }
+
+  return zoom_level_;
 }
 
 float WebViewImpl::PageScaleFactor() const {
@@ -2366,7 +2380,7 @@ void WebViewImpl::SetZoomFactorForDeviceScaleFactor(
   // We can't early-return here if these are already equal, because we may
   // need to propagate the correct zoom factor to newly navigated frames.
   zoom_factor_for_device_scale_factor_ = zoom_factor_for_device_scale_factor;
-  RecomputeMainFrameZoomFactor();
+  SetZoomLevel(zoom_level_);
 }
 
 void WebViewImpl::SetPageLifecycleStateFromNewPageCommit(
@@ -3210,7 +3224,7 @@ void WebViewImpl::SetCompositorDeviceScaleFactorOverride(
     return;
   compositor_device_scale_factor_override_ = device_scale_factor;
   if (zoom_factor_for_device_scale_factor_) {
-    RecomputeMainFrameZoomFactor();
+    SetZoomLevel(ZoomLevel());
     return;
   }
 }
@@ -3756,7 +3770,7 @@ void WebViewImpl::SetBackgroundColorOverrideForFullscreenController(
 
 void WebViewImpl::SetZoomFactorOverride(float zoom_factor) {
   zoom_factor_override_ = zoom_factor;
-  RecomputeMainFrameZoomFactor();
+  SetZoomLevel(ZoomLevel());
 }
 
 Element* WebViewImpl::FocusedElement() const {
@@ -4114,4 +4128,5 @@ void WebViewImpl::SetPageAttributionSupport(
 
   page->SetAttributionSupport(support);
 }
+
 }  // namespace blink

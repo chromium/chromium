@@ -225,6 +225,20 @@ class BLINK_EXPORT WebView {
   // previous element in the tab sequence (if reverse is true).
   virtual void AdvanceFocus(bool reverse) {}
 
+  // Zoom ----------------------------------------------------------------
+
+  // Returns the current zoom level.  0 is "original size", and each increment
+  // above or below represents zooming 20% larger or smaller to default limits
+  // of 300% and 50% of original size, respectively.  Only plugins use
+  // non whole-numbers, since they might choose to have specific zoom level so
+  // that fixed-width content is fit-to-page-width, for example.
+  virtual double ZoomLevel() = 0;
+
+  // Changes the zoom level to the specified level, clamping at the limits
+  // noted above, and returns the current zoom level after applying the
+  // change.
+  virtual double SetZoomLevel(double) = 0;
+
   // Gets the scale factor of the page, where 1.0 is the normal size, > 1.0
   // is scaled up, < 1.0 is scaled down.
   virtual float PageScaleFactor() const = 0;
