@@ -4,6 +4,12 @@
 
 package org.chromium.base.test.transit;
 
+import android.view.View;
+
+import org.hamcrest.Matcher;
+
+import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +80,11 @@ public class Elements {
             ViewElementInState inState = new ViewElementInState(viewElement, gate);
             mElements.mElementsInState.add(inState);
             return inState;
+        }
+
+        /** Declare as a Condition that a View is not displayed. */
+        public void declareNoView(Matcher<View> viewMatcher) {
+            mElements.mOtherEnterConditions.add(new NotDisplayedAnymoreCondition(viewMatcher));
         }
 
         /**
