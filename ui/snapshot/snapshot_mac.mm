@@ -12,9 +12,11 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/snapshot/snapshot_mac.h"
 
 // TODO: Remove when Chromium is built against the macOS 14.4 SDK or newer.
 #if !defined(MAC_OS_VERSION_14_4)
@@ -44,6 +46,8 @@ BASE_FEATURE(kUseScreenCaptureKitForSnapshots,
 namespace ui {
 
 namespace {
+
+SnapshotAPI g_snapshot_api = SnapshotAPI::kUnspecified;
 
 void GrabViewSnapshotScreenCaptureKitImpl(gfx::NativeView native_view,
                                           const gfx::Rect& source_rect,
@@ -167,7 +171,24 @@ gfx::Image GrabViewSnapshotCGWindowListImpl(gfx::NativeView native_view,
                                                 size:NSZeroSize]);
 }
 
+bool ShouldForceOldAPIUse() {
+  // The SCK API -[SCShareableContent
+  // getCurrentProcessShareableContentWithCompletionHandler:] does not work
+  // correctly when there are multiple instances of an app with the same bundle
+  // ID. It must not be used in that case, as it can return errors, hang, or
+  // crash. https://crbug.com/333443445, FB13717818
+  return [NSRunningApplication
+             runningApplicationsWithBundleIdentifier:NSBundle.mainBundle
+                                                         .bundleIdentifier]
+             .count > 1;
+}
+
 }  // namespace
+
+void ForceAPIUsageForTesting(SnapshotAPI api) {
+  CHECK(base::mac::MacOSVersion() >= 14'04'00 || api != SnapshotAPI::kNewAPI);
+  g_snapshot_api = api;
+}
 
 void GrabWindowSnapshot(gfx::NativeWindow native_window,
                         const gfx::Rect& source_rect,
@@ -182,8 +203,19 @@ void GrabWindowSnapshot(gfx::NativeWindow native_window,
 void GrabViewSnapshot(gfx::NativeView view,
                       const gfx::Rect& source_rect,
                       GrabSnapshotImageCallback callback) {
+  SnapshotAPI api = g_snapshot_api;
+  if (api == SnapshotAPI::kUnspecified) {
+    if (base::mac::MacOSVersion() >= 14'04'00 &&
+        base::FeatureList::IsEnabled(kUseScreenCaptureKitForSnapshots) &&
+        !ShouldForceOldAPIUse()) {
+      api = SnapshotAPI::kNewAPI;
+    } else {
+      api = SnapshotAPI::kOldAPI;
+    }
+  }
+
   if (@available(macOS 14.4, *)) {
-    if (base::FeatureList::IsEnabled(kUseScreenCaptureKitForSnapshots)) {
+    if (api == SnapshotAPI::kNewAPI) {
       GrabViewSnapshotScreenCaptureKitImpl(view, source_rect,
                                            std::move(callback));
       return;

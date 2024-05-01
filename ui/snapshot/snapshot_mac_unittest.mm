@@ -16,17 +16,34 @@
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/snapshot/snapshot_mac.h"
 
 namespace ui {
 namespace {
 
-class GrabWindowSnapshotTest : public CocoaTest {
+class GrabWindowSnapshotTest : public CocoaTest,
+                               public testing::WithParamInterface<SnapshotAPI> {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 };
 
-TEST_F(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
+INSTANTIATE_TEST_SUITE_P(Snapshot,
+                         GrabWindowSnapshotTest,
+                         ::testing::Values(SnapshotAPI::kOldAPI,
+                                           SnapshotAPI::kNewAPI));
+
+TEST_P(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
+  SnapshotAPI api = GetParam();
+  if (api == SnapshotAPI::kNewAPI && base::mac::MacOSVersion() < 14'04'00) {
+    GTEST_SKIP() << "Cannot test macOS 14.4 API on pre-14.4 macOS";
+  }
+  if (api == SnapshotAPI::kNewAPI) {
+    GTEST_SKIP() << "https://crbug.com/335449467";
+  }
+
+  ForceAPIUsageForTesting(api);
+
   // The window snapshot code uses `CGWindowListCreateImage` which requires
   // going to the windowserver. By default, unittests are run with the
   // `NSApplicationActivationPolicyProhibited` policy which prohibits
@@ -78,6 +95,8 @@ TEST_F(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
   EXPECT_LE(green, 0.2);
   EXPECT_GE(blue, 0.9);
   EXPECT_EQ(alpha, 1);
+
+  ForceAPIUsageForTesting(SnapshotAPI::kUnspecified);
 }
 
 }  // namespace
