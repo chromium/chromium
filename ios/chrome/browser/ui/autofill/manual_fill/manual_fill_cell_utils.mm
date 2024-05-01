@@ -56,6 +56,9 @@ constexpr CGFloat kVerticalSpacingBetweenLabeledChips = 8;
 // Height and width of the 3-dot menu button displayed in the cell's header.
 constexpr CGFloat kThreeDotMenuButtonSize = 24;
 
+// Top and bottom padding for the virtual card instruction view.
+constexpr CGFloat kVirtualCardInstructionsVerticalPadding = 8;
+
 // Adds all baseline anchor constraints for the given `views` to match the first
 // one. Constraints are not activated.
 void AppendEqualBaselinesConstraints(
@@ -88,9 +91,12 @@ CGFloat GetVerticalSpacingForElementType(
       return kGenericVerticalSpacingBetweenViews;
     case ManualFillCellView::ElementType::kLabeledChipButton:
       return kVerticalSpacingBetweenLabeledChips;
-    case ManualFillCellView::ElementType::kSeparator:
+    case ManualFillCellView::ElementType::kHeaderSeparator:
     case ManualFillCellView::ElementType::kOtherChipButton:
       return kSmallSpacingBetweenViews;
+    case ManualFillCellView::ElementType::kVirtualCardInstructions:
+    case ManualFillCellView::ElementType::kVirtualCardInstructionsSeparator:
+      return kVirtualCardInstructionsVerticalPadding;
   }
 }
 

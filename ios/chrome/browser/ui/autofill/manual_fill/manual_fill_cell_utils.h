@@ -38,8 +38,13 @@ struct ManualFillCellView {
     kLabeledChipButton,
     // A chip button that is not the first of its group and is unlabeled.
     kOtherChipButton,
-    // A grey line to separate some parts of the cell.
-    kSeparator,
+    // A grey line to separate the header from the rest of the cell.
+    kHeaderSeparator,
+    // The view presenting the instructions on how to use virtual cards.
+    kVirtualCardInstructions,
+    // A grey line to separate the virtual card instruction view from the rest
+    // of the cell.
+    kVirtualCardInstructionsSeparator,
     // Any other element not falling into one of the above types.
     kOther,
   };

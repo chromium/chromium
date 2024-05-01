@@ -123,10 +123,12 @@ using base::SysNSStringToUTF8;
 // Layout guide for the cell's content.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
 
-// Separator line. When the Keyboard Accessory Upgrade feature is enbaled, used
-// to delimit the header from the rest of the cell. When disabled, used to
-// delimit cells.
-@property(nonatomic, strong) UIView* grayLine;
+// Separator line. Used to delimit the header from the rest of the cell.
+@property(nonatomic, strong) UIView* headerSeparator;
+
+// Separator line. Used to delimit the virtual card instruction text view from
+// the rest of the cell.
+@property(nonatomic, strong) UIView* virtualCardInstructionsSeparator;
 
 @end
 
@@ -204,7 +206,13 @@ using base::SysNSStringToUTF8;
                                    forAxis:UILayoutConstraintAxisHorizontal];
   self.headerView = CreateHeaderView(self.cardIcon, self.cardLabel);
   [self.contentView addSubview:self.headerView];
-  self.grayLine = CreateGraySeparatorForContainer(self.contentView);
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.headerSeparator = CreateGraySeparatorForContainer(self.contentView);
+  } else {
+    // This separator is used to delimit this cell from the others.
+    CreateGraySeparatorForContainer(self.contentView);
+  }
 
   UILabel* expirationDateSeparatorLabel;
 
@@ -217,6 +225,9 @@ using base::SysNSStringToUTF8;
     self.virtualCardInstructionTextView =
         [self createVirtualCardInstructionTextView];
     [self.contentView addSubview:self.virtualCardInstructionTextView];
+    self.virtualCardInstructionsSeparator =
+        CreateGraySeparatorForContainer(self.contentView);
+
     self.cardNumberLabeledChip = [[ManualFillLabeledChip alloc]
         initSingleChipWithTarget:self
                         selector:@selector(userDidTapCardNumber:)];
@@ -376,10 +387,11 @@ using base::SysNSStringToUTF8;
   AddViewToVerticalLeadViews(self.headerView,
                              ManualFillCellView::ElementType::kOther,
                              verticalLeadViews);
+
   if (IsKeyboardAccessoryUpgradeEnabled()) {
-    AddViewToVerticalLeadViews(self.grayLine,
-                               ManualFillCellView::ElementType::kSeparator,
-                               verticalLeadViews);
+    AddViewToVerticalLeadViews(
+        self.headerSeparator, ManualFillCellView::ElementType::kHeaderSeparator,
+        verticalLeadViews);
   }
 
   // Holds the chip buttons related to the card that are vertical leads.
@@ -392,12 +404,21 @@ using base::SysNSStringToUTF8;
           autofill::features::kAutofillEnableVirtualCards)) {
     // Virtual card instruction.
     if (card.recordType == kVirtualCard) {
-      AddViewToVerticalLeadViews(self.virtualCardInstructionTextView,
-                                 ManualFillCellView::ElementType::kOther,
-                                 verticalLeadViews);
+      AddViewToVerticalLeadViews(
+          self.virtualCardInstructionTextView,
+          ManualFillCellView::ElementType::kVirtualCardInstructions,
+          verticalLeadViews);
+      if (IsKeyboardAccessoryUpgradeEnabled()) {
+        AddViewToVerticalLeadViews(
+            self.virtualCardInstructionsSeparator,
+            ManualFillCellView::ElementType::kVirtualCardInstructionsSeparator,
+            verticalLeadViews);
+        self.virtualCardInstructionsSeparator.hidden = NO;
+      }
       self.virtualCardInstructionTextView.hidden = NO;
     } else {
       self.virtualCardInstructionTextView.hidden = YES;
+      self.virtualCardInstructionsSeparator.hidden = YES;
     }
 
     // Card number labeled chip button.

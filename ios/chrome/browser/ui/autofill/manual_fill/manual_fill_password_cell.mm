@@ -203,9 +203,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
     if (IsKeyboardAccessoryUpgradeEnabled()) {
-      AddViewToVerticalLeadViews(self.grayLine,
-                                 ManualFillCellView::ElementType::kSeparator,
-                                 verticalLeadViews);
+      AddViewToVerticalLeadViews(
+          self.grayLine, ManualFillCellView::ElementType::kHeaderSeparator,
+          verticalLeadViews);
     }
   }
 
