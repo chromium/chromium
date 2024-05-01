@@ -168,6 +168,38 @@ class JSOpacityPlusNLayers99(ToughCompositorWaitPage):
          'js_opacity_plus_n_layers.html?layer_count=306&visible_layers=46')
 
 
+# Why: JS driven layer creation with 0%-ile layer count """
+class JSToggleLayerPlusNLayers0(ToughCompositorWaitPage):
+  BASE_NAME = 'js_toggle_layer_plus_n_layers_0'
+  SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'js_toggle_layer_plus_n_layers.html?layer_count=1&visible_layers=1')
+
+
+# Why: JS driven layer creation with 50%-ile layer count """
+class JSToggleLayerPlusNLayers50(ToughCompositorWaitPage):
+  BASE_NAME = 'js_toggle_layer_plus_n_layers_50'
+  SUPPORTED_PLATFORMS = platforms.NO_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'js_toggle_layer_plus_n_layers.html?layer_count=31&visible_layers=10')
+
+
+# Why: JS driven layer creation with 75%-ile layer count """
+class JSToggleLayerPlusNLayers75(ToughCompositorWaitPage):
+  BASE_NAME = 'js_toggle_layer_plus_n_layers_75'
+  SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'js_toggle_layer_plus_n_layers.html?layer_count=53&visible_layers=16')
+
+
+# Why: JS driven layer creation with 99%-ile layer count """
+class JSToggleLayerPlusNLayers99(ToughCompositorWaitPage):
+  BASE_NAME = 'js_toggle_layer_plus_n_layers_99'
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/tough_compositor_cases/'
+         'js_toggle_layer_plus_n_layers.html?layer_count=306&visible_layers=46')
+
+
 # Why: Painting 1 layer baseline """
 class JSPaintPlusNLayers0(ToughCompositorWaitPage):
   BASE_NAME = 'js_paint_plus_n_layers_0'

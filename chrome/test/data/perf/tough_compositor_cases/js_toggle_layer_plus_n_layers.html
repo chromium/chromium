@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+<meta name="viewport" content="width=device-width, minimum-scale=1.0">
+
+<style>
+
+
+.quad{
+  float:left;
+  background: blue;
+  margin: 2px;
+  will-change: transform;
+}
+
+.quad > p {
+  font-family: 'Georgia', serif;
+  font-size: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.padding_quad{
+  float:left;
+  margin: 2px;
+}
+
+</style>
+</head>
+<script type="text/javascript" src="bench.js"></script>
+<script type="text/javascript">
+
+var qs = (function(a) {
+  if (a == "") return {};
+  var b = {};
+  for (var i = 0; i < a.length; ++i)
+  {
+    var p=a[i].split('=', 2);
+    if (p.length == 1)
+      b[p[0]] = "";
+    else
+      b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+  }
+  return b;
+})(window.location.search.substr(1).split('&'));
+
+function init() {
+	var body = document.getElementById('body');
+	var layer_width = 20;
+  var layer_height = 20;
+  var layer_count = qs['layer_count'];
+  var visible_layers = qs['visible_layers'];
+
+	for (var i = 0; i < layer_count; i ++) {
+    if (i == visible_layers) {
+      var div = body.appendChild(document.createElement('div'));
+      div.className = 'padding_quad'
+      div.style.width = '100%';
+      div.style.height = (window.innerHeight * 2) + 'px';
+    }
+		var div = body.appendChild(document.createElement('div'));
+		div.id = 'myDiv' + i;
+		div.className = 'quad';
+		div.style.width = layer_width + 'px'
+		div.style.height= layer_height + 'px'
+		var number = div.appendChild(document.createElement('p'));
+		number.textContent = i + 1;
+		number.style.marginTop = (layer_height/2 - 3) + 'px';
+	}
+
+  bench.run(draw);
+}
+
+  // call init once the document is fully loaded
+  window.addEventListener('load', init, false);
+
+
+function get_random_color_string() {
+  var characters = "0123456789ABCDEF";
+  var color = "#";
+
+  for (var i = 1; i < 7; i++) {
+    color += characters[Math.floor(Math.random() * characters.length)];
+  }
+
+  return color;
+}
+
+var toggle_state = false;
+
+function draw() {
+  toggle_state = !toggle_state;
+  document.getElementById("myDiv0").style.willChange = toggle_state ? 'transform' : 'unset';
+};
+</script>
+<body id="body"></body>
+</html>
