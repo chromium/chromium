@@ -119,6 +119,10 @@ chromium-metrics-reviews@google.com.
                of Autofill UKM metrics per origin based on origin popularity."/>
   <variant name="BloomFilterValidation"
       summary="Validates bloom filer allowlist/blocklist based hints"/>
+  <variant name="CapitalOneCreditCardBenefitsBlocked"
+      summary="This optimization provides information about whether a
+               merchant url is eligible to display Capital One credit card
+               benefits."/>
   <variant name="CapitalOneCreditCardDiningBenefits"
       summary="This optimization provides information about whether a
                merchant url is eligible for dining credit card benefits.

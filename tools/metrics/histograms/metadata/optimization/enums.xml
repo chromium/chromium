@@ -666,6 +666,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS"/>
   <int value="47" label="AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS"/>
   <int value="48" label="AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS"/>
+  <int value="55" label="CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">

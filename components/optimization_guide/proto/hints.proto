@@ -250,6 +250,9 @@ enum OptimizationType {
   // American Express supports for credit card category benefits.
   AMERICAN_EXPRESS_CREDIT_CARD_FLIGHT_BENEFITS = 47;
   AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS = 48;
+  // This optimization provides information about URLs that should be blocked
+  // from displaying Capital One credit card benefits.
+  CAPITAL_ONE_CREDIT_CARD_BENEFITS_BLOCKED = 55;
 }
 
 // Presents semantics for how page load URLs should be matched.
