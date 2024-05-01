@@ -21,6 +21,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<TemplateURLData> GenerateSimpleTemplateURLData(
     const std::string& keyword) {
   auto data = std::make_unique<TemplateURLData>();
@@ -29,6 +30,7 @@ std::unique_ptr<TemplateURLData> GenerateSimpleTemplateURLData(
   data->SetURL(std::string("https://") + keyword + "/q={searchTerms}");
   return data;
 }
+#endif
 
 using testing::_;
 
@@ -211,10 +213,10 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // test. As a result, the test would validate what the mocks fill in.
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        DoesNotAttemptToPopulateFillIntoEditWithFeatureDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(omnibox::kSearchReadyOmniboxAllowQueryEdit);
   // Clear the TemplateURLService. Observe crash, if we attempt to use it.
   mock_client_.set_template_url_service(std::unique_ptr<TemplateURLService>());
 
@@ -231,11 +233,12 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
     ASSERT_EQ(u"title", provider_->matches()[0].description);
   }
 }
+#endif
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        NoFillIntoEditResolutionWithNoSearchEngines) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kSearchReadyOmniboxAllowQueryEdit);
   // No TemplateURLServices to parse or resolve the URL.
   mock_client_.set_template_url_service(
       std::make_unique<TemplateURLService>(nullptr, 0));
@@ -258,7 +261,6 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        UpdateFillIntoEditWhenUrlMatchesSearchResultsPage) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kSearchReadyOmniboxAllowQueryEdit);
 
   // Default TemplateURL to parse the URL.
   std::unique_ptr<TemplateURLData> engine =
@@ -285,7 +287,6 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        DontUpdateFillIntoEditWhenUrlMatchesNonDefaultSearchEngine) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kSearchReadyOmniboxAllowQueryEdit);
 
   // Default TemplateURL to parse the URL.
   std::unique_ptr<TemplateURLData> engine =
@@ -312,6 +313,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
     ASSERT_EQ(u"title", provider_->matches()[0].description);
   }
 }
+#endif
 
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
        MissingPageTitle_NoHistoryService) {

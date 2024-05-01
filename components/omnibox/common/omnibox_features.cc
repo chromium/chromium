@@ -290,12 +290,6 @@ BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
              "OmniboxMatchToolbarAndStatusBarColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, allows Search Ready Omnibox to populate original search query
-// when the user presses the <edit> button on EditUrl suggestion.
-BASE_FEATURE(kSearchReadyOmniboxAllowQueryEdit,
-             "SearchReadyOmniboxAllowQueryEdit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, appends Query Tiles to the Omnibox ZPS on New Tab Page.
 BASE_FEATURE(kQueryTilesInZPSOnNTP,
              "OmniboxQueryTilesInZPSOnNTP",

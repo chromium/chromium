@@ -20,6 +20,8 @@
 #include "components/url_formatter/url_formatter.h"
 
 namespace {
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+
 // Verbatim Match is placed in a dedicated SECTION_MOBILE_VERBATIM.
 // While there are no other occupants of this section, the Relevance score
 // remains important, because the Verbatim Match may get de-duplicated to other,
@@ -143,8 +145,7 @@ void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
   // If the URL suggestion comes from the default search engine, extract the
   // original search query and place it in fill_into_edit, to permit re-use of
   // the query for manual refinement.
-  if (base::FeatureList::IsEnabled(
-          omnibox::kSearchReadyOmniboxAllowQueryEdit)) {
+  if constexpr (is_android) {
     auto* const url_service = client_->GetTemplateURLService();
     if (url_service->IsSearchResultsPageFromDefaultSearchProvider(
             match.destination_url)) {
