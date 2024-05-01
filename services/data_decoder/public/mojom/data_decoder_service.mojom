@@ -4,6 +4,7 @@
 
 module data_decoder.mojom;
 
+import "components/facilitated_payments/core/mojom/pix_code_validator.mojom";
 import "components/web_package/mojom/web_bundle_parser.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/data_decoder/public/mojom/cbor_parser.mojom";
@@ -42,8 +43,14 @@ interface DataDecoderService {
   BindBleScanParser(pending_receiver<BleScanParser> receiver);
 
   // Binds an interface which can be used to parse structured headers.
-  BindStructuredHeadersParser(pending_receiver<StructuredHeadersParser> receiver);
+  BindStructuredHeadersParser(
+      pending_receiver<StructuredHeadersParser> receiver);
 
   // Binds an interface which can be used to parse CBOR data.
   BindCborParser(pending_receiver<CborParser> receiver);
+
+  // Binds an interface which can be used to validate the format PIX code
+  // strings.
+  BindPixCodeValidator(
+      pending_receiver<payments.facilitated.mojom.PixCodeValidator> receiver);
 };

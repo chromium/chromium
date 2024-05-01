@@ -49,6 +49,12 @@ void FakeDataDecoderService::BindCborParser(
   FAIL();
 }
 
+void FakeDataDecoderService::BindPixCodeValidator(
+    mojo::PendingReceiver<payments::facilitated::mojom::PixCodeValidator>
+        receiver) {
+  FAIL();
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void FakeDataDecoderService::BindBleScanParser(
     mojo::PendingReceiver<mojom::BleScanParser> receiver) {

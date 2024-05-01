@@ -20,6 +20,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
 #include "services/data_decoder/public/mojom/gzipper.mojom.h"
@@ -81,14 +82,16 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
   // Handles a successful parse from the service.
   void OnServiceValueOrError(std::optional<V> value,
                              const std::optional<std::string>& error) {
-    if (!callback() || is_cancelled_->data)
+    if (!callback() || is_cancelled_->data) {
       return;
+    }
 
     base::expected<V, std::string> result;
-    if (value)
+    if (value) {
       result = std::move(*value);
-    else
+    } else {
       result = base::unexpected(error.value_or("unknown error"));
+    }
 
     // Copy the callback onto the stack before resetting the Remote, as that may
     // delete |this|.
@@ -109,8 +112,9 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
   ~ValueParseRequest() = default;
 
   void OnRemoteDisconnected() {
-    if (is_cancelled_->data)
+    if (is_cancelled_->data) {
       return;
+    }
 
     if (callback()) {
       std::move(callback())
@@ -145,8 +149,9 @@ void BindInProcessService(
 void ParsingComplete(scoped_refptr<DataDecoder::CancellationFlag> is_cancelled,
                      DataDecoder::ValueParseCallback callback,
                      base::JSONReader::Result value_with_error) {
-  if (is_cancelled->data)
+  if (is_cancelled->data) {
     return;
+  }
 
   if (!value_with_error.has_value()) {
     std::move(callback).Run(base::unexpected(value_with_error.error().message));
@@ -496,6 +501,20 @@ void DataDecoder::ParseCborIsolated(base::span<const uint8_t> data,
                   std::move(callback).Run(std::move(result));
                 },
                 std::move(decoder), std::move(callback)));
+}
+
+void DataDecoder::ValidatePixCode(const std::string& pix_code,
+                                  ValidationCallback callback) {
+  auto request = base::MakeRefCounted<
+      ValueParseRequest<payments::facilitated::mojom::PixCodeValidator, bool>>(
+      std::move(callback), cancel_requests_);
+  GetService()->BindPixCodeValidator(request->BindRemote());
+  request->remote()->ValidatePixCode(
+      pix_code,
+      base::BindOnce(
+          &ValueParseRequest<payments::facilitated::mojom::PixCodeValidator,
+                             bool>::OnServiceValue,
+          request));
 }
 
 }  // namespace data_decoder

@@ -149,6 +149,64 @@ TEST_F(DataDecoderTest, ParseCborAndFailed) {
   ASSERT_EQ(result.error(), "Error unexpected CBOR value.");
 }
 
+TEST_F(DataDecoderTest, ValidateAnInvalidPixCode) {
+  base::RunLoop run_loop;
+  DataDecoder decoder;
+  base::expected<bool, std::string> validation_result;
+
+  decoder.ValidatePixCode(
+      std::string(),
+      base::BindLambdaForTesting([&run_loop, &validation_result](
+                                     base::expected<bool, std::string> result) {
+        validation_result = std::move(result);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  ASSERT_TRUE(validation_result.has_value());
+  EXPECT_FALSE(validation_result.value());
+}
+
+TEST_F(DataDecoderTest, ValidateAValidPixCode) {
+  base::RunLoop run_loop;
+  DataDecoder decoder;
+  base::expected<bool, std::string> validation_result;
+
+  decoder.ValidatePixCode(
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
+      base::BindLambdaForTesting([&run_loop, &validation_result](
+                                     base::expected<bool, std::string> result) {
+        validation_result = std::move(result);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  ASSERT_TRUE(validation_result.has_value());
+  EXPECT_TRUE(validation_result.value());
+}
+
+// PIX codes are payment related and should be private, so they should not be
+// parsed in the same process.
+TEST_F(DataDecoderTest, SeparateDecoderInstancesMakeSeparateConnectionsForPix) {
+  DataDecoder decoder1;
+  mojo::Remote<payments::facilitated::mojom::PixCodeValidator> validator1;
+  decoder1.GetService()->BindPixCodeValidator(
+      validator1.BindNewPipeAndPassReceiver());
+  validator1.FlushForTesting();
+
+  EXPECT_TRUE(validator1.is_connected());
+  EXPECT_EQ(1u, service().receivers().size());
+
+  DataDecoder decoder2;
+  mojo::Remote<payments::facilitated::mojom::PixCodeValidator> validator2;
+  decoder2.GetService()->BindPixCodeValidator(
+      validator2.BindNewPipeAndPassReceiver());
+  validator2.FlushForTesting();
+
+  EXPECT_TRUE(validator2.is_connected());
+  EXPECT_EQ(2u, service().receivers().size());
+}
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_READER)
 
 class DataDecoderMultiThreadTest : public testing::Test {

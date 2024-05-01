@@ -45,6 +45,8 @@ source_set("lib") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/cbor",
+    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
+    "//components/facilitated_payments/core/util",
     "//components/web_package",
     "//mojo/public/cpp/bindings",
     "//net",

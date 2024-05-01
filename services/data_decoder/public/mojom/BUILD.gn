@@ -17,6 +17,7 @@ mojom("mojom") {
 
   public_deps = [
     ":mojom_xml_parser",
+    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
     "//components/web_package/mojom",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

@@ -72,6 +72,7 @@ class DataDecoder {
       ResultCallback<net::structured_headers::Dictionary>;
   using ValueParseCallback = ResultCallback<base::Value>;
   using GzipperCallback = ResultCallback<mojo_base::BigBuffer>;
+  using ValidationCallback = ResultCallback<bool>;
   using CancellationFlag = base::RefCountedData<bool>;
 
   // Returns a raw interface to the service instance. This launches an instance
@@ -211,6 +212,10 @@ class DataDecoder {
   // platforms.
   static void ParseCborIsolated(base::span<const uint8_t> cbor,
                                 ValueParseCallback callback);
+
+  // Validates the format of the potentially unsafe `pix_code`.
+  void ValidatePixCode(const std::string& pix_code,
+                       ValidationCallback callback);
 
  private:
   // The amount of idle time to tolerate on a DataDecoder instance. If the
