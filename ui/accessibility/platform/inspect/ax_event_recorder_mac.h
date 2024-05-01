@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderMac
   static std::string SerializeTextSelectionChangedProperties(
       CFDictionaryRef user_info);
 
+  void WaitForDoneRecording() override;
+
  private:
   // Add one notification to the list of notifications monitored by our
   // observer.

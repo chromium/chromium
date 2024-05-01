@@ -13,6 +13,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/logging.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -187,6 +188,17 @@ std::string AXEventRecorderMac::SerializeTextSelectionChangedProperties(
   std::sort(serialized_info.begin(), serialized_info.end());
 
   return base::JoinString(serialized_info, " ");
+}
+
+void AXEventRecorderMac::WaitForDoneRecording() {
+  base::RunLoop run_loop;
+  auto quit = run_loop.QuitClosure();
+  // `dispatch_async` spins the CFRunLoop to ensure all pending accessibility
+  // notifications are processed.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    quit.Run();
+  });
+  return run_loop.Run();
 }
 
 }  // namespace ui
