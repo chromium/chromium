@@ -368,6 +368,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFirstPartyVietnameseInput);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFlexAutoEnrollment);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFloatingWorkspace);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kClassHub);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin;
@@ -1045,6 +1046,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFirmwareUpdateUIV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFlexAutoEnrollmentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceV2Enabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool isClassHubEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFocusModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldForceEnableServerSideSpeechRecognitionForDev();

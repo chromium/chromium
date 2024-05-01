@@ -1199,6 +1199,9 @@ BASE_FEATURE(kFloatingWorkspace,
              "FloatingWorkspace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Floating Workspace feature on ChromeOS
+BASE_FEATURE(kClassHub, "ClassHub", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables chrome.fileSystemProvider file systems in Files app Recents view.
 BASE_FEATURE(kFSPsInRecents, "FSPsInRecents", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3544,6 +3547,10 @@ bool IsFloatingWorkspaceEnabled() {
 
 bool IsFloatingWorkspaceV2Enabled() {
   return base::FeatureList::IsEnabled(kFloatingWorkspaceV2);
+}
+
+bool IsClassHubEnabled() {
+  return base::FeatureList::IsEnabled(kClassHub);
 }
 
 bool IsFocusModeEnabled() {

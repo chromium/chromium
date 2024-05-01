@@ -1693,6 +1693,9 @@ inline constexpr char kLoginScreenWebUILazyLoading[] =
 inline constexpr char kFloatingWorkspaceV2Enabled[] =
     "ash.floating_workspace_v2_enabled";
 
+// Boolean value for the ClassHub policy
+inline constexpr char kClassHub[] = "ash.class_hub_enabled";
+
 // Boolean value indicating that post reboot notification should be shown to the
 // user.
 inline constexpr char kShowPostRebootNotification[] =
