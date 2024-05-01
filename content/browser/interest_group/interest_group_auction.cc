@@ -4525,6 +4525,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
               : std::nullopt,
       bid_raw->interest_group->owner, bid_raw->ad_descriptor.url,
       bid_raw->GetAdComponentUrls(), bid_raw->bid_duration.InMilliseconds(),
+      bid_raw->ad_descriptor.size,
       IsOriginInDebugReportCooldownOrLockout(
           config_->seller, debug_report_lockout_and_cooldowns_),
       SellerTimeout(), bid_trace_id, std::move(score_ad_remote));

@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
@@ -245,9 +246,9 @@ class SellerWorkletTest : public testing::Test {
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
     browser_signal_buyer_and_seller_reporting_id_ = std::nullopt;
     browser_signal_render_url_ = GURL("https://render.url.test/");
-    browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
     browser_signal_ad_components_.clear();
     browser_signal_bidding_duration_msecs_ = 0;
+    browser_signal_render_size_ = std::nullopt;
     browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
     browser_signal_desireability_ = 1;
     seller_timeout_ = std::nullopt;
@@ -377,6 +378,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1,
@@ -468,6 +470,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1,
@@ -800,6 +803,7 @@ class SellerWorkletTest : public testing::Test {
   GURL browser_signal_render_url_;
   std::vector<GURL> browser_signal_ad_components_;
   uint32_t browser_signal_bidding_duration_msecs_;
+  std::optional<blink::AdSize> browser_signal_render_size_;
   bool browser_signal_for_debugging_only_in_cooldown_or_lockout_;
   double browser_signal_desireability_;
   double browser_signal_highest_scoring_other_bid_;
@@ -3806,6 +3810,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+          browser_signal_render_size_,
           browser_signal_for_debugging_only_in_cooldown_or_lockout_,
           seller_timeout_,
           /*trace_id=*/1,
@@ -3902,6 +3907,7 @@ TEST_F(SellerWorkletTest,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1,
@@ -3989,6 +3995,7 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1,
@@ -4031,6 +4038,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1,
@@ -4707,6 +4715,7 @@ TEST_F(SellerWorkletTest, Cancelation) {
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1, client_receiver.BindNewPipeAndPassRemote());
@@ -4769,6 +4778,7 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
       browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      browser_signal_render_size_,
       browser_signal_for_debugging_only_in_cooldown_or_lockout_,
       seller_timeout_,
       /*trace_id=*/1, client_receiver.BindNewPipeAndPassRemote());
@@ -4887,6 +4897,31 @@ TEST_F(SellerWorkletTest,
       R"(browserSignals.forDebuggingOnlyInCooldownOrLockout === true ? 3 : 0)",
       3);
 }
+
+class ScoreAdBrowserSignalRenderSizeTest
+    : public base::test::WithFeatureOverride,
+      public SellerWorkletTest {
+ public:
+  ScoreAdBrowserSignalRenderSizeTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kRenderSizeInScoreAdBrowserSignals) {}
+};
+
+TEST_P(ScoreAdBrowserSignalRenderSizeTest, ScoreAdBrowserSignalRenderSize) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.hasOwnProperty('renderSize') ? 3 : 0)", 0);
+
+  browser_signal_render_size_ =
+      blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                    blink::AdSize::LengthUnit::kPixels);
+  RunScoreAdWithReturnValueExpectingResult(
+      R"((browserSignals.hasOwnProperty('renderSize') &&
+          browserSignals.renderSize.width === '100sw' &&
+          browserSignals.renderSize.height === '50px') ? 3 : 0)",
+      IsParamFeatureEnabled() ? 3 : 0);
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ScoreAdBrowserSignalRenderSizeTest);
 
 class SellerWorkletSharedStorageAPIDisabledTest : public SellerWorkletTest {
  public:
@@ -5423,6 +5458,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
         browser_signals_other_seller_.Clone(), component_expect_bid_currency_,
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        browser_signal_render_size_,
         browser_signal_for_debugging_only_in_cooldown_or_lockout_,
         seller_timeout_,
         /*trace_id=*/1,

@@ -10,6 +10,7 @@
 
 #include "base/strings/strcat.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_worklet_util.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
@@ -132,12 +133,6 @@ bool SetDictMember(v8::Isolate* isolate,
   v8::Maybe<bool> result = object->Set(isolate->GetCurrentContext(),
                                        gin::StringToV8(isolate, key), v8_value);
   return !result.IsNothing() && result.FromJust();
-}
-
-bool CanSetRequestedAdSize(
-    const std::optional<blink::AdSize>& requested_ad_size) {
-  return requested_ad_size.has_value() &&
-         blink::IsValidAdSize(requested_ad_size.value());
 }
 
 // Creates an AdSize object with a "width" and a "height" from a blink::AdSize.
@@ -279,8 +274,7 @@ bool AuctionConfigLazyFiller::FillInObject(
     return false;
   }
 
-  if (CanSetRequestedAdSize(
-          auction_ad_config_non_shared_params_->requested_size) &&
+  if (auction_ad_config_non_shared_params_->requested_size &&
       !DefineLazyAttribute(object, "requestedSize", &HandleRequestedSize)) {
     return false;
   }
@@ -537,7 +531,7 @@ void AuctionConfigLazyFiller::HandleRequestedSize(
   // The second is possible if an old object is kept around and has a field,
   // while the new config doesn't.
   if (!self->auction_ad_config_non_shared_params_ ||
-      !CanSetRequestedAdSize(
+      !CanSetAdSize(
           self->auction_ad_config_non_shared_params_->requested_size)) {
     return;
   }

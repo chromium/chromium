@@ -32,6 +32,7 @@
 #include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
+#include "content/services/auction_worklet/auction_worklet_util.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
@@ -126,57 +127,6 @@ v8::Local<v8::Value> GetDirectFromSellerSignals(
   }
 
   return subresource_bundle_result.GetSignals(v8_helper, context, errors);
-}
-
-// TODO(crbug.com/40266734): Remove this code after rename. These functions
-// allow having multiple dictionary keys (e.g. renderUrl and renderURL) share
-// the same V8 value.
-bool SetDictMember(v8::Isolate* isolate,
-                   v8::Local<v8::Object> object,
-                   const std::string& key,
-                   v8::Local<v8::Value> v8_value) {
-  v8::Maybe<bool> result = object->Set(isolate->GetCurrentContext(),
-                                       gin::StringToV8(isolate, key), v8_value);
-  return !result.IsNothing() && result.FromJust();
-}
-
-bool CanSetRequestedAdSize(
-    const std::optional<blink::AdSize>& requested_ad_size) {
-  return requested_ad_size.has_value() &&
-         blink::IsValidAdSize(requested_ad_size.value());
-}
-
-// Must only be called after CanSetRequestedAdSize(). The requested_ad_size is
-// optional for the auction, so if it's invalid, it just won't be passed to the
-// bidding logic.
-bool SetRequestedAdSize(v8::Isolate* isolate,
-                        v8::Local<v8::Object> top_level_object,
-                        const blink::AdSize& requested_ad_size) {
-  v8::Local<v8::Value> v8_width;
-  if (!gin::TryConvertToV8(
-          isolate,
-          base::StrCat({base::NumberToString(requested_ad_size.width),
-                        blink::ConvertAdSizeUnitToString(
-                            requested_ad_size.width_units)}),
-          &v8_width)) {
-    return false;
-  }
-
-  v8::Local<v8::Value> v8_height;
-  if (!gin::TryConvertToV8(
-          isolate,
-          base::StrCat({base::NumberToString(requested_ad_size.height),
-                        blink::ConvertAdSizeUnitToString(
-                            requested_ad_size.height_units)}),
-          &v8_height)) {
-    return false;
-  }
-
-  v8::Local<v8::Object> size_object = v8::Object::New(isolate);
-
-  return SetDictMember(isolate, size_object, "width", v8_width) &&
-         SetDictMember(isolate, size_object, "height", v8_height) &&
-         SetDictMember(isolate, top_level_object, "requestedSize", size_object);
 }
 
 bool HasKAnonFailureComponent(
@@ -1500,6 +1450,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
+  // TODO(crbug.com/336164429): Construct the fields of browser signals lazily.
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
       !browser_signals_dict.Set("seller",
@@ -1539,8 +1490,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  bidding_signals_data_version.value())) ||
-      (CanSetRequestedAdSize(requested_ad_size) &&
-       !SetRequestedAdSize(isolate, browser_signals,
+      (requested_ad_size.has_value() &&
+       !MaybeSetSizeMember(isolate, browser_signals_dict, "requestedSize",
                            requested_ad_size.value()))) {
     return std::nullopt;
   }

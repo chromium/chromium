@@ -1684,6 +1684,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Don't throttle frames that are same-agent with with a visible frame.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoThrottlingVisibleAgent);
 
+// Enable the optional renderSize field in the browserSignals parameter of
+// scoreAd function of Protected Audience API.
+// See explainer:
+// https://github.com/WICG/turtledove/blob/main/FLEDGE.md#23-scoring-bids
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderSizeInScoreAdBrowserSignals);
+
 }  // namespace features
 }  // namespace blink
 

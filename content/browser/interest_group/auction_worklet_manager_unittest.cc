@@ -364,6 +364,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const GURL& browser_signal_render_url,
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
+      const std::optional<blink::AdSize>& browser_signal_render_size,
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       const std::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,

@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
@@ -127,6 +128,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const GURL& browser_signal_render_url,
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
+      const std::optional<blink::AdSize>& browser_signal_render_size,
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       const std::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
@@ -188,6 +190,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     // ScoringSignals code with BidderWorklets.
     std::vector<std::string> browser_signal_ad_components;
     uint32_t browser_signal_bidding_duration_msecs;
+    std::optional<blink::AdSize> browser_signal_render_size;
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout;
     std::optional<base::TimeDelta> seller_timeout;
     uint64_t trace_id;
@@ -349,6 +352,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const GURL& browser_signal_render_url,
         const std::vector<std::string>& browser_signal_ad_components,
         uint32_t browser_signal_bidding_duration_msecs,
+        const std::optional<blink::AdSize>& browser_signal_render_size,
         bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
         const std::optional<base::TimeDelta> seller_timeout,
         uint64_t trace_id,
