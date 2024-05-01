@@ -163,6 +163,7 @@ mojom::MetadataPtr MetadataToMojom(
   proto.set_key_seed(std::string(local_credential->key_seed.begin(),
                                  local_credential->key_seed.end()));
   proto.set_start_time_millis(local_credential->start_time_millis);
+  proto.set_end_time_millis(local_credential->end_time_millis);
   proto.set_metadata_encryption_key_v0(
       std::string(local_credential->metadata_encryption_key_v0.begin(),
                   local_credential->metadata_encryption_key_v0.end()));
@@ -272,7 +273,7 @@ mojom::LocalCredentialPtr LocalCredentialToMojom(
                            local_credential.secret_id().end()),
       std::vector<uint8_t>(local_credential.key_seed().begin(),
                            local_credential.key_seed().end()),
-      local_credential.start_time_millis(),
+      local_credential.start_time_millis(), local_credential.end_time_millis(),
       std::vector<uint8_t>(
           local_credential.metadata_encryption_key_v0().begin(),
           local_credential.metadata_encryption_key_v0().end()),

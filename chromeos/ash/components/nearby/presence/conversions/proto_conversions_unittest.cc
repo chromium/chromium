@@ -345,6 +345,7 @@ TEST_F(ProtoConversionsTest, LocalCredentialToMojomTest) {
       std::string(kSecretId.begin(), kSecretId.end()));
   local_credential.set_key_seed(std::string(kKeySeed.begin(), kKeySeed.end()));
   local_credential.set_start_time_millis(kStartTimeMillis_BeforeConversion);
+  local_credential.set_end_time_millis(kEndTimeMillis_BeforeConversion);
   local_credential.set_metadata_encryption_key_v0(
       std::string(kAdvertisementMetadataEncrpytionKeyV0.begin(),
                   kAdvertisementMetadataEncrpytionKeyV0.end()));
@@ -367,6 +368,8 @@ TEST_F(ProtoConversionsTest, LocalCredentialToMojomTest) {
   EXPECT_EQ(kKeySeed, mojo_local_credential->key_seed);
   EXPECT_EQ(kStartTimeMillis_BeforeConversion,
             mojo_local_credential->start_time_millis);
+  EXPECT_EQ(kEndTimeMillis_BeforeConversion,
+            mojo_local_credential->end_time_millis);
   EXPECT_EQ(kAdvertisementMetadataEncrpytionKeyV0,
             mojo_local_credential->metadata_encryption_key_v0);
   EXPECT_EQ(mojom::IdentityType::kIdentityTypePrivate,
@@ -391,7 +394,7 @@ TEST_F(ProtoConversionsTest, LocalCredentialFromMojomTest) {
                                                      kConsumedSalts.end());
   mojom::LocalCredentialPtr mojo_local_credential = mojom::LocalCredential::New(
       kSecretId, kKeySeed, kStartTimeMillis_BeforeConversion,
-      kAdvertisementMetadataEncrpytionKeyV0,
+      kEndTimeMillis_BeforeConversion, kAdvertisementMetadataEncrpytionKeyV0,
       mojom::PrivateKey::New(AdvertisementSigningKeyCertificateAlias,
                              kPrivateKey),
       mojom::PrivateKey::New(ConnectionSigningKeyCertificateAlias, kPrivateKey),
@@ -407,6 +410,8 @@ TEST_F(ProtoConversionsTest, LocalCredentialFromMojomTest) {
             local_credential_proto.key_seed());
   EXPECT_EQ(kStartTimeMillis_BeforeConversion,
             local_credential_proto.start_time_millis());
+  EXPECT_EQ(kEndTimeMillis_BeforeConversion,
+            local_credential_proto.end_time_millis());
   EXPECT_EQ(std::string(kAdvertisementMetadataEncrpytionKeyV0.begin(),
                         kAdvertisementMetadataEncrpytionKeyV0.end()),
             local_credential_proto.metadata_encryption_key_v0());

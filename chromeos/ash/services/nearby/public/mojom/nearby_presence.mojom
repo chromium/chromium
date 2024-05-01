@@ -178,8 +178,10 @@ struct LocalCredential {
   // Bytes representation of an AES Key owned by local device, to encrypt
   // local device metadata.
   array<uint8> key_seed;
-    // The time in millis from epoch when this credential becomes effective.
+  // The time in millis from epoch when this credential becomes effective.
   int64 start_time_millis;
+  // The time in millis from epoch when this credential expires.
+  int64 end_time_millis;
   // The 14 bytes aes key to encrypt metadata in SharedCredential.
   array<uint8> metadata_encryption_key_v0;
   // Used for signing advertisement.
