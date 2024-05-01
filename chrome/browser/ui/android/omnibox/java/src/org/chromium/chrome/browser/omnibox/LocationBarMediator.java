@@ -1165,7 +1165,6 @@ class LocationBarMediator
         // Never show Lens in the old search widget page context.
         // This widget must guarantee consistent feature set regardless of search engine choice or
         // other aspects that may not be met by Lens.
-        LocationBarDataProvider dataProvider = getLocationBarDataProvider();
         if (!mEmbedderUiOverrides.isLensEntrypointAllowed()) {
             return false;
         }
