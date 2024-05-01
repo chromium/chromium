@@ -2328,9 +2328,41 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         verify(mTabGroupModelFilter)
                 .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testReorder_MovePastCollapsedGroup_TabGroupIndicators() {
+        // Mock 5 tabs. Group the second and third tabs.
+        initializeTest(false, false, true, 3, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        groupTabs(1, 3);
+
+        // Fake a click on the tab group to collapse.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[1]);
+
+        // Start reorder mode on fourth tab. Drag past the collapsed group.
+        // -50 < -groupTitleWidth(46)
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(3);
+        StripLayoutView draggedTab = views[4];
+        assertEquals(
+                "Should be dragging the fourth tab.",
+                draggedTab,
+                mStripLayoutHelper.getInteractingTabForTesting());
+
+        float dragDistance = -50f;
+        float startX = mStripLayoutHelper.getLastReorderXForTesting();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
+
+        // Verify interacting tab was moved past the collapsed group and is now the second tab.
+        assertEquals("Dragged tab should now be second tab.", draggedTab, views[1]);
     }
 
     @Test

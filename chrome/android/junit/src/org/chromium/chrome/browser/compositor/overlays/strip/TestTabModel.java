@@ -33,10 +33,8 @@ public class TestTabModel extends EmptyTabModel {
 
     @Override
     public Tab getTabAt(int position) {
-        if (position < mMockTabs.size()) {
-            return mMockTabs.get(position);
-        }
-        return null;
+        if (position < 0 || position >= mMockTabs.size()) return null;
+        return mMockTabs.get(position);
     }
 
     @Override
