@@ -5,10 +5,13 @@
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
 import './strings.m.js';
 import './read_anything_toolbar.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {rgbToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
@@ -252,6 +255,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private emptyStateImagePath_: string;
   private emptyStateDarkImagePath_: string;
   private emptyStateHeading_: string;
+  private lastDownloadedLang_: string;
   private emptyStateSubheading_: string;
 
   private previousHighlight_: HTMLElement[] = [];
@@ -798,9 +802,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // If we've never seen the voice pack for this language, then it was
       // already downloaded so mark it as such.
       if (!this.voicePackInstallStatus[voicePackLangauge]) {
-        // TODO: (b/325962407) - Trigger ChromeOS system notification that voice
-        // has been installed.
-        this.setVoicePackStatus_(lang, voicePackStatus);
+        this.setVoicePackStatus_(voicePackLangauge, voicePackStatus);
+      } else if (
+          this.voicePackInstallStatus[voicePackLangauge] ===
+          VoicePackStatus.INSTALLING) {
+        const possibleLanguageConversion =
+            convertLangToAnAvailableLangIfPresent(
+                voicePackLangauge, this.availableLangs, true);
+        this.lastDownloadedLang_ = possibleLanguageConversion ?
+            possibleLanguageConversion :
+            voicePackLangauge;
+        this.showToast_();
+        this.setVoicePackStatus_(voicePackLangauge, voicePackStatus);
       }
 
       // Force a refresh of the voices list since we might not get an update the
@@ -811,6 +824,26 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.setVoicePackStatus_(lang, voicePackStatus);
       // TODO (b/335472298) Handle voice menu downloading voice spinners
     }
+  }
+
+  private getLanguageDownloadedTitle_(lang: string) {
+    const langDisplayName =
+        (this.localeToDisplayName && lang in this.localeToDisplayName) ?
+        this.localeToDisplayName[lang] :
+        lang;
+
+    return loadTimeData.getStringF(
+        'readingModeVoiceDownloadedTitle', langDisplayName);
+  }
+
+  // TODO(b/325962407): replace toast with system notification
+  private showToast_(): void {
+    if (!this.shadowRoot) {
+      return;
+    }
+
+    const toast = this.shadowRoot.querySelector<CrToastElement>('#toast')!;
+    toast.show();
   }
 
   private onSpeechRateChange_(event: CustomEvent<{rate: number}>) {

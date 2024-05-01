@@ -1,4 +1,4 @@
-<style include="cr-hidden-style sp-shared-style">
+<style include="cr-shared-style cr-hidden-style sp-shared-style">
   #empty-state-container {
     background: var(--background-color);
     border-radius: 12px;
@@ -88,6 +88,22 @@
   img {
     max-width: 100%;
   }
+
+  #toast {
+    bottom: 0;
+    left: 0;
+  }
+
+  #toastTitle {
+    display:inline-block;
+    font-size: 1em;
+  }
+
+  #toastMessage {
+    display:inline-block;
+    font-size: 0.8em;
+  }
+
 </style>
 <div id="flexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
@@ -133,3 +149,12 @@
     </sp-empty-state>
   </div>
 </div>
+
+<cr-toast id="toast" duration="5000">
+  <div id="toastDiv">
+    <span id="toastTitle">
+      [[getLanguageDownloadedTitle_(lastDownloadedLang_)]]
+    </span>
+    <span id="toastMessage">$i18n{readingModeVoiceDownloadedMessage}</span>
+  </div>
+</cr-toast>
