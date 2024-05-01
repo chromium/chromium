@@ -38,7 +38,7 @@ public class ItemOnScreenFacility<HostStationT extends TransitStation, SelectRet
         try {
             return mItem.getSelectHandler().call();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw TravelException.newTravelException("Select handler threw an exception:", e);
         }
     }
 }
