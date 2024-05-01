@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <vector>
-
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+
+#import <vector>
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -15,7 +15,7 @@
 #import "base/values.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/js_features/context_menu/context_menu_constants.h"
-#import "ios/web/js_messaging/web_view_js_utils.h"
+#import "ios/web/public/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"

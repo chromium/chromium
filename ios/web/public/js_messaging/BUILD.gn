@@ -26,6 +26,12 @@ source_set("js_messaging") {
   ]
 }
 
+source_set("web_view_js_utils") {
+  frameworks = [ "Foundation.framework" ]
+
+  sources = [ "web_view_js_utils.h" ]
+}
+
 source_set("content_world_header") {
   sources = [ "content_world.h" ]
 }

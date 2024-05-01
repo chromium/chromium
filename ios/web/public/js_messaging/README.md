@@ -369,4 +369,4 @@ dropped if the webpage goes away before the JavaScript is executed.
 [legacy IPC docs]: https://www.chromium.org/Home/chromium-security/education/security-tips-for-ipc
 [Mojo IPC docs]: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/security/mojo.md
 [JS ObjC conversions]: https://developer.apple.com/documentation/javascriptcore/jsvalue?language=objc
-[ValueResultFromWKResult]: https://source.chromium.org/chromium/chromium/src/+/main:ios/web/js_messaging/web_view_js_utils.h;l=36
+[ValueResultFromWKResult]: https://source.chromium.org/chromium/chromium/src/+/main:ios/web/public/js_messaging/web_view_js_utils.h;l=36
