@@ -720,6 +720,33 @@ void OverlayCandidateFactory::HandleClipAndSubsampling(
   // may not preserve axis alignment.
   DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
 
+  // Candidates that need detiling have a UV rect that indicates the
+  // relationship between the visible rect and the backing buffer dimensions
+  // (coded size). This rect is calculated assuming no rotation, so we need to
+  // rotate it before applying our own clipping.
+  if (candidate.needs_detiling &&
+      absl::holds_alternative<gfx::OverlayTransform>(candidate.transform)) {
+    switch (absl::get<gfx::OverlayTransform>(candidate.transform)) {
+      case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
+        candidate.uv_rect =
+            gfx::RectF(1.0f - candidate.uv_rect.height(), candidate.uv_rect.x(),
+                       candidate.uv_rect.height(), candidate.uv_rect.width());
+        break;
+      case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
+        candidate.uv_rect = gfx::RectF(
+            1.0f - candidate.uv_rect.width(), 1.0f - candidate.uv_rect.height(),
+            candidate.uv_rect.width(), candidate.uv_rect.height());
+        break;
+      case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
+        candidate.uv_rect =
+            gfx::RectF(candidate.uv_rect.y(), 1.0f - candidate.uv_rect.width(),
+                       candidate.uv_rect.height(), candidate.uv_rect.width());
+        break;
+      default:
+        break;
+    }
+  }
+
   // Calculate |uv_rect| of |clip_rect| in |display_rect|
   // TODO(rivr): Handle candidates with an overlay transform applied.
   gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(

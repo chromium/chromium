@@ -145,7 +145,8 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
 };
 
 class MailboxVideoFrameConverterWithUnwrappedFramesTest
-    : public MailboxVideoFrameConverterTest {
+    : public MailboxVideoFrameConverterTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   MailboxVideoFrameConverterWithUnwrappedFramesTest() {
     auto mock_gpu_delegate = std::make_unique<StrictMock<MockGpuDelegate>>();
@@ -163,6 +164,14 @@ class MailboxVideoFrameConverterWithUnwrappedFramesTest
   MailboxVideoFrameConverterWithUnwrappedFramesTest& operator=(
       const MailboxVideoFrameConverterWithUnwrappedFramesTest&) = delete;
   ~MailboxVideoFrameConverterWithUnwrappedFramesTest() override = default;
+
+  struct PrintToStringParamName {
+    template <class ParamType>
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      return base::StringPrintf("%s", (info.param) ? "Tiled" : "Linear");
+    }
+  };
 };
 
 // This test verifies a typical path for a MailboxVideoFrameConverter configured
@@ -174,13 +183,14 @@ class MailboxVideoFrameConverterWithUnwrappedFramesTest
 // expected to be re-used because in out-of-process video decoding, we always
 // create a new frame with a unique ID for every GpuMemoryBuffer we receive
 // from the video decoder process.
-TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
+TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
        CanConvertMultipleFramesAndThenHandleTheirRelease) {
   constexpr gfx::Size kCodedSize(640, 368);
   constexpr gfx::Rect kVisibleRect(600, 300);
   constexpr gfx::Size kNaturalSize(1200, 600);
   constexpr gfx::BufferFormat kBufferFormat =
       gfx::BufferFormat::YUV_420_BIPLANAR;
+  const bool needs_detiling = GetParam();
 
   // |gmb_frames| are the frames backed by GpuMemoryBuffers. In real usage,
   // those are the frames that the hardware decoder decodes to and (when the
@@ -212,12 +222,16 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
   // and verify that the GpuDelegate gets used correctly.
   for (size_t i = 0; i < std::size(gmb_frames); i++) {
     gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
-    scoped_refptr<FrameResource> gmb_frame =
-        VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
+    scoped_refptr<VideoFrame> video_frame =
+        VideoFrame::WrapExternalGpuMemoryBuffer(
             kVisibleRect, kNaturalSize,
             std::make_unique<FakeGpuMemoryBuffer>(kCodedSize, kBufferFormat),
             empty_mailboxes, base::NullCallback(),
-            /*timestamp=*/base::TimeDelta()));
+            /*timestamp=*/base::TimeDelta());
+    ASSERT_TRUE(video_frame);
+    video_frame->metadata().needs_detiling = needs_detiling;
+    scoped_refptr<FrameResource> gmb_frame =
+        VideoFrameResource::Create(video_frame);
     ASSERT_TRUE(gmb_frame);
     gmb_frame->AddDestructionObserver(mock_frame_destruction_cbs_[i]->Get());
     gmb_frames[i] = gmb_frame.get();
@@ -231,8 +245,9 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
           *mock_gpu_delegate_,
           CreateSharedImage(
               /*mailbox=*/_, /*handle=*/_, shared_image_format,
-              /*size=*/kVisibleRect.size(), /*color_space=*/_,
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, /*usage=*/_))
+              /*size=*/needs_detiling ? kCodedSize : kVisibleRect.size(),
+              /*color_space=*/_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+              /*usage=*/_))
           .WillOnce(
               DoAll(SaveArg<0>(&mailboxes_seen_by_gpu_delegate[i]),
                     Return(ByMove(mock_destroy_shared_image_cbs_[i]->Get()))));
@@ -252,8 +267,12 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
         converted_frames[i]->AsVideoFrameResource()->GetVideoFrame();
     EXPECT_EQ(converted_frame->storage_type(), VideoFrame::STORAGE_OPAQUE);
     EXPECT_EQ(converted_frame->format(), gmb_frames[i]->format());
-    EXPECT_EQ(converted_frame->coded_size(),
-              gmb_frames[i]->visible_rect().size());
+    if (needs_detiling) {
+      EXPECT_EQ(converted_frame->coded_size(), kCodedSize);
+    } else {
+      EXPECT_EQ(converted_frame->coded_size(),
+                gmb_frames[i]->visible_rect().size());
+    }
     EXPECT_EQ(converted_frame->visible_rect(), gmb_frames[i]->visible_rect());
     EXPECT_EQ(converted_frame->natural_size(), gmb_frames[i]->natural_size());
     ASSERT_TRUE(converted_frame->HasTextures());
@@ -296,5 +315,11 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         MailboxVideoFrameConverterWithUnwrappedFramesTest,
+                         testing::Values(false, true),
+                         MailboxVideoFrameConverterWithUnwrappedFramesTest::
+                             PrintToStringParamName());
 
 }  // namespace media

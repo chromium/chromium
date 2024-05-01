@@ -455,10 +455,26 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   // includes the non-visible area on the left and on top of the visible area
   // (so that the client can calculate the UV coordinates correctly). Hence the
   // use of GetRectSizeFromOrigin().
+  //
+  // Most video frames should use visible size instead of coded size because
+  // some videos use 0s to pad the frames to coded size, which will cause
+  // artifacting along the edges of the image when we scale using bilinear
+  // filtering. Tiled protected content is an exception though, because we have
+  // a custom Vulkan shader pipeline for scanning out these buffers that needs
+  // to know the underlying coded buffer size for detiling computations.
+  //
+  // The metadata field |needs_detiling| technically comes from an untrusted
+  // source, but we don't believe this is a security risk since the worst case
+  // scenario simply involves video corruption when the Vulkan detiler
+  // misinterprets the frame.
+  const gfx::Size coded_size =
+      frame->metadata().needs_detiling
+          ? frame->coded_size()
+          : GetRectSizeFromOrigin(frame->visible_rect());
   scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapNativeTextures(
       frame->format(), mailbox_holders, std::move(release_mailbox_cb),
-      GetRectSizeFromOrigin(frame->visible_rect()), frame->visible_rect(),
-      frame->natural_size(), frame->timestamp());
+      coded_size, frame->visible_rect(), frame->natural_size(),
+      frame->timestamp());
   mailbox_frame->set_color_space(frame->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
@@ -576,7 +592,9 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   // these exotic visible rectangles, we must include the area on the left and
   // on the top of the frames when computing the SharedImage size.
   const gfx::Size shared_image_size =
-      GetRectSizeFromOrigin(destination_visible_rect);
+      origin_frame->metadata().needs_detiling
+          ? origin_frame->coded_size()
+          : GetRectSizeFromOrigin(destination_visible_rect);
 
   const std::optional<gpu::SharedImageCapabilities> shared_image_caps =
       gpu_delegate_->GetCapabilities();

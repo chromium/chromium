@@ -767,7 +767,8 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
 
   void RunClipToTopLeftCornerTest(gfx::OverlayTransform overlay_transform,
                                   gfx::RectF quad_uvs,
-                                  gfx::RectF expected_uvs) {
+                                  gfx::RectF expected_uvs,
+                                  bool needs_detiling = false) {
     AggregatedRenderPass render_pass;
     gfx::Rect bounds(100, 100);
     render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1), bounds,
@@ -789,6 +790,7 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
                                       bounds, quad_uvs);
 
     OverlayCandidate candidate;
+    candidate.needs_detiling = needs_detiling;
     OverlayCandidate::CandidateStatus result =
         factory.FromDrawQuad(&quad, candidate);
     ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
@@ -838,6 +840,36 @@ TEST_F(TransformedOverlayClipRectTest, ClippedUvs) {
   RunClipToTopLeftCornerTest(
       gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180,
       gfx::RectF(0.1f, 0.2f, 0.4f, 0.4f), gfx::RectF(0.3f, 0.4f, 0.2f, 0.2f));
+}
+
+// Test to make sure we handle overlays that need detiling and have a rotation
+// correctly. The UV rect of these overlays assumes no rotation, so we have to
+// rotate them before applying the clip.
+TEST_F(TransformedOverlayClipRectTest, NoTransformNeedsDetiling) {
+  RunClipToTopLeftCornerTest(
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, gfx::RectF(0.7f, 0.6f),
+      gfx::RectF(0.0f, 0.0f, 0.35f, 0.3f), /*needs_detiling=*/true);
+}
+
+TEST_F(TransformedOverlayClipRectTest, Rotate90NeedsDetiling) {
+  RunClipToTopLeftCornerTest(
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
+      gfx::RectF(0.7f, 0.6f), gfx::RectF(0.0f, 0.3f, 0.35f, 0.3f),
+      /*needs_detiling=*/true);
+}
+
+TEST_F(TransformedOverlayClipRectTest, Rotate180NeedsDetiling) {
+  RunClipToTopLeftCornerTest(
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180,
+      gfx::RectF(0.7f, 0.6f), gfx::RectF(0.35f, 0.3f, 0.35f, 0.3f),
+      /*needs_detiling=*/true);
+}
+
+TEST_F(TransformedOverlayClipRectTest, Rotate270NeedsDetiling) {
+  RunClipToTopLeftCornerTest(
+      gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,
+      gfx::RectF(0.7f, 0.6f), gfx::RectF(0.35f, 0.0f, 0.35f, 0.3f),
+      /*needs_detiling=*/true);
 }
 
 TEST_F(OverlayCandidateFactoryTest, RenderPassClipped) {
