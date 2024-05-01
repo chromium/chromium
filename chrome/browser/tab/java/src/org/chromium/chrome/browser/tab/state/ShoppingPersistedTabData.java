@@ -1181,6 +1181,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     private static void processNextItemOnQueue() {
+        if (sDelayedInitFinished) {
+            assert sShoppingDataRequests.isEmpty();
+            return;
+        }
         if (sShoppingDataRequests.isEmpty()) {
             sDelayedInitFinished = true;
             return;

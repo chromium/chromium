@@ -71,7 +71,8 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap.ProfileSelection;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
@@ -141,6 +142,11 @@ public class ProcessInitializationHandler {
     private boolean mInitializedPostNative;
     private boolean mInitializedDeferredStartupTasks;
     private DevToolsServer mDevToolsServer;
+
+    private final ProfileKeyedMap<Boolean> mStartupProfileTasksCompleted =
+            new ProfileKeyedMap<>(
+                    ProfileSelection.REDIRECTED_TO_ORIGINAL,
+                    ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
     /**
      * @return The ProcessInitializationHandler for use during the lifetime of the browser process.
@@ -339,6 +345,32 @@ public class ProcessInitializationHandler {
     }
 
     /**
+     * Handle per-profile level deferred startup tasks that can be lazily done after all the
+     * necessary initialization has been completed. Should only be triggered once per profile
+     * lifetime. Any calls requiring network access should probably go here.
+     *
+     * @param profile The Profile associated with the startup tasks.
+     * @see #initializeDeferredStartupTasks() for timing considerations.
+     */
+    public final void initializeProfileDependentDeferredStartupTasks(Profile profile) {
+        ThreadUtils.checkUiThread();
+
+        // Ignore the return value as ProfileKeyedMap is used to track that these actions are
+        // handled at most once per Profile.
+        mStartupProfileTasksCompleted.getForProfile(
+                profile, this::handlePerProfileDeferredStartupTasksInitialization);
+    }
+
+    private boolean handlePerProfileDeferredStartupTasksInitialization(Profile profile) {
+        DeferredStartupHandler deferredStartupHandler = DeferredStartupHandler.getInstance();
+        List<Runnable> deferredTasks = new ArrayList<>();
+        addPerProfileStartupDeferredTasks(profile, deferredTasks);
+        deferredStartupHandler.addDeferredTasks(deferredTasks);
+
+        return true; // Return a non-null value to ensure ProfileKeyedMap tracks this was completed.
+    }
+
+    /**
      * Adds all the deferred startup tasks that should be called exactly once for the lifetime of
      * the application.
      *
@@ -398,8 +430,6 @@ public class ProcessInitializationHandler {
 
         tasks.add(
                 () -> {
-                    SigninCheckerProvider.get(ProfileManager.getLastUsedRegularProfile())
-                            .onMainActivityStart();
                     RevenueStats.getInstance().retrieveAndApplyTrackingIds();
                 });
 
@@ -429,11 +459,28 @@ public class ProcessInitializationHandler {
                     GlobalAppLocaleController.getInstance().maybeSetupLocaleManager();
                     GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics();
                 });
+        tasks.add(PersistedTabData::onDeferredStartup);
+
+        // Asynchronously query system accessibility state so it is ready for clients.
+        tasks.add(AccessibilityState::initializeOnStartup);
+        tasks.add(TabStateFileManager::onDeferredStartup);
+    }
+
+    /**
+     * Adds all the deferred startup tasks that should be called exactly once for the lifetime of a
+     * profile.
+     *
+     * @param profile The profile triggering the startup tasks.
+     * @param tasks The list where new tasks should be added.
+     */
+    @CallSuper
+    protected void addPerProfileStartupDeferredTasks(Profile profile, List<Runnable> tasks) {
+        tasks.add(() -> SigninCheckerProvider.get(profile).onMainActivityStart());
+
         tasks.add(
                 () -> {
                     // OptimizationTypes which we give a guarantee will be registered when we pass
                     // the onDeferredStartup() signal to OptimizationGuide.
-                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     List<HintsProto.OptimizationType> registeredTypesAllowList = new ArrayList<>();
                     registeredTypesAllowList.addAll(
                             ShoppingPersistedTabData.getShoppingHintsToRegisterOnDeferredStartup(
@@ -451,11 +498,6 @@ public class ProcessInitializationHandler {
                         ShoppingPersistedTabData.onDeferredStartup();
                     }
                 });
-        tasks.add(PersistedTabData::onDeferredStartup);
-
-        // Asynchronously query system accessibility state so it is ready for clients.
-        tasks.add(AccessibilityState::initializeOnStartup);
-        tasks.add(TabStateFileManager::onDeferredStartup);
     }
 
     private void initChannelsAsync() {
