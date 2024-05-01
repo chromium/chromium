@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 
 #include <algorithm>
+
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -884,7 +885,7 @@ bool Scrollbar::ContainerIsFormControl() const {
 
 EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
   if (style_source_) {
-    return style_source_->StyleRef().ScrollbarWidth();
+    return style_source_->StyleRef().UsedScrollbarWidth();
   }
   return EScrollbarWidth::kAuto;
 }

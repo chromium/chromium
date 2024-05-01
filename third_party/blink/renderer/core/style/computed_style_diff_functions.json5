@@ -184,6 +184,10 @@
             method: "HasDashArray()",
             field_dependencies: ["stroke-dasharray"]
           },
+          {
+            method: "UsedScrollbarWidth()",
+            field_dependencies: ["scrollbar-width"]
+          },
         ],
         predicates_to_test: [
           {
@@ -317,6 +321,10 @@
           {
             method: "AccentColorResolved()",
             field_dependencies: ["accent-color", "color"]
+          },
+          {
+            method: "UsedScrollbarColor()",
+            field_dependencies: ["scrollbar-color"]
           },
         ],
         predicates_to_test: [

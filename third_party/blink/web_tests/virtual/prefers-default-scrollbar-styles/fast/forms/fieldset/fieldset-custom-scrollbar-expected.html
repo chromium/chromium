@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<title>Check if fieldset's scrollbars are customized, and the vertical scroll
+position is not initial.</title>
+<style>
+fieldset {
+  height: 300px;
+  width: 500px;
+  overflow: scroll;
+  margin: 0;
+  padding: 0;
+  border: 2px solid gray;
+}
+</style>
+<fieldset>
+<div style="height: 600px; width: 400px;"></div>
+</fieldset>
+<script>
+testRunner.waitUntilDone();
+const fieldset = document.querySelector('fieldset');
+const rect = fieldset.getBoundingClientRect();
+const clickX = rect.right - 20;
+const clickY = rect.top + 20;
+chrome.gpuBenchmarking.pointerActionSequence([{
+  source: 'mouse',
+  actions: [
+    {name:'pointerDown', x:clickX, y:clickY},
+    {name:'pointerMove', x:clickX, y:clickY + 100},
+    {name:'pointerUp'}
+  ]}], () => { testRunner.notifyDone(); });
+</script>
+

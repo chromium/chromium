@@ -2340,22 +2340,41 @@ const CSSValue* ComputedStyle::GetVariableValue(
   return blink::GetVariableValue(*this, name, is_inherited_property);
 }
 
-bool ComputedStyle::HasCustomScrollbarStyle(const Document& document) const {
+bool ComputedStyle::HasCustomScrollbarStyle(Element* element) const {
+  if (!element) {
+    return false;
+  }
 
   // Ignore ::-webkit-scrollbar when the web setting to prefer default scrollbar
-  // styling is true. This web setting ignores both ::-webkit-scrollbar styling
-  // and standard properties.
-  if (RuntimeEnabledFeatures::PreferDefaultScrollbarStylesEnabled()) {
-    const Settings* settings = document.GetSettings();
-    if (settings && settings->GetPrefersDefaultScrollbarStyles()) {
-      return false;
-    }
+  // styling is true. The exception to this case is when 'display' is set to
+  // 'none'.
+  if (RuntimeEnabledFeatures::PreferDefaultScrollbarStylesEnabled() &&
+      PrefersDefaultScrollbarStyles() && element &&
+      !ScrollbarIsHiddenByCustomStyle(element)) {
+    return false;
   }
 
   // Ignore non-standard ::-webkit-scrollbar when standard properties are in
   // use.
   return HasPseudoElementStyle(kPseudoIdScrollbar) &&
          !UsesStandardScrollbarStyle();
+}
+
+EScrollbarWidth ComputedStyle::UsedScrollbarWidth() const {
+  if (PrefersDefaultScrollbarStyles() &&
+      ScrollbarWidth() != EScrollbarWidth::kNone) {
+    return EScrollbarWidth::kAuto;
+  }
+
+  return ScrollbarWidth();
+}
+
+StyleScrollbarColor* ComputedStyle::UsedScrollbarColor() const {
+  if (PrefersDefaultScrollbarStyles()) {
+    return nullptr;
+  }
+
+  return ScrollbarColor();
 }
 
 Length ComputedStyle::LineHeight() const {
@@ -2726,7 +2745,7 @@ std::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
 }
 
 std::optional<blink::Color> ComputedStyle::ScrollbarThumbColorResolved() const {
-  if (const StyleScrollbarColor* scrollbar_color = ScrollbarColor()) {
+  if (const StyleScrollbarColor* scrollbar_color = UsedScrollbarColor()) {
     return scrollbar_color->GetThumbColor().Resolve(GetCurrentColor(),
                                                     UsedColorScheme());
   }
@@ -2734,7 +2753,7 @@ std::optional<blink::Color> ComputedStyle::ScrollbarThumbColorResolved() const {
 }
 
 std::optional<blink::Color> ComputedStyle::ScrollbarTrackColorResolved() const {
-  if (const StyleScrollbarColor* scrollbar_color = ScrollbarColor()) {
+  if (const StyleScrollbarColor* scrollbar_color = UsedScrollbarColor()) {
     return scrollbar_color->GetTrackColor().Resolve(GetCurrentColor(),
                                                     UsedColorScheme());
   }
@@ -2782,10 +2801,31 @@ bool ComputedStyle::IsInterleavingRoot(const ComputedStyle* style) {
                        unensured->HasAnchorFunctions());
 }
 
+bool ComputedStyle::ScrollbarIsHiddenByCustomStyle(Element* element) const {
+  // It is necessary to check the cached styles because native input
+  // controls are styled this way.
+  const ComputedStyle* cached_scrollbar_style =
+      GetCachedPseudoElementStyle(kPseudoIdScrollbar);
+  if (cached_scrollbar_style &&
+      cached_scrollbar_style->Display() == EDisplay::kNone) {
+    return true;
+  }
+
+  if (!element) {
+    return false;
+  }
+
+  const ComputedStyle* uncached_scrollbar_style =
+      element->UncachedStyleForPseudoElement(
+          StyleRequest(kPseudoIdScrollbar, StyleRequest::kForComputedStyle));
+  return uncached_scrollbar_style &&
+         uncached_scrollbar_style->Display() == EDisplay::kNone;
+}
+
 bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
   // Force a stacking context for transform-style: preserve-3d. This happens
-  // even if preserves-3d is ignored due to a 'grouping property' being present
-  // which requires flattening. See:
+  // even if preserves-3d is ignored due to a 'grouping property' being
+  // present which requires flattening. See:
   // ComputedStyle::HasGroupingPropertyForUsedTransformStyle3D().
   // This is legacy behavior that is left ambiguous in the official specs.
   // See https://crbug.com/663650 for more details.

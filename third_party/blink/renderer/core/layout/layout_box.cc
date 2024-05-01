@@ -424,7 +424,7 @@ int HypotheticalScrollbarThickness(const LayoutBox& box,
       float scale_from_dip =
           chrome_client.WindowToViewportScalar(document.GetFrame(), 1.0f);
       return theme.ScrollbarThickness(scale_from_dip,
-                                      box.StyleRef().ScrollbarWidth());
+                                      box.StyleRef().UsedScrollbarWidth());
     }
   }
 }
@@ -1041,7 +1041,7 @@ LayoutUnit LayoutBox::ClientHeightWithTableSpecialBehavior() const {
 
 bool LayoutBox::UsesOverlayScrollbars() const {
   NOT_DESTROYED();
-  if (StyleRef().HasCustomScrollbarStyle(GetDocument())) {
+  if (StyleRef().HasCustomScrollbarStyle(DynamicTo<Element>(GetNode()))) {
     return false;
   }
   if (GetFrame()->GetPage()->GetScrollbarTheme().UsesOverlayScrollbars())

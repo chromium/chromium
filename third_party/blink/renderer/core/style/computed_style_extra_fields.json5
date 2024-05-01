@@ -1242,5 +1242,14 @@
       type_name: "std::optional<PhysicalOffset>",
       custom_compare: true,
     },
+    // This will return true if a user has enabled a web setting to prefer
+    // default scrollbar styles.
+    {
+      name: "PrefersDefaultScrollbarStyles",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      inherited: true,
+    },
   ],
 }

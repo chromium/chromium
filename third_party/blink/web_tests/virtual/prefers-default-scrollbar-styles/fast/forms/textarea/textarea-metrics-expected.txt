@@ -1,0 +1,192 @@
+This test checks that textareas have the right metrics. These numbers match IE7 except for scrollHeight. For two reasons:
+1. scrollHeight is different for elements without enough content to cause scroll because IE7 then reports the height of the text inside the element as the scrollHeight. IE8 reports has scrollHeight == offsetHeight. Gecko/WebKit have scrollHeight == clientHeight.
+2. For the elements with scroll in standards-mode, IE wraps the text differently. It seems to leave 2px less space for the text. We don't currently mimic this quirk. It's not clear whether we should given that we agree with IE7's clientWidth numbers in all these cases.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Testing BackCompat document.
+Properties = none
+PASS BackCompatdoc.getElementById('no-styles').clientWidth is 48
+PASS BackCompatdoc.getElementById('no-styles').clientHeight is 48
+PASS BackCompatdoc.getElementById('no-styles').offsetWidth is 50
+PASS BackCompatdoc.getElementById('no-styles').offsetHeight is 50
+PASS BackCompatdoc.getElementById('no-styles').scrollWidth is 48
+PASS BackCompatdoc.getElementById('no-styles').scrollHeight is 48
+
+
+Properties = disabled: "true",
+PASS BackCompatdoc.getElementById('-disabled-true-').clientWidth is 48
+PASS BackCompatdoc.getElementById('-disabled-true-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-disabled-true-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-disabled-true-').offsetHeight is 50
+PASS BackCompatdoc.getElementById('-disabled-true-').scrollWidth is 48
+PASS BackCompatdoc.getElementById('-disabled-true-').scrollHeight is 48
+
+
+Properties = innerHTML: "A",
+PASS BackCompatdoc.getElementById('-innerHTML-A-').clientWidth is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-innerHTML-A-').offsetHeight is 50
+PASS BackCompatdoc.getElementById('-innerHTML-A-').scrollWidth is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-').scrollHeight is 48
+
+
+Properties = innerHTML: "AAAAAAAAA",
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').clientWidth should be 31. Was 33.
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').offsetHeight is 50
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollWidth should be 31. Was 33.
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollHeight is 104
+
+
+Properties = innerHTML: "A", disabled: "true",
+PASS BackCompatdoc.getElementById('-innerHTML-A-disabled-true-').clientWidth is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-disabled-true-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-disabled-true-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-innerHTML-A-disabled-true-').offsetHeight is 50
+PASS BackCompatdoc.getElementById('-innerHTML-A-disabled-true-').scrollWidth is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-disabled-true-').scrollHeight is 48
+
+
+Properties = innerHTML: "AAAAAAAAA", disabled: "true",
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').clientWidth should be 31. Was 33.
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').offsetHeight is 50
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollWidth should be 31. Was 33.
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollHeight is 104
+
+
+Properties = innerHTML: "A", style: "padding:8px",
+PASS BackCompatdoc.getElementById('-innerHTML-A-style-padding-8px-').clientWidth is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-style-padding-8px-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-style-padding-8px-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-innerHTML-A-style-padding-8px-').offsetHeight is 50
+PASS BackCompatdoc.getElementById('-innerHTML-A-style-padding-8px-').scrollWidth is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-style-padding-8px-').scrollHeight is 48
+
+
+Properties = innerHTML: "AAAAAAAAA", style: "padding:8px",
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').clientWidth should be 31. Was 33.
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').offsetHeight is 50
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').scrollWidth should be 31. Was 33.
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').scrollHeight is 196
+
+
+Properties = innerHTML: "A", rows: "10",
+PASS BackCompatdoc.getElementById('-innerHTML-A-rows-10-').clientWidth is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-rows-10-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-rows-10-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-innerHTML-A-rows-10-').offsetHeight is 50
+PASS BackCompatdoc.getElementById('-innerHTML-A-rows-10-').scrollWidth is 48
+PASS BackCompatdoc.getElementById('-innerHTML-A-rows-10-').scrollHeight is 48
+
+
+Properties = innerHTML: "AAAAAAAAA", rows: "10",
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').clientWidth should be 31. Was 33.
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').clientHeight is 48
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').offsetWidth is 50
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').offsetHeight is 50
+FAIL BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollWidth should be 31. Was 33.
+PASS BackCompatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollHeight is 104
+
+
+Testing CSS1Compat document.
+Properties = none
+PASS CSS1Compatdoc.getElementById('no-styles').clientWidth is 54
+PASS CSS1Compatdoc.getElementById('no-styles').clientHeight is 54
+PASS CSS1Compatdoc.getElementById('no-styles').offsetWidth is 56
+PASS CSS1Compatdoc.getElementById('no-styles').offsetHeight is 56
+PASS CSS1Compatdoc.getElementById('no-styles').scrollWidth is 54
+PASS CSS1Compatdoc.getElementById('no-styles').scrollHeight is 54
+
+
+Properties = disabled: "true",
+PASS CSS1Compatdoc.getElementById('-disabled-true-').clientWidth is 54
+PASS CSS1Compatdoc.getElementById('-disabled-true-').clientHeight is 54
+PASS CSS1Compatdoc.getElementById('-disabled-true-').offsetWidth is 56
+PASS CSS1Compatdoc.getElementById('-disabled-true-').offsetHeight is 56
+PASS CSS1Compatdoc.getElementById('-disabled-true-').scrollWidth is 54
+PASS CSS1Compatdoc.getElementById('-disabled-true-').scrollHeight is 54
+
+
+Properties = innerHTML: "A",
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-').clientWidth is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-').clientHeight is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-').offsetWidth is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-').offsetHeight is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-').scrollWidth is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-').scrollHeight is 54
+
+
+Properties = innerHTML: "AAAAAAAAA",
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').clientWidth should be 37. Was 39.
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').clientHeight is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').offsetWidth is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').offsetHeight is 56
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollWidth should be 37. Was 39.
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-').scrollHeight should be 64. Was 104.
+
+
+Properties = innerHTML: "A", disabled: "true",
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-disabled-true-').clientWidth is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-disabled-true-').clientHeight is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-disabled-true-').offsetWidth is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-disabled-true-').offsetHeight is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-disabled-true-').scrollWidth is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-disabled-true-').scrollHeight is 54
+
+
+Properties = innerHTML: "AAAAAAAAA", disabled: "true",
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').clientWidth should be 37. Was 39.
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').clientHeight is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').offsetWidth is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').offsetHeight is 56
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollWidth should be 37. Was 39.
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-disabled-true-').scrollHeight should be 64. Was 104.
+
+
+Properties = innerHTML: "A", style: "padding:8px",
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-style-padding-8px-').clientWidth is 66
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-style-padding-8px-').clientHeight is 66
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-style-padding-8px-').offsetWidth is 68
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-style-padding-8px-').offsetHeight is 68
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-style-padding-8px-').scrollWidth is 66
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-style-padding-8px-').scrollHeight is 66
+
+
+Properties = innerHTML: "AAAAAAAAA", style: "padding:8px",
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').clientWidth should be 49. Was 51.
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').clientHeight is 66
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').offsetWidth is 68
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').offsetHeight is 68
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').scrollWidth should be 49. Was 51.
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-style-padding-8px-').scrollHeight should be 76. Was 116.
+
+
+Properties = innerHTML: "A", rows: "10",
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-rows-10-').clientWidth is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-rows-10-').clientHeight is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-rows-10-').offsetWidth is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-rows-10-').offsetHeight is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-rows-10-').scrollWidth is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-A-rows-10-').scrollHeight is 54
+
+
+Properties = innerHTML: "AAAAAAAAA", rows: "10",
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').clientWidth should be 37. Was 39.
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').clientHeight is 54
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').offsetWidth is 56
+PASS CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').offsetHeight is 56
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollWidth should be 37. Was 39.
+FAIL CSS1Compatdoc.getElementById('-innerHTML-AAAAAAAAA-rows-10-').scrollHeight should be 64. Was 104.
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

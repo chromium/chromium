@@ -899,24 +899,6 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
   }
 }
 
-void StyleAdjuster::AdjustForPrefersDefaultScrollbarStyles(
-    Element* element,
-    ComputedStyleBuilder& builder) {
-  if (!element) {
-    return;
-  }
-
-  Settings* settings = element->GetDocument().GetSettings();
-  if (!settings || !settings->GetPrefersDefaultScrollbarStyles()) {
-    return;
-  }
-
-  builder.SetScrollbarWidth(
-      ComputedStyleInitialValues::InitialScrollbarWidth());
-  builder.SetScrollbarColor(
-      ComputedStyleInitialValues::InitialScrollbarColor());
-}
-
 void StyleAdjuster::AdjustForSVGTextElement(ComputedStyleBuilder& builder) {
   builder.SetColumnGap(ComputedStyleInitialValues::InitialColumnGap());
   builder.SetColumnWidthInternal(
@@ -1218,10 +1200,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
           CSSContentVisibilityImpliesContainIntrinsicSizeAutoEnabled() &&
       builder.ContentVisibility() == EContentVisibility::kAuto) {
     builder.SetContainIntrinsicSizeAuto();
-  }
-
-  if (RuntimeEnabledFeatures::PreferDefaultScrollbarStylesEnabled()) {
-    AdjustForPrefersDefaultScrollbarStyles(element, builder);
   }
 }
 

@@ -666,7 +666,7 @@ void VisualViewport::InitializeScrollbars() {
 EScrollbarWidth VisualViewport::CSSScrollbarWidth() const {
   DCHECK(IsActiveViewport());
   if (Document* main_document = LocalMainFrame().GetDocument())
-    return main_document->GetLayoutView()->StyleRef().ScrollbarWidth();
+    return main_document->GetLayoutView()->StyleRef().UsedScrollbarWidth();
 
   return EScrollbarWidth::kAuto;
 }

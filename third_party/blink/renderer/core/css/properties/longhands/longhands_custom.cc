@@ -7356,7 +7356,7 @@ const CSSValue* ScrollbarColor::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  const StyleScrollbarColor* scrollbar_color = style.ScrollbarColor();
+  const StyleScrollbarColor* scrollbar_color = style.UsedScrollbarColor();
   if (!scrollbar_color) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
@@ -7442,7 +7442,7 @@ const CSSValue* ScrollbarWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.ScrollbarWidth());
+  return CSSIdentifierValue::Create(style.UsedScrollbarWidth());
 }
 
 const CSSValue* ScrollBehavior::CSSValueFromComputedStyleInternal(

@@ -1870,6 +1870,13 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
     builder.SetInitialData(std::move(initial_data));
   }
 
+  if (RuntimeEnabledFeatures::PreferDefaultScrollbarStylesEnabled()) {
+    Settings* settings = GetDocument().GetSettings();
+    if (settings && settings->GetPrefersDefaultScrollbarStyles()) {
+      builder.SetPrefersDefaultScrollbarStyles(true);
+    }
+  }
+
   return builder;
 }
 
@@ -2976,7 +2983,7 @@ void StyleResolver::PropagateStyleToViewport() {
                                        overflow_style->OverscrollBehaviorY())));
       }
 
-      if (overflow_style->HasCustomScrollbarStyle(GetDocument())) {
+      if (overflow_style->HasCustomScrollbarStyle(document_element)) {
         update_scrollbar_style = true;
       }
     }

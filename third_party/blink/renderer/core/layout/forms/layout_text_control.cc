@@ -71,7 +71,7 @@ int ScrollbarThickness(const LayoutBox& box) {
   const Page& page = *box.GetDocument().GetPage();
   return page.GetScrollbarTheme().ScrollbarThickness(
       page.GetChromeClient().WindowToViewportScalar(box.GetFrame(), 1.0f),
-      box.StyleRef().ScrollbarWidth());
+      box.StyleRef().UsedScrollbarWidth());
 }
 
 void HitInnerEditorElement(const LayoutBox& box,

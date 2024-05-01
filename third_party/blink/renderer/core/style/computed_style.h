@@ -727,7 +727,13 @@ class ComputedStyle final : public ComputedStyleBase {
     return ScrollbarWidth() != EScrollbarWidth::kAuto || ScrollbarColor();
   }
 
-  bool HasCustomScrollbarStyle(const Document& document) const;
+  bool HasCustomScrollbarStyle(Element* element) const;
+
+  // Use UsedScrollbarWidth() instead of ScrollbarWidth() to get the used value.
+  EScrollbarWidth UsedScrollbarWidth() const;
+
+  // Use UsedScrollbarColor() instead of ScrollbarColor() to get the used value.
+  StyleScrollbarColor* UsedScrollbarColor() const;
 
   // shape-outside (aka -webkit-shape-outside)
   ShapeValue* ShapeOutside() const { return ShapeOutsideInternal().Get(); }
@@ -2635,6 +2641,10 @@ class ComputedStyle final : public ComputedStyleBase {
     return ShouldForceColor(InForcedColorsMode(), ForcedColorAdjust(),
                             unforced_color);
   }
+
+  // Returns true if the value for "display" is "none" on the scrollbar
+  // pseudo-element.
+  bool ScrollbarIsHiddenByCustomStyle(Element* element) const;
 
   // Derived flags:
   bool CalculateIsStackingContextWithoutContainment() const;

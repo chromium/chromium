@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<style>
+div {
+    height: 10000px;
+  }
+
+  :root::-webkit-scrollbar {
+    color: #007 #bada55;
+  }
+
+  :root {
+    scrollbar-width: none;
+  }
+</style>
+<div>
+  <p>
+    Tests that the scrollbar styling using CSS ScrollbarWidth and ScrollbarColor
+    is prioritized over the webkit pseudo styling when there is a user preference
+    for default scrollbar styles. The test passes if the scrollbar is hidden.
+  </p>
+</div>

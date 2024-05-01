@@ -113,7 +113,7 @@ int LayoutCustomScrollbarPart::ComputeSize(const Length& length,
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   }
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
-      scrollbar_->ScaleFromDIP(), StyleRef().ScrollbarWidth());
+      scrollbar_->ScaleFromDIP(), StyleRef().UsedScrollbarWidth());
 }
 
 int LayoutCustomScrollbarPart::ComputeWidth(int container_width) const {
