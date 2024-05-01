@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/audio/audio_effects_controller.h"
@@ -1172,6 +1173,33 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   WAIT_FOR_CONDITION(
       camera_effects_controller()->GetCameraEffects()->background_filepath ==
       image2);
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       TrayTriggeredByCaptureCamera) {
+  ash::CaptureModeTestApi test_api;
+  ASSERT_EQ(1u, test_api.GetNumberOfAvailableCameras());
+  test_api.SelectCameraAtIndex(0);
+  test_api.StartForFullscreen(/*for_video=*/true);
+  ASSERT_TRUE(test_api.IsSessionActive());
+
+  // VcTray should be triggered.
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       TrayTriggeredByCaptureMicrophone) {
+  ash::CaptureModeTestApi test_api;
+  ASSERT_EQ(1u, test_api.GetNumberOfAvailableCameras());
+  test_api.SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
+  test_api.StartForFullscreen(/*for_video=*/true);
+  ASSERT_TRUE(test_api.IsSessionActive());
+  test_api.PerformCapture();
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_TRUE(test_api.IsVideoRecordingInProgress());
+
+  // VcTray should be triggered.
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
 }
 
 }  // namespace ash::video_conference

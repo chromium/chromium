@@ -990,7 +990,7 @@ void CaptureModeController::MaybeUpdateVcPanel() {
   delegate_->UpdateVideoConferenceManager(
       crosapi::mojom::VideoConferenceMediaUsageStatus::New(
           /*client_id=*/vc_client_id_,
-          /*has_media_app=*/is_recording_in_progress(),
+          /*has_media_app=*/is_camera_used || is_recording_audio,
           /*has_camera_permission=*/is_camera_used,
           /*has_microphone_permission=*/is_recording_audio,
           /*is_capturing_camera=*/is_camera_used,
