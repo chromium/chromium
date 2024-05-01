@@ -480,7 +480,7 @@ crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 win10 ] Pixel_Pr
 crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
 crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 win10 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
 crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 win11 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
-crbug.com/329235191 [ win graphite-enabled ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
+crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 win11 ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 target-cpu-64 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/329235191 [ graphite-enabled intel-0x9bc5 release-x64 target-cpu-64 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/329235191 [ graphite-enabled nvidia-0x2184 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
