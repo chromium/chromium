@@ -20,7 +20,14 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "crypto/aead.h"
 #include "crypto/ec_private_key.h"
+#include "crypto/ec_signature_creator.h"
 #include "crypto/random.h"
+#include "crypto/sha2.h"
+#include "device/fido/attested_credential_data.h"
+#include "device/fido/authenticator_data.h"
+#include "device/fido/fido_constants.h"
+#include "device/fido/p256_public_key.h"
+#include "device/fido/public_key.h"
 
 namespace webauthn::passkey_model_utils {
 
@@ -214,6 +221,58 @@ bool EncryptWebauthnCredentialSpecificsData(
   }
   *out->mutable_encrypted() = base::StrCat({nonce, ciphertext});
   return true;
+}
+
+std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
+  using Flag = device::AuthenticatorData::Flag;
+  return device::AuthenticatorData(
+             crypto::SHA256Hash(base::as_byte_span(rp_id)),
+             {Flag::kTestOfUserPresence, Flag::kTestOfUserVerification,
+              Flag::kBackupEligible, Flag::kBackupState},
+             /*sign_counter=*/0u,
+             /*attested_credential_data=*/std::nullopt,
+             /*extensions=*/std::nullopt)
+      .SerializeToByteArray();
+}
+
+std::vector<uint8_t> MakeAuthenticatorDataForCreation(
+    std::string_view rp_id,
+    base::span<const uint8_t> credential_id,
+    base::span<const uint8_t> public_key_spki_der) {
+  static constexpr std::array<const uint8_t, 16> kGpmAaguid{
+      0xea, 0x9b, 0x8d, 0x66, 0x4d, 0x01, 0x1d, 0x21,
+      0x3c, 0xe4, 0xb6, 0xb4, 0x8c, 0xb5, 0x75, 0xd4};
+
+  using Flag = device::AuthenticatorData::Flag;
+  std::unique_ptr<device::PublicKey> public_key =
+      device::P256PublicKey::ParseSpkiDer(
+          base::strict_cast<int32_t>(device::CoseAlgorithmIdentifier::kEs256),
+          public_key_spki_der);
+  device::AttestedCredentialData attested_credential_data(
+      kGpmAaguid, credential_id, std::move(public_key));
+  return device::AuthenticatorData(
+             crypto::SHA256Hash(base::as_byte_span(rp_id)),
+             {Flag::kTestOfUserPresence, Flag::kTestOfUserVerification,
+              Flag::kBackupEligible, Flag::kBackupState, Flag::kAttestation},
+             /*sign_counter=*/0u, std::move(attested_credential_data),
+             /*extensions=*/std::nullopt)
+      .SerializeToByteArray();
+}
+
+std::optional<std::vector<uint8_t>> GenerateEcSignature(
+    base::span<const uint8_t> pkcs8_ec_private_key,
+    base::span<const uint8_t> signed_over_data) {
+  auto ec_private_key =
+      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(pkcs8_ec_private_key);
+  if (!ec_private_key) {
+    return std::nullopt;
+  }
+  auto signer = crypto::ECSignatureCreator::Create(ec_private_key.get());
+  std::vector<uint8_t> signature;
+  if (!signer->Sign(signed_over_data, &signature)) {
+    return std::nullopt;
+  }
+  return signature;
 }
 
 }  // namespace webauthn::passkey_model_utils

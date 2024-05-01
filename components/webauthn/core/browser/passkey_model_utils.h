@@ -48,6 +48,29 @@ bool EncryptWebauthnCredentialSpecificsData(
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& in,
     sync_pb::WebauthnCredentialSpecifics* out);
 
+// Returns the WebAuthn authenticator data for the GPM authenticator.
+// For assertion signatures, the AT flag MUST NOT be set and the
+// attestedCredentialData MUST NOT be included. See
+// https://w3c.github.io/webauthn/#authenticator-data.
+std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id);
+
+// Returns the WebAuthn authenticator data for the GPM authenticator.
+// For attestation signatures, the authenticator MUST set the AT flag and
+// include the attestedCredentialData. See
+// https://w3c.github.io/webauthn/#authenticator-data.
+std::vector<uint8_t> MakeAuthenticatorDataForCreation(
+    std::string_view rp_id,
+    base::span<const uint8_t> credential_id,
+    base::span<const uint8_t> public_key_spki_der);
+
+// Performs the signing operation over the signed over data using the private
+// key. The signed over data is the concatenation to the authenticator data and
+// the client data hash. See:
+// https://w3c.github.io/webauthn/#fig-signature
+std::optional<std::vector<uint8_t>> GenerateEcSignature(
+    base::span<const uint8_t> pkcs8_ec_private_key,
+    base::span<const uint8_t> signed_over_data);
+
 }  // namespace webauthn::passkey_model_utils
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_UTILS_H_
