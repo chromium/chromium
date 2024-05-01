@@ -5,9 +5,10 @@
 import 'chrome://os-print/js/data/print_ticket_manager.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
-import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
+import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {setPrintPreviewPageHandlerForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {PrintTicket} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -350,5 +351,47 @@ suite('PrintTicketManager', () => {
             sessionContextNoSelection.hasSelection,
             ticket!.shouldPrintSelectionOnly,
             'shouldPrintSelectionOnly should default to match session context');
+      });
+
+  // Verify PrintTicket destination updates to active destination on first
+  // event if currently empty string and stops listening to active destination
+  // events after change.
+  test(
+      'PrintTicket listens to active destination change until ' +
+          'print ticket destination set to non-empty value',
+      async () => {
+        const ticketManager = PrintTicketManager.getInstance();
+        const destinationManager = DestinationManager.getInstance();
+        const getActiveDestinationFn = mockController.createFunctionMock(
+            destinationManager, 'getActiveDestination');
+        getActiveDestinationFn.returnValue = null;
+        assertEquals(null, ticketManager.getPrintTicketForTesting());
+        ticketManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+
+        const ticket = ticketManager.getPrintTicketForTesting();
+        assertEquals('', ticket!.destination, 'destination should be empty');
+
+        getActiveDestinationFn.returnValue = PDF_DESTINATION;
+        const changeEvent1 = eventToPromise(
+            DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, destinationManager);
+        destinationManager.dispatchEvent(
+            createCustomEvent(DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED));
+        await changeEvent1;
+
+        assertEquals(
+            PDF_DESTINATION.id, ticket!.destination,
+            `destination should be ${PDF_DESTINATION.id}`);
+        getActiveDestinationFn.returnValue = {
+          id: 'fake_id',
+          displayName: 'Fake Destination',
+        };
+        const changeEvent2 = eventToPromise(
+            DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, destinationManager);
+        destinationManager.dispatchEvent(
+            createCustomEvent(DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED));
+        await changeEvent2;
+        assertEquals(
+            PDF_DESTINATION.id, ticket!.destination,
+            `destination should remain ${PDF_DESTINATION.id}`);
       });
 });

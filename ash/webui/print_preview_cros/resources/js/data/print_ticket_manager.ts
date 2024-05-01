@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getPrintPreviewPageHandler} from '../utils/mojo_data_providers.js';
 import {type PrintPreviewPageHandler, PrintTicket, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
-import {DestinationManager} from './destination_manager.js';
+import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './destination_manager.js';
 
 /**
  * @fileoverview
@@ -45,6 +46,7 @@ export class PrintTicketManager extends EventTarget {
   private sessionContext: SessionContext;
   private destinationManager: DestinationManager =
       DestinationManager.getInstance();
+  private eventTracker = new EventTracker();
 
   // Prevent additional initialization.
   private constructor() {
@@ -69,10 +71,16 @@ export class PrintTicketManager extends EventTarget {
       shouldPrintSelectionOnly: this.sessionContext.hasSelection,
     } as PrintTicket;
 
+    if (this.printTicket.destination === '') {
+      this.eventTracker.add(
+          this.destinationManager,
+          DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED,
+          (event: Event): void => this.onActiveDestinationChanged(event));
+    }
+
     this.dispatchEvent(
         createCustomEvent(PRINT_TICKET_MANAGER_SESSION_INITIALIZED));
   }
-
 
   // Handles notifying start and finish print request.
   // TODO(b/323421684): Takes current print ticket uses PrintPreviewPageHandler
@@ -120,6 +128,28 @@ export class PrintTicketManager extends EventTarget {
 
   getPrintTicketForTesting(): PrintTicket|null {
     return this.printTicket;
+  }
+
+  // Handles setting initial active destination in print ticket if not already
+  // set. Removes listener once destination is set in print ticket. After the
+  // initial change, future updates to active destination will start in the
+  // print ticket manager.
+  private onActiveDestinationChanged(_event: Event): void {
+    // Event listener added by initializeSession; print ticket will not be null.
+    assert(this.printTicket);
+
+    const activeDest = this.destinationManager.getActiveDestination();
+    if (activeDest === null) {
+      return;
+    }
+
+    if (this.printTicket!.destination === '') {
+      this.printTicket!.destination = activeDest.id;
+    }
+
+    this.eventTracker.remove(
+        this.destinationManager,
+        DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED);
   }
 }
 
