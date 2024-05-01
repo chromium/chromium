@@ -35,6 +35,7 @@ class NotificationCenterTray;
 class OverviewButtonTray;
 class PaletteTray;
 class PhoneHubTray;
+class PodsOverflowTray;
 class ProjectorAnnotationTray;
 class SelectToSpeakTray;
 class Shelf;
@@ -114,6 +115,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   StatusAreaWidgetDelegate* status_area_widget_delegate() {
     return status_area_widget_delegate_;
   }
+  PodsOverflowTray* pods_overflow_tray() { return pods_overflow_tray_; }
   UnifiedSystemTray* unified_system_tray() { return unified_system_tray_; }
   NotificationCenterTray* notification_center_tray() {
     return notification_center_tray_;
@@ -290,6 +292,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   raw_ptr<LogoutButtonTray, DanglingUntriaged> logout_button_tray_ = nullptr;
   raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_ = nullptr;
   raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ = nullptr;
+  raw_ptr<PodsOverflowTray> pods_overflow_tray_ = nullptr;
   raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
   raw_ptr<VideoConferenceTray, DanglingUntriaged> video_conference_tray_ =
       nullptr;

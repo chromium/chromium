@@ -31,6 +31,7 @@
 #include "ash/system/overview/overview_button_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
+#include "ash/system/pods_overflow_tray.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_animation_controller.h"
 #include "ash/system/status_area_widget_delegate.h"
@@ -127,11 +128,16 @@ void StatusAreaWidget::Initialize() {
         AddTrayButton(std::make_unique<WmModeButtonTray>(shelf_));
   }
 
-    notification_center_tray_ =
-        AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
-    notification_center_tray_->AddObserver(this);
-    animation_controller_ = std::make_unique<StatusAreaAnimationController>(
-        notification_center_tray());
+  if (features::IsScalableShelfPodsEnabled()) {
+    pods_overflow_tray_ =
+        AddTrayButton(std::make_unique<PodsOverflowTray>(shelf_));
+  }
+
+  notification_center_tray_ =
+      AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
+  notification_center_tray_->AddObserver(this);
+  animation_controller_ = std::make_unique<StatusAreaAnimationController>(
+      notification_center_tray());
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
   unified_system_tray_ = unified_system_tray.get();
   date_tray_ =
@@ -177,6 +183,11 @@ StatusAreaWidget::~StatusAreaWidget() {
   // `TrayBubbleView` might be deleted after `StatusAreaWidget`, so we reset the
   // pointer here to avoid dangling pointer.
   open_shelf_pod_bubble_ = nullptr;
+
+  // All tray pods are deleted upon shutdown of `status_area_widget_delegate_`,
+  // so their pointers are reset here to prevent them from dangling.
+  // TODO(b/338090322): Handle all dangling tray pointers here.
+  pods_overflow_tray_ = nullptr;
 
   status_area_widget_delegate_->Shutdown();
 }
@@ -282,6 +293,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
       case TrayBackgroundViewCatalogName::kMediaPlayer:
       case TrayBackgroundViewCatalogName::kPalette:
       case TrayBackgroundViewCatalogName::kPhoneHub:
+      case TrayBackgroundViewCatalogName::kPodsOverflow:
       case TrayBackgroundViewCatalogName::kLogoutButton:
       case TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea:
       case TrayBackgroundViewCatalogName::kWmMode:

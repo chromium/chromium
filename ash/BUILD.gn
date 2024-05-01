@@ -2155,6 +2155,8 @@ component("ash") {
     "system/phonehub/tether_connection_pending_view.cc",
     "system/phonehub/tether_connection_pending_view.h",
     "system/phonehub/ui_constants.h",
+    "system/pods_overflow_tray.cc",
+    "system/pods_overflow_tray.h",
     "system/power/adaptive_charging_controller.cc",
     "system/power/adaptive_charging_controller.h",
     "system/power/adaptive_charging_notification_controller.cc",
