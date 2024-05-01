@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "services/accessibility/features/v8_utils.h"
+
 #include <memory>
+
+#include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"

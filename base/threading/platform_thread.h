@@ -16,7 +16,6 @@
 #include <type_traits>
 
 #include "base/base_export.h"
-#include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker_impl.h"
@@ -35,6 +34,10 @@
 #elif BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #include <unistd.h>
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/feature_list.h"
 #endif
 
 namespace base {
