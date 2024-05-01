@@ -232,7 +232,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketLocator& bucket_locator,
       DeleteBucketDataCallback callback);
 
-  void OnBucketInfoReady(
+  // Invoked after asynchronously retrieving buckets from the quota manager in
+  // service of `GetAllBucketsDetails()`.
+  void ContinueGetAllBucketsDetails(
       GetAllBucketsDetailsCallback callback,
       std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
 
