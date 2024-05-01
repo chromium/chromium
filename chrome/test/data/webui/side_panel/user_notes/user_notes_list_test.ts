@@ -79,7 +79,8 @@ suite('UserNotesListTest', () => {
         entryNote.$.noteContent.getAttribute('contenteditable'));
     entryNote.$.noteContent.focus();
     const notesAddButton =
-        entryNote.shadowRoot!.querySelector('#addButton')! as HTMLButtonElement;
+        entryNote.shadowRoot!.querySelector<HTMLElement>('#addButton');
+    assertTrue(!!notesAddButton);
     notesAddButton.click();
     const text = await testProxy.whenCalled('newNoteFinished');
     assertEquals(text, sampleNoteContent);
@@ -100,8 +101,8 @@ suite('UserNotesListTest', () => {
     noteMenuButton.click();
     const noteMenu = contextMenuElement.$.menu;
     // Click edit button.
-    const editButton =
-        noteMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
+    const editButton = noteMenu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!editButton);
     editButton.click();
     assertEquals(
         'plaintext-only', note.$.noteContent.getAttribute('contenteditable'));
@@ -113,7 +114,8 @@ suite('UserNotesListTest', () => {
     note.$.noteContent.focus();
     await flushTasks();
     const noteAddButton =
-        note.shadowRoot!.querySelector('#addButton')! as HTMLButtonElement;
+        note.shadowRoot!.querySelector<HTMLElement>('#addButton');
+    assertTrue(!!noteAddButton);
     noteAddButton.click();
     // Verify changes to content have been saved and the note is no longer in
     // the editing state.
@@ -137,8 +139,8 @@ suite('UserNotesListTest', () => {
     noteMenuButton.click();
     const noteMenu = contextMenuElement.$.menu;
     // Click edit button.
-    const editButton =
-        noteMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
+    const editButton = noteMenu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!editButton);
     editButton.click();
     assertEquals(
         'plaintext-only', note.$.noteContent.getAttribute('contenteditable'));
@@ -150,7 +152,8 @@ suite('UserNotesListTest', () => {
     note.$.noteContent.focus();
     await flushTasks();
     const noteAddButton =
-        note.shadowRoot!.querySelector('#addButton')! as HTMLButtonElement;
+        note.shadowRoot!.querySelector<HTMLElement>('#addButton');
+    assertTrue(!!noteAddButton);
     noteAddButton.click();
     // Verify changes to content have been saved and the note is no longer in
     // the editing state.
@@ -174,8 +177,8 @@ suite('UserNotesListTest', () => {
     noteMenuButton.click();
     const noteMenu = contextMenuElement.$.menu;
     // Click edit button.
-    const editButton =
-        noteMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
+    const editButton = noteMenu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!editButton);
     editButton.click();
     assertEquals(
         'plaintext-only', note.$.noteContent.getAttribute('contenteditable'));
@@ -186,7 +189,8 @@ suite('UserNotesListTest', () => {
     note.$.noteContent.focus();
     await flushTasks();
     const notesCancelButton =
-        note.shadowRoot!.querySelector('#cancelButton')! as HTMLButtonElement;
+        note.shadowRoot!.querySelector<HTMLElement>('#cancelButton');
+    assertTrue(!!notesCancelButton);
     notesCancelButton.click();
     // Verify changes to content have been undone and the note is no longer in
     // the editing state.
@@ -209,7 +213,8 @@ suite('UserNotesListTest', () => {
     const noteMenu = contextMenuElement.$.menu;
     // Click delete button.
     const deleteButton =
-        noteMenu.querySelectorAll('.dropdown-item')[1]! as HTMLButtonElement;
+        noteMenu.querySelectorAll<HTMLElement>('.dropdown-item')[1];
+    assertTrue(!!deleteButton);
     deleteButton.click();
     await testProxy.whenCalled('deleteNote');
   });
@@ -236,7 +241,8 @@ suite('UserNotesListTest', () => {
     // Click sort by newest option.
     const sortMenu = userNotesList.shadowRoot!.getElementById('sortMenu')!;
     const sortNewestButton =
-        sortMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
+        sortMenu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!sortNewestButton);
     sortNewestButton.click();
     const sortByNewest = await testProxy.whenCalled('setSortOrder');
     testProxy.getCallbackRouterRemote().sortByNewestPrefChanged(sortByNewest);
@@ -277,7 +283,8 @@ suite('UserNotesListTest', () => {
     entryNote.$.noteContent.focus();
     await flushTasks();
     const notesAddButton =
-        entryNote.shadowRoot!.querySelector('#addButton')! as HTMLButtonElement;
+        entryNote.shadowRoot!.querySelector<HTMLButtonElement>('#addButton');
+    assertTrue(!!notesAddButton);
     assertEquals(true, notesAddButton.disabled);
   });
 });

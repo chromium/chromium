@@ -1904,19 +1904,19 @@ suite('WallpaperSearchTest', () => {
       assertEquals(inspirations[0], inspirationGridResults1[0]);
       assertEquals(
           'https://example.com/foo_2.png',
-          (inspirations[0]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+          inspirations[0]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
       assertEquals('Description foo', inspirations[0]!.ariaLabel);
       assertEquals(inspirations[1], inspirationGridResults1[1]);
       assertEquals(
           'https://example.com/bar_2.png',
-          (inspirations[1]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+          inspirations[1]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
       assertEquals('Description bar', inspirations[1]!.ariaLabel);
       const inspirationGridResults2 =
           inspirationsGroups[1]!.querySelectorAll('.tile.result');
       assertEquals(inspirations[2], inspirationGridResults2[0]);
       assertEquals(
           'https://example.com/baz_2.png',
-          (inspirations[2]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+          inspirations[2]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
       assertEquals('Description baz', inspirations[2]!.ariaLabel);
     });
 

@@ -201,8 +201,9 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           eventToPromise('dismiss-module-instance', moduleElement);
       const doneButton =
           moduleElement.shadowRoot!.querySelector('history-clusters-header-v2')!
-              .shadowRoot!.querySelector(
-                  'ntp-module-header-v2 cr-icon-button')! as HTMLElement;
+              .shadowRoot!.querySelector<HTMLElement>(
+                  'ntp-module-header-v2 cr-icon-button');
+      assertTrue(!!doneButton);
       doneButton.click();
 
       const dismissEvent: DismissModuleInstanceEvent =
@@ -269,7 +270,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
               moduleElement.shadowRoot!
                   .querySelector('history-clusters-header-v2')!.shadowRoot!
                   .querySelector('ntp-module-header-v2')!.shadowRoot!
-                  .querySelector('#dismiss')! as HTMLButtonElement;
+                  .querySelector<HTMLElement>('#dismiss');
+          assertTrue(!!dismissButton);
           dismissButton.click();
 
           // Assert.
@@ -307,7 +309,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
               moduleElement.shadowRoot!
                   .querySelector('history-clusters-header-v2')!.shadowRoot!
                   .querySelector('ntp-module-header-v2')!.shadowRoot!
-                  .querySelector('#done')! as HTMLButtonElement;
+                  .querySelector<HTMLElement>('#done');
+          assertTrue(!!doneButton);
           doneButton.click();
 
           // Assert.
@@ -339,7 +342,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       const disableButton =
           moduleElement.shadowRoot!.querySelector('history-clusters-header-v2')!
               .shadowRoot!.querySelector('ntp-module-header-v2')!.shadowRoot!
-              .querySelector('#disable')! as HTMLButtonElement;
+              .querySelector<HTMLElement>('#disable');
+      assertTrue(!!disableButton);
       disableButton.click();
 
       // Assert.
@@ -537,7 +541,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           'https://www.annotated.com/1',
           visitTiles[0]!.visit.normalizedUrl.url);
       let contentElement =
-          visitTiles[0]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+          visitTiles[0]!.shadowRoot!.querySelector<HTMLElement>('#content');
+      assertTrue(!!contentElement);
       assertEquals(
           contentElement.getAttribute('aria-label'),
           'Test Title 1, annotated.com, 1 min ago, 15% off');
@@ -545,7 +550,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       assertEquals(
           'https://www.foo.com/2', visitTiles[1]!.visit.normalizedUrl.url);
       contentElement =
-          visitTiles[1]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+          visitTiles[1]!.shadowRoot!.querySelector<HTMLElement>('#content');
+      assertTrue(!!contentElement);
       assertEquals(
           contentElement.getAttribute('aria-label'),
           'Test Title 2, foo.com, 1 min ago');
@@ -567,7 +573,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       assertEquals(
           'https://www.foo.com/3', visitTiles[0]!.visit.normalizedUrl.url);
       contentElement =
-          visitTiles[0]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+          visitTiles[0]!.shadowRoot!.querySelector<HTMLElement>('#content');
+      assertTrue(!!contentElement);
       assertEquals(
           contentElement.getAttribute('aria-label'),
           'Test Title 1, foo.com, 1 min ago');
@@ -576,7 +583,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           'https://www.annotated.com/2',
           visitTiles[1]!.visit.normalizedUrl.url);
       contentElement =
-          visitTiles[1]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+          visitTiles[1]!.shadowRoot!.querySelector<HTMLElement>('#content');
+      assertTrue(!!contentElement);
       assertEquals(
           contentElement.getAttribute('aria-label'),
           'Test Title 2, annotated.com, 1 min ago, $10 off');

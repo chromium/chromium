@@ -9,7 +9,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsReviewNotificationPermissionsElement} from 'chrome://settings/lazy_load.js';
 import {SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
-import type {CrActionMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
+import type {SettingsRoutes} from 'chrome://settings/settings.js';
 import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -136,15 +136,16 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
    *     open the action menu for.
    */
   function openActionMenu(index: number) {
-    const menu1 = testElement.shadowRoot!.querySelector('cr-action-menu')!;
+    const menu1 = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu1);
     assertFalse(isVisible(menu1.getDialog()));
 
     const item = getEntries()[index]!;
-    (item.querySelector('#actionMenuButton')! as HTMLElement).click();
+    item.querySelector<HTMLElement>('#actionMenuButton')!.click();
     flush();
 
-    const menu2 = testElement.shadowRoot!.querySelector('cr-action-menu')! as
-        CrActionMenuElement;
+    const menu2 = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu2);
     assertTrue(isVisible(menu2.getDialog()));
   }
 
@@ -191,7 +192,8 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertAnimation([false, false]);
 
     // User clicks don't allow.
-    const element = entries[0]!.querySelector('#block')! as HTMLElement;
+    const element = entries[0]!.querySelector<HTMLElement>('#block');
+    assertTrue(!!element);
     element.click();
     assertAnimation([true, false]);
     // Ensure the browser proxy call is done.
@@ -241,10 +243,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await assertMetricsInteraction(
         SafetyCheckNotificationsModuleInteractions.IGNORE);
     // Ensure the action menu is closed.
-    const menu = testElement.shadowRoot!.querySelector('cr-action-menu')! as
-        CrActionMenuElement;
-    const dialog = menu.getDialog() as HTMLDialogElement;
-    assertFalse(isVisible(dialog));
+    const menu = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu);
+    assertFalse(isVisible(menu.getDialog()));
   });
 
   /**
@@ -278,10 +279,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await assertMetricsInteraction(
         SafetyCheckNotificationsModuleInteractions.RESET);
     // Ensure the action menu is closed.
-    const menu = testElement.shadowRoot!.querySelector('cr-action-menu')! as
-        CrActionMenuElement;
-    const dialog = menu.getDialog() as HTMLDialogElement;
-    assertFalse(isVisible(dialog));
+    const menu = testElement.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!menu);
+    assertFalse(isVisible(menu.getDialog()));
   });
 
   /**

@@ -204,8 +204,9 @@ suite('PriceTrackingSectionTest', () => {
     await flushTasks();
     checkPriceTrackingSectionRendering(true);
 
-    const folder = priceTrackingSection.shadowRoot!.querySelector(
-                       '#toggleAnnotationButton')! as HTMLElement;
+    const folder = priceTrackingSection.shadowRoot!.querySelector<HTMLElement>(
+        '#toggleAnnotationButton');
+    assertTrue(!!folder);
     folder.click();
 
     await shoppingServiceApi.whenCalled('showBookmarkEditorForCurrentUrl');

@@ -95,8 +95,8 @@ export class PrintPreviewProvisionalDestinationResolverElement extends
     this.state_ = ResolverState.ACTIVE;
     this.destination_ = destination;
     this.$.dialog.showModal();
-    const icon =
-        this.shadowRoot!.querySelector('.extension-icon')! as HTMLElement;
+    const icon = this.shadowRoot!.querySelector<HTMLElement>('.extension-icon');
+    assert(icon);
     icon.style.backgroundImage = 'image-set(' +
         'url(chrome://extension-icon/' + this.destination_!.extensionId +
         '/24/1) 1x,' +

@@ -107,8 +107,9 @@ suite('CategoriesTest', () => {
     await setInitialSettings(1);
 
     const eventPromise = eventToPromise('collection-select', categoriesElement);
-    const category = categoriesElement.shadowRoot!.querySelector(
-                         '.collection')! as HTMLButtonElement;
+    const category =
+        categoriesElement.shadowRoot!.querySelector<HTMLElement>('.collection');
+    assertTrue(!!category);
     category.click();
     const event = (await eventPromise) as CustomEvent<BackgroundCollection>;
     assertTrue(!!event);

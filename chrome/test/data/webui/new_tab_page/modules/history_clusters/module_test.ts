@@ -700,7 +700,8 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           'https://www.foo.com/1', visitTiles[0]!.visit.normalizedUrl.url);
       assertEquals('', visitTiles[0]!.discount);
       let contentElement =
-          visitTiles[0]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+          visitTiles[0]!.shadowRoot!.querySelector<HTMLElement>('#content');
+      assertTrue(!!contentElement);
       assertEquals(
           contentElement.getAttribute('aria-label'),
           'Test Title 1, foo.com, 1 min ago');
@@ -710,7 +711,8 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           visitTiles[1]!.visit.normalizedUrl.url);
       assertEquals('15% off', visitTiles[1]!.discount);
       contentElement =
-          visitTiles[1]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+          visitTiles[1]!.shadowRoot!.querySelector<HTMLElement>('#content');
+      assertTrue(!!contentElement);
       assertEquals(
           contentElement.getAttribute('aria-label'),
           'Test Title 2, annotated.com, 1 min ago, 15% off');
@@ -720,7 +722,8 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           visitTiles[2]!.visit.normalizedUrl.url);
       assertEquals('$10 off', visitTiles[2]!.discount);
       contentElement =
-          visitTiles[2]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+          visitTiles[2]!.shadowRoot!.querySelector<HTMLElement>('#content');
+      assertTrue(!!contentElement);
       assertEquals(
           contentElement.getAttribute('aria-label'),
           'Test Title 3, annotated.com, 1 min ago, $10 off');

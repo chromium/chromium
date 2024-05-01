@@ -82,8 +82,9 @@ suite('UserNoteOverviewsListTest', () => {
       overviewMenuButton.click();
       const overviewMenu = contextMenuElement.$.menu;
       // Click add a note button.
-      const addNoteButton = overviewMenu.querySelectorAll(
-                                '.dropdown-item')[0]! as HTMLButtonElement;
+      const addNoteButton =
+          overviewMenu.querySelector<HTMLElement>('.dropdown-item');
+      assertTrue(!!addNoteButton);
       addNoteButton.click();
       const [url, _clickModifiers] =
           await testProxy.whenCalled('noteOverviewSelected');
@@ -124,8 +125,9 @@ suite('UserNoteOverviewsListTest', () => {
       overviewMenuButton.click();
       const overviewMenu = contextMenuElement.$.menu;
       // Click delete button.
-      const deleteButton = overviewMenu.querySelectorAll(
-                               '.dropdown-item')[4]! as HTMLButtonElement;
+      const deleteButton =
+          overviewMenu.querySelectorAll<HTMLElement>('.dropdown-item')[4];
+      assertTrue(!!deleteButton);
       deleteButton.click();
       const url = await testProxy.whenCalled('deleteNotesForUrl');
       assertEquals(url, overviewElement.overview.url);

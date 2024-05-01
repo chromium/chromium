@@ -9,7 +9,7 @@ import type {UserNotesAppElement} from 'chrome://user-notes-side-panel.top-chrom
 import type {UserNoteElement} from 'chrome://user-notes-side-panel.top-chrome/user_note.js';
 import type {Note, NoteOverview} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
 import {UserNotesApiProxyImpl} from 'chrome://user-notes-side-panel.top-chrome/user_notes_api_proxy.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -100,7 +100,8 @@ suite('UserNotesAppTest', () => {
     // Click button to navigate to note overviews.
     const allNotesButton =
         userNotesApp.shadowRoot!.querySelector('user-notes-list')!.shadowRoot!
-            .getElementById('allNotesButton') as HTMLButtonElement;
+            .querySelector<HTMLElement>('#allNotesButton');
+    assertTrue(!!allNotesButton);
     allNotesButton.click();
     await flushTasks();
     // Verify note overviews are found and the individual notes list is not.
@@ -116,7 +117,8 @@ suite('UserNotesAppTest', () => {
     // Click button to navigate to note overviews.
     const allNotesButton =
         userNotesApp.shadowRoot!.querySelector('user-notes-list')!.shadowRoot!
-            .getElementById('allNotesButton') as HTMLButtonElement;
+            .querySelector<HTMLElement>('#allNotesButton');
+    assertTrue(!!allNotesButton);
     allNotesButton.click();
     await flushTasks();
     // Verify note overviews are found and the individual notes list is not.

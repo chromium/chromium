@@ -108,7 +108,8 @@ export class PrintPreviewDestinationListItemElement extends
     this.title = this.destination.displayName;
     if (this.destination.isExtension) {
       const icon =
-          this.shadowRoot!.querySelector('.extension-icon')! as HTMLElement;
+          this.shadowRoot!.querySelector<HTMLElement>('.extension-icon');
+      assert(icon);
       icon.style.backgroundImage = 'image-set(' +
           'url(chrome://extension-icon/' + this.destination.extensionId +
           '/24/1) 1x,' +

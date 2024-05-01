@@ -97,11 +97,14 @@ export class OfficeFallbackElement extends HTMLElement {
     const template = document.createElement('template');
     template.innerHTML = getTemplate() as string;
     const fragment = template.content;
-    const titleElement = fragment.querySelector('#title')! as HTMLElement;
+    const titleElement = fragment.querySelector<HTMLElement>('#title');
+    assert(titleElement);
     const reasonMessageElement =
-        fragment.querySelector('#reason-message')! as HTMLElement;
+        fragment.querySelector<HTMLElement>('#reason-message');
+    assert(reasonMessageElement);
     const instructionsMessageElement =
-        fragment.querySelector('#instructions-message')! as HTMLElement;
+        fragment.querySelector<HTMLElement>('#instructions-message');
+    assert(instructionsMessageElement);
 
     titleElement.textContent = this.titleText;
     reasonMessageElement.textContent = this.reasonMessage;

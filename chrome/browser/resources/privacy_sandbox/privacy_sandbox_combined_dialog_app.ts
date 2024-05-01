@@ -31,7 +31,7 @@ export interface PrivacySandboxCombinedDialogAppElement {
   };
 }
 
-type PrivacySandboxStepElement = PrivacySandboxDialogMixinInterface;
+type PrivacySandboxStepElement = PrivacySandboxDialogMixinInterface&HTMLElement;
 
 const PrivacySandboxCombinedDialogAppElementBase =
     PrivacySandboxDialogResizeMixin(PolymerElement);
@@ -120,8 +120,8 @@ export class PrivacySandboxCombinedDialogAppElement extends
 
   private getStepElement_(step: PrivacySandboxCombinedDialogStep):
       PrivacySandboxStepElement {
-    return this.shadowRoot!.querySelector(`#${step}`)! as unknown as
-        PrivacySandboxStepElement;
+    return this.shadowRoot!.querySelector<PrivacySandboxStepElement>(
+        `#${step}`)!;
   }
 }
 

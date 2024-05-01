@@ -262,8 +262,10 @@ suite('SidePanelShoppingListTest', () => {
   });
 
   test('TracksAndUntracksPrice', async () => {
-    const actionButton = getProductElements(shoppingList)[0]!.querySelector(
-                             '.action-button')! as HTMLElement;
+    const actionButton =
+        getProductElements(shoppingList)[0]!.querySelector<HTMLElement>(
+            '.action-button');
+    assertTrue(!!actionButton);
     actionButton.click();
     let id = await shoppingServiceApi.whenCalled('untrackPriceForBookmark');
     assertEquals(id, products[0]!.bookmarkId);
@@ -307,8 +309,9 @@ suite('SidePanelShoppingListTest', () => {
     assertEquals(3, productElements.length);
     checkProductElementRender(productElements[2]!, newProduct);
 
-    const actionButtons = Array.from(shoppingList.shadowRoot!.querySelectorAll(
-                              '.action-button')) as HTMLElement[];
+    const actionButtons =
+        Array.from(shoppingList.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.action-button'));
     assertEquals(3, actionButtons.length);
     for (let i = 0; i < 3; i++) {
       checkActionButtonStatus(actionButtons[i]!, true);
@@ -326,8 +329,10 @@ suite('SidePanelShoppingListTest', () => {
   test('ObservesTrackAndUntrackPriceForExitingProduct', async () => {
     // Manually untrack price for bookmark with ID 3.
     const product = products[0]!;
-    const actionButtonA = getProductElements(shoppingList)[0]!.querySelector(
-                              '.action-button')! as HTMLElement;
+    const actionButtonA =
+        getProductElements(shoppingList)[0]!.querySelector<HTMLElement>(
+            '.action-button');
+    assertTrue(!!actionButtonA);
     actionButtonA.click();
     const id = await shoppingServiceApi.whenCalled('untrackPriceForBookmark');
     assertEquals(id, products[0]!.bookmarkId);

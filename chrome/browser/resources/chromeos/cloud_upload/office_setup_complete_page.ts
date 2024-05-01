@@ -4,6 +4,8 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import {BaseSetupPageElement} from './base_setup_page.js';
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
@@ -46,7 +48,8 @@ export class OfficeSetupCompletePageElement extends BaseSetupPageElement {
     super.connectedCallback();
 
     this.innerHTML = getTemplate();
-    const uploadButton = this.querySelector('.action-button')! as HTMLElement;
+    const uploadButton = this.querySelector<HTMLElement>('.action-button');
+    assert(uploadButton);
 
     if (this.setOfficeAsDefaultHandler) {
       this.proxy.handler.setOfficeAsDefaultHandler();

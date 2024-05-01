@@ -8,6 +8,7 @@ import './icons.html.js';
 import './destination_list_item_style.css.js';
 import '../strings.m.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -53,7 +54,8 @@ export class PrintPreviewDestinationListItemElement extends PolymerElement {
     this.title = this.destination.displayName;
     if (this.destination.isExtension) {
       const icon =
-          this.shadowRoot!.querySelector('.extension-icon')! as HTMLElement;
+          this.shadowRoot!.querySelector<HTMLElement>('.extension-icon');
+      assert(icon);
       icon.style.backgroundImage = 'image-set(' +
           'url(chrome://extension-icon/' + this.destination.extensionId +
           '/24/1) 1x,' +

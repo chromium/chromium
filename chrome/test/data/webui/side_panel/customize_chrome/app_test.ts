@@ -127,9 +127,11 @@ suite('AppTest', () => {
     test(
         'clicking "coupon" card opens Chrome Web Store category page',
         async () => {
-          ((customizeChromeApp.shadowRoot!.querySelector('#couponsButton')!) as
-           HTMLElement)
-              .click();
+          const button =
+              customizeChromeApp.shadowRoot!.querySelector<HTMLElement>(
+                  '#couponsButton');
+          assertTrue(!!button);
+          button.click();
           assertEquals(
               1, handler.getCallCount('openChromeWebStoreCategoryPage'));
         });
@@ -137,9 +139,11 @@ suite('AppTest', () => {
     test(
         'clicking "writing" card opens Chrome Web Store collection page',
         async () => {
-          ((customizeChromeApp.shadowRoot!.querySelector('#writingButton')!) as
-           HTMLElement)
-              .click();
+          const button =
+              customizeChromeApp.shadowRoot!.querySelector<HTMLElement>(
+                  '#writingButton');
+          assertTrue(!!button);
+          button.click();
           assertEquals(
               1, handler.getCallCount('openChromeWebStoreCollectionPage'));
         });
@@ -147,9 +151,11 @@ suite('AppTest', () => {
     test(
         'clicking "productivity" card opens Chrome Web Store category page',
         async () => {
-          ((customizeChromeApp.shadowRoot!.querySelector('#productivityButton')!
-            ) as HTMLElement)
-              .click();
+          const button =
+              customizeChromeApp.shadowRoot!.querySelector<HTMLElement>(
+                  '#productivityButton');
+          assertTrue(!!button);
+          button.click();
           assertEquals(
               1, handler.getCallCount('openChromeWebStoreCategoryPage'));
         });
@@ -157,9 +163,11 @@ suite('AppTest', () => {
     test(
         'clicking Chrome Web Store link opens Chrome Web Store home page',
         async () => {
-          ((customizeChromeApp.shadowRoot!.querySelector('#chromeWebstoreLink')!
-            ) as HTMLElement)
-              .click();
+          const button =
+              customizeChromeApp.shadowRoot!.querySelector<HTMLElement>(
+                  '#chromeWebstoreLink');
+          assertTrue(!!button);
+          button.click();
           assertEquals(1, handler.getCallCount('openChromeWebStoreHomePage'));
         });
   });
