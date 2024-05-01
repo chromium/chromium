@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/logical_line_builder.h"
 
+#include <algorithm>
+
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
@@ -70,7 +72,8 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
 
   if (UNLIKELY(node_.IsBidiEnabled())) {
     box_states_->PrepareForReorder(line_box);
-    BidiReorder(line_info->BaseDirection(), line_box);
+    BidiReorder(line_info->BaseDirection(), line_box,
+                box_states_->RubyColumnList());
     box_states_->UpdateAfterReorder(line_box);
   } else {
     DCHECK(IsLtr(line_info->BaseDirection()));
@@ -485,8 +488,10 @@ void LogicalLineBuilder::PlaceListMarker(const InlineItem& item,
   }
 }
 
-void LogicalLineBuilder::BidiReorder(TextDirection base_direction,
-                                     LogicalLineItems* line_box) {
+void LogicalLineBuilder::BidiReorder(
+    TextDirection base_direction,
+    LogicalLineItems* line_box,
+    HeapVector<Member<LogicalRubyColumn>>& column_list) {
   if (line_box->IsEmpty()) {
     return;
   }
@@ -554,6 +559,34 @@ void LogicalLineBuilder::BidiReorder(TextDirection base_direction,
   DCHECK_EQ(line_box->size(), visual_items.size());
   line_box->swap(visual_items);
   context_->ReleaseTempLogicalLineItems(visual_items);
+
+  // Adjust LogicalRubyColumn::start_index.
+  if (column_list.size() > 0) {
+    Vector<unsigned, 32> logical_to_visual(line_box->size());
+    for (unsigned i = 0; i < indices_in_visual_order.size(); ++i) {
+      logical_to_visual[indices_in_visual_order[i]] = i;
+    }
+    for (auto& column : column_list) {
+      // Find the minimum visual index in the logical range
+      // [column->start_index, column->EndIndex()).
+      //
+      // Base items in a ruby column are placed consecutively even after the
+      // reorder because they are isolated.
+      //
+      // std::min_element() below doesn't return the end iterator because we
+      // ensure there is at least one item in the range.
+      auto begin = logical_to_visual.begin();
+      column->start_index = *std::min_element(begin + column->start_index,
+                                              begin + column->EndIndex());
+    }
+    // The order is important for RubyBlockPositionCalculator::HandleRubyLine().
+    std::stable_sort(
+        column_list.begin(), column_list.end(),
+        [](const auto& column1, const auto& column2) {
+          int32_t diff = column2->start_index - column1->start_index;
+          return diff != 0 ? (diff > 0) : (column1->size > column2->size);
+        });
+  }
 }
 
 }  // namespace blink

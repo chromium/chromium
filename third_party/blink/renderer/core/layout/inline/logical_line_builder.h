@@ -91,7 +91,9 @@ class LogicalLineBuilder {
                            LogicalRubyColumn& logical_column);
   void PlaceListMarker(const InlineItem&, InlineItemResult*);
 
-  void BidiReorder(TextDirection base_direction, LogicalLineItems* line_box);
+  void BidiReorder(TextDirection base_direction,
+                   LogicalLineItems* line_box,
+                   HeapVector<Member<LogicalRubyColumn>>& column_list);
 
   InlineNode node_;
   const ConstraintSpace& constraint_space_;
