@@ -1986,7 +1986,7 @@ bool ChromeDownloadManagerDelegate::IsFromExternalApp(
 
 bool ChromeDownloadManagerDelegate::ShouldOpenPdfInline() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_PdfUtils_shouldOpenPdfInline(env) || true;
+  return Java_PdfUtils_shouldOpenPdfInline(env);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
