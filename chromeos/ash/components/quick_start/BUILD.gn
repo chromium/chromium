@@ -27,6 +27,7 @@ static_library("quick_start") {
     "//base",
     "//chromeos/constants",
     "//components/cbor",
+    "//components/metrics/structured:structured_events",
     "//crypto",
     "//google_apis:google_apis",
     "//sandbox/policy",

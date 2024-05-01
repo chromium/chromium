@@ -997,7 +997,170 @@
   <summary>
     Project used to record a sequence of events that are related to each other.
   </summary>
+  <enum name="CameraAppLaunchType">
+    <variant value="0">DEFAULT</variant>
+    <variant value="1">ASSISTANT</variant>
+  </enum>
 
+  <enum name="CameraAppMode">
+    <variant value="0">PHOTO</variant>
+    <variant value="1">VIDEO</variant>
+    <variant value="2">SCAN</variant>
+    <variant value="3">PORTRAIT</variant>
+  </enum>
+
+  <enum name="CameraAppFacing">
+    <variant value="0">ENVIRONMENT</variant>
+    <variant value="1">USER</variant>
+    <variant value="2">EXTERNAL</variant>
+    <variant value="3">UNKNOWN</variant>
+  </enum>
+
+  <enum name="CameraAppGridType">
+    <variant value="0">NONE</variant>
+    <variant value="1">THREE_BY_THREE</variant>
+    <variant value="2">FOUR_BY_FOUR</variant>
+    <variant value="3">GOLDEN</variant>
+  </enum>
+
+  <enum name="CameraAppTimerType">
+    <variant value="0">NONE</variant>
+    <variant value="1">THREE_SECONDS</variant>
+    <variant value="2">TEN_SECONDS</variant>
+  </enum>
+
+  <enum name="CameraAppShutterType">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">ASSISTANT</variant>
+    <variant value="2">KEYBOARD</variant>
+    <variant value="3">MOUSE</variant>
+    <variant value="4">TOUCH</variant>
+    <variant value="5">VOLUME_KEY</variant>
+  </enum>
+
+  <enum name="CameraAppAndroidIntentResultType">
+    <variant value="0">NON_INTENT</variant>
+    <variant value="1">CONFIRMED</variant>
+    <variant value="2">CANCELED</variant>
+  </enum>
+
+  <enum name="CameraAppResolutionLevel">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">FOUR_K</variant>
+    <variant value="2">QUAD_HD</variant>
+    <variant value="3">FULL_HD</variant>
+    <variant value="4">HD</variant>
+    <variant value="5">THREE_HUNDRED_THIRTY_P</variant>
+    <variant value="6">FULL</variant>
+    <variant value="7">MEDIUM</variant>
+  </enum>
+
+  <enum name="CameraAppAspectRatioSet">
+    <variant value="0">OTHERS</variant>
+    <variant value="1">FOUR_TO_THREE</variant>
+    <variant value="2">SIXTEEN_TO_NINE</variant>
+    <variant value="3">SQUARE</variant>
+  </enum>
+
+  <enum name="CameraAppRecordType">
+    <variant value="0">NOT_RECORDING</variant>
+    <variant value="1">NORMAL</variant>
+    <variant value="2">GIF</variant>
+    <variant value="3">TIMELAPSE</variant>
+  </enum>
+
+  <enum name="CameraAppGifResultType">
+    <variant value="0">NOT_GIF</variant>
+    <variant value="1">RETAKE</variant>
+    <variant value="2">SHARE</variant>
+    <variant value="3">SAVE</variant>
+  </enum>
+
+  <enum name="CameraAppDocScanActionType">
+    <variant value="0">ADD_PAGE</variant>
+    <variant value="1">DELETE_PAGE</variant>
+    <variant value="2">FIX</variant>
+  </enum>
+
+  <enum name="CameraAppDocScanResultType">
+    <variant value="0">CANCEL</variant>
+    <variant value="1">SAVE_AS_PDF</variant>
+    <variant value="2">SAVE_AS_PHOTO</variant>
+    <variant value="3">SHARE</variant>
+  </enum>
+
+  <enum name="CameraAppLowStorageActionType">
+    <variant value="0">MANAGE_STORAGE_AUTO_STOP</variant>
+    <variant value="1">MANAGE_STORAGE_CANNOT_START</variant>
+    <variant value="2">SHOW_AUTO_STOP_DIALOG</variant>
+    <variant value="3">SHOW_CANNOT_START_DIALOG</variant>
+    <variant value="4">SHOW_WARNING_MESSAGE</variant>
+  </enum>
+
+  <enum name="CameraAppBarcodeContentType">
+    <variant value="0">TEXT</variant>
+    <variant value="1">URL</variant>
+    <variant value="2">WIFI</variant>
+  </enum>
+
+  <enum name="CameraAppWifiSecurityType">
+    <variant value="0">NONE</variant>
+    <variant value="1">EAP</variant>
+    <variant value="2">WEP</variant>
+    <variant value="3">WPA</variant>
+  </enum>
+
+  <enum name="CameraAppPerfEventType">
+    <variant value="0">CAMERA_SWITCHING</variant>
+    <variant value="1">GIF_CAPTURE_POST_PROCESSING</variant>
+    <variant value="2">LAUNCHING_FROM_LAUNCH_APP_COLD</variant>
+    <variant value="3">LAUNCHING_FROM_LAUNCH_APP_WARM</variant>
+    <variant value="4">LAUNCHING_FROM_WINDOW_CREATION</variant>
+    <variant value="5">MODE_SWITCHING</variant>
+    <variant value="6">PHOTO_CAPTURE_POST_PROCESSING</variant>
+    <variant value="7">PHOTO_CAPTURE_SHUTTER</variant>
+    <variant value="8">PHOTO_TAKING</variant>
+    <variant value="9">PORTRAIT_MODE_CAPTURE_POST_PROCESSING</variant>
+    <variant value="10">TIMELAPSE_CAPTURE_POST_PROCESSING</variant>
+    <variant value="11">VIDEO_CAPTURE_POST_PROCESSING</variant>
+  </enum>
+
+  <enum name="CampaignButtonId">
+    <variant value="0">PRIMARY</variant>
+    <variant value="1">SECONDARY</variant>
+  </enum>
+
+  <enum name="QuickStartEntryPoint">
+    <variant value="0">WELCOME_SCREEN</variant>
+    <variant value="1">NETWORK_SCREEN</variant>
+    <variant value="2">GAIA_INFO_SCREEN</variant>
+    <variant value="3">GAIA_SCREEN</variant>
+  </enum>
+
+  <enum name="QuickStartScreenName">
+    <variant value="0">OTHER</variant>
+    <variant value="1">NONE</variant>
+    <variant value="2">WELCOME_SCREEN</variant>
+    <variant value="3">NETWORK_SCREEN</variant>
+    <variant value="4">GAIA_SCREEN</variant>
+    <variant value="5">QS_SETUP_WITH_ANDROID_PHONE</variant>
+    <variant value="6">QS_CONNECTING_TO_WIFI</variant>
+    <variant value="7">CHECKING_FOR_UPDATE_AND_DETERMINING_DEVICE_CONFIG</variant>
+    <variant value="8">CHOOSE_CHROMEBOOK_SETUP</variant>
+    <variant value="9">CONSUMER_UPDATE</variant>
+    <variant value="10">QS_RESUMING_CONNECTION_AFTER_UPDATE</variant>
+    <variant value="11">QS_GETTING_GOOGLE_ACCOUNT_INFO</variant>
+    <variant value="12">QS_COMPLETE</variant>
+    <variant value="13">SETUP_DEVICE_PIN</variant>
+    <variant value="14">ADD_CHILD</variant>
+    <variant value="15">REVIEW_PRIVACY_AND_TERMS</variant>
+    <variant value="16">UNIFIED_SETUP</variant>
+    <variant value="17">GAIA_INFO_SCREEN</variant>
+    <variant value="18">QS_WIFI_CREDENTIALS_RECEIVED</variant>
+    <variant value="19">QS_SELECT_GOOGLE_ACCOUNT</variant>
+    <variant value="20">QS_CREATING_ACCOUNT</variant>
+    <variant value="21">QS_FALLBACK_URL</variant>
+  </enum>
   <event name="AppDiscovery.AppInstalled">
     <summary>
       Recorded whenever a new app is installed on Chrome OS.
@@ -1182,134 +1345,6 @@
       </summary>
     </metric>
   </event>
-
-  <enum name="CameraAppLaunchType">
-    <variant value="0">DEFAULT</variant>
-    <variant value="1">ASSISTANT</variant>
-  </enum>
-
-  <enum name="CameraAppMode">
-    <variant value="0">PHOTO</variant>
-    <variant value="1">VIDEO</variant>
-    <variant value="2">SCAN</variant>
-    <variant value="3">PORTRAIT</variant>
-  </enum>
-
-  <enum name="CameraAppFacing">
-    <variant value="0">ENVIRONMENT</variant>
-    <variant value="1">USER</variant>
-    <variant value="2">EXTERNAL</variant>
-    <variant value="3">UNKNOWN</variant>
-  </enum>
-
-  <enum name="CameraAppGridType">
-    <variant value="0">NONE</variant>
-    <variant value="1">THREE_BY_THREE</variant>
-    <variant value="2">FOUR_BY_FOUR</variant>
-    <variant value="3">GOLDEN</variant>
-  </enum>
-
-  <enum name="CameraAppTimerType">
-    <variant value="0">NONE</variant>
-    <variant value="1">THREE_SECONDS</variant>
-    <variant value="2">TEN_SECONDS</variant>
-  </enum>
-
-  <enum name="CameraAppShutterType">
-    <variant value="0">UNKNOWN</variant>
-    <variant value="1">ASSISTANT</variant>
-    <variant value="2">KEYBOARD</variant>
-    <variant value="3">MOUSE</variant>
-    <variant value="4">TOUCH</variant>
-    <variant value="5">VOLUME_KEY</variant>
-  </enum>
-
-  <enum name="CameraAppAndroidIntentResultType">
-    <variant value="0">NON_INTENT</variant>
-    <variant value="1">CONFIRMED</variant>
-    <variant value="2">CANCELED</variant>
-  </enum>
-
-  <enum name="CameraAppResolutionLevel">
-    <variant value="0">UNKNOWN</variant>
-    <variant value="1">FOUR_K</variant>
-    <variant value="2">QUAD_HD</variant>
-    <variant value="3">FULL_HD</variant>
-    <variant value="4">HD</variant>
-    <variant value="5">THREE_HUNDRED_THIRTY_P</variant>
-    <variant value="6">FULL</variant>
-    <variant value="7">MEDIUM</variant>
-  </enum>
-
-  <enum name="CameraAppAspectRatioSet">
-    <variant value="0">OTHERS</variant>
-    <variant value="1">FOUR_TO_THREE</variant>
-    <variant value="2">SIXTEEN_TO_NINE</variant>
-    <variant value="3">SQUARE</variant>
-  </enum>
-
-  <enum name="CameraAppRecordType">
-    <variant value="0">NOT_RECORDING</variant>
-    <variant value="1">NORMAL</variant>
-    <variant value="2">GIF</variant>
-    <variant value="3">TIMELAPSE</variant>
-  </enum>
-
-  <enum name="CameraAppGifResultType">
-    <variant value="0">NOT_GIF</variant>
-    <variant value="1">RETAKE</variant>
-    <variant value="2">SHARE</variant>
-    <variant value="3">SAVE</variant>
-  </enum>
-
-  <enum name="CameraAppDocScanActionType">
-    <variant value="0">ADD_PAGE</variant>
-    <variant value="1">DELETE_PAGE</variant>
-    <variant value="2">FIX</variant>
-  </enum>
-
-  <enum name="CameraAppDocScanResultType">
-    <variant value="0">CANCEL</variant>
-    <variant value="1">SAVE_AS_PDF</variant>
-    <variant value="2">SAVE_AS_PHOTO</variant>
-    <variant value="3">SHARE</variant>
-  </enum>
-
-  <enum name="CameraAppLowStorageActionType">
-    <variant value="0">MANAGE_STORAGE_AUTO_STOP</variant>
-    <variant value="1">MANAGE_STORAGE_CANNOT_START</variant>
-    <variant value="2">SHOW_AUTO_STOP_DIALOG</variant>
-    <variant value="3">SHOW_CANNOT_START_DIALOG</variant>
-    <variant value="4">SHOW_WARNING_MESSAGE</variant>
-  </enum>
-
-  <enum name="CameraAppBarcodeContentType">
-    <variant value="0">TEXT</variant>
-    <variant value="1">URL</variant>
-    <variant value="2">WIFI</variant>
-  </enum>
-
-  <enum name="CameraAppWifiSecurityType">
-    <variant value="0">NONE</variant>
-    <variant value="1">EAP</variant>
-    <variant value="2">WEP</variant>
-    <variant value="3">WPA</variant>
-  </enum>
-
-  <enum name="CameraAppPerfEventType">
-    <variant value="0">CAMERA_SWITCHING</variant>
-    <variant value="1">GIF_CAPTURE_POST_PROCESSING</variant>
-    <variant value="2">LAUNCHING_FROM_LAUNCH_APP_COLD</variant>
-    <variant value="3">LAUNCHING_FROM_LAUNCH_APP_WARM</variant>
-    <variant value="4">LAUNCHING_FROM_WINDOW_CREATION</variant>
-    <variant value="5">MODE_SWITCHING</variant>
-    <variant value="6">PHOTO_CAPTURE_POST_PROCESSING</variant>
-    <variant value="7">PHOTO_CAPTURE_SHUTTER</variant>
-    <variant value="8">PHOTO_TAKING</variant>
-    <variant value="9">PORTRAIT_MODE_CAPTURE_POST_PROCESSING</variant>
-    <variant value="10">TIMELAPSE_CAPTURE_POST_PROCESSING</variant>
-    <variant value="11">VIDEO_CAPTURE_POST_PROCESSING</variant>
-  </enum>
 
   <event name="CameraApp.StartSession">
     <summary>
@@ -1613,6 +1648,7 @@
     <summary>
       Event recorded when a barcode is detected and it is unsupported protocol.
     </summary>
+
   </event>
 
   <event name="CameraApp.EndSession">
@@ -1636,11 +1672,6 @@
       </summary>
     </metric>
   </event>
-
-  <enum name="CampaignButtonId">
-    <variant value="0">PRIMARY</variant>
-    <variant value="1">SECONDARY</variant>
-  </enum>
 
   <event name="Growth.Ui.ButtonPressed">
     <summary>
@@ -2253,6 +2284,43 @@
     <metric name="ChromeMilestone" type="int">
       <summary>
         The major version of chrome at the time of recording the event.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.ScreenOpened">
+    <summary>
+      Recorded when a new UI view is shown to a Quick Start user. It can either be
+      a new OOBE screen that occurs in the middle of Quick Start or one of the
+      Quick Start UI views.
+    </summary>
+    <metric name="ScreenName" type="QuickStartScreenName">
+      <summary>
+        Screen shown to Quick Start user.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.ScreenClosed">
+    <summary>
+      Recorded when a UI view shown to a Quick Start user leaves. It can either be
+      a new OOBE screen that occurs in the middle of Quick Start or one of the
+      Quick Start UI views.
+    </summary>
+    <metric name="ScreenName" type="QuickStartScreenName">
+      <summary>
+        Screen closed for Quick Start user.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.Initiated">
+    <summary>
+      Recorded when a user initiates Quick Start.
+    </summary>
+    <metric name="EntryPoint" type="QuickStartEntryPoint">
+      <summary>
+        Entry Point from where the user entered Quick Start.
       </summary>
     </metric>
   </event>

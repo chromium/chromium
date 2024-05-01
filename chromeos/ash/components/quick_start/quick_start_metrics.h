@@ -18,9 +18,11 @@ namespace ash::quick_start {
 class QuickStartMetrics {
  public:
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
-  // reflect it (do not change one without changing the other). Entries should
-  // be never modified or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml as well as a
+  // CrOSEvents enum defined in
+  // //components/metrics/structured/structured_events.h, and should always
+  // reflect them (do not change one without changing the others). Entries
+  // should never be modified or deleted. Only additions possible.
   enum class ScreenName {
     kOther = 0,  // We don't expect this value to ever be emitted.
     kNone = 1,  // There is no previous screen when automatically resuming after
@@ -239,9 +241,11 @@ class QuickStartMetrics {
   };
 
   // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/metadata/quickstart/enums.xml, and should always
-  // reflect it (do not change one without changing the other). Entries should
-  // be never modified or deleted. Only additions possible.
+  // //tools/metrics/histograms/metadata/quickstart/enums.xml as well as a
+  // CrOSEvents enum defined in
+  // //components/metrics/structured/structured_events.h, and should always
+  // reflect them (do not change one without changing the others). Entries
+  // should never be modified or deleted. Only additions possible.
   enum class EntryPoint {
     WELCOME_SCREEN = 0,
     NETWORK_SCREEN = 1,

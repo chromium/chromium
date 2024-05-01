@@ -10,11 +10,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/quick_start/logging.h"
+#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace ash::quick_start {
 
 namespace {
+
+namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
 constexpr const char kChallengeBytesFetchDurationHistogramName[] =
     "QuickStart.ChallengeBytes.FetchDuration";
@@ -304,6 +308,9 @@ void QuickStartMetrics::RecordGaiaTransferResult(
 // static
 void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
   base::UmaHistogramEnumeration(kEntryPointHistogramName, entry_point);
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::QuickStart_Initiated().SetEntryPoint(
+          static_cast<cros_events::QuickStartEntryPoint>(entry_point))));
 }
 
 // static
@@ -333,6 +340,9 @@ QuickStartMetrics::~QuickStartMetrics() = default;
 
 void QuickStartMetrics::RecordScreenOpened(ScreenName screen) {
   base::UmaHistogramEnumeration(kScreenOpened, screen);
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::QuickStart_ScreenOpened().SetScreenName(
+          static_cast<cros_events::QuickStartScreenName>(screen))));
   screen_opened_view_duration_timer_ = std::make_unique<base::ElapsedTimer>();
   last_screen_opened_ = screen;
 }
@@ -353,6 +363,9 @@ void QuickStartMetrics::RecordScreenClosed(ScreenName screen,
     return;
   }
 
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::QuickStart_ScreenClosed().SetScreenName(
+          static_cast<cros_events::QuickStartScreenName>(screen))));
   base::UmaHistogramEnumeration(MapScreenNameToMetric(screen) + ".Reason",
                                 reason);
   base::UmaHistogramTimes(MapScreenNameToMetric(screen) + ".ViewDuration",
