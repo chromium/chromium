@@ -346,6 +346,7 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
 
   void ClearContext() override { clear_context_ = true; }
 
+  DISABLE_CFI_DLSYM
   void SizeInTokens(const std::string& text,
                     base::OnceCallback<void(uint32_t)> callback) override {
     if (!chrome_ml_->api().SizeInTokens) {
