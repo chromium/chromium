@@ -278,14 +278,6 @@ BASE_FEATURE(kCr2023ActionChipsIcons,
              "Cr2023ActionChipsIcons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, finance ticker answer from omnibox will reverse the color for
-// stock ticker. only colors being swapped are those that represent "growth" and
-// "loss" to represent colors red and green in a way that is appropriate for a
-// given country/culture
-BASE_FEATURE(kSuggestionAnswersColorReverse,
-             "SuggestionAnswersColorReverse",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, makes Most Visited Tiles a Horizontal render group.
 // Horizontal render group decomposes aggregate suggestions (such as old Most
 // Visited Tiles), expecting individual AutocompleteMatch entry for every

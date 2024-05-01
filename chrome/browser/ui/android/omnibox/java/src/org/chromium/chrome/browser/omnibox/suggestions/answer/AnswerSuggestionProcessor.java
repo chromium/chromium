@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.LocaleUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
@@ -32,7 +31,6 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private static final String COLOR_REVERSAL_COUNTRY_LIST = "ja-JP,ko-KR,zh-CN,zh-TW";
 
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
-    private boolean mOmniBoxAnswerColorReversal;
 
     public AnswerSuggestionProcessor(
             @NonNull Context context,
@@ -41,13 +39,6 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
         super(context, suggestionHost, imageSupplier);
         mUrlBarEditingTextProvider = editingTextProvider;
-    }
-
-    @Override
-    public void onNativeInitialized() {
-        super.onNativeInitialized();
-        mOmniBoxAnswerColorReversal =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE);
     }
 
     @Override
@@ -117,8 +108,6 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     @VisibleForTesting
     public boolean checkColorReversalRequired(@AnswerType int answerType) {
         boolean isFinanceAnswer = answerType == AnswerType.FINANCE;
-        // Flag disabled.
-        if (!mOmniBoxAnswerColorReversal) return false;
         // Country not eligible.
         if (!isCountryEligibleForColorReversal()) return false;
         // Not a finance answer.
