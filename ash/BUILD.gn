@@ -4993,6 +4993,7 @@ static_library("test_support") {
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/dbus/typecd",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/fwupd:test_support",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/growth",
     "//chromeos/ash/components/login/login_state",
