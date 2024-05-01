@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "gpu/config/gpu_info.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
@@ -98,9 +99,13 @@ class VaapiImageDecoder {
  protected:
   explicit VaapiImageDecoder(VAProfile va_profile);
 
-  ScopedVAContextAndSurface scoped_va_context_and_surface_;
+  SEQUENCE_CHECKER(decoder_sequence_checker_);
 
-  scoped_refptr<VaapiWrapper> vaapi_wrapper_;
+  ScopedVAContextAndSurface scoped_va_context_and_surface_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  scoped_refptr<VaapiWrapper> vaapi_wrapper_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
  private:
   // Submits an image to the VA-API by filling its parameters and calling on the
@@ -111,7 +116,7 @@ class VaapiImageDecoder {
       base::span<const uint8_t> encoded_image) = 0;
 
   // The VA profile used for the current image decoder.
-  const VAProfile va_profile_;
+  const VAProfile va_profile_ GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 };
 
 }  // namespace media

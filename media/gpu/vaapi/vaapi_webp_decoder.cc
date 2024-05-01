@@ -78,10 +78,12 @@ VaapiWebPDecoder::VaapiWebPDecoder() : VaapiImageDecoder(kWebPVAProfile) {}
 VaapiWebPDecoder::~VaapiWebPDecoder() = default;
 
 gpu::ImageDecodeAcceleratorType VaapiWebPDecoder::GetType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return gpu::ImageDecodeAcceleratorType::kWebP;
 }
 
 SkYUVColorSpace VaapiWebPDecoder::GetYUVColorSpace() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return SkYUVColorSpace::kRec601_SkYUVColorSpace;
 }
 
@@ -112,6 +114,7 @@ VaapiWebPDecoder::GetSupportedProfile() {
 
 VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
     base::span<const uint8_t> encoded_image) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(vaapi_wrapper_);
   std::unique_ptr<Vp8FrameHeader> parse_result = ParseWebPImage(encoded_image);
   if (!parse_result)

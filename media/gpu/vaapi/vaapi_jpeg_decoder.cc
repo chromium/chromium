@@ -212,6 +212,7 @@ VaapiJpegDecoder::~VaapiJpegDecoder() = default;
 
 VaapiImageDecodeStatus VaapiJpegDecoder::AllocateVASurfaceAndSubmitVABuffers(
     base::span<const uint8_t> encoded_image) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(vaapi_wrapper_);
 
   // Parse the JPEG encoded data.
@@ -255,10 +256,12 @@ VaapiImageDecodeStatus VaapiJpegDecoder::AllocateVASurfaceAndSubmitVABuffers(
 }
 
 gpu::ImageDecodeAcceleratorType VaapiJpegDecoder::GetType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return gpu::ImageDecodeAcceleratorType::kJpeg;
 }
 
 SkYUVColorSpace VaapiJpegDecoder::GetYUVColorSpace() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return SkYUVColorSpace::kJPEG_SkYUVColorSpace;
 }
 
@@ -297,6 +300,7 @@ VaapiJpegDecoder::GetSupportedProfile() {
 std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
     uint32_t preferred_image_fourcc,
     VaapiImageDecodeStatus* status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   if (!scoped_va_context_and_surface_) {
     VLOGF(1) << "No decoded JPEG available";
     *status = VaapiImageDecodeStatus::kInvalidState;
@@ -339,6 +343,7 @@ std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
 bool VaapiJpegDecoder::MaybeCreateSurface(unsigned int picture_va_rt_format,
                                           const gfx::Size& new_coded_size,
                                           const gfx::Size& new_visible_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(!scoped_va_context_and_surface_ ||
          scoped_va_context_and_surface_->IsValid());
   if (scoped_va_context_and_surface_ &&
@@ -368,6 +373,7 @@ bool VaapiJpegDecoder::MaybeCreateSurface(unsigned int picture_va_rt_format,
 }
 
 bool VaapiJpegDecoder::SubmitBuffers(const JpegParseResult& parse_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   // Set picture parameters.
   VAPictureParameterBufferJPEGBaseline pic_param{};
   FillPictureParameters(parse_result.frame_header, &pic_param);

@@ -23,11 +23,16 @@ void VAContextAndScopedVASurfaceDeleter::operator()(
 }
 
 VaapiImageDecoder::VaapiImageDecoder(VAProfile va_profile)
-    : va_profile_(va_profile) {}
+    : va_profile_(va_profile) {
+  DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
+}
 
-VaapiImageDecoder::~VaapiImageDecoder() = default;
+VaapiImageDecoder::~VaapiImageDecoder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+}
 
 bool VaapiImageDecoder::Initialize(const ReportErrorToUMACB& error_uma_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   if (vaapi_wrapper_) {
     return true;
   }
@@ -40,6 +45,7 @@ bool VaapiImageDecoder::Initialize(const ReportErrorToUMACB& error_uma_cb) {
 
 VaapiImageDecodeStatus VaapiImageDecoder::Decode(
     base::span<const uint8_t> encoded_image) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   if (!vaapi_wrapper_) {
     VLOGF(1) << "VaapiImageDecoder has not been initialized";
     scoped_va_context_and_surface_.reset();
@@ -63,11 +69,13 @@ VaapiImageDecodeStatus VaapiImageDecoder::Decode(
 }
 
 const ScopedVASurface* VaapiImageDecoder::GetScopedVASurface() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return scoped_va_context_and_surface_.get();
 }
 
 std::unique_ptr<NativePixmapAndSizeInfo>
 VaapiImageDecoder::ExportAsNativePixmapDmaBuf(VaapiImageDecodeStatus* status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(status);
 
   // We need to take ownership of the ScopedVASurface so that the next Decode()
