@@ -2255,7 +2255,7 @@ Del</translation>
 <translation id="5316812925700871227">סיבוב נגד כיוון השעון</translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5319366980180850702">קלאסיקות ספרותיות</translation>
-<translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />מנוע החיפוש שמוגדר כברירת המחדל הוא המנוע שישמש לחיפוש באינטרנט ושבאמצעותו יתבצע החיפוש דרך תכונות שונות של Chromium<ph name="END_BOLD" />, כמו חיפוש מסרגל הכתובות ומתמונות בדפי אינטרנט. אם מנוע החיפוש שבחרת לא תומך בתכונות מסוימות, הן לא יהיו זמינות.</translation>
+<translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />מנוע החיפוש שמוגדר כברירת המחדל הוא המנוע שבאמצעותו מתבצע החיפוש באינטרנט והחיפוש דרך תכונות שונות של  Chromium<ph name="END_BOLD" />, כמו חיפוש בדפי אינטרנט מתמונות ומסרגל הכתובות. אם מנוע החיפוש שבחרת לא תומך בתכונות מסוימות, הן לא יהיו זמינות.</translation>
 <translation id="5323043727018853753">ניתנה הרשאה לתוכן מוטמע</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> מתוך <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">הדפדפן שלך לא מנוהל</translation>
