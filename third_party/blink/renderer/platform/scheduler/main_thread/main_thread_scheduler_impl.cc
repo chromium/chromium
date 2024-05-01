@@ -1371,22 +1371,6 @@ void MainThreadSchedulerImpl::DidHandleInputEventOnMainThread(
   }
 }
 
-bool MainThreadSchedulerImpl::IsHighPriorityWorkAnticipated() {
-  helper_.CheckOnValidThread();
-  if (helper_.IsShutdown())
-    return false;
-
-  MaybeUpdatePolicy();
-  // The touchstart, synchronized gesture and main-thread gesture use cases
-  // indicate a strong likelihood of high-priority work in the near future.
-  UseCase use_case = main_thread_only().current_use_case;
-  return main_thread_only().blocking_input_expected_soon ||
-         use_case == UseCase::kTouchstart ||
-         use_case == UseCase::kMainThreadGesture ||
-         use_case == UseCase::kMainThreadCustomInputHandling ||
-         use_case == UseCase::kSynchronizedGesture;
-}
-
 bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
   helper_.CheckOnValidThread();
   if (helper_.IsShutdown())
