@@ -1756,6 +1756,7 @@
       // to help detect is on.
       implied_by: ["FledgeCustomMaxAuctionAdComponents",
                    "FledgeDeprecatedRenderURLReplacements",
+                   "FledgePermitCrossOriginTrustedSignals",
                    "FledgeReportingTimeout"],
       base_feature: "none",
     },

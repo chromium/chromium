@@ -35,6 +35,14 @@ ScriptValue ProtectedAudience::queryFeatureSupport(ScriptState* script_state,
                        ToV8Traits<IDLBoolean>::ToV8(script_state, enabled));
   }
 
+  if (feature_name == "permitCrossOriginTrustedSignals") {
+    bool enabled =
+        RuntimeEnabledFeatures::FledgePermitCrossOriginTrustedSignalsEnabled(
+            ExecutionContext::From(script_state));
+    return ScriptValue(script_state->GetIsolate(),
+                       ToV8Traits<IDLBoolean>::ToV8(script_state, enabled));
+  }
+
   return ScriptValue();
 }
 

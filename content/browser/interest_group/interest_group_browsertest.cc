@@ -721,7 +721,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeMultiBid, {}},
          {blink::features::kFledgeCustomMaxAuctionAdComponents,
           {{"FledgeAdComponentLimit", "40"}}},
-         {blink::features::kFledgeReportingTimeout, {}}},
+         {blink::features::kFledgeReportingTimeout, {}},
+         {blink::features::kFledgeDeprecatedRenderURLReplacements, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
@@ -22668,7 +22669,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
       embedded_https_test_server().GetURL("a.test", "/simple_page.html");
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  EXPECT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
+  ASSERT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
+
+  // Current state of various features for the fixture's flags.
+  const char kQueryComponentLimit[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'adComponentsLimit');
+  )";
+
+  const char kQueryUrlReplacements[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'deprecatedRenderURLReplacements');
+  )";
+
+  const char kQueryReportingTimeout[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'reportingTimeout');
+  )";
+
+  const char kQueryCrossOriginTrustedSignals[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'permitCrossOriginTrustedSignals');
+  )";
+
+  EXPECT_EQ(40, EvalJs(shell(), kQueryComponentLimit));
+  EXPECT_EQ(true, EvalJs(shell(), kQueryUrlReplacements));
+  EXPECT_EQ(true, EvalJs(shell(), kQueryReportingTimeout));
+  EXPECT_EQ(false, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
 }
 
 // Worklet handling of zero seller timeout.
@@ -23688,6 +23715,20 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                        SellerSignalsNoScriptHeader) {
   TestTrustedSellerSignals(/*expect_success=*/false, /*add_cors_header=*/true,
                            /*add_script_header=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
+                       FeatureDetection) {
+  const char kTestExpression[] = R"(
+    navigator.protectedAudience.queryFeatureSupport(
+        'permitCrossOriginTrustedSignals');
+  )";
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/simple_page.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(true, EvalJs(shell(), kTestExpression));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
