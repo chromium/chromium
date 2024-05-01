@@ -19,13 +19,20 @@ class BuilderPropsTests(unittest.TestCase):
 
   def setUp(self):
     self.tmp_dir = pathlib.Path(tempfile.mkdtemp())
+    self.tmp_internal_dir = pathlib.Path(tempfile.mkdtemp())
 
     patch_props_dir = mock.patch('builders._BUILDER_PROP_DIRS', self.tmp_dir)
     patch_props_dir.start()
     self.addCleanup(patch_props_dir.stop)
 
+    patch_internal_props_dir = mock.patch(
+        'builders._INTERNAL_BUILDER_PROP_DIRS', self.tmp_internal_dir)
+    patch_internal_props_dir.start()
+    self.addCleanup(patch_internal_props_dir.stop)
+
   def tearDown(self):
     shutil.rmtree(self.tmp_dir)
+    shutil.rmtree(self.tmp_internal_dir)
 
   def testNoProps(self):
     # Empty base dir
@@ -50,6 +57,26 @@ class BuilderPropsTests(unittest.TestCase):
 
     props, _ = builders.find_builder_props('some-bucket', 'some-builder')
     self.assertEqual(props['some-key'], 'some-val')
+
+  def testInternalProps(self):
+    # Create props for a public and internal builder, then fetch those props.
+    builder_dir = self.tmp_dir.joinpath('some-bucket', 'some-public-builder')
+    os.makedirs(builder_dir)
+    with open(builder_dir.joinpath('properties.json'), 'w') as f:
+      json.dump({'some-key': 'some-public-val'}, f)
+
+    internal_builder_dir = self.tmp_dir.joinpath('some-bucket',
+                                                 'some-internal-builder')
+    os.makedirs(internal_builder_dir)
+    with open(internal_builder_dir.joinpath('properties.json'), 'w') as f:
+      json.dump({'some-key': 'some-internal-val'}, f)
+
+    props, _ = builders.find_builder_props('some-bucket', 'some-public-builder')
+    self.assertEqual(props['some-key'], 'some-public-val')
+
+    props, _ = builders.find_builder_props('some-bucket',
+                                           'some-internal-builder')
+    self.assertEqual(props['some-key'], 'some-internal-val')
 
 
 if __name__ == '__main__':

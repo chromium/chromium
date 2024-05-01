@@ -13,6 +13,8 @@ _SRC_DIR = _THIS_DIR.parents[1]
 # ensure tools/utr/recipe.py is not using the public reclient instance
 _BUILDER_PROP_DIRS = _SRC_DIR.joinpath('infra', 'config', 'generated',
                                        'builders')
+_INTERNAL_BUILDER_PROP_DIRS = _SRC_DIR.joinpath('internal', 'infra', 'config',
+                                                'generated', 'builders')
 
 
 def find_builder_props(bucket_name, builder_name):
@@ -26,21 +28,37 @@ def find_builder_props(bucket_name, builder_name):
     Tuple of (Dict of the builder's input props, Swarming server the builder
       runs on). Both elements will be None if the builder wasn't found.
   """
-  # TODO(crbug.com/41492688): Allow bucket_name to be optional?
+
+  def _walk_props_dir(props_dir):
+    matches = []
+    # TODO(crbug.com/41492688): Allow bucket_name to be optional?
+    for bucket_path in props_dir.iterdir():
+      if not bucket_path.is_dir() or bucket_path.name != bucket_name:
+        continue
+      for builder_path in bucket_path.iterdir():
+        if builder_path.name != builder_name:
+          continue
+        prop_file = builder_path.joinpath('properties.json')
+        if not prop_file.exists():
+          logging.warning(
+              'Found generated dir for builder at %s, but no prop file?',
+              builder_path)
+          continue
+        matches.append(prop_file)
+    return matches
+
+  swarming_server = 'chrome-swarming'
   possible_matches = []
-  for bucket_path in _BUILDER_PROP_DIRS.iterdir():
-    if not bucket_path.is_dir() or bucket_path.name != bucket_name:
-      continue
-    for builder_path in bucket_path.iterdir():
-      if builder_path.name != builder_name:
-        continue
-      prop_file = builder_path.joinpath('properties.json')
-      if not prop_file.exists():
-        logging.warning(
-            'Found generated dir for builder at %s, but no prop file?',
-            builder_path)
-        continue
-      possible_matches.append(prop_file)
+  if _INTERNAL_BUILDER_PROP_DIRS.exists():
+    possible_matches += _walk_props_dir(_INTERNAL_BUILDER_PROP_DIRS)
+
+  public_matches = _walk_props_dir(_BUILDER_PROP_DIRS)
+  if public_matches:
+    # It's probably safe to assume src implies chromium-swarm and src-internal
+    # implies chrome-swarming. If it's not, cr-buildbucket.cfg attaches the
+    # swarming to each and every builder. So could use that instead.
+    swarming_server = 'chromium-swarm'
+    possible_matches += public_matches
 
   if not possible_matches:
     logging.error(
@@ -58,9 +76,5 @@ def find_builder_props(bucket_name, builder_name):
   logging.debug('Found prop file %s', prop_file)
   with open(possible_matches[0]) as f:
     props = json.load(f)
-
-  # TODO(crbug.com/41492688): Support src-internal configs too. Fow now, assume
-  # chromium builders correlate to "chromium-swarm".
-  swarming_server = 'chromium-swarm'
 
   return props, swarming_server

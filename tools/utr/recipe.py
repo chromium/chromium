@@ -121,12 +121,20 @@ class LegacyRunner:
     self._console_printer = console.Console()
     assert self._recipes_py.exists()
 
+    # Put all results in "try" realms. "try" should be writable for most devs,
+    # while other realms like "ci" likely aren't. "try" is generally where we
+    # confine untested code, so it's the best fit for our results here.
+    self._luci_realm = 'chrome:try'
+    if self._swarming_server == 'chromium-swarm':
+      self._luci_realm = 'chromium:try'
+
     # Add UTR recipe props. Its schema is located at:
     # https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipes/chromium/universal_test_runner.proto
     input_props = builder_props.copy()
     input_props['checkout_path'] = str(_SRC_DIR)
     input_props['$recipe_engine/path'] = {'cache_dir': str(_SRC_DIR.parent)}
     input_props['test_names'] = tests
+    input_props['$build/chromium_swarming'] = {'task_realm': self._luci_realm}
     if additional_test_args:
       input_props['additional_test_args'] = additional_test_args
     if build_dir:
@@ -210,13 +218,6 @@ class LegacyRunner:
     input_props['rerun_options'] = rerun_props or {}
     with tempfile.TemporaryDirectory() as tmp_dir:
 
-      # TODO(crbug.com/41492688): Support both chrome and chromium realms. Just
-      # hard-code 'chromium' for now.
-      # Put all results in "try" realms. "try" should be writable for most devs,
-      # while other realms like "ci" likely aren't. "try" is generally where we
-      # confine untested code, so it's the best fit for our results here.
-      rdb_realm = 'chromium:try'
-
       output_path = pathlib.Path(tmp_dir).joinpath('out.json')
       rerun_props_path = pathlib.Path(tmp_dir).joinpath('rerun_props.json')
       input_props['output_properties_file'] = str(rerun_props_path)
@@ -225,7 +226,7 @@ class LegacyRunner:
           'stream',
           '-new',
           '-realm',
-          rdb_realm,
+          self._luci_realm,
           '--',
           self._recipes_py,
           'run',
