@@ -33,7 +33,6 @@ crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/re
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/338122791 external/wpt/css/css-masking/clip-path/clip-path-rotated-will-change-transform.html [ Failure ]
-crbug.com/338122792 virtual/gpu-rasterization/external/wpt/css/css-images/gradient/repeating-gradient-hsl-and-oklch.html [ Failure ]
 crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Crash ]
 crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Crash ]
 crbug.com/626703 external/wpt/webnn/conformance_tests/constant.https.any.worker.html?gpu [ Crash Failure ]
