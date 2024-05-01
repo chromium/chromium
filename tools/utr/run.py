@@ -112,7 +112,9 @@ def parse_args(args=None):
   subparsers = parser.add_subparsers(dest='run_mode')
 
   compile_subp = subparsers.add_parser(
-      'compile', help='Only compiles. WARNING: this mode is not yet supported.')
+      'compile',
+      aliases=['build'],
+      help='Only compiles. WARNING: this mode is not yet supported.')
   add_compile_args(compile_subp)
 
   test_subp = subparsers.add_parser(
@@ -122,6 +124,7 @@ def parse_args(args=None):
 
   compile_and_test_subp = subparsers.add_parser(
       'compile-and-test',
+      aliases=['build-and-test', 'run'],
       help='Both compile and run/trigger tests. WARNING: this mode is not yet '
       'supported.')
   add_compile_args(compile_and_test_subp)
