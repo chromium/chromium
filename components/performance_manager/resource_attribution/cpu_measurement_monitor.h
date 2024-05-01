@@ -108,12 +108,12 @@ class CPUMeasurementMonitor
   // WorkerNode::Observer:
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override;
-  void OnClientFrameAdded(const WorkerNode* worker_node,
-                          const FrameNode* client_frame_node) override;
+  void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
+                                const FrameNode* client_frame_node) override;
   void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
                                   const FrameNode* client_frame_node) override;
-  void OnClientWorkerAdded(const WorkerNode* worker_node,
-                           const WorkerNode* client_worker_node) override;
+  void OnBeforeClientWorkerAdded(const WorkerNode* worker_node,
+                                 const WorkerNode* client_worker_node) override;
   void OnBeforeClientWorkerRemoved(
       const WorkerNode* worker_node,
       const WorkerNode* client_worker_node) override;

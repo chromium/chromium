@@ -92,6 +92,11 @@ uint64_t WorkerNodeImpl::GetPrivateFootprintKbEstimate() const {
 
 void WorkerNodeImpl::AddClientFrame(FrameNodeImpl* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& observer : GetObservers()) {
+    observer.OnBeforeClientFrameAdded(this, frame_node);
+  }
+
   bool inserted = client_frames_.insert(frame_node).second;
   DCHECK(inserted);
 
@@ -132,6 +137,10 @@ void WorkerNodeImpl::AddClientWorker(WorkerNodeImpl* worker_node) {
       // A service worker may not control another service worker.
       DCHECK_NE(worker_node->GetWorkerType(), WorkerType::kService);
       break;
+  }
+
+  for (auto& observer : GetObservers()) {
+    observer.OnBeforeClientWorkerAdded(this, worker_node);
   }
 
   bool inserted = client_workers_.insert(worker_node).second;

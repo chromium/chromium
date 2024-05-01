@@ -449,16 +449,14 @@ void CPUMeasurementMonitor::OnBeforeWorkerNodeRemoved(
   SaveFinalMeasurements({worker_node->GetResourceContext()});
 }
 
-void CPUMeasurementMonitor::OnClientFrameAdded(
+void CPUMeasurementMonitor::OnBeforeClientFrameAdded(
     const WorkerNode* worker_node,
     const FrameNode* client_frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage *before* this worker gained a
   // client. The CPU measurement will be distributed to pages that were clients
   // of this worker, not including the new client.
-  UpdateCPUMeasurements(
-      worker_node->GetProcessNode(),
-      GraphChangeAddClientFrameToWorker(worker_node, client_frame_node));
+  UpdateCPUMeasurements(worker_node->GetProcessNode());
 }
 
 void CPUMeasurementMonitor::OnBeforeClientFrameRemoved(
@@ -468,21 +466,17 @@ void CPUMeasurementMonitor::OnBeforeClientFrameRemoved(
   // Take a measurement of the process CPU usage *before* this worker lost a
   // client. The CPU measurement will be distributed to pages that were
   // clients of this worker, including the old client.
-  UpdateCPUMeasurements(
-      worker_node->GetProcessNode(),
-      GraphChangeRemoveClientFrameFromWorker(worker_node, client_frame_node));
+  UpdateCPUMeasurements(worker_node->GetProcessNode());
 }
 
-void CPUMeasurementMonitor::OnClientWorkerAdded(
+void CPUMeasurementMonitor::OnBeforeClientWorkerAdded(
     const WorkerNode* worker_node,
     const WorkerNode* client_worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Take a measurement of the process CPU usage *before* this worker gained a
   // client. The CPU measurement will be distributed to pages that were clients
   // of this worker, not including the new client.
-  UpdateCPUMeasurements(
-      worker_node->GetProcessNode(),
-      GraphChangeAddClientWorkerToWorker(worker_node, client_worker_node));
+  UpdateCPUMeasurements(worker_node->GetProcessNode());
 }
 
 void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
@@ -492,9 +486,7 @@ void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
   // Take a measurement of the process CPU usage *before* this worker lost a
   // client. The CPU measurement will be distributed to pages that were clients
   // of this worker, including the old client.
-  UpdateCPUMeasurements(
-      worker_node->GetProcessNode(),
-      GraphChangeRemoveClientWorkerFromWorker(worker_node, client_worker_node));
+  UpdateCPUMeasurements(worker_node->GetProcessNode());
 }
 
 base::Value::Dict CPUMeasurementMonitor::DescribeFrameNodeData(
@@ -603,8 +595,7 @@ void CPUMeasurementMonitor::ApplyMeasurementDeltas(
       const WorkerNode* worker_node =
           AsContext<WorkerContext>(context).GetWorkerNode();
       CHECK(worker_node);
-      for (const PageNode* page_node :
-           GetWorkerClientPages(worker_node, graph_change)) {
+      for (const PageNode* page_node : GetWorkerClientPages(worker_node)) {
         ApplyOverlappingDelta(page_node->GetResourceContext(), delta);
         std::optional<OriginInPageContext> origin_in_page_context =
             OriginInPageContextForNode(worker_node, page_node, graph_change);

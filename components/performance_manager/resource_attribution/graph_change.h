@@ -49,42 +49,6 @@ struct GraphChangeRemoveWorker {
   raw_ptr<const WorkerNode> worker_node;
 };
 
-struct GraphChangeAddClientFrameToWorker {
-  GraphChangeAddClientFrameToWorker(const WorkerNode* node,
-                                    const FrameNode* client_node)
-      : worker_node(node), client_frame_node(client_node) {}
-
-  raw_ptr<const WorkerNode> worker_node;
-  raw_ptr<const FrameNode> client_frame_node;
-};
-
-struct GraphChangeRemoveClientFrameFromWorker {
-  GraphChangeRemoveClientFrameFromWorker(const WorkerNode* node,
-                                         const FrameNode* client_node)
-      : worker_node(node), client_frame_node(client_node) {}
-
-  raw_ptr<const WorkerNode> worker_node;
-  raw_ptr<const FrameNode> client_frame_node;
-};
-
-struct GraphChangeAddClientWorkerToWorker {
-  GraphChangeAddClientWorkerToWorker(const WorkerNode* node,
-                                     const WorkerNode* client_node)
-      : worker_node(node), client_worker_node(client_node) {}
-
-  raw_ptr<const WorkerNode> worker_node;
-  raw_ptr<const WorkerNode> client_worker_node;
-};
-
-struct GraphChangeRemoveClientWorkerFromWorker {
-  GraphChangeRemoveClientWorkerFromWorker(const WorkerNode* node,
-                                          const WorkerNode* client_node)
-      : worker_node(node), client_worker_node(client_node) {}
-
-  raw_ptr<const WorkerNode> worker_node;
-  raw_ptr<const WorkerNode> client_worker_node;
-};
-
 // Not technically a graph change, but modifies the distribution of FrameNode
 // and WorkerNode measurements to OriginInPageContexts the same way graph
 // changes modify the distribution of measurements to PageContexts.
@@ -117,10 +81,6 @@ using GraphChange = absl::variant<NoGraphChange,
                                   GraphChangeRemoveFrame,
                                   GraphChangeAddWorker,
                                   GraphChangeRemoveWorker,
-                                  GraphChangeAddClientFrameToWorker,
-                                  GraphChangeRemoveClientFrameFromWorker,
-                                  GraphChangeAddClientWorkerToWorker,
-                                  GraphChangeRemoveClientWorkerFromWorker,
                                   GraphChangeUpdateOrigin,
                                   GraphChangeUpdateProcessPriority>;
 

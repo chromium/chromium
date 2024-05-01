@@ -190,7 +190,13 @@ class WorkerNodeObserver : public base::CheckedObserver {
   // enabled.
   virtual void OnFinalResponseURLDetermined(const WorkerNode* worker_node) = 0;
 
-  // Invoked when |client_frame_node| becomes a client of |worker_node|.
+  // Invoked before |client_frame_node| becomes a client of |worker_node|. This
+  // is the last chance to traverse the graph and capture state that doesn't
+  // include the worker/frame client relationship.
+  virtual void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
+                                        const FrameNode* client_frame_node) = 0;
+
+  // Invoked after |client_frame_node| becomes a client of |worker_node|.
   virtual void OnClientFrameAdded(const WorkerNode* worker_node,
                                   const FrameNode* client_frame_node) = 0;
 
@@ -199,7 +205,14 @@ class WorkerNodeObserver : public base::CheckedObserver {
       const WorkerNode* worker_node,
       const FrameNode* client_frame_node) = 0;
 
-  // Invoked when |client_worker_node| becomes a client of |worker_node|.
+  // Invoked before |client_worker_node| becomes a client of |worker_node|. This
+  // is the last chance to traverse the graph and capture state that doesn't
+  // include the worker/worker client relationship.
+  virtual void OnBeforeClientWorkerAdded(
+      const WorkerNode* worker_node,
+      const WorkerNode* client_worker_node) = 0;
+
+  // Invoked after |client_worker_node| becomes a client of |worker_node|.
   virtual void OnClientWorkerAdded(const WorkerNode* worker_node,
                                    const WorkerNode* client_worker_node) = 0;
 
@@ -232,11 +245,16 @@ class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override {}
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {}
   void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {}
+  void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
+                                const FrameNode* client_frame_node) override {}
   void OnClientFrameAdded(const WorkerNode* worker_node,
                           const FrameNode* client_frame_node) override {}
   void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
                                   const FrameNode* client_frame_node) override {
   }
+  void OnBeforeClientWorkerAdded(
+      const WorkerNode* worker_node,
+      const WorkerNode* client_worker_node) override {}
   void OnClientWorkerAdded(const WorkerNode* worker_node,
                            const WorkerNode* client_worker_node) override {}
   void OnBeforeClientWorkerRemoved(

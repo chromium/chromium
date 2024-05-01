@@ -327,6 +327,12 @@ void DiscardsGraphDumpImpl::OnFinalResponseURLDetermined(
   SendWorkerNotification(worker_node, false);
 }
 
+void DiscardsGraphDumpImpl::OnBeforeClientFrameAdded(
+    const performance_manager::WorkerNode* worker_node,
+    const performance_manager::FrameNode* client_frame_node) {
+  // Nothing to do.
+}
+
 void DiscardsGraphDumpImpl::OnClientFrameAdded(
     const performance_manager::WorkerNode* worker_node,
     const performance_manager::FrameNode* client_frame_node) {
@@ -337,6 +343,12 @@ void DiscardsGraphDumpImpl::OnBeforeClientFrameRemoved(
     const performance_manager::WorkerNode* worker_node,
     const performance_manager::FrameNode* client_frame_node) {
   SendWorkerNotification(worker_node, false);
+}
+
+void DiscardsGraphDumpImpl::OnBeforeClientWorkerAdded(
+    const performance_manager::WorkerNode* worker_node,
+    const performance_manager::WorkerNode* client_worker_node) {
+  // Nothing to do.
 }
 
 void DiscardsGraphDumpImpl::OnClientWorkerAdded(

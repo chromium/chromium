@@ -46,12 +46,20 @@ class LenientMockObserver : public WorkerNodeImpl::Observer {
               (const WorkerNode*),
               (override));
   MOCK_METHOD(void,
+              OnBeforeClientFrameAdded,
+              (const WorkerNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
               OnClientFrameAdded,
               (const WorkerNode*, const FrameNode*),
               (override));
   MOCK_METHOD(void,
               OnBeforeClientFrameRemoved,
               (const WorkerNode*, const FrameNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnBeforeClientWorkerAdded,
+              (const WorkerNode*, const WorkerNode*),
               (override));
   MOCK_METHOD(void,
               OnClientWorkerAdded,
@@ -305,8 +313,10 @@ enum class NotificationMethod {
   kOnWorkerNodeAdded,
   kOnBeforeWorkerNodeRemoved,
   kOnFinalResponseURLDetermined,
+  kOnBeforeClientFrameAdded,
   kOnClientFrameAdded,
   kOnBeforeClientFrameRemoved,
+  kOnBeforeClientWorkerAdded,
   kOnClientWorkerAdded,
   kOnBeforeClientWorkerRemoved,
   kOnPriorityAndReasonChanged,
@@ -320,12 +330,16 @@ std::ostream& operator<<(std::ostream& os, NotificationMethod method) {
       return os << "OnBeforeWorkerNodeRemoved";
     case NotificationMethod::kOnFinalResponseURLDetermined:
       return os << "OnFinalResponseURLDetermined";
+    case NotificationMethod::kOnBeforeClientFrameAdded:
+      return os << "OnBeforeClientFrameAdded";
     case NotificationMethod::kOnClientFrameAdded:
       return os << "OnClientFrameAdded";
     case NotificationMethod::kOnBeforeClientFrameRemoved:
       return os << "OnBeforeClientFrameRemoved";
     case NotificationMethod::kOnClientWorkerAdded:
       return os << "OnClientWorkerAdded";
+    case NotificationMethod::kOnBeforeClientWorkerAdded:
+      return os << "OnBeforeClientWorkerAdded";
     case NotificationMethod::kOnBeforeClientWorkerRemoved:
       return os << "OnBeforeClientWorkerRemoved";
     case NotificationMethod::kOnPriorityAndReasonChanged:
@@ -334,10 +348,30 @@ std::ostream& operator<<(std::ostream& os, NotificationMethod method) {
   return os << "Unknown:" << static_cast<int>(method);
 }
 
+// All clients of a WorkerNode, including those in the process of being added.
+struct WorkerClients {
+  // Client frames.
+  base::flat_set<raw_ptr<const FrameNode, CtnExperimental>> frames;
+
+  // Clients that are about to be added to `frames`.
+  base::flat_set<raw_ptr<const FrameNode, CtnExperimental>> frames_to_add;
+
+  // Client workers.
+  base::flat_set<raw_ptr<const WorkerNode, CtnExperimental>> workers;
+
+  // Clients that are about to be added to `workers`.
+  base::flat_set<raw_ptr<const WorkerNode, CtnExperimental>> workers_to_add;
+};
+
 // A more complicated observer that tests the consistency of client
 // relationships.
 class TestWorkerNodeObserver : public WorkerNodeObserver {
  public:
+  using FrameNodeSet =
+      base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>;
+  using WorkerNodeSet =
+      base::flat_set<raw_ptr<const WorkerNode, CtnExperimental>>;
+
   TestWorkerNodeObserver() = default;
 
   TestWorkerNodeObserver(const TestWorkerNodeObserver&) = delete;
@@ -347,63 +381,108 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
 
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override {
     methods_called_.push_back(NotificationMethod::kOnWorkerNodeAdded);
-    EXPECT_TRUE(client_frames_.insert({worker_node, {}}).second);
-    EXPECT_TRUE(client_workers_.insert({worker_node, {}}).second);
+
+    // Create an empty client map for the worker.
+    EXPECT_TRUE(clients_.insert({worker_node, {}}).second);
   }
+
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {
     methods_called_.push_back(NotificationMethod::kOnBeforeWorkerNodeRemoved);
-    EXPECT_TRUE(client_frames_.at(worker_node).empty());
-    EXPECT_TRUE(client_workers_.at(worker_node).empty());
-    EXPECT_EQ(client_frames_.erase(worker_node), 1u);
-    EXPECT_EQ(client_workers_.erase(worker_node), 1u);
+
+    // Ensure all clients were disconnected before deleting the worker.
+    const WorkerClients& clients = clients_.at(worker_node);
+    EXPECT_TRUE(clients.frames.empty());
+    EXPECT_TRUE(clients.frames_to_add.empty());
+    EXPECT_TRUE(clients.workers.empty());
+    EXPECT_TRUE(clients.workers_to_add.empty());
+    EXPECT_EQ(clients_.erase(worker_node), 1u);
   }
+
   void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {
     methods_called_.push_back(
         NotificationMethod::kOnFinalResponseURLDetermined);
   }
+
+  void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
+                                const FrameNode* client_node) override {
+    methods_called_.push_back(NotificationMethod::kOnBeforeClientFrameAdded);
+
+    // Ensure OnBeforeClientFrameAdded is only called once for this client, and
+    // OnClientFrameAdded wasn't called yet.
+    WorkerClients& clients = clients_.at(worker_node);
+    EXPECT_FALSE(base::Contains(clients.frames, client_node));
+    EXPECT_FALSE(base::Contains(clients.frames_to_add, client_node));
+    clients.frames_to_add.insert(client_node);
+  }
+
   void OnClientFrameAdded(const WorkerNode* worker_node,
-                          const FrameNode* client_frame_node) override {
+                          const FrameNode* client_node) override {
     methods_called_.push_back(NotificationMethod::kOnClientFrameAdded);
-    auto& client_frames = client_frames_.find(worker_node)->second;
-    EXPECT_TRUE(client_frames.insert(client_frame_node).second);
+
+    // Ensure OnBeforeClientFrameAdded was already called for this client, and
+    // OnClientFrameAdded is only called once.
+    WorkerClients& clients = clients_.at(worker_node);
+    EXPECT_FALSE(base::Contains(clients.frames, client_node));
+    EXPECT_TRUE(base::Contains(clients.frames_to_add, client_node));
+    clients.frames_to_add.erase(client_node);
+    clients.frames.insert(client_node);
   }
+
   void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
-                                  const FrameNode* client_frame_node) override {
+                                  const FrameNode* client_node) override {
     methods_called_.push_back(NotificationMethod::kOnBeforeClientFrameRemoved);
-    auto& client_frames = client_frames_.find(worker_node)->second;
-    EXPECT_EQ(client_frames.erase(client_frame_node), 1u);
+
+    // Ensure OnBeforeClientFrameRemoved is only called once for this client.
+    WorkerClients& clients = clients_.at(worker_node);
+    EXPECT_TRUE(base::Contains(clients.frames, client_node));
+    EXPECT_FALSE(base::Contains(clients.frames_to_add, client_node));
+    clients.frames.erase(client_node);
   }
+
+  void OnBeforeClientWorkerAdded(const WorkerNode* worker_node,
+                                 const WorkerNode* client_node) override {
+    methods_called_.push_back(NotificationMethod::kOnBeforeClientWorkerAdded);
+
+    // Ensure OnBeforeClientWorkerAdded is only called once for this client, and
+    // OnClientWorkerAdded wasn't called yet.
+    WorkerClients& clients = clients_.at(worker_node);
+    EXPECT_FALSE(base::Contains(clients.workers, client_node));
+    EXPECT_FALSE(base::Contains(clients.workers_to_add, client_node));
+    clients.workers_to_add.insert(client_node);
+  }
+
   void OnClientWorkerAdded(const WorkerNode* worker_node,
-                           const WorkerNode* client_worker_node) override {
+                           const WorkerNode* client_node) override {
     methods_called_.push_back(NotificationMethod::kOnClientWorkerAdded);
-    auto& client_workers = client_workers_.find(worker_node)->second;
-    EXPECT_TRUE(client_workers.insert(client_worker_node).second);
+
+    // Ensure OnBeforeClientWorkerAdded was already called for this client, and
+    // OnClientWorkerAdded is only called once.
+    WorkerClients& clients = clients_.at(worker_node);
+    EXPECT_FALSE(base::Contains(clients.workers, client_node));
+    EXPECT_TRUE(base::Contains(clients.workers_to_add, client_node));
+    clients.workers_to_add.erase(client_node);
+    clients.workers.insert(client_node);
   }
-  void OnBeforeClientWorkerRemoved(
-      const WorkerNode* worker_node,
-      const WorkerNode* client_worker_node) override {
+
+  void OnBeforeClientWorkerRemoved(const WorkerNode* worker_node,
+                                   const WorkerNode* client_node) override {
     methods_called_.push_back(NotificationMethod::kOnBeforeClientWorkerRemoved);
-    auto& client_workers = client_workers_.find(worker_node)->second;
-    EXPECT_EQ(client_workers.erase(client_worker_node), 1u);
+
+    // Ensure OnBeforeClientWorkerRemoved is only called once for this client.
+    WorkerClients& clients = clients_.at(worker_node);
+    EXPECT_TRUE(base::Contains(clients.workers, client_node));
+    EXPECT_FALSE(base::Contains(clients.workers_to_add, client_node));
+    clients.workers.erase(client_node);
   }
+
   void OnPriorityAndReasonChanged(
       const WorkerNode* worker_node,
       const PriorityAndReason& previous_value) override {
     methods_called_.push_back(NotificationMethod::kOnPriorityAndReasonChanged);
   }
 
-  const base::flat_map<
-      const WorkerNode*,
-      base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>>&
-  client_frames() const {
-    return client_frames_;
-  }
-
-  const base::flat_map<
-      const WorkerNode*,
-      base::flat_set<raw_ptr<const WorkerNode, CtnExperimental>>>&
-  client_workers() const {
-    return client_workers_;
+  const base::flat_map<const WorkerNode*, WorkerClients>& clients() const {
+    return clients_;
   }
 
   std::vector<NotificationMethod> methods_called() const {
@@ -412,13 +491,7 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
 
  private:
   std::vector<NotificationMethod> methods_called_;
-
-  base::flat_map<const WorkerNode*,
-                 base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>>
-      client_frames_;
-  base::flat_map<const WorkerNode*,
-                 base::flat_set<raw_ptr<const WorkerNode, CtnExperimental>>>
-      client_workers_;
+  base::flat_map<const WorkerNode*, WorkerClients> clients_;
 };
 
 // Same as the AddWorkerNodes test, but the graph is verified through the
@@ -442,13 +515,10 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   service_worker->AddClientFrame(frame.get());
 
   // 3 different workers observed.
-  EXPECT_EQ(worker_node_observer.client_frames().size(), 3u);
-  for (const auto& worker_and_client_frames :
-       worker_node_observer.client_frames()) {
-    // For each worker, check that |frame| is a client.
-    const base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>&
-        client_frames = worker_and_client_frames.second;
-    EXPECT_TRUE(client_frames.find(frame.get()) != client_frames.end());
+  EXPECT_EQ(worker_node_observer.clients().size(), 3u);
+  for (const auto& [worker_node, clients] : worker_node_observer.clients()) {
+    // For each worker, check that `frame` is a client.
+    EXPECT_TRUE(base::Contains(clients.frames, frame.get()));
   }
 
   // Remove client connections.
@@ -467,8 +537,11 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
                   NotificationMethod::kOnWorkerNodeAdded,
                   NotificationMethod::kOnWorkerNodeAdded,
                   // 3 client frames added
+                  NotificationMethod::kOnBeforeClientFrameAdded,
                   NotificationMethod::kOnClientFrameAdded,
+                  NotificationMethod::kOnBeforeClientFrameAdded,
                   NotificationMethod::kOnClientFrameAdded,
+                  NotificationMethod::kOnBeforeClientFrameAdded,
                   NotificationMethod::kOnClientFrameAdded,
                   // 3 client frames removed
                   NotificationMethod::kOnBeforeClientFrameRemoved,
@@ -503,20 +576,14 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   service_worker->AddClientWorker(shared_worker.get());
 
   // 3 different workers observed.
-  EXPECT_EQ(worker_node_observer.client_frames().size(), 3u);
+  EXPECT_EQ(worker_node_observer.clients().size(), 3u);
 
   // Check clients of the service worker.
-  const base::flat_set<
-      raw_ptr<const FrameNode, CtnExperimental>>& client_frames =
-      worker_node_observer.client_frames().find(service_worker.get())->second;
-  EXPECT_TRUE(client_frames.find(frame.get()) != client_frames.end());
-
-  const base::flat_set<
-      raw_ptr<const WorkerNode, CtnExperimental>>& client_workers =
-      worker_node_observer.client_workers().find(service_worker.get())->second;
-  EXPECT_TRUE(client_workers.find(dedicated_worker.get()) !=
-              client_workers.end());
-  EXPECT_TRUE(client_workers.find(shared_worker.get()) != client_workers.end());
+  const WorkerClients& clients =
+      worker_node_observer.clients().at(service_worker.get());
+  EXPECT_TRUE(base::Contains(clients.frames, frame.get()));
+  EXPECT_TRUE(base::Contains(clients.workers, dedicated_worker.get()));
+  EXPECT_TRUE(base::Contains(clients.workers, shared_worker.get()));
 
   // Remove client connections.
   service_worker->RemoveClientWorker(shared_worker.get());
@@ -534,8 +601,11 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
                   NotificationMethod::kOnWorkerNodeAdded,
                   NotificationMethod::kOnWorkerNodeAdded,
                   // 3 clients added
+                  NotificationMethod::kOnBeforeClientFrameAdded,
                   NotificationMethod::kOnClientFrameAdded,
+                  NotificationMethod::kOnBeforeClientWorkerAdded,
                   NotificationMethod::kOnClientWorkerAdded,
+                  NotificationMethod::kOnBeforeClientWorkerAdded,
                   NotificationMethod::kOnClientWorkerAdded,
                   // 3 client frames removed
                   NotificationMethod::kOnBeforeClientWorkerRemoved,
