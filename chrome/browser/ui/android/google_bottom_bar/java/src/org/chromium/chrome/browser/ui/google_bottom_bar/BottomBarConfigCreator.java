@@ -99,27 +99,27 @@ public class BottomBarConfigCreator {
         List<ButtonConfig> buttonConfigs = new ArrayList<>();
 
         for (@ButtonId int id : buttonIdList) {
-            boolean found = false;
-            for (CustomButtonParams params : customButtonParams) {
-                if (mapToButtonId(params.getId()) == id) {
-                    buttonConfigs.add(new ButtonConfig(mContext, id, params));
-                    found = true;
-                    break;
-                }
+            ButtonConfig buttonConfig;
+            if (getCustomButtonParamsId(id) != -1) {
+                buttonConfig = createButtonConfigFromCustomParams(customButtonParams, id);
+            } else {
+                buttonConfig = createButtonConfigFromId(id);
             }
-            if (!found) {
-                /**
-                 * TODO If the user is signed-out the buttons sent through customButtonParams will
-                 * still be included, which we want to avoid. Update this condition to ensure that
-                 * the final list is not including any buttons that should not be there.
-                 */
-                ButtonConfig buttonConfig = createButtonConfigFromId(id);
-                if (buttonConfig != null) {
-                    buttonConfigs.add(buttonConfig);
-                }
+            if (buttonConfig != null) {
+                buttonConfigs.add(buttonConfig);
             }
         }
         return buttonConfigs;
+    }
+
+    private @Nullable ButtonConfig createButtonConfigFromCustomParams(
+            List<CustomButtonParams> customButtonParams, @ButtonId int id) {
+        for (CustomButtonParams params : customButtonParams) {
+            if (params.getId() == getCustomButtonParamsId(id)) {
+                return new ButtonConfig(mContext, id, params);
+            }
+        }
+        return null;
     }
 
     private static List<Integer> getEncodedListFromString(String encodedConfig) {
@@ -138,12 +138,15 @@ public class BottomBarConfigCreator {
         return result;
     }
 
-    private static int mapToButtonId(int id) {
+    /**
+     * Returns valid ID for {@link CustomButtonParams} if they should be used, or
+     * returns -1 if they should not be used.
+     */
+    private static int getCustomButtonParamsId(@ButtonId int id) {
         return switch (id) {
-            case 100 -> ButtonId.SAVE;
-            case 101 -> ButtonId.SHARE;
-            case 104 -> ButtonId.ADD_NOTES;
-            default -> ButtonId.MAX_BUTTON_ID;
+            case ButtonId.SAVE -> 100;
+            case ButtonId.ADD_NOTES -> 104;
+            default -> -1;
         };
     }
 

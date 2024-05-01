@@ -11,7 +11,11 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.ADD_NOTES;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.PIH_BASIC;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.REFRESH;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SAVE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId.SHARE;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -30,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for {@link BottomBarConfig}. */
@@ -70,6 +75,43 @@ public class BottomBarConfigCreatorTest {
 
         assertNotNull(spotlight);
         assertEquals(spotlight.intValue(), PIH_BASIC);
+        assertEquals(3, buttonConfig.getButtonList().size());
+    }
+
+    @Test
+    public void createButtonConfigList_emptyCustomButtonParamsList() {
+        List<Integer> buttonIdList = List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE, ADD_NOTES, REFRESH);
+
+        // empty customButtonParamsList - SAVE and ADD_NOTES are not included in the final list
+        BottomBarConfig buttonConfig = mConfigCreator.create(buttonIdList, new ArrayList<>());
+        assertEquals(3, buttonConfig.getButtonList().size());
+    }
+
+    @Test
+    public void createButtonConfigList_withCustomButtonParamsList() {
+        List<Integer> buttonIdList =
+                List.of(
+                        PIH_BASIC, PIH_BASIC, SHARE, SAVE, ADD_NOTES,
+                        REFRESH); // PIH_BASIC, SHARE, SAVE, ADD_NOTES, REFRESH
+
+        when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
+
+        // ADD_NOTES is not included in the final list
+        BottomBarConfig buttonConfig =
+                mConfigCreator.create(buttonIdList, List.of(mCustomButtonParams));
+        assertEquals(4, buttonConfig.getButtonList().size());
+    }
+
+    @Test
+    public void createButtonConfigList_buttonIdListWithoutCustomParamId() {
+        List<Integer> buttonIdList =
+                List.of(PIH_BASIC, PIH_BASIC, SHARE, REFRESH); // PIH_BASIC, SHARE, REFRESH
+
+        when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
+
+        // SAVE is not included in the final list
+        BottomBarConfig buttonConfig =
+                mConfigCreator.create(buttonIdList, List.of(mCustomButtonParams));
         assertEquals(3, buttonConfig.getButtonList().size());
     }
 
