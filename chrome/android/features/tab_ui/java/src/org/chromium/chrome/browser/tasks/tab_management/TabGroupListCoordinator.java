@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -52,12 +53,14 @@ public class TabGroupListCoordinator {
      * @param filter Used to interact with local tab model and groups.
      * @param profileProvider Used to fetch keyed service.
      * @param paneManager Used to switch to show detailed tab group UI.
+     * @param tabGroupUiActionHandler Used to open hidden tab groups.
      */
     public TabGroupListCoordinator(
             Context context,
             TabGroupModelFilter filter,
             ProfileProvider profileProvider,
-            PaneManager paneManager) {
+            PaneManager paneManager,
+            TabGroupUiActionHandler tabGroupUiActionHandler) {
         ModelList modelList = new ModelList();
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
@@ -78,7 +81,12 @@ public class TabGroupListCoordinator {
         TabGroupSyncService syncService = TabGroupSyncServiceFactory.getForProfile(profile);
         mTabGroupListMediator =
                 new TabGroupListMediator(
-                        modelList, filter, faviconResolver, syncService, paneManager);
+                        modelList,
+                        filter,
+                        faviconResolver,
+                        syncService,
+                        paneManager,
+                        tabGroupUiActionHandler);
     }
 
     private BiConsumer<GURL, Callback<Drawable>> buildFaviconResolver(

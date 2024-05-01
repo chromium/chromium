@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.AsyncDrawable;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -76,6 +77,7 @@ public class TabGroupListMediator {
     private final BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
     private final TabGroupSyncService mSyncService;
     private final PaneManager mPaneManager;
+    private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final CallbackController mCallbackController = new CallbackController();
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
@@ -116,18 +118,21 @@ public class TabGroupListMediator {
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param syncService Used to fetch synced copy of tab groups.
      * @param paneManager Used switch panes to show details of a group.
+     * @param tabGroupUiActionHandler Used to open hidden tab groups.
      */
     public TabGroupListMediator(
             ModelList modelList,
             TabGroupModelFilter filter,
             BiConsumer<GURL, Callback<Drawable>> faviconResolver,
             TabGroupSyncService syncService,
-            PaneManager paneManager) {
+            PaneManager paneManager,
+            TabGroupUiActionHandler tabGroupUiActionHandler) {
         mModelList = modelList;
         mFilter = filter;
         mFaviconResolver = faviconResolver;
         mSyncService = syncService;
         mPaneManager = paneManager;
+        mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mSyncService.addObserver(mSyncObserver);
         repopulateModelList();
     }
@@ -199,8 +204,10 @@ public class TabGroupListMediator {
 
     private void openGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {
         if (state == TabGroupState.HIDDEN) {
-            // TODO(crbug.com/324934166): Open this tab in local model first.
-            return;
+            String syncId = savedTabGroup.syncId;
+            mTabGroupUiActionHandler.openTabGroup(syncId);
+            savedTabGroup = mSyncService.getGroup(syncId);
+            assert savedTabGroup.localId != null;
         }
         int rootId = mFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
         mPaneManager.focusPane(PaneId.TAB_SWITCHER);

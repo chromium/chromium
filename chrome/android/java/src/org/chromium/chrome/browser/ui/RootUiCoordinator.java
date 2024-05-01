@@ -1897,6 +1897,11 @@ public class RootUiCoordinator
         return mBottomSheetSnackbarManager;
     }
 
+    /** Returns the {@link TabGroupSyncController} if it has been created yet. */
+    public TabGroupSyncController getTabGroupSyncController() {
+        return mTabGroupSyncController;
+    }
+
     /**
      * Initializes a glue logic that suppresses Contextual Search and hides the Page Zoom slider
      * while a Bottom Sheet feature is in action.

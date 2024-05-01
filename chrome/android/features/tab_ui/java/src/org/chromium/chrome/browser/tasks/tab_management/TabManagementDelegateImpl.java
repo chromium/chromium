@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -225,7 +226,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull TabModelSelector tabModelSelector,
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull OneshotSupplier<HubManager> hubManagerSupplier) {
+            @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
+            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () ->
@@ -237,7 +239,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabModelFilterSupplier,
                 onToolbarAlphaChange,
                 profileProviderSupplier,
-                () -> hubManagerSupplier.get().getPaneManager());
+                () -> hubManagerSupplier.get().getPaneManager(),
+                tabGroupUiActionHandlerSupplier);
     }
 
     @Override
