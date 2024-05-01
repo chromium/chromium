@@ -270,11 +270,14 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
       base::BindRepeating(&LibYUVImageProcessorBackend::Create)};
 
 #if defined(ARCH_CPU_ARM_FAMILY)
-    if (base::FeatureList::IsEnabled(media::kUseGLForScaling)) {
-      create_funcs.insert(
-          create_funcs.begin(),
-          base::BindRepeating(&GLImageProcessorBackend::Create));
-    }
+  const bool use_gl_scaling =
+      (base::FeatureList::IsEnabled(media::kUseGLForScaling) &&
+       (input_config.fourcc == Fourcc(Fourcc::NV12) ||
+        input_config.fourcc == Fourcc(Fourcc::NM12)));
+  if (use_gl_scaling) {
+    create_funcs.insert(create_funcs.begin(),
+                        base::BindRepeating(&GLImageProcessorBackend::Create));
+  }
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 
     for (auto& create_func : create_funcs) {
@@ -307,9 +310,14 @@ ImageProcessorFactory::CreateWithInputCandidates(
     return processor;
 #elif BUILDFLAG(USE_V4L2_CODEC)
 #if defined(ARCH_CPU_ARM_FAMILY)
-
-  if (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor) ||
-      base::FeatureList::IsEnabled(media::kUseGLForScaling)) {
+  const bool use_gl_scaling =
+      (base::FeatureList::IsEnabled(media::kUseGLForScaling) &&
+       (input_candidates[0].fourcc == Fourcc(Fourcc::NV12) ||
+        input_candidates[0].fourcc == Fourcc(Fourcc::NM12)));
+  const bool use_gl_detiling =
+      (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor) &&
+       input_candidates[0].fourcc == Fourcc(Fourcc::MM21));
+  if (use_gl_scaling || use_gl_detiling) {
     auto processor = CreateGLImageProcessorWithInputCandidates(
         input_candidates, input_visible_rect, output_size, output_storage_type,
         client_task_runner, out_format_picker, error_cb);
