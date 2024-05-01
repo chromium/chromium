@@ -73,7 +73,7 @@ def main():
 
     if not failures:
         key = (sysroot_creator.ARCHIVE_TIMESTAMP + "-" +
-               sysroot_creator.SYSROOT_RELEASE)
+               str(sysroot_creator.SYSROOT_RELEASE))
         sysroot_gni = textwrap.dedent(f"""\
             # Copyright 2024 The Chromium Authors
             # Use of this source code is governed by a BSD-style license that

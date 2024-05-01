@@ -46,11 +46,15 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/e/elfutils
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/e/elfutils/libelf1_0.187-1~bpo11+1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/e/expat/libexpat1-dev_2.2.10-2+deb11u5_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/e/expat/libexpat1_2.2.10-2+deb11u5_i386.deb
+https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavcodec-dev_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavcodec58_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavcodec59_5.1.3-1_i386.deb
+https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavformat-dev_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavformat59_5.1.3-1_i386.deb
+https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavutil-dev_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavutil56_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libavutil57_5.1.3-1_i386.deb
+https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libswresample-dev_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libswresample3_4.3.5-0+deb11u1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/ffmpeg/libswresample4_5.1.3-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/f/flac/libflac-dev_1.3.3-2+deb11u1_i386.deb
@@ -227,6 +231,7 @@ https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvd
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvorbis/libvorbis0a_1.3.7-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvorbis/libvorbisenc2_1.3.7-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvorbis/libvorbisfile3_1.3.7-1_i386.deb
+https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvpx/libvpx-dev_1.9.0-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvpx/libvpx6_1.9.0-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libv/libvpx/libvpx7_1.12.0-1_i386.deb
 https://snapshot.debian.org/archive/debian/20230611T210420Z/pool/main/libw/libwacom/libwacom2_1.8-2_i386.deb

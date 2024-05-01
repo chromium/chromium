@@ -56,8 +56,8 @@ class Error(Exception):
     pass
 
 
-def GetSha1(filename):
-    sha1 = hashlib.sha1()
+def GetSha256(filename):
+    sha1 = hashlib.sha256()
     with open(filename, "rb") as f:
         while True:
             # Read in 1mb chunks, so it doesn't all have to be loaded into
@@ -121,14 +121,14 @@ def InstallSysroot(sysroots_json_path, target_platform, target_arch):
     sysroot_dict = GetSysrootDict(sysroots_json_path, target_platform,
                                   target_arch)
     tarball_filename = sysroot_dict["Tarball"]
-    tarball_sha1sum = sysroot_dict["Sha1Sum"]
+    tarball_sha256sum = sysroot_dict["Sha256Sum"]
     url_prefix = sysroot_dict["URL"]
     # TODO(thestig) Consider putting this elsewhere to avoid having to recreate
     # it on every build.
     linux_dir = os.path.dirname(SCRIPT_DIR)
     sysroot = os.path.join(linux_dir, sysroot_dict["SysrootDir"])
 
-    url = "%s/%s/%s" % (url_prefix, tarball_sha1sum, tarball_filename)
+    url = "%s/%s" % (url_prefix, tarball_sha256sum)
 
     stamp = os.path.join(sysroot, ".stamp")
     # This file is created by first class GCS deps. If this file exists,
@@ -158,10 +158,10 @@ def InstallSysroot(sysroots_json_path, target_platform, target_arch):
             pass
     else:
         raise Error("Failed to download %s" % url)
-    sha1sum = GetSha1(tarball)
-    if sha1sum != tarball_sha1sum:
-        raise Error("Tarball sha1sum is wrong."
-                    "Expected %s, actual: %s" % (tarball_sha1sum, sha1sum))
+    sha256sum = GetSha256(tarball)
+    if sha256sum != tarball_sha256sum:
+        raise Error("Tarball sha256sum is wrong."
+                    "Expected %s, actual: %s" % (tarball_sha256sum, sha256sum))
     subprocess.check_call(["tar", "mxf", tarball, "-C", sysroot])
     os.remove(tarball)
 

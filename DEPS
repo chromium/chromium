@@ -561,16 +561,16 @@ deps = {
           },
       ],
   },
-  'src/build/linux/debian_bullseye_armhf-sysroot': {
+  'src/build/linux/debian_bullseye_amd64-sysroot': {
     'bucket': 'chrome-linux-sysroot',
-    'condition': 'checkout_linux and checkout_arm and non_git_source',
+    'condition': 'checkout_linux and checkout_x64 and non_git_source',
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'e1ace9eea7f5f8906a5de665022abb745efb47ce4931ae774b58005adaf907e9',
-        'sha256sum': 'e1ace9eea7f5f8906a5de665022abb745efb47ce4931ae774b58005adaf907e9',
-        'size_bytes': 96825360,
-        'generation': 1714159610727506,
+        'generation': 1714590045814759,
+        'object_name': 'dec7a3a0fc5b83b909cba1b6d119077e0429a138eadef6bf5a0f2e03b1904631',
+        'sha256sum': 'dec7a3a0fc5b83b909cba1b6d119077e0429a138eadef6bf5a0f2e03b1904631',
+        'size_bytes': 129948576,
       },
     ],
   },
@@ -580,10 +580,23 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'd303cf3faf7804c9dd24c9b6b167d0345d41d7fe4bfb7d34add3ab342f6a236c',
-        'sha256sum': 'd303cf3faf7804c9dd24c9b6b167d0345d41d7fe4bfb7d34add3ab342f6a236c',
-        'size_bytes': 103556332,
-        'generation': 1714159596952688,
+        'generation': 1714589974958986,
+        'object_name': '308e23faba3174bd01accfe358467b8a40fad4db4c49ef629da30219f65a275f',
+        'sha256sum': '308e23faba3174bd01accfe358467b8a40fad4db4c49ef629da30219f65a275f',
+        'size_bytes': 108470444,
+      },
+    ],
+  },
+  'src/build/linux/debian_bullseye_armhf-sysroot': {
+    'bucket': 'chrome-linux-sysroot',
+    'condition': 'checkout_linux and checkout_arm and non_git_source',
+    'dep_type': 'gcs',
+    'objects': [
+      {
+        'generation': 1714589870087834,
+        'object_name': 'fe81e7114b97440262bce004caf02c1514732e2fa7f99693b2836932ad1c4626',
+        'sha256sum': 'fe81e7114b97440262bce004caf02c1514732e2fa7f99693b2836932ad1c4626',
+        'size_bytes': 99265992,
       },
     ],
   },
@@ -593,23 +606,10 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': '4300851707ad38b204e7f4912950c05ad51da0251ecc4e410de9b9fb94f7decf',
-        'sha256sum': '4300851707ad38b204e7f4912950c05ad51da0251ecc4e410de9b9fb94f7decf',
-        'size_bytes': 116515924,
-        'generation': 1714159579525878,
-      },
-    ],
-  },
-  'src/build/linux/debian_bullseye_mipsel-sysroot': {
-    'bucket': 'chrome-linux-sysroot',
-    'condition': 'checkout_linux and checkout_mips and non_git_source',
-    'dep_type': 'gcs',
-    'objects': [
-      {
-        'object_name': 'cc3202718a58541488e79b0333ce936a32227e07228f6b3c122d99ee45f83270',
-        'sha256sum': 'cc3202718a58541488e79b0333ce936a32227e07228f6b3c122d99ee45f83270',
-        'size_bytes': 93412776,
-        'generation': 1714159559897107,
+        'generation': 1714589989387491,
+        'object_name': 'b53933120bb08ffc38140a817e3f0f99782254a6bf9622271574fa004e8783a4',
+        'sha256sum': 'b53933120bb08ffc38140a817e3f0f99782254a6bf9622271574fa004e8783a4',
+        'size_bytes': 122047968,
       },
     ],
   },
@@ -619,23 +619,23 @@ deps = {
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': 'ee94d723b36d1e643820fe7ee2a8f45b3664b4c5d3c3379ebab39e474a2c9f86',
-        'sha256sum': 'ee94d723b36d1e643820fe7ee2a8f45b3664b4c5d3c3379ebab39e474a2c9f86',
-        'size_bytes': 97911708,
-        'generation': 1714159538956875,
+        'generation': 1714590006168779,
+        'object_name': '783cb79f26736c69e8125788d95ffb65a28172349009d75188838a004280a92b',
+        'sha256sum': '783cb79f26736c69e8125788d95ffb65a28172349009d75188838a004280a92b',
+        'size_bytes': 103362108,
       },
     ],
   },
-  'src/build/linux/debian_bullseye_amd64-sysroot': {
+  'src/build/linux/debian_bullseye_mipsel-sysroot': {
     'bucket': 'chrome-linux-sysroot',
-    'condition': 'checkout_linux and checkout_x64 and non_git_source',
+    'condition': 'checkout_linux and checkout_mips and non_git_source',
     'dep_type': 'gcs',
     'objects': [
       {
-        'object_name': '5df5be9357b425cdd70d92d4697d07e7d55d7a923f037c22dc80a78e85842d2c',
-        'sha256sum': '5df5be9357b425cdd70d92d4697d07e7d55d7a923f037c22dc80a78e85842d2c',
-        'size_bytes': 123084324,
-        'generation': 1714159395960299,
+        'generation': 1714589936675352,
+        'object_name': 'fcf8c3931476dd097c58f2f5d44621c7090b135e85ab56885aa4b44f4bd6cdb5',
+        'sha256sum': 'fcf8c3931476dd097c58f2f5d44621c7090b135e85ab56885aa4b44f4bd6cdb5',
+        'size_bytes': 96161964,
       },
     ],
   },
