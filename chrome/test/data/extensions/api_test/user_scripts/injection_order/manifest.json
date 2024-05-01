@@ -1,0 +1,11 @@
+{
+  "name": "Injection Order Test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": ["userScripts", "tabs"],
+  "host_permissions": ["http://example.com/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}

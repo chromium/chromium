@@ -112,6 +112,11 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, GetAndRemoveWorlds) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest,
+                       UserScriptInjectionOrderIsAlphabetical) {
+  ASSERT_TRUE(RunExtensionTest("user_scripts/injection_order")) << message_;
+}
+
 // Tests that registered user scripts are disabled when dev mode is disabled and
 // are re-enabled if dev mode is turned back on.
 IN_PROC_BROWSER_TEST_F(UserScriptsAPITest,
