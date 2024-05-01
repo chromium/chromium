@@ -19,7 +19,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './language_menu.html.js';
-import {convertLangOrLocaleForVoicePackManager, VoicePackStatus} from './voice_language_util.js';
+import {convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from './voice_language_util.js';
 
 export interface LanguageMenuElement {
   $: {
@@ -67,6 +67,10 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
   private enabledLanguagesInPref: string[] = [];
 
+  // Use this variable instead of PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES
+  // directly to better aid in testing.
+  private baseLanguages = PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES;
+
   private closeLanguageMenu_() {
     this.$.languageMenu.close();
   }
@@ -79,6 +83,13 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     event.model.item.callback();
   }
 
+  private getDisplayName(
+      localeToDisplayName: {[lang: string]: string}, lang: string) {
+    return (localeToDisplayName && lang in localeToDisplayName) ?
+        localeToDisplayName[lang] :
+        lang;
+  }
+
   private computeAvailableLanguages_(
       availableVoices: SpeechSynthesisVoice[],
       localeToDisplayName: {[lang: string]: string},
@@ -87,14 +98,24 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       return [];
     }
 
-    const langsAndReadableLangs: Array<[string, string]> =
-        [...new Set(availableVoices.map(({lang}) => lang))].map(
-            lang => ([
-              lang.toLowerCase(),
-              (localeToDisplayName && lang in localeToDisplayName) ?
-                  localeToDisplayName[lang] :
-                  lang,
-            ]));
+    // Ensure we've added the available pack manager supported languages to
+    // the language menu first.
+    const langsAndReadableLangs: Array<[string, string]> = Array.from(
+        this.baseLanguages,
+        (key) => [key, this.getDisplayName(localeToDisplayName, key)]);
+
+    // Next, add any other supported languages to the menu, if they don't
+    // already exist.
+    availableVoices.forEach((voice) => {
+      const lang = voice.lang;
+      if (!langsAndReadableLangs.some(
+              ([key, _]) => key === lang.toLowerCase())) {
+        langsAndReadableLangs.push([
+          lang.toLowerCase(),
+          this.getDisplayName(localeToDisplayName, lang),
+        ]);
+      }
+    });
 
     return langsAndReadableLangs
         .filter(([_, readableLang]) => {

@@ -8,7 +8,7 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 
@@ -67,7 +67,52 @@ suite('LanguageMenu', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     languageMenu = document.createElement('language-menu');
     document.body.appendChild(languageMenu);
+    // @ts-ignore
+    languageMenu.baseLanguages = {};
     flush();
+  });
+
+  suite('using pack manager languages', () => {
+    setup(() => {
+      // @ts-ignore
+      languageMenu.baseLanguages = PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES;
+      flush();
+    });
+
+    test('with existing available language no duplicates added', () => {
+      availableVoices =
+          [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+      setAvailableVoices();
+      languageMenu.showDialog();
+      assertTrue(isPositionedOnPage(languageMenu));
+      assertEquals(getLanguageLineItems().length, 34);
+    });
+  });
+
+  suite('using some base languages', () => {
+    setup(() => {
+      // @ts-ignore
+      languageMenu.baseLanguages = ['en-us'];
+      flush();
+    });
+
+    test('with existing available language no duplicates added', () => {
+      availableVoices =
+          [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+      setAvailableVoices();
+      languageMenu.showDialog();
+      assertTrue(isPositionedOnPage(languageMenu));
+      assertEquals(getLanguageLineItems().length, 1);
+    });
+
+    test('adds language from available voice', () => {
+      availableVoices =
+          [{name: 'test voice 5', lang: 'en-es'} as SpeechSynthesisVoice];
+      setAvailableVoices();
+      languageMenu.showDialog();
+      assertTrue(isPositionedOnPage(languageMenu));
+      assertEquals(getLanguageLineItems().length, 2);
+    });
   });
 
   suite('with one language', () => {

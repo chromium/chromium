@@ -20,7 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -941,14 +941,24 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private populateDisplayNamesForLocaleCodes() {
     this.localeToDisplayName = {};
 
+    // Get display names for all the pack manager supported locales.
+    PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.forEach((lang) => {
+      this.maybeAddDisplayName(lang);
+    });
+
+    // Get any remaining display names for languages of available voices.
     for (const {lang} of this.availableVoices) {
-      if (!(lang in this.localeToDisplayName)) {
-        const langDisplayName =
-            chrome.readingMode.getDisplayNameForLocale(lang, lang);
-        if (langDisplayName) {
-          this.localeToDisplayName =
-              {...this.localeToDisplayName, [lang]: langDisplayName};
-        }
+      this.maybeAddDisplayName(lang);
+    }
+  }
+
+  private maybeAddDisplayName(lang: string) {
+    if (!(lang in this.localeToDisplayName)) {
+      const langDisplayName =
+          chrome.readingMode.getDisplayNameForLocale(lang, lang);
+      if (langDisplayName) {
+        this.localeToDisplayName =
+            {...this.localeToDisplayName, [lang]: langDisplayName};
       }
     }
   }
