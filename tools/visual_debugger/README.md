@@ -53,6 +53,14 @@ It is recommended to delete unused filters and disable filters to improve App pe
 
 ### Security
 
-For official builds all visual debug macros are compiled out and the VizDebugger is reduced to a selective few method stubs. This means there are no security concerns for this system with exception of mutable side effects in the creation of input variables to the logging macros. These concerns for mutable side effects already exist for any other code; so no special attention is warranted for these macros.
+For official builds all visual debug macros end up as chrome traces. This means there are minimal security concerns for this system with exception of mutable side effects in the creation of input variables to the logging macros. These concerns for mutable side effects already exist for any other code; so no special attention is warranted for these macros.
 
 For non-official (debug) builds the dev-tools remote debugging port command line argument must be provided for the viz debugger to collect and stream data. Thus the security of this new system is identical to that of the remote dev tools for the case of debugging builds.
+
+### Visual debugger to trace (Prototype)
+
+For official builds the visual debugger is disabled but the logging feeds into the chrome tracing system. This visual debugger specific tracing is reported with the 'viz.visual_debugger' tracing category. These traces can be imported into the visual debugger using the import trace button.
+
+The overhead of these optional traces has been evaluated and the cost has been found to be acceptable.
+[Trace Macro Overhead in Official Builds](https://docs.google.com/document/d/1oWtNgW0XXU5UCO_0mJlYwTLE0nMQIMJO6oIyKs15Ci8/)
+

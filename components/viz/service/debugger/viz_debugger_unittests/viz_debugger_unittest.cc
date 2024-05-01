@@ -478,6 +478,26 @@ TEST_F(VisualDebuggerTest, TestDebugFlagAnnoAndFunction) {
   EXPECT_FALSE(flag_default_value_check());
 }
 
+// This tests makes sure that expressions inside debugging macros are not
+// evaluated by default with visual debugger off.
+TEST_F(VisualDebuggerTest, DefaultDisabledNoExecute) {
+  const char* kStrA = "anno_A";
+  // These integers are mutated on a function invocation.
+  int count_a = 0;
+
+  auto get_a_string = [&count_a, &kStrA]() {
+    count_a++;
+    return std::string(kStrA);
+  };
+
+  DBG_DRAW_TEXT(kStrA, gfx::Point(), get_a_string());
+  DBG_LOG(kStrA, "%s", get_a_string().c_str());
+  EXPECT_EQ(0, count_a);
+
+  EXPECT_EQ(get_a_string(), kStrA);
+  EXPECT_EQ(1, count_a);
+}
+
 // For optimization purposes the flag fbool values return false as a constexpr.
 // This allows the compiler to constant propagate and remove unused codepaths.
 static_assert(flag_default_value_check() == false,
