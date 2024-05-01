@@ -709,17 +709,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Both 32-bit and 64-bit"/>
 </enum>
 
-<enum name="DesktopWindowHeuristicResult">
-  <int value="0" label="Invalid result."/>
-  <int value="1" label="The app is in a desktop window."/>
-  <int value="2" label="The app is not in multi-window mode."/>
-  <int value="3" label="Navigation bar bottom insets are present."/>
-  <int value="4"
-      label="Caption bar insets hold an unexpected number of bounding rects."/>
-  <int value="5" label="Caption bar top insets are not present."/>
-  <int value="6" label="Caption bar bounding rect has an invalid height."/>
-</enum>
-
 <enum name="DeviceAuthSource">
   <int value="0" label="Password Manager"/>
   <int value="1" label="Autofill"/>
