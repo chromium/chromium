@@ -100,6 +100,11 @@ class ReadAnythingUntrustedPageHandler
   void PrimaryPageChanged();
   void WebContentsDestroyed();
 
+  // read_anything::mojom::UntrustedPageHandler:
+  void OnVoiceChange(const std::string& voice,
+                     const std::string& lang) override;
+  void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
+
  private:
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
@@ -124,9 +129,6 @@ class ReadAnythingUntrustedPageHandler
   void OnLinksEnabledChanged(bool enabled) override;
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnSpeechRateChange(double rate) override;
-  void OnVoiceChange(const std::string& voice,
-                     const std::string& lang) override;
-  void OnLanguagePrefChange(const std::string& lang, bool enabled) override;
   void OnHighlightGranularityChanged(
       read_anything::mojom::HighlightGranularity granularity) override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
