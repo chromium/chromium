@@ -163,7 +163,9 @@ class BuganizerClient:
                           'error: %s', str(e))
             return {'error': str(e)}
 
-    def GetIssueList(self, query_string, limit: int = MAX_PAGE_SIZE):
+    def GetIssueList(self,
+                     query_string,
+                     limit: int = MAX_PAGE_SIZE) -> List[BuganizerIssue]:
         """Makes a request to the issue tracker to get list of issues by query"""
         # TODO(crbug.com/333112144) : Use nextPageToken in response to support
         # more than 500 issues
@@ -173,7 +175,14 @@ class BuganizerClient:
                                               view='FULL')
         try:
             response = self._ExecuteRequest(request)
-            issues = response.get('issues', []) if response else []
+            logging.debug('[BuganizerClient] GetIssueList response: %s',
+                          response)
+            if not response:
+                return []
+            issues = [
+                BuganizerIssue.from_payload(issue_payload)
+                for issue_payload in response.get('issues', [])
+            ]
             return issues
         except Exception as e:
             raise BuganizerError(f'failed to get issue list: {e}') from e
