@@ -1524,6 +1524,14 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
   CloudOpenTaskBrowserTest(const CloudOpenTaskBrowserTest&) = delete;
   CloudOpenTaskBrowserTest& operator=(const CloudOpenTaskBrowserTest&) = delete;
 
+  void TearDownOnMainThread() override {
+    // Explictly destroy the `upload_task_` before the Profile* is destroyed.
+    // Otherwise the `upload_task_` will be destroyed afterwards and the profile
+    // pointer owned by the `upload_task_` will become dangling
+    upload_task_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   void SetUpLocalToDriveTask() {
     SetUpMyFiles();
 

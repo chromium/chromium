@@ -237,7 +237,7 @@ class CloudOpenTask : public BrowserListObserver,
       std::unique_ptr<std::vector<std::string>> mime_types);
   void RecordUploadLatencyUMA();
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_;
   std::vector<storage::FileSystemURL> file_urls_;
   // File being currently uploaded.
   size_t file_urls_idx_ = 0;
