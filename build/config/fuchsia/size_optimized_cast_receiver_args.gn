@@ -34,7 +34,6 @@ enable_library_cdms = false
 enable_logging_override = true
 enable_pdf = false
 enable_plugins = false
-optimize_for_size = true
 optional_trace_events_enabled = false
 
 # Ensure PGO and ThinLTO are disabled as these optimizations increase the binary
