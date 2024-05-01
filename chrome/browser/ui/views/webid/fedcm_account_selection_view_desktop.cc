@@ -62,6 +62,24 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   TabStripModelObserver::StopObservingAll(this);
 }
 
+void FedCmAccountSelectionView::ShowDialogWidget() {
+  // An active widget would steal the focus when displayed, this would lead
+  // to some unexpected consequences. e.g.
+  //   1. links/buttons from the web contents area would require two clicks,
+  //   one to focus on the content area and one to focus on the clickable
+  //   2. user typing will be interrupted because the widget that's not
+  //   gated by user gesture would take the focus
+  // However, from accessibility's perspective, when the widget is
+  // displayed, there would be announcement with it and it would be better
+  // to focus on the widget such that the user could have more context and
+  // interact with it easily.
+  if (accessibility_state_utils::IsScreenReaderEnabled()) {
+    GetDialogWidget()->Show();
+    return;
+  }
+  GetDialogWidget()->ShowInactive();
+}
+
 void FedCmAccountSelectionView::Show(
     const std::string& top_frame_etld_plus_one,
     const std::optional<std::string>& iframe_etld_plus_one,
@@ -257,21 +275,7 @@ void FedCmAccountSelectionView::Show(
     is_modal_closed_but_accounts_fetch_pending_ = false;
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
-      // An active widget would steal the focus when displayed, this would lead
-      // to some unexpected consequences. e.g.
-      //   1. links/buttons from the web contents area would require two clicks,
-      //   one to focus on the content area and one to focus on the clickable
-      //   2. user typing will be interrupted because the widget that's not
-      //   gated by user gesture would take the focus
-      // However, from accessibility's perspective, when the widget is
-      // displayed, there would be announcement with it and it would be better
-      // to focus on the widget such that the user could have more context and
-      // interact with it easily.
-      if (accessibility_state_utils::IsScreenReaderEnabled()) {
-        GetDialogWidget()->Show();
-      } else {
-        GetDialogWidget()->ShowInactive();
-      }
+      ShowDialogWidget();
       if (accounts_displayed_callback_) {
         std::move(accounts_displayed_callback_).Run();
       }
@@ -368,7 +372,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
     is_modal_closed_but_accounts_fetch_pending_ = false;
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
-      GetDialogWidget()->Show();
+      ShowDialogWidget();
     }
   }
   // Else:
@@ -436,7 +440,7 @@ void FedCmAccountSelectionView::ShowErrorDialog(
   }
 
   if (is_web_contents_visible_) {
-    GetDialogWidget()->Show();
+    ShowDialogWidget();
     input_protector_->VisibilityChanged(true);
   }
   // Else:

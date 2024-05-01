@@ -266,6 +266,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   bool ShowVerifyingSheet(const Account& account,
                           const IdentityProviderDisplayData& idp_display_data);
 
+  // Shows the dialog widget.
+  void ShowDialogWidget();
+
   // Returns the SheetType to be used for metrics reporting.
   SheetType GetSheetType();
 
