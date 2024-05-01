@@ -31,7 +31,7 @@ TEST(MAYBE_FendCoreTest, SimpleMath) {
 
 TEST(MAYBE_FendCoreTest, NoApproxString) {
   std::optional<std::string> result = evaluate("1/3", /*timeout_in_ms=*/0);
-  EXPECT_THAT(result, Optional(Eq("0.33")));
+  EXPECT_THAT(result, Optional(Eq("0.3333333333")));
 }
 
 TEST(MAYBE_FendCoreTest, FiltersTrivialResult) {
@@ -51,7 +51,7 @@ TEST(MAYBE_FendCoreTest, FiltersLambdaResults) {
 
 TEST(MAYBE_FendCoreTest, UnitConversion) {
   std::optional<std::string> result = evaluate("2 miles in meters", /*timeout_in_ms=*/0);
-  EXPECT_THAT(result, Optional(Eq("3218.68 meters")));
+  EXPECT_THAT(result, Optional(Eq("3218.688 meters")));
 }
 
 // This test passes MSan as it does not allocate on the Rust side. However, we
