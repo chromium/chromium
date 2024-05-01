@@ -617,7 +617,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kDownloadRowEsbPromoFeature.name == feature->name) {
+  if (kEsbDownloadRowPromoFeature.name == feature->name) {
     // A config that allows a promotion row referring users to enable Enhanced
     // Safe Browsing (ESB), to be shown on the Downloads manager page. It
     // can be viewed at most 7 times without interaction across a 90 day period.
@@ -651,7 +651,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                             Comparator(LESS_THAN, 3), 90, 90));
 
     return config;
-
   }
 
   if (kIPHBackNavigationMenuFeature.name == feature->name) {

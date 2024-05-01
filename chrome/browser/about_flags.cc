@@ -10568,9 +10568,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"esb-download-row-promo", flag_descriptions::kEsbDownloadRowPromoName,
-     flag_descriptions::kEsbDownloadRowPromoDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(safe_browsing::kEsbDownloadRowPromo)},
+    {"esb-download-row-promo",
+     flag_descriptions::kEsbDownloadRowPromoFeatureName,
+     flag_descriptions::kEsbDownloadRowPromoFeatureDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(feature_engagement::kEsbDownloadRowPromoFeature)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

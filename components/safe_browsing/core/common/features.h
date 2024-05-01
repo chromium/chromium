@@ -69,10 +69,6 @@ BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
 // passwords for local decryption on encrypted archives.
 BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);
 
-// Controls whether the Enhanced Safe Browsing (ESB) download row promotion
-// should show.
-BASE_DECLARE_FEATURE(kEsbDownloadRowPromo);
-
 // Allows the Extension Telemetry Service to accept and use configurations
 // sent by the server.
 BASE_DECLARE_FEATURE(kExtensionTelemetryConfiguration);

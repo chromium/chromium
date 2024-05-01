@@ -2749,8 +2749,8 @@ extern const char kEnableCrOSSodaLanguagesDescription[];
 extern const char kEnableMantaServiceName[];
 extern const char kEnableMantaServiceDescription[];
 
-extern const char kEsbDownloadRowPromoName[];
-extern const char kEsbDownloadRowPromoDescription[];
+extern const char kEsbDownloadRowPromoFeatureName[];
+extern const char kEsbDownloadRowPromoFeatureDescription[];
 
 extern const char kForceSigninFlowInProfilePickerName[];
 extern const char kForceSigninFlowInProfilePickerDescription[];
