@@ -830,6 +830,9 @@ CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
   if (range.Peek().FunctionId() != CSSValueID::kLightDark) {
     return nullptr;
   }
+  if (!IsUASheetBehavior(context.Mode())) {
+    context.Count(WebFeature::kCSSLightDark);
+  }
   CSSParserSavePoint savepoint(range);
   CSSParserTokenRange arg_range = ConsumeFunction(range);
   CSSValue* light_value = consume_value(arg_range, context);

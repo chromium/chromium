@@ -11534,6 +11534,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4963" label="PrefersReducedDataMediaFeature"/>
   <int value="4964" label="ScriptingMediaFeature"/>
   <int value="4965" label="InvertedColorsMediaFeature"/>
+  <int value="4966" label="CSSLightDark"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

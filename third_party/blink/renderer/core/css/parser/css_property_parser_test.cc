@@ -643,6 +643,16 @@ TEST_F(CSSPropertyUseCounterTest, CSSPropertyBackgroundImageImageSet) {
   EXPECT_TRUE(IsCounted(feature));
 }
 
+TEST_F(CSSPropertyUseCounterTest, CSSLightDark) {
+  WebFeature feature = WebFeature::kCSSLightDark;
+
+  ParseProperty(CSSPropertyID::kBackgroundColor, "pink");
+  EXPECT_FALSE(IsCounted(feature));
+
+  ParseProperty(CSSPropertyID::kBackgroundColor, "light-dark(green, lime)");
+  EXPECT_TRUE(IsCounted(feature));
+}
+
 void TestImageSetParsing(const String& testValue,
                          const String& expectedCssText) {
   const CSSValue* value = CSSParser::ParseSingleValue(
