@@ -8,7 +8,7 @@ import type {HoverButtonElement} from 'chrome://customize-chrome-side-panel.top-
 import {listenOnce} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('HoverButtonTest', () => {
   let hoverButtonElement: HoverButtonElement;
@@ -71,5 +71,24 @@ suite('HoverButtonTest', () => {
       keyDownOn(hoverButtonElement, 0, [], ' ');
     });
     assertTrue(clickEventHappened);
+  });
+
+  test('icon shows', () => {
+    // Set --cr-icon-image variable. In prod code this is done in a parent
+    // element.
+    const crIconImage = 'url("chrome://resources/images/open_in_new.svg")';
+    hoverButtonElement.style.setProperty('--cr-icon-image', crIconImage);
+
+    // Assert that icon is visible.
+    const icon = hoverButtonElement.shadowRoot!.querySelector<HTMLElement>(
+        '#icon.cr-icon');
+    assertTrue(!!icon);
+    assertTrue(isVisible(icon));
+
+    // Assert that `--cr-icon-image` propagates to the icon's `mask-image`
+    // property.
+    const maskImageProperty = icon.computedStyleMap().get('mask-image');
+    assertTrue(!!maskImageProperty);
+    assertEquals(crIconImage, maskImageProperty.toString());
   });
 });
