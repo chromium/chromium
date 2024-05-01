@@ -2546,6 +2546,12 @@ BASE_FEATURE(kScalableIphClientConfig,
              "ScalableIphClientConfig",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Adds a shelf pod button that appears whenever the shelf has limited space and
+// acts as an entrypoint to other shelf pod buttons to prevent overflow.
+BASE_FEATURE(kScalableShelfPods,
+             "ScalableShelfPods",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sea pen feature in the personalization app.
 BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementSeaPen,
@@ -4315,6 +4321,10 @@ bool IsScalableIphTrackingOnlyEnabled() {
 
 bool IsScalableIphClientConfigEnabled() {
   return base::FeatureList::IsEnabled(kScalableIphClientConfig);
+}
+
+bool IsScalableShelfPodsEnabled() {
+  return base::FeatureList::IsEnabled(kScalableShelfPods);
 }
 
 bool IsSeaPenDemoModeEnabled() {
