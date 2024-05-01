@@ -236,8 +236,8 @@ class MEDIA_GPU_EXPORT V4L2Device
 
   VideoEncodeAccelerator::SupportedProfiles EnumerateSupportedEncodeProfiles();
 
-  // Open device node for |path| as a device of |type|.
-  bool OpenDevicePath(const std::string& path, Type type);
+  // Open device node for |path|.
+  bool OpenDevicePath(const std::string& path);
 
   // Close the currently open device.
   void CloseDevice();

@@ -130,7 +130,7 @@ bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
     return false;
   }
 
-  if (!OpenDevicePath(path, type)) {
+  if (!OpenDevicePath(path)) {
     VLOGF(1) << "Failed opening " << path;
     return false;
   }
@@ -460,7 +460,7 @@ std::vector<uint32_t> V4L2Device::GetSupportedImageProcessorPixelformats(
   Type type = Type::kImageProcessor;
   const auto& devices = GetDevicesForType(type);
   for (const auto& device : devices) {
-    if (!OpenDevicePath(device.first, type)) {
+    if (!OpenDevicePath(device.first)) {
       VLOGF(1) << "Failed opening " << device.first;
       continue;
     }
@@ -484,7 +484,7 @@ V4L2Device::GetSupportedDecodeProfiles(
   Type type = Type::kDecoder;
   const auto& devices = GetDevicesForType(type);
   for (const auto& device : devices) {
-    if (!OpenDevicePath(device.first, type)) {
+    if (!OpenDevicePath(device.first)) {
       VLOGF(1) << "Failed opening " << device.first;
       continue;
     }
@@ -505,7 +505,7 @@ V4L2Device::GetSupportedEncodeProfiles() {
   Type type = Type::kEncoder;
   const auto& devices = GetDevicesForType(type);
   for (const auto& device : devices) {
-    if (!OpenDevicePath(device.first, type)) {
+    if (!OpenDevicePath(device.first)) {
       VLOGF(1) << "Failed opening " << device.first;
       continue;
     }
@@ -835,7 +835,7 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
   return true;
 }
 
-bool V4L2Device::OpenDevicePath(const std::string& path, Type type) {
+bool V4L2Device::OpenDevicePath(const std::string& path) {
   DCHECK(!device_fd_.is_valid());
 
   device_fd_.reset(
@@ -896,7 +896,7 @@ void V4L2Device::EnumerateDevicesForType(Type type) {
 
   Devices devices;
   for (const auto& path : candidate_paths) {
-    if (!OpenDevicePath(path, type)) {
+    if (!OpenDevicePath(path)) {
       continue;
     }
     const auto supported_pixelformats = EnumerateSupportedPixFmts(
