@@ -5811,6 +5811,7 @@ static_library("browser") {
     ]
     deps += [
       "//chrome/browser/apps:icon_standardizer",
+      "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",

@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 
 #include <stddef.h>
+
 #include <map>
 #include <type_traits>
 #include <utility>
@@ -15,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"

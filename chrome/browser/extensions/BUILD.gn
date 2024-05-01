@@ -760,6 +760,9 @@ static_library("extensions") {
   defines = []
 
   allow_circular_includes_from = [
+    # TODO(b/40251079): Remove this circular dependency.
+    "//chrome/browser/apps/app_service/app_icon",
+
     # TODO(crbug.com/40161499): Remove this circular dependency.
     "//chrome/browser/devtools",
 
@@ -810,6 +813,9 @@ static_library("extensions") {
     "//chrome/browser:theme_properties",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_service:constants",
+
+    # Only for allow_circular_includes_from
+    "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/browsing_data:constants",

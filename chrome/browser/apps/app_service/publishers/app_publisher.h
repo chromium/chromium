@@ -26,7 +26,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/app_service/publishers/compressed_icon_getter.h"
+#include "chrome/browser/apps/app_service/app_icon/compressed_icon_getter.h"
 #endif
 
 namespace apps {

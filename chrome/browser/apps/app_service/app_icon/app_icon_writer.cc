@@ -8,8 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/app_service/app_icon/compressed_icon_getter.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
-#include "chrome/browser/apps/app_service/publishers/compressed_icon_getter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/resource/resource_scale_factor.h"
 

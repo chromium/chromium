@@ -1,0 +1,39 @@
+include_rules = [
+  "-chrome/browser/apps/app_service",
+  "+chrome/browser/apps/app_service/app_icon",
+]
+
+specific_include_rules = {
+  "app_icon_factory_unittest\.cc": [
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+  ],
+  "app_icon_test_util\.cc": [
+    "+chrome/browser/apps/app_service/app_launch_params.h",
+  ],
+  "app_icon_test_util\.h": [
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/publishers/app_publisher.h",
+  ],
+  "arc_apps_icon_unittest\.cc": [
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+  ],
+  "browser_shortcut_icon_unittest\.cc": [
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+    "+chrome/browser/apps/app_service/publishers/shortcut_publisher.h",
+  ],
+  "chrome_apps_icon_unittest\.cc": [
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+  ],
+  "guest_os_apps_icon_unittest\.cc": [
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+  ],
+  "web_app_icon_unittest\.cc": [
+    "+chrome/browser/apps/app_service/app_service_proxy.h",
+    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
+  ],
+}

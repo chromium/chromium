@@ -1,0 +1,161 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(!is_android)
+
+source_set("app_icon") {
+  sources = [
+    "app_icon_factory.cc",
+    "app_icon_factory.h",
+    "app_icon_loader.cc",
+    "app_icon_loader.h",
+  ]
+
+  deps = [
+    ":util",
+    "//base",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser/apps:icon_standardizer",
+    "//chrome/browser/favicon",
+    "//chrome/browser/icon_transcoder",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources:app_icon_resources_grit",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//components/app_constants",
+    "//components/favicon/core",
+    "//components/keyed_service/content",
+    "//components/services/app_service",
+    "//components/webapps/common",
+    "//extensions:extensions_browser_resources_grit",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "app_icon_decoder.cc",
+      "app_icon_decoder.h",
+      "app_icon_reader.cc",
+      "app_icon_reader.h",
+      "app_icon_writer.cc",
+      "app_icon_writer.h",
+      "arc_activity_adaptive_icon_impl.cc",
+      "arc_activity_adaptive_icon_impl.h",
+      "compressed_icon_getter.h",
+    ]
+
+    deps += [
+      "//ash/components/arc/mojom",
+      "//ash/public/cpp",
+      "//chrome/browser/image_decoder",
+      "//chrome/browser/resources:component_extension_resources_grit",
+      "//components/arc/common",
+    ]
+  }
+}
+
+source_set("util") {
+  sources = [
+    "app_icon_util.cc",
+    "app_icon_util.h",
+    "dip_px_util.cc",
+    "dip_px_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/services/app_service",
+    "//services/data_decoder/public/cpp",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gfx",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/public/cpp" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_icon_factory_unittest.cc",
+    "chrome_apps_icon_unittest.cc",
+    "web_app_icon_unittest.cc",
+  ]
+
+  deps = [
+    ":app_icon",
+    ":test_support",
+    ":util",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//cc:test_support",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser/apps:icon_standardizer",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/extensions",
+    "//chrome/browser/resources:component_extension_resources_grit",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//components/app_constants",
+    "//components/services/app_service",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//skia",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/gfx/codec",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "app_icon_decoder_unittest.cc",
+      "arc_apps_icon_unittest.cc",
+      "browser_shortcut_icon_unittest.cc",
+      "guest_os_apps_icon_unittest.cc",
+    ]
+
+    deps += [
+      "//ash/components/arc:arc_test_support",
+      "//chrome/browser/ash:test_support",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "app_icon_test_util.cc",
+    "app_icon_test_util.h",
+    "web_app_icon_test_helper.cc",
+    "web_app_icon_test_helper.h",
+  ]
+
+  public_deps = [ "//chrome/browser/apps/app_service" ]
+
+  deps = [
+    ":app_icon",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/apps:icon_standardizer",
+    "//chrome/test:test_support",
+    "//components/services/app_service",
+    "//skia",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash:test_support" ]
+  }
+}

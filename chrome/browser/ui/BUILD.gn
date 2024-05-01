@@ -2076,6 +2076,8 @@ static_library("ui") {
       "//chrome/browser:theme_properties",
       "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service/app_icon",
+      "//chrome/browser/apps/app_service/app_icon:util",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/cart:mojo_bindings",
@@ -2220,6 +2222,7 @@ static_library("ui") {
 
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service/app_icon",
     ]
 
     if (use_ozone && !is_chromeos_ash) {

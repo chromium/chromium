@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_icon/compressed_icon_getter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
-#include "chrome/browser/apps/app_service/publishers/compressed_icon_getter.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
