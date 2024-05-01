@@ -2275,14 +2275,6 @@
     'version_assembly': {
       'filepath': 'chrome/app/version_assembly',
     },
-    'video': {
-      'filepath': 'content/browser/renderer_host/media/|'\
-                  'content/renderer/media/|'\
-                  'media/capture/video/|'\
-                  'media/filters/|'\
-                  'media/gpu/|'\
-                  '.*video',
-    },
     'video_capture': {
       'filepath': 'chrome/browser/media/.*(capture|media|webrtc)'\
                   '|content/browser/renderer_host/media/.*(capture|media)'\
@@ -3336,7 +3328,6 @@
     'user_education': ['cros-system-ui-productivity-eng+reviews@google.com'],
     'version_assembly': ['caitkp+watch@chromium.org',
                          'gab+watch@chromium.org'],
-    'video': ['posciak+watch@chromium.org'],
     'video_capture': ['chfremer+watch@chromium.org',
                       'rijubrata.bhaumik@intel.com'],
     'virtual_keyboard': ['shend+watch@chromium.org',
