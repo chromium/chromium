@@ -851,7 +851,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5329451663851195956">Puedes deslizar la pantalla hacia abajo para actualizar la página.</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
 <translation id="5343472494710226394">Noticias, deportes y contenido basado en tus intereses.</translation>
-<translation id="5345660046352249607">{COUNT,plural, =1{¿Hacer seguimiento de este paquete?}other{¿Hacer seguimiento de {COUNT} paquetes?}}</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{¿Seguir este paquete?}other{¿Seguir {COUNT} paquetes?}}</translation>
 <translation id="5348775987281903912">Puedes compartir esta página usando el botón de compartir.</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
@@ -1541,7 +1541,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8775144690796719618">La URL no es válida</translation>
 <translation id="8780076847684176174">{count,plural, =1{Revisar la pestaña...}other{Revisar todas las pestañas...}}</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>
-<translation id="8782570580170191813">Monitorizar paquetes siempre</translation>
+<translation id="8782570580170191813">Seguir paquetes siempre</translation>
 <translation id="8787968206789828143">Buscar en Web</translation>
 <translation id="8792626944327216835">micrófono</translation>
 <translation id="8803639129939845298">Es seguro</translation>

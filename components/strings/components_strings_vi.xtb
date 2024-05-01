@@ -3382,7 +3382,7 @@ Thông tin chi tiết bổ sung:
 <translation id="753556296624075801">Do Google cung cấp</translation>
 <translation id="7537536606612762813">Bắt buộc</translation>
 <translation id="7542995811387359312">Tính năng tự động điền thẻ tín dụng đã bị vô hiệu hóa vì biểu mẫu này không sử dụng kết nối an toàn.</translation>
-<translation id="7543525346216957623">Hãy hỏi ý kiến cha mẹ của bạn</translation>
+<translation id="7543525346216957623">Xin phép cha mẹ</translation>
 <translation id="7546409722674205727">Đang khởi động <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Khắc phục lỗi kết nối</translation>
 <translation id="7549584377607005141">Trang web này yêu cầu dữ liệu mà bạn đã nhập trước đó để được hiển thị đúng cách. Bạn có thể gửi lại dữ liệu này nhưng làm như vậy bạn sẽ lặp lại mọi hoạt động mà trang này đã thực hiện trước đó.</translation>
@@ -4272,7 +4272,7 @@ Thông tin chi tiết bổ sung:
 <translation id="945855313015696284">Kiểm tra thông tin bên dưới và xóa mọi thẻ không hợp lệ</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tạo nhanh một trang web mới trong Google Sites</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{Hôm nay, Chrome sẽ hạn chế cookie trở lại}=1{Chrome sẽ hạn chế cookie trở lại vào ngày mai}other{Chrome sẽ hạn chế cookie trở lại sau # ngày nữa}}</translation>
-<translation id="949314938206378263">Bạn đã yêu cầu truy cập trang web này. Cha/mẹ bạn có thể trả lời trong Family Link.</translation>
+<translation id="949314938206378263">Bạn đã xin phép truy cập trang web này. Cha mẹ bạn có thể trả lời trong Family Link.</translation>
 <translation id="950736567201356821">Đục 3 lỗ trên cùng</translation>
 <translation id="961663415146723894">Đóng gáy dưới cùng</translation>
 <translation id="961930410699694996">Đã cho phép sử dụng thông tin vị trí cho lần này</translation>

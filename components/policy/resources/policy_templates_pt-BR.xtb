@@ -1178,7 +1178,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
         |BLOCK| deixa o app indisponível para o usuário. Se você especificar |daily_limit_mins| com a restrição |BLOCK|, |daily_limit_mins| será ignorado.
         |TIME_LIMITS| aplica o limite de uso diário e torna o app indisponível após o limite ser atingido no dia especificado. O limite de uso é especificado em |daily_limit_mins|. O limite de uso é redefinido diariamente no horário UTC transmitido em |reset_at|.
         Esta política é usada apenas para crianças.
-        Esta política complementa a "UsageTimeLimit". Restrições especificadas em "UsageTimeLimit", como tempo de uso e hora de dormir, serão aplicadas independentemente de "PerAppTimeLimits".</translation>
+        Esta política complementa a "UsageTimeLimit". Restrições especificadas em "UsageTimeLimit", como tempo de tela e hora de dormir, serão aplicadas independentemente de "PerAppTimeLimits".</translation>
 <translation id="1913629775420987861">Mostrar uma caixa de diálogo de alerta quando o usuário tentar sair</translation>
 <translation id="1916266055944569995">Se a política for definida, o valor de retorno da API Managed Configuration será definido para origens específicas.
 

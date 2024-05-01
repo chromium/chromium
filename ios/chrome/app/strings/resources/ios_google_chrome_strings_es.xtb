@@ -72,7 +72,7 @@ Notas importantes:
 <translation id="2574249610672786438">Inicia sesión en todos tus dispositivos para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="2576431527583832481">Chrome sigue mejorando. Hay una nueva versión disponible.</translation>
 <translation id="257708665678654955">¿Quieres que Google Chrome te ofrezca la posibilidad de traducir las páginas en <ph name="LANGUAGE_NAME" /> de este sitio web la próxima vez?</translation>
-<translation id="2650286135394207535">Permitir que Chrome te ayude a monitorizar tus paquetes</translation>
+<translation id="2650286135394207535">Permitir que Chrome te ayude a seguir tus paquetes</translation>
 <translation id="2671426118752779020">Puedes usar las contraseñas que has guardado en el Gestor de contraseñas de Google en otras aplicaciones de tu iPhone.</translation>
 <translation id="2689064829982324496">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
@@ -144,7 +144,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="484033449593719797">No compatible con Chrome Beta</translation>
 <translation id="4840404732697892756">El Gestor de contraseñas de Google puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google.</translation>
 <translation id="4856636171409137183">Para disfrutar de una experiencia más personalizada, incluye Chrome en <ph name="FEATURE_NAME_1" /> y <ph name="FEATURE_NAME_2" /></translation>
-<translation id="4860330141789125848">{COUNT,plural, =1{Chrome puede ayudarte a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chrome puede ayudarte a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome puede ayudarte a seguir este paquete en la página Nueva pestaña.}other{Chrome puede ayudarte a seguir estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="4903674399067644695">En esta tarjeta se muestran sugerencias sobre cómo sacarle el máximo partido a Chrome.</translation>
 <translation id="49200511069271369">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en el que se puede usar Chrome. Tu administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="498985224078955265">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ambos dispositivos.</translation>
@@ -163,7 +163,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="5439191312780166229">Te envía advertencias sobre sitios peligrosos (aunque Google no los conozca) analizando más datos de sitios que la protección estándar. Si quieres, puedes omitir las advertencias de Chrome.</translation>
 <translation id="5442013002200339429">Si ocultas <ph name="MODULE_NAME" />, Chrome dejará de hacer un seguimiento automático de tus próximos paquetes y eliminará todos los datos de seguimiento de envíos anteriores.</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome</translation>
-<translation id="546541279759910616">{COUNT,plural, =1{Chrome te ayudará a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chrome te ayudará a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome te ayudará a seguir este paquete en la página Nueva pestaña.}other{Chrome te ayudará a seguir estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="5492504007368565877">El Gestor de contraseñas de Google no puede comprobar tus contraseñas.</translation>
 <translation id="5525095647255982834">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ese dispositivo.</translation>
 <translation id="5527026824954593399">Toca Ver con Google Maps en Chrome.</translation>

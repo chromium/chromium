@@ -927,7 +927,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5744274077973758795">Se activaron las notificaciones de <ph name="FEATURE_NAME" /></translation>
 <translation id="5745916533876677730">Ir a la pestaña anterior</translation>
 <translation id="574762237186762643">Eventos</translation>
-<translation id="5748177854685749242">Llega a las <ph name="DATE" /></translation>
+<translation id="5748177854685749242">Llega <ph name="DATE" /></translation>
 <translation id="5755162682436943950">Has cerrado sesión. Abre el cuadro de diálogo para acceder y activar la sincronización.</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>

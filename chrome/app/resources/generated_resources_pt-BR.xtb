@@ -467,7 +467,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1348966090521113558">Configurações de acessibilidade do mouse</translation>
 <translation id="1350962700620017446">"<ph name="EXTENSION_NAME" />" quer encontrar e acessar scanners de documentos.</translation>
 <translation id="1352834119074414157">O pacote pode estar corrompido ou comprometido. Feche esta janela e faça o download de novo</translation>
-<translation id="1353275871123211385">Para usar o controle dos pais, como a aprovação de apps e os limites de tempo de uso, é necessário que a criança tenha uma Conta do Google gerenciada por familiar responsável. Uma conta escolar pode ser adicionada mais tarde para o uso de ferramentas como o Google Sala de Aula.</translation>
+<translation id="1353275871123211385">Para usar o controle dos pais, como a aprovação de apps e os limites de tempo de tela, é necessário que a criança tenha uma Conta do Google gerenciada por familiar responsável. Uma conta escolar pode ser adicionada mais tarde para o uso de ferramentas como o Google Sala de Aula.</translation>
 <translation id="135389172849514421">Funciona off-line</translation>
 <translation id="1353980523955420967">Não é possível encontrar o PPD. Verifique se seu Chromebook está on-line e tente novamente.</translation>
 <translation id="1354045473509304750">Continuar permitindo que <ph name="HOST" /> use e mova sua câmera</translation>
@@ -3098,7 +3098,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3321460131042519426">Ativar quebra de palavra</translation>
 <translation id="3321494112580110651">Sua impressora não está listada?</translation>
 <translation id="3321776060736518525">De <ph name="APP_URL" /></translation>
-<translation id="3323521181261657960">Bônus! Você ganhou mais tempo de uso</translation>
+<translation id="3323521181261657960">Bônus! Você ganhou mais tempo de tela</translation>
 <translation id="3325804108816646710">Procurando perfis disponíveis…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive conectado</translation>
 <translation id="3325995804968971809">Estilo</translation>
@@ -3387,7 +3387,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3552780134252864554">Limpar ao sair</translation>
 <translation id="3554493885489666172">Seu dispositivo é gerenciado por <ph name="PROFILE_NAME" />. Os administradores podem acessar os dados de qualquer perfil neste dispositivo.</translation>
 <translation id="3555812735919707620">Remover extensão</translation>
-<translation id="3557101512409028104">Defina restrições de sites e limites de tempo de uso com o Family Link</translation>
+<translation id="3557101512409028104">Defina restrições de sites e limites de tempo de tela com o Family Link</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar nesse sistema. Esses relatórios podem incluir informações como falhas do ChromeOS, quais recursos foram usados e a quantidade de memória utilizada normalmente.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />É possível ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS da criança. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559079791149580653">Parar de transmitir tela para <ph name="DEVICE_NAME" /></translation>
@@ -4136,7 +4136,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4099874310852108874">Ocorreu um erro de rede.</translation>
 <translation id="4100020874626534113">Permitir atribuição flexível do diacrítico. Por exemplo, insira "anhs" ou "asnh" para digitar "ánh".</translation>
 <translation id="4100733287846229632">Espaço em disco do dispositivo criticamente baixo</translation>
-<translation id="4100853287411968461">Novo limite de tempo de uso</translation>
+<translation id="4100853287411968461">Novo limite de tempo de tela</translation>
 <translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102906002417106771">Reiniciar para executar o Powerwash</translation>
 <translation id="4103644672850109428">Leitor de tela, ampliação</translation>

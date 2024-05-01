@@ -1417,7 +1417,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 Nueva instalación</translation>
 <translation id="6559976592393364813">Pregunta al administrador</translation>
 <translation id="6565007273808762236">Conexión eSIM no disponible</translation>
-<translation id="6570831796530454248">{0,plural, =1{Actualiza el dispositivo en un plazo de 1 hora}other{Actualiza el dispositivo en un plazo de # horas}}</translation>
+<translation id="6570831796530454248">{0,plural, =1{Actualiza tu dispositivo en un plazo de 1 hora}other{Actualiza tu dispositivo en un plazo de # horas}}</translation>
 <translation id="6570902864550063460">Cargando mediante USB</translation>
 <translation id="6574587113394758819">Se ha ocultado una notificación de <ph name="APP_TITLE" /> porque la protección contra fisgones está activada</translation>
 <translation id="6574622320167699133">Desbloqueado con tu teléfono. Toca o haz clic para acceder.</translation>
