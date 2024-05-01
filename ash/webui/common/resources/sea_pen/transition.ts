@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isSeaPenEnabled} from './load_time_booleans.js';
-
-let transitionsEnabled = isSeaPenEnabled();
+let transitionsEnabled = true;
 
 export function getTransitionEnabled() {
   return transitionsEnabled;
