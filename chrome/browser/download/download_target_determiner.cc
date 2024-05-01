@@ -246,7 +246,6 @@ DownloadTargetDeterminer::Result
       return QUIT_DOLOOP;
     }
 
-    conflict_action_ = DownloadPathReservationTracker::OVERWRITE;
     DCHECK(virtual_path_.IsAbsolute());
     return CONTINUE;
   }
@@ -482,7 +481,7 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
         << "Transient download should not ask the user for confirmation.";
     DCHECK(result != download::PathValidationResult::CONFLICT)
         << "Transient download"
-           "should always overwrite the file.";
+           "should always overwrite or uniquify the file.";
     switch (result) {
       case download::PathValidationResult::PATH_NOT_WRITABLE:
       case download::PathValidationResult::NAME_TOO_LONG:
@@ -495,8 +494,8 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
       case download::PathValidationResult::SUCCESS:
       case download::PathValidationResult::SUCCESS_RESOLVED_CONFLICT:
       case download::PathValidationResult::SAME_AS_SOURCE:
-        DCHECK_EQ(virtual_path_, path) << "Transient download path should not"
-                                          "be changed.";
+        DCHECK(virtual_path_ == path ||
+               conflict_action_ == DownloadPathReservationTracker::UNIQUIFY);
         break;
       case download::PathValidationResult::COUNT:
         NOTREACHED();

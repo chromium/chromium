@@ -692,7 +692,7 @@ void DownloadManagerImpl::StartDownloadItem(
     download::DownloadItemImpl* download = downloads_by_guid_[info->guid];
     if (!download || download->GetState() == download::DownloadItem::CANCELLED)
       download = nullptr;
-    std::move(callback).Run(std::move(info), download,
+    std::move(callback).Run(std::move(info), download, base::FilePath(),
                             should_persist_new_download_);
     OnDownloadStarted(download, std::move(on_started));
   } else {
@@ -702,23 +702,68 @@ void DownloadManagerImpl::StartDownloadItem(
                       "request is ignored.";
       return;
     }
-    GetNextId(base::BindOnce(&DownloadManagerImpl::CreateNewDownloadItemToStart,
+    GetNextId(base::BindOnce(&DownloadManagerImpl::OnNewDownloadIdRetrieved,
                              weak_factory_.GetWeakPtr(), std::move(info),
                              std::move(on_started), std::move(callback)));
   }
+}
+
+void DownloadManagerImpl::OnNewDownloadIdRetrieved(
+    std::unique_ptr<download::DownloadCreateInfo> info,
+    download::DownloadUrlParameters::OnStartedCallback on_started,
+    download::InProgressDownloadManager::StartDownloadItemCallback callback,
+    uint32_t id) {
+#if BUILDFLAG(IS_ANDROID)
+  if (info->transient && !info->is_must_download &&
+      delegate_->ShouldOpenPdfInline() &&
+      base::EqualsCaseInsensitiveASCII(info->mime_type, kPdfMimeType)) {
+    for (const auto& iter : downloads_by_guid_) {
+      download::DownloadItem* item = iter.second;
+      if (item->GetFileExternallyRemoved() ||
+          item->GetState() != download::DownloadItem::COMPLETE) {
+        continue;
+      }
+
+      if (item->GetMimeType() != kPdfMimeType ||
+          item->GetUrlChain() != info->url_chain) {
+        continue;
+      }
+
+      if (!item->IsTransient() || item->IsMustDownload()) {
+        continue;
+      }
+
+      disk_access_task_runner_->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&base::PathExists, item->GetTargetFilePath()),
+          base::BindOnce(&DownloadManagerImpl::CreateNewDownloadItemToStart,
+                         weak_factory_.GetWeakPtr(), std::move(info),
+                         std::move(on_started), std::move(callback), id,
+                         item->GetTargetFilePath()));
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  CreateNewDownloadItemToStart(std::move(info), std::move(on_started),
+                               std::move(callback), id, base::FilePath(),
+                               false);
 }
 
 void DownloadManagerImpl::CreateNewDownloadItemToStart(
     std::unique_ptr<download::DownloadCreateInfo> info,
     download::DownloadUrlParameters::OnStartedCallback on_started,
     download::InProgressDownloadManager::StartDownloadItemCallback callback,
-    uint32_t id) {
+    uint32_t id,
+    const base::FilePath& duplicate_download_file_path,
+    bool duplicate_file_exists) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   download::DownloadItemImpl* download = CreateActiveItem(id, *info);
   content::devtools_instrumentation::WillBeginDownload(info.get(), download);
-  std::move(callback).Run(std::move(info), download,
-                          should_persist_new_download_);
+  std::move(callback).Run(
+      std::move(info), download,
+      duplicate_file_exists ? duplicate_download_file_path : base::FilePath(),
+      should_persist_new_download_);
   if (download) {
     // For new downloads, we notify here, rather than earlier, so that
     // the download_file is bound to download and all the usual

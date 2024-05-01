@@ -26,6 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="BooleanOpenFromDuplicates">
+  <int value="0" label="Created New file"/>
+  <int value="1" label="Opened existing duplicate"/>
+</enum>
+
 <enum name="BooleanReplaced">
   <int value="0" label="Did Not Replace"/>
   <int value="1" label="Replaced"/>

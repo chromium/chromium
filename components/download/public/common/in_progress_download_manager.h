@@ -52,6 +52,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
   using StartDownloadItemCallback =
       base::OnceCallback<void(std::unique_ptr<DownloadCreateInfo> info,
                               DownloadItemImpl*,
+                              const base::FilePath&,
                               bool /* should_persist_new_download */)>;
   using DisplayNames = std::unique_ptr<
       std::map<std::string /*content URI*/, base::FilePath /* display name*/>>;
@@ -243,6 +244,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
       DownloadJob::CancelRequestCallback cancel_request_callback,
       std::unique_ptr<DownloadCreateInfo> info,
       DownloadItemImpl* download,
+      const base::FilePath& duplicate_download_file_path,
       bool should_persist_new_download);
 
   // Called when downloads are initialized.

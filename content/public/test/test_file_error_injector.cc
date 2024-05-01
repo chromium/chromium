@@ -317,6 +317,7 @@ class DownloadFileWithErrorFactory : public download::DownloadFileFactory {
       const base::FilePath& default_download_directory,
       std::unique_ptr<download::InputStream> stream,
       uint32_t download_id,
+      const base::FilePath& duplicate_download_file_path,
       base::WeakPtr<download::DownloadDestinationObserver> observer) override;
 
   bool SetError(TestFileErrorInjector::FileErrorInfo error);
@@ -343,6 +344,7 @@ download::DownloadFile* DownloadFileWithErrorFactory::CreateFile(
     const base::FilePath& default_download_directory,
     std::unique_ptr<download::InputStream> stream,
     uint32_t download_id,
+    const base::FilePath& duplicate_download_file_path,
     base::WeakPtr<download::DownloadDestinationObserver> observer) {
   return new DownloadFileWithError(
       std::move(save_info), default_download_directory, std::move(stream),

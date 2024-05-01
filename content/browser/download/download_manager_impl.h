@@ -221,7 +221,9 @@ class CONTENT_EXPORT DownloadManagerImpl
       std::unique_ptr<download::DownloadCreateInfo> info,
       download::DownloadUrlParameters::OnStartedCallback on_started,
       download::InProgressDownloadManager::StartDownloadItemCallback callback,
-      uint32_t id);
+      uint32_t id,
+      const base::FilePath& duplicate_download_file_path,
+      bool duplicate_file_exists);
 
   // Sets the |next_download_id_| if the |next_id| is larger. Runs all the
   // |id_callbacks_| if both the ID from both history db and in-progress db
@@ -315,6 +317,13 @@ class CONTENT_EXPORT DownloadManagerImpl
                                  download::DownloadItem::DownloadState state,
                                  download::DownloadInterruptReason reason,
                                  const base::Time& start_time);
+
+  // Called when Id for a new download item is retrieved.
+  void OnNewDownloadIdRetrieved(
+      std::unique_ptr<download::DownloadCreateInfo> info,
+      download::DownloadUrlParameters::OnStartedCallback on_started,
+      download::InProgressDownloadManager::StartDownloadItemCallback callback,
+      uint32_t id);
 
   // Factory for creation of downloads items.
   std::unique_ptr<download::DownloadItemFactory> item_factory_;

@@ -3039,6 +3039,7 @@ class CountingDownloadFileFactory : public download::DownloadFileFactory {
       const base::FilePath& default_downloads_directory,
       std::unique_ptr<download::InputStream> stream,
       uint32_t download_id,
+      const base::FilePath& duplicate_download_file_path,
       base::WeakPtr<download::DownloadDestinationObserver> observer) override {
     return new CountingDownloadFile(std::move(save_info),
                                     default_downloads_directory,

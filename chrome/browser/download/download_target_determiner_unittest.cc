@@ -2445,7 +2445,7 @@ TEST_F(DownloadTargetDeterminerTest, TransientDownload) {
 
   EXPECT_CALL(*delegate(), NotifyExtensions_(_, _, _)).Times(0);
   EXPECT_CALL(*delegate(), ReserveVirtualPath_(_, expected_path, false,
-                                               ConflictAction::OVERWRITE, _))
+                                               ConflictAction::UNIQUIFY, _))
       .Times(1);
   EXPECT_CALL(*delegate(), DetermineLocalPath_(_, expected_path, _)).Times(1);
   EXPECT_CALL(*delegate(), CheckDownloadUrl_(_, expected_path, _)).Times(1);
@@ -2498,7 +2498,7 @@ TEST_F(DownloadTargetDeterminerTest, TransientDownloadResumption) {
 
   EXPECT_CALL(*delegate(), NotifyExtensions_(_, _, _)).Times(0);
   EXPECT_CALL(*delegate(), ReserveVirtualPath_(_, expected_path, false,
-                                               ConflictAction::OVERWRITE, _))
+                                               ConflictAction::UNIQUIFY, _))
       .Times(1);
   EXPECT_CALL(*delegate(), DetermineLocalPath_(_, expected_path, _));
   EXPECT_CALL(*delegate(), CheckDownloadUrl_(_, expected_path, _)).Times(1);

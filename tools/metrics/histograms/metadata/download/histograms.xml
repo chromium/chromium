@@ -75,6 +75,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Android.OpenPdfFromDuplicates"
+    enum="BooleanOpenFromDuplicates" expires_after="2024-12-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records whether opening a pdf download on Android triggers opening an
+    existing downloaded file, instead of creating a new file. This metric is
+    only recorded when Chrome enables rendering PDFs inside a tab, and it is
+    reorded once each time a PDF is displayed.
+  </summary>
+</histogram>
+
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
     expires_after="2024-09-29">
   <owner>dtrainor@chromium.org</owner>

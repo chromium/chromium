@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "components/download/internal/common/download_file_with_copy.h"
 #include "components/download/public/common/download_file_impl.h"
 
 namespace download {
@@ -17,7 +18,11 @@ DownloadFile* DownloadFileFactory::CreateFile(
     const base::FilePath& default_downloads_directory,
     std::unique_ptr<InputStream> stream,
     uint32_t download_id,
+    const base::FilePath& duplicate_download_file_path,
     base::WeakPtr<DownloadDestinationObserver> observer) {
+  if (!duplicate_download_file_path.empty()) {
+    return new DownloadFileWithCopy(duplicate_download_file_path, observer);
+  }
   return new DownloadFileImpl(std::move(save_info), default_downloads_directory,
                               std::move(stream), download_id, observer);
 }
