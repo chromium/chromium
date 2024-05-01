@@ -10,8 +10,15 @@ if (is_android) {
 
 source_set("core") {
   sources = [
+    "empty_tab_group_store_delegate.cc",
+    "empty_tab_group_store_delegate.h",
     "stats.cc",
     "stats.h",
+    "tab_group_store.cc",
+    "tab_group_store.h",
+    "tab_group_store_delegate.h",
+    "tab_group_store_id.cc",
+    "tab_group_store_id.h",
     "tab_group_sync_service.h",
     "tab_group_sync_service_impl.cc",
     "tab_group_sync_service_impl.h",
@@ -29,6 +36,8 @@ source_set("core") {
 
   if (is_android) {
     sources += [
+      "android/tab_group_store_delegate_android.cc",
+      "android/tab_group_store_delegate_android.h",
       "android/tab_group_sync_conversions_bridge.cc",
       "android/tab_group_sync_conversions_bridge.h",
       "android/tab_group_sync_conversions_utils.cc",
@@ -72,15 +81,19 @@ if (is_android) {
       "android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupMetadataPersistentStore.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupStoreDelegate.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
     ]
 
     deps = [
+      ":tab_group_id_metadata_proto_java",
       "//base:base_java",
       "//components/tab_groups:tab_groups_java",
       "//net/android:net_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
@@ -99,8 +112,25 @@ if (is_android) {
     ]
 
     sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupStoreDelegate.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
+    ]
+  }
+
+  robolectric_library("components_tab_group_sync_junit_tests") {
+    include_android_sdk = false
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupMetadataPersistentStoreUnitTest.java" ]
+
+    deps = [
+      ":java",
+      ":tab_group_id_metadata_proto_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/junit",
     ]
   }
 
@@ -123,12 +153,23 @@ if (is_android) {
     ]
 
     srcjar_deps = [ ":native_j_unittests_jni_headers" ]
-    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupStoreDelegateTestSupport.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java",
+    ]
   }
 
   generate_jni("native_j_unittests_jni_headers") {
     testonly = true
-    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupStoreDelegateTestSupport.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java",
+    ]
+  }
+
+  proto_java_library("tab_group_id_metadata_proto_java") {
+    proto_path = "android/java/src/org/chromium/components/tab_group_sync/proto"
+    sources = [ "$proto_path/tab_group_id_metadata.proto" ]
   }
 }
 
@@ -140,6 +181,7 @@ source_set("unit_tests") {
     "saved_tab_group_test_utils.cc",
     "saved_tab_group_test_utils.h",
     "saved_tab_group_unittest.cc",
+    "tab_group_store_unittest.cc",
     "tab_group_sync_service_unittest.cc",
   ]
   deps = [
@@ -156,7 +198,10 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "android/tab_group_sync_service_android_unittest.cc" ]
+    sources += [
+      "android/tab_group_store_delegate_android_unittest.cc",
+      "android/tab_group_sync_service_android_unittest.cc",
+    ]
     deps += [
       ":native_j_unittests_jni_headers",
       ":native_java_unittests_java",

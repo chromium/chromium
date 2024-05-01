@@ -1251,6 +1251,7 @@ if (is_android) {
       "//components/policy/android:components_policy_junit_tests",
       "//components/prefs/android:junit",
       "//components/query_tiles:query_tiles_junit_tests",
+      "//components/saved_tab_groups:components_tab_group_sync_junit_tests",
       "//components/signin/public/android:junit",
       "//components/stylus_handwriting/android:stylus_handwriting_junit_tests",
       "//components/subresource_filter/android:junit",
