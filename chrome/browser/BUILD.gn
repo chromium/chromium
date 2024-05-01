@@ -574,6 +574,8 @@ static_library("browser") {
     "geolocation/geolocation_permission_context_delegate.h",
     "geolocation/geolocation_permission_context_extensions.cc",
     "geolocation/geolocation_permission_context_extensions.h",
+    "global_features.cc",
+    "global_features.h",
     "gpu/chrome_browser_main_extra_parts_gpu.cc",
     "gpu/chrome_browser_main_extra_parts_gpu.h",
     "gpu/gpu_mode_manager.cc",

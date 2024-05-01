@@ -51,6 +51,7 @@
 class BatteryMetrics;
 class ChromeMetricsServicesManagerClient;
 class DevToolsAutoOpener;
+class GlobalFeatures;
 class RemoteDebuggingServer;
 class PrefRegistrySimple;
 class SearchEngineChoiceProfileTagger;
@@ -472,6 +473,8 @@ class BrowserProcessImpl : public BrowserProcess,
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener> app_state_listener_;
 #endif
+
+  std::unique_ptr<GlobalFeatures> features_;
 
   // Observes application-wide events and logs them to breadcrumbs. Null if
   // breadcrumbs logging is disabled.

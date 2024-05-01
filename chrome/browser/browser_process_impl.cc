@@ -51,6 +51,7 @@
 #include "chrome/browser/devtools/remote_debugging_server.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/download/download_status_updater.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
 #include "chrome/browser/icon_manager.h"
@@ -410,6 +411,9 @@ void BrowserProcessImpl::Init() {
   usb_system_tray_icon_ = std::make_unique<UsbStatusIcon>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  features_ = GlobalFeatures::CreateGlobalFeatures();
+  features_->Init();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
