@@ -44,6 +44,14 @@ source_set("shortcuts") {
       "shortcut_creator_mac.mm",
     ]
   }
+
+  if (is_linux) {
+    sources += [
+      "linux_xdg_wrapper.h",
+      "shortcut_creator_linux.cc",
+      "shortcut_creator_linux.h",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -58,6 +66,12 @@ source_set("test_support") {
     "//skia",
   ]
   deps = [ "//ui/gfx/codec" ]
+
+  if (is_linux) {
+    public += [ "shortcut_creator_linux_test_support.h" ]
+    sources += [ "shortcut_creator_linux_test_support.cc" ]
+    deps += []
+  }
 }
 
 source_set("browser_tests") {
@@ -71,11 +85,11 @@ source_set("browser_tests") {
     ":shortcuts",
     ":test_support",
     "//base",
-    "//chrome/browser/ui:ui",
+    "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//content/public/browser",
     "//skia",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
     "//ui/gfx:test_support",
     "//url",
   ]
@@ -96,6 +110,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/gfx:test_support",
+    "//ui/gfx/codec",
     "//url",
   ]
 
@@ -105,5 +120,9 @@ source_set("unit_tests") {
       "platform_util_mac_unittest.mm",
       "shortcut_creator_mac_unittest.mm",
     ]
+  }
+
+  if (is_linux) {
+    sources += [ "shortcut_creator_linux_unittest.cc" ]
   }
 }

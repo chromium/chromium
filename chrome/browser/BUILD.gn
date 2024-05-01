@@ -4802,8 +4802,13 @@ static_library("browser") {
         "themes/theme_color_policy_handler.cc",
         "themes/theme_color_policy_handler.h",
       ]
-
       deps += [ "//chrome/browser/shortcuts" ]
+      if (is_linux) {
+        allow_circular_includes_from += [
+          # TODO(crbug.com/335727004): Split out linux dependencies into separate targets.
+          "//chrome/browser/shortcuts",
+        ]
+      }
     }
     if (!is_chromeos_ash) {
       sources += [

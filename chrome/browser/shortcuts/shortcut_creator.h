@@ -7,13 +7,10 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 
 class GURL;
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace gfx {
 class ImageFamily;
@@ -21,9 +18,13 @@ class ImageFamily;
 
 namespace shortcuts {
 
-enum class ShortcutCreatorResult { kSuccess, kError };
+enum class ShortcutCreatorResult { kSuccess, kSuccessWithErrors, kError };
 
 using ShortcutCreatorCallback = base::OnceCallback<void(ShortcutCreatorResult)>;
+
+// Path in user profile directory to store shortcut icons on Windows and Linux.
+inline constexpr base::FilePath::StringPieceType kWebShortcutsIconDirName =
+    FILE_PATH_LITERAL("Web Shortcut Icons");
 
 // Creates a shortcut on the OS desktop with the given name and icons. When
 // clicked / launched, it will launch the given url in a new chrome tab.

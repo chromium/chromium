@@ -1,0 +1,146 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/shortcuts/shortcut_creator_linux.h"
+
+#include <stdlib.h>
+
+#include <optional>
+
+#include "base/base_paths.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
+#include "base/hash/md5.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/shortcuts/linux_xdg_wrapper.h"
+#include "chrome/browser/shortcuts/shortcut_creator.h"
+#include "ui/gfx/image/image.h"
+#include "url/gurl.h"
+
+namespace shortcuts {
+namespace {
+
+base::SafeBaseName GenerateIconFilename(const GURL& url) {
+  std::string url_hash = base::MD5String(url.spec());
+  std::optional<base::SafeBaseName> base_name =
+      base::SafeBaseName::Create(base::StrCat({"shortcut-", url_hash, ".png"}));
+  CHECK(base_name);
+  return base_name.value();
+}
+
+ShortcutCreatorResult CreateExecutableFile(const base::FilePath& file_path,
+                                           const std::string& contents) {
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    return ShortcutCreatorResult::kError;
+  }
+  if (!file.Write(0, base::as_byte_span(contents)).has_value()) {
+    // Attempt to delete the file to clean up
+    file.Close();
+    base::DeleteFile(file_path);
+    return ShortcutCreatorResult::kError;
+  }
+  file.Close();
+
+  // User:  RWX
+  // Group: R_X
+  // Other: R_X
+  bool success = base::SetPosixFilePermissions(
+      file_path, base::FILE_PERMISSION_USER_MASK |
+                     base::FILE_PERMISSION_READ_BY_GROUP |
+                     base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                     base::FILE_PERMISSION_READ_BY_OTHERS |
+                     base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+  // Failing to set permissions is acceptable.
+  return success ? ShortcutCreatorResult::kSuccess
+                 : ShortcutCreatorResult::kSuccessWithErrors;
+}
+
+}  // namespace
+
+ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
+    const std::string& shortcut_name,
+    const GURL& shortcut_url,
+    gfx::Image icon,
+    const base::FilePath& profile_path,
+    LinuxXdgWrapper& xdg_wrapper) {
+  CHECK(!shortcut_name.empty());
+  CHECK(shortcut_url.is_valid());
+  CHECK(!profile_path.empty());
+  CHECK_NE(profile_path.BaseName(), profile_path);
+
+  // First, create necessary directories and do .desktop file location
+  // resolution before writing any data, removing some cleanup.
+  base::FilePath icon_directory = profile_path.Append(kWebShortcutsIconDirName);
+  if (!base::CreateDirectory(icon_directory)) {
+    return ShortcutCreatorResult::kError;
+  }
+
+  std::optional<base::SafeBaseName> desktop_file_basename =
+      shell_integration_linux::GetUniqueWebShortcutFilename(shortcut_name);
+
+  if (!desktop_file_basename) {
+    return ShortcutCreatorResult::kError;
+  }
+
+  base::FilePath desktop_path;
+  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
+    return ShortcutCreatorResult::kError;
+  }
+
+  base::FilePath shortcut_desktop_location =
+      desktop_path.Append(desktop_file_basename->path());
+
+  // Second, write the icon to disk.
+  // TODO(crbug.com/338093295): Determine if we need to worry about cleaning
+  // these up and figure out how to do that. Recording an UMA metric here on the
+  // number of files in this directory is a good start.
+  base::SafeBaseName icon_base_name = GenerateIconFilename(shortcut_url);
+  base::FilePath icon_path = icon_directory.Append(icon_base_name);
+  scoped_refptr<base::RefCountedMemory> png_data = icon.As1xPNGBytes();
+
+  bool non_fatal_failure = false;
+  if (!base::WriteFile(icon_path, *png_data)) {
+    non_fatal_failure = true;
+  }
+
+  // Third, create the .desktop file.
+  std::string desktop_file_contents =
+      shell_integration_linux::GetDesktopFileContentsForUrlShortcut(
+          shortcut_name, shortcut_url, icon_path, profile_path);
+  ShortcutCreatorResult file_creation_result =
+      CreateExecutableFile(shortcut_desktop_location, desktop_file_contents);
+  switch (file_creation_result) {
+    case ShortcutCreatorResult::kError:
+      // Attempt to clean up the icon.
+      base::DeleteFile(icon_path);
+      return ShortcutCreatorResult::kError;
+    case ShortcutCreatorResult::kSuccessWithErrors:
+      non_fatal_failure = true;
+      break;
+    case ShortcutCreatorResult::kSuccess:
+      break;
+  }
+
+  // Fourth, install the .desktop file into the desktop menu.
+  int error_code = xdg_wrapper.XdgDesktopMenuInstall(shortcut_desktop_location);
+  if (error_code != EXIT_SUCCESS) {
+    non_fatal_failure = true;
+  }
+  return non_fatal_failure ? ShortcutCreatorResult::kSuccessWithErrors
+                           : ShortcutCreatorResult::kSuccess;
+}
+
+}  // namespace shortcuts
