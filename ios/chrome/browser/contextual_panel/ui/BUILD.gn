@@ -6,9 +6,13 @@ source_set("ui") {
   sources = [
     "contextual_sheet_view_controller.h",
     "contextual_sheet_view_controller.mm",
+    "panel_content_view_controller.h",
+    "panel_content_view_controller.mm",
   ]
   deps = [
+    "//components/strings:components_strings_grit",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

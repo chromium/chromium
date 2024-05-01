@@ -7,6 +7,8 @@ source_set("coordinator") {
     "contextual_sheet_coordinator.h",
     "contextual_sheet_coordinator.mm",
     "contextual_sheet_presenter.h",
+    "panel_content_coordinator.h",
+    "panel_content_coordinator.mm",
   ]
   deps = [
     "//ios/chrome/browser/contextual_panel/ui",

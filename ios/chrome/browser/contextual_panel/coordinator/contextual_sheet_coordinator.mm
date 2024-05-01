@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
 
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_presenter.h"
+#import "ios/chrome/browser/contextual_panel/coordinator/panel_content_coordinator.h"
 #import "ios/chrome/browser/contextual_panel/ui/contextual_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -12,6 +13,8 @@
 
 @implementation ContextualSheetCoordinator {
   ContextualSheetViewController* _viewController;
+
+  PanelContentCoordinator* _panelContentCoordinator;
 }
 
 - (void)start {
@@ -24,6 +27,11 @@
   [self.presenter insertContextualSheet:_viewController.view];
 
   [_viewController didMoveToParentViewController:self.baseViewController];
+
+  _panelContentCoordinator = [[PanelContentCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser];
+  [_panelContentCoordinator start];
 }
 
 - (void)stop {
