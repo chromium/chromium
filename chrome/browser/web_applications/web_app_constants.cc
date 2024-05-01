@@ -24,6 +24,41 @@ static_assert(WebAppManagementTypes::kValueCount ==
                   WebAppManagement::kMaxValue + 1,
               "WebAppManagementTypes is missing an enum value");
 
+// WebAppManagement types that can't be uninstalled by the user. Counterpart to
+// kUserUninstallableSources.
+constexpr WebAppManagementTypes kNotUserUninstallableSources = {
+    WebAppManagement::kSystem,    WebAppManagement::kIwaShimlessRma,
+    WebAppManagement::kKiosk,     WebAppManagement::kPolicy,
+    WebAppManagement::kIwaPolicy,
+};
+
+constexpr bool AllWebAppManagementTypesListed() {
+  for (int i = WebAppManagement::Type::kMinValue;
+       i < WebAppManagement::Type::kMaxValue; ++i) {
+    WebAppManagement::Type t = static_cast<WebAppManagement::Type>(i);
+
+    if (!kUserUninstallableSources.Has(t) &&
+        !kNotUserUninstallableSources.Has(t)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// When adding a new WebAppManagement::Type, mark whether or not it is
+// uninstallable by adding it to the appropriate WebAppManagementTypes constant.
+//
+// Note: A nicer way to do this would be to compute kUserUninstallableSources
+// using a constexpr function which includes an exhaustive switch statement over
+// WebAppManagement::Types. Such a method would use base::Union to accumulate
+// sources, which is only constexpr once std::bitset::operator| is constexpr in
+// C++23.
+static_assert(AllWebAppManagementTypesListed(),
+              "All WebAppManagement::Types must be listed in either "
+              "web_app::kUserUninstallableSources or "
+              "web_app::kNotUserUninstallableSources");
+
 namespace WebAppManagement {
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   switch (type) {

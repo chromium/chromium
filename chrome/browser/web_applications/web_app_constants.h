@@ -293,6 +293,8 @@ using ResultCallback = base::OnceCallback<void(Result)>;
 // Note: These work directly with the `webapps::IsUserUninstall` function - any
 // source that returns true there can uninstall these types but not others, and
 // will CHECK-fail in RemoveWebAppJob otherwise.
+// All WebAppManagement::Types must be listed in either this constant or
+// kNotUserUninstallableSources (located in the cc file).
 constexpr WebAppManagementTypes kUserUninstallableSources = {
     WebAppManagement::kDefault,
     WebAppManagement::kApsDefault,
