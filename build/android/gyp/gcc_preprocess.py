@@ -15,6 +15,10 @@ from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
+_CHROMIUM_SRC = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
+                             os.pardir)
+_LLVM_CLANG_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'llvm-build',
+                                'Release+Asserts', 'bin', 'clang')
 
 def _ParsePackageName(data):
   m = re.match(r'^\s*package\s+(.*?)\s*;', data, re.MULTILINE)
@@ -22,17 +26,17 @@ def _ParsePackageName(data):
 
 
 def ProcessJavaFile(template, defines, include_dirs):
-  gcc_cmd = [
-      'gcc',
+  clang_cmd = [
+      _LLVM_CLANG_PATH,
       '-E',  # stop after preprocessing.
       '-DANDROID',  # Specify ANDROID define for pre-processor.
       '-x',
       'c-header',  # treat sources as C header files
       '-P',  # disable line markers, i.e. '#line 309'
   ]
-  gcc_cmd.extend('-D' + x for x in defines)
-  gcc_cmd.extend('-I' + x for x in include_dirs)
-  data = build_utils.CheckOutput(gcc_cmd + [template])
+  clang_cmd.extend('-D' + x for x in defines)
+  clang_cmd.extend('-I' + x for x in include_dirs)
+  data = build_utils.CheckOutput(clang_cmd + [template])
   package_name = _ParsePackageName(data)
   if not package_name:
     raise Exception('Could not find java package of ' + template)
