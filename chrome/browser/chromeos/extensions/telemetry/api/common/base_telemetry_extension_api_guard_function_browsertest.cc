@@ -845,8 +845,9 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 
 // Smoke test to verify that real ApiGuardDelegate works in prod.
 // TODO(b/219514064): Make an equivalent test for Lacros.
+// TODO(b/338199240): Test is flaky.
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardRealDelegateBrowserTest,
-                       CanAccessRunBatteryCapacityRoutine) {
+                       DISABLED_CanAccessRunBatteryCapacityRoutine) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // We can't run this test if Ash doesn't support the crosapi
   // interface.
