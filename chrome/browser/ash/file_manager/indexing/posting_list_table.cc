@@ -23,7 +23,7 @@ static constexpr char kCreatePostingListTableQuery[] =
       URL_ID " INTEGER NOT NULL,"
       "FOREIGN KEY(" AUGMENTED_TERM_ID ") REFERENCES augmented_term_table("
           AUGMENTED_TERM_ID "),"
-      "FOREIGN KEY(" URL_ID ") REFERENCES file_info_table(" URL_ID "),"
+      "FOREIGN KEY(" URL_ID ") REFERENCES file_info_table(url_id),"
       "PRIMARY KEY (" AUGMENTED_TERM_ID ", " URL_ID "))";
 // clang-format on
 

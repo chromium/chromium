@@ -10,34 +10,40 @@ namespace file_manager {
 
 namespace {
 
+#define FILE_INFO_TABLE "file_info_table"
+#define URL_ID "url_id"
+#define LAST_MODIFIED "last_modified"
+#define SIZE "size"
+#define REMOTE_ID "remote_id"
+
 // The statement used to create the file_info table.
 static constexpr char kCreateFileInfoTableQuery[] =
     // clang-format off
-    "CREATE TABLE IF NOT EXISTS file_info_table("
-      "url_id INTEGER PRIMARY KEY NOT NULL REFERENCES url_table(url_id),"
-      "last_modified INTEGER NOT NULL,"
-      "size INTEGER NOT NULL,"
-      "remote_id TEXT)";
+    "CREATE TABLE IF NOT EXISTS " FILE_INFO_TABLE "("
+      URL_ID " INTEGER PRIMARY KEY NOT NULL REFERENCES url_table(url_id),"
+      LAST_MODIFIED " INTEGER NOT NULL,"
+      SIZE " INTEGER NOT NULL,"
+      REMOTE_ID " TEXT)";
 // clang-format on
 
 // The statement used to insert a new term into the table.
 static constexpr char kInsertFileInfoQuery[] =
     // clang-format off
-    "INSERT OR REPLACE INTO file_info_table(url_id, last_modified, "
-    "size, remote_id) VALUES (?, ?, ?, ?)";
+    "INSERT OR REPLACE INTO " FILE_INFO_TABLE "(" URL_ID ", " LAST_MODIFIED ", "
+    SIZE ", " REMOTE_ID ") VALUES (?, ?, ?, ?)";
 // clang-format on
 
 // The statement used to delete a FileInfo from the database by URL ID.
 static constexpr char kDeleteFileInfoQuery[] =
     // clang-format off
-    "DELETE FROM file_info_table WHERE url_id = ?";
+    "DELETE FROM " FILE_INFO_TABLE " WHERE " URL_ID " = ?";
 // clang-format on
 
 // The statement used fetch the file info by the URL ID.
 static constexpr char kGetFileInfoQuery[] =
     // clang-format off
-    "SELECT last_modified, size, remote_id FROM file_info_table "
-    "WHERE url_id = ?";
+    "SELECT " LAST_MODIFIED ", " SIZE ", " REMOTE_ID " FROM "
+    FILE_INFO_TABLE " WHERE " URL_ID " = ?";
 // clang-format on
 
 }  // namespace
@@ -47,7 +53,7 @@ FileInfoTable::~FileInfoTable() = default;
 
 bool FileInfoTable::Init() {
   if (!db_->is_open()) {
-    LOG(WARNING) << "Faield to initialize file_info_table "
+    LOG(WARNING) << "Faield to initialize " FILE_INFO_TABLE " "
                  << "due to closed database";
     return false;
   }

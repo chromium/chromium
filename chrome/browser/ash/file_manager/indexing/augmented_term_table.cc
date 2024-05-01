@@ -10,38 +10,41 @@ namespace file_manager {
 
 namespace {
 
-#define TABLE_NAME "augmented_term_table"
+#define AUGMENTED_TERM_TABLE "augmented_term_table"
+#define AUGMENTED_TERM_ID "augmented_term_id"
+#define FIELD_NAME "field_name"
+#define TERM_ID "term_id"
 
 // The statement used to create the augmented_term table.
 static constexpr char kCreateAugmentedTermTableQuery[] =
     // clang-format off
-    "CREATE TABLE IF NOT EXISTS " TABLE_NAME "("
-      "augmented_term_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-      "field_name TEXT NOT NULL,"
-      "term_id INTEGER NOT NULL REFERENCES term_table(term_id),"
-      "UNIQUE(field_name, term_id))";
+    "CREATE TABLE IF NOT EXISTS " AUGMENTED_TERM_TABLE "("
+      AUGMENTED_TERM_ID " INTEGER PRIMARY KEY AUTOINCREMENT,"
+      FIELD_NAME " TEXT NOT NULL,"
+      TERM_ID " INTEGER NOT NULL REFERENCES term_table(term_id),"
+      "UNIQUE(" FIELD_NAME ", " TERM_ID "))";
 // clang-format on
 
 // The statement used to insert a new augmented term into the table.
 static constexpr char kInsertAugmentedTermQuery[] =
     // clang-format off
-    "INSERT OR REPLACE INTO " TABLE_NAME "(field_name, "
-    "term_id) VALUES (?, ?) RETURNING augmented_term_id";
+    "INSERT OR REPLACE INTO " AUGMENTED_TERM_TABLE "(" FIELD_NAME ", "
+    TERM_ID ") VALUES (?, ?) RETURNING " AUGMENTED_TERM_ID "";
 // clang-format on
 
 // The statement used to delete an augmented term ID from the database by
-// augmented_term_id
+// augmented_term_id.
 static constexpr char kDeleteAugmentedTermQuery[] =
     // clang-format off
-    "DELETE FROM " TABLE_NAME " WHERE augmented_term_id = ? "
-    "RETURNING augmented_term_id";
+    "DELETE FROM " AUGMENTED_TERM_TABLE " WHERE " AUGMENTED_TERM_ID "=? "
+    "RETURNING " AUGMENTED_TERM_ID;
 // clang-format on
 
 // The statement used fetch the augmented term ID by field name and term ID.
 static constexpr char kGetAugmentedTermIdQuery[] =
     // clang-format off
-    "SELECT augmented_term_id FROM " TABLE_NAME " "
-    "WHERE field_name = ? AND term_id = ?";
+    "SELECT " AUGMENTED_TERM_ID " FROM " AUGMENTED_TERM_TABLE " "
+    "WHERE " FIELD_NAME "=? AND " TERM_ID "=?";
 // clang-format on
 
 }  // namespace

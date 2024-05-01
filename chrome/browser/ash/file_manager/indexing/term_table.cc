@@ -11,41 +11,47 @@ namespace file_manager {
 
 namespace {
 
+#define TERM_TABLE "term_table"
+#define TERM_ID "term_id"
+#define TERM "term"
+#define TERM_INDEX "term_index"
+
 // The statement used to create the term table.
 static constexpr char kCreateTermTableQuery[] =
     // clang-format off
-    "CREATE TABLE IF NOT EXISTS term_table("
-      "term_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-      "term TEXT NOT NULL)";
+    "CREATE TABLE IF NOT EXISTS " TERM_TABLE "("
+      TERM_ID " INTEGER PRIMARY KEY AUTOINCREMENT,"
+      TERM " TEXT NOT NULL)";
 // clang-format on
 
 // The statement used to delete a term from the database by term ID.
 static constexpr char kDeleteTermQuery[] =
     // clang-format off
-    "DELETE FROM term_table WHERE term_id = ?";
+    "DELETE FROM " TERM_TABLE " WHERE " TERM_ID "=?";
 // clang-format on
 
 // The statement used fetch the ID of the term.
 static constexpr char kGetTermIdQuery[] =
     // clang-format off
-    "SELECT term_id FROM term_table WHERE term = ?";
+    "SELECT " TERM_ID " FROM " TERM_TABLE " WHERE " TERM "=?";
 // clang-format on
 
 // The statement used to insert a new term into the table.
 static constexpr char kInsertTermQuery[] =
     // clang-format off
-    "INSERT INTO term_table(term) VALUES (?) RETURNING term_id";
+    "INSERT INTO " TERM_TABLE "(" TERM ") VALUES (?) RETURNING " TERM_ID;
 // clang-format on
 
 // The statement that creates an index on terms.
 static constexpr char kCreateTermIndexQuery[] =
     // clang-format off
-    "CREATE UNIQUE INDEX IF NOT EXISTS term_index ON term_table(term)";
+    "CREATE UNIQUE INDEX IF NOT EXISTS " TERM_INDEX " ON " TERM_TABLE
+    "(" TERM ")";
 // clang-format on
 
 }  // namespace
 
-TermTable::TermTable(sql::Database* db) : TextTable(db, "term_table") {}
+TermTable::TermTable(sql::Database* db) : TextTable(db, "" TERM_TABLE "") {}
 TermTable::~TermTable() = default;
 
 int64_t TermTable::DeleteTerm(const std::string& term) {
