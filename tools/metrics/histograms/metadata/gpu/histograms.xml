@@ -1668,6 +1668,24 @@ chromium-metrics-reviews@google.com.
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
 </histogram>
 
+<histogram
+    name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.{CacheHitMiss}.Counts.90SecondsPostStartup"
+    units="count" expires_after="2024-12-29">
+  <owner>hitawala@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Tracks the number of times calls to {Cacheable}.{CacheHitMiss} are emitted
+    within 90 seconds of browser start up. Recorded only for clients that
+    support high-resolution clocks.
+  </summary>
+  <token key="Cacheable" variants="WebGPUCacheable"/>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+  <token key="CacheHitMiss">
+    <variant name="CacheHit"/>
+    <variant name="CacheMiss"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.{SchedulerType}.{Stage}" units="microseconds"
     expires_after="2024-08-07">
   <owner>vikassoni@chromium.org</owner>

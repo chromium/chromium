@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -82,11 +83,15 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
 
 }  // anonymous namespace
 
+DawnPlatform::CacheCounts::CacheCounts() = default;
+DawnPlatform::CacheCounts::~CacheCounts() = default;
+
 DawnPlatform::DawnPlatform(
     std::unique_ptr<DawnCachingInterface> dawn_caching_interface,
     const char* uma_prefix)
     : dawn_caching_interface_(std::move(dawn_caching_interface)),
-      uma_prefix_(uma_prefix) {}
+      uma_prefix_(uma_prefix),
+      cache_counts_(base::MakeRefCounted<CacheCounts>()) {}
 
 DawnPlatform::~DawnPlatform() = default;
 
@@ -140,8 +145,43 @@ void DawnPlatform::HistogramCustomCounts(const char* name,
                                          int min,
                                          int max,
                                          int bucketCount) {
-  base::UmaHistogramCustomCounts(uma_prefix_ + name, sample, min, max,
+  std::string nameStr = name;
+  bool post_task = false;
+  bool is_cache = nameStr.find("Cache");
+  if (is_cache) {
+    if (nameStr.find("Hit")) {
+      cache_counts_->cache_hit_count.fetch_add(1, std::memory_order_release);
+    } else if (nameStr.find("Miss")) {
+      cache_counts_->cache_miss_count.fetch_add(1, std::memory_order_release);
+    }
+    post_task = cache_counts_->did_schedule_log.exchange(
+                    true, std::memory_order_acq_rel) == false;
+  }
+  base::UmaHistogramCustomCounts(uma_prefix_ + nameStr, sample, min, max,
                                  bucketCount);
+
+  if (post_task) {
+    // Record the stats soonish after the first call.
+    // The 90 seconds comes from the 99 percentile of startup time on macos.
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](const std::string& name,
+               scoped_refptr<CacheCounts> cache_counts) {
+              if (name.find("Hit")) {
+                UMA_HISTOGRAM_COUNTS_10000(name,
+                                           cache_counts->cache_hit_count.load(
+                                               std::memory_order_acquire));
+              } else {
+                UMA_HISTOGRAM_COUNTS_10000(name,
+                                           cache_counts->cache_miss_count.load(
+                                               std::memory_order_acquire));
+              }
+            },
+            uma_prefix_ + nameStr + ".Counts.90SecondsPostStartup",
+            cache_counts_),
+        base::Seconds(90));
+  }
 }
 
 void DawnPlatform::HistogramCustomCountsHPC(const char* name,

@@ -64,8 +64,21 @@ class DawnPlatform : public dawn::platform::Platform {
   bool IsFeatureEnabled(dawn::platform::Features feature) override;
 
  private:
+  struct CacheCounts : public base::RefCountedThreadSafe<CacheCounts> {
+    CacheCounts();
+
+    std::atomic<bool> did_schedule_log = false;
+    std::atomic<uint32_t> cache_miss_count = 0;
+    std::atomic<uint32_t> cache_hit_count = 0;
+
+   private:
+    friend class base::RefCountedThreadSafe<CacheCounts>;
+    ~CacheCounts();
+  };
+
   std::unique_ptr<DawnCachingInterface> dawn_caching_interface_ = nullptr;
   std::string uma_prefix_;
+  scoped_refptr<CacheCounts> cache_counts_;
 };
 
 }  // namespace gpu::webgpu
