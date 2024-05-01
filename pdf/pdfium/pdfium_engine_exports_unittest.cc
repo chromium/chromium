@@ -32,8 +32,8 @@ class PDFiumEngineExportsTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pdf_data_dir_));
-    pdf_data_dir_ = pdf_data_dir_.Append(FILE_PATH_LITERAL("pdf"))
+    pdf_data_dir_ = base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+                        .Append(FILE_PATH_LITERAL("pdf"))
                         .Append(FILE_PATH_LITERAL("test"))
                         .Append(FILE_PATH_LITERAL("data"));
   }
