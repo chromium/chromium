@@ -148,6 +148,7 @@ class DownloadBubbleDeepScanNotice : public views::View {
   METADATA_HEADER(DownloadBubbleDeepScanNotice, views::View)
  public:
   explicit DownloadBubbleDeepScanNotice(base::WeakPtr<Browser> browser) {
+    const gfx::Insets insets = GetLayoutInsets(DOWNLOAD_ROW);
     const int icon_label_spacing =
         ChromeLayoutProvider::Get()->GetDistanceMetric(
             views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -156,11 +157,13 @@ class DownloadBubbleDeepScanNotice : public views::View {
             views::DISTANCE_RELATED_CONTROL_VERTICAL);
 
     SetLayoutManager(std::make_unique<views::TableLayout>())
+        // Left inset
+        ->AddPaddingColumn(views::TableLayout::kFixedSize, insets.left())
         // Download Icon
-        ->AddColumn(views::LayoutAlignment::kCenter,
-                    views::LayoutAlignment::kStart,
-                    views::TableLayout::kFixedSize,
-                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+        .AddColumn(views::LayoutAlignment::kCenter,
+                   views::LayoutAlignment::kStart,
+                   views::TableLayout::kFixedSize,
+                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
         // Download name label (primary_label_)
         .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
         .AddColumn(views::LayoutAlignment::kStart,
@@ -168,6 +171,8 @@ class DownloadBubbleDeepScanNotice : public views::View {
                        ? views::LayoutAlignment::kCenter
                        : views::LayoutAlignment::kStart,
                    1.0f, views::TableLayout::ColumnSize::kFixed, 0, 0)
+        // Right inset
+        .AddPaddingColumn(views::TableLayout::kFixedSize, insets.right())
         .AddPaddingRow(1.0, vertical_spacing)
         .AddRows(1, 1.0f)
         .AddPaddingRow(1.0, vertical_spacing);
@@ -210,11 +215,22 @@ class DownloadBubbleDeepScanNotice : public views::View {
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
-    size_t vertical_offset = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_RELATED_CONTROL_VERTICAL);
     gfx::Rect bounds = GetLocalBounds();
-    bounds.set_y(bounds.y() + vertical_offset);
-    bounds.set_height(bounds.height() - vertical_offset);
+    // Shift downward to not paint the margin between the notice and row.
+    const size_t kVerticalOffset =
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_CONTROL_VERTICAL);
+    bounds.set_y(bounds.y() + kVerticalOffset);
+    bounds.set_height(bounds.height() - kVerticalOffset);
+    // Shrink horizontally. We want to be a small offset into the insets
+    const size_t kHorizontalOffset =
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN);
+    gfx::Insets insets = GetLayoutInsets(DOWNLOAD_ROW);
+    insets.set_top_bottom(0, 0);
+    insets -= gfx::Insets::VH(0, kHorizontalOffset);
+    bounds.Inset(insets);
+
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -447,7 +463,14 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       fixed_width_(fixed_width) {
   CHECK(info_->model());
   info_->AddObserver(this);
-  SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
+  gfx::Insets insets = GetLayoutInsets(DOWNLOAD_ROW);
+  // The DeepScanNotice has a background that extends into the insets on the
+  // left and right. To support this, we include vertical insets here, and the
+  // left and right inset are manually handled as columns in the table
+  // layout. This is temporary until the DeepScanNotice is removed. (Targeting
+  // 2024-10)
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0)));
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -470,11 +493,15 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
   SetLayoutManager(std::make_unique<views::TableLayout>())
+      // Left inset
+      ->AddColumn(
+          views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
+          views::TableLayout::kFixedSize,
+          views::TableLayout::ColumnSize::kFixed, insets.left(), insets.left())
       // Download Icon
-      ->AddColumn(views::LayoutAlignment::kCenter,
-                  views::LayoutAlignment::kStart,
-                  views::TableLayout::kFixedSize,
-                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kStart, views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       // Download name label (primary_label_)
       .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
       .AddColumn(views::LayoutAlignment::kStart,
@@ -491,6 +518,11 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       .AddColumn(views::LayoutAlignment::kCenter,
                  views::LayoutAlignment::kStart, views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      // Right inset
+      .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kFixed, insets.right(),
+                 insets.right())
       // Four rows, one for name, one for status, one for the progress bar, and
       // one for the deep scan notice.
       .AddRows(4, 1.0f);
@@ -505,6 +537,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   transparent_button_->set_context_menu_controller(this);
   transparent_button_->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
   transparent_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+
+  // Left inset, first row.
+  AddChildView(std::make_unique<views::View>());
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetCanProcessEventsWithinSubtree(false);
@@ -585,6 +620,12 @@ DownloadBubbleRowView::DownloadBubbleRowView(
         GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   }
 
+  // Right inset, first row.
+  AddChildView(std::make_unique<views::View>());
+
+  // Left inset, second row.
+  AddChildView(std::make_unique<views::View>());
+
   // The content of the label will be populated in the `UpdateRow` function.
   secondary_label_ = AddChildView(std::make_unique<views::Label>(
       u"", views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
@@ -598,6 +639,12 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   if (features::IsChromeRefresh2023()) {
     secondary_label_->SetTextStyle(views::style::STYLE_BODY_5);
   }
+
+  // Right inset, second row.
+  AddChildView(std::make_unique<views::View>());
+
+  // Left inset, third row.
+  AddChildView(std::make_unique<views::View>());
 
   // TODO(crbug.com/40875578): Remove the progress bar holder view here.
   // Currently the animation does not show up on deep scanning without
@@ -624,13 +671,16 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // Expect to start not visible, will be updated later.
   progress_bar_->SetVisible(false);
 
+  // Right inset, third row.
+  AddChildView(std::make_unique<views::View>());
+
   SetNotifyEnterExitOnChild(true);
 
   // TODO(https://crbug.com/332382747): Remove after 2024-10
   deep_scan_notice_ =
       AddChildView(std::make_unique<DownloadBubbleDeepScanNotice>(browser_));
   deep_scan_notice_->SetProperty(views::kTableColAndRowSpanKey,
-                                 gfx::Size(5, 1));
+                                 gfx::Size(7, 1));
   deep_scan_notice_->SetProperty(views::kTableHorizAlignKey,
                                  views::LayoutAlignment::kStretch);
   deep_scan_notice_->SetBorder(views::CreateEmptyBorder(
