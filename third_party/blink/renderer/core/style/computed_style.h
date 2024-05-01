@@ -1159,9 +1159,6 @@ class ComputedStyle final : public ComputedStyleBase {
   using ComputedStyleBase::GetTextAlign;
   ETextAlign GetTextAlign(bool is_last_line) const;
 
-  // text-indent utility functions.
-  bool ShouldUseTextIndent(bool is_first_line) const;
-
   // text-transform utility functions.
   [[nodiscard]] String ApplyTextTransform(
       const String&,

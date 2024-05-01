@@ -1948,10 +1948,6 @@ ETextAlign ComputedStyle::GetTextAlign(bool is_last_line) const {
   return GetTextAlign();
 }
 
-bool ComputedStyle::ShouldUseTextIndent(bool is_first_line) const {
-  return is_first_line;
-}
-
 // Unicode 11 introduced Georgian capital letters (U+1C90 - U+1CBA,
 // U+1CB[D-F]), but virtually no font covers them. For now map them back
 // to their lowercase counterparts (U+10D0 - U+10FA, U+10F[D-F]).
