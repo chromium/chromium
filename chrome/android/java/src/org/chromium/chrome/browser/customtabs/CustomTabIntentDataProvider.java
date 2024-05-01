@@ -212,6 +212,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                     "package_names_allowlist",
                     "com.google.android.googlequicksearchbox");
 
+    /** Pipe ("|") separated list of package names allowed to use the interactive Omnibox. */
+    public static final StringCachedFieldTrialParameter OMNIBOX_ALLOWED_PACKAGE_NAMES =
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
+                    ChromeFeatureList.SEARCH_IN_CCT, "omnibox_allowed_package_names", null);
+
     private static final String EXTRA_TWA_DISCLOSURE_UI =
             "androidx.browser.trusted.extra.DISCLOSURE_VERSION";
 
@@ -1481,5 +1486,20 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return position == ACTIVITY_SIDE_SHEET_POSITION_DEFAULT
                 ? ACTIVITY_SIDE_SHEET_POSITION_END
                 : position;
+    }
+
+    @Override
+    public boolean isInteractiveOmniboxAllowed() {
+        if (!ChromeFeatureList.sSearchInCCT.isEnabled()) return false;
+
+        // Local builds only: permit test APK.
+        if (VersionInfo.isLocalBuild()) {
+            if (TextUtils.equals(getClientPackageName(), "org.chromium.customtabsclient")) {
+                return true;
+            }
+        }
+
+        return isPackageNameInList(
+                getClientPackageName(), OMNIBOX_ALLOWED_PACKAGE_NAMES.getValue());
     }
 }

@@ -600,4 +600,9 @@ public abstract class BrowserServicesIntentDataProvider {
     public int getSideSheetPosition() {
         return ACTIVITY_SIDE_SHEET_POSITION_END;
     }
+
+    /** Return whether calling package should be allowed to present an interactive Omnibox. */
+    public boolean isInteractiveOmniboxAllowed() {
+        return false;
+    }
 }
