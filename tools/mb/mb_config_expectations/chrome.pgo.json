@@ -105,6 +105,7 @@
       "is_debug": false,
       "is_official_build": true,
       "symbol_level": 1,
+      "target_cpu": "x64",
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
