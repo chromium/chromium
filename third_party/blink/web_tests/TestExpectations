@@ -7315,9 +7315,6 @@ crbug.com/325441197 http/tests/devtools/security/security-explanation-ordering.j
 crbug.com/325441197 http/tests/devtools/service-workers/service-workers-redundant.js [ Failure Pass ]
 crbug.com/325441197 http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
 
-# Gardener 2024-04-11
-crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
-
 # Gardener 2024-04-16
 crbug.com/335003887 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/arg_min_max.https.any.worker.html?gpu [ Failure Pass ]
 crbug.com/335003887 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/arg_min_max.https.any.worker.html?gpu [ Failure Pass ]
@@ -7334,3 +7331,5 @@ crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinst
 crbug.com/40851596 external/wpt/pointerevents/pointerevent_click_during_capture.html?mouse-auxclick [ Failure Pass ]
 crbug.com/40181907 external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure Pass Timeout ]
 crbug.com/40286318 external/wpt/html/semantics/invokers/invoketarget-on-dialog-behavior.tentative.html [ Failure Pass ]
+crbug.com/333739617 [ Mac ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
+crbug.com/333739617 [ Win ] fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Timeout ]
