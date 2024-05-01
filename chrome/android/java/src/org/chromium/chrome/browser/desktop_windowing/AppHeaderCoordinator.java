@@ -15,7 +15,6 @@ import android.view.WindowInsetsController;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
@@ -25,7 +24,6 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
@@ -42,7 +40,10 @@ import org.chromium.ui.util.TokenHolder;
  * from listening the window insets updates, and pushing updates to the tab strip.
  */
 @RequiresApi(api = Build.VERSION_CODES.R)
-public class AppHeaderCoordinator implements DesktopWindowStateProvider {
+public class AppHeaderCoordinator
+        implements DesktopWindowStateProvider,
+                TopResumedActivityChangedObserver,
+                SaveInstanceStateObserver {
     @VisibleForTesting
     public static final String INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW =
             "is_app_in_unfocused_desktop_window";
@@ -50,26 +51,9 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     private static final String TAG = "AppHeader";
     // TODO(crbug/328446763): Use values from Android V and remove SuppressWarnings.
     private static final int APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND = 1 << 7;
-    private static final int APPEARANCE_LIGHT_CAPTION_BARS = 1 << 8;
+    @VisibleForTesting static final int APPEARANCE_LIGHT_CAPTION_BARS = 1 << 8;
 
     private static @Nullable InsetsRectProvider sInsetsRectProviderForTesting;
-
-    /** External delegate to adjust UI in response to app header signals. */
-    public interface AppHeaderDelegate {
-
-        /**
-         * Adjust the paddings for app header region.
-         *
-         * @param leftPadding Left padding at the app header region in px.
-         * @param rightPadding Right padding at the app header region in px.
-         */
-        void updateHorizontalPaddings(@Px int leftPadding, @Px int rightPadding);
-
-        /**
-         * @return The background color to be used for the app header.
-         */
-        int getAppHeaderBackgroundColor();
-    }
 
     private Activity mActivity;
     private final View mRootView;
@@ -77,7 +61,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
     private final InsetObserver mInsetObserver;
     private final InsetsRectProvider mInsetsRectProvider;
     private final WindowInsetsController mInsetsController;
-    private final OneshotSupplier<AppHeaderDelegate> mAppHeaderDelegateSupplier;
     private final ObserverList<AppHeaderObserver> mObservers = new ObserverList<>();
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
@@ -96,7 +79,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
      *     controls visibility.
      * @param insetObserver {@link InsetObserver} that manages insets changes on the
      *     CoordinatorView.
-     * @param appHeaderDelegateSupplier Supplier for {@link AppHeaderDelegate}.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to dispatch {@link
      *     TopResumedActivityChangedObserver#onTopResumedActivityChanged(boolean)} and {@link
      *     SaveInstanceStateObserver#onSaveInstanceState(Bundle)} events observed by this class.
@@ -109,7 +91,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
             View rootView,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             InsetObserver insetObserver,
-            OneshotSupplier<AppHeaderDelegate> appHeaderDelegateSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Bundle savedInstanceState) {
         mActivity = activity;
@@ -117,7 +98,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mInsetObserver = insetObserver;
         mInsetsController = mRootView.getWindowInsetsController();
-        mAppHeaderDelegateSupplier = appHeaderDelegateSupplier;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         // Whether the app started in an unfocused desktop window, so that relevant UI state can be
@@ -143,9 +123,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
             insetsRectUpdateRunnable.onBoundingRectsUpdated(
                     mInsetsRectProvider.getWidestUnoccludedRect());
         }
-
-        mAppHeaderDelegateSupplier.runSyncOrOnAvailable(
-                (delegate) -> maybeUpdateAppHeaderPaddings());
     }
 
     /** Destroy the instances and remove all the dependencies. */
@@ -182,6 +159,11 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         return mObservers.removeObserver(observer);
     }
 
+    @Override
+    public void updateForegroundColor(int backgroundColor) {
+        updateIconColorForCaptionBars(backgroundColor);
+    }
+
     // TopResumedActivityChangedObserver implementation.
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
@@ -216,10 +198,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
             observer.onAppHeaderStateChanged(mAppHeaderState);
         }
 
-        // Regardless the current state, we'll update the side padding for StripLayoutHelper, as
-        // bounding rect can have updates without entering / exiting desktop windowing mode.
-        maybeUpdateAppHeaderPaddings();
-
         // If whether we are in DW mode does not change, we can end this method now.
         if (!desktopWindowingModeChanged) return;
         for (var observer : mObservers) {
@@ -231,7 +209,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
 
         // 2. Set the captionBar background appropriately to draw into the region.
         updateCaptionBarBackground(mIsInDesktopWindow);
-        updateIconColorForCaptionBars();
 
         // 3. Lock the browser controls when we are in DW mode.
         if (mIsInDesktopWindow) {
@@ -240,21 +217,6 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
                             mBrowserControlsToken);
         } else {
             mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(mBrowserControlsToken);
-        }
-    }
-
-    private void maybeUpdateAppHeaderPaddings() {
-        if (mAppHeaderDelegateSupplier.get() == null
-                || mInsetsRectProvider.getWindowRect().isEmpty()
-                || mAppHeaderState == null) return;
-
-        if (mAppHeaderState.isInDesktopWindow()) {
-            mAppHeaderDelegateSupplier
-                    .get()
-                    .updateHorizontalPaddings(
-                            mAppHeaderState.getLeftPadding(), mAppHeaderState.getRightPadding());
-        } else {
-            mAppHeaderDelegateSupplier.get().updateHorizontalPaddings(0, 0);
         }
     }
 
@@ -315,17 +277,14 @@ public class AppHeaderCoordinator implements DesktopWindowStateProvider {
         }
     }
 
-    // TODO(crbug/328446763): Call this method when theme / tab model switches.
+    // TODO(crbug/328446763): Confirm the icon color update at startup during theme changes.
     @SuppressLint("WrongConstant")
-    private void updateIconColorForCaptionBars() {
-        if (mAppHeaderDelegateSupplier.get() == null) return;
-
-        boolean useLightIcon =
-                ColorUtils.shouldUseLightForegroundOnBackground(
-                        mAppHeaderDelegateSupplier.get().getAppHeaderBackgroundColor());
-        int useLightCaptionBar = useLightIcon ? APPEARANCE_LIGHT_CAPTION_BARS : 0;
+    private void updateIconColorForCaptionBars(int color) {
+        boolean useLightIcon = ColorUtils.shouldUseLightForegroundOnBackground(color);
+        // APPEARANCE_LIGHT_CAPTION_BARS needs to be set when caption bar is with light background.
+        int captionBarAppearance = useLightIcon ? 0 : APPEARANCE_LIGHT_CAPTION_BARS;
         mInsetsController.setSystemBarsAppearance(
-                useLightCaptionBar, APPEARANCE_LIGHT_CAPTION_BARS);
+                captionBarAppearance, APPEARANCE_LIGHT_CAPTION_BARS);
     }
 
     /** Set states for testing. */

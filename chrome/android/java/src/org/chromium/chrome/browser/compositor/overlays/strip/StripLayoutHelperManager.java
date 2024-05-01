@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.TintedComposito
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
-import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -71,8 +70,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -99,7 +100,7 @@ public class StripLayoutHelperManager
                 PauseResumeWithNativeObserver,
                 TabStripHeightObserver,
                 TopResumedActivityChangedObserver,
-                AppHeaderCoordinator.AppHeaderDelegate {
+                AppHeaderObserver {
 
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
@@ -408,6 +409,7 @@ public class StripLayoutHelperManager
                         ? toolbarManager.getTabStripHeightSupplier().get() / mDensity
                         : mScrollableStripHeight;
         mTopPadding = mHeight - mScrollableStripHeight;
+        mDesktopWindowStateProvider = desktopWindowStateProvider;
 
         CompositorOnClickHandler selectorClickHandler = time -> handleModelSelectorButtonClick();
         createModelSelectorButton(context, selectorClickHandler);
@@ -544,13 +546,16 @@ public class StripLayoutHelperManager
                     mIncognitoHelper.setLayerTitleCache(layerTitleCache);
                 });
 
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
-        mIsTopResumedActivity =
-                mDesktopWindowStateProvider == null
-                        ? AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher)
-                        : !mDesktopWindowStateProvider.isInUnfocusedDesktopWindow();
-
         onContextChanged(context);
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.addObserver(this);
+            mIsTopResumedActivity = !mDesktopWindowStateProvider.isInUnfocusedDesktopWindow();
+        } else {
+            mIsTopResumedActivity = AppHeaderUtils.isActivityFocusedAtStartup(lifecycleDispatcher);
+        }
+        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) {
+            onAppHeaderStateChanged(mDesktopWindowStateProvider.getAppHeaderState());
+        }
     }
 
     private void setTabModelStartupInfo(TabModelStartupInfo startupInfo) {
@@ -598,6 +603,9 @@ public class StripLayoutHelperManager
             mTabModelSelectorTabObserver.destroy();
         }
         mTabDragSource = null;
+        if (mDesktopWindowStateProvider != null) {
+            mDesktopWindowStateProvider.removeObserver(this);
+        }
     }
 
     /** Mark whether tab strip |isHidden|. */
@@ -1213,23 +1221,27 @@ public class StripLayoutHelperManager
         }
     }
 
+    @Override
+    public void onAppHeaderStateChanged(AppHeaderState newState) {
+        assert mDesktopWindowStateProvider != null;
+        // We do not update the layer's height in this method. The height adjustment will be
+        // triggered by #onHeightChanged.
+
+        mDesktopWindowStateProvider.updateForegroundColor(getBackgroundColor());
+        updateHorizontalPaddings(newState.getLeftPadding(), newState.getRightPadding());
+    }
+
     /**
      * Update the start / end padding for the tab strip.
      *
      * @param leftPaddingPx Left padding for the tab strip in px.
      * @param rightPaddingPx Right padding for the tab strip in px.
      */
-    @Override
-    public void updateHorizontalPaddings(int leftPaddingPx, int rightPaddingPx) {
+    private void updateHorizontalPaddings(int leftPaddingPx, int rightPaddingPx) {
         mLeftPadding = leftPaddingPx / mDensity;
         mRightPadding = rightPaddingPx / mDensity;
 
         onSizeChanged(mWidth, mHeight, mLastVisibleViewportOffsetY, mOrientation);
-    }
-
-    @Override
-    public int getAppHeaderBackgroundColor() {
-        return getBackgroundColor();
     }
 
     private void updateTitleForTab(Tab tab) {
@@ -1295,6 +1307,11 @@ public class StripLayoutHelperManager
         mNormalHelper.tabModelSelected(!mIsIncognito);
 
         updateModelSwitcherButton();
+
+        // If we are in DW mode, notify DW state provider since the model changed.
+        if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)) {
+            mDesktopWindowStateProvider.updateForegroundColor(getBackgroundColor());
+        }
 
         mUpdateHost.requestUpdate();
     }

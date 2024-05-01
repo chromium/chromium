@@ -25,7 +25,6 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
@@ -42,14 +41,11 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
-import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.AppHeaderDelegate;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
@@ -193,9 +189,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TouchEventObserver mDragDropTouchObserver;
     private ViewGroup mCoordinator;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    // TODO(crbug/325351108): Remove the use of supplier and inject through ctor.
-    private final OneshotSupplierImpl<AppHeaderDelegate> mAppHeaderDelegateSupplier =
-            new OneshotSupplierImpl<>();
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private Destroyable mTabGroupCreationDialogManager;
 
@@ -807,14 +800,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         initStatusIndicatorCoordinator(layoutManager);
         mLayoutManager = layoutManager;
-
-        if (mLayoutManager instanceof LayoutManagerChrome) {
-            StripLayoutHelperManager stripLayoutHelperManager =
-                    ((LayoutManagerChrome) mLayoutManager).getStripLayoutHelperManager();
-            if (stripLayoutHelperManager != null) {
-                mAppHeaderDelegateSupplier.set(stripLayoutHelperManager);
-            }
-        }
     }
 
     @Override
@@ -1221,7 +1206,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity.getWindow().getDecorView().getRootView(),
                         mBrowserControlsManager.getBrowserVisibilityDelegate(),
                         mInsetObserverViewSupplier.get(),
-                        mAppHeaderDelegateSupplier,
                         mActivityLifecycleDispatcher,
                         savedInstanceState);
     }

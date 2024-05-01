@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
@@ -310,6 +311,23 @@ public class StripLayoutHelperManagerTest {
                 "Strip background color is incorrect.",
                 unfocusedLightThemeColor,
                 mStripLayoutHelperManager.getBackgroundColor());
+    }
+
+    @Test
+    public void testUpdateForeGroundColor() {
+        initializeTest();
+
+        mStripLayoutHelperManager.onAppHeaderStateChanged(new AppHeaderState());
+
+        int normalColor = TabUiThemeUtil.getTabStripBackgroundColor(mContext, false);
+        verify(mDesktopWindowStateProvider).updateForegroundColor(normalColor);
+
+        Mockito.reset(mDesktopWindowStateProvider);
+        mStripLayoutHelperManager.setIsIncognitoForTesting(true);
+        mStripLayoutHelperManager.onAppHeaderStateChanged(new AppHeaderState());
+
+        int incognitoColor = TabUiThemeUtil.getTabStripBackgroundColor(mContext, true);
+        verify(mDesktopWindowStateProvider).updateForegroundColor(incognitoColor);
     }
 
     @Test
@@ -627,7 +645,16 @@ public class StripLayoutHelperManagerTest {
         int leftPadding = 10;
         int rightPadding = 20;
         int topPaddingPx = 5;
-        mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+        var appHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, (int) SCREEN_WIDTH, (int) SCREEN_HEIGHT),
+                        new Rect(
+                                leftPadding,
+                                0,
+                                (int) (SCREEN_WIDTH - rightPadding),
+                                TAB_STRIP_HEIGHT_PX + topPaddingPx),
+                        true);
+        mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPaddingPx);
 
         // Invoke the method.
@@ -970,7 +997,16 @@ public class StripLayoutHelperManagerTest {
         // Update the size and paddings.
         int leftPadding = 10;
         int rightPadding = 20;
-        mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+        var appHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, (int) SCREEN_WIDTH, (int) SCREEN_HEIGHT),
+                        new Rect(
+                                leftPadding,
+                                0,
+                                (int) (SCREEN_WIDTH - rightPadding),
+                                TAB_STRIP_HEIGHT_PX),
+                        true);
+        mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
 
@@ -1027,6 +1063,15 @@ public class StripLayoutHelperManagerTest {
         int leftPadding = 10;
         int rightPadding = 20;
         int topPadding = 5;
+        var appHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, (int) SCREEN_WIDTH, (int) SCREEN_HEIGHT),
+                        new Rect(
+                                leftPadding,
+                                0,
+                                (int) (SCREEN_WIDTH - rightPadding),
+                                TAB_STRIP_HEIGHT_PX + topPadding),
+                        true);
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         initializeTest();
 
@@ -1035,7 +1080,7 @@ public class StripLayoutHelperManagerTest {
 
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-        mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+        mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
         mStripLayoutHelperManager.updateOverlay(0, 0);
 
@@ -1071,6 +1116,15 @@ public class StripLayoutHelperManagerTest {
         int leftPadding = 10;
         int rightPadding = 20;
         int topPadding = 5;
+        var appHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, (int) SCREEN_WIDTH, (int) SCREEN_HEIGHT),
+                        new Rect(
+                                leftPadding,
+                                0,
+                                (int) (SCREEN_WIDTH - rightPadding),
+                                TAB_STRIP_HEIGHT_PX + topPadding),
+                        true);
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         initializeTest();
 
@@ -1079,7 +1133,7 @@ public class StripLayoutHelperManagerTest {
 
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-        mStripLayoutHelperManager.updateHorizontalPaddings(leftPadding, rightPadding);
+        mStripLayoutHelperManager.onAppHeaderStateChanged(appHeaderState);
         mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX + topPadding);
         mStripLayoutHelperManager.updateOverlay(0, 0);
 

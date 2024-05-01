@@ -4,12 +4,11 @@
 
 package org.chromium.chrome.browser.ui.desktop_windowing;
 
-import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
-import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import androidx.annotation.ColorInt;
 
 /** Interface to observe and retrieve desktop windowing mode state and updates. */
-public interface DesktopWindowStateProvider
-        extends TopResumedActivityChangedObserver, SaveInstanceStateObserver {
+// TODO(crbug.com/332784708): Rename this class (and observer) to DesktopWindowStateManager*.
+public interface DesktopWindowStateProvider {
 
     interface AppHeaderObserver {
 
@@ -65,4 +64,11 @@ public interface DesktopWindowStateProvider
      * @return {@code true} if the observer was successfully removed, {@code false} otherwise.
      */
     boolean removeObserver(AppHeaderObserver observer);
+
+    /**
+     * Updates the system UI header foreground color when the app header background color changes.
+     *
+     * @param backgroundColor The app header background color.
+     */
+    void updateForegroundColor(@ColorInt int backgroundColor);
 }

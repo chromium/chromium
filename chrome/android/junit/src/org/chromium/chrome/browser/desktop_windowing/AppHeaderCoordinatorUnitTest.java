@@ -14,12 +14,12 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
@@ -40,13 +40,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
-import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
-import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator.AppHeaderDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
@@ -76,7 +72,6 @@ public class AppHeaderCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private StripLayoutHelperManager mAppHeaderDelegate;
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisDelegate;
     @Mock private InsetObserver mInsetObserver;
     @Mock private InsetsRectProvider mInsetsRectProvider;
@@ -88,8 +83,6 @@ public class AppHeaderCoordinatorUnitTest {
     private Activity mSpyActivity;
     private View mSpyRootView;
     private WindowInsetsCompat mLastSeenRawWindowInsets = new WindowInsetsCompat(null);
-    private final OneshotSupplierImpl<AppHeaderDelegate> mAppHeaderDelegateSupplier =
-            new OneshotSupplierImpl<>();
     private Bundle mSavedInstanceStateBundle;
 
     @Before
@@ -204,12 +197,10 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void enableDesktopWindowing() {
-        initPostNative();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
-        verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
 
         var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, true);
         assertEquals(
@@ -221,7 +212,6 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void changeBoundingRects() {
-        initPostNative();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
@@ -241,8 +231,6 @@ public class AppHeaderCoordinatorUnitTest {
         notifyInsetsRectObserver();
 
         verifyDesktopWindowingEnabled();
-        verify(mAppHeaderDelegate, times(2))
-                .updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
 
         var expectedState = new AppHeaderState(windowRect, widestUnoccludedRect, true);
         assertEquals(
@@ -256,9 +244,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void initializeWithDesktopWindowingThenExit() {
         setupWithLeftAndRightBoundingRect();
         initAppHeaderCoordinator();
-        initPostNative();
         verifyDesktopWindowingEnabled();
-        verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(LEFT_BLOCK), eq(RIGHT_BLOCK));
 
         var expectedState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, true);
         assertEquals(
@@ -271,7 +257,6 @@ public class AppHeaderCoordinatorUnitTest {
         assertFalse(
                 "DesktopWindowing should exit when no insets is supplied.",
                 mAppHeaderCoordinator.isInDesktopWindow());
-        verify(mAppHeaderDelegate).updateHorizontalPaddings(eq(0), eq(0));
         verify(mBrowserControlsVisDelegate).releasePersistentShowingToken(anyInt());
 
         expectedState = new AppHeaderState(WINDOW_RECT, new Rect(), false);
@@ -284,16 +269,13 @@ public class AppHeaderCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
-        initPostNative();
         mAppHeaderCoordinator.destroy();
 
         verify(mInsetsRectProvider).destroy();
-        verify(mAppHeaderDelegate, times(0)).updateHorizontalPaddings(anyInt(), anyInt());
     }
 
     @Test
     public void activityLostFocusInDesktopWindow() {
-        initPostNative();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
@@ -319,7 +301,6 @@ public class AppHeaderCoordinatorUnitTest {
     @Test
     public void saveInstanceStateForUnfocusedWindow() {
         mSavedInstanceStateBundle.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
-        initPostNative();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
@@ -336,6 +317,25 @@ public class AppHeaderCoordinatorUnitTest {
         assertTrue(mSavedInstanceStateBundle.getBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW));
     }
 
+    @Test
+    public void updateForegroundColor() {
+        var insetController = mSpyRootView.getWindowInsetsController();
+
+        mAppHeaderCoordinator.updateForegroundColor(Color.BLACK);
+        assertEquals(
+                "Background is dark. Expecting APPEARANCE_LIGHT_CAPTION_BARS not set.",
+                0,
+                insetController.getSystemBarsAppearance()
+                        & AppHeaderCoordinator.APPEARANCE_LIGHT_CAPTION_BARS);
+
+        mAppHeaderCoordinator.updateForegroundColor(Color.WHITE);
+        assertEquals(
+                "Background is light. Expecting APPEARANCE_LIGHT_CAPTION_BARS set.",
+                AppHeaderCoordinator.APPEARANCE_LIGHT_CAPTION_BARS,
+                insetController.getSystemBarsAppearance()
+                        & AppHeaderCoordinator.APPEARANCE_LIGHT_CAPTION_BARS);
+    }
+
     private void initAppHeaderCoordinator() {
         mAppHeaderCoordinator =
                 new AppHeaderCoordinator(
@@ -343,15 +343,9 @@ public class AppHeaderCoordinatorUnitTest {
                         mSpyRootView,
                         mBrowserControlsVisDelegate,
                         mInsetObserver,
-                        mAppHeaderDelegateSupplier,
                         mActivityLifecycleDispatcher,
                         mSavedInstanceStateBundle);
         mAppHeaderCoordinator.addObserver(mObserver);
-    }
-
-    private void initPostNative() {
-        mAppHeaderDelegateSupplier.set(mAppHeaderDelegate);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 
     private void setupWithNoInsets() {
