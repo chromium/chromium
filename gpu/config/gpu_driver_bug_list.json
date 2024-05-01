@@ -1399,7 +1399,7 @@
     },
     {
       "id": 249,
-      "description": "Direct composition causes slow presents on old Nvidia GPUs",
+      "description": "Full screen video overlays causes slow presents on old Nvidia GPUs",
       "cr_bugs": [775898],
       "os": {
         "type": "win"
@@ -1407,7 +1407,7 @@
       "vendor_id": "0x10de",
       "device_id": ["0x10d8"],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -1621,7 +1621,7 @@
     },
     {
       "id": 277,
-      "description": "Direct composition path is buggy on certain AMD devices/drivers",
+      "description": "Video overlay path is buggy on certain AMD devices/drivers",
       "cr_bugs": [800950],
       "os": {
         "type": "win"
@@ -1632,12 +1632,12 @@
         "value": "8.17.10.1129"
       },
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
       "id": 278,
-      "description": "Direct composition path is buggy on certain AMD devices/drivers",
+      "description": "Video overlay path is buggy on certain AMD devices/drivers",
       "cr_bugs": [800950],
       "os": {
         "type": "win"
@@ -1645,7 +1645,7 @@
       "vendor_id": "0x1002",
       "device_id": ["0x6900"],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -1723,7 +1723,7 @@
       },
       "hardware_overlay": "unsupported",
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
@@ -1996,14 +1996,14 @@
     {
       "id": 318,
       "cr_bugs": [995396],
-      "description": "Direct composition caused performance issues on AMD GPUs",
+      "description": "Full screen video overlays caused performance issues on AMD GPUs",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x1002",
       "device_id": ["0x694c"],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {
