@@ -2711,15 +2711,34 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
   }
   base::TimeDelta caret_blink_interval = base::Milliseconds(
       active_user_prefs_->GetInteger(prefs::kAccessibilityCaretBlinkInterval));
+  bool notify_dark = false;
+  bool notify_web = false;
+  bool notify_native = false;
   auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
-  native_theme_dark->set_caret_blink_interval(caret_blink_interval);
+  if (native_theme_dark->GetCaretBlinkInterval() != caret_blink_interval) {
+    notify_dark = true;
+    native_theme_dark->set_caret_blink_interval(caret_blink_interval);
+  }
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-  native_theme_web->set_caret_blink_interval(caret_blink_interval);
+  if (native_theme_web->GetCaretBlinkInterval() != caret_blink_interval) {
+    notify_web = true;
+    native_theme_web->set_caret_blink_interval(caret_blink_interval);
+  }
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_caret_blink_interval(caret_blink_interval);
-  native_theme_dark->NotifyOnNativeThemeUpdated();
-  native_theme_web->NotifyOnNativeThemeUpdated();
-  native_theme->NotifyOnNativeThemeUpdated();
+  if (native_theme->GetCaretBlinkInterval() != caret_blink_interval) {
+    notify_native = true;
+    native_theme->set_caret_blink_interval(caret_blink_interval);
+  }
+  // Avoid unnecessary notifications.
+  if (notify_dark) {
+    native_theme_dark->NotifyOnNativeThemeUpdated();
+  }
+  if (notify_web) {
+    native_theme_web->NotifyOnNativeThemeUpdated();
+  }
+  if (notify_native) {
+    native_theme->NotifyOnNativeThemeUpdated();
+  }
 }
 
 void AccessibilityController::UpdateAccessibilityHighlightingFromPrefs() {

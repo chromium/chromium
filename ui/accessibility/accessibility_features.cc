@@ -208,7 +208,7 @@ bool IsAccessibilityMouseKeysEnabled() {
 
 BASE_FEATURE(kAccessibilityCaretBlinkIntervalSetting,
              "AccessibilityCaretBlinkIntervalSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityCaretBlinkIntervalSettingEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityCaretBlinkIntervalSetting);
