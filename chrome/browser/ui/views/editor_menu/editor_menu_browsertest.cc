@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
-
 #include <string_view>
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -20,9 +21,12 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -115,6 +119,42 @@ class EditorMenuBrowserFeatureEnabledTest : public EditorMenuBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
   void SetUp() override { GTEST_SKIP(); }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+class EditorMenuBrowserI18nEnabledTest : public EditorMenuBrowserTest {
+ public:
+  EditorMenuBrowserI18nEnabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kOrca,
+                              chromeos::features::kFeatureManagementOrca,
+                              chromeos::features::kOrcaUseL10nStrings},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kLang, "fr");
+  }
+
+  ~EditorMenuBrowserI18nEnabledTest() override = default;
+};
+
+class EditorMenuBrowserI18nDisabledTest : public EditorMenuBrowserTest {
+ public:
+  EditorMenuBrowserI18nDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            chromeos::features::kOrca,
+            chromeos::features::kFeatureManagementOrca,
+        },
+        /*disabled_features=*/{chromeos::features::kOrcaUseL10nStrings});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kLang, "fr");
+  }
+
+  ~EditorMenuBrowserI18nDisabledTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureDisabledTest,
@@ -318,4 +358,71 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
   EXPECT_TRUE(GetEditorMenuView()->GetWidget()->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EditorMenuBrowserI18nEnabledTest,
+    ShowWriteCardTitleInFrenchWhenOrcaUseL10nStringsIsEnabled) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kWrite));
+
+  ASSERT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
+
+  EXPECT_EQ(views::AsViewClass<EditorMenuView>(GetEditorMenuView())
+                ->textfield_for_testing()
+                ->textfield()
+                ->GetPlaceholderText(),
+            l10n_util::GetStringUTF16(
+                IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EditorMenuBrowserI18nEnabledTest,
+    ShowPromoCardTitleInFrenchWhenOrcaUseL10nStringsFlagIsEnabled) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kPromoCard));
+
+  ASSERT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
+
+  EXPECT_EQ(views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView())
+                ->title_for_testing()
+                ->GetDisplayTextForTesting(),
+            l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EditorMenuBrowserI18nDisabledTest,
+    ShowWriteCardPlaceholderTextInEnUsWhenOrcaUseL10nStringsFlagIsDisabled) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kWrite));
+
+  ASSERT_TRUE(views::IsViewClass<EditorMenuView>(GetEditorMenuView()));
+
+  EXPECT_EQ(views::AsViewClass<EditorMenuView>(GetEditorMenuView())
+                ->textfield_for_testing()
+                ->textfield()
+                ->GetPlaceholderText(),
+            u"Enter a prompt like \"write a thank you note\"");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EditorMenuBrowserI18nDisabledTest,
+    ShowPromoCardTitleInEnUsWhenOrcaUseL10nStringsFlagIsDisabled) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext(EditorMode::kPromoCard));
+
+  ASSERT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
+
+  EXPECT_EQ(views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView())
+                ->title_for_testing()
+                ->GetDisplayTextForTesting(),
+            u"Write faster and with more confidence");
 }

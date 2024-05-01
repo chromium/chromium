@@ -55,6 +55,8 @@ class EditorMenuPromoCardView : public views::View,
 
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
+  views::Label* title_for_testing() { return title_; }
+
  private:
   void InitLayout();
   void AddTitle(views::View* main_view);
