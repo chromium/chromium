@@ -2685,31 +2685,6 @@
             ]
         }
     ],
-    "BoostResourceLoadingTaskPriorities": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AllTypes",
-                    "enable_features": [
-                        "BoostFontLoadingTaskPriority",
-                        "BoostImageSetLoadingTaskPriority",
-                        "BoostNonRenderBlockingStyleLoadingTaskPriority",
-                        "BoostRenderBlockingStyleLoadingTaskPriority",
-                        "BoostVideoLoadingTaskPriority"
-                    ]
-                }
-            ]
-        }
-    ],
     "BorealisProvision": [
         {
             "platforms": [
