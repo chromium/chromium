@@ -113,13 +113,21 @@ ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(
   return UuidToJavaString(env, group.saved_guid());
 }
 
-void TabGroupSyncServiceAndroid::RemoveGroup(
+void TabGroupSyncServiceAndroid::RemoveGroupByLocalId(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    const JavaParamRef<jobject>& j_group_id) {
+    const JavaParamRef<jobject>& j_local_group_id) {
   auto group_id =
-      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_local_group_id);
   tab_group_sync_service_->RemoveGroup(group_id);
+}
+
+void TabGroupSyncServiceAndroid::RemoveGroupBySyncId(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jstring>& j_sync_group_id) {
+  auto sync_group_id = JavaStringToUuid(env, j_sync_group_id);
+  tab_group_sync_service_->RemoveGroup(sync_group_id);
 }
 
 void TabGroupSyncServiceAndroid::UpdateVisualData(

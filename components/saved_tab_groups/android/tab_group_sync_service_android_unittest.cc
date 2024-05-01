@@ -43,6 +43,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
 
   MOCK_METHOD(void, AddGroup, (const SavedTabGroup&));
   MOCK_METHOD(void, RemoveGroup, (const LocalTabGroupID&));
+  MOCK_METHOD(void, RemoveGroup, (const base::Uuid&));
   MOCK_METHOD(void,
               UpdateVisualData,
               (const LocalTabGroupID, const tab_groups::TabGroupVisualData*));
@@ -214,11 +215,24 @@ TEST_F(TabGroupSyncServiceAndroidTest, CreateGroup) {
   EXPECT_EQ(test_tab_group_id_, captured_group.local_group_id().value());
 }
 
-TEST_F(TabGroupSyncServiceAndroidTest, RemoveGroup) {
+TEST_F(TabGroupSyncServiceAndroidTest, RemoveGroupByLocalId) {
   auto* env = AttachCurrentThread();
 
-  EXPECT_CALL(tab_group_sync_service_, RemoveGroup(Eq(test_tab_group_id_)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveGroup(env, j_test_);
+  EXPECT_CALL(tab_group_sync_service_, RemoveGroup(test_tab_group_id_))
+      .Times(1);
+  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveGroupByLocalId(env,
+                                                                   j_test_);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, RemoveGroupBySyncId) {
+  auto* env = AttachCurrentThread();
+
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(kTestUuid);
+  auto j_uuid = UuidToJavaString(env, uuid);
+
+  EXPECT_CALL(tab_group_sync_service_, RemoveGroup(uuid)).Times(1);
+  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveGroupBySyncId(env, j_test_,
+                                                                  j_uuid);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateVisualData) {

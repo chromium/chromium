@@ -193,7 +193,7 @@ TEST_F(TabGroupSyncServiceTest, AddGroup) {
   test::CompareSavedTabGroupTabs(group->saved_tabs(), group_4.saved_tabs());
 }
 
-TEST_F(TabGroupSyncServiceTest, RemoveGroup) {
+TEST_F(TabGroupSyncServiceTest, RemoveGroupByLocalId) {
   // Add a group.
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
   LocalTabGroupID tab_group_id = test::GenerateRandomTabGroupID();
@@ -210,6 +210,17 @@ TEST_F(TabGroupSyncServiceTest, RemoveGroup) {
   // Verify model internals.
   EXPECT_FALSE(model_->Contains(group_4.saved_guid()));
   EXPECT_EQ(model_->Count(), 3);
+}
+
+TEST_F(TabGroupSyncServiceTest, RemoveGroupBySyncId) {
+  // Remove the group and verify.
+  tab_group_sync_service_->RemoveGroup(group_1_.saved_guid());
+  EXPECT_EQ(tab_group_sync_service_->GetGroup(group_1_.saved_guid()),
+            std::nullopt);
+
+  // Verify model internals.
+  EXPECT_FALSE(model_->Contains(group_1_.saved_guid()));
+  EXPECT_EQ(model_->Count(), 2);
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateVisualData) {

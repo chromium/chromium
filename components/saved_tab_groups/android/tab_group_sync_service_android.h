@@ -43,9 +43,13 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
       const JavaParamRef<jobject>& j_caller,
       const JavaParamRef<jobject>& j_group_id);
 
-  void RemoveGroup(JNIEnv* env,
-                   const JavaParamRef<jobject>& j_caller,
-                   const JavaParamRef<jobject>& j_group_id);
+  void RemoveGroupByLocalId(JNIEnv* env,
+                            const JavaParamRef<jobject>& j_caller,
+                            const JavaParamRef<jobject>& j_local_group_id);
+
+  void RemoveGroupBySyncId(JNIEnv* env,
+                           const JavaParamRef<jobject>& j_caller,
+                           const JavaParamRef<jstring>& j_sync_group_id);
 
   void UpdateVisualData(JNIEnv* env,
                         const JavaParamRef<jobject>& j_caller,

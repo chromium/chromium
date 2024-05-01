@@ -58,10 +58,17 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @Override
-    public void removeGroup(LocalTabGroupId groupId) {
+    public void removeGroup(LocalTabGroupId localTabGroupId) {
         if (mNativePtr == 0) return;
-        assert groupId != null;
-        TabGroupSyncServiceImplJni.get().removeGroup(mNativePtr, this, groupId);
+        assert localTabGroupId != null;
+        TabGroupSyncServiceImplJni.get().removeGroupByLocalId(mNativePtr, this, localTabGroupId);
+    }
+
+    @Override
+    public void removeGroup(String syncTabGroupId) {
+        if (mNativePtr == 0) return;
+        assert syncTabGroupId != null;
+        TabGroupSyncServiceImplJni.get().removeGroupBySyncId(mNativePtr, this, syncTabGroupId);
     }
 
     @Override
@@ -205,10 +212,15 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
                 TabGroupSyncServiceImpl caller,
                 LocalTabGroupId groupId);
 
-        void removeGroup(
+        void removeGroupByLocalId(
                 long nativeTabGroupSyncServiceAndroid,
                 TabGroupSyncServiceImpl caller,
-                LocalTabGroupId groupId);
+                LocalTabGroupId localTabGroupId);
+
+        void removeGroupBySyncId(
+                long nativeTabGroupSyncServiceAndroid,
+                TabGroupSyncServiceImpl caller,
+                String syncTabGroupId);
 
         void updateVisualData(
                 long nativeTabGroupSyncServiceAndroid,

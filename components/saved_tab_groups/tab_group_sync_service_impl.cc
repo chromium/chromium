@@ -91,6 +91,12 @@ void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {
   // TODO(b/336865528): Remove from mapping store.
 }
 
+void TabGroupSyncServiceImpl::RemoveGroup(const base::Uuid& sync_id) {
+  VLOG(2) << __func__;
+  model_->Remove(sync_id);
+  // TODO(b/336865528): Remove from mapping store.
+}
+
 void TabGroupSyncServiceImpl::UpdateVisualData(
     const LocalTabGroupID local_group_id,
     const tab_groups::TabGroupVisualData* visual_data) {

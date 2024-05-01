@@ -36,7 +36,10 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
-    public void removeGroup(LocalTabGroupId groupId) {}
+    public void removeGroup(LocalTabGroupId localTabGroupId) {}
+
+    @Override
+    public void removeGroup(String syncTabGroupId) {}
 
     @Override
     public void updateVisualData(LocalTabGroupId tabGroupId, @NonNull String title, int color) {}

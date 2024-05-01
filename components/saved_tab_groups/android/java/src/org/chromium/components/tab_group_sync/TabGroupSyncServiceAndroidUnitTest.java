@@ -121,8 +121,13 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public void testRemoveGroup() {
+    public void testRemoveGroupByLocalId() {
         mService.removeGroup(LOCAL_TAB_GROUP_ID_1);
+    }
+
+    @CalledByNative
+    public void testRemoveGroupBySyncId(String uuid) {
+        mService.removeGroup(uuid);
     }
 
     @CalledByNative

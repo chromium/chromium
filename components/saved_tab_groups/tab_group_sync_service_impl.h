@@ -54,6 +54,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // TabGroupSyncService implementation.
   void AddGroup(const SavedTabGroup& group) override;
   void RemoveGroup(const LocalTabGroupID& local_id) override;
+  void RemoveGroup(const base::Uuid& sync_id) override;
   void UpdateVisualData(
       const LocalTabGroupID local_group_id,
       const tab_groups::TabGroupVisualData* visual_data) override;
