@@ -4,7 +4,7 @@
 
 package org.chromium.base.test.transit;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.allOf;
@@ -27,6 +27,15 @@ import java.lang.annotation.RetentionPolicy;
 
 /** An Element representing a view characteristic of a ConditionalState. */
 public class ViewElement {
+
+    /**
+     * Minimum percentage of the View that needs to be displayed for a ViewElement's enter
+     * Conditions to be considered fulfilled.
+     *
+     * <p>Matches Espresso's preconditions for ViewActions like click().
+     */
+    public static final int MIN_DISPLAYED_PERCENT = 90;
+
     @IntDef({Scope.CONDITIONAL_STATE_SCOPED, Scope.SHARED, Scope.UNSCOPED})
     @Retention(RetentionPolicy.SOURCE)
     @interface Scope {
@@ -141,7 +150,7 @@ public class ViewElement {
      * Start an Espresso interaction with a displayed View that matches this ViewElement's Matcher.
      */
     public ViewInteraction onView() {
-        return Espresso.onView(allOf(mViewMatcher, isDisplayed()));
+        return Espresso.onView(allOf(mViewMatcher, isDisplayingAtLeast(MIN_DISPLAYED_PERCENT)));
     }
 
     /**

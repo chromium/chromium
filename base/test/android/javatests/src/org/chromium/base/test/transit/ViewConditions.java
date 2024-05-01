@@ -7,6 +7,7 @@ package org.chromium.base.test.transit;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.any;
@@ -33,7 +34,7 @@ public class ViewConditions {
     /** Fulfilled when a single matching View exists and is displayed. */
     public static class DisplayedCondition extends ExistsCondition {
         public DisplayedCondition(Matcher<View> matcher, ExistsCondition.Options options) {
-            super(allOf(matcher, isDisplayed()), options);
+            super(allOf(matcher, isDisplayingAtLeast(ViewElement.MIN_DISPLAYED_PERCENT)), options);
         }
     }
 
