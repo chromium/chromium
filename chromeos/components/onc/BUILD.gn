@@ -39,6 +39,7 @@ source_set("test_support") {
   testonly = true
   deps = [
     "//base",
+    "//components/onc",
     "//testing/gtest",
   ]
   data = [ "//chromeos/components/test/data/onc/" ]

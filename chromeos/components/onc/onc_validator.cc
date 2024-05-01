@@ -148,6 +148,8 @@ base::Value::Dict Validator::MapObject(const OncValueSignature& signature,
       valid = ValidateNetworkConfiguration(&repaired);
     } else if (&signature == &kCellularSignature) {
       valid = ValidateCellular(&repaired);
+    } else if (&signature == &kCellularApnSignature) {
+      valid = ValidateAPN(&repaired);
     } else if (&signature == &kEthernetSignature) {
       valid = ValidateEthernet(&repaired);
     } else if (&signature == &kIPConfigSignature ||
@@ -773,6 +775,44 @@ bool Validator::ValidateCellular(base::Value::Dict* result) {
         R"(The "SMDPAddress" and "SMDSAddress" fields are mutually exclusive.)");
     return false;
   }
+  return true;
+}
+
+bool Validator::ValidateAPN(base::Value::Dict* result) {
+  if (!RequireField(*result, ::onc::cellular_apn::kAccessPointName) ||
+      FieldExistsAndIsEmpty(*result, ::onc::cellular_apn::kAccessPointName)) {
+    return false;
+  }
+
+  const std::vector<const char*> valid_ip_types = {
+      ::onc::cellular_apn::kIpTypeAutomatic,
+      ::onc::cellular_apn::kIpTypeIpv4,
+      ::onc::cellular_apn::kIpTypeIpv6,
+      ::onc::cellular_apn::kIpTypeIpv4Ipv6,
+  };
+
+  if (FieldExistsAndHasNoValidValue(*result, ::onc::cellular_apn::kIpType,
+                                    valid_ip_types)) {
+    return false;
+  }
+
+  const std::vector<const char*> valid_apn_types = {
+      ::onc::cellular_apn::kApnTypeDefault,
+      ::onc::cellular_apn::kApnTypeAttach,
+      ::onc::cellular_apn::kApnTypeTether,
+  };
+
+  if (FieldExistsAndIsEmpty(*result, ::onc::cellular_apn::kApnTypes) ||
+      !ListFieldContainsValidValues(*result, ::onc::cellular_apn::kApnTypes,
+                                    valid_apn_types)) {
+    return false;
+  }
+
+  // TODO(b/333100319): Validate that all APNs with ::onc::cellular_apn::kSource
+  // that are ::onc::cellular_apn::kAdmin or ::onc::cellular_apn::kUi have a
+  // non-empty string ::onc::cellular_apn::kId. This should be done after
+  // kApnPolicies flag is moved to chromeos as it is in ash currently.
+
   return true;
 }
 

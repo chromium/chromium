@@ -188,6 +188,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   bool ValidateToplevelConfiguration(base::Value::Dict* result);
   bool ValidateNetworkConfiguration(base::Value::Dict* result);
   bool ValidateCellular(base::Value::Dict* result);
+  bool ValidateAPN(base::Value::Dict* result);
   bool ValidateEthernet(base::Value::Dict* result);
   bool ValidateIPConfig(base::Value::Dict* result, bool require_fields = true);
   bool ValidateNameServersConfig(base::Value::Dict* result);

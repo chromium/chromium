@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
@@ -222,6 +223,159 @@ TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
   expected.Set(::onc::kRecommended, std::move(recommended));
   EXPECT_THAT(cellular_apn->GetDict(),
               base::test::DictionaryHasValues(std::move(expected)));
+}
+
+TEST(ONCUtils, ParseAndValidateOncForImport_APNAccessPointName) {
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  // Test APN with only Access Point Name
+  std::string onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name", /*ip_type=*/std::nullopt,
+      /*apn_types=*/std::nullopt);
+
+  // APNs are required to have a non-empty Access Point Name
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  // Failure if APN has empty Access Point Name
+  onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"", /*ip_type=*/std::nullopt,
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_FALSE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  //  Failure if APN has no AccessPointName field.
+  onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/std::nullopt, /*ip_type=*/std::nullopt,
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_FALSE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+}
+
+TEST(ONCUtils, ParseAndValidateOncForImport_APNApnType) {
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  // Test that empty APN Types field is fine
+  std::string onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name",
+      /*ip_type=*/std::nullopt,
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  // Test valid ApnType cases
+  onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name", /*ip_type=*/std::nullopt,
+      /*apn_types=*/
+      std::vector<std::string>({::onc::cellular_apn::kApnTypeDefault,
+                                ::onc::cellular_apn::kApnTypeAttach,
+                                ::onc::cellular_apn::kApnTypeTether}));
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  // Test invalid ApnType cases
+  onc_blob = onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name", /*ip_type=*/std::nullopt,
+      /*apn_types=*/std::vector<std::string>());
+
+  ASSERT_FALSE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name", /*ip_type=*/std::nullopt,
+      /*apn_types=*/
+      std::vector<std::string>({"InvalidApn",
+                                ::onc::cellular_apn::kApnTypeAttach,
+                                ::onc::cellular_apn::kApnTypeTether}));
+
+  ASSERT_FALSE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name", /*ip_type=*/std::nullopt,
+      /*apn_types=*/
+      std::vector<std::string>({"InvalidApn"}));
+
+  ASSERT_FALSE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+}
+
+TEST(ONCUtils, ParseAndValidateOncForImport_APNIpType) {
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  // Test that no IpType provided is fine
+  std::string onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name", /*ip_type=*/std::nullopt,
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  // Test valid IpTypes
+  onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name",
+      /*ip_type=*/::onc::cellular_apn::kIpTypeAutomatic,
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  onc_blob = onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name",
+      /*ip_type=*/::onc::cellular_apn::kIpTypeIpv4,
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  onc_blob = onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name",
+      /*ip_type=*/::onc::cellular_apn::kIpTypeIpv4Ipv6,
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  onc_blob = onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name",
+      /*ip_type=*/::onc::cellular_apn::kIpTypeIpv6,
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  //  Failure if Invalid IP type
+  onc_blob = onc_blob = test_utils::GenerateTopLevelWithCellularWithAPNAsJson(
+      /*access_point_name=*/"test-access-point-name",
+      /*ip_type=*/"invalid-ip-type",
+      /*apn_types=*/std::nullopt);
+
+  ASSERT_FALSE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {

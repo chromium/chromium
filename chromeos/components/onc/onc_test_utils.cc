@@ -11,11 +11,13 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "components/onc/onc_constants.h"
 
 namespace chromeos::onc::test_utils {
 
@@ -107,6 +109,57 @@ base::Value::List ReadTestList(const std::string& filename) {
                                        << "Expected value:\n"
                                        << *expected << "Actual value:\n"
                                        << *actual;
+}
+
+const std::string GenerateTopLevelWithCellularWithAPNAsJson(
+    const std::optional<std::string>& access_point_name,
+    const std::optional<std::string>& ip_type,
+    const std::optional<std::vector<std::string>>& apn_types) {
+  base::Value::Dict top_level =
+      test_utils::ReadTestDictionary("toplevel_cellular_no_apn.onc");
+
+  // Helper function to set optional properties
+  auto maybe_set_value = [](base::Value::Dict& dict, const char* key,
+                            const std::optional<std::string>& value) {
+    if (value) {
+      dict.Set(key, *value);
+    }
+  };
+
+  // Construct APN dictionary
+  base::Value::Dict apn_dict;
+  maybe_set_value(apn_dict, ::onc::cellular_apn::kAccessPointName,
+                  access_point_name);
+  maybe_set_value(apn_dict, ::onc::cellular_apn::kIpType, ip_type);
+
+  // Handle apn_types, including nullopt and empty list
+  if (apn_types.has_value()) {
+    base::Value::List apn_types_list = base::Value::List();
+    for (const std::string& type : *apn_types) {
+      apn_types_list.Append(type);
+    }
+    apn_dict.Set(::onc::cellular_apn::kApnTypes, std::move(apn_types_list));
+  }
+
+  // Find and update the cellular configuration
+  base::Value::List* network_configs =
+      top_level.FindList(::onc::toplevel_config::kNetworkConfigurations);
+  DCHECK(network_configs);
+  base::Value::Dict* cellular_network_config_dict =
+      network_configs->front().GetIfDict();
+  DCHECK(cellular_network_config_dict);
+  base::Value::Dict* cellular_dict =
+      cellular_network_config_dict->FindDict(::onc::network_config::kCellular);
+  DCHECK(cellular_dict);
+  cellular_dict->Set(::onc::cellular::kAPN, std::move(apn_dict));
+
+  // Serialize to JSON string
+  std::string json_output;
+  if (!base::JSONWriter::WriteWithOptions(
+          top_level, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_output)) {
+    LOG(ERROR) << "JSON serialization failed";
+  }
+  return json_output;
 }
 
 }  // namespace chromeos::onc::test_utils

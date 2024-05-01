@@ -1,0 +1,20 @@
+{
+  "GlobalNetworkConfiguration": {
+    "AllowAPNModification": true,
+    "AllowCellularHotspot": true,
+    "AllowCellularSimLock": true,
+    "AllowOnlyPolicyCellularNetworks": false,
+    "AllowOnlyPolicyNetworksToAutoconnect": false
+  },
+  "NetworkConfigurations": [
+    {
+      "GUID": "123",
+      "Type": "Cellular",
+      "Name": "Test Network",
+      "Cellular": {
+        "AllowRoaming": true,
+        "AutoConnect": true
+      }
+    }
+  ]
+}
