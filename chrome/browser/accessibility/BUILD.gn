@@ -41,9 +41,17 @@ source_set("utils") {
   sources = [
     "accessibility_state_utils.cc",
     "accessibility_state_utils.h",
+    "pdf_ocr_metrics.cc",
+    "pdf_ocr_metrics.h",
   ]
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//components/prefs",
+  ]
 
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash" ]

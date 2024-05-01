@@ -24,7 +24,8 @@ class ChromeMimeHandlerViewGuestDelegate : public MimeHandlerViewGuestDelegate {
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   void RecordLoadMetric(bool is_full_page,
-                        const std::string& mime_type) override;
+                        const std::string& mime_type,
+                        content::BrowserContext* browser_context) override;
 };
 
 }  // namespace extensions

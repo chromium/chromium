@@ -168,7 +168,7 @@ void MimeHandlerViewGuest::CreateWebContents(
 
   delegate_->RecordLoadMetric(
       /*is_full_page=*/!GetEmbedderFrame()->GetParentOrOuterDocument(),
-      mime_type_);
+      mime_type_, browser_context());
 
   // Compute the mime handler extension's `SiteInstance`. This must match the
   // `SiteInstance` for the navigation in `DidAttachToEmbedder()`, otherwise the

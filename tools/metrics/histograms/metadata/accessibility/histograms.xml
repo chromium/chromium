@@ -1769,6 +1769,20 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PDF.OpenedWith{A11yFeature}.PdfOcr"
+    enum="BooleanExists" expires_after="2025-04-18">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Record when PDF is opened with {A11yFeature} with or without PDF OCR.
+  </summary>
+  <token key="A11yFeature">
+    <variant name="ScreenReader"/>
+    <variant name="SelectToSpeak"
+        summary="Select-to-speak enabed (on ChromeOS only)"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened"
     enum="BooleanExists" expires_after="2025-02-28">
   <owner>kyungjunlee@google.com</owner>

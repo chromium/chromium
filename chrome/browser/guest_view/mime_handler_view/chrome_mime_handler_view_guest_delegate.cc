@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/accessibility/pdf_ocr_metrics.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 #include "components/pdf/common/constants.h"
@@ -39,7 +40,8 @@ bool ChromeMimeHandlerViewGuestDelegate::HandleContextMenu(
 
 void ChromeMimeHandlerViewGuestDelegate::RecordLoadMetric(
     bool is_full_page,
-    const std::string& mime_type) {
+    const std::string& mime_type,
+    content::BrowserContext* browser_context) {
   if (mime_type != pdf::kPDFMimeType) {
     return;
   }
@@ -47,6 +49,8 @@ void ChromeMimeHandlerViewGuestDelegate::RecordLoadMetric(
   ReportPDFLoadStatus(is_full_page
                           ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
                           : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
+
+  accessibility::RecordPDFOpenedWithA11yFeatureWithPdfOcr(browser_context);
 }
 
 }  // namespace extensions

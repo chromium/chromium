@@ -30,12 +30,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
@@ -75,6 +77,10 @@
 #include "chrome/browser/renderer_context_menu/pdf_ocr_menu_observer.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // TODO(crbug.com/41489544): Add a fake library that is built with Chrome for
 // sanitizer tests.
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
@@ -86,7 +92,6 @@
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
-#include "chrome/common/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -241,6 +246,17 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
     EXPECT_EQ(pdf_root->GetTreeData().focus_id, pdf_root->GetId());
 
     return content::GetAccessibilityTreeSnapshotFromId(pdf_tree_id);
+  }
+
+  void EnableScreenReader(bool enabled) {
+    // Spoof a screen reader.
+    if (enabled) {
+      content::BrowserAccessibilityState::GetInstance()
+          ->AddAccessibilityModeFlags(ui::AXMode::kScreenReader);
+    } else {
+      content::BrowserAccessibilityState::GetInstance()
+          ->RemoveAccessibilityModeFlags(ui::AXMode::kScreenReader);
+    }
   }
 };
 
@@ -1173,19 +1189,29 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityNavigationTest,
   EXPECT_EQ("https://bing.com/", expected_url.spec());
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+// TODO(b:289010799): Revisit using `crosapi` in `PDFOCRUmaTest` for Lacros.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test suite contains simple tests for the PDF OCR feature.
-class PDFExtensionAccessibilityPdfOcrTest
-    : public PDFExtensionAccessibilityTestWithOopifOverride {
+class PDFOCRUmaTest
+    : public PDFExtensionAccessibilityTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  PDFExtensionAccessibilityPdfOcrTest() = default;
-  ~PDFExtensionAccessibilityPdfOcrTest() override = default;
+  PDFOCRUmaTest() = default;
+  ~PDFOCRUmaTest() override = default;
+
+  bool IsPdfOcrSet() const { return std::get<0>(GetParam()); }
+
+  // PDFExtensionAccessibilityTest:
+  bool UseOopif() const override { return std::get<1>(GetParam()); }
 
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     std::vector<base::test::FeatureRef> enabled =
         PDFExtensionAccessibilityTest::GetEnabledFeatures();
     enabled.push_back(::features::kPdfOcr);
+    if (UseOopif()) {
+      enabled.push_back(chrome_pdf::features::kPdfOopif);
+    }
     return enabled;
   }
 
@@ -1200,42 +1226,56 @@ class PDFExtensionAccessibilityPdfOcrTest
     }
     return disabled;
   }
-
-  void ClickPdfOcrToggleButton(content::RenderFrameHost* extension_host) {
-    ASSERT_TRUE(content::ExecJs(
-        extension_host,
-        "viewer.shadowRoot.getElementById('toolbar').shadowRoot."
-        "getElementById('pdf-ocr-button').click();"));
-    ASSERT_TRUE(content::WaitForRenderFrameReady(extension_host));
-  }
 };
 
-// TODO(b/289010799): Re-enable it when integrating PDF OCR with
-// Select-to-Speak.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
-                       DISABLED_CheckUmaWhenTurnOnPdfOcrFromMoreActions) {
+IN_PROC_BROWSER_TEST_P(PDFOCRUmaTest, CheckOpenedWithScreenReader) {
+  // TODO(b:289010799): Remove this once the metrics are added for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ::ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+#else
+  EnableScreenReader(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, IsPdfOcrSet());
+
+  base::HistogramTester histograms;
+  histograms.ExpectUniqueSample(
+      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr", IsPdfOcrSet(),
+      /*expected_bucket_count=*/0);
+
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
   WebContents* contents = GetActiveWebContents();
   content::RenderFrameHost* extension_host =
       pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
   ASSERT_TRUE(extension_host);
-
-  // Turn on PDF OCR always.
-  base::HistogramTester histograms;
-  ClickPdfOcrToggleButton(extension_host);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueSample(
-      "Accessibility.PdfOcr.UserSelection",
-      PdfOcrUserSelection::kTurnOnAlwaysFromMoreActions,
+      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr", IsPdfOcrSet(),
       /*expected_bucket_count=*/1);
 }
 
-// TODO(b/289010799): Re-enable it when integrating PDF OCR with
-// Select-to-Speak.
-IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
-                       DISABLED_CheckUmaWhenTurnOffPdfOcrFromMoreActions) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_P(PDFOCRUmaTest, CheckOpenedWithSelectToSpeak) {
+  // TODO(b:289010799): Remove this once the metrics are added for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  ::ash::AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, IsPdfOcrSet());
+
+  base::HistogramTester histograms;
+  histograms.ExpectUniqueSample(
+      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr", IsPdfOcrSet(),
+      /*expected_bucket_count=*/0);
+
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
 
   WebContents* contents = GetActiveWebContents();
@@ -1243,19 +1283,23 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityPdfOcrTest,
       pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
   ASSERT_TRUE(extension_host);
 
-  // Turn on PDF OCR always.
-  ClickPdfOcrToggleButton(extension_host);
-
-  // Turn off PDF OCR.
-  base::HistogramTester histograms;
-  ClickPdfOcrToggleButton(extension_host);
-
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectUniqueSample("Accessibility.PdfOcr.UserSelection",
-                                PdfOcrUserSelection::kTurnOffFromMoreActions,
-                                /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr", IsPdfOcrSet(),
+      /*expected_bucket_count=*/1);
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PDFOCRUmaTest,
+    ::testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StringPrintf(
+          "PDFOCR_%s_OOPIF_%s", std::get<0>(info.param) ? "On" : "Off",
+          std::get<1>(info.param) ? "Enabled" : "Disabled");
+    });
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
@@ -1265,9 +1309,6 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityTextExtractionTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityNavigationTest);
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionAccessibilityPdfOcrTest);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
 
@@ -1363,17 +1404,6 @@ class PDFOCRIntegrationTest
       disabled.push_back(chrome_pdf::features::kPdfOopif);
     }
     return disabled;
-  }
-
-  void EnableScreenReader(bool enabled) {
-    // Spoof a screen reader.
-    if (enabled) {
-      content::BrowserAccessibilityState::GetInstance()
-          ->AddAccessibilityModeFlags(ui::AXMode::kScreenReader);
-    } else {
-      content::BrowserAccessibilityState::GetInstance()
-          ->RemoveAccessibilityModeFlags(ui::AXMode::kScreenReader);
-    }
   }
 
   void RunPDFAXTreeDumpTest(const char* pdf_file, int status_message_id) {

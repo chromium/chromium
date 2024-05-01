@@ -443,6 +443,8 @@ void PdfViewerStreamManager::DidFinishNavigation(
   ReportPDFLoadStatus(embedder_host->IsInPrimaryMainFrame()
                           ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
                           : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
+  // TODO(b:289010799): Call `RecordPDFOpenedWithA11yFeatureWithPdfOcr`in
+  // pdf_ocr_util.cc after figuring out how to fix the build dependency issue.
 
   NavigateToPdfExtensionUrl(extension_host_frame_tree_node_id, stream_info,
                             embedder_host->GetSiteInstance(),
