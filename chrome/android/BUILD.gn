@@ -3124,15 +3124,22 @@ if (current_toolchain == default_toolchain) {
   ]
 
   instrumentation_test_runner("monochrome_public_bundle_smoke_test") {
-    if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
-      apk_under_test = "//chrome/android:monochrome_64_public_bundle_apks"
-      if (!is_java_debug) {
-        proguard_mapping_path =
-            "$root_build_dir/apks/MonochromePublic64.aab.mapping"
+    if (android_64bit_target_cpu) {
+      if (skip_secondary_abi_for_cq) {
+        apk_under_test = "//chrome/android:monochrome_64_public_bundle_apks"
+        if (!is_java_debug) {
+          proguard_mapping_path =
+              "$root_build_dir/apks/MonochromePublic64.aab.mapping"
+        }
+      } else {
+        apk_under_test = "//chrome/android:monochrome_64_32_public_bundle_apks"
+        if (!is_java_debug) {
+          proguard_mapping_path =
+              "$root_build_dir/apks/MonochromePublic6432.aab.mapping"
+        }
       }
     } else {
-      apk_under_test =
-          "//chrome/android:${_main_monochrome_public_bundle_target}_apks"
+      apk_under_test = "//chrome/android:monochrome_public_bundle_apks"
       if (!is_java_debug) {
         proguard_mapping_path =
             "$root_build_dir/apks/MonochromePublic.aab.mapping"
