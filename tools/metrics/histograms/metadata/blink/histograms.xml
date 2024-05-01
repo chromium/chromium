@@ -1826,6 +1826,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Timing.ContinueOn.Response" units="ms"
+    expires_after="2024-09-01">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time from when an account is selected to when the continue_on
+    response is received. Only records a sample if and when
+    IdentityProvider.resolve is called from the continue_on popup. Recorded at
+    most once per FedCM call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Timing.ContinueOn.TurnaroundTime" units="ms"
+    expires_after="2024-09-01">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the overall time from when the API is called to when the token is
+    received through IdentityProvider.resolve. Only records a sample if and when
+    IdentityProvider.resolve is called from the continue_on popup. Recorded at
+    most once per FedCM call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Timing.ContinueOnDialog" units="ms"
     expires_after="2024-09-01">
   <owner>yigu@chromium.org</owner>

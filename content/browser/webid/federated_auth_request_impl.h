@@ -463,7 +463,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::TimeTicks ready_to_display_accounts_dialog_time_;
   base::TimeTicks accounts_dialog_display_time_;
   base::TimeTicks select_account_time_;
-  base::TimeTicks token_response_time_;
+  base::TimeTicks id_assertion_response_time_;
   bool errors_logged_to_console_{false};
   // This gets set at the beginning of a request. It indicates whether we
   // should bypass the delay to notify the renderer, for use in automated

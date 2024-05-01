@@ -2354,6 +2354,8 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
   // This is enforced by OnAccountSelected when we call SendTokenRequest.
   DCHECK(webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin));
 
+  id_assertion_response_time_ = base::TimeTicks::Now();
+
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &render_frame_host(), blink::mojom::WebFeature::kFedCmContinueOnResponse);
 
@@ -2450,8 +2452,9 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // `kTokenRequestDelay` seconds for better UX.
   // Note that for button flow we can complete without delay because the UI
   // difference between the verifying UI and its predecessors are minor.
-  token_response_time_ = base::TimeTicks::Now();
-  base::TimeDelta fetch_time = token_response_time_ - select_account_time_;
+  id_assertion_response_time_ = base::TimeTicks::Now();
+  base::TimeDelta fetch_time =
+      id_assertion_response_time_ - select_account_time_;
   if (should_complete_request_immediately_ || rp_mode_ == RpMode::kButton ||
       fetch_time >= kTokenRequestDelay) {
     std::move(complete_request_callback).Run();
@@ -2542,8 +2545,8 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       SetRequiresUserMediation(false);
 
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
-          idp_config_url, token_response_time_ - select_account_time_,
-          token_response_time_ - start_time_ -
+          idp_config_url, id_assertion_response_time_ - select_account_time_,
+          id_assertion_response_time_ - start_time_ -
               (accounts_dialog_display_time_ -
                ready_to_display_accounts_dialog_time_));
 
@@ -2559,8 +2562,8 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
                 metrics_endpoint,
                 ready_to_display_accounts_dialog_time_ - start_time_,
                 select_account_time_ - accounts_dialog_display_time_,
-                token_response_time_ - select_account_time_,
-                token_response_time_ - start_time_ -
+                id_assertion_response_time_ - select_account_time_,
+                id_assertion_response_time_ - start_time_ -
                     (accounts_dialog_display_time_ -
                      ready_to_display_accounts_dialog_time_));
           } else {
@@ -2708,7 +2711,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   ready_to_display_accounts_dialog_time_ = base::TimeTicks();
   accounts_dialog_display_time_ = base::TimeTicks();
   select_account_time_ = base::TimeTicks();
-  token_response_time_ = base::TimeTicks();
+  id_assertion_response_time_ = base::TimeTicks();
   accounts_dialog_shown_time_ = std::nullopt;
   mismatch_dialog_shown_time_ = std::nullopt;
   has_shown_mismatch_ = false;
@@ -2866,8 +2869,14 @@ bool FederatedAuthRequestImpl::OnResolve(
       origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
       account_id.value_or(account_id_));
 
+  fedcm_metrics_->RecordContinueOnResponseAndTurnaroundTime(
+      id_assertion_response_time_ - select_account_time_,
+      base::TimeTicks::Now() - start_time_ -
+          (accounts_dialog_display_time_ -
+           ready_to_display_accounts_dialog_time_));
   fedcm_metrics_->RecordContinueOnPopupResult(
       FedCmContinueOnPopupResult::kTokenReceived);
+
   CompleteRequest(FederatedAuthRequestResult::kSuccess,
                   TokenStatus::kSuccessUsingIdentityProviderResolve,
                   /*token_error=*/std::nullopt, idp_config_url, token,

@@ -313,6 +313,14 @@ class CONTENT_EXPORT FedCmMetrics {
                                             base::TimeDelta token_response_time,
                                             base::TimeDelta turnaround_time);
 
+  // Records the time from when the user presses the Continue button to when
+  // the continue_on response is received. Also records the overall time from
+  // when the API is called to when the IdentityProvider.resolve token is
+  // received.
+  void RecordContinueOnResponseAndTurnaroundTime(
+      base::TimeDelta token_response_time,
+      base::TimeDelta turnaround_time);
+
   // Records the status of the |RequestToken| call. Also records the number of
   // IDPs requested and the number of IDPs for which a mismatch was found.
   // |requested_providers| contains all IDPs that were requested in the get()

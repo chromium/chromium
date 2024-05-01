@@ -259,6 +259,15 @@ void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(
                                 turnaround_time);
 }
 
+void FedCmMetrics::RecordContinueOnResponseAndTurnaroundTime(
+    base::TimeDelta token_response_time,
+    base::TimeDelta turnaround_time) {
+  base::UmaHistogramMediumTimes("Blink.FedCm.Timing.ContinueOn.Response",
+                                token_response_time);
+  base::UmaHistogramMediumTimes("Blink.FedCm.Timing.ContinueOn.TurnaroundTime",
+                                turnaround_time);
+}
+
 void FedCmMetrics::RecordRequestTokenStatus(
     FedCmRequestIdTokenStatus status,
     MediationRequirement requirement,
