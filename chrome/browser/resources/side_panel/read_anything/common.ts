@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+
+export const defaultFontName: string = 'sans-serif';
+
 // Defines the valid font names that can be passed to front-end and maps
 // them to a corresponding class style in app.html. Must stay in-sync with
 // the names set in read_anything_model.cc.
-export const defaultFontName: string = 'sans-serif';
 const validFontNames: Array<{name: string, css: string}> = [
   {name: 'Poppins', css: 'Poppins'},
   {name: 'Sans-serif', css: 'sans-serif'},
@@ -17,9 +21,36 @@ const validFontNames: Array<{name: string, css: string}> = [
   {name: 'Andika', css: 'Andika'},
 ];
 
+const activeClass = ' active';
+
 // Validate that the given font name is a valid choice, or use the default.
 export function validatedFontName(fontName: string): string {
   const validFontName =
       validFontNames.find((f: {name: string}) => f.name === fontName);
   return validFontName ? validFontName.css : defaultFontName;
+}
+
+export function openMenu(
+    menuToOpen: CrActionMenuElement, target: HTMLElement,
+    showAtConfig?: {minX: number, maxX: number}) {
+  // The button should stay active while the menu is open and deactivate when
+  // the menu closes.
+  menuToOpen.addEventListener('close', () => {
+    target.className = target.className.replace(activeClass, '');
+  });
+  target.className += activeClass;
+
+  requestAnimationFrame(() => {
+    const minY = target.getBoundingClientRect().bottom;
+    menuToOpen.showAt(
+        target,
+        Object.assign(
+            {
+              minY: minY,
+              anchorAlignmentX: AnchorAlignment.AFTER_START,
+              anchorAlignmentY: AnchorAlignment.AFTER_END,
+              noOffset: true,
+            },
+            showAtConfig));
+  });
 }

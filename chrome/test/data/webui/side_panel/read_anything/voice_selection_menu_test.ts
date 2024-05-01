@@ -11,6 +11,8 @@ import {PLAY_PREVIEW_EVENT, VoicePackStatus} from 'chrome-untrusted://read-anyth
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {stubAnimationFrame} from './common.js';
+
 function stringToHtmlTestId(s: string): string {
   return s.replace(/\s/g, '-').replace(/[()]/g, '');
 }
@@ -76,6 +78,7 @@ suite('VoiceSelectionMenu', () => {
     });
 
     test('it shows dropdown items after button click', () => {
+      stubAnimationFrame();
       voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
 
       flush();
@@ -88,6 +91,7 @@ suite('VoiceSelectionMenu', () => {
     });
 
     test('it shows language menu after button click', () => {
+      stubAnimationFrame();
       const button =
           voiceSelectionMenu!.$.voiceSelectionMenu.get()
               .querySelector<HTMLButtonElement>('.language-menu-button');
@@ -108,6 +112,7 @@ suite('VoiceSelectionMenu', () => {
       });
 
       test('it updates and displays the new voices', () => {
+        stubAnimationFrame();
         voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
         flush();
 
@@ -321,6 +326,7 @@ suite('VoiceSelectionMenu', () => {
       });
 
       test('it shows preview-playing button when preview plays', () => {
+        stubAnimationFrame();
         const playIconVoice0 =
             getDropdownItemForVoice(availableVoices[0]!)
                 .querySelector<CrIconButtonElement>('#preview-icon')!;
@@ -354,6 +360,7 @@ suite('VoiceSelectionMenu', () => {
         });
 
         test('it flips the preview button back to play icon', () => {
+          stubAnimationFrame();
           const playIconVoice0 =
               getDropdownItemForVoice(availableVoices[0]!)
                   .querySelector<CrIconButtonElement>('#preview-icon')!;

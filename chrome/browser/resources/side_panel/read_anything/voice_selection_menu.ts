@@ -11,7 +11,6 @@ import './icons.html.js';
 import './language_menu.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
@@ -19,6 +18,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {openMenu} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
 import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, VoicePackStatus} from './voice_language_util.js';
 import {getTemplate} from './voice_selection_menu.html.js';
@@ -48,6 +48,8 @@ interface VoiceDropdownItem {
 // Events emitted from the voice selection menu to the app
 export const PLAY_PREVIEW_EVENT = 'preview-voice';
 
+const spBodyPadding = window.getComputedStyle(document.body)
+                          .getPropertyValue('--sp-body-padding');
 
 const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -93,16 +95,12 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 
   onVoiceSelectionMenuClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const minY = target.getBoundingClientRect().bottom;
-
     this.voicePlayingWhenMenuOpened_ = !this.paused;
-
-    this.$.voiceSelectionMenu.get().showAt(target, {
-      minY: minY,
-      left: 0,
-      anchorAlignmentY: AnchorAlignment.AFTER_END,
-      noOffset: true,
+    const target = event.target as HTMLElement;
+    const menu = this.$.voiceSelectionMenu.get();
+    openMenu(menu, target, {
+      minX: parseInt(spBodyPadding, 10),
+      maxX: document.body.clientWidth - parseInt(spBodyPadding, 10),
     });
   }
 

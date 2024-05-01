@@ -12,8 +12,7 @@ import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import './voice_selection_menu.js';
 import './icons.html.js';
 
-import type {CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -24,7 +23,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {validatedFontName} from './common.js';
+import {openMenu, validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -84,7 +83,6 @@ enum ReadAnythingSettingsChange {
 
 const SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
 export const moreOptionsClass = '.more-options-icon';
-const activeClass = ' active';
 
 // Link toggle button constants.
 export const LINKS_ENABLED_ICON = 'read-anything:links-enabled';
@@ -326,12 +324,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       menuToOpen: () => this.$.letterSpacingMenu.get(),
     },
   ];
-
-  private showAtPositionConfig_: ShowAtPositionConfig = {
-    top: 20,
-    left: 8,
-    anchorAlignmentY: AnchorAlignment.AFTER_END,
-  };
 
   private isReadAloudEnabled_: boolean;
   private isHighlightOn_: boolean = true;
@@ -609,11 +601,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onTextStyleMenuButtonClick_(event: DomRepeatEvent<MenuButton>) {
-    this.openMenu_(event.model.item.menuToOpen(), event.target as HTMLElement);
+    openMenu(event.model.item.menuToOpen(), event.target as HTMLElement);
   }
 
   private onShowRateMenuClick_(event: MouseEvent) {
-    this.openMenu_(this.$.rateMenu.get(), event.target as HTMLElement);
+    openMenu(this.$.rateMenu.get(), event.target as HTMLElement);
   }
 
   private onVoiceSelectionMenuClick_(event: MouseEvent) {
@@ -630,38 +622,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // in the menu so we check for 4 children, which indicates 3 buttons.
     (menu.firstChild as HTMLElement).style.marginLeft =
         (menu.children.length === 4) ? '16px' : '6px';
-    this.openMenu_(menu, event.target as HTMLElement);
-  }
-
-  private openMenu_(
-      menuToOpen: CrActionMenuElement, target: HTMLElement,
-      fullScreen: boolean = false) {
-    // The button should stay active while the menu is open and deactivate when
-    // the menu closes.
-    menuToOpen.addEventListener('close', () => {
-      target.className = target.className.replace(activeClass, '');
-    });
-    target.className += activeClass;
-    this.closeMenus_();
-
-    requestAnimationFrame(() => {
-      const minY = target.getBoundingClientRect().bottom;
-      if (fullScreen) {
-        menuToOpen.showAt(target, {
-          minY: minY,
-          left: 0,
-          anchorAlignmentY: AnchorAlignment.AFTER_END,
-          noOffset: true,
-        });
-      } else {
-        menuToOpen.showAt(target, {
-          minY: minY,
-          anchorAlignmentX: AnchorAlignment.AFTER_START,
-          anchorAlignmentY: AnchorAlignment.AFTER_END,
-          noOffset: true,
-        });
-      }
-    });
+    openMenu(menu, event.target as HTMLElement);
   }
 
   private onHighlightClick_() {
@@ -942,7 +903,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (elementToFocus.className !== moreOptionsClass.slice(1)) {
       this.$.moreOptionsMenu.getIfExists()?.close();
     } else if (!this.$.moreOptionsMenu.getIfExists()?.open) {
-      this.openMenu_(this.$.moreOptionsMenu.get(), this.$.more);
+      openMenu(this.$.moreOptionsMenu.get(), this.$.more);
     }
 
     // When the user tabs away from the toolbar and then tabs back, we want to
