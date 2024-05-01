@@ -107,22 +107,6 @@ std::unique_ptr<base::Value> ParseFormFillResult(id wk_result) {
   return std::make_unique<base::Value>(std::move(parsed_result));
 }
 
-// } else if (result_type == CFDictionaryGetTypeID()) {
-//   base::Value::Dict dictionary;
-//   for (id key in wk_result) {
-//     NSString* obj_c_string = base::apple::ObjCCast<NSString>(key);
-//     const std::string path = base::SysNSStringToUTF8(obj_c_string);
-//     SCOPED_CRASH_KEY_STRING32("ScriptMessage", "path", path);
-//     std::unique_ptr<base::Value> value =
-//         ValueResultFromWKResult(wk_result[obj_c_string], max_depth - 1);
-//     if (value) {
-//       dictionary.SetByDottedPath(
-//           path, base::Value::FromUniquePtrValue(std::move(value)));
-//     }
-//   }
-//   result = std::make_unique<base::Value>(std::move(dictionary));
-// } else if (result_type == CFArrayGetTypeID()) {
-
 // Text fixture to test password controller.
 class PasswordControllerJsTest : public PlatformTest {
  public:
