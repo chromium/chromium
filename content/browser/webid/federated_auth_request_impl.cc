@@ -925,6 +925,8 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
+  bool any_idp_has_custom_scopes = false;
+  bool any_idp_has_parameters = false;
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       bool has_failing_idp_signin_status =
@@ -981,6 +983,13 @@ void FederatedAuthRequestImpl::RequestToken(
         return;
       }
 
+      if (webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin)) {
+        any_idp_has_custom_scopes =
+            any_idp_has_custom_scopes || !ShouldMediateAuthzFor(*idp_ptr);
+        any_idp_has_parameters =
+            any_idp_has_parameters || !idp_ptr->params.empty();
+      }
+
       blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
       blink::mojom::RpMode rp_mode = idp_get_params_ptr->mode;
       const GURL& idp_config_url = idp_ptr->config->config_url;
@@ -988,6 +997,18 @@ void FederatedAuthRequestImpl::RequestToken(
           idp_config_url,
           IdentityProviderGetInfo(std::move(idp_ptr), rp_context, rp_mode));
     }
+  }
+  if (any_idp_has_parameters || any_idp_has_custom_scopes) {
+    FedCmRpParameters parameters;
+    if (any_idp_has_custom_scopes && any_idp_has_parameters) {
+      parameters = FedCmRpParameters::kHasParametersAndNonDefaultScope;
+    } else if (any_idp_has_parameters) {
+      parameters = FedCmRpParameters::kHasParameters;
+    } else {
+      DCHECK(any_idp_has_custom_scopes);
+      parameters = FedCmRpParameters::kHasNonDefaultScope;
+    }
+    fedcm_metrics_->RecordRpParameters(parameters);
   }
 
   if (IsFedCmMultipleIdentityProvidersEnabled() && unique_idps.empty()) {

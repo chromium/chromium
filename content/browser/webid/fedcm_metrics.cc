@@ -579,6 +579,11 @@ void FedCmMetrics::RecordContinueOnPopupResult(
                                 result);
 }
 
+void FedCmMetrics::RecordRpParameters(FedCmRpParameters parameters) {
+  base::UmaHistogramEnumeration("Blink.FedCm.RpParametersAndScopeState",
+                                parameters);
+}
+
 void FedCmMetrics::RecordErrorDialogResult(FedCmErrorDialogResult result,
                                            const GURL& provider_url) {
   DCHECK_GT(session_id_, 0);

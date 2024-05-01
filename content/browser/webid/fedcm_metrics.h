@@ -223,6 +223,17 @@ enum class FedCmMultipleRequestsRpMode {
   kMaxValue = kButtonThenButton
 };
 
+// This enum tracks whether the RP requested additional scopes and/or
+// parameters. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class FedCmRpParameters {
+  kHasParameters = 0,
+  kHasNonDefaultScope = 1,
+  kHasParametersAndNonDefaultScope = 2,
+
+  kMaxValue = kHasParametersAndNonDefaultScope
+};
+
 class CONTENT_EXPORT FedCmMetrics {
  public:
   explicit FedCmMetrics(const ukm::SourceId page_source_id);
@@ -390,6 +401,9 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // Records the outcome of the continue_on dialog.
   void RecordContinueOnPopupResult(FedCmContinueOnPopupResult result);
+
+  // Records whether parameters or scopes were specified.
+  void RecordRpParameters(FedCmRpParameters parameters);
 
   // Records the outcome of the error dialog.
   void RecordErrorDialogResult(FedCmErrorDialogResult result,

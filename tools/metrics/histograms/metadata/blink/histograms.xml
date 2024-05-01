@@ -1673,6 +1673,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.RpParametersAndScopeState"
+    enum="FedCmRpParameters" expires_after="2024-10-06">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether parameters or a non-default scope were specified in the
+    FedCM call by the RP for any IDP. Records once per FedCM call when the
+    request is initiated. Only recorded if parameters or non-default scopes were
+    specified and FedCmAuthz is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.SetLoginStatusIgnored"
     enum="FedCmSetLoginStatusIgnoredReason" expires_after="2024-08-27">
   <owner>cbiesinger@chromium.org</owner>
