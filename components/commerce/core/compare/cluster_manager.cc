@@ -43,6 +43,22 @@ std::optional<std::string> GetLabelFromBottom(const ProductCategory& category,
       .category_default_label();
 }
 
+std::optional<std::string> GetShortestLabelAtBottom(
+    const CategoryData& category_data) {
+  std::optional<std::string> title;
+  for (const auto& product_category : category_data.product_categories()) {
+    std::optional<std::string> bottom_label =
+        GetLabelFromBottom(product_category, 0);
+    if (!bottom_label) {
+      continue;
+    }
+    if (!title || title->length() > bottom_label->length()) {
+      title = std::move(bottom_label);
+    }
+  }
+  return title;
+}
+
 // Determines if two CategoryData are similar. If the bottom label from one of
 // the categories in the first CategoryData matches either the bottom or the
 // second to bottom label from one of the categories in the second CategoryData,
@@ -112,6 +128,18 @@ bool IsCandidateProductInProductGroup(
 }
 
 }  // namespace
+
+EntryPointInfo::EntryPointInfo(const std::string& title,
+                               std::set<GURL> similar_candidate_products_urls)
+    : title(title),
+      similar_candidate_products_urls(
+          std::move(similar_candidate_products_urls)) {}
+
+EntryPointInfo::~EntryPointInfo() = default;
+
+EntryPointInfo::EntryPointInfo(const EntryPointInfo&) = default;
+
+EntryPointInfo& EntryPointInfo::operator=(const EntryPointInfo&) = default;
 
 ClusterManager::ClusterManager(
     ProductSpecificationsService* product_specification_service,
@@ -311,6 +339,49 @@ std::set<GURL> ClusterManager::FindSimilarCandidateProducts(
     similar_candidate_products.insert(url);
   }
   return similar_candidate_products;
+}
+
+std::optional<EntryPointInfo> ClusterManager::GetEntryPointInfoForNavigation(
+    GURL url) {
+  std::set<GURL> similar_urls = FindSimilarCandidateProducts(url);
+  if (similar_urls.size() == 0) {
+    return std::nullopt;
+  }
+
+  similar_urls.insert(url);
+  std::optional<std::string> title =
+      GetShortestLabelAtBottom(candidate_product_map_[url]->category_data);
+  return std::make_optional<EntryPointInfo>(title ? title.value() : "",
+                                            std::move(similar_urls));
+}
+
+std::optional<EntryPointInfo> ClusterManager::GetEntryPointInfoForSelection(
+    GURL old_url,
+    GURL new_url) {
+  std::set<GURL> similar_urls = FindSimilarCandidateProducts(old_url);
+  if (similar_urls.find(new_url) == similar_urls.end()) {
+    return std::nullopt;
+  }
+  std::set<GURL> similar_urls_new = FindSimilarCandidateProducts(new_url);
+  if (similar_urls_new.find(old_url) == similar_urls_new.end()) {
+    return std::nullopt;
+  }
+  similar_urls.merge(similar_urls_new);
+  std::optional<std::string> title_old =
+      GetShortestLabelAtBottom(candidate_product_map_[old_url]->category_data);
+  std::optional<std::string> title_new =
+      GetShortestLabelAtBottom(candidate_product_map_[new_url]->category_data);
+  std::optional<std::string> title;
+  if (!title_old) {
+    title = std::move(title_new);
+  } else if (title_new) {
+    title = title_old->size() < title_new->size() ? std::move(title_old)
+                                                  : std::move(title_new);
+  } else {
+    title = std::move(title_old);
+  }
+  return std::make_optional<EntryPointInfo>(title ? title.value() : "",
+                                            std::move(similar_urls));
 }
 
 }  // namespace commerce

@@ -210,7 +210,7 @@ TEST_F(ClusterManagerTest,
             kCategoryChair);
 }
 
-TEST_F(ClusterManagerTest, NewCandidateProductClustered) {
+TEST_F(ClusterManagerTest, GetEntryPointInfoForNavigation) {
   GURL foo1(kTestUrl1);
   GURL foo2(kTestUrl2);
   GURL foo3(kTestUrl3);
@@ -223,22 +223,38 @@ TEST_F(ClusterManagerTest, NewCandidateProductClustered) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
 
-  std::set<GURL> similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo1);
-  ASSERT_EQ(similar_candidate_products.size(), 1u);
-  ASSERT_EQ(similar_candidate_products.count(foo3), 1u);
+  std::optional<EntryPointInfo> info =
+      cluster_manager_->GetEntryPointInfoForNavigation(foo1);
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->title, "Lamp");
 
-  similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo2);
-  ASSERT_EQ(similar_candidate_products.size(), 0u);
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForNavigation(foo2));
 
-  similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo3);
-  ASSERT_EQ(similar_candidate_products.size(), 1u);
-  ASSERT_EQ(similar_candidate_products.count(foo1), 1u);
+  info = cluster_manager_->GetEntryPointInfoForNavigation(foo3);
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->title, "Lamp");
 }
 
-TEST_F(ClusterManagerTest, CandidateProductWithMultipleLabelsClustered) {
+TEST_F(ClusterManagerTest, GetEntryPointInfoForNavigationWithInvalidUrl) {
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2});
+
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(2u, GetCandidateProductMap()->size());
+
+  ASSERT_FALSE(
+      cluster_manager_->GetEntryPointInfoForNavigation(GURL(kTestUrl3)));
+}
+
+TEST_F(ClusterManagerTest,
+       GetEntryPointInfoForNavigationWithMultiLabelProduct) {
   GURL foo1(kTestUrl1);
   GURL foo2(kTestUrl2);
   GURL foo3(kTestUrl3);
@@ -258,24 +274,29 @@ TEST_F(ClusterManagerTest, CandidateProductWithMultipleLabelsClustered) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
 
-  std::set<GURL> similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo1);
-  ASSERT_EQ(similar_candidate_products.size(), 2u);
-  ASSERT_EQ(similar_candidate_products.count(foo2), 1u);
-  ASSERT_EQ(similar_candidate_products.count(foo3), 1u);
+  std::optional<EntryPointInfo> info =
+      cluster_manager_->GetEntryPointInfoForNavigation(foo1);
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 3u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->title, "Lamp");
 
-  similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo2);
-  ASSERT_EQ(similar_candidate_products.size(), 1u);
-  ASSERT_EQ(similar_candidate_products.count(foo1), 1u);
+  info = cluster_manager_->GetEntryPointInfoForNavigation(foo2);
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(info->title, "GamingChair");
 
-  similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo3);
-  ASSERT_EQ(similar_candidate_products.size(), 1u);
-  ASSERT_EQ(similar_candidate_products.count(foo1), 1u);
+  info = cluster_manager_->GetEntryPointInfoForNavigation(foo3);
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->title, "Lamp");
 }
 
-TEST_F(ClusterManagerTest, RemoveClusteredCandidateProduct) {
+TEST_F(ClusterManagerTest,
+       GetEntryPointInfoForNavigationAfterRemoveingCandidateProduct) {
   GURL foo1(kTestUrl1);
   GURL foo2(kTestUrl2);
   GURL foo3(kTestUrl3);
@@ -287,19 +308,21 @@ TEST_F(ClusterManagerTest, RemoveClusteredCandidateProduct) {
   cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
+  std::optional<EntryPointInfo> info =
+      cluster_manager_->GetEntryPointInfoForNavigation(foo1);
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->title, "Lamp");
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForNavigation(foo2));
 
   // Remove product 3.
   UpdateUrlInfos(std::vector<GURL>{foo1, foo2});
   cluster_manager_->DidNavigateAway(foo3);
   ASSERT_EQ(2u, GetCandidateProductMap()->size());
 
-  std::set<GURL> similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo1);
-  ASSERT_EQ(similar_candidate_products.size(), 0u);
-
-  similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo2);
-  ASSERT_EQ(similar_candidate_products.size(), 0u);
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForNavigation(foo1));
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForNavigation(foo2));
 }
 
 TEST_F(ClusterManagerTest,
@@ -317,17 +340,16 @@ TEST_F(ClusterManagerTest,
   // Add the 3rd product, and immediately removes it.
   cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
   ASSERT_EQ(2u, GetCandidateProductMap()->size());
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForNavigation(foo1));
   UpdateUrlInfos(std::vector<GURL>{foo1, foo2});
   cluster_manager_->DidNavigateAway(foo3);
   ASSERT_EQ(2u, GetCandidateProductMap()->size());
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForNavigation(foo1));
 
   // Let GetProductInfo() for the 3rd product to complete.
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, GetCandidateProductMap()->size());
-
-  std::set<GURL> similar_candidate_products =
-      cluster_manager_->FindSimilarCandidateProducts(foo1);
-  ASSERT_EQ(similar_candidate_products.size(), 0u);
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForNavigation(foo1));
 }
 
 TEST_F(ClusterManagerTest, FindSimilarCandidateProductsForProductGroup) {
@@ -399,15 +421,17 @@ TEST_F(ClusterManagerTest,
   cluster_manager_->DidNavigatePrimaryMainFrame(foo4);
   base::RunLoop().RunUntilIdle();
 
-  std::set<GURL> similar_candidates =
-      cluster_manager_->FindSimilarCandidateProducts(foo2);
-  ASSERT_EQ(2u, similar_candidates.size());
-  ASSERT_EQ(similar_candidates.count(foo1), 1u);
-  ASSERT_EQ(similar_candidates.count(foo4), 1u);
-  similar_candidates = cluster_manager_->FindSimilarCandidateProducts(foo1);
-  ASSERT_EQ(2u, similar_candidates.size());
-  ASSERT_EQ(similar_candidates.count(foo2), 1u);
-  ASSERT_EQ(similar_candidates.count(foo4), 1u);
+  std::optional<EntryPointInfo> info =
+      cluster_manager_->GetEntryPointInfoForNavigation(foo2);
+  ASSERT_EQ(3u, info->similar_candidate_products_urls.size());
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo4), 1u);
+  info = cluster_manager_->GetEntryPointInfoForNavigation(foo1);
+  ASSERT_EQ(3u, info->similar_candidate_products_urls.size());
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo4), 1u);
 
   // Similar candidates will not include `foo1` if it is added to a product
   // group.
@@ -415,11 +439,11 @@ TEST_F(ClusterManagerTest,
       CreateProductSpecificationsSet(kProduct1Url, 0);
   cluster_manager_->OnProductSpecificationsSetAdded(set1);
 
-  similar_candidates = cluster_manager_->FindSimilarCandidateProducts(foo2);
-  ASSERT_EQ(1u, similar_candidates.size());
-  ASSERT_EQ(similar_candidates.count(foo4), 1u);
-  similar_candidates = cluster_manager_->FindSimilarCandidateProducts(foo1);
-  ASSERT_EQ(0u, similar_candidates.size());
+  info = cluster_manager_->GetEntryPointInfoForNavigation(foo2);
+  ASSERT_EQ(2u, info->similar_candidate_products_urls.size());
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo4), 1u);
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForNavigation(foo1));
 }
 
 TEST_F(ClusterManagerTest,
@@ -579,4 +603,65 @@ TEST_F(ClusterManagerTest, AddCandidateProductAlreadyInProductGroups) {
   ASSERT_EQ(1u, product_group->member_products.size());
 }
 
+TEST_F(ClusterManagerTest, GetEntryPointInfoForSelection) {
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  GURL foo3(kTestUrl3);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForSelection(foo1, foo2));
+  std::optional<EntryPointInfo> info =
+      cluster_manager_->GetEntryPointInfoForSelection(foo1, foo3);
+  ASSERT_TRUE(info);
+  ASSERT_EQ(info->title, "Lamp");
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+}
+
+TEST_F(ClusterManagerTest,
+       GetEntryPointInfoForSelectionWithMultiLabelProducts) {
+  GURL foo1(kTestUrl1);
+  GURL foo2(kTestUrl2);
+  GURL foo3(kTestUrl3);
+  UpdateUrlInfos(std::vector<GURL>{foo1, foo2, foo3});
+
+  // Product 1 belongs to 2 categories.
+  product_infos_[foo1]
+      .category_data.add_product_categories()
+      ->add_category_labels()
+      ->set_category_default_label(kCategoryChair);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  // Product 2's category label has 2 levels, Chair -> GamingChair.
+  product_infos_[foo2]
+      .category_data.mutable_product_categories(0)
+      ->add_category_labels()
+      ->set_category_default_label(kCategoryGamingChair);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo2);
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo3);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(3u, GetCandidateProductMap()->size());
+
+  std::optional<EntryPointInfo> info =
+      cluster_manager_->GetEntryPointInfoForSelection(foo1, foo2);
+  ASSERT_TRUE(info);
+  ASSERT_EQ(info->title, "Lamp");
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 3u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+
+  info = cluster_manager_->GetEntryPointInfoForSelection(foo1, foo3);
+  ASSERT_EQ(info->title, "Lamp");
+  ASSERT_EQ(info->similar_candidate_products_urls.size(), 3u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+
+  ASSERT_FALSE(cluster_manager_->GetEntryPointInfoForSelection(foo2, foo3));
+}
 }  // namespace commerce

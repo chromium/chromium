@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -20,6 +21,22 @@ namespace commerce {
 class ProductSpecificationsService;
 struct CandidateProduct;
 struct ProductGroup;
+
+// Class representing the tap strip entry point.
+struct EntryPointInfo {
+  EntryPointInfo(const std::string& title,
+                 std::set<GURL> similar_candidate_products_urls);
+  ~EntryPointInfo();
+  EntryPointInfo(const EntryPointInfo&);
+  EntryPointInfo& operator=(const EntryPointInfo&);
+
+  // Title of the product group to be clustered.
+  std::string title;
+
+  // Set of URLs of candidate products that are similar and can
+  // be clustered into one product group.
+  std::set<GURL> similar_candidate_products_urls;
+};
 
 // Class for clustering product information.
 class ClusterManager : public ProductSpecificationsSet::Observer {
@@ -59,17 +76,20 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   std::optional<ProductGroup> GetProductGroupForCandidateProduct(
       const GURL& product_url);
 
-  // Finds similar candidate products for a product group, the returned
-  // result will exclude all candidate products that are already in
-  // any product groups.
+  // Gets information to decide if entry point should show on navivation to
+  // `url` and return it. The returned EntryPointInfo will include `url`
+  // if it can be clustered into a group.
+  std::optional<EntryPointInfo> GetEntryPointInfoForNavigation(GURL url);
+
+  // Get information to decide if entry point should show on selection and
+  // return it. `old_url` is the URL of the tab before selection.
+  // `new_url` is the URL of the tab after selection.
+  std::optional<EntryPointInfo> GetEntryPointInfoForSelection(GURL old_url,
+                                                              GURL new_url);
+
+  // Finds similar candidate products for a product group.
   std::vector<GURL> FindSimilarCandidateProductsForProductGroup(
       const base::Uuid& uuid);
-
-  // Finds similar candidate products for a candidate product. The returned
-  // URLs doesn't include the `product_url` and any candidate products that
-  // are already in a product group. If the `product_url` is in a product
-  // group, this method will return an empty result.
-  std::set<GURL> FindSimilarCandidateProducts(const GURL& product_url);
 
  private:
   friend class ClusterManagerTest;
@@ -92,6 +112,10 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
 
   // Removes a candidate product URL if it is not open in any tabs.
   void RemoveCandidateProductURLIfNotOpen(const GURL& url);
+
+  // Finds similar candidate products for a candidate product. The returned
+  // URLs doesn't include the `product_url`.
+  std::set<GURL> FindSimilarCandidateProducts(const GURL& product_url);
 
   // Callback to get product info.
   GetProductInfoCallback get_product_info_cb_;
