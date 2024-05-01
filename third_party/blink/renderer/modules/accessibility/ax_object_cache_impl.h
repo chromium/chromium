@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/blink_ax_tree_source.h"
@@ -183,9 +182,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ListboxActiveIndexChanged(HTMLSelectElement*) override;
   void SetMenuListOptionsBounds(HTMLSelectElement*,
                                 const WTF::Vector<gfx::Rect>&) override;
-  const WTF::Vector<gfx::Rect>& GetOptionsBounds(
-      const AXObject& ax_menu_list) const;
-
   void ImageLoaded(const LayoutObject*) override;
 
   // Removes AXObject backed by passed-in object, if there is one.
@@ -1128,14 +1124,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // The set of node IDs whose bounds has changed since the last time
   // SerializeLocationChanges was called.
   HashSet<AXID> changed_bounds_ids_;
-
-  // If the currently focused element is an expanded <select>, this tracks the
-  // bounding boxes for the options, which are rendered in a special popup
-  // document that is not in the AX tree that duplicates the option elements
-  // from the main document.
-  WTF::Vector<gfx::Rect> options_bounds_;
-  // AXID for the <select> containing tracked options bounds.
-  AXID current_menu_list_axid_ = 0;
 
   // Known locations and sizes of bounding boxes that are known to have been
   // serialized.

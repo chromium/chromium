@@ -3859,29 +3859,12 @@ void AXObjectCacheImpl::ListboxActiveIndexChanged(HTMLSelectElement* select) {
 void AXObjectCacheImpl::SetMenuListOptionsBounds(
     HTMLSelectElement* select,
     const WTF::Vector<gfx::Rect>& options_bounds) {
-  CHECK(select->PopupIsVisible());
-  CHECK_EQ(select->GetDocument(), GetDocument());
-
-  options_bounds_ = options_bounds;
-  current_menu_list_axid_ = select->GetDomNodeId();
-}
-
-const WTF::Vector<gfx::Rect>& AXObjectCacheImpl::GetOptionsBounds(
-    const AXObject& ax_menu_list) const {
-  if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    // Stylable select does not render in a special popup document and does
-    // not need to supply bounding boxes via options_bounds_.
-    HTMLSelectElement* select = To<HTMLSelectElement>(ax_menu_list.GetNode());
-    if (select->IsAppearanceBaseSelect()) {
-      CHECK(!current_menu_list_axid_);
-      CHECK(options_bounds_.empty());
-      return options_bounds_;
-    }
+  auto* ax_object = DynamicTo<AXMenuList>(Get(select));
+  if (!ax_object) {
+    return;
   }
-  CHECK_EQ(ax_menu_list.IsExpanded(), kExpandedExpanded);
-  CHECK_EQ(ax_menu_list.AXObjectID(), current_menu_list_axid_);
-  CHECK(options_bounds_.size());
-  return options_bounds_;
+
+  ax_object->SetOptionsBounds(options_bounds);
 }
 
 void AXObjectCacheImpl::ImageLoaded(const LayoutObject* layout_object) {
@@ -5716,7 +5699,6 @@ void AXObjectCacheImpl::DidShowMenuListPopup(LayoutObject* menu_list) {
   DCHECK(menu_list->GetNode());
   DeferTreeUpdate(TreeUpdateReason::kDidShowMenuListPopup,
                   menu_list->GetNode());
-  MarkSubtreeDirty(menu_list->GetNode());
 }
 
 void AXObjectCacheImpl::DidShowMenuListPopupWithCleanLayout(Node* menu_list) {
@@ -5734,10 +5716,6 @@ void AXObjectCacheImpl::DidHideMenuListPopup(LayoutObject* menu_list) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
   DCHECK(menu_list->GetNode());
-
-  current_menu_list_axid_ = 0;
-  options_bounds_ = {};
-
   DeferTreeUpdate(TreeUpdateReason::kDidHideMenuListPopup,
                   menu_list->GetNode());
 }
