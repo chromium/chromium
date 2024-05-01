@@ -1968,7 +1968,7 @@
     },
     {
       name: "HitTestOpaqueness",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HrefTranslate",
