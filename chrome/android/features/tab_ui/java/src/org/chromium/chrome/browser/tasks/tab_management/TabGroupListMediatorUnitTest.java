@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -16,6 +17,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_LEFT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.ASYNC_FAVICON_TOP_RIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
@@ -86,6 +88,7 @@ public class TabGroupListMediatorUnitTest {
     @Mock private Callback<Drawable> mFaviconCallback2;
     @Mock private Callback<Drawable> mFaviconCallback3;
     @Mock private Callback<Drawable> mFaviconCallback4;
+    @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mSyncObserverCaptor;
 
@@ -482,5 +485,46 @@ public class TabGroupListMediatorUnitTest {
         PropertyModel model2 = mModelList.get(1).model;
         model2.get(OPEN_RUNNABLE).run();
         // TODO(crbug.com/324934166): Verify once this functionality is implemented.
+    }
+
+    @Test
+    @SmallTest
+    public void testDeleteRunnable() {
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.syncId = SYNC_GROUP_ID1;
+        group1.savedTabs = Arrays.asList(new SavedTabGroupTab());
+        group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
+
+        SavedTabGroup group2 = new SavedTabGroup();
+        group2.syncId = SYNC_GROUP_ID2;
+        group2.savedTabs = Arrays.asList(new SavedTabGroupTab());
+        group2.localId = null;
+
+        when(mTabGroupSyncService.getAllGroupIds())
+                .thenReturn(new String[] {SYNC_GROUP_ID1, SYNC_GROUP_ID2});
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group1);
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID2)).thenReturn(group2);
+        when(mTabGroupModelFilter.getRootIdFromStableId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
+        when(mTabGroupModelFilter.getRootIdFromStableId(LOCAL_GROUP_ID2))
+                .thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID1))
+                .thenReturn(Arrays.asList(mTab));
+
+        new TabGroupListMediator(
+                mModelList,
+                mTabGroupModelFilter,
+                mFaviconResolver,
+                mTabGroupSyncService,
+                mPaneManager);
+
+        assertEquals(2, mModelList.size());
+        PropertyModel model1 = mModelList.get(0).model;
+        model1.get(DELETE_RUNNABLE).run();
+
+        verify(mTabGroupModelFilter).closeMultipleTabs(any(), eq(false), eq(false));
+
+        PropertyModel model2 = mModelList.get(1).model;
+        model2.get(DELETE_RUNNABLE).run();
+        verify(mTabGroupSyncService).removeGroup(SYNC_GROUP_ID2);
     }
 }

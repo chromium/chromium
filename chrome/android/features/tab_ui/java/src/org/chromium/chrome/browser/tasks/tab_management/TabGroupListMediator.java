@@ -43,6 +43,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 /** Populates a {@link ModelList} with an item for each tab group. */
@@ -185,9 +186,10 @@ public class TabGroupListMediator {
 
             builder.with(CREATION_MILLIS, savedTabGroup.creationTimeMs);
 
-            builder.with(TabGroupRowProperties.OPEN_RUNNABLE, () -> openGroup(savedTabGroup));
-            // TODO(crbug.com/324934166): Supply delete runnable.
-            // builder.with(TabGroupRowProperties.DELETE_RUNNABLE, null);
+            builder.with(
+                    TabGroupRowProperties.OPEN_RUNNABLE, () -> openGroup(savedTabGroup, state));
+            builder.with(
+                    TabGroupRowProperties.DELETE_RUNNABLE, () -> deleteGroup(savedTabGroup, state));
 
             PropertyModel propertyModel = builder.build();
             ListItem listItem = new ListItem(0, propertyModel);
@@ -195,8 +197,8 @@ public class TabGroupListMediator {
         }
     }
 
-    private void openGroup(SavedTabGroup savedTabGroup) {
-        if (savedTabGroup.localId == null) {
+    private void openGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {
+        if (state == TabGroupState.HIDDEN) {
             // TODO(crbug.com/324934166): Open this tab in local model first.
             return;
         }
@@ -206,6 +208,18 @@ public class TabGroupListMediator {
                 (TabSwitcherPaneBase) mPaneManager.getPaneForId(PaneId.TAB_SWITCHER);
         boolean success = tabSwitcherPaneBase.requestOpenTabGroupDialog(rootId);
         assert success;
+    }
+
+    private void deleteGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {
+        if (state == TabGroupState.IN_CURRENT) {
+            int rootId = mFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
+            List<Tab> tabsToClose = mFilter.getRelatedTabListForRootId(rootId);
+            mFilter.closeMultipleTabs(
+                    tabsToClose, /* canUndo= */ false, /* hideTabGroups= */ false);
+        } else {
+            assert state == TabGroupState.HIDDEN;
+            mSyncService.removeGroup(savedTabGroup.syncId);
+        }
     }
 
     private AsyncDrawable buildAsyncDrawable(SavedTabGroupTab tab) {
