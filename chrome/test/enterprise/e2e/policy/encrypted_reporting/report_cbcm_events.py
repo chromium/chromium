@@ -38,30 +38,33 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     return self.RunWebDriverTest(self.win_config['client'],
                                  os.path.join(local_dir, '../cbcm_enroll.py'))
 
-  def VerifyHeartbeatEvents(self, test_start_time_in_microseconds, url):
+  def IsEventValid(self, event, test_start_time, device_id):
+    timestamp_in_microseconds = int(
+        event['apiEvent']['reportingRecordEvent']['timestampUs'])
+    event_occurred_after_test_started = timestamp_in_microseconds > test_start_time
+    event_occurred_on_test_device = event['clientId'] == device_id
+    return event_occurred_after_test_started and event_occurred_on_test_device
+
+  def VerifyHeartbeatEvents(self, test_start_time_in_microseconds, url,
+                            device_id):
     r = requests.get(url)
     logging.info('Querying reporting server for events...')
-    json = r.json()
+    logging.info('server response = %s' % r)
+    json_object = r.json()
 
-    if not 'event' in json:
+    if not 'event' in json_object:
       return False
 
     event_count = 0
-    for event in json['event']:
-      timestamp_in_microseconds = int(
-          event['apiEvent']['reportingRecordEvent']['timestampUs'])
-      # Only count events that occurred after the test started.
-      if timestamp_in_microseconds > test_start_time_in_microseconds:
+    for event in json_object['event']:
+      if self.IsEventValid(event, test_start_time_in_microseconds, device_id):
         event_count += 1
 
     logging.info('Found %d CBCM heartbeat events' % event_count)
     return event_count > 0
 
-  def GetReportingUrl(self, device_id, customer_id):
-    api_key = self.GetEncryptedReportingAPIKey()
-
-    url = "https://autopush-chromereporting-pa.sandbox.googleapis.com/v1/test/events"
-
+  def GetReportingUrl(self, device_id, customer_id, api_key):
+    url = "https://chromereporting-pa.googleapis.com/v1/test/events"
     # Add arguments to url
     args = "?key=%s&obfuscatedCustomerId=%s&deviceId=%s&destination=HEARTBEAT_EVENTS" % (
         api_key, customer_id, device_id)
@@ -91,9 +94,10 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     device_id = match.group()[len('DEVICE_ID='):]
 
     # Customer id for managedchrome.com
-    customer_id = "02gxaaci"
-
-    url = self.GetReportingUrl(device_id, customer_id)
+    customer_id = self.GetManagedChromeCustomerId()
+    api_key = self.GetEncryptedReportingAPIKey()
+    url = self.GetReportingUrl(device_id, customer_id, api_key)
 
     self.assertTrue(
-        self.VerifyHeartbeatEvents(test_start_time_in_microseconds, url))
+        self.VerifyHeartbeatEvents(test_start_time_in_microseconds, url,
+                                   device_id))
