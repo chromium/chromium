@@ -213,6 +213,9 @@ crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan relea
 # Flaky driver failure to create device
 crbug.com/329145623 [ linux angle-vulkan graphite-disabled nvidia-0x2184 passthrough release ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
 
+# Flaky failure to restore context
+crbug.com/338071088 [ mac amd-0x67ef angle-opengl graphite-disabled passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
