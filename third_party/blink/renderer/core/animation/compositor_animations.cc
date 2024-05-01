@@ -267,7 +267,8 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     reasons |= kTargetHasInvalidCompositingState;
   }
 
-  PropertyHandleSet properties = keyframe_effect.DynamicProperties();
+  const PropertyHandleSet& properties =
+      keyframe_effect.EnsureDynamicProperties();
   if (RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
     // If all properties are static, we don't need to composite. The animation
     // can only change at a phase boundary.
@@ -982,7 +983,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
       timing, normalized_timing, time_offset, compositor_timing,
       animation_playback_rate, is_monotonic_timeline, is_boundary_aligned);
 
-  PropertyHandleSet properties = effect.DynamicProperties();
+  const PropertyHandleSet& properties = effect.EnsureDynamicProperties();
   DCHECK(!properties.empty());
   for (const auto& property : properties) {
     // If the animation duration is infinite, it doesn't make sense to scale

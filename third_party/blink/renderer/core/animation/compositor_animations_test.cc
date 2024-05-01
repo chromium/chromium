@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
+#include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
@@ -77,6 +78,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -2726,6 +2728,54 @@ TEST_P(AnimationCompositorAnimationsTest,
                   GetDocument().View()->GetPaintArtifactCompositor()));
 }
 
+class ScopedBackgroundColorPaintImageGenerator {
+ public:
+  explicit ScopedBackgroundColorPaintImageGenerator(LocalFrame* frame)
+      : paint_image_generator_(
+        MakeGarbageCollected<FakeBackgroundColorPaintImageGenerator>()),
+        frame_(frame) {
+    frame_->SetBackgroundColorPaintImageGeneratorForTesting(
+        paint_image_generator_);
+  }
+
+  ~ScopedBackgroundColorPaintImageGenerator() {
+    frame_->SetBackgroundColorPaintImageGeneratorForTesting(nullptr);
+  }
+
+ private:
+  class FakeBackgroundColorPaintImageGenerator
+      : public BackgroundColorPaintImageGenerator {
+    scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
+                               const Node* node,
+                               const Vector<Color>& animated_colors,
+                               const Vector<double>& offsets,
+                               const std::optional<double>& progress) override {
+      return BitmapImage::Create();
+    }
+
+    bool GetBGColorPaintWorkletParams(Node* node,
+                                      Vector<Color>* animated_colors,
+                                      Vector<double>* offsets,
+                                      std::optional<double>* progress) override {
+      return true;
+    }
+
+    Animation* GetAnimationIfCompositable(const Element* element) override {
+      // Note that the complete test for determining eligibility to run on the
+      // compositor is in modules code. It is a layering violation to include
+      // here. Instead, we assume that no paint definition specific constraints
+      // are violated. These additional constraints should be tested in
+      // *_paint_definitiion_test.cc.
+      return element->GetElementAnimations()->Animations().begin()->key;
+    }
+
+    void Shutdown() override {}
+  };
+
+  Persistent<FakeBackgroundColorPaintImageGenerator> paint_image_generator_;
+  Persistent<LocalFrame> frame_;
+};
+
 TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
   ClearUseCounters();
   SetBodyInnerHTML(R"HTML(
@@ -2743,15 +2793,19 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
     <div id="target"></div>
   )HTML");
 
+  // Normally, we don't get image generators set up in a testing environment.
+  // Construct a fake one to allow us to test that we are making the correct
+  // compositing decision.
+  ScopedBackgroundColorPaintImageGenerator image_generator(
+      GetDocument().GetFrame());
+
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
 
-  // TODO(kevers): Update NativeCssPaintDefinition to only consider dynamic
-  // properties when determining if an animation can be composited.
-  EXPECT_TRUE(CompositorAnimations::kUnsupportedCSSProperty &
-              animation->CheckCanStartAnimationOnCompositor(
-                  GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
 
   EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }

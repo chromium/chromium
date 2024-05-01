@@ -93,7 +93,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   PropertyHandleSet Properties() const;
 
-  PropertyHandleSet DynamicProperties() const;
+  const PropertyHandleSet& EnsureDynamicProperties() const;
 
   bool HasStaticProperty() const;
 
@@ -244,6 +244,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   // to get the 'property-specific keyframes'. For efficiency, we cache the
   // property-specific lists.
   mutable Member<KeyframeGroupMap> keyframe_groups_;
+  mutable std::unique_ptr<PropertyHandleSet> dynamic_properties_;
   mutable Member<InterpolationEffect> interpolation_effect_;
   mutable int last_iteration_;
   mutable double last_fraction_;

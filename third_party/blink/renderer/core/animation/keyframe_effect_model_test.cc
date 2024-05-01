@@ -955,12 +955,12 @@ TEST_F(KeyframeEffectModelTest, StaticProperty) {
       KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "3px");
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   EXPECT_EQ(1U, effect->Properties().size());
-  EXPECT_EQ(0U, effect->DynamicProperties().size());
+  EXPECT_EQ(0U, effect->EnsureDynamicProperties().size());
 
   keyframes = KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "3px", "5px");
   effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   EXPECT_EQ(1U, effect->Properties().size());
-  EXPECT_EQ(1U, effect->DynamicProperties().size());
+  EXPECT_EQ(1U, effect->EnsureDynamicProperties().size());
 }
 
 TEST_F(AnimationKeyframeEffectModel, BackgroundShorthandStaticProperties) {
@@ -991,7 +991,7 @@ TEST_F(AnimationKeyframeEffectModel, BackgroundShorthandStaticProperties) {
   auto* model = To<KeyframeEffect>(effect)->Model();
   EXPECT_EQ(kBackgroundProperties, model->Properties().size());
   // Background-color is the only property that is changing between keyframes.
-  EXPECT_EQ(1U, model->DynamicProperties().size());
+  EXPECT_EQ(1U, model->EnsureDynamicProperties().size());
 }
 
 }  // namespace blink
