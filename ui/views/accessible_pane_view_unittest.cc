@@ -285,7 +285,7 @@ TEST_F(AccessiblePaneViewTest, AccessibleProperties) {
   test_view->SetAccessibleName(u"Name");
   test_view->GetViewAccessibility().SetDescription(u"Description");
   EXPECT_EQ(test_view->GetAccessibleName(), u"Name");
-  EXPECT_EQ(test_view->GetViewAccessibility().GetViewAccessibilityDescription(),
+  EXPECT_EQ(test_view->GetViewAccessibility().GetCachedDescription(),
             u"Description");
   EXPECT_EQ(test_view->GetAccessibleRole(), ax::mojom::Role::kPane);
 

@@ -69,9 +69,9 @@ IN_PROC_BROWSER_TEST_F(ConfirmBubbleTest, RootViewAccessibleProperties) {
 
   // TODO(accessibility): The title is not yet being set as the accessible name
   // of `RootView`. As a result, `GetAccessibleName` will fail. The reason we
-  // can use `GetViewAccessibility().GetViewAccessibilityDescription`
+  // can use `GetViewAccessibility().GetCachedDescription`
   // successfully is because the description is set in
   // `ConfirmBubbleViews::OnWidgetInitialized`.
-  EXPECT_EQ(root_view->GetViewAccessibility().GetViewAccessibilityDescription(),
+  EXPECT_EQ(root_view->GetViewAccessibility().GetCachedDescription(),
             kMessageText);
 }

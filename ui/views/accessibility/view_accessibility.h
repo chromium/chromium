@@ -172,13 +172,13 @@ class VIEWS_EXPORT ViewAccessibility {
   // AXPlatformNodeDelegate, which would lead to conflicts and confusion.
   // TODO(accessibility): Rename to GetRole once the ViewsAX project is
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
-  ax::mojom::Role GetViewAccessibilityRole() const;
+  ax::mojom::Role GetCachedRole() const;
 
-  // For the same reasons as GetViewAccessibilityRole, this function cannot
+  // For the same reasons as GetCachedRole, this function cannot
   // follow the established pattern and be named GetName()
   // TODO(accessibility): Rename to GetName once the ViewsAX project is
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
-  const std::string& GetViewAccessibilityName() const;
+  const std::string& GetCachedName() const;
 
   // Sets the accessible name to the specified string and source type.
   // To indicate that this view should never have an accessible name, e.g. to
@@ -252,7 +252,7 @@ class VIEWS_EXPORT ViewAccessibility {
   // and confusion.
   // TODO(accessibility): Rename to GetDescription once the ViewsAX project is
   // completed and we don't have ViewAXPlatformNodeDelegate anymore.
-  std::u16string GetViewAccessibilityDescription() const;
+  std::u16string GetCachedDescription() const;
 
   void SetCheckedState(ax::mojom::CheckedState checked_state);
   void RemoveCheckedState();

@@ -80,8 +80,7 @@ void NewBadgeLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   std::u16string accessible_name = GetText();
   if (display_new_badge_) {
     accessible_name.push_back(' ');
-    accessible_name.append(
-        GetViewAccessibility().GetViewAccessibilityDescription());
+    accessible_name.append(GetViewAccessibility().GetCachedDescription());
   }
   node_data->SetNameChecked(accessible_name);
 }

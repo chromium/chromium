@@ -258,7 +258,7 @@ void LocationIconView::SetAccessibleProperties(bool is_initialization) {
   // If no display text exists, ensure that the accessibility label is added.
   const std::u16string description =
       delegate_->IsEditingOrEmpty()
-          ? GetViewAccessibility().GetViewAccessibilityDescription()
+          ? GetViewAccessibility().GetCachedDescription()
       : label()->GetText().empty()
           ? delegate_->GetLocationBarModel()->GetSecureAccessibilityText()
           : std::u16string();

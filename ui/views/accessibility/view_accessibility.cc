@@ -399,7 +399,7 @@ void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   DCHECK(IsValidRoleForViews(role)) << "Invalid role for Views.";
-  if (role == GetViewAccessibilityRole()) {
+  if (role == GetCachedRole()) {
     return;
   }
 
@@ -438,7 +438,7 @@ void ViewAccessibility::SetName(const std::string& name,
          "|name_from| should be set to |kAttributeExplicitlyEmpty|.";
   data_.SetNameFrom(name_from);
 
-  if (name == GetViewAccessibilityName()) {
+  if (name == GetCachedName()) {
     return;
   }
 
@@ -485,11 +485,11 @@ void ViewAccessibility::SetName(View& naming_view) {
   // TODO(javiercon): This is a temporary workaround to avoid the DCHECK below
   // in the scenario where the View's accessible name is being set through
   // either the GetAccessibleNodeData override pipeline or the SetAccessibleName
-  // pipeline, which would make the call to `GetViewAccessibilityName` return an
+  // pipeline, which would make the call to `GetCachedName` return an
   // empty string. (this is the case for `Label` view). Once these are migrated
   // we can remove this `if`, otherwise we must retrieve the name from there if
   // needed.
-  if (naming_view.GetViewAccessibility().GetViewAccessibilityName().empty()) {
+  if (naming_view.GetViewAccessibility().GetCachedName().empty()) {
     ui::AXNodeData label_data;
     const_cast<View&>(naming_view).GetAccessibleNodeData(&label_data);
     const std::string& name =
@@ -498,7 +498,7 @@ void ViewAccessibility::SetName(View& naming_view) {
     SetName(name, ax::mojom::NameFrom::kRelatedElement);
   } else {
     const std::string& name =
-        naming_view.GetViewAccessibility().GetViewAccessibilityName();
+        naming_view.GetViewAccessibility().GetCachedName();
     DCHECK(!name.empty());
     SetName(name, ax::mojom::NameFrom::kRelatedElement);
   }
@@ -508,11 +508,11 @@ void ViewAccessibility::SetName(View& naming_view) {
       {naming_view.GetViewAccessibility().GetUniqueId().Get()});
 }
 
-const std::string& ViewAccessibility::GetViewAccessibilityName() const {
+const std::string& ViewAccessibility::GetCachedName() const {
   return data_.GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
-ax::mojom::Role ViewAccessibility::GetViewAccessibilityRole() const {
+ax::mojom::Role ViewAccessibility::GetCachedRole() const {
   return data_.role;
 }
 
@@ -596,7 +596,7 @@ void ViewAccessibility::SetDescription(View& describing_view) {
   DCHECK_NE(view_, &describing_view);
 
   const std::string& name =
-      describing_view.GetViewAccessibility().GetViewAccessibilityName();
+      describing_view.GetViewAccessibility().GetCachedName();
   if (name.empty()) {
     // TODO(javiercon): This is a temporary workaround for the scenarios where
     // the name is set via View::SetAccessibleName, which means that
@@ -623,7 +623,7 @@ void ViewAccessibility::SetDescription(View& describing_view) {
   }
 }
 
-std::u16string ViewAccessibility::GetViewAccessibilityDescription() const {
+std::u16string ViewAccessibility::GetCachedDescription() const {
   if (data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
     return base::UTF8ToUTF16(
         data_.GetStringAttribute(ax::mojom::StringAttribute::kDescription));

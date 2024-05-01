@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
   EXPECT_TRUE(view_->progress_bar_for_testing()->GetVisible());
   EXPECT_EQ(view_->progress_bar_for_testing()
                 ->GetViewAccessibility()
-                .GetViewAccessibilityDescription(),
+                .GetCachedDescription(),
             view_->GetSecondaryMessage());
 
   // InstallThenSuccess already checks that the secondary message changes
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
   view_->StateChanged(bruschetta::BruschettaInstaller::State::kStartVm);
   EXPECT_EQ(view_->progress_bar_for_testing()
                 ->GetViewAccessibility()
-                .GetViewAccessibilityDescription(),
+                .GetCachedDescription(),
             view_->GetSecondaryMessage());
 }
 
