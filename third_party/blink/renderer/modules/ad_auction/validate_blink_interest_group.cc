@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -30,8 +32,8 @@ bool IsUrlAllowedForRenderUrls(const KURL& url) {
 }
 
 // Check if `url` can be used with the specified interest group for any of
-// script URL, update URL, or realtime data URL. Ad render URLs should be
-// checked with IsUrlAllowedForRenderUrls(), which doesn't have the same-origin
+// script URL, or update URL. Ad render URLs should be checked with
+// IsUrlAllowedForRenderUrls(), which doesn't have the same-origin
 // check, and allows references.
 bool IsUrlAllowed(const KURL& url, const mojom::blink::InterestGroup& group) {
   if (!group.owner->IsSameOriginWith(SecurityOrigin::Create(url).get())) {
@@ -39,6 +41,38 @@ bool IsUrlAllowed(const KURL& url, const mojom::blink::InterestGroup& group) {
   }
 
   return IsUrlAllowedForRenderUrls(url) && !url.HasFragmentIdentifier();
+}
+
+// Checks if `url` can be used with interest group `group` as a trusted
+// bidding signals URL. Sets `error_out` to an error message appropriate for
+// failure regardless of success or failure.
+bool IsUrlAllowedForTrustedBiddingSignals(
+    const KURL& url,
+    const mojom::blink::InterestGroup& group,
+    String& error_out) {
+  bool allow_cross_origin = base::FeatureList::IsEnabled(
+      blink::features::kFledgePermitCrossOriginTrustedSignals);
+  if (allow_cross_origin) {
+    error_out =
+        "trustedBiddingSignalsURL must have https schema and have no query "
+        "string, fragment identifier or embedded credentials.";
+  } else {
+    error_out =
+        "trustedBiddingSignalsURL must have the same origin as the "
+        "InterestGroup owner and have no query string, fragment identifier or "
+        "embedded credentials.";
+  }
+
+  if (!IsUrlAllowedForRenderUrls(url) || url.HasFragmentIdentifier() ||
+      !group.trusted_bidding_signals_url->Query().IsNull()) {
+    return false;
+  }
+
+  if (allow_cross_origin) {
+    return true;
+  } else {
+    return group.owner->IsSameOriginWith(SecurityOrigin::Create(url).get());
+  }
 }
 
 size_t EstimateHashMapSize(const HashMap<String, double>& hash_map) {
@@ -242,14 +276,13 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     // In addition to passing the same checks used on the other URLs,
     // `trusted_bidding_signals_url` must not have a query string, since the
     // query parameter needs to be set as part of running an auction.
-    if (!IsUrlAllowed(*group.trusted_bidding_signals_url, group) ||
+    String trusted_url_error;
+    if (!IsUrlAllowedForTrustedBiddingSignals(
+            *group.trusted_bidding_signals_url, group, trusted_url_error) ||
         !group.trusted_bidding_signals_url->Query().IsNull()) {
       error_field_name = "trustedBiddingSignalsURL";
       error_field_value = group.trusted_bidding_signals_url->GetString();
-      error =
-          "trustedBiddingSignalsURL must have the same origin as the "
-          "InterestGroup owner and have no query string, fragment identifier "
-          "or embedded credentials.";
+      error = std::move(trusted_url_error);
       return false;
     }
   }

@@ -181,7 +181,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   bool is_cross_origin_enabled_trusted_signals_request = false;
-  if (is_trusted_signals_request && is_for_seller_ &&
+  if (is_trusted_signals_request &&
       base::FeatureList::IsEnabled(
           blink::features::kFledgePermitCrossOriginTrustedSignals)) {
     is_cross_origin_enabled_trusted_signals_request = true;

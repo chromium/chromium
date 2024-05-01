@@ -323,8 +323,8 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::TestWithParam<bool> {
               observed_request.load_flags);
 
     bool cross_site_enabled_trusted_signals_request =
-        PermitCrossOriginTrustedSignals() && is_for_seller_ &&
-        !expect_bundle_request && original_accept_header == kAcceptJson;
+        PermitCrossOriginTrustedSignals() && !expect_bundle_request &&
+        original_accept_header == kAcceptJson;
 
     // The initiator should be set.
     if (cross_site_enabled_trusted_signals_request) {

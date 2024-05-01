@@ -6,10 +6,12 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_display_size.mojom-blink.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
@@ -400,6 +402,80 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
       String::FromUTF8("trustedBiddingSignalsURL"),
       /*expected_error_field_value=*/rejected_url2.GetString(),
       /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
+}
+
+// If the feature enabling cross-origin trusted signals URL to be accepted
+// is on, they will be, but other checks still happen.
+// TODO(morlovich): Once this is on by default, this should be merged with the
+// above test.
+TEST_F(ValidateBlinkInterestGroupTest,
+       CrossOriginTrustedBiddingSignalsUrlPermitted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgePermitCrossOriginTrustedSignals);
+
+  // Note that cross-origin checks here refer to the group's owner,
+  // https://origin.test
+  const struct {
+    KURL url;
+    bool ok = false;
+  } kTests[] = {
+      // HTTP URLs is rejected: it's wrong scheme.
+      {KURL(String::FromUTF8("http://origin.test/foo"))},
+      // Cross origin HTTPS URLs are OK with flag on.
+      {KURL(String::FromUTF8("https://origin2.test/foo")), /*ok=*/true},
+      // URL with different ports are cross-origin.
+      {KURL(String::FromUTF8("https://origin.test:1234/")), /*ok=*/true},
+      // URLs with opaque origins are cross-origin, but not OK since they're
+      // not https.
+      {KURL(String::FromUTF8("data://text/html,payload"))},
+      // Unknown scheme.
+      {KURL(String::FromUTF8("unknown-scheme://foo/"))},
+
+      // filesystem URLs are rejected, even if they're same-origin with the page
+      // origin.
+      {KURL(String::FromUTF8("filesystem:https://origin.test/foo"))},
+
+      // URLs with user/ports are rejected.
+      {KURL(String::FromUTF8("https://user:pass@origin.test/"))},
+      // References also aren't allowed, as they aren't sent over HTTP.
+      {KURL(String::FromUTF8("https://origin.test/#foopy"))},
+      // Even empty ones.
+      {KURL(String::FromUTF8("https://origin.test/#"))},
+
+      // Invalid URLs.
+      {KURL(String::FromUTF8(""))},
+      {KURL(String::FromUTF8("invalid url"))},
+      {KURL(String::FromUTF8("https://!@#$%^&*()/"))},
+      {KURL(String::FromUTF8("https://[1::::::2]/"))},
+      {KURL(String::FromUTF8("https://origin%00.test"))},
+
+      // `trusted_bidding_signals_url` also can't include query strings.
+      {KURL(String::FromUTF8("https://origin.test/?query"))},
+
+      // That includes an empty query string.
+      {KURL(String::FromUTF8("https://origin.test/?"))}};
+
+  for (const auto& test : kTests) {
+    const KURL& test_url = test.url;
+    SCOPED_TRACE(test_url.GetString());
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->trusted_bidding_signals_url = test_url;
+    if (test.ok) {
+      ExpectInterestGroupIsValid(blink_interest_group);
+    } else {
+      ExpectInterestGroupIsNotValid(
+          blink_interest_group,
+          /*expected_error_field_name=*/
+          String::FromUTF8("trustedBiddingSignalsURL"),
+          /*expected_error_field_value=*/test_url.GetString(),
+          /*expected_error=*/
+          String::FromUTF8(
+              "trustedBiddingSignalsURL must have https schema and have no "
+              "query string, fragment identifier or embedded credentials."));
+    }
+  }
 }
 
 // Tests valid and invalid ad render URLs.

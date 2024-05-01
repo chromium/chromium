@@ -14,9 +14,11 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -42,8 +44,8 @@ bool IsUrlAllowedForRenderUrls(const GURL& url) {
 }
 
 // Check if `url` can be used with the specified interest group for any of
-// script URL, update URL, or realtime data URL. Ad render URLs should be
-// checked with IsUrlAllowedForRenderUrls(), which doesn't have the same-origin
+// script URL, update URL. Ad render URLs should be checked with
+// IsUrlAllowedForRenderUrls(), which doesn't have the same-origin
 // check, and allows references.
 bool IsUrlAllowed(const GURL& url, const InterestGroup& group) {
   if (url::Origin::Create(url) != group.owner) {
@@ -51,6 +53,22 @@ bool IsUrlAllowed(const GURL& url, const InterestGroup& group) {
   }
 
   return IsUrlAllowedForRenderUrls(url) && !url.has_ref();
+}
+
+// Check if `url` can be used with the specified interest group for trusted
+// bidding signals URL.
+bool IsUrlAllowedForTrustedBiddingSignals(const GURL& url,
+                                          const InterestGroup& group) {
+  if (!IsUrlAllowedForRenderUrls(url) || url.has_ref() || url.has_query()) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+    return true;
+  } else {
+    return url::Origin::Create(url) == group.owner;
+  }
 }
 
 size_t EstimateFlatMapSize(
@@ -178,13 +196,8 @@ bool InterestGroup::IsValid() const {
   }
 
   if (trusted_bidding_signals_url) {
-    if (!IsUrlAllowed(*trusted_bidding_signals_url, *this)) {
-      return false;
-    }
-
-    // `trusted_bidding_signals_url` must not have a query string, since the
-    // query parameter needs to be set as part of running an auction.
-    if (trusted_bidding_signals_url->has_query()) {
+    if (!IsUrlAllowedForTrustedBiddingSignals(*trusted_bidding_signals_url,
+                                              *this)) {
       return false;
     }
   }

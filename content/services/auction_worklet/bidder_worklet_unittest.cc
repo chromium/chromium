@@ -93,7 +93,7 @@ std::string CreateGenerateBidScript(const std::string& raw_return_value,
   constexpr char kGenerateBidScript[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals,
-                         directFromSellerSignals) {
+                         directFromSellerSignals, crossOriginTrustedSignals) {
       %s;
       return %s;
     }
@@ -375,7 +375,9 @@ class BidderWorkletTest : public testing::Test {
   // evaluates to true when evaluated in a generateBid() script. Does this by
   // evaluating the expression in the content of generateBid() and throwing if
   // it's not true. Otherwise, a bid is generated.
-  void RunGenerateBidExpectingExpressionIsTrue(const std::string& expression) {
+  void RunGenerateBidExpectingExpressionIsTrue(
+      const std::string& expression,
+      const std::optional<uint32_t>& expected_data_version = std::nullopt) {
     std::string script = CreateGenerateBidScript(
         /*raw_return_value=*/R"({bid: 1, render:"https://response.test/"})",
         /*extra_code=*/base::StringPrintf(R"(let val = %s;
@@ -384,14 +386,16 @@ class BidderWorkletTest : public testing::Test {
                                           expression.c_str()));
 
     RunGenerateBidWithJavascriptExpectingResult(
-        script, mojom::BidderWorkletBid::New(
-                    auction_worklet::mojom::BidRole::kUnenforcedKAnon,
-                    /*ad=*/"null",
-                    /*bid=*/1, /*bid_currency=*/std::nullopt,
-                    /*ad_cost=*/std::nullopt,
-                    blink::AdDescriptor(GURL("https://response.test/")),
-                    /*ad_component_descriptors=*/std::nullopt,
-                    /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+        script,
+        mojom::BidderWorkletBid::New(
+            auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+            /*ad=*/"null",
+            /*bid=*/1, /*bid_currency=*/std::nullopt,
+            /*ad_cost=*/std::nullopt,
+            blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/std::nullopt,
+            /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+        expected_data_version);
   }
 
   // Configures `url_loader_factory_` to return a generateBid() script with the
@@ -480,6 +484,7 @@ class BidderWorkletTest : public testing::Test {
 
     auto bidder_worklet = CreateWorkletAndGenerateBid();
 
+    EXPECT_EQ(expected_errors, bid_errors_);
     ASSERT_EQ(expected_bids.size(), bids_.size());
     for (size_t i = 0; i < bids_.size(); ++i) {
       const mojom::BidderWorkletBidPtr& expected_bid = expected_bids[i];
@@ -506,7 +511,6 @@ class BidderWorkletTest : public testing::Test {
     EXPECT_EQ(expected_debug_win_report_url, bid_debug_win_report_url_);
     EXPECT_EQ(expected_pa_requests, pa_requests_);
     EXPECT_EQ(expected_non_kanon_pa_requests, non_kanon_pa_requests_);
-    EXPECT_EQ(expected_errors, bid_errors_);
     EXPECT_EQ(expected_set_priority, set_priority_);
     EXPECT_EQ(expected_update_priority_signals_overrides,
               update_priority_signals_overrides_);
@@ -4419,6 +4423,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallelLoadFails) {
 // 3) The trusted bidding signals are loaded.
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_bidding_url_ = *interest_group_trusted_bidding_signals_url_;
   interest_group_trusted_bidding_signals_keys_.emplace();
 
   // Each GenerateBid() call provides a different `auctionSignals` value. The
@@ -4546,6 +4551,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
 // 3) The worklet script load completes.
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_bidding_url_ = *interest_group_trusted_bidding_signals_url_;
   interest_group_trusted_bidding_signals_keys_.emplace();
 
   // Each GenerateBid() call provides a different `auctionSignals` value. The
@@ -4674,6 +4680,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
 // 3) The trusted bidding signals are loaded.
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_bidding_url_ = *interest_group_trusted_bidding_signals_url_;
   interest_group_trusted_bidding_signals_keys_.emplace();
 
   // Each GenerateBid() call provides a different `auctionSignals` value. The
@@ -4791,6 +4798,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
 // test all not batched order variations.
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_bidding_url_ = *interest_group_trusted_bidding_signals_url_;
   interest_group_trusted_bidding_signals_keys_.emplace();
 
   // Each GenerateBid() call provides a different `auctionSignals` value. The
@@ -5871,6 +5879,7 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
 
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   const GURL kBaseSignalsUrl("https://signals.test/");
+  interest_group_bidding_url_ = kBaseSignalsUrl;
   const GURL kNoKeysSignalsUrl(
       "https://signals.test/"
       "?hostname=top.window.test&interestGroupNames=Fred");
@@ -5982,6 +5991,14 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 }
 
+// With the cross-origin trusted signals flag off, nothing is passed in to the
+// cross-original signals parameter.
+TEST_F(BidderWorkletTest, CrossOriginTrustedSignalsDisabled) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      "crossOriginTrustedSignals === undefined");
+  RunGenerateBidExpectingExpressionIsTrue("arguments.length === 6");
+}
+
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsV1) {
   const GURL kFullSignalsUrl(
       "https://signals.test/"
@@ -5995,6 +6012,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsV1) {
   )";
 
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_bidding_url_ = *interest_group_trusted_bidding_signals_url_;
   interest_group_trusted_bidding_signals_keys_ =
       std::vector<std::string>({"key1", "key2"});
 
@@ -6452,6 +6470,7 @@ TEST_F(BidderWorkletTest, GenerateBidCancelWhileRunningJavascript) {
 
 TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_bidding_url_ = *interest_group_trusted_bidding_signals_url_;
   interest_group_trusted_bidding_signals_keys_.emplace();
   interest_group_trusted_bidding_signals_keys_->push_back("key1");
   AddBidderJsonResponse(
@@ -6474,6 +6493,7 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
 // Even with no trustedBiddingSignalsKeys, the data version should be available.
 TEST_F(BidderWorkletTest, GenerateBidDataVersionNoKeys) {
   interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  interest_group_bidding_url_ = *interest_group_trusted_bidding_signals_url_;
   AddBidderJsonResponse(
       &url_loader_factory_,
       GURL("https://signals.test/"
@@ -11849,6 +11869,103 @@ TEST_F(BidderWorkletSampleDebugReportsDisabledTest,
   RunGenerateBidExpectingExpressionIsTrue(R"(
     !browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout');
   )");
+}
+
+class BidderWorkletCrossOriginTrustedSignalsTest : public BidderWorkletTest {
+ public:
+  BidderWorkletCrossOriginTrustedSignalsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kFledgePermitCrossOriginTrustedSignals);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// With the feature on, same-origin trusted signals still come in the same,
+// only there is an extra null param.
+TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, SameOrigin) {
+  const GURL kBaseSignalsUrl("https://signals.test/");
+  interest_group_bidding_url_ = kBaseSignalsUrl;
+  interest_group_trusted_bidding_signals_url_ = kBaseSignalsUrl;
+  interest_group_trusted_bidding_signals_keys_ =
+      std::vector<std::string>({"key1", "key2"});
+  const GURL kFullSignalsUrl(
+      "https://signals.test/"
+      "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred");
+
+  const char kJson[] = R"(
+    {
+      "keys": {
+        "key1": 1,
+        "key2": [2]
+      }
+    }
+  )";
+
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson,
+                        /*data_version=*/5);
+
+  RunGenerateBidExpectingExpressionIsTrue("crossOriginTrustedSignals === null",
+                                          /*expected_data_version=*/5);
+  RunGenerateBidExpectingExpressionIsTrue("arguments.length === 7",
+                                          /*expected_data_version=*/5);
+  RunGenerateBidExpectingExpressionIsTrue("browserSignals.dataVersion === 5",
+                                          /*expected_data_version=*/5);
+  RunGenerateBidExpectingExpressionIsTrue(
+      "!('crossOriginDataVersion' in browserSignals)",
+      /*expected_data_version=*/5);
+
+  RunGenerateBidExpectingExpressionIsTrue("trustedBiddingSignals['key1'] === 1",
+                                          /*expected_data_version=*/5);
+}
+
+// Cross-origin signals (and their version) come in as different parameters
+// and fields.
+TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, CrossOrigin) {
+  const GURL kBaseSignalsUrl("https://signals.test/");
+  interest_group_bidding_url_ = GURL("https://url.test/");
+  interest_group_trusted_bidding_signals_url_ = kBaseSignalsUrl;
+  interest_group_trusted_bidding_signals_keys_ =
+      std::vector<std::string>({"key1", "key2"});
+  const GURL kFullSignalsUrl(
+      "https://signals.test/"
+      "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred");
+
+  const char kJson[] = R"(
+    {
+      "keys": {
+        "key1": 1,
+        "key2": [2]
+      }
+    }
+  )";
+
+  AddBidderJsonResponse(&url_loader_factory_, kFullSignalsUrl, kJson,
+                        /*data_version=*/5);
+
+  const char kValidate[] = R"(
+    function() {
+      const expected = '{"https://signals.test":{"key1":1,"key2":[2]}}';
+      const actual = JSON.stringify(crossOriginTrustedSignals);
+      if (actual === expected)
+        return true;
+      return actual + "!" + expected;
+    }();
+  )";
+
+  RunGenerateBidExpectingExpressionIsTrue(kValidate,
+                                          /*expected_data_version=*/5);
+  RunGenerateBidExpectingExpressionIsTrue("arguments.length === 7",
+                                          /*expected_data_version=*/5);
+  RunGenerateBidExpectingExpressionIsTrue("!('dataVersion' in browserSignals)",
+                                          /*expected_data_version=*/5);
+  RunGenerateBidExpectingExpressionIsTrue(
+      "browserSignals.crossOriginDataVersion === 5",
+      /*expected_data_version=*/5);
+
+  RunGenerateBidExpectingExpressionIsTrue("trustedBiddingSignals === null",
+                                          /*expected_data_version=*/5);
 }
 
 }  // namespace

@@ -301,6 +301,44 @@ size_t GetNumberOfGroupByOriginContextsToKeep() {
   return 1;
 }
 
+// Check if trusted bidding signals, if any, are same-origin or cross-origin.
+BidderWorklet::SignalsOriginRelation ClassifyTrustedSignals(
+    const GURL& script_source_url,
+    const std::optional<url::Origin>& trusted_bidding_signals_origin) {
+  if (!trusted_bidding_signals_origin) {
+    return BidderWorklet::SignalsOriginRelation::kNoTrustedSignals;
+  }
+  if (trusted_bidding_signals_origin->IsSameOriginWith(script_source_url)) {
+    return BidderWorklet::SignalsOriginRelation::kSameOriginSignals;
+  }
+
+  return BidderWorklet::SignalsOriginRelation::kCrossOriginSignals;
+}
+
+// Sets the appropriate field (if any) of `browser_signals_dict` to data
+// version. Returns success/failure.
+bool SetDataVersion(
+    BidderWorklet::SignalsOriginRelation trusted_signals_relation,
+    std::optional<uint32_t> bidding_signals_data_version,
+    gin::Dictionary& browser_signals_dict) {
+  if (!bidding_signals_data_version.has_value()) {
+    return true;
+  }
+
+  switch (trusted_signals_relation) {
+    case BidderWorklet::SignalsOriginRelation::kNoTrustedSignals:
+      return true;
+
+    case BidderWorklet::SignalsOriginRelation::kSameOriginSignals:
+      return browser_signals_dict.Set("dataVersion",
+                                      bidding_signals_data_version.value());
+
+    case BidderWorklet::SignalsOriginRelation::kCrossOriginSignals:
+      return browser_signals_dict.Set("crossOriginDataVersion",
+                                      bidding_signals_data_version.value());
+  }
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -683,6 +721,10 @@ BidderWorklet::V8State::V8State(
       permissions_policy_state_(std::move(permissions_policy_state)),
       wasm_helper_url_(wasm_helper_url),
       trusted_bidding_signals_url_(trusted_bidding_signals_url),
+      trusted_bidding_signals_origin_(
+          trusted_bidding_signals_url_ ? std::make_optional(url::Origin::Create(
+                                             *trusted_bidding_signals_url_))
+                                       : std::nullopt),
       context_recyclers_for_origin_group_mode_(
           GetNumberOfGroupByOriginContextsToKeep()) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
@@ -1431,6 +1473,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   v8::Local<v8::Value> trusted_signals;
+  SignalsOriginRelation trusted_signals_relation = ClassifyTrustedSignals(
+      script_source_url_, trusted_bidding_signals_origin_);
   if (!trusted_bidding_signals_result ||
       !bidder_worklet_non_shared_params.trusted_bidding_signals_keys ||
       bidder_worklet_non_shared_params.trusted_bidding_signals_keys->empty()) {
@@ -1440,7 +1484,12 @@ BidderWorklet::V8State::RunGenerateBidOnce(
         v8_helper_.get(), context,
         *bidder_worklet_non_shared_params.trusted_bidding_signals_keys);
   }
-  args.push_back(trusted_signals);
+
+  if (trusted_signals_relation == SignalsOriginRelation::kSameOriginSignals) {
+    args.push_back(trusted_signals);
+  } else {
+    args.push_back(v8::Null(isolate));
+  }
 
   std::optional<uint32_t> bidding_signals_data_version;
   if (trusted_bidding_signals_result) {
@@ -1487,9 +1536,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
            blink::features::kFledgePassRecencyToGenerateBid) &&
        !browser_signals_dict.Set("recency",
                                  browser_signal_recency.InMilliseconds())) ||
-      (bidding_signals_data_version.has_value() &&
-       !browser_signals_dict.Set("dataVersion",
-                                 bidding_signals_data_version.value())) ||
+      !SetDataVersion(trusted_signals_relation, bidding_signals_data_version,
+                      browser_signals_dict) ||
       (requested_ad_size.has_value() &&
        !MaybeSetSizeMember(isolate, browser_signals_dict, "requestedSize",
                            requested_ad_size.value()))) {
@@ -1534,6 +1582,21 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     return std::nullopt;
   }
   args.push_back(direct_from_seller_signals);
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+    v8::Local<v8::Value> cross_origin_trusted_bidding_signals_value;
+    if (trusted_signals_relation ==
+        SignalsOriginRelation::kCrossOriginSignals) {
+      cross_origin_trusted_bidding_signals_value =
+          TrustedSignals::Result::WrapCrossOriginSignals(
+              v8_helper_.get(), context, *trusted_bidding_signals_origin_,
+              trusted_signals);
+    } else {
+      cross_origin_trusted_bidding_signals_value = v8::Null(isolate);
+    }
+    args.push_back(cross_origin_trusted_bidding_signals_value);
+  }
 
   v8::Local<v8::Value> generate_bid_result;
 

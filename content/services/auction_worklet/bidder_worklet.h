@@ -83,6 +83,13 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
+  // Classification of how trusted signals related to this worklet.
+  enum class SignalsOriginRelation {
+    kNoTrustedSignals,
+    kSameOriginSignals,
+    kCrossOriginSignals,
+  };
+
   // Starts loading the worklet script on construction, as well as the trusted
   // bidding data, if necessary. Will then call the script's generateBid()
   // function and invoke the callback with the results. Callback will always be
@@ -582,6 +589,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const std::optional<GURL> wasm_helper_url_;
     const std::optional<GURL> trusted_bidding_signals_url_;
+    const std::optional<url::Origin> trusted_bidding_signals_origin_;
 
     // This must be above the ContextRecyclers, since they own
     // SharedStorageBindings, which have raw pointers to it.
