@@ -180,7 +180,7 @@
     <template is="dom-if" restamp
         if="[[showAutoBrightnessToggle_(hasAmbientLightSensor_)]]">
       <div class="settings-box indented" id="autoBrightnessToggleRow"
-          on-click="onAutoBrightnessToggleRowClicked_">
+          on-click="onAutoBrightnessToggleRowClicked_" actionable-row>
         <div class="start settings-box-text">
           <div id="autoBrightnessToggleLabel" class="start" aria-hidden="true">
               $i18n{displayAutoBrightnessToggleLabel}
