@@ -6,36 +6,30 @@ import 'chrome://diagnostics/text_badge.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('textBadgeTestSuite', function() {
-  /** @type {?TextBadgeElement} */
-  let textBadgeElement = null;
+  let textBadgeElement: TextBadgeElement|null = null;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    if (textBadgeElement) {
-      textBadgeElement.remove();
-    }
+    textBadgeElement?.remove();
     textBadgeElement = null;
   });
 
-  /**
-   * @param {!BadgeType} badgeType
-   * @param {string} value
-   */
-  function initializeBadge(badgeType, value) {
+  function initializeBadge(badgeType: BadgeType, value: string): Promise<void> {
     assertFalse(!!textBadgeElement);
 
-    textBadgeElement =
-        /** @type {!TextBadgeElement} */ (document.createElement('text-badge'));
-    assertTrue(!!textBadgeElement);
+    textBadgeElement = document.createElement('text-badge');
+    assert(textBadgeElement);
     textBadgeElement.badgeType = badgeType;
     textBadgeElement.value = value;
     document.body.appendChild(textBadgeElement);
@@ -47,8 +41,10 @@ suite('textBadgeTestSuite', function() {
     const badgeType = BadgeType.QUEUED;
     const value = 'Test value';
     return initializeBadge(badgeType, value).then(() => {
-      const textBadge = textBadgeElement.shadowRoot.querySelector('#textBadge');
+      assert(textBadgeElement);
+      const textBadge = strictQuery('#textBadge', textBadgeElement.shadowRoot, HTMLSpanElement);
       assertEquals(badgeType, textBadge.getAttribute('class'));
+      assert(textBadge.textContent);
       dx_utils.assertTextContains(textBadge.textContent, value);
     });
   });
