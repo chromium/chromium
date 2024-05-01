@@ -4,6 +4,8 @@
 
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "base/feature_list.h"
@@ -23,6 +25,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
+#include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "device/fido/features.h"
@@ -30,6 +34,11 @@
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_types.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/common/chrome_version.h"
+#include "device/fido/enclave/icloud_recovery_key_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 using Step = AuthenticatorRequestDialogModel::Step;
 
@@ -178,6 +187,11 @@ using Step = AuthenticatorRequestDialogModel::Step;
 //                           +----------------------+
 
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
+    MAC_TEAM_IDENTIFIER_STRING ".com.google.common.folsom";
+#endif  // BUILDFLAG(IS_MAC)
 
 // EnclaveUserVerificationMethod enumerates the possible ways that user
 // verification will be performed for an enclave transaction.
@@ -440,11 +454,16 @@ void GPMEnclaveController::OnAccountStateDownloaded(
                   << (result.gpm_pin_metadata.has_value()
                           ? base::TimeFormatAsIso8601(
                                 result.gpm_pin_metadata->expiry)
-                          : "<none>");
+                          : "<none>")
+                  << ", icloud keys: " << result.icloud_keys.size();
 
   if (result.gpm_pin_metadata) {
     pin_metadata_ = std::move(result.gpm_pin_metadata);
   }
+  std::ranges::transform(
+      result.icloud_keys,
+      std::back_inserter(security_domain_icloud_recovery_keys_),
+      &trusted_vault::SecureBoxPublicKey::ExportToBytes);
 
   if (base::FeatureList::IsEnabled(device::kWebAuthnGpmPin)) {
     SetActive(account_state_ != AccountState::kNone);
@@ -495,6 +514,76 @@ void GPMEnclaveController::OnDeviceAdded(bool success) {
     return;
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(device::kWebAuthnICloudRecoveryKey)) {
+    MaybeAddICloudRecoveryKey();
+    return;
+  }
+#endif
+
+  OnEnclaveAccountSetUpComplete();
+}
+
+#if BUILDFLAG(IS_MAC)
+
+void GPMEnclaveController::MaybeAddICloudRecoveryKey() {
+  device::enclave::ICloudRecoveryKey::Retrieve(
+      base::BindOnce(&GPMEnclaveController::OnLocalICloudRecoveryKeysRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kICloudKeychainRecoveryKeyAccessGroup);
+}
+
+void GPMEnclaveController::OnLocalICloudRecoveryKeysRetrieved(
+    std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+        local_icloud_keys) {
+  for (const std::vector<uint8_t>& recovery_icloud_key :
+       security_domain_icloud_recovery_keys_) {
+    const auto local_icloud_key_it = std::ranges::find_if(
+        local_icloud_keys, [&recovery_icloud_key](const auto& key) {
+          return key->id() == recovery_icloud_key;
+        });
+    if (local_icloud_key_it != local_icloud_keys.end()) {
+      // This device already has an iCloud keychain recovery factor configured
+      // for the passkey security domain. Nothing else to do here.
+      FIDO_LOG(EVENT) << "Device already has iCloud recovery key configured";
+      OnEnclaveAccountSetUpComplete();
+      return;
+    }
+  }
+
+  if (local_icloud_keys.empty()) {
+    // The device has no iCloud recovery key. Create a new key.
+    FIDO_LOG(EVENT) << "Creating new iCloud recovery key";
+    device::enclave::ICloudRecoveryKey::Create(
+        base::BindOnce(&GPMEnclaveController::EnrollICloudRecoveryKey,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kICloudKeychainRecoveryKeyAccessGroup);
+    return;
+  }
+
+  // The device has at least one iCloud recovery key, but it hasn't been
+  // enrolled as a passkey domain recovery factor. This can happen if enrollment
+  // was interrupted or if the recovery key is currently enrolled for a
+  // different security domain. Choose an arbitrary key and enroll it.
+  FIDO_LOG(EVENT) << "Enrolling existing iCloud recovery key";
+  EnrollICloudRecoveryKey(std::move(local_icloud_keys.at(0)));
+}
+
+void GPMEnclaveController::EnrollICloudRecoveryKey(
+    std::unique_ptr<device::enclave::ICloudRecoveryKey> key) {
+  if (!key) {
+    FIDO_LOG(ERROR) << "Could not create iCloud recovery key";
+    OnEnclaveAccountSetUpComplete();
+  }
+  enclave_manager_->AddICloudRecoveryKey(
+      std::move(key), base::IgnoreArgs<bool>(base::BindOnce(
+                          &GPMEnclaveController::OnEnclaveAccountSetUpComplete,
+                          weak_ptr_factory_.GetWeakPtr())));
+}
+
+#endif  // BUILDFLAG(IS_MAC)
+
+void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
   have_added_device_ = true;
   SetAccountStateReady();
   SetFailedPINAttemptCount(0);

@@ -114,6 +114,12 @@ void ICloudRecoveryKey::Retrieve(RetrieveCallback callback,
 }
 
 // static
+std::unique_ptr<ICloudRecoveryKey> ICloudRecoveryKey::CreateForTest() {
+  return base::WrapUnique(
+      new ICloudRecoveryKey(trusted_vault::SecureBoxKeyPair::GenerateRandom()));
+}
+
+// static
 std::unique_ptr<ICloudRecoveryKey> ICloudRecoveryKey::CreateAndStoreKeySlowly(
     std::string_view keychain_access_group) {
   std::unique_ptr<trusted_vault::SecureBoxKeyPair> key =

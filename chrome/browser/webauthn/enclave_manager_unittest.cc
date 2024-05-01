@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/enclave_manager.h"
 
+#include <memory>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -29,6 +30,8 @@
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto/vault.pb.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
+#include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
@@ -47,9 +50,12 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/hmac.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "device/fido/enclave/icloud_recovery_key_mac.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -102,6 +108,12 @@ constexpr std::string_view kTestPINPublicKey =
     "\xe9\x6d\xea\xf2\xf0\x7f\xa9\xde\x89\xe2\x9e\x69\x36\xc4\x4c\xf9\x56\xe9"
     "\xa1\x1f\x08\xfe\x55\xca\x1b\x84\xb9\xe5\x1e\xc3\x26\x69\x16\xa0\x6b\x03"
     "\xfa\x42\x08\xa8\xaf\x7d\xd9\x14\xb4\xfc\x1a";
+
+#if BUILDFLAG(IS_MAC)
+base::span<const uint8_t> ToSpan(std::string_view s) {
+  return base::as_bytes(base::make_span(s));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> GetTestEntity() {
   auto ret = std::make_unique<sync_pb::WebauthnCredentialSpecifics>();
@@ -250,7 +262,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
         });
 
     enclave::EnclaveAuthenticator authenticator(
-        std::move(ui_request),
+        std::move(ui_request), /*network_context_factory=*/
         base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
           return network_context_.get();
         }));
@@ -331,7 +343,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
         [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
 
     enclave::EnclaveAuthenticator authenticator(
-        std::move(ui_request), /*save_passkey_callback=*/
+        std::move(ui_request), /*network_context_factory=*/
         base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
           return network_context_.get();
         }));
@@ -366,6 +378,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     task_env_.RunUntilQuit();
 
     ASSERT_TRUE(status.has_value());
+    ASSERT_TRUE(true);
     ASSERT_EQ(status, device::CtapDeviceResponseCode::kSuccess);
     ASSERT_EQ(responses.size(), 1u);
   }
@@ -858,6 +871,63 @@ TEST_F(EnclaveManagerTest, RenewPIN) {
   CHECK(security_domain_secret.has_value());
   EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
+  ASSERT_TRUE(Register());
+
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN("123456", setup_callback.callback());
+  setup_callback.WaitForCallback();
+  ASSERT_TRUE(manager_.is_ready());
+
+  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
+      device::enclave::ICloudRecoveryKey::CreateForTest();
+  std::unique_ptr<trusted_vault::SecureBoxKeyPair> key =
+      trusted_vault::SecureBoxKeyPair::CreateByPrivateKeyImport(
+          icloud_key->key()->private_key().ExportToBytes());
+  BoolCallback icloud_callback;
+  manager_.AddICloudRecoveryKey(std::move(icloud_key),
+                                icloud_callback.callback());
+  icloud_callback.WaitForCallback();
+  EXPECT_TRUE(std::get<0>(icloud_callback.result().value()));
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+
+  // Find the iCloud recovery key member.
+  const auto icloud_member = std::ranges::find_if(
+      security_domain_service_->members(),
+      [](const trusted_vault_pb::SecurityDomainMember& member) {
+        return member.member_type() == trusted_vault_pb::SecurityDomainMember::
+                                           MEMBER_TYPE_ICLOUD_KEYCHAIN;
+      });
+  ASSERT_NE(icloud_member, security_domain_service_->members().end());
+  ASSERT_EQ(trusted_vault::ProtoStringToBytes(icloud_member->public_key()),
+            key->public_key().ExportToBytes());
+
+  // Use the iCloud recovery key to recover the security domain secret.
+  const trusted_vault_pb::SharedMemberKey& shared_member_key =
+      icloud_member->memberships().at(0).keys().at(0);
+  const std::optional<std::vector<uint8_t>> security_domain_secret =
+      key->private_key().Decrypt(base::span<const uint8_t>(),
+                                 ToSpan("V1 shared_key"),
+                                 ToSpan(shared_member_key.wrapped_key()));
+  ASSERT_TRUE(security_domain_secret);
+  EXPECT_EQ(manager_.TakeSecret()->second, *security_domain_secret);
+
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_proof;
+  unsigned expected_proof_len;
+  HMAC(EVP_sha256(), security_domain_secret->data(),
+       security_domain_secret->size(),
+       reinterpret_cast<const uint8_t*>(icloud_member->public_key().data()),
+       icloud_member->public_key().size(), expected_proof.data(),
+       &expected_proof_len);
+  ASSERT_EQ(expected_proof_len, expected_proof.size());
+  EXPECT_EQ(base::span<const uint8_t>(expected_proof),
+            ToSpan(shared_member_key.member_proof()));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Tests that rely on `ScopedMockUnexportableKeyProvider` only work on
 // platforms where EnclaveManager uses `GetUnexportableKeyProvider`, as opposed

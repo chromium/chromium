@@ -135,6 +135,10 @@ BASE_DECLARE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround);
 
+// Store recovery keys on iCloud keychain for the enclave authenticator.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnICloudRecoveryKey);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

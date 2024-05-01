@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEBAUTHN_ENCLAVE_MANAGER_H_
 
 #include <deque>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -30,6 +31,12 @@
 namespace crypto {
 class RefCountedUserVerifyingSigningKey;
 }  // namespace crypto
+
+#if BUILDFLAG(IS_MAC)
+namespace device::enclave {
+class ICloudRecoveryKey;
+}  // namespace device::enclave
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -154,6 +161,14 @@ class EnclaveManager : public KeyedService {
                  Callback callback);
   // Renew the current PIN. Requires `has_wrapped_pin` to be true.
   void RenewPIN(Callback callback);
+#if BUILDFLAG(IS_MAC)
+  // Adds an iCloud recovery key to the security domain. This can only be called
+  // immediately after enrollment while we still have the security domain secret
+  // around.
+  void AddICloudRecoveryKey(
+      std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key,
+      Callback callback);
+#endif  // BUILDFLAG(IS_MAC)
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.
@@ -230,6 +245,9 @@ class EnclaveManager : public KeyedService {
   // Reset the EnclaveManager to simulate creating a new one in initialized
   // state.
   void ResetForTesting();
+
+  // Clears the registration as if we were starting from scratch.
+  void ClearRegistrationForTesting();
 
   // Create a wrapped PIN, suitable for putting into a simulated security domain
   // member.

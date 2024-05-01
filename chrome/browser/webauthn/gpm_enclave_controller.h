@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -27,6 +28,7 @@ enum class FidoRequestType : uint8_t;
 enum class UserVerificationRequirement;
 namespace enclave {
 struct CredentialRequest;
+class ICloudRecoveryKey;
 }  // namespace enclave
 }  // namespace device
 
@@ -130,6 +132,25 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // Called when the local device has been added to the security domain.
   void OnDeviceAdded(bool success);
 
+#if BUILDFLAG(IS_MAC)
+  // Enrolls an iCloud keychain recovery factor if available and needed.
+  void MaybeAddICloudRecoveryKey();
+
+  // Called when Chrome has retrieved the iCloud recovery keys present in the
+  // current device.
+  void OnLocalICloudRecoveryKeysRetrieved(
+      std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+          local_icloud_keys);
+
+  // Enrolls a specific iCloud keychain recovery key. |key| may be null, in
+  // which case we skip to the next step.
+  void EnrollICloudRecoveryKey(
+      std::unique_ptr<device::enclave::ICloudRecoveryKey> key);
+#endif  // BUILDFLAG(IS_MAC)
+
+  // Called when the enclave enrollment is complete.
+  void OnEnclaveAccountSetUpComplete();
+
   // Called when the EnclaveManager is ready. Sets `account_state_` to the
   // correct value for the level of user verification required.
   void SetAccountStateReady();
@@ -222,6 +243,10 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // Contains the bytes of a WrappedPIN structure, downloaded from the security
   // domain service.
   std::optional<trusted_vault::GpmPinMetadata> pin_metadata_;
+
+  // The list of iCloud recovery key public keys known to the security domain
+  // service.
+  std::vector<std::vector<uint8_t>> security_domain_icloud_recovery_keys_;
 
   // The pending request to fetch the state of the trusted vault.
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>

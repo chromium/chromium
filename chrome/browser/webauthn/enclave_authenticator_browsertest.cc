@@ -47,6 +47,7 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/trusted_vault/proto/vault.pb.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/test/browser_test.h"
@@ -55,6 +56,7 @@
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
+#include "device/fido/test_callback_receiver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -64,6 +66,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/common/chrome_version.h"
+#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "device/fido/enclave/icloud_recovery_key_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 // These tests are disabled under MSAN. The enclave subprocess is written in
 // Rust and FFI from Rust to C++ doesn't work in Chromium at this time
@@ -653,8 +661,6 @@ std::tuple<bool, std::string, std::string> ParsePrfResult(
 
   return std::make_tuple(enabled, std::move(first), std::move(second));
 }
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        RegisterDeviceWithGpmPin_MakeCredential_Success) {
@@ -1413,5 +1419,279 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
+
+#if BUILDFLAG(IS_MAC)
+
+constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
+    MAC_TEAM_IDENTIFIER_STRING ".com.google.common.folsom";
+
+class EnclaveICloudRecoveryKeyTest
+    : public EnclaveAuthenticatorWithPinBrowserTest {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnICloudRecoveryKey};
+  crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+      kICloudKeychainRecoveryKeyAccessGroup};
+};
+
+// Tests enrolling an iCloud recovery key when there are no keys already
+// enrolled with the recovery service or present in iCloud keychain.
+IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
+  // Do a make credential request and enroll a PIN.
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMOnboardingAccepted();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  delegate_observer()->WaitForDelegateDestruction();
+
+  // Find the iCloud recovery key member.
+  const auto icloud_member = std::ranges::find_if(
+      security_domain_service_->members(),
+      [](const trusted_vault_pb::SecurityDomainMember& member) {
+        return member.member_type() == trusted_vault_pb::SecurityDomainMember::
+                                           MEMBER_TYPE_ICLOUD_KEYCHAIN;
+      });
+  ASSERT_NE(icloud_member, security_domain_service_->members().end());
+
+  // Find the recovery key on iCloud keychain.
+  device::test::ValueCallbackReceiver<
+      std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
+      callback;
+  device::enclave::ICloudRecoveryKey::Retrieve(
+      callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
+  callback.WaitForCallback();
+  std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+      recovery_keys = callback.TakeValue();
+  ASSERT_EQ(recovery_keys.size(), 1u);
+  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
+      std::move(recovery_keys.at(0));
+
+  // Make sure they match.
+  EXPECT_EQ(trusted_vault::ProtoStringToBytes(icloud_member->public_key()),
+            icloud_key->key()->public_key().ExportToBytes());
+}
+
+// Tests enrolling an iCloud recovery key when there is already a recovery key
+// stored in iCloud keychain. The existing key should be added to the SDS.
+IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
+                       EnrollWithExistingKeyInICloud) {
+  // Create an iCloud recovery key.
+  device::test::ValueCallbackReceiver<
+      std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+      callback;
+  device::enclave::ICloudRecoveryKey::Create(
+      callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
+  callback.WaitForCallback();
+  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_key =
+      callback.TakeValue();
+  ASSERT_TRUE(icloud_key);
+
+  // Do a make credential request and enroll a PIN.
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMOnboardingAccepted();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  delegate_observer()->WaitForDelegateDestruction();
+
+  // Find the iCloud recovery key member.
+  const auto icloud_member = std::ranges::find_if(
+      security_domain_service_->members(),
+      [](const trusted_vault_pb::SecurityDomainMember& member) {
+        return member.member_type() == trusted_vault_pb::SecurityDomainMember::
+                                           MEMBER_TYPE_ICLOUD_KEYCHAIN;
+      });
+  ASSERT_NE(icloud_member, security_domain_service_->members().end());
+
+  // Make sure it matches the existing key.
+  EXPECT_EQ(trusted_vault::ProtoStringToBytes(icloud_member->public_key()),
+            icloud_key->key()->public_key().ExportToBytes());
+
+  // No additional key should be stored in iCloud keychain.
+  device::test::ValueCallbackReceiver<
+      std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
+      list_callback;
+  device::enclave::ICloudRecoveryKey::Retrieve(
+      list_callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
+  list_callback.WaitForCallback();
+  std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>
+      recovery_keys = list_callback.TakeValue();
+  EXPECT_EQ(recovery_keys.size(), 1u);
+}
+
+// Tests enrolling an iCloud recovery key, then recovering from it. Recovery is
+// not implemented yet, so this test verifies that Chrome does not try enrolling
+// a new iCloud recovery key if one is already enrolled.
+IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
+  {
+    // Do a make credential request and enroll a PIN.
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        registration_state_result;
+    registration_state_result.state = trusted_vault::
+        DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+    SetMockVaultConnectionOnRequestDelegate(
+        std::move(registration_state_result));
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::DOMMessageQueue message_queue(web_contents);
+    content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+    delegate_observer()->WaitForUI();
+
+    EXPECT_EQ(dialog_model()->step(),
+              AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+    EXPECT_EQ(request_delegate()
+                  ->enclave_controller_for_testing()
+                  ->account_state_for_testing(),
+              GPMEnclaveController::AccountState::kEmpty);
+    model_observer()->SetStepToObserve(
+        AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+    SimulateEnclaveMechanismSelection();
+    model_observer()->WaitForStep();
+
+    dialog_model()->OnGPMOnboardingAccepted();
+    EXPECT_EQ(dialog_model()->step(),
+              AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+    dialog_model()->OnGPMPinEntered(u"123456");
+
+    std::string script_result;
+    ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+    EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+    delegate_observer()->WaitForDelegateDestruction();
+
+    // Make sure a new recovery key was enrolled.
+    device::test::ValueCallbackReceiver<
+        std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
+        callback;
+    device::enclave::ICloudRecoveryKey::Retrieve(
+        callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
+    callback.WaitForCallback();
+    ASSERT_EQ(callback.value().size(), 1u);
+  }
+
+  // Unenroll the current device from the enclave.
+  EnclaveManagerFactory::GetForProfile(browser()->profile())
+      ->ClearRegistrationForTesting();
+  EnclaveManagerFactory::GetForProfile(browser()->profile())->ResetForTesting();
+
+  // Do a make credential request and recover with a PIN.
+  {
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        registration_state_result;
+    registration_state_result.state =
+        trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
+            State::kRecoverable;
+    registration_state_result.key_version = kSecretVersion;
+    registration_state_result.gpm_pin_metadata = trusted_vault::GpmPinMetadata(
+        "public key",
+        EnclaveManager::MakeWrappedPINForTesting(kSecurityDomainSecret,
+                                                 "123456"),
+        /*expiry=*/base::Time::Now() + base::Seconds(10000));
+    SetMockVaultConnectionOnRequestDelegate(
+        std::move(registration_state_result));
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::DOMMessageQueue message_queue(web_contents);
+    content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+    delegate_observer()->WaitForUI();
+
+    EXPECT_EQ(dialog_model()->step(),
+              AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+    EXPECT_EQ(request_delegate()
+                  ->enclave_controller_for_testing()
+                  ->account_state_for_testing(),
+              GPMEnclaveController::AccountState::kRecoverable);
+
+    model_observer()->SetStepToObserve(
+        AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+    SimulateEnclaveMechanismSelection();
+    model_observer()->WaitForStep();
+
+    model_observer()->SetStepToObserve(
+        AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+    dialog_model()->OnTrustThisComputer();
+    model_observer()->WaitForStep();
+
+    EnclaveManagerFactory::GetForProfile(browser()->profile())
+        ->StoreKeys("gaia_id_for_test_gmail.com",
+                    {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                          std::end(kSecurityDomainSecret))},
+                    kSecretVersion);
+    std::string script_result;
+    ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+    EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+    delegate_observer()->WaitForDelegateDestruction();
+    // Make sure a no new recovery key was enrolled.
+    device::test::ValueCallbackReceiver<
+        std::vector<std::unique_ptr<device::enclave::ICloudRecoveryKey>>>
+        callback;
+    device::enclave::ICloudRecoveryKey::Retrieve(
+        callback.callback(), kICloudKeychainRecoveryKeyAccessGroup);
+    callback.WaitForCallback();
+    ASSERT_EQ(callback.value().size(), 1u);
+  }
+}
+
+#endif  // BUILDFLAG(IS_MAC)
+
+}  // namespace
 
 #endif  // !defined(MEMORY_SANITIZER)

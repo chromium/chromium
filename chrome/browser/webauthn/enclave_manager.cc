@@ -76,6 +76,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "crypto/scoped_lacontext.h"
+#include "device/fido/enclave/icloud_recovery_key_mac.h"
 #include "device/fido/mac/util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -101,6 +102,9 @@ struct EnclaveManager::PendingAction {
   std::optional<std::string> rapt;  // ReAuthentication Proof Token.
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
   std::optional<std::string> pin_public_key;
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key;
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 namespace {
@@ -1011,6 +1015,9 @@ class EnclaveManager::StateMachine {
     kWaitingForRecoveryKeyStore,
     kJoiningPINToDomain,
     kJoiningUpdatedPINToDomain,
+#if BUILDFLAG(IS_MAC)
+    kJoiningICloudKeychainToDomain,
+#endif  // BUILDFLAG(IS_MAC)
     kChangingPIN,
     kRenewingPIN,
   };
@@ -1132,6 +1139,12 @@ class EnclaveManager::StateMachine {
       case State::kRenewingPIN:
         DoRenewingPIN(std::move(event));
         break;
+
+#if BUILDFLAG(IS_MAC)
+      case State::kJoiningICloudKeychainToDomain:
+        DoJoiningICloudKeychainToDomain(std::move(event));
+        break;
+#endif  // BUILDFLAG(IS_MAC)
     }
 
     FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
@@ -1201,6 +1214,10 @@ class EnclaveManager::StateMachine {
         return "JoiningUpdatedPINToDomain";
       case State::kRenewingPIN:
         return "RenewingPIN";
+#if BUILDFLAG(IS_MAC)
+      case State::kJoiningICloudKeychainToDomain:
+        return "JoiningICloudKeychainToDomain";
+#endif  // BUILDFLAG(IS_MAC)
     }
   }
 
@@ -1328,6 +1345,14 @@ class EnclaveManager::StateMachine {
       }
       return;
     }
+
+#if BUILDFLAG(IS_MAC)
+    if (action_->icloud_recovery_key) {
+      state_ = State::kJoiningICloudKeychainToDomain;
+      JoinICloudKeychainToDomain(std::move(action_->icloud_recovery_key));
+      return;
+    }
+#endif  // BUILDFLAG(IS_MAC)
 
     if (!action_->updated_pin.empty()) {
       if (!user_->registered()) {
@@ -1963,6 +1988,18 @@ class EnclaveManager::StateMachine {
     state_ = State::kStop;
   }
 
+#if BUILDFLAG(IS_MAC)
+  void DoJoiningICloudKeychainToDomain(Event event) {
+    CHECK(absl::holds_alternative<JoinStatus>(event)) << ToString(event);
+    const auto& join_status = absl::get_if<JoinStatus>(&event)->value();
+    const trusted_vault::TrustedVaultRegistrationStatus status =
+        join_status.first;
+    FIDO_LOG(EVENT) << "iCloud recovery key registration status: "
+                    << TrustedVaultRegistrationStatusToString(status);
+    state_ = State::kNextAction;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   void DoChangingPIN(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -2127,6 +2164,21 @@ class EnclaveManager::StateMachine {
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
+
+#if BUILDFLAG(IS_MAC)
+  void JoinICloudKeychainToDomain(
+      std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key) {
+    std::vector<trusted_vault::TrustedVaultKeyAndVersion> member_keys_source =
+        trusted_vault::GetTrustedVaultKeysWithVersions(
+            {manager_->secret_}, manager_->secret_version_);
+    join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
+        *primary_account_info_, std::move(member_keys_source),
+        icloud_recovery_key->key()->public_key(),
+        trusted_vault::ICloudKeychain(),
+        base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   // Constructed a wrapped version of the hashed PIN that will be part of the
   // virtual member metadata. This inner CBOR structure contains everything that
@@ -2380,6 +2432,23 @@ void EnclaveManager::RenewPIN(EnclaveManager::Callback callback) {
   pending_actions_.emplace_back(std::move(action));
   Act();
 }
+
+#if BUILDFLAG(IS_MAC)
+void EnclaveManager::AddICloudRecoveryKey(
+    std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key,
+    EnclaveManager::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(user_->registered());
+  CHECK(!secret_.empty())
+      << "AddICloudRecoveryKey must be called immediately after registration "
+         "and before discarding the security domain secret";
+  auto action = std::make_unique<PendingAction>();
+  action->callback = std::move(callback);
+  action->icloud_recovery_key = std::move(icloud_recovery_key);
+  pending_actions_.emplace_back(std::move(action));
+  Act();
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 void EnclaveManager::GetHardwareKeyForSignature(
     base::OnceCallback<void(
@@ -2814,6 +2883,10 @@ void EnclaveManager::ResetForTesting() {
   user_ = nullptr;
   local_state_.reset();
   loading_ = false;
+}
+
+void EnclaveManager::ClearRegistrationForTesting() {
+  ClearRegistration();
 }
 
 // static

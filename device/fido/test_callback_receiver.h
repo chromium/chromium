@@ -100,6 +100,13 @@ class ValueCallbackReceiver : public TestCallbackReceiver<Value> {
   const Value& value() const {
     return std::get<0>(*TestCallbackReceiver<Value>::result());
   }
+
+  // Moves the contents of |value()| into the returned object. Useful for when
+  // you want to manipulate move-only types.
+  // |value()| is invalid to call after.
+  Value TakeValue() {
+    return std::move(std::get<0>(TestCallbackReceiver<Value>::TakeResult()));
+  }
 };
 
 template <class Status, class Value>

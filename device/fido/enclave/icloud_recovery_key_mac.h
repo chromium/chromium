@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ICloudRecoveryKey {
   static void Retrieve(RetrieveCallback callback,
                        std::string_view keychain_access_group);
 
+  // Randomly generates an ICloudRecoveryKey that is not persisted to the
+  // keychain for unit tests.
+  static std::unique_ptr<ICloudRecoveryKey> CreateForTest();
+
   const trusted_vault::SecureBoxKeyPair* key() const { return key_.get(); }
   const std::vector<uint8_t>& id() const { return id_; }
 

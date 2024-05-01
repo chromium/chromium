@@ -160,4 +160,9 @@ BASE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround,
              "WebAuthenticationCredProtectWin10BugWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Default enabled in M126. Remove in or after M129.
+BASE_FEATURE(kWebAuthnICloudRecoveryKey,
+             "WebAuthenticationICloudRecoveryKey",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device
