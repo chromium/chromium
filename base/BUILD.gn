@@ -4646,7 +4646,7 @@ if (is_android) {
 
     resources_package = "org.chromium.base"
 
-    proguard_configs = [ "android/proguard/chromium_code.flags" ]
+    proguard_configs = [ "android/proguard/shared_with_cronet.flags" ]
     if (!is_cronet_build) {
       proguard_configs += [
         "android/proguard/chromium_apk.flags",
