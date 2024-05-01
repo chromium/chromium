@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
@@ -165,8 +166,9 @@ std::u16string GetCustomRuleString(
         custom_rule_message) {
   std::u16string custom_message;
   for (const auto& custom_segment : custom_rule_message.message_segments()) {
-    base::StrAppend(&custom_message,
-                    {base::UTF8ToUTF16(custom_segment.text())});
+    base::StrAppend(
+        &custom_message,
+        {base::UnescapeForHTML(base::UTF8ToUTF16(custom_segment.text()))});
   }
   return custom_message;
 }
@@ -181,7 +183,11 @@ std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
       GURL url(custom_segment.link());
       if (url.is_valid()) {
         linked_ranges.emplace_back(
-            gfx::Range(offset, offset + custom_segment.text().length()), url);
+            gfx::Range(offset,
+                       offset + base::UnescapeForHTML(
+                                    base::UTF8ToUTF16(custom_segment.text()))
+                                    .length()),
+            url);
       }
     }
     offset += custom_segment.text().length();

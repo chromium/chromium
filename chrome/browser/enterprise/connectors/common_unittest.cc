@@ -46,6 +46,8 @@ constexpr char kGoogleServiceProvider[] = R"(
   ],
   "block_large_files": 1
 })";
+constexpr char kTestEscapedHtmlMessage[] = "&lt;&gt;&amp;&quot;&#39;";
+constexpr char16_t kTestUnescapedHtmlMessage[] = u"<>&\"'";
 // Offset to first placeholder index for
 // IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE.
 constexpr size_t kRuleMessageOffset = 26;
@@ -222,6 +224,7 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, ValidUrlCustomMessage) {
     EXPECT_TRUE(custom_ranges.empty());
   } else {
     EXPECT_EQ(1u, custom_ranges.size());
+    EXPECT_EQ(custom_message.size(), custom_ranges.begin()->first.length());
   }
 }
 
@@ -297,5 +300,10 @@ INSTANTIATE_TEST_SUITE_P(
             std::vector<CustomMessageTestCase>{
                 {.action = TriggeredRule::BLOCK, .message = kTestMessage},
                 {.action = TriggeredRule::WARN, .message = kTestMessage2}},
-            /*expected_message=*/kU16TestMessage)));
+            /*expected_message=*/kU16TestMessage),
+        std::make_tuple(
+            std::vector<CustomMessageTestCase>{
+                {.action = TriggeredRule::BLOCK,
+                 .message = kTestEscapedHtmlMessage}},
+            /*expected_message=*/kTestUnescapedHtmlMessage)));
 }  // namespace enterprise_connectors
