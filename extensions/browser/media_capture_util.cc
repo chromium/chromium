@@ -116,15 +116,5 @@ void VerifyMediaAccessPermission(blink::mojom::MediaStreamType type,
   }
 }
 
-bool CheckMediaAccessPermission(blink::mojom::MediaStreamType type,
-                                const Extension* extension) {
-  const PermissionsData* permissions_data = extension->permissions_data();
-  if (type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    return permissions_data->HasAPIPermission(APIPermissionID::kAudioCapture);
-  }
-  DCHECK(type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  return permissions_data->HasAPIPermission(APIPermissionID::kVideoCapture);
-}
-
 }  // namespace media_capture_util
 }  // namespace extensions
