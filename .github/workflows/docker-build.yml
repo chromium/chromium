@@ -34,8 +34,9 @@ jobs:
 
   build:
     needs: [docker-build-image]
-    runs-on: ubuntu-latest # Default runner
-    # runs-on: ubuntu-latest-m # Larger Runner with 150gb ssd
+    runs-on:
+      labels: linux-test-hosted
+      group: cobalt
     container: ${{ needs.docker-build-image.outputs.docker_tag }}
     env:
       DEPOT_TOOLS_UPDATE: 0
