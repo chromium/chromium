@@ -10,9 +10,18 @@ component("file_manager") {
   output_name = "file_manager"
   defines = [ "IS_FILE_MANAGER_IMPL" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//components/user_manager",
+  ]
 
   sources = [
+    "indexing/file_index_service.cc",
+    "indexing/file_index_service.h",
+    "indexing/file_index_service_registry.cc",
+    "indexing/file_index_service_registry.h",
     "speedometer.cc",
     "speedometer.h",
   ]
@@ -23,8 +32,16 @@ source_set("unit_tests") {
   deps = [
     ":file_manager",
     "//base/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/browser_context_helper:test_support",
+    "//components/account_id",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
-  sources = [ "speedometer_unittest.cc" ]
+  sources = [
+    "indexing/file_index_service_registry_unittest.cc",
+    "speedometer_unittest.cc",
+  ]
 }

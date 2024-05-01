@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +17,10 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/file_manager/indexing/file_index_service.h"
+#include "chromeos/ash/components/file_manager/indexing/file_index_service_registry.h"
+#include "components/user_manager/user_manager.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
@@ -39,6 +45,21 @@ FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
           browser_context());
   if (!holding_space) {
     return RespondNow(Error("Not enabled"));
+  }
+
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          browser_context());
+
+  if (base::FeatureList::IsEnabled(ash::features::kFilesMaterializedViews)) {
+    auto* registry = ::ash::file_manager::FileIndexServiceRegistry::Get();
+    // TODO(b/327534188): Toggle the starred state in the index.
+    ::ash::file_manager::FileIndexService* index =
+        registry ? registry->GetFileIndexService(user->GetAccountId())
+                 : nullptr;
+    if (index) {
+      LOG(ERROR) << "FileIndexService File Index: " << index;
+    }
   }
 
   scoped_refptr<storage::FileSystemContext> file_system_context =

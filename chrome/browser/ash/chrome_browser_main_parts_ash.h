@@ -100,6 +100,10 @@ namespace cros_healthd::internal {
 class DataCollector;
 }
 
+namespace file_manager {
+class FileIndexServiceRegistry;
+}
+
 namespace internal {
 class DBusServices;
 }
@@ -179,6 +183,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<DebugdNotificationHandler> debugd_notification_handler_;
   std::unique_ptr<HatsBluetoothRevampTriggerImpl>
       hats_bluetooth_revamp_trigger_;
+
+  std::unique_ptr<::ash::file_manager::FileIndexServiceRegistry>
+      file_index_service_registry_;
 
   std::unique_ptr<internal::DBusServices> dbus_services_;
 
