@@ -65,7 +65,7 @@ void MaybeTriggerSlot(growth::Slot slot) {
 
   const auto* payload = growth::GetPayloadBySlot(campaign, slot);
   if (!payload) {
-    LOG(ERROR) << "Invalid: Missing payload.";
+    // No payload for the targeted slot. It is valid for counterfactual control.
     return;
   }
 
