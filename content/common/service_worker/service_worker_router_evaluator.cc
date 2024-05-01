@@ -303,6 +303,34 @@ bool IsValidSources(
   return false;
 }
 
+void UpdateMaxConditionDepthAndWidth(
+    const blink::ServiceWorkerRouterCondition& condition,
+    size_t& max_depth,
+    size_t& max_width,
+    size_t depth = 0) {
+  const auto& or_condition =
+      std::get<const std::optional<blink::ServiceWorkerRouterOrCondition>&>(
+          condition.get());
+  if (or_condition) {
+    max_width = std::max(max_width, or_condition->conditions.size());
+    for (const auto& c : or_condition->conditions) {
+      UpdateMaxConditionDepthAndWidth(c, max_depth, max_width, depth + 1);
+    }
+    // Or and other conditions are mutual exclusive.
+    return;
+  }
+  const auto& not_condition =
+      std::get<const std::optional<blink::ServiceWorkerRouterNotCondition>&>(
+          condition.get());
+  if (not_condition) {
+    UpdateMaxConditionDepthAndWidth(*not_condition->condition, max_depth,
+                                    max_width, depth + 1);
+    // Not and other conditions are mutual exclusive.
+    return;
+  }
+  max_depth = std::max(max_depth, depth);
+}
+
 bool MatchRequestCondition(
     const blink::ServiceWorkerRouterRequestCondition& pattern,
     const network::ResourceRequest& request) {
@@ -781,9 +809,24 @@ std::string ServiceWorkerRouterEvaluator::ToString() const {
   return json;
 }
 
-void ServiceWorkerRouterEvaluator::RecordRouterRuleCount() const {
+void ServiceWorkerRouterEvaluator::RecordRouterRuleInfo() const {
   base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.RuleCount",
                                compiled_rules_.size());
+  size_t depth, width;
+  std::tie(depth, width) = GetMaxDepthAndWidth();
+  base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.ConditionDepth",
+                               depth);
+  base::UmaHistogramCounts1000("ServiceWorker.RouterEvaluator.OrConditionWidth",
+                               width);
+}
+
+std::tuple<size_t, size_t> ServiceWorkerRouterEvaluator::GetMaxDepthAndWidth()
+    const {
+  size_t depth = 0, width = 0;
+  for (const auto& r : rules_.rules) {
+    UpdateMaxConditionDepthAndWidth(r.condition, depth, width);
+  }
+  return {depth, width};
 }
 
 }  // namespace content

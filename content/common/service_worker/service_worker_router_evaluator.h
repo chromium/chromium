@@ -51,7 +51,8 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
 
   base::Value ToValue() const;
   std::string ToString() const;
-  void RecordRouterRuleCount() const;
+  void RecordRouterRuleInfo() const;
+  std::tuple<size_t, size_t> GetMaxDepthAndWidth() const;
 
  private:
   class RouterRule;

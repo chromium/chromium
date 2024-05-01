@@ -707,9 +707,9 @@ void ServiceWorkerRegistration::OnActivateEventFinished(
   // 'activated' as the arguments."
   activating_version->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
-  // If router rules are registered, record the number of rules.
+  // If router rules are registered, record the information on rules.
   if (activating_version->router_evaluator()) {
-    activating_version->router_evaluator()->RecordRouterRuleCount();
+    activating_version->router_evaluator()->RecordRouterRuleInfo();
   }
 
   context_->registry()->UpdateToActiveState(id(), key_, base::DoNothing());

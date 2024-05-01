@@ -1270,6 +1270,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.RouterEvaluator.ConditionDepth" units="count"
+    expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Tha max depth of the conditions in rules registered with the ServiceWorker
+    Static Routing API.
+
+    Recorded when the service worker, which has associated routing info, is
+    activated.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.RouterEvaluator.Error"
     enum="ServiceWorkerRouterEvaluatorErrorEnums" expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>
@@ -1300,9 +1313,22 @@ chromium-metrics-reviews@google.com.
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
-    The result of the router evaluation of the Static Routing API. This
-    indicates which source type is used to get the resource. This will be
+    The result of the router evaluation of the ServiceWorker Static Routing API.
+    This indicates which source type is used to get the resource. This will be
     recorded only when the router has matched the incoming resource.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.RouterEvaluator.OrConditionWidth" units="count"
+    expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Tha max width of the &quot;or&quot; conditions in rules registered with the
+    ServiceWorker Static Routing API.
+
+    Recorded when the service worker, which has associated routing info, is
+    activated.
   </summary>
 </histogram>
 
@@ -1311,9 +1337,9 @@ chromium-metrics-reviews@google.com.
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
-    The sum of registered router rules with the Static Routing API. Recorded
-    when the service worker, which has associated routing info, is activated.
-    This was broken from 2024-02-07 to 2024-04-07.
+    The sum of registered router rules with the ServiceWorker Static Routing
+    API. Recorded when the service worker, which has associated routing info, is
+    activated. This was broken from 2024-02-07 to 2024-04-07.
   </summary>
 </histogram>
 
