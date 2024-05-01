@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.OpenCustomizeSettings"
-    enum="ModuleType" expires_after="2024-08-25">
+    enum="ModuleType" expires_after="2024-10-28">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataDurationMs.{ModuleType}"
-    units="ms" expires_after="2024-08-25">
+    units="ms" expires_after="2024-10-28">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -250,7 +250,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataFailedDurationMs.{ModuleType}"
-    units="ms" expires_after="2024-08-25">
+    units="ms" expires_after="2024-10-28">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.FirstModuleShownDurationMs"
-    units="ms" expires_after="2024-08-25">
+    units="ms" expires_after="2024-10-28">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
