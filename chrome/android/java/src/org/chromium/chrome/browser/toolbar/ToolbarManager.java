@@ -1724,7 +1724,11 @@ public class ToolbarManager
         // Must be initialized before Toolbar attempts to use it.
         mLocationBarModel.initializeWithNative();
 
+        Profile profile = mTabModelSelector.getModel(false).getProfile();
+        assert profile != null;
+
         mToolbar.initializeWithNative(
+                profile,
                 layoutManager::requestUpdate,
                 tabSwitcherClickHandler,
                 newTabClickHandler,
@@ -1782,8 +1786,6 @@ public class ToolbarManager
             mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
         }
 
-        Profile profile = mTabModelSelector.getModel(false).getProfile();
-        assert profile != null;
         mUpdateMenuItemHelper = UpdateMenuItemHelper.getInstance(profile);
         if (mMenuStateObserver != null) {
             mUpdateMenuItemHelper.registerObserver(mMenuStateObserver);

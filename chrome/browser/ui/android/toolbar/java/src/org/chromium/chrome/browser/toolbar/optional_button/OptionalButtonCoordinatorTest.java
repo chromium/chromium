@@ -79,7 +79,7 @@ public class OptionalButtonCoordinatorTest {
                         mMockUserEducationHelper,
                         mMockRootView,
                         mMockIsAnimationAllowedDelegate,
-                        mMockTracker);
+                        () -> mMockTracker);
     }
 
     @Test
