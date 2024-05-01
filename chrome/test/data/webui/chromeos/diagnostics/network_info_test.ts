@@ -5,51 +5,44 @@
 import 'chrome://diagnostics/network_info.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
+import {WiFiNetwork, CellularNetwork, EthernetNetwork} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
 import {NetworkInfoElement} from 'chrome://diagnostics/network_info.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {isVisible} from '../test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('networkInfoTestSuite', function() {
-  /** @type {?NetworkInfoElement} */
-  let networkInfoElement = null;
+  let networkInfoElement: NetworkInfoElement|null = null;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    networkInfoElement.remove();
+    networkInfoElement?.remove();
     networkInfoElement = null;
   });
 
-  /**
-   * @param {!Network} network
-   */
-  function initializeNetworkInfo(network) {
+  function initializeNetworkInfo(network: EthernetNetwork|WiFiNetwork|CellularNetwork): Promise<void> {
     assertFalse(!!networkInfoElement);
 
     // Add the network info to the DOM.
-    networkInfoElement = /** @type {!NetworkInfoElement} */ (
-        document.createElement('network-info'));
-    assertTrue(!!networkInfoElement);
-    networkInfoElement.network = network;
+    networkInfoElement = document.createElement('network-info');
+    assert(networkInfoElement);
+    networkInfoElement.network = network as Network;
     document.body.appendChild(networkInfoElement);
 
     return flushTasks();
   }
 
-  /**
-   * @param {!Network} network
-   * @return {!Promise}
-   */
-  function changeNetwork(network) {
-    networkInfoElement.network = network;
+  function changeNetwork(network: EthernetNetwork|WiFiNetwork|CellularNetwork): Promise<void> {
+    assert(networkInfoElement);
+    networkInfoElement.network = network as Network;
     return flushTasks();
   }
 
