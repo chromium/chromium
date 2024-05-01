@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
@@ -12,10 +13,12 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 
 using user_education::HelpBubbleArrow;
@@ -172,17 +175,36 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
       WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
+namespace {
+
+constexpr char kLinuxWaylandErrorMessage[] =
+    "This test does work on Linux, however, because of the way events are "
+    "routed on Wayland specifically (and on Linux in general) the test itself "
+    "isn't reliable on Linux. It has been manually tested, and based on the "
+    "way the annotation event routing works, if it did not work (a) it would "
+    "not work on any platform, and (b) it would not be possible to close a "
+    "menu by clicking away from it and into e.g. the omnibox.";
+
+// Determines whether the current system is Linux + Wayland and the current test
+// should be skipped for reasons described in the error message above.
+bool SkipIfLinuxWayland() {
+#if BUILDFLAG(IS_LINUX)
+  return views::test::InteractionTestUtilSimulatorViews::IsWayland();
+#else
+  return false;
+#endif
+}
+
+}  // namespace
+
 // This is a combined test for both help bubbles anchored to menus and menu
 // annotation.
-//
-// This test does work on Linux, however, because of the way events are routed
-// on Wayland specifically (and on Linux in general) the test itself isn't
-// reliable on Linux. It has been manually tested, and based on the way the
-// annotation event routing works, if it did not work (a) it would not work on
-// any platform, and (b) it would not be possible to close a menu by clicking
-// away from it and into e.g. the omnibox.
-#if !BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, AnnotateMenu) {
+  // See message for why this is necessary.
+  if (SkipIfLinuxWayland()) {
+    GTEST_SKIP_(kLinuxWaylandErrorMessage);
+  }
+
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, default_button_clicked);
   constexpr char16_t kButton1Text[] = u"button 1";
 
@@ -201,6 +223,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, AnnotateMenu) {
   RunTestSequence(
       // Show the application menu and attach a bubble to a menu item.
       PressButton(kToolbarAppMenuButtonElementId),
+
+      // There may be some shuffling and setting up on some platforms (looking
+      // at you, Lacros) so make sure the menu is fully loaded before trying to
+      // show the help bubble.
+      WaitForShow(AppMenuModel::kDownloadsMenuItem), FlushEvents(),
+
+      // Show the help bubble attached to the menu.
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params)),
 
       // Hover the default button and verify that the inkdrop is highlighted.
@@ -218,6 +247,11 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, AnnotateMenu) {
 // Verifies that we can safely show and then close two help bubbles attached to
 // the same menu. This may happen transiently during tutorials.
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
+  // See message for why this is necessary.
+  if (SkipIfLinuxWayland()) {
+    GTEST_SKIP_(kLinuxWaylandErrorMessage);
+  }
+
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, button_clicked);
   constexpr char16_t kButtonText[] = u"button";
 
@@ -241,6 +275,12 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
       // Show the application menu and attach a bubble to two different menu
       // items.
       PressButton(kToolbarAppMenuButtonElementId),
+
+      // There may be some shuffling and setting up on some platforms (looking
+      // at you, Lacros) so make sure the menu is fully loaded before trying to
+      // show the help bubble.
+      WaitForShow(AppMenuModel::kDownloadsMenuItem), FlushEvents(),
+
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params1)),
       ShowHelpBubble(AppMenuModel::kMoreToolsMenuItem, std::move(params2)),
 
@@ -257,5 +297,3 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
       // Close the remaining help bubble.
       CloseHelpBubble());
 }
-
-#endif
