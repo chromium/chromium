@@ -314,9 +314,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCaseInsensitiveCookiePrefix);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
 
-// Whether to do IPv4 to IPv6 address translation for IPv4 literals.
-NET_EXPORT BASE_DECLARE_FEATURE(kUseNAT64ForIPv4Literal);
-
 #if BUILDFLAG(IS_WIN)
 // Whether or not to use the GetNetworkConnectivityHint API on modern Windows
 // versions for the Network Change Notifier.

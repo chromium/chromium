@@ -8442,11 +8442,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "use-nat64-for-ipv4-literal",
-    "owners": [ "horo@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "use-out-of-process-video-decoding",
     "owners": [ "pmolinalopez@chromium.org", "andrescj@chromium.org" ],
     "expiry_milestone": 128

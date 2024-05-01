@@ -296,10 +296,6 @@ BASE_FEATURE(kEnableWebsocketsOverHttp3,
              "EnableWebsocketsOverHttp3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseNAT64ForIPv4Literal,
-             "UseNAT64ForIPv4Literal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN)
 // Disabled because of https://crbug.com/1489696.
 BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,

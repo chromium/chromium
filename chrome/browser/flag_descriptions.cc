@@ -3439,12 +3439,6 @@ const char kUIEnableSharedImageCacheForGpuDescription[] =
     "Enables shared GPUImageDecodeCache for UI if gpu rasterization is "
     "enabled.";
 
-const char kUseNAT64ForIPv4LiteralName[] =
-    "Use NAT64 translation for IPv4 literals";
-const char kUseNAT64ForIPv4LiteralDescription[] =
-    "Enables IPv4 to IPv6 address translation for IPv4 literals when chrome is "
-    "on an IPv6 only network";
-
 const char kTPCPhaseOutFacilitatedTestingName[] =
     "Third-party Cookie Phase Out Facilitated Testing";
 const char kTPCPhaseOutFacilitatedTestingDescription[] =

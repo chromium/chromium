@@ -14941,11 +14941,6 @@ TEST_F(HostResolverManagerBootstrapTest, OnlyBootstrapTwice) {
 
 void HostResolverManagerTest::IPv4AddressLiteralInIPv6OnlyNetworkTest(
     bool is_async) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUseNAT64ForIPv4Literal},
-      /*disabled_features=*/{});
-
   HostResolver::ManagerOptions options = DefaultOptions();
   CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
                                      true /* ipv6_reachable */, is_async,
@@ -14992,11 +14987,6 @@ TEST_F(HostResolverManagerTest, IPv4AddressLiteralInIPv6OnlyNetworkSync) {
 
 void HostResolverManagerTest::IPv4AddressLiteralInIPv6OnlyNetworkPort443Test(
     bool is_async) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUseNAT64ForIPv4Literal},
-      /*disabled_features=*/{});
-
   HostResolver::ManagerOptions options = DefaultOptions();
   CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
                                      true /* ipv6_reachable */, is_async,
@@ -15045,11 +15035,6 @@ TEST_F(HostResolverManagerTest,
 
 void HostResolverManagerTest::IPv4AddressLiteralInIPv6OnlyNetworkNoDns64Test(
     bool is_async) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUseNAT64ForIPv4Literal},
-      /*disabled_features=*/{});
-
   HostResolver::ManagerOptions options = DefaultOptions();
   CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
                                      true /* ipv6_reachable */, is_async,
@@ -15083,11 +15068,6 @@ TEST_F(HostResolverManagerTest,
 
 void HostResolverManagerTest::IPv4AddressLiteralInIPv6OnlyNetworkBadAddressTest(
     bool is_async) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kUseNAT64ForIPv4Literal},
-      /*disabled_features=*/{});
-
   HostResolver::ManagerOptions options = DefaultOptions();
   CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
                                      true /* ipv6_reachable */, is_async,

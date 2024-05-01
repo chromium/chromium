@@ -9927,11 +9927,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kWelcomeTourForceUserEligibility)},
 #endif
 
-    {"use-nat64-for-ipv4-literal",
-     flag_descriptions::kUseNAT64ForIPv4LiteralName,
-     flag_descriptions::kUseNAT64ForIPv4LiteralDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kUseNAT64ForIPv4Literal)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-per-desk-z-order", flag_descriptions::kEnablePerDeskZOrderName,
      flag_descriptions::kEnablePerDeskZOrderDescription, kOsCrOS,
