@@ -432,7 +432,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
 
  private:
   friend class FlexLayoutAlgorithm;
-  EOverflow MainAxisOverflowForChild(const LayoutBox& child) const;
 
   Member<const ComputedStyle> style_;
   const LayoutUnit line_break_length_;

@@ -907,7 +907,7 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
 
   const bool applies_auto_min_size =
       container_style.LogicalMinHeight().HasAuto() &&
-      container_style.OverflowBlockDirection() == EOverflow::kVisible &&
+      container_style.IsOverflowVisibleOrClip() &&
       !container_style.AspectRatio().IsAuto();
   if (grid_available_size_.block_size == kIndefiniteSize ||
       applies_auto_min_size) {

@@ -795,10 +795,10 @@ bool FlexibleBoxAlgorithm::ShouldApplyMinSizeAutoForChild(
   if (child.ShouldApplySizeContainment())
     return false;
 
-  // For replaced elements treat 'clip' similar to 'visible'.
-  return MainAxisOverflowForChild(child) == EOverflow::kVisible ||
-         (child.IsLayoutReplaced() &&
-          MainAxisOverflowForChild(child) == EOverflow::kClip);
+  // Note that the spec uses "scroll container", but it's resolved to just look
+  // at the computed value of overflow not being scrollable, see
+  // https://github.com/w3c/csswg-drafts/issues/7714#issuecomment-1879319762
+  return child.StyleRef().IsOverflowVisibleOrClip();
 }
 
 LayoutUnit FlexibleBoxAlgorithm::IntrinsicContentBlockSize() const {
@@ -1188,13 +1188,6 @@ LayoutUnit FlexibleBoxAlgorithm::ContentDistributionSpaceBetweenChildren(
       return available_free_space / (number_of_items + 1);
   }
   return LayoutUnit();
-}
-
-EOverflow FlexibleBoxAlgorithm::MainAxisOverflowForChild(
-    const LayoutBox& child) const {
-  if (IsHorizontalFlow())
-    return child.StyleRef().OverflowX();
-  return child.StyleRef().OverflowY();
 }
 
 // Above, we calculated the positions of items in a column reverse container as
