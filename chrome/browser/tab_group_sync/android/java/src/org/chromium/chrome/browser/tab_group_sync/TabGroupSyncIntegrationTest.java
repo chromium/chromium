@@ -100,6 +100,7 @@ public class TabGroupSyncIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
+        ChromeFeatureList.sAndroidTabGroupStableIds.setForTesting(true);
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setSelectedTypes(true, null);
         SyncTestUtil.waitForHistorySyncEnabled();
@@ -116,7 +117,6 @@ public class TabGroupSyncIntegrationTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisabledTest(message = "b/337135045")
     public void testRemoteToLocalCreateNewTabGroup() throws Exception {
         GroupInfo[] groups = createGroupInfos(new GroupInfo[] {mGroup1}, new TabInfo[][] {{mTab1}});
         addFakeServerGroups(groups);
@@ -130,7 +130,6 @@ public class TabGroupSyncIntegrationTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisabledTest(message = "b/337135045")
     public void testOneGroupTwoTabs() throws Exception {
         GroupInfo[] groups =
                 createGroupInfos(new GroupInfo[] {mGroup1}, new TabInfo[][] {{mTab1, mTab2}});
@@ -145,7 +144,6 @@ public class TabGroupSyncIntegrationTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisabledTest(message = "b/337135045")
     public void testTwoGroups() throws Exception {
         GroupInfo[] groups =
                 createGroupInfos(
@@ -161,7 +159,6 @@ public class TabGroupSyncIntegrationTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisabledTest(message = "b/337135045")
     public void testAddTab() throws Exception {
         GroupInfo[] groups = createGroupInfos(new GroupInfo[] {mGroup1}, new TabInfo[][] {{mTab1}});
         addFakeServerGroups(groups);
