@@ -450,9 +450,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private OneshotSupplierImpl<ModuleRegistry> mModuleRegistrySupplier =
             new OneshotSupplierImpl<>();
 
-    private final ObservableSupplierImpl<Boolean> mDesktopWindowModeSupplier =
-            new ObservableSupplierImpl<>();
-
     private final IncognitoTabHost mIncognitoTabHost =
             new IncognitoTabHost() {
                 @Override
@@ -565,7 +562,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         getLifecycleDispatcher(),
                         getModalDialogManagerSupplier(),
                         this,
-                        mDesktopWindowModeSupplier);
+                        () ->
+                                mRootUiCoordinator != null
+                                        ? mRootUiCoordinator.getDesktopWindowStateProvider()
+                                        : null);
         StartSurfaceUserData.reset();
         mBackPressManager.setFallbackOnBackPressed(
                 () -> {
@@ -2241,8 +2241,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getSavedInstanceState(),
                 mMultiInstanceManager,
                 getHubOverviewColorSupplier(),
-                getBaseChromeLayout(),
-                mDesktopWindowModeSupplier);
+                getBaseChromeLayout());
     }
 
     @Override

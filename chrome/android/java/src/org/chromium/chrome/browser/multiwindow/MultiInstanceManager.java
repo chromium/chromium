@@ -25,6 +25,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocati
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -48,9 +50,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Manages multi-instance mode for an associated activity. After construction, call
- * {@link #isStartedUpCorrectly(int)} to validate that the owning Activity should be allowed to
- * finish starting up.
+ * Manages multi-instance mode for an associated activity. After construction, call {@link
+ * #isStartedUpCorrectly(int)} to validate that the owning Activity should be allowed to finish
+ * starting up.
  */
 public class MultiInstanceManager
         implements PauseResumeWithNativeObserver,
@@ -88,9 +90,6 @@ public class MultiInstanceManager
 
     protected TabModelSelectorTabModelObserver mTabModelObserver;
 
-    // TODO(crbug.com/332784708): Make this class an AppHeaderStateObserver.
-    protected ObservableSupplier<Boolean> mDesktopWindowModeSupplier;
-
     private int mActivityTaskId;
     private boolean mNativeInitialized;
     private DisplayManager.DisplayListener mDisplayListener;
@@ -113,8 +112,8 @@ public class MultiInstanceManager
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for the
      *     associated activity.
-     * @param desktopWindowModeSupplier A supplier to determine whether the app is in a desktop
-     *     window.
+     * @param desktopWindowStateProviderSupplier A supplier for the {@link
+     *     DesktopWindowStateProvider} instance.
      * @return {@link MultiInstanceManager} object or {@code null} on the platform it is not needed.
      */
     public @Nullable static MultiInstanceManager create(
@@ -124,7 +123,7 @@ public class MultiInstanceManager
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            ObservableSupplier<Boolean> desktopWindowModeSupplier) {
+            Supplier<DesktopWindowStateProvider> desktopWindowStateProviderSupplier) {
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return new MultiInstanceManagerApi31(
                     activity,
@@ -133,7 +132,7 @@ public class MultiInstanceManager
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
                     menuOrKeyboardActionController,
-                    desktopWindowModeSupplier);
+                    desktopWindowStateProviderSupplier);
         } else {
             return new MultiInstanceManager(
                     activity,

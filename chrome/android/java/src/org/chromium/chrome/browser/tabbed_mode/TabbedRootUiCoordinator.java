@@ -197,7 +197,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplierImpl<AppHeaderDelegate> mAppHeaderDelegateSupplier =
             new OneshotSupplierImpl<>();
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
-    private DesktopWindowStateProvider.AppHeaderObserver mAppHeaderObserver;
     private Destroyable mTabGroupCreationDialogManager;
 
     // Activity tab observer that updates the current tab used by various UI components.
@@ -288,8 +287,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
-     * @param desktopWindowModeSupplier Supplier to determine whether the app is in a desktop
-     *     window.
      */
     public TabbedRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -341,8 +338,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable Bundle savedInstanceState,
             @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
-            @Nullable View baseChromeLayout,
-            @NonNull ObservableSupplierImpl<Boolean> desktopWindowModeSupplier) {
+            @Nullable View baseChromeLayout) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -418,14 +414,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusBarColorController.setAllowToolbarColorOnTablets(
                 ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim());
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
-        // TODO(crbug.com/332784708): Replace desktopWindowModeSupplier with AppHeaderCoordinator.
-        mAppHeaderObserver =
-                new DesktopWindowStateProvider.AppHeaderObserver() {
-                    @Override
-                    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
-                        desktopWindowModeSupplier.set(isInDesktopWindow);
-                    }
-                };
+
         initAppHeaderCoordinator(savedInstanceState);
     }
 
@@ -511,7 +500,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.R) {
-            mAppHeaderCoordinator.removeObserver(mAppHeaderObserver);
             mAppHeaderCoordinator.destroy();
             mAppHeaderCoordinator = null;
         }
@@ -1236,7 +1224,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mAppHeaderDelegateSupplier,
                         mActivityLifecycleDispatcher,
                         savedInstanceState);
-        mAppHeaderCoordinator.addObserver(mAppHeaderObserver);
     }
 
     @Override
