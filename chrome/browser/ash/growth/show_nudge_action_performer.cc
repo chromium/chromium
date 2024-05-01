@@ -45,8 +45,6 @@ constexpr char kActionPath[] = "action";
 constexpr char kMarkDismissedPath[] = "shouldMarkDismissed";
 constexpr char kArrowPath[] = "arrow";
 constexpr char kAnchorPath[] = "anchor";
-constexpr char kActiveAppWindowAnchorTypePath[] =
-    "anchor.activeAppWindowAnchorType";
 
 // Nudge ID.
 constexpr char kGrowthNudgeId[] = "growth_campaign_nudge";
@@ -130,12 +128,6 @@ const std::string* GetNudgeBody(const NudgePayload* nudge_payload) {
   return nudge_payload->FindString(kNudgeBodyPath);
 }
 
-const std::optional<int> GetActiveAppWindowAnchorType(
-    const NudgePayload* nudge_payload) {
-  CHECK(nudge_payload);
-  return nudge_payload->FindIntByDottedPath(kActiveAppWindowAnchorTypePath);
-}
-
 void MaybeSetImageData(const base::Value::Dict* image_value,
                        ash::AnchoredNudgeData& nudge_data) {
   if (!image_value) {
@@ -203,10 +195,10 @@ views::View* GetWindowCaptionButtonContainer() {
       chromeos::ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
 }
 
-bool IsCaptionButtonContainer(std::optional<int> app_window_anchor_type) {
+bool IsCaptionButtonContainer(
+    std::optional<growth::WindowAnchorType> app_window_anchor_type) {
   return app_window_anchor_type &&
-         static_cast<growth::WindowAnchorType>(
-             app_window_anchor_type.value()) ==
+         app_window_anchor_type.value() ==
              growth::WindowAnchorType::kCaptionButtonContainer;
 }
 
@@ -236,6 +228,17 @@ growth::ActionType ShowNudgeActionPerformer::ActionType() const {
   return growth::ActionType::kShowNudge;
 }
 
+std::optional<growth::Anchor> GetAnchorConfig(
+    const base::Value::Dict* nudge_payload) {
+  const auto* anchor_dict = nudge_payload->FindDict(kAnchorPath);
+  if (!anchor_dict) {
+    // No anchor specified. Anchor on the default position.
+    return std::nullopt;
+  }
+
+  return std::make_optional<growth::Anchor>(anchor_dict);
+}
+
 // Get the anchor view.
 // Returns:
 // 1. nullptr if no anchor payload specified. Nudge will anchor at the default
@@ -243,16 +246,14 @@ growth::ActionType ShowNudgeActionPerformer::ActionType() const {
 // 2. The targeted anchor view if available.
 // 3. nullopt if the anchor view is not found. Skip showing nudge in this case.
 std::optional<views::View*> GetAnchor(const NudgePayload* nudge_payload) {
-  const auto* anchor_dict = nudge_payload->FindDict(kAnchorPath);
-  if (!anchor_dict) {
-    // No anchor specified. Anchor on the default position.
+  auto anchor = GetAnchorConfig(nudge_payload);
+  if (!anchor) {
     return nullptr;
   }
 
-  // TODO: b/331948797 - Use GetActiveAppWindowAnchorType from
-  // `campaigns_model`.
-  auto app_window_anchor_type = GetActiveAppWindowAnchorType(nudge_payload);
-  if (IsCaptionButtonContainer(app_window_anchor_type)) {
+  auto app_window_anchor_type = anchor->GetActiveAppWindowAnchorType();
+  if (app_window_anchor_type &&
+      IsCaptionButtonContainer(app_window_anchor_type)) {
     auto* anchor_view = GetWindowCaptionButtonContainer();
     if (!anchor_view) {
       // Can't find the targeted view. Return nullopt and skip showing nudge.
@@ -262,8 +263,7 @@ std::optional<views::View*> GetAnchor(const NudgePayload* nudge_payload) {
     return anchor_view;
   }
 
-  auto anchor = growth::Anchor(anchor_dict);
-  auto* shelf_app_button_id = anchor.GetShelfAppButtonId();
+  auto* shelf_app_button_id = anchor->GetShelfAppButtonId();
   if (shelf_app_button_id) {
     auto* anchor_view =
         ash::Shell::GetPrimaryRootWindowController()
@@ -312,9 +312,12 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
       /*anchor_view=*/anchor_view.value());
 
   if (!ash::features::IsGrowthCampaignsShowNudgeInDefaultParentEnabled() &&
-      anchor_view.value() &&
-      IsCaptionButtonContainer(GetActiveAppWindowAnchorType(nudge_payload))) {
-    nudge_data.set_anchor_view_as_parent = true;
+      anchor_view.value()) {
+    auto anchor = GetAnchorConfig(nudge_payload);
+    if (anchor &&
+        IsCaptionButtonContainer(anchor->GetActiveAppWindowAnchorType())) {
+      nudge_data.set_anchor_view_as_parent = true;
+    }
   }
 
   auto* title = GetNudgeTitle(nudge_payload);
