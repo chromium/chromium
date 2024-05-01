@@ -67,17 +67,10 @@ class HeapProfilerController {
   // before Start.
   void SuppressRandomnessForTesting();
 
-  // Sets a callback that will be invoked in tests after StartIfEnabled() is
-  // called. The callback will be called immediately if profiling is disabled,
-  // or when the first snapshot is scheduled if it's enabled. This lets tests
-  // quit a RunLoop once the profiler has a chance to collect a snapshot.
-  //
-  // The callback parameter will be true if a snapshot is to be collected, false
-  // otherwise. If the parameter is true, the test will need to wait for another
-  // callback from CallStackProfileBuilder before the snapshot is actually
-  // collected.
-  void SetFirstSnapshotCallbackForTesting(
-      base::OnceCallback<void(bool)> callback);
+  // Sets a callback that will be invoked in tests when the first snapshot is
+  // scheduled after StartIfEnabled() is called. This lets tests quit a RunLoop
+  // once the profiler has a chance to collect a snapshot.
+  void SetFirstSnapshotCallbackForTesting(base::OnceClosure callback);
 
   // Appends a switch to enable or disable profiling for the given
   // `child_process_type` to `command_line`.
@@ -98,7 +91,7 @@ class HeapProfilerController {
                    scoped_refptr<StoppedFlag> stopped,
                    ProcessType process_type,
                    base::TimeTicks profiler_creation_time,
-                   base::OnceCallback<void(bool)> on_first_snapshot_callback);
+                   base::OnceClosure on_first_snapshot_callback);
     ~SnapshotParams();
 
     // Move-only.
@@ -125,22 +118,21 @@ class HeapProfilerController {
 
     // A callback to invoke for the first snapshot. Will be null for the
     // following snapshots. For testing.
-    base::OnceCallback<void(bool)> on_first_snapshot_callback;
+    base::OnceClosure on_first_snapshot_callback;
   };
 
   // Schedules the next call to TakeSnapshot.
   static void ScheduleNextSnapshot(SnapshotParams params);
 
-  // Takes a heap snapshot unless the `params.stopped` flag is set.
+  // Takes a heap snapshot unless the `params.stopped` flag is set. If this is
+  // the first call to TakeSnapshot() after StartIfEnabled(), invokes
+  // `on_snapshot_callback` first.
   static void TakeSnapshot(SnapshotParams params);
 
   // Processes the most recent snapshot and sends it to CallStackProfileBuilder.
-  // Invokes `on_snapshot_callback` with true if a snapshot will be sent,
-  // false otherwise.
   static void RetrieveAndSendSnapshot(
       ProcessType process_type,
-      base::TimeDelta time_since_profiler_creation,
-      base::OnceCallback<void(bool)> on_snapshot_callback);
+      base::TimeDelta time_since_profiler_creation);
 
   const ProcessType process_type_;
   const bool profiling_enabled_;
@@ -169,7 +161,7 @@ class HeapProfilerController {
       false;
 
   // A callback to call before the first scheduled snapshot in tests.
-  base::OnceCallback<void(bool)> on_first_snapshot_callback_
+  base::OnceClosure on_first_snapshot_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

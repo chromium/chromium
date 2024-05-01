@@ -12,6 +12,8 @@
 
 #include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/subsystem.h"
+#include "base/barrier_closure.h"
+#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -88,6 +90,79 @@ class TestCallStackProfileCollector final
   }
 
  private:
+  ProfileCollectorCallback collector_callback_;
+};
+
+// A scoped holder for callbacks to pass to
+// HeapProfilerControllerTest::StartHeapProfiling(), and a BarrierClosure that
+// will quit a run loop. The ScopedCallbacks object must stay in scope until the
+// run loop finishes.
+class ScopedCallbacks {
+ public:
+  // Creates a BarrierClosure that will invoke the given `quit_closure` after
+  // the expected callbacks are invoked:
+  //
+  // If `expect_take_snapshot` is true, HeapProfilerController::TakeSnapshot()
+  // should be called, so first_snapshot_callback() returns a callback that's
+  // expected to be invoked. If not, first_snapshot_callback() returns a
+  // callback that's expected not to run.
+  //
+  // If `expect_sampled_profile` is true, HeapProfilerController::TakeSnapshot()
+  // should find a sample to pass to CallStackProfileBuilder, so
+  // collector_callback() returns a callback that's expected to be invoked. It
+  // will also run the given `profile_collector_callback`. If not,
+  // collector_callback() returns a callback that's expected not to run, and the
+  // given `profile_collector_callback` is ignored.
+  ScopedCallbacks(bool expect_take_snapshot,
+                  bool expect_sampled_profile,
+                  ProfileCollectorCallback profile_collector_callback,
+                  base::OnceClosure quit_closure) {
+    size_t num_callbacks = 0;
+    if (expect_take_snapshot) {
+      num_callbacks += 1;
+    }
+    if (expect_sampled_profile) {
+      num_callbacks += 1;
+    }
+    barrier_closure_ =
+        base::BarrierClosure(num_callbacks, std::move(quit_closure));
+
+    if (expect_take_snapshot) {
+      first_snapshot_callback_ = barrier_closure_;
+    } else {
+      first_snapshot_callback_ =
+          base::BindOnce([] { FAIL() << "TakeSnapshot called unexpectedly."; });
+    }
+    if (expect_sampled_profile) {
+      collector_callback_ =
+          std::move(profile_collector_callback).Then(barrier_closure_);
+    } else {
+      collector_callback_ =
+          base::BindRepeating([](base::TimeTicks, metrics::SampledProfile) {
+            FAIL() << "ProfileCollectorCallback called unexpectedly.";
+          });
+    }
+  }
+
+  ~ScopedCallbacks() = default;
+
+  // Move-only.
+  ScopedCallbacks(const ScopedCallbacks&) = delete;
+  ScopedCallbacks& operator=(const ScopedCallbacks&) = delete;
+  ScopedCallbacks(ScopedCallbacks&&) = default;
+  ScopedCallbacks& operator=(ScopedCallbacks&&) = default;
+
+  base::OnceClosure first_snapshot_callback() {
+    return std::move(first_snapshot_callback_);
+  }
+
+  ProfileCollectorCallback collector_callback() {
+    return std::move(collector_callback_);
+  }
+
+ private:
+  base::RepeatingClosure barrier_closure_;
+  base::OnceClosure first_snapshot_callback_;
   ProfileCollectorCallback collector_callback_;
 };
 
@@ -262,38 +337,36 @@ class HeapProfilerControllerTest
         ResetChildCallStackProfileCollectorForTesting();
   }
 
-  void StartHeapProfiling(version_info::Channel channel,
-                          ProcessType process_type,
-                          ProfileCollectorCallback collector_callback,
-                          bool expect_enabled = true) {
+  // Creates a HeapProfilerController and mocks profiling a process of type
+  // `process_type` on `channel`. The test should pass `expect_enabled` as true
+  // if heap profiling should be enabled in this test setup.
+  //
+  // `first_snapshot_callback` will be invoked the first time
+  // HeapProfilerController::TakeSnapshot() is called, even if it doesn't
+  // collect a profile. `collector_callback` will be invoked whenever
+  // TakeSnapshot() passes a profile to CallStackProfileBuilder.
+  void StartHeapProfiling(
+      version_info::Channel channel,
+      ProcessType process_type,
+      bool expect_enabled,
+      base::OnceClosure first_snapshot_callback = base::DoNothing(),
+      ProfileCollectorCallback collector_callback = base::DoNothing()) {
     ASSERT_FALSE(controller_) << "StartHeapProfiling called twice";
-
-    auto first_snapshot_callback = base::BindLambdaForTesting(
-        [quit_closure = task_environment_.QuitClosure()](bool will_snapshot) {
-          // If `collector_callback` will run, it will quit the runloop.
-          // Otherwise quit now.
-          if (!will_snapshot) {
-            std::move(quit_closure).Run();
-          }
-        });
-    auto done_snapshot_callback =
-        std::move(collector_callback).Then(task_environment_.QuitClosure());
-
     switch (process_type) {
       case ProcessType::kBrowser:
         expected_process_ = metrics::Process::BROWSER_PROCESS;
         metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-            std::move(done_snapshot_callback));
+            std::move(collector_callback));
         break;
       case ProcessType::kUtility:
         expected_process_ = metrics::Process::UTILITY_PROCESS;
-        ConnectRemoteProfileCollector(std::move(done_snapshot_callback));
+        ConnectRemoteProfileCollector(std::move(collector_callback));
         break;
       default:
         // Connect up the profile collector even though we expect the heap
         // profiler not to start, so that the test environment is complete.
         expected_process_ = metrics::Process::UNKNOWN_PROCESS;
-        ConnectRemoteProfileCollector(std::move(done_snapshot_callback));
+        ConnectRemoteProfileCollector(std::move(collector_callback));
         break;
     }
 
@@ -331,6 +404,15 @@ class HeapProfilerControllerTest
         remote.InitWithNewPipeAndPassReceiver());
     metrics::CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
         std::move(remote));
+  }
+
+  ScopedCallbacks CreateScopedCallbacks(bool expect_take_snapshot,
+                                        bool expect_sampled_profile) {
+    return ScopedCallbacks(
+        expect_take_snapshot, expect_sampled_profile,
+        base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
+                            base::Unretained(this)),
+        task_environment_.QuitClosure());
   }
 
   // Initialize `mute_hooks_` before `task_environment_` so that memory
@@ -402,6 +484,8 @@ TEST_P(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
   };
 
   StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
+                     /*expect_enabled=*/true,
+                     /*first_snapshot_callback=*/base::DoNothing(),
                      base::BindLambdaForTesting(check_profile));
 
   auto* sampler = base::PoissonAllocationSampler::Get();
@@ -430,14 +514,14 @@ TEST_P(HeapProfilerControllerTest, UnhandledProcess) {
   // Starting the heap profiler in an unhandled process type should safely do
   // nothing.
   StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUnknown,
-                     base::DoNothing(), /*expect_enabled=*/false);
+                     /*expect_enabled=*/false);
   // The Enabled summary histogram should not be logged for unsupported
   // processes, because they're not included in the per-process histograms that
   // are aggregated into it.
   histogram_tester_.ExpectTotalCount("HeapProfiling.InProcess.Enabled", 0);
 }
 
-// Test the feature on various channels.
+// Test the feature on various channels in the browser process.
 constexpr FeatureTestParams kChannelConfigs[] = {
     // Disabled.
     {
@@ -478,33 +562,35 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kChannelConfigs));
 
 TEST_P(HeapProfilerControllerChannelTest, StableChannel) {
-  StartHeapProfiling(
-      version_info::Channel::STABLE, ProcessType::kBrowser,
-      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)),
+  const bool profiling_enabled =
+      GetParam().feature_enabled && GetParam().stable.probability > 0.0;
+  ScopedCallbacks callbacks = CreateScopedCallbacks(
+      /*expect_take_snapshot=*/profiling_enabled,
       GetParam().stable.expect_browser_sample);
+  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
+                     profiling_enabled, callbacks.first_snapshot_callback(),
+                     callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled.Browser",
-      GetParam().stable.expect_browser_sample, 1);
+      "HeapProfiling.InProcess.Enabled.Browser", profiling_enabled, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
-                                       GetParam().stable.expect_browser_sample,
-                                       1);
+                                       profiling_enabled, 1);
   AddOneSampleAndWait();
   EXPECT_EQ(sample_received_, GetParam().stable.expect_browser_sample);
 }
 
 TEST_P(HeapProfilerControllerChannelTest, CanaryChannel) {
-  StartHeapProfiling(
-      version_info::Channel::CANARY, ProcessType::kBrowser,
-      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)),
+  const bool profiling_enabled =
+      GetParam().feature_enabled && GetParam().nonstable.probability > 0.0;
+  ScopedCallbacks callbacks = CreateScopedCallbacks(
+      /*expect_take_snapshot=*/profiling_enabled,
       GetParam().nonstable.expect_browser_sample);
+  StartHeapProfiling(version_info::Channel::CANARY, ProcessType::kBrowser,
+                     profiling_enabled, callbacks.first_snapshot_callback(),
+                     callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled.Browser",
-      GetParam().nonstable.expect_browser_sample, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled",
-      GetParam().nonstable.expect_browser_sample, 1);
+      "HeapProfiling.InProcess.Enabled.Browser", profiling_enabled, 1);
+  histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
+                                       profiling_enabled, 1);
   AddOneSampleAndWait();
   EXPECT_EQ(sample_received_, GetParam().nonstable.expect_browser_sample);
 }
@@ -512,43 +598,38 @@ TEST_P(HeapProfilerControllerChannelTest, CanaryChannel) {
 TEST_P(HeapProfilerControllerChannelTest, UnknownChannel) {
   // An unknown channel should be treated like stable, in case a large
   // population doesn't have the channel set.
-  StartHeapProfiling(
-      version_info::Channel::UNKNOWN, ProcessType::kBrowser,
-      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)),
+  const bool profiling_enabled =
+      GetParam().feature_enabled && GetParam().stable.probability > 0.0;
+  ScopedCallbacks callbacks = CreateScopedCallbacks(
+      /*expect_take_snapshot=*/profiling_enabled,
       GetParam().stable.expect_browser_sample);
+  StartHeapProfiling(version_info::Channel::UNKNOWN, ProcessType::kBrowser,
+                     profiling_enabled, callbacks.first_snapshot_callback(),
+                     callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled.Browser",
-      GetParam().stable.expect_browser_sample, 1);
+      "HeapProfiling.InProcess.Enabled.Browser", profiling_enabled, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
-                                       GetParam().stable.expect_browser_sample,
-                                       1);
+                                       profiling_enabled, 1);
   AddOneSampleAndWait();
   EXPECT_EQ(sample_received_, GetParam().stable.expect_browser_sample);
 }
 
-// Test the feature in various processes.
+// Test the feature in various processes on the stable channel.
 constexpr FeatureTestParams kProcessConfigs[] = {
     // Enabled in parent process only.
     {
         .supported_processes = {ProcessType::kBrowser},
         .stable = {.expect_browser_sample = true, .expect_child_sample = false},
-        .nonstable = {.expect_browser_sample = true,
-                      .expect_child_sample = false},
     },
     // Enabled in child process only.
     {
         .supported_processes = {ProcessType::kUtility},
         .stable = {.expect_browser_sample = false, .expect_child_sample = true},
-        .nonstable = {.expect_browser_sample = false,
-                      .expect_child_sample = true},
     },
     // Enabled in parent and child processes.
     {
         .supported_processes = {ProcessType::kBrowser, ProcessType::kUtility},
         .stable = {.expect_browser_sample = true, .expect_child_sample = true},
-        .nonstable = {.expect_browser_sample = true,
-                      .expect_child_sample = true},
     },
 };
 
@@ -559,33 +640,35 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kProcessConfigs));
 
 TEST_P(HeapProfilerControllerProcessTest, BrowserProcess) {
-  StartHeapProfiling(
-      version_info::Channel::STABLE, ProcessType::kBrowser,
-      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)),
+  const bool profiling_enabled =
+      base::Contains(GetParam().supported_processes, ProcessType::kBrowser);
+  ScopedCallbacks callbacks = CreateScopedCallbacks(
+      /*expect_take_snapshot=*/profiling_enabled,
       GetParam().stable.expect_browser_sample);
+  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
+                     profiling_enabled, callbacks.first_snapshot_callback(),
+                     callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled.Browser",
-      GetParam().stable.expect_browser_sample, 1);
+      "HeapProfiling.InProcess.Enabled.Browser", profiling_enabled, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
-                                       GetParam().stable.expect_browser_sample,
-                                       1);
+                                       profiling_enabled, 1);
   AddOneSampleAndWait();
   EXPECT_EQ(sample_received_, GetParam().stable.expect_browser_sample);
 }
 
 TEST_P(HeapProfilerControllerProcessTest, ChildProcess) {
-  StartHeapProfiling(
-      version_info::Channel::STABLE, ProcessType::kUtility,
-      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)),
+  const bool profiling_enabled =
+      base::Contains(GetParam().supported_processes, ProcessType::kUtility);
+  ScopedCallbacks callbacks = CreateScopedCallbacks(
+      /*expect_take_snapshot=*/profiling_enabled,
       GetParam().stable.expect_child_sample);
+  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kUtility,
+                     profiling_enabled, callbacks.first_snapshot_callback(),
+                     callbacks.collector_callback());
   histogram_tester_.ExpectUniqueSample(
-      "HeapProfiling.InProcess.Enabled.Utility",
-      GetParam().stable.expect_child_sample, 1);
+      "HeapProfiling.InProcess.Enabled.Utility", profiling_enabled, 1);
   histogram_tester_.ExpectUniqueSample("HeapProfiling.InProcess.Enabled",
-                                       GetParam().stable.expect_child_sample,
-                                       1);
+                                       profiling_enabled, 1);
   AddOneSampleAndWait();
   EXPECT_EQ(sample_received_, GetParam().stable.expect_child_sample);
 }
@@ -607,10 +690,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kIncludeZeroConfigs));
 
 TEST_P(HeapProfilerControllerIncludeZeroTest, EmptyProfile) {
-  StartHeapProfiling(
-      version_info::Channel::STABLE, ProcessType::kBrowser,
-      base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
-                          base::Unretained(this)));
+  // TakeSnapshot() is always called, but since no memory is allocated it will
+  // only save a profile if HeapProfilerIncludeZero is enabled.
+  ScopedCallbacks callbacks = CreateScopedCallbacks(
+      /*expect_take_snapshot=*/true, GetParam().include_zero_feature_enabled);
+  StartHeapProfiling(version_info::Channel::STABLE, ProcessType::kBrowser,
+                     /*expect_enabled=*/true,
+                     callbacks.first_snapshot_callback(),
+                     callbacks.collector_callback());
   task_environment_.RunUntilQuit();
   EXPECT_EQ(sample_received_, GetParam().include_zero_feature_enabled);
 }

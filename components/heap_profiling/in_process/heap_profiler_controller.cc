@@ -167,7 +167,7 @@ HeapProfilerController::SnapshotParams::SnapshotParams(
     scoped_refptr<StoppedFlag> stopped,
     ProcessType process_type,
     base::TimeTicks profiler_creation_time,
-    base::OnceCallback<void(bool)> on_first_snapshot_callback)
+    base::OnceClosure on_first_snapshot_callback)
     : mean_interval(mean_interval),
       use_random_interval(use_random_interval),
       stopped(std::move(stopped)),
@@ -226,10 +226,6 @@ bool HeapProfilerController::StartIfEnabled() {
     base::UmaHistogramBoolean(kEnabledHistogramName, profiling_enabled_);
   }
   if (!profiling_enabled_) {
-    if (!on_first_snapshot_callback_.is_null()) {
-      // Snapshot will never be scheduled, so break out of any waiting loop.
-      std::move(on_first_snapshot_callback_).Run(false);
-    }
     return false;
   }
   HeapProfilerParameters profiler_params =
@@ -258,7 +254,7 @@ void HeapProfilerController::SuppressRandomnessForTesting() {
 }
 
 void HeapProfilerController::SetFirstSnapshotCallbackForTesting(
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_first_snapshot_callback_ = std::move(callback);
 }
@@ -299,19 +295,15 @@ void HeapProfilerController::ScheduleNextSnapshot(SnapshotParams params) {
 
 // static
 void HeapProfilerController::TakeSnapshot(SnapshotParams params) {
-  // Use DoNothing instead of null to simplify control flow.
-  base::OnceCallback<void(bool)> on_snapshot_callback =
-      params.on_first_snapshot_callback.is_null()
-          ? base::DoNothing()
-          : std::move(params.on_first_snapshot_callback);
   if (params.stopped->data.IsSet()) {
-    std::move(on_snapshot_callback).Run(false);
     return;
+  }
+  if (!params.on_first_snapshot_callback.is_null()) {
+    std::move(params.on_first_snapshot_callback).Run();
   }
   RetrieveAndSendSnapshot(
       params.process_type,
-      base::TimeTicks::Now() - params.profiler_creation_time,
-      std::move(on_snapshot_callback));
+      base::TimeTicks::Now() - params.profiler_creation_time);
   // Callback should be left as null for next snapshot.
   CHECK(params.on_first_snapshot_callback.is_null());
   ScheduleNextSnapshot(std::move(params));
@@ -320,8 +312,7 @@ void HeapProfilerController::TakeSnapshot(SnapshotParams params) {
 // static
 void HeapProfilerController::RetrieveAndSendSnapshot(
     ProcessType process_type,
-    base::TimeDelta time_since_profiler_creation,
-    base::OnceCallback<void(bool)> on_snapshot_callback) {
+    base::TimeDelta time_since_profiler_creation) {
   using Sample = base::SamplingHeapProfiler::Sample;
 
   // Always log the total sampled memory before returning. If `samples` is empty
@@ -345,13 +336,10 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
   // Also summarize over all process types.
   base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
                                  samples.size());
-  CHECK(!on_snapshot_callback.is_null());
   if (!base::FeatureList::IsEnabled(kHeapProfilerIncludeZero) &&
       samples.empty()) {
-    std::move(on_snapshot_callback).Run(false);
     return;
   }
-  std::move(on_snapshot_callback).Run(true);
 
   base::ModuleCache module_cache;
   metrics::CallStackProfileParams params(
