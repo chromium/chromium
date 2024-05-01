@@ -12,6 +12,8 @@
 class ChromeBrowserState;
 class FaviconLoader;
 
+extern const char kSyncStoreHistogramName[];
+
 // Returns the equivalent of a unique record identifier. Built from the unique
 // columns in the logins database.
 NSString* RecordIdentifierForPasswordForm(

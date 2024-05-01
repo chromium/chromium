@@ -12,11 +12,13 @@
 #import "base/location.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/favicon/core/large_icon_service.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_store/password_store_change.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -491,5 +493,181 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 2u);
+}
+TEST_F(CredentialProviderServiceTest,
+       OnLoginsChanged_WithPerformanceImprovements_SingleOperation) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      kCredentialProviderPerformanceImprovements, true);
+
+  CreateCredentialProviderService();
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  base::HistogramTester histogram_tester;
+
+  // Test adding a password.
+  password_manager::PasswordForm test_form;
+  test_form.url = GURL("http://example.com/login");
+  test_form.username_value = u"username";
+  test_form.password_value = u"12345";
+
+  password_manager::PasswordStoreChangeList change_list;
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::ADD, test_form));
+
+  credential_provider_service_->OnLoginsChanged(password_store_.get(),
+                                                change_list);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  EXPECT_NSEQ(credential_store_.credentials[0].user, @"username");
+  EXPECT_NSEQ(credential_store_.credentials[0].password, @"12345");
+  histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 1);
+
+  // Test updating a password.
+  test_form.password_value = u"54321";
+  change_list.clear();
+  password_manager::PasswordStoreChange change(
+      password_manager::PasswordStoreChange::UPDATE, test_form,
+      /*password_changed=*/true);
+  change_list.emplace_back(change);
+
+  credential_provider_service_->OnLoginsChanged(password_store_.get(),
+                                                change_list);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  EXPECT_NSEQ(credential_store_.credentials[0].password, @"54321");
+  histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 2);
+
+  // Test deleting a password.
+  change_list.clear();
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::REMOVE, test_form));
+
+  credential_provider_service_->OnLoginsChanged(password_store_.get(),
+                                                change_list);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+  histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 3);
+}
+
+TEST_F(CredentialProviderServiceTest,
+       OnLoginsChanged_WithPerformanceImprovements_MultipleOperations) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      kCredentialProviderPerformanceImprovements, true);
+
+  CreateCredentialProviderService();
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  // Setup
+  password_manager::PasswordForm test_form;
+  test_form.url = GURL("http://example.com/login");
+  test_form.username_value = u"username";
+  test_form.password_value = u"12345";
+
+  password_manager::PasswordForm test_form2;
+  test_form2.url = GURL("http://homersimpson.com/login");
+  test_form2.username_value = u"homer";
+  test_form2.password_value = u"simpson";
+
+  password_manager::PasswordStoreChangeList change_list;
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::ADD, test_form));
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::ADD, test_form2));
+
+  credential_provider_service_->OnLoginsChanged(password_store_.get(),
+                                                change_list);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
+
+  // Prepare simultaneous ADD, UPDATE and REMOVE operations.
+  password_manager::PasswordForm test_form3;
+  test_form3.url = GURL("http://margesimpson.com/login");
+  test_form3.username_value = u"marge";
+  test_form3.password_value = u"bouvier";
+
+  test_form2.password_value = u"JSimpson";
+
+  change_list.clear();
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::ADD, test_form3));
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::UPDATE, test_form2,
+      /*password_changed=*/true));
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::REMOVE, test_form));
+
+  base::HistogramTester histogram_tester;
+
+  // Test results.
+  credential_provider_service_->OnLoginsChanged(password_store_.get(),
+                                                change_list);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  EXPECT_NSEQ(credential_store_.credentials[0].user, @"homer");
+  EXPECT_NSEQ(credential_store_.credentials[0].password, @"JSimpson");
+  EXPECT_NSEQ(credential_store_.credentials[1].user, @"marge");
+  EXPECT_NSEQ(credential_store_.credentials[1].password, @"bouvier");
+
+  // There should have been only one write to disk.
+  histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 1);
+}
+
+// Tests that a PasswordStoreChange Update that doesn't change the password
+// doesn't result in a write to disk.
+TEST_F(
+    CredentialProviderServiceTest,
+    OnLoginsChanged_WithPerformanceImprovements_UpdateWithoutPasswordChangeNoDiskSave) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatureState(
+      kCredentialProviderPerformanceImprovements, true);
+
+  CreateCredentialProviderService();
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  // Setup
+  password_manager::PasswordForm test_form;
+  test_form.url = GURL("http://example.com/login");
+  test_form.username_value = u"username";
+  test_form.password_value = u"12345";
+
+  password_manager::PasswordStoreChangeList change_list;
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::ADD, test_form));
+
+  credential_provider_service_->OnLoginsChanged(password_store_.get(),
+                                                change_list);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  // Update the PasswordForm without changing its username, url or password.
+  // This mimicks a password usage.
+  test_form.date_last_used = base::Time::Now();
+
+  change_list.clear();
+  change_list.emplace_back(password_manager::PasswordStoreChange(
+      password_manager::PasswordStoreChange::UPDATE, test_form,
+      /*password_changed=*/false));
+
+  base::HistogramTester histogram_tester;
+
+  // Test results.
+  credential_provider_service_->OnLoginsChanged(password_store_.get(),
+                                                change_list);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  EXPECT_NSEQ(credential_store_.credentials[0].user, @"username");
+  EXPECT_NSEQ(credential_store_.credentials[0].password, @"12345");
+
+  // There should have been only one write to disk.
+  histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 0);
 }
 }  // namespace

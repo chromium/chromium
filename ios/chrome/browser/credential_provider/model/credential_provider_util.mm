@@ -27,6 +27,9 @@
 using base::SysUTF16ToNSString;
 using base::UTF8ToUTF16;
 
+extern const char kSyncStoreHistogramName[] =
+    "IOS.CredentialExtension.SyncedStore";
+
 namespace {
 
 // Max number of stored favicons.

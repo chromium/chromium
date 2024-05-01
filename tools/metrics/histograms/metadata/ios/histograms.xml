@@ -600,6 +600,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.CredentialExtension.SyncedStore" enum="Boolean"
+    expires_after="2024-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-transactions-eng@google.com</owner>
+  <summary>
+    Recorded when the CPE syncs its file storage: removing it and re-writing it.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CredentialProviderExtension.Promo.Impression{IsReminder}"
     enum="IOSCredentialProviderPromoSource" expires_after="2024-12-01">
   <owner>huitingyu@google.com</owner>

@@ -68,6 +68,14 @@ class CredentialProviderService
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
+  // PasswordStoreInterface::Observer:
+  void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
+      const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
+
  private:
   // Request all the credentials to sync them. Before adding the fresh ones,
   // the old ones are deleted.
@@ -111,14 +119,6 @@ class CredentialProviderService
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
       password_manager::LoginsResultOrError results_or_error) override;
-
-  // PasswordStoreInterface::Observer:
-  void OnLoginsChanged(
-      password_manager::PasswordStoreInterface* store,
-      const password_manager::PasswordStoreChangeList& changes) override;
-  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
-                        const std::vector<password_manager::PasswordForm>&
-                            retained_passwords) override;
 
   // Completion called after the affiliations are injected in the added forms.
   // If no affiliation matcher is available, it is called right away. Errors are
