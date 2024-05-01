@@ -14,11 +14,12 @@ import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUs
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/** An implementation of PlatformServiceBridge that can be used to wait for metrics logs in tests. */
+/**
+ * An implementation of PlatformServiceBridge that can be used to wait for metrics logs in tests.
+ */
 public class MetricsTestPlatformServiceBridge extends PlatformServiceBridge {
     private final BlockingQueue<byte[]> mQueue;
     private int mStatus;
-    private boolean mUseDefaultUploadQos;
 
     public MetricsTestPlatformServiceBridge() {
         mQueue = new LinkedBlockingQueue<>();
@@ -38,23 +39,19 @@ public class MetricsTestPlatformServiceBridge extends PlatformServiceBridge {
     }
 
     @Override
-    public void logMetrics(byte[] data, boolean useDefaultUploadQos) {
+    public void logMetrics(byte[] data) {
         mQueue.add(data);
-        mUseDefaultUploadQos = useDefaultUploadQos;
     }
 
     @Override
-    public int logMetricsBlocking(byte[] data, boolean useDefaultUploadQos) {
-        logMetrics(data, useDefaultUploadQos);
-        mUseDefaultUploadQos = useDefaultUploadQos;
+    public int logMetricsBlocking(byte[] data) {
+        logMetrics(data);
         return mStatus;
     }
 
-    public boolean isLastLogUsingDefaultUploadQos() {
-        return mUseDefaultUploadQos;
-    }
-
-    /** This method can be used to set the status code to return from the {@link logMetricsBlocking}. */
+    /**
+     * This method can be used to set the status code to return from the {@link logMetricsBlocking}.
+     */
     public void setLogMetricsBlockingStatus(int status) {
         mStatus = status;
     }

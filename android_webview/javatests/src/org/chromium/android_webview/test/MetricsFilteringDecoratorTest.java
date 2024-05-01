@@ -51,7 +51,7 @@ public class MetricsFilteringDecoratorTest extends AwParameterizedTest {
 
         AndroidMetricsLogConsumer directUploader =
                 data -> {
-                    PlatformServiceBridge.getInstance().logMetrics(data, true);
+                    PlatformServiceBridge.getInstance().logMetrics(data);
                     return HttpURLConnection.HTTP_OK;
                 };
         mUploader = new MetricsFilteringDecorator(directUploader);

@@ -215,12 +215,6 @@ BASE_FEATURE(kWebViewInjectPlatformJsApis,
              "WebViewInjectPlatformJsApis",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This enables uploading UMA data with a higher frequency.
-// This Feature is checked and used in downstream internal code.
-BASE_FEATURE(kWebViewUmaUploadQualityOfServiceSetToDefault,
-             "WebViewUmaUploadQualityOfServiceSetToDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to use initial network state during initialization to speed up
 // startup.
 BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,

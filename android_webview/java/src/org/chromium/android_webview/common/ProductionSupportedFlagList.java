@@ -581,9 +581,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, reduces SubresourceResponseStarted IPC by sending"
                         + "subresource notifications only if the user has allowed"
                         + "HTTPS-related exceptions."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_UMA_UPLOAD_QUALITY_OF_SERVICE_SET_TO_DEFAULT,
-                "If enabled, the frequency to upload UMA is increased."),
         Flag.baseFeature("CanvasColorCache"),
         Flag.baseFeature(
                 BlinkFeatures.KEYBOARD_FOCUSABLE_SCROLLERS,

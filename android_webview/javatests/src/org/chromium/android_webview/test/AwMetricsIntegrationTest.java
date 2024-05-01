@@ -102,7 +102,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                     // outside the scope of these integeration tests.
                     AndroidMetricsLogConsumer directUploader =
                             data -> {
-                                PlatformServiceBridge.getInstance().logMetrics(data, true);
+                                PlatformServiceBridge.getInstance().logMetrics(data);
                                 return HttpURLConnection.HTTP_OK;
                             };
                     AndroidMetricsLogUploader.setConsumer(

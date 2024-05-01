@@ -43,31 +43,25 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
 
     private final AtomicReference<MetricsLogUploaderServiceConnection> mInitialConnection;
     private final boolean mIsAsync;
-    private final boolean mUseDefaultUploadQos;
 
     /**
      * @param isAsync Whether logging is happening on a background thread or if it is being called
-     * from the main thread.
-     * @param useDefaultUploadQos Used to experiment modifying the QOS upload rate.
+     *     from the main thread.
      */
-    public AwMetricsLogUploader(boolean isAsync, boolean useDefaultUploadQos) {
+    public AwMetricsLogUploader(boolean isAsync) {
         // A service connection that is used to establish an initial connection to the
         // MetricsUploadService to keep it alive until the first metrics log is ready.
         mInitialConnection = new AtomicReference();
         mIsAsync = isAsync;
-        mUseDefaultUploadQos = useDefaultUploadQos;
     }
 
     // A service connection that sends the given serialized metrics log data to
     // MetricsUploadService. It closes the connection after sending the metrics log.
     private static class MetricsLogUploaderServiceConnection implements ServiceConnection {
-        private final boolean mUseDefaultUploadQos;
         private final LinkedBlockingQueue<IMetricsUploadService> mConnectionsQueue;
 
         public MetricsLogUploaderServiceConnection(
-                boolean useDefaultUploadQos,
                 LinkedBlockingQueue<IMetricsUploadService> connectionsQueue) {
-            mUseDefaultUploadQos = useDefaultUploadQos;
             mConnectionsQueue = connectionsQueue;
         }
 
@@ -135,7 +129,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
                     return HttpURLConnection.HTTP_CLIENT_TIMEOUT;
                 }
 
-                return uploadService.uploadMetricsLog(data, mUseDefaultUploadQos);
+                return uploadService.uploadMetricsLog(data);
             } catch (RemoteException e) {
                 Log.d(TAG, "Failed to send serialized metrics data to service", e);
             } catch (InterruptedException e) {
@@ -166,8 +160,7 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
         MetricsLogUploaderServiceConnection connection = mInitialConnection.getAndSet(null);
 
         if (connection == null) {
-            connection =
-                    new MetricsLogUploaderServiceConnection(mUseDefaultUploadQos, connectionsQueue);
+            connection = new MetricsLogUploaderServiceConnection(connectionsQueue);
 
             if (!connection.bind()) {
                 Log.w(TAG, "Failed to bind to MetricsUploadService");
@@ -182,15 +175,14 @@ public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
      * Initialize a connection to {@link org.chromium.android_webview.services.MetricsUploadService}
      * and keep it alive until the first metrics log data is sent for upload.
      *
-     * We do this because we already pay the startup cost of the non-embedded process due to other
-     * webview non-embedded services running early on.
-     * We can hopefully save some time on initially spinning the process since we know we
-     * are going to attempt to upload pretty soon after starting up WebView the first time.
+     * <p>We do this because we already pay the startup cost of the non-embedded process due to
+     * other webview non-embedded services running early on. We can hopefully save some time on
+     * initially spinning the process since we know we are going to attempt to upload pretty soon
+     * after starting up WebView the first time.
      */
     public void initialize() {
         MetricsLogUploaderServiceConnection connection =
-                new MetricsLogUploaderServiceConnection(
-                        mUseDefaultUploadQos, new LinkedBlockingQueue(1));
+                new MetricsLogUploaderServiceConnection(new LinkedBlockingQueue(1));
         if (connection.bind()) {
             mInitialConnection.set(connection);
         } else {
