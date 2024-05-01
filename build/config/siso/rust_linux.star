@@ -108,7 +108,7 @@ __handlers = {
 }
 
 def __step_config(ctx, step_config):
-    remote_run = True  # Turn this to False when you do file access trace.
+    remote_run = not config.get(ctx, "clang-tot")  # Turn this to False when you do file access trace.
     platform_ref = "large"  # Rust actions run faster on large workers.
     clang_inputs = [
         "build/linux/debian_bullseye_amd64-sysroot:rustlink",

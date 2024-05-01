@@ -124,6 +124,9 @@ def __step_config(ctx, step_config):
         ],
     })
     step_config["input_deps"].update(clang_all.input_deps)
+
+    # Disable remote compiles on Clang ToT builds.
+    remote = not config.get(ctx, "clang-tot")
     step_config["rules"].extend([
         {
             "name": "clang/cxx",
@@ -133,7 +136,7 @@ def __step_config(ctx, step_config):
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
             "exclude_input_patterns": ["*.stamp"],
-            "remote": True,
+            "remote": remote,
             "canonicalize_dir": True,
             "timeout": "2m",
         },
@@ -145,7 +148,7 @@ def __step_config(ctx, step_config):
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
             "exclude_input_patterns": ["*.stamp"],
-            "remote": True,
+            "remote": remote,
             "canonicalize_dir": True,
             "timeout": "2m",
         },
@@ -156,7 +159,7 @@ def __step_config(ctx, step_config):
             "inputs": [
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
-            "remote": config.get(ctx, "cog"),
+            "remote": remote and config.get(ctx, "cog"),
             "canonicalize_dir": True,
             "timeout": "2m",
         },
@@ -169,7 +172,7 @@ def __step_config(ctx, step_config):
             ],
             "exclude_input_patterns": ["*.stamp"],
             "handler": "clang_compile_coverage",
-            "remote": True,
+            "remote": remote,
             "canonicalize_dir": True,
             "timeout": "2m",
         },
@@ -182,7 +185,7 @@ def __step_config(ctx, step_config):
             ],
             "exclude_input_patterns": ["*.stamp"],
             "handler": "clang_compile_coverage",
-            "remote": True,
+            "remote": remote,
             "canonicalize_dir": True,
             "timeout": "2m",
         },

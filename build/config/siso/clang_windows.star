@@ -9,6 +9,7 @@ load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+load("./config.star", "config")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
 def __win_toolchain_dir(ctx):
@@ -75,9 +76,11 @@ def __step_config(ctx, step_config):
         # missing build/win_toolchain.json), we can't run
         # clang-cl remotely as we can find sysroot files
         # under exec_root, so just run locally.
+        # When building with ToT Clang, we can't run clang-cl
+        # remotely, too.
         remote = False
         win_toolchain_dir = __win_toolchain_dir(ctx)
-        if win_toolchain_dir:
+        if win_toolchain_dir and not config.get(ctx, "clang-tot"):
             remote = True
             if reproxy_config["platform"]["OSFamily"] == "Windows":
                 step_config["input_deps"].update({

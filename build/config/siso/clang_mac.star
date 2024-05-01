@@ -9,6 +9,7 @@ load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
+load("./config.star", "config")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 
 def __filegroups(ctx):
@@ -94,6 +95,9 @@ def __step_config(ctx, step_config):
             # objc/objcxx uses hmap, which contains absolute path
             # see also b/256536089
             need_input_root_absolute_path_for_objc = True
+
+        # Disable remote compiles on Clang ToT builds.
+        remote = not config.get(ctx, "clang-tot")
         step_config["rules"].extend([
             {
                 "name": "clang/cxx",
@@ -104,7 +108,7 @@ def __step_config(ctx, step_config):
                 ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
-                "remote": True,
+                "remote": remote,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
             },
@@ -117,7 +121,7 @@ def __step_config(ctx, step_config):
                 ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
-                "remote": True,
+                "remote": remote,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
             },
@@ -130,7 +134,7 @@ def __step_config(ctx, step_config):
                 ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
-                "remote": True,
+                "remote": remote,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
                 "input_root_absolute_path": need_input_root_absolute_path_for_objc,
@@ -144,7 +148,7 @@ def __step_config(ctx, step_config):
                 ],
                 "exclude_input_patterns": ["*.stamp"],
                 "platform_ref": "clang",
-                "remote": True,
+                "remote": remote,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
                 "input_root_absolute_path": need_input_root_absolute_path_for_objc,
@@ -159,7 +163,7 @@ def __step_config(ctx, step_config):
                 "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang",
-                "remote": True,
+                "remote": remote,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
             },
@@ -173,7 +177,7 @@ def __step_config(ctx, step_config):
                 "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang",
-                "remote": True,
+                "remote": remote,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
             },
@@ -187,7 +191,7 @@ def __step_config(ctx, step_config):
                 "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang",
-                "remote": True,
+                "remote": remote,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
                 "input_root_absolute_path": need_input_root_absolute_path_for_objc,
@@ -202,7 +206,7 @@ def __step_config(ctx, step_config):
                 "exclude_input_patterns": ["*.stamp"],
                 "handler": "clang_compile_coverage",
                 "platform_ref": "clang",
-                "remote": True,
+                "remote": remote,
                 "remote_wrapper": reproxy_config["remote_wrapper"],
                 "timeout": "2m",
                 "input_root_absolute_path": need_input_root_absolute_path_for_objc,
