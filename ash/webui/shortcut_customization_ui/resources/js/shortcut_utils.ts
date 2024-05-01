@@ -27,14 +27,6 @@ const modifiers: Modifier[] = [
   Modifier.COMMAND,
 ];
 
-export const keyCodeToModifier: {[keyCode: number]: number} = {
-  16: Modifier.SHIFT,
-  17: Modifier.CONTROL,
-  18: Modifier.ALT,
-  91: Modifier.COMMAND,
-  92: Modifier.COMMAND,
-};
-
 export const unidentifiedKeyCodeToKey: {[keyCode: number]: string} = {
   159: 'MicrophoneMuteToggle',
   192: '`',  // Backquote key.
