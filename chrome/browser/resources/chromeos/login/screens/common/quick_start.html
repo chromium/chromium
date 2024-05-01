@@ -170,9 +170,11 @@ found in the LICENSE file.
       <iron-icon id="qrDeco" icon="oobe-illos:quickstart-qr">
       </iron-icon>
       <div id="qrHolder">
-        <canvas id="qrCodeCanvas" hidden="[[!qrCodeAvailable]]">
+        <canvas id="qrCodeCanvas" aria-label="QR code"
+            hidden="[[!qrCodeAvailable]]">
         </canvas>
-        <iron-icon id="qrPlaceholder" hidden="[[qrCodeAvailable]]" icon="oobe-illos:quickstart-qr-placeholder">
+        <iron-icon id="qrPlaceholder" alt="QR code" hidden="[[qrCodeAvailable]]"
+            icon="oobe-illos:quickstart-qr-placeholder">
         </iron-icon>
       </div>
       </div>
