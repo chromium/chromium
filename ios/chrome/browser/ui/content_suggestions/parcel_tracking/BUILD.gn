@@ -15,7 +15,6 @@ source_set("parcel_tracking") {
     "parcel_tracking_view.mm",
   ]
   deps = [
-    "resources:untrack_parcel",
     "//base",
     "//base:i18n",
     "//components/commerce/core:shopping_service",
@@ -33,6 +32,7 @@ source_set("parcel_tracking") {
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/browser/ui/content_suggestions/parcel_tracking/resources",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/browser/url_loading/model",

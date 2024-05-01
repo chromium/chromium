@@ -30,7 +30,6 @@ source_set("cells") {
   ]
   deps = [
     ":constants",
-    "resources:ntp_most_visited_tile",
     "//base",
     "//components/ntp_tiles",
     "//ios/chrome/app/strings",
@@ -40,6 +39,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells/resources",
     "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
