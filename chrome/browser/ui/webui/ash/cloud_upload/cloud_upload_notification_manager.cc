@@ -205,7 +205,10 @@ void CloudUploadNotificationManager::ShowUploadProgress(int progress) {
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadProgressNotification();
   notification->set_progress(progress_);
+  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
+  // notification never times out.
   notification->set_never_timeout(true);
+  notification->SetSystemPriority();
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
                                            /*metadata=*/nullptr);
@@ -225,7 +228,10 @@ void CloudUploadNotificationManager::ShowCompleteNotification() {
   DCHECK_EQ(state_, State::kComplete);
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadCompleteNotification();
+  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
+  // notification never times out.
   notification->set_never_timeout(true);
+  notification->SetSystemPriority();
   // Close the progress notification before displaying the completed
   // notification.
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
@@ -262,7 +268,10 @@ void CloudUploadNotificationManager::ShowUploadError(
     const std::string& message) {
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadErrorNotification(message);
+  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
+  // notification never times out.
   notification->set_never_timeout(true);
+  notification->SetSystemPriority();
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
                                            /*metadata=*/nullptr);
