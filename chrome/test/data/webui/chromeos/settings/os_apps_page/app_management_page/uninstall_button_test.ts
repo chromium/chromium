@@ -13,13 +13,14 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {createApp, setupFakeHandler} from '../../app_management/test_util.js';
+import {clearBody} from '../../utils.js';
 
 suite('AppManagementUninstallButtonTest', () => {
   let uninstallButton: AppManagementUninstallButtonElement;
   let fakeHandler: FakePageHandler;
 
   setup(async function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     fakeHandler = setupFakeHandler();
   });
 

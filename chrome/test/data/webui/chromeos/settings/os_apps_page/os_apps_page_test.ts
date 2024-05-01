@@ -16,6 +16,8 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {clearBody} from '../utils.js';
+
 import {FakeAppNotificationHandler} from './app_notifications_page/fake_app_notification_handler.js';
 import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.js';
 
@@ -583,7 +585,7 @@ suite('AppsPageTests', () => {
     });
 
     teardown(() => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      clearBody();
       subpage.remove();
     });
 

@@ -15,6 +15,7 @@ import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 import {FakePersonalizationSearchHandler} from '../fake_personalization_search_handler.js';
 import {FakeSettingsSearchHandler} from '../fake_settings_search_handler.js';
 import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
+import {clearBody} from '../utils.js';
 
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestOsSettingsSearchBoxBrowserProxy} from './test_os_settings_search_box_browser_proxy.js';
@@ -664,12 +665,12 @@ suite('<os-settings-search-box>', () => {
     });
 
     test('Focus search input behavior on attached', () => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      clearBody();
       Router.getInstance().navigateTo(routes.BASIC);
       setupSearchBox();
       assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
 
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      clearBody();
       Router.getInstance().navigateTo(routes.KEYBOARD);
       assertNull(field.shadowRoot!.activeElement);
     });

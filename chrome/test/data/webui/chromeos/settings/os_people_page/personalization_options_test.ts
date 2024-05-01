@@ -9,8 +9,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
+import {clearBody} from '../utils.js';
+
 function buildTestElement(): OsSettingsPersonalizationOptionsElement {
-  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  clearBody();
   const testElement =
       document.createElement('os-settings-personalization-options');
   testElement.prefs = {};

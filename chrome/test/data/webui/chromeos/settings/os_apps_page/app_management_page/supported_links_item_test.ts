@@ -15,6 +15,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {createApp, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
+import {clearBody} from '../../utils.js';
 
 type AppConfig = Partial<App>;
 suite('<app-management-supported-links-item>', () => {
@@ -330,7 +331,7 @@ suite('AppManagementSupportedLinksItemElement', function() {
   let apps: AppMap;
 
   setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     apps = {};
     setupFakeHandler();
 

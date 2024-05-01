@@ -13,6 +13,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 import {TestOsSettingsHatsBrowserProxy} from './test_os_settings_hats_browser_proxy.js';
 
@@ -33,7 +34,7 @@ suite('<os-settings-ui> HaTS', () => {
     AccountManagerBrowserProxyImpl.setInstanceForTesting(
         testAccountManagerBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
     await CrSettingsPrefs.initialized;

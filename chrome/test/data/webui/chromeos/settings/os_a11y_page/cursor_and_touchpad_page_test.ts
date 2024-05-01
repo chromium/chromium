@@ -14,6 +14,7 @@ import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/pol
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestDevicePageBrowserProxy} from '../device_page/test_device_page_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
 const RED_CURSOR_COLOR = 0xd93025;
@@ -51,7 +52,7 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     deviceBrowserProxy.hasPointingStick = false;
     DevicePageBrowserProxyImpl.setInstanceForTesting(deviceBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD);
   });
 

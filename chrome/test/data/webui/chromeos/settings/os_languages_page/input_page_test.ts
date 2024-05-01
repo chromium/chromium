@@ -16,6 +16,7 @@ import {fakeDataBind, flushTasks, waitAfterNextRender} from 'chrome://webui-test
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
+import {clearBody} from '../utils.js';
 
 import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
 import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.js';
@@ -106,7 +107,7 @@ suite('<os-settings-input-page>', () => {
   });
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     loadTimeData.overrideValues({
       allowEmojiSuggestion: true,
     });

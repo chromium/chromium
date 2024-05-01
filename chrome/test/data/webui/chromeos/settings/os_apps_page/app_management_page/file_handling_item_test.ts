@@ -13,6 +13,7 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createApp, setupFakeHandler} from '../../app_management/test_util.js';
+import {clearBody} from '../../utils.js';
 
 suite('AppManagementFileHandlingItemTest', function() {
   let fileHandlingItem: AppManagementFileHandlingItemElement;
@@ -27,7 +28,7 @@ suite('AppManagementFileHandlingItemTest', function() {
   };
 
   setup(async function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     setupFakeHandler();
     app = createApp('app', {fileHandlingState});
 

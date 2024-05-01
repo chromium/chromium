@@ -14,6 +14,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeSystemDisplay} from '../fake_system_display.js';
+import {clearBody} from '../utils.js';
 
 import {getFakePrefs} from './device_page_test_util.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
@@ -40,7 +41,7 @@ suite('<settings-storage> for device page', () => {
   });
 
   async function createStorageSubpage(): Promise<void> {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     storageSubpage = document.createElement('settings-storage');
     storageSubpage.prefs = getFakePrefs();
     document.body.appendChild(storageSubpage);

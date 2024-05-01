@@ -12,6 +12,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {clearBody} from '../utils.js';
+
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 suite('<settings-per-device-keyboard>', () => {
@@ -48,7 +50,7 @@ suite('<settings-per-device-keyboard>', () => {
     devicePageBrowserProxy = new TestDevicePageBrowserProxy();
     DevicePageBrowserProxyImpl.setInstanceForTesting(devicePageBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     perDeviceKeyboardPage =
         document.createElement('settings-per-device-keyboard');
     perDeviceKeyboardPage.set('prefs', getFakeAutoRepeatPrefs());

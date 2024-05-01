@@ -21,6 +21,8 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
+import { clearBody } from '../utils.js';
+
 // clang-format on
 
 function focused(inputElement: HTMLElement): boolean {
@@ -33,7 +35,7 @@ suite('SettingsSecureDnsInputInteractive', function() {
 
   setup(function() {
     assertTrue(document.hasFocus());
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     testElement = document.createElement('secure-dns-input');
     document.body.appendChild(testElement);
     flush();
@@ -104,7 +106,8 @@ suite('SettingsSecureDnsInteractive', function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     testBrowserProxy.setResolverList(resolverList);
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    clearBody();
     testElement = document.createElement('settings-secure-dns');
     testElement.prefs = {
       dns_over_https:

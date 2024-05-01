@@ -9,6 +9,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {clearBody} from '../utils.js';
+
 suite('<keyboard-shortcut-banner>', () => {
   let banner: KeyboardShortcutBanner;
 
@@ -27,7 +29,7 @@ suite('<keyboard-shortcut-banner>', () => {
    * element.
    */
   function setupBannerAndDocument(title: string, body: TrustedHTML[]): void {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
 
     banner = document.createElement('keyboard-shortcut-banner');
     banner.setAttribute('header', title);

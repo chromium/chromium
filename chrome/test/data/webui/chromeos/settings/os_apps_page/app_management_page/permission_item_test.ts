@@ -30,7 +30,6 @@ suite('AppManagementPermissionItemTest', function() {
 
   function createPermissionItem(): void {
     clearBody();
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     permissionItem = document.createElement('app-management-permission-item');
     permissionItem.app = getApp();
     permissionItem.permissionType = permissionType;

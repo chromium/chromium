@@ -48,7 +48,8 @@ suite('SettingsSecureDnsInput', function() {
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    clearBody();
     testElement = document.createElement('secure-dns-input');
     document.body.appendChild(testElement);
     flush();

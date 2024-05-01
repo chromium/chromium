@@ -12,6 +12,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 
 import {FakeLanguageSettingsPrivate} from '../fake_language_settings_private.js';
+import {clearBody} from '../utils.js';
 
 import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
 
@@ -67,7 +68,7 @@ suite('<os-settings-edit-dictionary-page>', () => {
   });
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
     settingsPrefs.initialize(settingsPrivate);

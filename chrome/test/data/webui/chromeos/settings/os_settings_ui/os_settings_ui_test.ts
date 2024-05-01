@@ -17,6 +17,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
+import {clearBody} from '../utils.js';
 
 suite('OSSettingsUi', () => {
   let ui: OsSettingsUiElement;
@@ -33,7 +34,7 @@ suite('OSSettingsUi', () => {
 
     // Create only one element instance for the entire suite since this element
     // is large and expensive to render to the DOM.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
     flush();
