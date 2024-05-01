@@ -96,9 +96,13 @@ void ReadAnythingSnapshotter::OnSnapshotCaptured(
   }
   if (!paint_preview_compositor_client_) {
     paint_preview_compositor_client_ =
-        paint_preview_compositor_service_->CreateCompositor(base::DoNothing());
+        paint_preview_compositor_service_->CreateCompositor(
+            base::BindOnce(&ReadAnythingSnapshotter::SendCompositeRequest,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           PrepareCompositeRequest(std::move(result))));
+  } else {
+    SendCompositeRequest(PrepareCompositeRequest(std::move(result)));
   }
-  SendCompositeRequest(PrepareCompositeRequest(std::move(result)));
 }
 
 paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
@@ -116,7 +120,7 @@ ReadAnythingSnapshotter::PrepareCompositeRequest(
     return nullptr;
   }
   begin_composite_request->preview =
-      mojo_base::ProtoWrapper(map_and_proto.second);
+      mojo_base::ProtoWrapper(std::move(map_and_proto.second));
   return begin_composite_request;
 }
 
