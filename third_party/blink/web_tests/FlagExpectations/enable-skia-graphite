@@ -32,6 +32,8 @@ crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Pas
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-masking/clip-path/clip-path-rotated-will-change-transform.html [ Failure ]
+virtual/gpu-rasterization/external/wpt/css/css-images/gradient/repeating-gradient-hsl-and-oklch.html [ Failure ]
 crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Crash ]
 crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Crash ]
 crbug.com/626703 external/wpt/webnn/conformance_tests/constant.https.any.worker.html?gpu [ Crash Failure ]
