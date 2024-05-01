@@ -6,17 +6,21 @@ package org.chromium.base.test.transit;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.allOf;
 
 import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
+
+import org.chromium.base.test.util.ViewPrinter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -159,6 +163,31 @@ public class ViewElement {
      */
     public static Options.Builder newOptions() {
         return new Options().new Builder();
+    }
+
+    /**
+     * Print the whole View hierarchy that contains the View matched to this ViewElement.
+     *
+     * <p>For debugging.
+     */
+    public void printFromRoot() {
+        perform(
+                new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return instanceOf(View.class);
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "print the View hierarchy for debugging";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        ViewPrinter.printView(view.getRootView());
+                    }
+                });
     }
 
     /** Extra options for declaring ViewElements. */

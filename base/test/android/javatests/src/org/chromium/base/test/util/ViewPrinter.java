@@ -54,6 +54,8 @@ public class ViewPrinter {
         }
     }
 
+    private static final int MAX_TEXT_TO_PRINT = 50;
+
     /**
      * Print out a representation of a View hierarchy to logcat for debugging.
      *
@@ -139,8 +141,17 @@ public class ViewPrinter {
 
         if (rootView instanceof TextView) {
             TextView v = (TextView) rootView;
+            CharSequence textAsCharSequence = v.getText();
+            String text;
+            if (textAsCharSequence.length() > MAX_TEXT_TO_PRINT) {
+                textAsCharSequence = textAsCharSequence.subSequence(0, MAX_TEXT_TO_PRINT - 5);
+                text = textAsCharSequence + "(...)";
+            } else {
+                text = textAsCharSequence.toString();
+            }
+            text = text.replace("\n", "\\n");
             stringBuilder.append('"');
-            stringBuilder.append(v.getText());
+            stringBuilder.append(text);
             stringBuilder.append("\" | ");
         }
 
