@@ -12,6 +12,7 @@ from __future__ import absolute_import
 from __future__ import print_function
 
 import os
+import platform as platform_module
 import subprocess
 import sys
 
@@ -41,11 +42,15 @@ cpp_type_conversions = {
 
 def GetClangFormatPath():
     """Returns the path to clang-format, for formatting the output."""
+    new_path_platform_suffix = ''
     if sys.platform.startswith('linux'):
       platform, exe_suffix = 'linux64', ''
       exe_suffix = ""
     elif sys.platform == 'darwin':
       platform, exe_suffix = 'mac', ''
+      host_arch = platform_module.machine().lower()
+      if host_arch == 'arm64' or host_arch.startswith('aarch64'):
+        new_path_platform_suffix = '_arm64'
     elif sys.platform == 'win32':
       platform, exe_suffix = 'win', '.exe'
     else:
@@ -55,7 +60,16 @@ def GetClangFormatPath():
     root_src_dir = os.path.abspath(
         os.path.join(this_dir, '..', '..', '..', '..'))
     buildtools_platform_dir = os.path.join(root_src_dir, 'buildtools', platform)
-    return os.path.join(buildtools_platform_dir, 'clang-format' + exe_suffix)
+    new_buildtools_platform_dir = os.path.join(
+        root_src_dir, 'buildtools', platform + new_path_platform_suffix)
+    # TODO(b/328065301): Remove old_path once clang hooks are migrated
+    old_path = os.path.join(
+        buildtools_platform_dir, 'clang-format' + exe_suffix)
+    new_path = os.path.join(
+        new_buildtools_platform_dir, 'format', 'clang-format' + exe_suffix)
+    for path in [new_path, old_path]:
+      if os.path.isfile(path):
+        return path
 
 
 def ClangFormat(source, filename):

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os.path
+import platform as platform_module
 import subprocess
 import sys
 
@@ -28,12 +29,16 @@ def init(root_src_dir, enable_style_format=True):
     root_src_dir = os.path.abspath(root_src_dir)
 
     # Determine //buildtools/<platform>/ directory
+    new_path_platform_suffix = ""
     if sys.platform.startswith("linux"):
         platform = "linux64"
         exe_suffix = ""
     elif sys.platform.startswith("darwin"):
         platform = "mac"
         exe_suffix = ""
+        host_arch = platform_module.machine().lower()
+        if host_arch == "arm64" or host_arch.startswith("aarch64"):
+            new_path_platform_suffix = "_arm64"
     elif sys.platform.startswith(("cygwin", "win")):
         platform = "win"
         exe_suffix = ".exe"
@@ -41,10 +46,19 @@ def init(root_src_dir, enable_style_format=True):
         assert False, "Unknown platform: {}".format(sys.platform)
     buildtools_platform_dir = os.path.join(root_src_dir, "buildtools",
                                            platform)
+    new_buildtools_platform_dir = os.path.join(
+        root_src_dir, "buildtools", platform + new_path_platform_suffix)
 
+    # TODO(b/328065301): Remove old_path once clang hooks are migrated
     # //buildtools/<platform>/clang-format
-    _clang_format_command_path = os.path.join(
-        buildtools_platform_dir, "clang-format{}".format(exe_suffix))
+    old_path = os.path.join(buildtools_platform_dir,
+                            "clang-format{}".format(exe_suffix))
+    # //buildtools/<platform>/format/clang-format
+    new_path = os.path.join(new_buildtools_platform_dir, "format",
+                            "clang-format{}".format(exe_suffix))
+    for path in [new_path, old_path]:
+        if os.path.isfile(path):
+            _clang_format_command_path = path
 
     # //buildtools/<platform>/gn
     _gn_command_path = os.path.join(buildtools_platform_dir,
