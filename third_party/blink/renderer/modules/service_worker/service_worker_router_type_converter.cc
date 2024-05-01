@@ -349,7 +349,7 @@ std::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
     return std::nullopt;
   }
 
-  if (!input->condition()) {
+  if (!input->hasCondition()) {
     exception_state.ThrowTypeError("No input condition has been set.");
     return std::nullopt;
   }
@@ -376,6 +376,10 @@ std::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
   // does not cover cases sequence of sources are set. The current IDL has
   // been implemented for this level, but the mojo IPC has been implemented
   // to support the final form.
+  if (!input->hasSource()) {
+    exception_state.ThrowTypeError("No input source has been set.");
+    return std::nullopt;
+  }
   const std::optional<ServiceWorkerRouterSource> source =
       RouterSourceInputToBlink(input->source(), fetch_handler_type,
                                exception_state);

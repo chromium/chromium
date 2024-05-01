@@ -47,6 +47,12 @@ const routerRules = {
       [{condition: {requestMethod: 'PUT'}, source: 'network'}],
   'condition-request-method-delete-network':
       [{condition: {requestMethod: 'DELETE'}, source: 'network'}],
+  'condition-lack-of-condition': [{
+    source: 'network'
+  }],
+  'condition-lack-of-source': [{
+    condition: {requestMode: 'no-cors'},
+  }],
   'condition-invalid-request-method': [{
     condition: {requestMethod: String.fromCodePoint(0x3042)},
     source: 'network'
