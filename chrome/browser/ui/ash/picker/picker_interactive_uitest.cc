@@ -60,6 +60,12 @@ class ViewFocusObserver
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewFocusObserver,
                                     kSearchFieldFocusedState);
 
+void SendKeyPress(ui::KeyboardCode keyboard_code) {
+  ui_controls::SendKeyPress(/*window=*/nullptr, keyboard_code,
+                            /*control=*/false, /*shift=*/false,
+                            /*alt=*/false, /*command=*/false);
+}
+
 void TogglePickerByAccelerator() {
   ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_S,
                             /*control=*/false, /*shift=*/false,
@@ -315,6 +321,41 @@ IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
   sm_.ExpectSpeechPattern("placeholder");
   sm_.ExpectSpeechPattern("Edit text");
   sm_.ExpectSpeechPattern("window");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerSpokenFeedbackInteractiveUiTest,
+                       AnnouncesKeyboardNavigationOnZeroState) {
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  // Wait for Chromevox to focus on the input field.
+  sm_.ExpectSpeechPattern("Edit text");
+
+  sm_.Call([this]() {
+    views::Textfield* picker_search_field = nullptr;
+    RunTestSequence(
+        Do([]() { TogglePicker(); }),
+        AfterShow(ash::kPickerSearchFieldTextfieldElementId,
+                  [&picker_search_field](ui::TrackedElement* el) {
+                    picker_search_field = AsView<views::Textfield>(el);
+                  }),
+        ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+        WaitForState(kSearchFieldFocusedState, true),
+        Do([]() { SendKeyPress(ui::VKEY_DOWN); }));
+  });
+  sm_.ExpectSpeechPattern("*Browsing history*");
+  // TODO: b/338142316 - Use correct role for zero state items.
+  sm_.ExpectSpeechPattern("*");
+  sm_.Call(
+      [this]() { RunTestSequence(Do([]() { SendKeyPress(ui::VKEY_DOWN); })); });
+  sm_.ExpectSpeechPattern("*Emojis*");
+  // TODO: b/338142316 - Use correct role for zero state items.
+  sm_.ExpectSpeechPattern("*");
+  sm_.Call(
+      [this]() { RunTestSequence(Do([]() { SendKeyPress(ui::VKEY_UP); })); });
+  sm_.ExpectSpeechPattern("*Browsing history*");
+  // TODO: b/338142316 - Use correct role for zero state items.
+  sm_.ExpectSpeechPattern("*");
   sm_.Replay();
 }
 
