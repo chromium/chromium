@@ -1,8 +1,5 @@
 # For Chrome/Chromium OS, please see //ui/base/ime/ash/COMMON_METADATA.
 # For non-Chrome/Chromium OS:
-monorail: {
-  component: "UI>Input>Text>IME"
-}
 buganizer_public: {
-  component_id: 1456787
+  component_id: 1457629
 }

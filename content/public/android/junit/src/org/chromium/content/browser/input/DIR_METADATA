@@ -1,7 +1,4 @@
-monorail: {
-  component: "UI>Input>Text>IME"
-}
 team_email: "input-dev@chromium.org"
 buganizer_public: {
-  component_id: 1456787
+  component_id: 1457629
 }
