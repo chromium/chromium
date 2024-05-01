@@ -250,6 +250,12 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // calculations.
   virtual void SetAmbientLightSensorEnabled(bool enabled) = 0;
 
+  // Asynchronously gets whether the ambient light sensor is currently enabled
+  // (i.e. whether it's being used in brightness calculations). On error (e.g.
+  // powerd not running), |callback| will be run with nullopt.
+  virtual void GetAmbientLightSensorEnabled(
+      DBusMethodCallback<bool> callback) = 0;
+
   // Asynchronously gets whether the device has at least one ambient light
   // sensor. On error (e.g. powerd not running), |callback| will be run with
   // nullopt.

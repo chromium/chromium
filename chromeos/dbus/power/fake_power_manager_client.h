@@ -125,6 +125,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
       const power_manager::SetBacklightBrightnessRequest& request) override;
   void GetScreenBrightnessPercent(DBusMethodCallback<double> callback) override;
   void SetAmbientLightSensorEnabled(bool enabled) override;
+  void GetAmbientLightSensorEnabled(DBusMethodCallback<bool> callback) override;
   void HasAmbientLightSensor(DBusMethodCallback<bool> callback) override;
   void HasKeyboardBacklight(DBusMethodCallback<bool> callback) override;
   void DecreaseKeyboardBrightness() override;

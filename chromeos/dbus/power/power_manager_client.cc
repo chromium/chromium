@@ -350,6 +350,17 @@ class PowerManagerClientImpl : public PowerManagerClient {
                                      base::DoNothing());
   }
 
+  void GetAmbientLightSensorEnabled(
+      DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kGetAmbientLightSensorEnabledMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PowerManagerClientImpl::OnGetAmbientLightSensorEnabled,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void HasAmbientLightSensor(DBusMethodCallback<bool> callback) override {
     dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
                                  power_manager::kHasAmbientLightSensorMethod);
@@ -1012,6 +1023,23 @@ class PowerManagerClientImpl : public PowerManagerClient {
       return;
     }
     std::move(callback).Run(has_ambient_light_sensor);
+  }
+
+  void OnGetAmbientLightSensorEnabled(DBusMethodCallback<bool> callback,
+                                      dbus::Response* response) {
+    if (!response) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    bool is_ambient_light_sensor_enabled = false;
+    if (!reader.PopBool(&is_ambient_light_sensor_enabled)) {
+      POWER_LOG(ERROR) << "Error reading response from powerd: "
+                       << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(is_ambient_light_sensor_enabled);
   }
 
   void OnGetScreenOrKeyboardBrightnessPercent(

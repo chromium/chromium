@@ -174,6 +174,13 @@ void FakePowerManagerClient::SetAmbientLightSensorEnabled(bool enabled) {
           weak_ptr_factory_.GetWeakPtr(), change));
 }
 
+void FakePowerManagerClient::GetAmbientLightSensorEnabled(
+    DBusMethodCallback<bool> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), is_ambient_light_sensor_enabled_));
+}
+
 void FakePowerManagerClient::HasAmbientLightSensor(
     DBusMethodCallback<bool> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

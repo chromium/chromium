@@ -352,4 +352,55 @@ TEST(FakePowerManagerClientTest, AmbientLightSensorEnabled) {
       power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
 }
 
+// Test that GetAmbientLightSensorEnabled works correctly.
+TEST(FakePowerManagerClientTest, GetAmbientLightSensorEnabled) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
+  FakePowerManagerClient client;
+
+  {
+    client.SetAmbientLightSensorEnabled(true);
+
+    bool called = false;
+    client.GetAmbientLightSensorEnabled(base::BindOnce(
+        [](std::reference_wrapper<bool> called_ref,
+           std::optional<bool> is_ambient_light_sensor_enabled) {
+          // The callback should be called with a value indicating that the
+          // ambient light sensor is enabled.
+          EXPECT_TRUE(is_ambient_light_sensor_enabled.value());
+
+          // Indicate that this function was called.
+          called_ref.get() = true;
+        },
+        std::ref(called)));
+
+    // Result should be asynchronous.
+    EXPECT_FALSE(called);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(called);
+  }
+
+  {
+    client.SetAmbientLightSensorEnabled(false);
+
+    bool called = false;
+    client.GetAmbientLightSensorEnabled(base::BindOnce(
+        [](std::reference_wrapper<bool> called_ref,
+           std::optional<bool> is_ambient_light_sensor_enabled) {
+          // The callback should be called with a value indicating that the
+          // ambient light sensor is not enabled.
+          EXPECT_FALSE(is_ambient_light_sensor_enabled.value());
+
+          // Indicate that this function was called.
+          called_ref.get() = true;
+        },
+        std::ref(called)));
+
+    // Result should be asynchronous.
+    EXPECT_FALSE(called);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(called);
+  }
+}
+
 }  // namespace chromeos
