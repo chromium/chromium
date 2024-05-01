@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
@@ -18,7 +19,7 @@ import org.chromium.url.GURL;
  * changes to remote. This is a per-activity object and hence responsible for handling updates for
  * current window only.
  */
-public final class TabGroupSyncController {
+public final class TabGroupSyncController implements TabGroupUiActionHandler {
     /**
      * A delegate in helping out with creating and navigating tabs in response to remote updates
      * from sync. The tab will be created in a background state and will not be navigated
@@ -122,6 +123,15 @@ public final class TabGroupSyncController {
     public void destroy() {
         mLocalObserver.destroy();
         mRemoteObserver.destroy();
+    }
+
+    @Override
+    public void openTabGroup(String syncId) {
+        // Skip groups that are open in another window, or have been deleted.
+        SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
+        if (savedTabGroup == null || savedTabGroup.localId != null) return;
+
+        mRemoteObserver.onTabGroupAdded(savedTabGroup);
     }
 
     private void onSyncBackendInitialized() {

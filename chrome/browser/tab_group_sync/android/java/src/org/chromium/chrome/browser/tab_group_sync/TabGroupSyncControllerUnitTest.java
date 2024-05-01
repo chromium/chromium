@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,7 +25,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -33,6 +36,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
@@ -41,6 +46,8 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupSyncControllerUnitTest {
+    private static final Token TOKEN_1 = new Token(2, 3);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock TabModelSelector mTabModelSelector;
     private @Mock TabCreatorManager mTabCreatorManager;
@@ -83,5 +90,28 @@ public class TabGroupSyncControllerUnitTest {
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         verify(mTabGroupSyncService, times(1)).addObserver(any());
         verify(mTabGroupSyncService, times(2)).getDeletedGroupIds();
+    }
+
+    @Test
+    public void testOpenTabGroupForClosedGroups() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
+        mController.openTabGroup(savedTabGroup.syncId);
+        verify(mPrefService, times(1)).getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);
+    }
+
+    @Test
+    public void testOpenTabGroupForAlreadyOpenGroups() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        savedTabGroup.localId = new LocalTabGroupId(TOKEN_1);
+        when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
+        mController.openTabGroup(savedTabGroup.syncId);
+        verify(mPrefService, never()).getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);
+    }
+
+    @Test
+    public void testOpenTabGroupForNonExistentGroups() {
+        mController.openTabGroup("some_id");
+        verify(mPrefService, never()).getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);
     }
 }
