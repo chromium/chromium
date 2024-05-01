@@ -1140,8 +1140,8 @@ enum BuildFlag {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 86
-// Next id: 86
+// Next version: 87
+// Next id: 87
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1632,6 +1632,13 @@ struct BrowserInitParams {
   // been satisfied.
   [MinVersion=85]
   bool is_mahi_supported_with_correct_feature_key@85;
+
+  // Set to true when both the
+  // `chromeos::features::kFileSystemProviderContentCache` and
+  // `chromeos::features::kFileSystemProviderCloudFileSystem` flag is enabled in
+  // Ash.
+  [MinVersion=86]
+  bool is_file_system_provider_content_cache_enabled@86;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

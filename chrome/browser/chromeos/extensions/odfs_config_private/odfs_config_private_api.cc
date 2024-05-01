@@ -108,4 +108,17 @@ OdfsConfigPrivateIsCloudFileSystemEnabledFunction::Run() {
           chromeos::features::IsFileSystemProviderCloudFileSystemEnabled())));
 }
 
+OdfsConfigPrivateIsContentCacheEnabledFunction::
+    OdfsConfigPrivateIsContentCacheEnabledFunction() = default;
+
+OdfsConfigPrivateIsContentCacheEnabledFunction::
+    ~OdfsConfigPrivateIsContentCacheEnabledFunction() = default;
+
+ExtensionFunction::ResponseAction
+OdfsConfigPrivateIsContentCacheEnabledFunction::Run() {
+  return RespondNow(ArgumentList(
+      api::odfs_config_private::IsContentCacheEnabled::Results::Create(
+          chromeos::features::IsFileSystemProviderContentCacheEnabled())));
+}
+
 }  // namespace extensions

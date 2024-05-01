@@ -444,8 +444,15 @@ bool IsFileSystemProviderCloudFileSystemEnabled() {
 bool IsFileSystemProviderContentCacheEnabled() {
   // The `ContentCache` will be owned by the `CloudFileSystem`. Thus, the
   // `FileSystemProviderCloudFileSystem` flag has to be enabled too.
-  return IsFileSystemProviderCloudFileSystemEnabled() &&
-         base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
+  if (!IsFileSystemProviderCloudFileSystemEnabled()) {
+    return false;
+  }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()
+      ->IsFileSystemProviderContentCacheEnabled();
+#else
+  return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
+#endif
 }
 
 bool IsJellyEnabled() {

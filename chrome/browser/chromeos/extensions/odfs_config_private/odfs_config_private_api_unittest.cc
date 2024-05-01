@@ -189,4 +189,49 @@ TEST_F(OfdsConfigPrivateApiUnittest, IsCloudFileSystemEnabled_Disabled) {
                    ->GetBool());
 }
 
+TEST_F(OfdsConfigPrivateApiUnittest, IsContentCacheEnabled_Enabled) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  scoped_feature_list_.InitWithFeatures(
+      {chromeos::features::kFileSystemProviderCloudFileSystem,
+       chromeos::features::kFileSystemProviderContentCache},
+      {});
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->is_file_system_provider_cloud_file_system_enabled = true;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto function = base::MakeRefCounted<
+      extensions::OdfsConfigPrivateIsCloudFileSystemEnabledFunction>();
+  auto returned_is_file_system_provider_cloud_file_system_enabled_value =
+      RunFunctionAndReturnValue(function.get(), /*args=*/"[]");
+  ASSERT_TRUE(returned_is_file_system_provider_cloud_file_system_enabled_value
+                  .has_value());
+
+  EXPECT_TRUE(returned_is_file_system_provider_cloud_file_system_enabled_value
+                  ->GetBool());
+}
+
+TEST_F(OfdsConfigPrivateApiUnittest, IsContentCacheEnabled_Disabled) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  scoped_feature_list_.InitWithFeatures(
+      {}, {chromeos::features::kFileSystemProviderCloudFileSystem,
+           chromeos::features::kFileSystemProviderContentCache});
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      chromeos::BrowserInitParams::GetForTests()->Clone();
+  init_params->is_file_system_provider_content_cache_enabled = false;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto function = base::MakeRefCounted<
+      extensions::OdfsConfigPrivateIsCloudFileSystemEnabledFunction>();
+  auto returned_is_file_system_provider_content_cache_enabled_value =
+      RunFunctionAndReturnValue(function.get(), /*args=*/"[]");
+  ASSERT_TRUE(
+      returned_is_file_system_provider_content_cache_enabled_value.has_value());
+
+  ASSERT_FALSE(
+      returned_is_file_system_provider_content_cache_enabled_value->GetBool());
+}
+
 }  // namespace extensions

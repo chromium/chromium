@@ -946,6 +946,9 @@ void InjectBrowserInitParams(
 
   params->is_container_app_preinstall_enabled =
       chromeos::features::IsContainerAppPreinstallEnabled();
+
+  params->is_file_system_provider_content_cache_enabled =
+      chromeos::features::IsFileSystemProviderContentCacheEnabled();
 }
 
 template <typename BrowserParams>

@@ -168,6 +168,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsFileSystemProviderCloudFileSystemEnabled() const;
 
+  bool IsFileSystemProviderContentCacheEnabled() const;
+
   bool IsOrcaEnabled() const;
 
   bool IsCrosMallEnabled() const;

@@ -364,6 +364,11 @@ bool BrowserParamsProxy::IsFileSystemProviderCloudFileSystemEnabled() const {
       ->is_file_system_provider_cloud_file_system_enabled;
 }
 
+bool BrowserParamsProxy::IsFileSystemProviderContentCacheEnabled() const {
+  return BrowserInitParams::Get()
+      ->is_file_system_provider_content_cache_enabled;
+}
+
 bool BrowserParamsProxy::IsOrcaEnabled() const {
   return BrowserInitParams::Get()->is_orca_enabled;
 }
