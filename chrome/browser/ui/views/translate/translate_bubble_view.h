@@ -97,7 +97,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   bool ShouldShowWindowTitle() const override;
   void WindowClosing() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnWidgetClosing(views::Widget* widget) override;
 
   // ui::SimpleMenuModel::Delegate:

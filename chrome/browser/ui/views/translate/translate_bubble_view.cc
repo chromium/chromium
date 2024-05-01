@@ -258,7 +258,8 @@ bool TranslateBubbleView::AcceleratorPressed(
   return BubbleDialogDelegateView::AcceleratorPressed(accelerator);
 }
 
-gfx::Size TranslateBubbleView::CalculatePreferredSize() const {
+gfx::Size TranslateBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int width = 0;
   for (const views::View* child : children()) {
     width = std::max(width, child->GetPreferredSize().width());
