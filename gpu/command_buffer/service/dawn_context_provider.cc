@@ -17,12 +17,9 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
@@ -60,6 +57,36 @@ BASE_FEATURE(kForceDawnInitializeFailure,
 void SetDawnErrorCrashKey(std::string_view message) {
   static crash_reporter::CrashKeyString<1024> error_key("dawn-error");
   error_key.Set(message);
+}
+
+void LogInfo(WGPULoggingType type, char const* message, void* userdata) {
+  switch (static_cast<wgpu::LoggingType>(type)) {
+    case wgpu::LoggingType::Warning:
+      LOG(WARNING) << message;
+      break;
+    case wgpu::LoggingType::Error:
+      LOG(ERROR) << message;
+      SetDawnErrorCrashKey(message);
+      base::debug::DumpWithoutCrashing();
+      break;
+    default:
+      break;
+  }
+}
+
+void LogError(WGPUErrorType type, char const* message, void* userdata) {
+  if (type != WGPUErrorType_NoError) {
+    static_cast<DawnContextProvider*>(userdata)->OnError(type, message);
+  }
+}
+
+void LogDeviceLost(WGPUDeviceLostReason reason,
+                   char const* message,
+                   void* userdata) {
+  if (reason != WGPUDeviceLostReason_Destroyed) {
+    static_cast<DawnContextProvider*>(userdata)->OnError(
+        WGPUErrorType_DeviceLost, message);
+  }
 }
 
 class Platform : public webgpu::DawnPlatform {
@@ -133,6 +160,31 @@ const char* HRESULTToString(HRESULT result) {
 
 }  // namespace
 
+std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
+    const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
+  return DawnContextProvider::CreateWithBackend(
+      GetDefaultBackendType(), DefaultForceFallbackAdapter(), gpu_preferences,
+      gpu_driver_workarounds);
+}
+
+std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
+    wgpu::BackendType backend_type,
+    bool force_fallback_adapter,
+    const GpuPreferences& gpu_preferences,
+    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
+  auto context_provider = base::WrapUnique(new DawnContextProvider());
+
+  // TODO(rivr): This may return a GPU that is not the active one. Currently
+  // the only known way to avoid this is platform-specific; e.g. on Mac, create
+  // a Dawn device, get the actual Metal device from it, and compare against
+  // MTLCreateSystemDefaultDevice().
+  if (!context_provider->Initialize(backend_type, force_fallback_adapter,
+                                    gpu_preferences, gpu_driver_workarounds)) {
+    context_provider.reset();
+  }
+  return context_provider;
+}
 // static
 wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
   const auto switch_value =
@@ -174,129 +226,9 @@ bool DawnContextProvider::DefaultForceFallbackAdapter() {
          gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
 }
 
-// Owns the dawn instance/adapter/device so that it's lifetime is not linked to
-// a specific DawnContextProvider.
-class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
-                        public base::trace_event::MemoryDumpProvider {
- public:
-  DawnSharedState() = default;
+DawnContextProvider::DawnContextProvider() = default;
 
-  bool Initialize(wgpu::BackendType backend_type,
-                  bool force_fallback_adapter,
-                  const GpuPreferences& gpu_preferences,
-                  const GpuDriverBugWorkarounds& gpu_driver_workarounds);
-  void SetCachingInterface(
-      std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
-
-  wgpu::Device GetDevice() const { return device_; }
-  wgpu::BackendType backend_type() const { return backend_type_; }
-  bool is_vulkan_swiftshader_adapter() const {
-    return is_vulkan_swiftshader_adapter_;
-  }
-  wgpu::Adapter GetAdapter() const { return adapter_; }
-  wgpu::Instance GetInstance() const { return instance_->Get(); }
-
-#if BUILDFLAG(IS_WIN)
-  Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const {
-    if (backend_type() == wgpu::BackendType::D3D11) {
-      return dawn::native::d3d11::GetD3D11Device(device_.Get());
-    }
-    return nullptr;
-  }
-#endif
-
-  std::optional<error::ContextLostReason> GetResetStatus() const;
-
- private:
-  friend class base::RefCountedThreadSafe<DawnSharedState>;
-
-  // Provided to wgpu::Device as caching callback.
-  static size_t LoadCachedData(const void* key,
-                               size_t key_size,
-                               void* value,
-                               size_t value_size,
-                               void* userdata) {
-    if (auto& caching_interface =
-            static_cast<DawnSharedState*>(userdata)->caching_interface_) {
-      caching_interface->LoadData(key, key_size, value, value_size);
-    }
-    return 0;
-  }
-
-  // Provided to wgpu::Device as caching callback.
-  static void StoreCachedData(const void* key,
-                              size_t key_size,
-                              const void* value,
-                              size_t value_size,
-                              void* userdata) {
-    if (auto& caching_interface =
-            static_cast<DawnSharedState*>(userdata)->caching_interface_) {
-      caching_interface->StoreData(key, key_size, value, value_size);
-    }
-  }
-
-  // Provided to wgpu::Device as logging callback.
-  static void LogInfo(WGPULoggingType type,
-                      char const* message,
-                      void* userdata) {
-    switch (static_cast<wgpu::LoggingType>(type)) {
-      case wgpu::LoggingType::Warning:
-        LOG(WARNING) << message;
-        break;
-      case wgpu::LoggingType::Error:
-        LOG(ERROR) << message;
-        SetDawnErrorCrashKey(message);
-        base::debug::DumpWithoutCrashing();
-        break;
-      default:
-        break;
-    }
-  }
-
-  // Provided to wgpu::Device as error callback.
-  static void LogError(WGPUErrorType type,
-                       char const* message,
-                       void* userdata) {
-    if (type != WGPUErrorType_NoError) {
-      static_cast<DawnSharedState*>(userdata)->OnError(type, message);
-    }
-  }
-
-  // Provided to wgpu::Device as device lost callback.
-  static void LogDeviceLost(WGPUDeviceLostReason reason,
-                            char const* message,
-                            void* userdata) {
-    if (reason != WGPUDeviceLostReason_Destroyed) {
-      static_cast<DawnSharedState*>(userdata)->OnError(WGPUErrorType_DeviceLost,
-                                                       message);
-    }
-  }
-
-  ~DawnSharedState() override;
-
-  void OnError(WGPUErrorType error_type, const char* message);
-
-  // base::trace_event::MemoryDumpProvider implementation:
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
-
-  std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
-
-  Platform platform_{/*dawn_caching_interface=*/nullptr,
-                     /*uma_prefix=*/"GPU.GraphiteDawn."};
-  std::unique_ptr<webgpu::DawnInstance> instance_;
-  wgpu::Adapter adapter_;
-  wgpu::Device device_;
-  wgpu::BackendType backend_type_;
-  bool is_vulkan_swiftshader_adapter_ = false;
-  bool registered_memory_dump_provider_ = false;
-
-  mutable base::Lock context_lost_lock_;
-  std::optional<error::ContextLostReason> context_lost_reason_
-      GUARDED_BY(context_lost_lock_);
-};
-
-DawnSharedState::~DawnSharedState() {
+DawnContextProvider::~DawnContextProvider() {
   if (device_) {
     if (registered_memory_dump_provider_) {
       base::trace_event::MemoryDumpManager::GetInstance()
@@ -311,18 +243,21 @@ DawnSharedState::~DawnSharedState() {
   }
 }
 
-bool DawnSharedState::Initialize(
+bool DawnContextProvider::Initialize(
     wgpu::BackendType backend_type,
     bool force_fallback_adapter,
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
+  platform_ = std::make_unique<Platform>(nullptr,
+                                         /*uma_prefix=*/"GPU.GraphiteDawn.");
+
   // Make Dawn experimental API and WGSL features available since access to this
   // instance doesn't exit the GPU process.
   // LogInfo will be used to receive instance level errors. For example failures
   // of loading libraries, initializing backend, etc
-  instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
+  instance_ = webgpu::DawnInstance::Create(platform_.get(), gpu_preferences,
                                            webgpu::SafetyLevel::kUnsafe,
-                                           &DawnSharedState::LogInfo, nullptr);
+                                           LogInfo, nullptr);
 
   // If a new toggle is added here, ForceDawnTogglesForSkia() which collects
   // info for about:gpu should be updated as well.
@@ -371,8 +306,8 @@ bool DawnSharedState::Initialize(
   toggles_desc.disabledToggleCount = disabled_toggles.size();
 
   wgpu::DawnCacheDeviceDescriptor cache_desc;
-  cache_desc.loadDataFunction = &DawnSharedState::LoadCachedData;
-  cache_desc.storeDataFunction = &DawnSharedState::StoreCachedData;
+  cache_desc.loadDataFunction = &DawnContextProvider::LoadCachedData;
+  cache_desc.storeDataFunction = &DawnContextProvider::StoreCachedData;
   // The dawn device is owned by this so a pointer back here is safe.
   cache_desc.functionUserdata = this;
   cache_desc.nextInChain = &toggles_desc;
@@ -541,7 +476,7 @@ bool DawnSharedState::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(kForceDawnInitializeFailure)) {
-    LOG(ERROR) << "DawnSharedState creation failed for testing";
+    LOG(ERROR) << "DawnContextProvider creation failed for testing";
     return false;
   }
 
@@ -562,11 +497,9 @@ bool DawnSharedState::Initialize(
     return false;
   }
 
-  device.SetUncapturedErrorCallback(&DawnSharedState::LogError,
-                                    static_cast<void*>(this));
-  device.SetDeviceLostCallback(&DawnSharedState::LogDeviceLost,
-                               static_cast<void*>(this));
-  device.SetLoggingCallback(&DawnSharedState::LogInfo, nullptr);
+  device.SetUncapturedErrorCallback(&LogError, static_cast<void*>(this));
+  device.SetDeviceLostCallback(&LogDeviceLost, static_cast<void*>(this));
+  device.SetLoggingCallback(&LogInfo, nullptr);
 
   adapter_ = std::move(adapter);
   device_ = std::move(device);
@@ -586,7 +519,7 @@ bool DawnSharedState::Initialize(
 
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "DawnSharedState",
+        this, "DawnContextProvider",
         base::SingleThreadTaskRunner::GetCurrentDefault());
     registered_memory_dump_provider_ = true;
   }
@@ -594,19 +527,58 @@ bool DawnSharedState::Initialize(
   return true;
 }
 
-void DawnSharedState::SetCachingInterface(
+bool DawnContextProvider::InitializeGraphiteContext(
+    const skgpu::graphite::ContextOptions& options) {
+  CHECK(!graphite_context_);
+
+  if (device_) {
+    skgpu::graphite::DawnBackendContext backend_context;
+    backend_context.fInstance = GetInstance();
+    backend_context.fDevice = device_;
+    backend_context.fQueue = device_.GetQueue();
+    graphite_context_ =
+        skgpu::graphite::ContextFactory::MakeDawn(backend_context, options);
+  }
+
+  return !!graphite_context_;
+}
+
+wgpu::Instance DawnContextProvider::GetInstance() const {
+  return instance_->Get();
+}
+
+void DawnContextProvider::SetCachingInterface(
     std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
   CHECK(!caching_interface_);
   caching_interface_ = std::move(caching_interface);
 }
 
-std::optional<error::ContextLostReason> DawnSharedState::GetResetStatus()
+#if BUILDFLAG(IS_WIN)
+Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
+    const {
+  if (backend_type() == wgpu::BackendType::D3D11) {
+    return dawn::native::d3d11::GetD3D11Device(device_.Get());
+  }
+  return nullptr;
+}
+#endif
+
+bool DawnContextProvider::SupportsFeature(wgpu::FeatureName feature) {
+  if (!device_) {
+    return false;
+  }
+
+  return device_.HasFeature(feature);
+}
+
+std::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
     const {
   base::AutoLock auto_lock(context_lost_lock_);
   return context_lost_reason_;
 }
 
-void DawnSharedState::OnError(WGPUErrorType error_type, const char* message) {
+void DawnContextProvider::OnError(WGPUErrorType error_type,
+                                  const char* message) {
   LOG(ERROR) << message;
   SetDawnErrorCrashKey(message);
 
@@ -646,8 +618,7 @@ void DawnSharedState::OnError(WGPUErrorType error_type, const char* message) {
 namespace {
 class DawnMemoryDump : public dawn::native::MemoryDump {
  public:
-  explicit DawnMemoryDump(base::trace_event::ProcessMemoryDump* pmd)
-      : pmd_(pmd) {
+  DawnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) : pmd_(pmd) {
     CHECK(pmd_);
   }
 
@@ -675,7 +646,7 @@ class DawnMemoryDump : public dawn::native::MemoryDump {
 };
 }  // namespace
 
-bool DawnSharedState::OnMemoryDump(
+bool DawnContextProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   // TODO(https://crbug.com/330806170): Implement background level of
@@ -688,92 +659,32 @@ bool DawnSharedState::OnMemoryDump(
   return true;
 }
 
-std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
-    const GpuPreferences& gpu_preferences,
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
-  return DawnContextProvider::CreateWithBackend(
-      GetDefaultBackendType(), DefaultForceFallbackAdapter(), gpu_preferences,
-      gpu_driver_workarounds);
-}
-
-std::unique_ptr<DawnContextProvider> DawnContextProvider::CreateWithBackend(
-    wgpu::BackendType backend_type,
-    bool force_fallback_adapter,
-    const GpuPreferences& gpu_preferences,
-    const GpuDriverBugWorkarounds& gpu_driver_workarounds) {
-  auto dawn_shared_state = base::MakeRefCounted<DawnSharedState>();
-  if (!dawn_shared_state->Initialize(backend_type, force_fallback_adapter,
-                                     gpu_preferences, gpu_driver_workarounds)) {
-    return nullptr;
+// static
+size_t DawnContextProvider::LoadCachedData(const void* key,
+                                           size_t key_size,
+                                           void* value,
+                                           size_t value_size,
+                                           void* userdata) {
+  auto* context_provider = static_cast<DawnContextProvider*>(userdata);
+  if (!context_provider->caching_interface_) {
+    return 0;
   }
 
-  return base::WrapUnique(
-      new DawnContextProvider(std::move(dawn_shared_state)));
+  return context_provider->caching_interface_->LoadData(key, key_size, value,
+                                                        value_size);
 }
 
-DawnContextProvider::DawnContextProvider(
-    scoped_refptr<DawnSharedState> dawn_shared_state)
-    : dawn_shared_state_(std::move(dawn_shared_state)) {
-  CHECK(dawn_shared_state_);
-}
-
-DawnContextProvider::~DawnContextProvider() = default;
-
-wgpu::Device DawnContextProvider::GetDevice() const {
-  return dawn_shared_state_->GetDevice();
-}
-
-wgpu::BackendType DawnContextProvider::backend_type() const {
-  return dawn_shared_state_->backend_type();
-}
-
-bool DawnContextProvider::is_vulkan_swiftshader_adapter() const {
-  return dawn_shared_state_->is_vulkan_swiftshader_adapter();
-}
-
-wgpu::Adapter DawnContextProvider::GetAdapter() const {
-  return dawn_shared_state_->GetAdapter();
-}
-
-wgpu::Instance DawnContextProvider::GetInstance() const {
-  return dawn_shared_state_->GetInstance();
-}
-
-bool DawnContextProvider::InitializeGraphiteContext(
-    const skgpu::graphite::ContextOptions& options) {
-  CHECK(!graphite_context_);
-
-  if (auto device = GetDevice()) {
-    skgpu::graphite::DawnBackendContext backend_context;
-    backend_context.fInstance = GetInstance();
-    backend_context.fDevice = device;
-    backend_context.fQueue = device.GetQueue();
-    graphite_context_ =
-        skgpu::graphite::ContextFactory::MakeDawn(backend_context, options);
+// static
+void DawnContextProvider::StoreCachedData(const void* key,
+                                          size_t key_size,
+                                          const void* value,
+                                          size_t value_size,
+                                          void* userdata) {
+  auto* context_provider = static_cast<DawnContextProvider*>(userdata);
+  if (context_provider->caching_interface_) {
+    context_provider->caching_interface_->StoreData(key, key_size, value,
+                                                    value_size);
   }
-
-  return !!graphite_context_;
-}
-
-void DawnContextProvider::SetCachingInterface(
-    std::unique_ptr<webgpu::DawnCachingInterface> caching_interface) {
-  dawn_shared_state_->SetCachingInterface(std::move(caching_interface));
-}
-
-#if BUILDFLAG(IS_WIN)
-Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
-    const {
-  return dawn_shared_state_->GetD3D11Device();
-}
-#endif
-
-bool DawnContextProvider::SupportsFeature(wgpu::FeatureName feature) {
-  return dawn_shared_state_->GetDevice().HasFeature(feature);
-}
-
-std::optional<error::ContextLostReason> DawnContextProvider::GetResetStatus()
-    const {
-  return dawn_shared_state_->GetResetStatus();
 }
 
 }  // namespace gpu
