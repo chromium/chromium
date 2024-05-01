@@ -56,7 +56,7 @@ TpmChallengeKeySubtle* TpmChallengeKeySubtleFactory::next_result_for_testing_ =
 
 // static
 std::unique_ptr<TpmChallengeKeySubtle> TpmChallengeKeySubtleFactory::Create() {
-  if (UNLIKELY(next_result_for_testing_)) {
+  if (next_result_for_testing_) [[unlikely]] {
     std::unique_ptr<TpmChallengeKeySubtle> result(next_result_for_testing_);
     next_result_for_testing_ = nullptr;
     return result;

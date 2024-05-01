@@ -1333,15 +1333,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
-      r'/\[\[(un)?likely\]\]',
-      (
-        '[[likely]] and [[unlikely]] are not yet allowed ',
-        '(https://crbug.com/1414620). Use [UN]LIKELY instead.',
-      ),
-      True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
-    ),
-    BanRule(
       r'/\[\[(\w*::)?no_unique_address\]\]',
       (
         '[[no_unique_address]] does not work as expected on Windows ',

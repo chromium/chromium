@@ -90,7 +90,7 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
   if (!dirty_page_ids_.empty()) {
     OcrNextDirtyPageIfAny();
   }
-  if (UNLIKELY(media_app_)) {
+  if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
     media_app_->OcrServiceEnabledChanged(true);
@@ -128,7 +128,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
           ax::mojom::IntAttribute::kScrollYMin));
       viewport_box_.set_y(
           std::max(viewport_box_.y() - viewport_box_.height(), y_min));
-      if (UNLIKELY(media_app_)) {
+      if (media_app_) [[unlikely]] {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
@@ -143,7 +143,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
           ax::mojom::IntAttribute::kScrollYMax));
       viewport_box_.set_y(
           std::min(viewport_box_.y() + viewport_box_.height(), y_max));
-      if (UNLIKELY(media_app_)) {
+      if (media_app_) [[unlikely]] {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
@@ -157,7 +157,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
           ax::mojom::IntAttribute::kScrollXMin));
       viewport_box_.set_x(
           std::max(viewport_box_.x() - viewport_box_.width(), x_min));
-      if (UNLIKELY(media_app_)) {
+      if (media_app_) [[unlikely]] {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
@@ -171,7 +171,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
           ax::mojom::IntAttribute::kScrollXMax));
       viewport_box_.set_x(
           std::min(viewport_box_.x() + viewport_box_.width(), x_max));
-      if (UNLIKELY(media_app_)) {
+      if (media_app_) [[unlikely]] {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
@@ -224,7 +224,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
         }
         break;
       }
-      if (UNLIKELY(media_app_)) {
+      if (media_app_) [[unlikely]] {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
         media_app_->SetViewport(viewport_box_);
@@ -266,7 +266,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
 }
 
 void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
-  if (UNLIKELY(media_app_)) {
+  if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
     media_app_->AccessibilityEnabledChanged(
@@ -652,7 +652,7 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   const std::string dirty_page_id = PopDirtyPage();
   // TODO(b/289012145): Refactor this code to support things happening
   // asynchronously - i.e. `RequestBitmap` will be async.
-  if (UNLIKELY(media_app_)) {
+  if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
     SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);

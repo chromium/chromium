@@ -29,7 +29,7 @@ CertProvisioningWorkerFactory* CertProvisioningWorkerFactory::test_factory_ =
 
 // static
 CertProvisioningWorkerFactory* CertProvisioningWorkerFactory::Get() {
-  if (UNLIKELY(test_factory_)) {
+  if (test_factory_) [[unlikely]] {
     return test_factory_;
   }
 

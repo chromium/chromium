@@ -910,7 +910,7 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
@@ -946,7 +946,7 @@ void ExtensionPlatformKeysService::GenerateECKey(
     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
@@ -978,7 +978,7 @@ void ExtensionPlatformKeysService::SignDigest(
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*signature=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
@@ -997,7 +997,7 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*signature=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
@@ -1019,7 +1019,7 @@ void ExtensionPlatformKeysService::SelectClientCertificates(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (UNLIKELY(!keystore_service_)) {
+  if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*matches=*/nullptr,
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;

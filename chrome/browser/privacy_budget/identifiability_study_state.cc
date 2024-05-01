@@ -95,7 +95,7 @@ int IdentifiabilityStudyState::generation() const {
 bool IdentifiabilityStudyState::ShouldRecordSurface(
     blink::IdentifiableSurface surface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (LIKELY(!settings_.enabled() && !meta_experiment_active_)) {
+  if (!settings_.enabled() && !meta_experiment_active_) [[unlikely]] {
     return false;
   }
 
@@ -103,7 +103,7 @@ bool IdentifiabilityStudyState::ShouldRecordSurface(
   if (surface.GetType() == blink::IdentifiableSurface::Type::kReservedInternal)
     return true;
 
-  if (LIKELY(!settings_.enabled())) {
+  if (!settings_.enabled()) [[unlikely]] {
     return false;
   }
 
@@ -165,8 +165,9 @@ void IdentifiabilityStudyState::InitializeRenderer(
 bool IdentifiabilityStudyState::DecideInclusionForNewSurface(
     blink::IdentifiableSurface new_surface) {
   DCHECK(settings_.IsUsingRandomSampling());
-  if (UNLIKELY(seen_surfaces_.size() > kMaxSelectedSurfaceOffset + 1))
+  if (seen_surfaces_.size() > kMaxSelectedSurfaceOffset + 1) [[unlikely]] {
     return false;
+  }
 
   MaybeUpdateSelectedOffsets();
 
@@ -547,7 +548,7 @@ bool IdentifiabilityStudyState::IsMetaExperimentActive() {
 }
 
 void IdentifiabilityStudyState::InitFromPrefs() {
-  if (LIKELY(!settings_.enabled())) {
+  if (!settings_.enabled()) [[unlikely]] {
     // Nothing to do if the study is not active. However it is possible that
     // this client has switched from active to inactive, in which case we should
     // nuke any persisted data.
