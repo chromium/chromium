@@ -425,8 +425,8 @@ export class ImageRequestTask {
             // If we can't get the frame at the midpoint of the video after 3
             // seconds have passed for some reason (e.g. unseekable video), we
             // give up generating thumbnail.
-            video.src =
-                '';  // Make sure to stop loading remaining part of the video.
+            // Make sure to stop loading remaining part of the video.
+            video.src = '';
             throw new Error('Seeking video failed.');
           }),
         ])
@@ -435,6 +435,8 @@ export class ImageRequestTask {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           canvas.getContext('2d')!.drawImage(video, 0, 0);
+          // Clearing the `src` helps the decoder to dispose its memory earlier.
+          video.src = '';
           return canvas.toDataURL();
         });
   }
