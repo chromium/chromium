@@ -897,16 +897,8 @@ IN_PROC_BROWSER_TEST_P(
   ExpectNotRestoredReason(FROM_HERE);
 }
 
-// Flaky on Mac and ChromeOS: crbug.com/1492026
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
-    ((BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)))
-#define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded DISABLED_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
-#else
-#define MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded
-#endif  //  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(
-    ChromeBackForwardCacheBrowserWithEmbedPdfTest,
-    MAYBE_DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
+IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
+                       DoesNotCachePageWithEmbeddedPdfAppendedOnPageLoaded) {
   const auto tag = html_tag();
 
   // Navigate to A.
@@ -914,17 +906,18 @@ IN_PROC_BROWSER_TEST_P(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
   //  Embed a PDF into A, and wait until PDF is loaded.
-  ASSERT_TRUE(content::ExecJs(
-      rfh_a.get(), content::JsReplace(R"(
+  EXPECT_EQ("success",
+            content::EvalJs(rfh_a.get(), content::JsReplace(
+                                             R"(
     new Promise(async resolve => {
       let el = document.createElement($1);
       el.type = 'application/pdf';
       el[$2] = '/pdf/test.pdf';
-      el.onload = e => resolve();
+      el.onload = e => resolve("success");
       document.body.append(el);
     });
   )",
-                                      tag, GetSrcAttributeForTag(tag))));
+                                             tag, GetSrcAttributeForTag(tag))));
   if (UseOopif()) {
     // Wait for the PDF to fully load.
     ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
@@ -973,14 +966,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
 }
 
 #if BUILDFLAG(ENABLE_PDF)
-// Flaky on Mac and Linux: crbug.com/1492026
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-#define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf DISABLED_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
-#else
-#define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
-#endif  // (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
-                       MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
+                       DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf) {
   const auto tag = html_tag();
   const auto page_with_html =
       base::StrCat({"/back_forward_cache/page_with_", tag, "_html.html"});
@@ -990,16 +977,17 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
       web_contents(), embedded_test_server()->GetURL("a.com", page_with_html)));
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
   //  Mutate the embed into PDF, and wait until PDF is loaded.
-  ASSERT_TRUE(content::ExecJs(
-      rfh_a.get(), content::JsReplace(R"(
+  EXPECT_EQ("success",
+            content::EvalJs(rfh_a.get(), content::JsReplace(
+                                             R"(
     new Promise(async resolve => {
       let el = document.getElementById($1);
       el.type = 'application/pdf';
       el[$2] = '/pdf/test.pdf';
-      el.onload = e => resolve();
+      el.onload = e => resolve("success");
     });
   )",
-                                      tag, GetSrcAttributeForTag(tag))));
+                                             tag, GetSrcAttributeForTag(tag))));
   if (UseOopif()) {
     // Wait for the PDF to fully load.
     ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
@@ -1038,16 +1026,17 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
       web_contents(), embedded_test_server()->GetURL("a.com", page_with_pdf)));
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
   //  Mutate the embed into HTML, and wait until HTML is loaded.
-  ASSERT_TRUE(content::ExecJs(
-      rfh_a.get(), content::JsReplace(R"(
+  EXPECT_EQ("success",
+            content::EvalJs(rfh_a.get(), content::JsReplace(
+                                             R"(
     new Promise(async resolve => {
       let el = document.getElementById($1);
       el.type = 'text/html';
       el[$2] = '/title1.html';
-      el.onload = e => resolve();
+      el.onload = e => resolve("success");
     });
   )",
-                                      tag, GetSrcAttributeForTag(tag))));
+                                             tag, GetSrcAttributeForTag(tag))));
 
   // Navigate to B.
   ASSERT_TRUE(content::NavigateToURL(
