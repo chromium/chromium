@@ -8,7 +8,4 @@ ContentNotificationService::ContentNotificationService() = default;
 
 ContentNotificationService::~ContentNotificationService() = default;
 
-void ContentNotificationService::SendNAUForConfiguration(
-    ContentNotificationNAUConfiguration* configuration) {}
-
 void ContentNotificationService::Shutdown() {}

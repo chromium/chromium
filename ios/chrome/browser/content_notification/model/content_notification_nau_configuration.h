@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class UNNotification;
-enum class ContentNotificationActionType;
+typedef NS_ENUM(NSInteger, NAUActionType);
 
 typedef void (^CompletionBlock)(BOOL success);
 
@@ -20,7 +20,7 @@ typedef void (^CompletionBlock)(BOOL success);
 @property(nonatomic, strong) UNNotification* notification;
 
 // The action that happened on the notification.
-@property(nonatomic) ContentNotificationActionType actionType;
+@property(nonatomic) NAUActionType actionType;
 
 // Whether the NAU has successfully been sent.
 @property(nonatomic, copy) CompletionBlock completion;

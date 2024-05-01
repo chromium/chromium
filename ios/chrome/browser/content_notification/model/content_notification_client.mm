@@ -32,16 +32,14 @@ void ContentNotificationClient::HandleNotificationInteraction(
   config.notification = response.notification;
   if ([response.actionIdentifier
           isEqualToString:kContentNotificationFeedbackActionIdentifier]) {
-    config.actionType = ContentNotificationActionType::
-        kContentNotificationActionTypeFeedbackClicked;
+    config.actionType = NAUActionTypeFeedbackClicked;
     NSDictionary<NSString*, NSString*>* feedbackPayload =
         contentNotificationService->GetFeedbackPayload(payload);
     loadFeedbackWithPayloadAndClientId(feedbackPayload,
                                        PushNotificationClientId::kContent);
   } else if ([response.actionIdentifier
                  isEqualToString:UNNotificationDefaultActionIdentifier]) {
-    config.actionType =
-        ContentNotificationActionType::kContentNotificationActionTypeOpened;
+    config.actionType = NAUActionTypeOpened;
     const GURL& url = contentNotificationService->GetDestinationUrl(payload);
     if (url.is_empty()) {
       base::UmaHistogramBoolean("ContentNotifications.OpenURLAction.HasURL",
@@ -53,16 +51,11 @@ void ContentNotificationClient::HandleNotificationInteraction(
     loadUrlInNewTab(url);
   } else if ([response.actionIdentifier
                  isEqualToString:UNNotificationDismissActionIdentifier]) {
-    config.actionType =
-        ContentNotificationActionType::kContentNotificationActionTypeDismissed;
+    config.actionType = NAUActionTypeDismissed;
   }
-  // TODO(crbug.com/337871560): Three way patch NAU.
-  config.completion(^(BOOL success) {
-    if (!success) {
-      // TODO(crbug.com/337871560): Send metric for sent action.
-      NSLog(@"Error processing NAU");
-    }
-  });
+  // TODO(crbug.com/337871560): Three way patch NAU and adding completion
+  // handler.
+  contentNotificationService->SendNAUForConfiguration(config);
 }
 
 UIBackgroundFetchResult ContentNotificationClient::HandleNotificationReception(

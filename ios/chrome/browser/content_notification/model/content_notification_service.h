@@ -29,7 +29,7 @@ class ContentNotificationService : public KeyedService {
   // Completion handler indicates the success of the NAU request for a content
   // notification.
   virtual void SendNAUForConfiguration(
-      ContentNotificationNAUConfiguration* configuration);
+      ContentNotificationNAUConfiguration* configuration) = 0;
 
   // KeyedService implementation.
   void Shutdown() override;
