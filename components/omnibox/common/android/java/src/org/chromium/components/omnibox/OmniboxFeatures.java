@@ -56,27 +56,30 @@ public class OmniboxFeatures {
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
 
+    public static final CachedFlag sQueryTilesInZPSOnNTP =
+            newFlag(OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, false);
+
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             newBooleanParam(
-                    OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP,
+                    sQueryTilesInZPSOnNTP,
                     "QueryTilesShowAsCarousel",
                     false);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
             newBooleanParam(
-                    OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS,
+                    sOmniboxAnswerActions,
                     "AnswerActionsShowAboveKeyboard",
                     false);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowIfUrlsPresent =
-            newBooleanParam(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowIfUrlsPresent", false);
+            newBooleanParam(sOmniboxAnswerActions, "ShowIfUrlsPresent", false);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowRichCard =
-            newBooleanParam(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowRichCard", false);
+            newBooleanParam(sOmniboxAnswerActions, "ShowRichCard", false);
 
     public static final IntCachedFieldTrialParameter sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(
-                    OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
+                    sTouchDownTriggerForPrefetch,
                     "max_prefetches_per_omnibox_session",
                     DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
 
@@ -97,15 +100,15 @@ public class OmniboxFeatures {
      *
      * <p>Newly created flag will be automatically added to list of persisted feature flags.
      *
-     * @param featureName the name of the feature flag
+     * @param flag the Feature flag the parameter is associated with
      * @param variationName the name of the associated parameter
      * @param defaultValue the default value to return if the feature state is unknown
      */
     private static BooleanCachedFieldTrialParameter newBooleanParam(
-            String featureName, String variationName, boolean defaultValue) {
+            CachedFlag flag, String variationName, boolean defaultValue) {
         var param =
                 new BooleanCachedFieldTrialParameter(
-                        OmniboxFeatureMap.getInstance(), featureName, variationName, defaultValue);
+                        OmniboxFeatureMap.getInstance(), flag.getFeatureName(), variationName, defaultValue);
         sCachedParams.add(param);
         return param;
     }
@@ -115,15 +118,15 @@ public class OmniboxFeatures {
      *
      * <p>Newly created flag will be automatically added to list of persisted feature flags.
      *
-     * @param featureName the name of the feature flag
+     * @param flag the Feature flag the parameter is associated with
      * @param variationName the name of the associated parameter
      * @param defaultValue the default value to return if the feature state is unknown
      */
     private static IntCachedFieldTrialParameter newIntParam(
-            String featureName, String variationName, int defaultValue) {
+            CachedFlag flag, String variationName, int defaultValue) {
         var param =
                 new IntCachedFieldTrialParameter(
-                        OmniboxFeatureMap.getInstance(), featureName, variationName, defaultValue);
+                        OmniboxFeatureMap.getInstance(), flag.getFeatureName(), variationName, defaultValue);
         sCachedParams.add(param);
         return param;
     }
