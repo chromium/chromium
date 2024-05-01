@@ -9,7 +9,7 @@
   <template is="dom-repeat" items="[[options]]" as="option">
     <option value="[[option.value]]"
         hidden="[[option.hidden]]"
-        selected="[[isOptionSelected_(option, pref.*, value)]]">
+        selected="[[isOptionSelected_(option, value)]]">
       [[option.label]]
     </option>
   </template>

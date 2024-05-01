@@ -13,7 +13,6 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 
-import {prefToString as prefValueToString} from '/shared/settings/prefs/pref_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../../assert_extras.js';
@@ -64,13 +63,15 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
       },
 
       /**
-       * Note: This property should not be set if `pref` is defined.
-       * When this component is used without a pref object, `value` represents
-       * the current value of the dropdown. Setting `value` from parent elements
-       * via downward data binding will update the selected option accordingly.
+       * Note: This property should not be set via downward data-binding from
+       * parent elements if `pref` is defined.
+       * Represents the value of the dropdown. When `pref` is specified, the
+       * pref object's value is synced to this property. When `pref` is not
+       * specified, this property can be updated via downward data-binding.
        */
       value: {
         type: String,
+        value: undefined,
       },
 
       /**
@@ -96,9 +97,15 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
        */
       isNotFoundOptionSelected_: {
         type: Boolean,
-        computed: 'computeIsNotFoundOptionSelected_(options, pref.*, value)',
+        computed: 'computeIsNotFoundOptionSelected_(options, value)',
       },
     };
+  }
+
+  static get observers() {
+    return [
+      'syncPrefChangeToValue_(pref.*)',
+    ];
   }
 
   readonly notFoundValue: string;
@@ -120,24 +127,32 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
   private onChange_(): void {
     const selectedOption = this.findMatchingOption_(this.$.select.value);
     assertExists(selectedOption);
-    const newValue = selectedOption.value;
+    this.value = selectedOption.value;
 
     if (this.pref) {
-      this.updatePrefValueFromUserAction(newValue);
-    } else {
-      this.value = newValue;
+      this.updatePrefValueFromUserAction(this.value);
     }
 
     this.dispatchEvent(new CustomEvent(
-        'change', {bubbles: true, composed: true, detail: newValue}));
+        'change', {bubbles: true, composed: true, detail: this.value}));
   }
 
   /**
-   * Returns a matching option from `options` based on the given `value`. Else,
-   * returns `undefined` if no matching option.
+   * Returns a matching option from `options` based on the given `value` string.
+   * Else, returns `undefined` if no matching option.
    */
   private findMatchingOption_(value: string): DropdownOption|undefined {
     return this.options.find(option => option.value.toString() === value);
+  }
+
+  /**
+   * This observer watches changes to `pref` and syncs it to the `value`
+   * property.
+   */
+  private syncPrefChangeToValue_(): void {
+    if (this.pref) {
+      this.value = this.pref.value;
+    }
   }
 
   /**
@@ -152,15 +167,11 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
    * Determines if the given `option` is selected based on its value.
    */
   private isOptionSelected_(option: DropdownOption): boolean {
-    if (this.pref) {
-      return prefValueToString(this.pref) === option.value.toString();
+    if (this.value === undefined) {
+      return false;
     }
 
-    if (this.value !== undefined) {
-      return this.value.toString() === option.value.toString();
-    }
-
-    return false;
+    return this.value.toString() === option.value.toString();
   }
 
   /**

@@ -186,10 +186,12 @@ suite('<settings-dropdown-v2>', () => {
       });
     });
 
-    test('Pref value updates selected option', () => {
+    test('Pref value updates the selected option', () => {
       assertOptionSelected(1);
+
       dropdownElement.set('pref.value', 2);
       assertOptionSelected(2);
+
       dropdownElement.set('pref.value', 3);
       assertOptionSelected(3);
     });
@@ -198,11 +200,24 @@ suite('<settings-dropdown-v2>', () => {
         'Not found option is selected if no matching option for pref value',
         () => {
           assertOptionSelected(1);
+
           dropdownElement.set('pref.value', 9001);
           assertOptionSelected('SETTINGS_DROPDOWN_NOT_FOUND');
+
           dropdownElement.set('pref.value', 2);
           assertOptionSelected(2);
         });
+
+    test('Pref value syncs to the "value" property', () => {
+      dropdownElement.set('pref.value', 2);
+      assertEquals(2, dropdownElement.value);
+
+      dropdownElement.set('pref.value', 3);
+      assertEquals(3, dropdownElement.value);
+
+      dropdownElement.set('pref.value', 9001);
+      assertEquals(9001, dropdownElement.value);
+    });
 
     test('Selecting an option updates local pref value', () => {
       for (const testOption of testOptions) {
