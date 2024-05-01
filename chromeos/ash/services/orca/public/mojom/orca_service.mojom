@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 12
+// Next MinVersion: 13
 
 module ash.orca.mojom;
 
@@ -123,6 +123,7 @@ struct Context {
 [Stable]
 struct EditorConfig {
   array<PresetTextQueryType> allowed_query_types@0;
+  [MinVersion=12] string? language_code@1;
 };
 
 [Stable]

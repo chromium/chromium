@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
@@ -35,7 +36,8 @@ orca::mojom::EditorConfigPtr GenerateConfig() {
     allowed.push_back(orca::mojom::PresetTextQueryType::kShorten);
   }
   return orca::mojom::EditorConfig::New(
-      /*allowed_types=*/std::move(allowed));
+      /*allowed_types=*/std::move(allowed),
+      /*language_code=*/g_browser_process->GetApplicationLocale());
 }
 
 }  // namespace
