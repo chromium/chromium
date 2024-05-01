@@ -83,7 +83,7 @@ namespace ash {
 namespace {
 
 // The splash screen should be removed either when this timeout passes or the
-// screensaver app is shown, whichever comes first.
+// demo mode launches and enters the full screen, whichever comes first.
 inline constexpr base::TimeDelta kRemoveSplashScreenTimeout = base::Seconds(10);
 
 // Global DemoSession instance.
@@ -635,10 +635,6 @@ void DemoSession::OnSessionStateChanged() {
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     case session_manager::SessionState::ACTIVE:
-      if (ShouldRemoveSplashScreen()) {
-        RemoveSplashScreen();
-      }
-
       // SystemTrayClientImpl may not exist in unit tests.
       if (SystemTrayClientImpl::Get()) {
         const std::string current_locale_iso_code =
@@ -748,6 +744,7 @@ base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,
 void DemoSession::ShowSplashScreen(base::FilePath image_path) {
   ash::WallpaperController::Get()->ShowOverrideWallpaper(
       image_path, /*always_on_top=*/true);
+  splash_screen_activated_ = true;
   remove_splash_screen_fallback_timer_->Start(
       FROM_HERE, kRemoveSplashScreenTimeout,
       base::BindOnce(&DemoSession::RemoveSplashScreen,
@@ -775,30 +772,15 @@ void DemoSession::ConfigureAndStartSplashScreen() {
 }
 
 void DemoSession::RemoveSplashScreen() {
-  if (splash_screen_removed_)
+  // The splash screen is shown after the active session starts and the demo
+  // mode app launches and enters the full screen, so that there's no need to
+  // check the session state here like before.
+  if (!splash_screen_activated_) {
     return;
+  }
   ash::WallpaperController::Get()->RemoveOverrideWallpaper();
   remove_splash_screen_fallback_timer_.reset();
-  app_window_registry_observations_.RemoveAllObservations();
-  splash_screen_removed_ = true;
-}
-
-bool DemoSession::ShouldRemoveSplashScreen() {
-  // TODO(crbug.com/40615242): Launch screensaver after active session starts,
-  // so that there's no need to check session state here.
-  return session_manager::SessionManager::Get()->session_state() ==
-             session_manager::SessionState::ACTIVE &&
-         screensaver_activated_;
-}
-
-// TODO(b/250637035): Either delete this code or fix it to work with the Demo
-// Mode SWA
-void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {
-  if (app_window->extension_id() != GetScreensaverAppId())
-    return;
-  screensaver_activated_ = true;
-  if (ShouldRemoveSplashScreen())
-    RemoveSplashScreen();
+  splash_screen_activated_ = false;
 }
 
 }  // namespace ash

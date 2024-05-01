@@ -202,26 +202,15 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
                    /*always_on_top=*/true));
   EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
 
-  TestingProfile* profile = LoginDemoUser();
-  scoped_refptr<const extensions::Extension> screensaver_app =
-      extensions::ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
-                           .Set("name", "Test App")
-                           .Set("version", "1.0")
-                           .Set("manifest_version", 2))
-          .SetID(DemoSession::GetScreensaverAppId())
-          .Build();
-  extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile,
-      std::make_unique<ChromeAppDelegate>(profile, true /* keep_alive */),
-      screensaver_app.get());
-  demo_session->OnAppWindowActivated(app_window);
-  // The splash screen is not removed until active session starts.
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+  // The splash screen is not removed upon the active session starts.
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
                    /*always_on_top=*/true));
   EXPECT_EQ(0, test_wallpaper_controller_.remove_override_wallpaper_count());
-  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+
+  // Explicitly remove the splash screen as if the fullscreen is toggled.
+  demo_session->RemoveSplashScreen();
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
                    /*always_on_top=*/true));
@@ -229,7 +218,14 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
   // The timer is cleared after splash screen is removed.
   EXPECT_FALSE(demo_session->GetTimerForTesting());
 
-  app_window->OnNativeClose();
+  // Explicitly remove the splash screen again as if the fullscreen is
+  // toggled again. But it should have no effect since the splash screen
+  // is already removed.
+  demo_session->RemoveSplashScreen();
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
+  EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
+                   /*always_on_top=*/true));
+  EXPECT_EQ(1, test_wallpaper_controller_.remove_override_wallpaper_count());
 }
 
 TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
@@ -260,38 +256,27 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
       static_cast<base::MockOneShotTimer*>(demo_session->GetTimerForTesting());
   ASSERT_TRUE(timer_ptr);
   timer_ptr->Fire();
+  // The splash screen should be removed when the timer goes off.
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
                    /*always_on_top=*/true));
   EXPECT_EQ(1, test_wallpaper_controller_.remove_override_wallpaper_count());
 
-  // Launching the screensaver will not trigger splash screen removal anymore.
-  TestingProfile* profile = LoginDemoUser();
-  scoped_refptr<const extensions::Extension> screensaver_app =
-      extensions::ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
-                           .Set("name", "Test App")
-                           .Set("version", "1.0")
-                           .Set("manifest_version", 2))
-          .SetID(DemoSession::GetScreensaverAppId())
-          .Build();
-  extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile,
-      std::make_unique<ChromeAppDelegate>(profile, true /* keep_alive */),
-      screensaver_app.get());
-  demo_session->OnAppWindowActivated(app_window);
+  // Explicitly remove the splash screen again as if the fullscreen is
+  // toggled. But it should have no effect since the splash screen is already
+  // removed.
+  demo_session->RemoveSplashScreen();
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
                    /*always_on_top=*/true));
   EXPECT_EQ(1, test_wallpaper_controller_.remove_override_wallpaper_count());
+
   // Entering active session will not trigger splash screen removal anymore.
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count());
   EXPECT_EQ(1, test_wallpaper_controller_.show_override_wallpaper_count(
                    /*always_on_top=*/true));
   EXPECT_EQ(1, test_wallpaper_controller_.remove_override_wallpaper_count());
-
-  app_window->OnNativeClose();
 }
 
 using DemoSessionLocaleTest = DemoSessionTest;

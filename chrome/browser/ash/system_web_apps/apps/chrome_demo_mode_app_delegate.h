@@ -23,6 +23,9 @@ class ChromeDemoModeAppDelegate : public DemoModeAppDelegate {
   // DemoModeAppDelegate
   void LaunchApp(const std::string& app_id) override;
 
+  // DemoModeAppDelegate
+  void RemoveSplashScreen() override;
+
  private:
   raw_ptr<content::WebUI> web_ui_;
 };

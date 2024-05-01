@@ -19,6 +19,7 @@ DemoModeUntrustedPageHandler::~DemoModeUntrustedPageHandler() = default;
 
 void DemoModeUntrustedPageHandler::ToggleFullscreen() {
   widget_->SetFullscreen(!widget_->IsFullscreen());
+  demo_mode_app_untrusted_ui_->delegate().RemoveSplashScreen();
 }
 
 void DemoModeUntrustedPageHandler::LaunchApp(const std::string& app_id) {

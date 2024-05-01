@@ -6,6 +6,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
@@ -17,6 +18,10 @@ ChromeDemoModeAppDelegate::ChromeDemoModeAppDelegate(content::WebUI* web_ui)
 void ChromeDemoModeAppDelegate::LaunchApp(const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_))
       ->Launch(app_id, 0, apps::LaunchSource::kFromOtherApp);
+}
+
+void ChromeDemoModeAppDelegate::RemoveSplashScreen() {
+  DemoSession::Get()->RemoveSplashScreen();
 }
 
 }  // namespace ash

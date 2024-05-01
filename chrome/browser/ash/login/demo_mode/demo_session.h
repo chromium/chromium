@@ -44,7 +44,6 @@ class DemoComponents;
 // started and the state of demo mode resources.
 class DemoSession : public session_manager::SessionManagerObserver,
                     public user_manager::UserManager::UserSessionStateObserver,
-                    public extensions::AppWindowRegistry::Observer,
                     public chromeos::PowerManagerClient::Observer {
  public:
   // Type of demo mode configuration.
@@ -169,9 +168,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
 
-  // extensions::AppWindowRegistry::Observer:
-  void OnAppWindowActivated(extensions::AppWindow* app_window) override;
-
   bool started() const { return started_; }
 
   // Returns the Demo App component path, which defines the directory that the
@@ -183,6 +179,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   base::FilePath GetDemoAppComponentPath();
 
   const DemoComponents* components() const { return components_.get(); }
+
+  // Removes the splash screen and stops the fallback timeout. It has no effect
+  // if the splash screen is already removed or never shown.
+  void RemoveSplashScreen();
 
  private:
   DemoSession();
@@ -204,14 +204,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   // Show, and set the fallback timeout to remove, the splash screen.
   void ShowSplashScreen(base::FilePath image_path);
-
-  // Removes the splash screen.
-  void RemoveSplashScreen();
-
-  // Returns whether splash screen should be removed. The splash screen should
-  // be removed when both active session starts (i.e. login screen is destroyed)
-  // and screensaver is shown, to ensure a smooth transition.
-  bool ShouldRemoveSplashScreen();
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
@@ -238,10 +230,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
 
-  base::ScopedMultiSourceObservation<extensions::AppWindowRegistry,
-                                     extensions::AppWindowRegistry::Observer>
-      app_window_registry_observations_{this};
-
   scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader_;
 
   // The fallback timer that ensures the splash screen is removed in case the
@@ -251,8 +239,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Constructed when the demo mode user session starts.
   std::unique_ptr<DemoModeWindowCloser> window_closer_;
 
-  bool splash_screen_removed_ = false;
-  bool screensaver_activated_ = false;
+  bool splash_screen_activated_ = false;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };
