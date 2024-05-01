@@ -336,7 +336,11 @@ class LensOverlayController : public LensSearchboxClient,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
+  // Removes the blur on the live page.
+  void RemoveBackgroundBlur();
+
   // lens::mojom::LensPageHandler overrides.
+  void AddBackgroundBlur() override;
   void CloseRequestedByOverlay() override;
   // TODO: rename this to IssueRegionSearchRequest.
   void IssueLensRequest(lens::mojom::CenterRotatedBoxPtr region) override;

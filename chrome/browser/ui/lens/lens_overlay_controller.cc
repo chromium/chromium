@@ -30,6 +30,7 @@
 #include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -44,6 +45,9 @@
 #endif
 
 namespace {
+
+// The radius of the blur to use for the underlying tab contents.
+constexpr int kBlurRadiusPixels = 200;
 
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
@@ -217,6 +221,10 @@ void LensOverlayController::ShowUI() {
 }
 
 void LensOverlayController::CloseUI() {
+  if (state_ == State::kOff) {
+    return;
+  }
+
   // TODO(b/331940245): Refactor to be decoupled from permission_prompt_factory
   state_ = State::kClosing;
 
@@ -235,13 +243,12 @@ void LensOverlayController::CloseUI() {
   // permission was queued. Restore the suspended prompt if possible.
   // TODO(b/331940245): Refactor to be decoupled from PermissionPromptFactory
   content::WebContents* contents = tab_->GetContents();
-  if (contents) {
-    auto* permission_request_manager =
-        permissions::PermissionRequestManager::FromWebContents(contents);
-    if (permission_request_manager &&
-        permission_request_manager->CanRestorePrompt()) {
-      permission_request_manager->RestorePrompt();
-    }
+  CHECK(contents);
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(contents);
+  if (permission_request_manager &&
+      permission_request_manager->CanRestorePrompt()) {
+    permission_request_manager->RestorePrompt();
   }
 
   results_side_panel_coordinator_.reset();
@@ -266,6 +273,8 @@ void LensOverlayController::CloseUI() {
   pending_text_query_.reset();
   pending_thumbnail_uri_.reset();
   thumbnail_uri_.clear();
+
+  RemoveBackgroundBlur();
 
   state_ = State::kOff;
 }
@@ -556,6 +565,7 @@ void LensOverlayController::ShowOverlayWidget() {
 
 void LensOverlayController::BackgroundUI() {
   overlay_widget_->Hide();
+  RemoveBackgroundBlur();
   state_ = State::kBackground;
   // TODO(b/335516480): Schedule the UI to be suspended.
 }
@@ -692,6 +702,9 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
   if (state_ == State::kBackground) {
     ShowOverlayWidget();
     state_ = State::kOverlay;
+
+    // Show after moving to kOverlay state.
+    AddBackgroundBlur();
   }
 }
 
@@ -720,6 +733,40 @@ void LensOverlayController::WillDiscardContents(
   CloseUI();
   old_contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
   LensOverlayControllerTabLookup::CreateForWebContents(new_contents, this);
+}
+
+void LensOverlayController::RemoveBackgroundBlur() {
+  auto* ui_layer =
+      tab_->GetBrowserWindowInterface()->GetWebView()->holder()->GetUILayer();
+  ui_layer->SetClipRect(gfx::Rect());
+  ui_layer->SetLayerBlur(0);
+}
+
+void LensOverlayController::AddBackgroundBlur() {
+  // We do not blur unless the overlay is currently active.
+  if (state_ != State::kOverlay && state_ != State::kOverlayAndResults) {
+    return;
+  }
+  // Blur the original web contents. This should be done after the overlay
+  // widget is showing and the screenshot is rendered so the user cannot see the
+  // live page get blurred. SetLayerBlur() multiplies by 3 to convert the given
+  // value to a pixel value. Since we are already in pixels, we need to divide
+  // by 3 so the blur is as expected.
+  CHECK(tab_->IsInForeground());
+  auto* ui_layer =
+      tab_->GetBrowserWindowInterface()->GetWebView()->holder()->GetUILayer();
+
+#if BUILDFLAG(IS_MAC)
+  // This fixes an issue on Mac where the blur will leak beyond the webpage
+  // and into the toolbar. Setting a clip rect forces the mask to not
+  // overflow. Clipping the rect breaks on linux, so gating the change to MacOS
+  // until a fix to cc allows for a universal solution. See b/328294684.
+  gfx::Rect web_contents_rect = tab_->GetContents()->GetContainerBounds();
+  ui_layer->SetClipRect(gfx::Rect(0, kBlurRadiusPixels - 2,
+                                  web_contents_rect.width(),
+                                  web_contents_rect.height()));
+#endif  // BUILDFLAG(IS_MAC)
+  ui_layer->SetLayerBlur(kBlurRadiusPixels / 3);
 }
 
 void LensOverlayController::CloseRequestedByOverlay() {
