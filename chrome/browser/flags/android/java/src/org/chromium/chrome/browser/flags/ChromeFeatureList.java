@@ -338,8 +338,6 @@ public abstract class ChromeFeatureList {
             "OmniboxCacheSuggestionResources";
     public static final String AVOID_RELAYOUT_DURING_FOCUS_ANIMATION =
             "AvoidRelayoutDuringFocusAnimation";
-    public static final String OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH =
-            "OmniboxTouchDownTriggerForPrefetch";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OMNIBOX_WARM_RECYCLED_VIEW_POOL = "OmniboxWarmRecycledViewPool";
@@ -784,8 +782,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
     public static final MutableFlagWithSafeDefault sTotallyEdgeToEdge =
             newMutableFlagWithSafeDefault(TOTALLY_EDGE_TO_EDGE, false);
-    public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =
-            newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
     public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =
             newMutableFlagWithSafeDefault(VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 

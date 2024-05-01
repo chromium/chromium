@@ -580,6 +580,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
           &kAnimateSuggestionsListAppearance,
           &kGroupingFrameworkForNonZPS,
           &kOmniboxMatchToolbarAndStatusBarColor,
+          &kOmniboxTouchDownTriggerForPrefetch,
       }});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());

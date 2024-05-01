@@ -108,6 +108,7 @@ public class ChromeCachedFlags {
                         OmniboxFeatures.sAnswerActionsShowAboveKeyboard,
                         OmniboxFeatures.sAnswerActionsShowIfUrlsPresent,
                         OmniboxFeatures.sAnswerActionsShowRichCard,
+                        OmniboxFeatures.sTouchDownTriggerMaxPrefetchesPerSession,
                         ShoppingPersistedTabDataService
                                 .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
                         StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,

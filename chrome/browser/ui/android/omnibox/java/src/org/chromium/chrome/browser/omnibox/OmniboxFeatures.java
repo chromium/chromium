@@ -8,12 +8,12 @@ import android.content.Context;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
-import org.chromium.base.FeatureList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.cached_flags.CachedFlagUtils;
+import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -58,6 +58,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
             newFlag(OmniboxFeatureList.OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
 
+    public static final CachedFlag sTouchDownTriggerForPrefetch =
+            newFlag(OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
+
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             newBooleanParam(
                     OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP,
@@ -75,6 +78,12 @@ public class OmniboxFeatures {
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowRichCard =
             newBooleanParam(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, "ShowRichCard", false);
+
+    public static final IntCachedFieldTrialParameter sTouchDownTriggerMaxPrefetchesPerSession =
+            newIntParam(
+                    OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
+                    "max_prefetches_per_omnibox_session",
+                    DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
 
     /**
      * Create an instance of a CachedFeatureFlag.
@@ -101,6 +110,24 @@ public class OmniboxFeatures {
             String featureName, String variationName, boolean defaultValue) {
         var param =
                 new BooleanCachedFieldTrialParameter(
+                        OmniboxFeatureMap.getInstance(), featureName, variationName, defaultValue);
+        sCachedParams.add(param);
+        return param;
+    }
+
+    /**
+     * Create an instance of a IntCachedFieldTrialParameter.
+     *
+     * <p>Newly created flag will be automatically added to list of persisted feature flags.
+     *
+     * @param featureName the name of the feature flag
+     * @param variationName the name of the associated parameter
+     * @param defaultValue the default value to return if the feature state is unknown
+     */
+    private static IntCachedFieldTrialParameter newIntParam(
+            String featureName, String variationName, int defaultValue) {
+        var param =
+                new IntCachedFieldTrialParameter(
                         OmniboxFeatureMap.getInstance(), featureName, variationName, defaultValue);
         sCachedParams.add(param);
         return param;
@@ -154,7 +181,7 @@ public class OmniboxFeatures {
      * the corresponding page.
      */
     public static boolean isTouchDownTriggerForPrefetchEnabled() {
-        return ChromeFeatureList.sTouchDownTriggerForPrefetch.isEnabled();
+        return sTouchDownTriggerForPrefetch.isEnabled();
     }
 
     /**
@@ -162,13 +189,7 @@ public class OmniboxFeatures {
      * omnibox session.
      */
     public static int getMaxPrefetchesPerOmniboxSession() {
-        if (!FeatureList.isInitialized()) {
-            return DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION;
-        }
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
-                "max_prefetches_per_omnibox_session",
-                DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
+        return sTouchDownTriggerMaxPrefetchesPerSession.getValue();
     }
 
     /**
