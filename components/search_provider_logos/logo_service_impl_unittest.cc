@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
@@ -19,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -407,8 +407,8 @@ class LogoServiceImplTest : public ::testing::Test {
   void GetDecodedLogo(LogoCallback cached, LogoCallback fresh);
   void GetEncodedLogo(EncodedLogoCallback cached, EncodedLogoCallback fresh);
 
-  void AddSearchEngine(base::StringPiece keyword,
-                       base::StringPiece short_name,
+  void AddSearchEngine(std::string_view keyword,
+                       std::string_view short_name,
                        const std::string& url,
                        GURL doodle_url,
                        bool make_default);
@@ -501,8 +501,8 @@ void LogoServiceImplTest::GetEncodedLogo(EncodedLogoCallback cached,
   GetLogo(std::move(callbacks));
 }
 
-void LogoServiceImplTest::AddSearchEngine(base::StringPiece keyword,
-                                          base::StringPiece short_name,
+void LogoServiceImplTest::AddSearchEngine(std::string_view keyword,
+                                          std::string_view short_name,
                                           const std::string& url,
                                           GURL doodle_url,
                                           bool make_default) {

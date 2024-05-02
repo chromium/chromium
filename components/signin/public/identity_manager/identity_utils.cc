@@ -5,9 +5,9 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
@@ -20,8 +20,8 @@ namespace signin {
 
 namespace {
 
-bool IsUsernameAllowedByPattern(base::StringPiece username,
-                                base::StringPiece pattern) {
+bool IsUsernameAllowedByPattern(std::string_view username,
+                                std::string_view pattern) {
   if (pattern.empty())
     return true;
 

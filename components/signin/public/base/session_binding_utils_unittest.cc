@@ -5,12 +5,12 @@
 #include "components/signin/public/base/session_binding_utils.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/value_iterators.h"
@@ -23,7 +23,7 @@ namespace signin {
 
 namespace {
 
-base::Value Base64UrlEncodedJsonToValue(base::StringPiece input) {
+base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
   std::string json;
   EXPECT_TRUE(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &json));
@@ -45,7 +45,7 @@ TEST(SessionBindingUtilsTest,
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
-  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
       *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(header_and_payload.size(), 2U);
   base::Value actual_header =
@@ -82,7 +82,7 @@ TEST(SessionBindingUtilsTest,
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
-  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
       *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(header_and_payload.size(), 2U);
   base::Value actual_header =
@@ -114,7 +114,7 @@ TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
       GURL("https://accounts.google.com/VerifyKey"), "test_namespace");
   ASSERT_TRUE(result.has_value());
 
-  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+  std::vector<std::string_view> header_and_payload = base::SplitStringPiece(
       *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(header_and_payload.size(), 2U);
   base::Value actual_header =
@@ -157,7 +157,7 @@ TEST(SessionBindingUtilsTest,
       0x02, 0x21, 0x00, 0xbc, 0xb5, 0xee, 0x42, 0xe2, 0x5a, 0x87, 0xae, 0x21,
       0x18, 0xda, 0x7e, 0x68, 0x65, 0x30, 0xbe, 0xe5, 0x69, 0x3d, 0xc5, 0x5f,
       0xd5, 0x62, 0x45, 0x3e, 0x8d, 0x0b, 0x05, 0x1a, 0x33, 0x79, 0x8d};
-  constexpr base::StringPiece kRawSignatureBase64UrlEncoded =
+  constexpr std::string_view kRawSignatureBase64UrlEncoded =
       "dKBvaysOgg4DO26Y_Imc8zC1VtMpibWCM1-dl_tlZJC8te5C4lqHriEY2n5oZTC-5Wk9xV_"
       "VYkU-jQsFGjN5jQ";
 

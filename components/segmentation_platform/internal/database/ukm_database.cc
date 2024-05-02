@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 
+#include <string_view>
+
 namespace segmentation_platform {
 
 UkmDatabase::CustomSqlQuery::CustomSqlQuery() = default;
@@ -11,7 +13,7 @@ UkmDatabase::CustomSqlQuery::CustomSqlQuery() = default;
 UkmDatabase::CustomSqlQuery::CustomSqlQuery(CustomSqlQuery&&) = default;
 
 UkmDatabase::CustomSqlQuery::CustomSqlQuery(
-    const base::StringPiece& query,
+    std::string_view query,
     const std::vector<processing::ProcessedValue>& bind_values)
     : query(query), bind_values(bind_values) {}
 

@@ -6,17 +6,17 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 InMemoryPrefStore::InMemoryPrefStore() {}
 
 InMemoryPrefStore::~InMemoryPrefStore() {}
 
-bool InMemoryPrefStore::GetValue(base::StringPiece key,
+bool InMemoryPrefStore::GetValue(std::string_view key,
                                  const base::Value** value) const {
   return prefs_.GetValue(key, value);
 }

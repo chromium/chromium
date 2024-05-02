@@ -5,8 +5,10 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 
 #include <stddef.h>
+
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -22,7 +24,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -126,12 +127,12 @@ void RemoveImage(const base::FilePath& image_path) {
 }
 
 // Converts the capability service name into a nested Chrome pref path.
-std::string GetCapabilityPrefPath(base::StringPiece capability_name) {
+std::string GetCapabilityPrefPath(std::string_view capability_name) {
   return base::StrCat({"accountcapabilities.", capability_name});
 }
 
 void SetAccountCapabilityState(base::Value::Dict& value,
-                               base::StringPiece capability_name,
+                               std::string_view capability_name,
                                signin::Tribool state) {
   value.SetByDottedPath(GetCapabilityPrefPath(capability_name),
                         static_cast<int>(state));
@@ -154,14 +155,14 @@ signin::Tribool ParseTribool(std::optional<int> int_value) {
 }
 
 signin::Tribool FindAccountCapabilityState(const base::Value::Dict& dict,
-                                           base::StringPiece name) {
+                                           std::string_view name) {
   std::optional<int> capability =
       dict.FindIntByDottedPath(GetCapabilityPrefPath(name));
   return ParseTribool(capability);
 }
 
 void GetString(const base::Value::Dict& dict,
-               base::StringPiece key,
+               std::string_view key,
                std::string& result) {
   if (const std::string* value = dict.FindString(key)) {
     result = *value;

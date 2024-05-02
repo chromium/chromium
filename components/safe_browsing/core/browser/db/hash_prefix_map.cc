@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/browser/db/hash_prefix_map.h"
 
+#include <string_view>
+
 #include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -31,7 +33,7 @@ std::string GenerateExtension(PrefixSize size) {
 }
 
 // Returns true if |hash_prefix| with PrefixSize |size| exists in |prefixes|.
-bool HashPrefixMatches(base::StringPiece prefix,
+bool HashPrefixMatches(std::string_view prefix,
                        HashPrefixesView prefixes,
                        PrefixSize size,
                        size_t start,
@@ -216,9 +218,9 @@ ApplyUpdateResult InMemoryHashPrefixMap::IsValid() const {
 }
 
 HashPrefixStr InMemoryHashPrefixMap::GetMatchingHashPrefix(
-    base::StringPiece full_hash) {
+    std::string_view full_hash) {
   for (const auto& [size, prefixes] : map_) {
-    base::StringPiece hash_prefix = full_hash.substr(0, size);
+    std::string_view hash_prefix = full_hash.substr(0, size);
     if (HashPrefixMatches(hash_prefix, prefixes, size, 0,
                           prefixes.size() / size)) {
       return std::string(hash_prefix);
@@ -467,7 +469,7 @@ ApplyUpdateResult MmapHashPrefixMap::IsValid() const {
 }
 
 HashPrefixStr MmapHashPrefixMap::GetMatchingHashPrefix(
-    base::StringPiece full_hash) {
+    std::string_view full_hash) {
   for (const auto& kv : map_) {
     HashPrefixStr matching_prefix = kv.second.Matches(full_hash);
     if (!matching_prefix.empty())
@@ -605,7 +607,7 @@ bool MmapHashPrefixMap::FileInfo::Finalize(HashFile* hash_file) {
 }
 
 HashPrefixStr MmapHashPrefixMap::FileInfo::Matches(
-    base::StringPiece full_hash) const {
+    std::string_view full_hash) const {
   HashPrefixStr hash_prefix(full_hash.substr(0, prefix_size_));
   HashPrefixesView prefixes = GetView();
 
@@ -626,8 +628,8 @@ HashPrefixStr MmapHashPrefixMap::FileInfo::Matches(
   }
 
   // TODO(crbug.com/40062772): Remove crash logging.
-  base::StringPiece start_prefix = prefixes.substr(0, prefix_size_);
-  base::StringPiece end_prefix =
+  std::string_view start_prefix = prefixes.substr(0, prefix_size_);
+  std::string_view end_prefix =
       prefixes.substr(prefix_size_ * (end - 1), prefix_size_);
   SCOPED_CRASH_KEY_STRING64(
       "SafeBrowsing", "prefix_match",

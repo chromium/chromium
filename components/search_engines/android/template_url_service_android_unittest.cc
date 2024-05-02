@@ -4,12 +4,12 @@
 
 #include "components/search_engines/android/template_url_service_android.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -78,12 +78,12 @@ class TemplateUrlServiceAndroidUnitTest
   }
 
   base::android::ScopedJavaLocalRef<jstring> ToLocalJavaString(
-      base::StringPiece str) {
+      std::string_view str) {
     return base::android::ConvertUTF8ToJavaString(env_, str);
   }
 
   base::android::ScopedJavaLocalRef<jstring> ToLocalJavaString(
-      base::StringPiece16 str) {
+      std::u16string_view str) {
     return base::android::ConvertUTF16ToJavaString(env_, str);
   }
 

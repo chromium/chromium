@@ -7,9 +7,9 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/prefs_export.h"
 
@@ -30,8 +30,8 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
   // Gets the value for |key| and stores it in |value|. Ownership remains with
   // the map. Returns true if a value is present. If not, |value| is not
   // touched.
-  bool GetValue(base::StringPiece key, const base::Value** value) const;
-  bool GetValue(base::StringPiece key, base::Value** value);
+  bool GetValue(std::string_view key, const base::Value** value) const;
+  bool GetValue(std::string_view key, base::Value** value);
 
   // Sets a new |value| for |key|. Returns true if the value changed.
   bool SetValue(const std::string& key, base::Value value);

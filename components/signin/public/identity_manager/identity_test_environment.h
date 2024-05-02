@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -64,7 +65,7 @@ struct SimpleAccountAvailabilityOptions {
   bool set_cookie = false;
 
   // If non-empty, the Gaia ID to use when adding the account.
-  base::StringPiece gaia_id;
+  std::string_view gaia_id;
 };
 
 // Class that creates an IdentityManager for use in testing contexts and
@@ -199,7 +200,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   //   configuration options and requires obtaining a builder to construct the
   //   options object. See `CreateAccountAvailabilityOptionsBuilder()`.
   AccountInfo MakeAccountAvailable(
-      base::StringPiece email,
+      std::string_view email,
       SimpleAccountAvailabilityOptions options = {});
 
   AccountInfo MakeAccountAvailable(const AccountAvailabilityOptions& options);

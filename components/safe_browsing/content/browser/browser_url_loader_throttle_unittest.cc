@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -84,19 +85,19 @@ class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
   ~MockThrottleDelegate() override = default;
 
   void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {
+                       std::string_view custom_reason) override {
     error_code_ = error_code;
     custom_reason_ = custom_reason;
   }
   void Resume() override { is_resumed_ = true; }
 
   int GetErrorCode() { return error_code_; }
-  base::StringPiece GetCustomReason() { return custom_reason_; }
+  std::string_view GetCustomReason() { return custom_reason_; }
   bool IsResumed() { return is_resumed_; }
 
  private:
   int error_code_ = 0;
-  base::StringPiece custom_reason_ = "";
+  std::string_view custom_reason_ = "";
   bool is_resumed_ = false;
 };
 

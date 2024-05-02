@@ -13,13 +13,13 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "url/gurl.h"
@@ -437,8 +437,7 @@ class V4ProtocolManagerUtil {
   static void GeneratePathsToCheck(const GURL& url,
                                    std::vector<std::string>* paths);
 
-  static std::string RemoveConsecutiveChars(base::StringPiece str,
-                                            const char c);
+  static std::string RemoveConsecutiveChars(std::string_view str, const char c);
 };
 
 using StoresToCheck = std::unordered_set<ListIdentifier>;

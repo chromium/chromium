@@ -7,6 +7,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -147,7 +148,7 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
     if (state_->iterator->IsWord()) {
       const size_t start = state_->iterator->prev();
       const size_t length = state_->iterator->pos() - start;
-      HandleWord(base::StringPiece16(page_text_->data() + start, length));
+      HandleWord(std::u16string_view(page_text_->data() + start, length));
       ++num_words;
     }
 
@@ -175,7 +176,7 @@ void PhishingTermFeatureExtractor::ExtractFeaturesWithTimeout() {
   RunCallback(true);
 }
 
-void PhishingTermFeatureExtractor::HandleWord(const base::StringPiece16& word) {
+void PhishingTermFeatureExtractor::HandleWord(std::u16string_view word) {
   // First, extract shingle hashes.
   const std::string& word_lower = base::UTF16ToUTF8(base::i18n::ToLower(word));
   state_->current_shingle.append(word_lower + " ");

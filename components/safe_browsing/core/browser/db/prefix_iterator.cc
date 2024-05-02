@@ -4,9 +4,11 @@
 
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
 
+#include <string_view>
+
 namespace safe_browsing {
 
-PrefixIterator::PrefixIterator(base::StringPiece prefixes,
+PrefixIterator::PrefixIterator(std::string_view prefixes,
                                size_t index,
                                size_t size)
     : prefixes_(prefixes), index_(index), size_(size) {}

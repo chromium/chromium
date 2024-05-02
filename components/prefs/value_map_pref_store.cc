@@ -6,15 +6,15 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 ValueMapPrefStore::ValueMapPrefStore() {}
 
-bool ValueMapPrefStore::GetValue(base::StringPiece key,
+bool ValueMapPrefStore::GetValue(std::string_view key,
                                  const base::Value** value) const {
   return prefs_.GetValue(key, value);
 }

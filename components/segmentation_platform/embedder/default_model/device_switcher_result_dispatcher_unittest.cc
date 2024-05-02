@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+
 #include <memory>
+#include <string_view>
 
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
@@ -59,11 +60,10 @@ std::unique_ptr<DeviceInfo> CreateDeviceInfo(
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
   MOCK_METHOD2(RegisterFieldTrial,
-               void(base::StringPiece trial_name,
-                    base::StringPiece group_name));
+               void(std::string_view trial_name, std::string_view group_name));
 
   MOCK_METHOD3(RegisterSubsegmentFieldTrialIfNeeded,
-               void(base::StringPiece trial_name,
+               void(std::string_view trial_name,
                     proto::SegmentId segment_id,
                     int subsegment_rank));
 };
@@ -123,7 +123,7 @@ TEST_F(DeviceSwitcherResultDispatcherTest, SegmentationFailed) {
       .WillOnce(RunOnceCallback<3>(result));
 
   EXPECT_CALL(field_trial_register_,
-              RegisterFieldTrial(_, base::StringPiece("Unselected")));
+              RegisterFieldTrial(_, std::string_view("Unselected")));
 
   // The DeviceSwitcherResultDispatcher will find the result returned by the
   // segmentation platform service.
@@ -150,7 +150,7 @@ TEST_F(DeviceSwitcherResultDispatcherTest, TestWaitForClassificationResult) {
       .WillOnce(RunOnceCallback<3>(result));
 
   EXPECT_CALL(field_trial_register_,
-              RegisterFieldTrial(_, base::StringPiece("test_label1")));
+              RegisterFieldTrial(_, std::string_view("test_label1")));
 
   // The DeviceSwitcherResultDispatcher will find the result returned by the
   // segmentation platform service.
@@ -178,11 +178,11 @@ TEST_F(DeviceSwitcherResultDispatcherTest, ResultRefreshedOnSyncConsent) {
 
   EXPECT_CALL(field_trial_register_,
               RegisterFieldTrial(
-                  _, base::StringPiece(DeviceSwitcherModel::kNotSyncedLabel)));
+                  _, std::string_view(DeviceSwitcherModel::kNotSyncedLabel)));
   EXPECT_CALL(
       field_trial_register_,
       RegisterFieldTrial(
-          _, base::StringPiece(DeviceSwitcherModel::kAndroidPhoneLabel)));
+          _, std::string_view(DeviceSwitcherModel::kAndroidPhoneLabel)));
 
   // The DeviceSwitcherResultDispatcher will find the result returned by the
   // segmentation platform service.
@@ -246,7 +246,7 @@ TEST_F(DeviceSwitcherResultDispatcherTest,
       .WillRepeatedly(MoveArg<3>(&callback));
 
   EXPECT_CALL(field_trial_register_,
-              RegisterFieldTrial(_, base::StringPiece("test_label1")));
+              RegisterFieldTrial(_, std::string_view("test_label1")));
 
   // The DeviceSwitcherResultDispatcher will wait for the result returned by the
   // segmentation platform service.

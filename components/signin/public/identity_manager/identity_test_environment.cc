@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -457,7 +458,7 @@ void IdentityTestEnvironment::ClearPrimaryAccount() {
 }
 
 AccountInfo IdentityTestEnvironment::MakeAccountAvailable(
-    base::StringPiece email,
+    std::string_view email,
     SimpleAccountAvailabilityOptions options) {
   auto builder = CreateAccountAvailabilityOptionsBuilder();
 

@@ -10,13 +10,13 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_name_set.h"
 #include "components/prefs/prefs_export.h"
@@ -54,7 +54,7 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   void RemoveObserver(Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
-  bool GetValue(base::StringPiece key,
+  bool GetValue(std::string_view key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
 
@@ -114,8 +114,8 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
 
   // Returns |selected_pref_store| if |key| is selected and
   // |default_pref_store| otherwise.
-  PersistentPrefStore* StoreForKey(base::StringPiece key);
-  const PersistentPrefStore* StoreForKey(base::StringPiece key) const;
+  PersistentPrefStore* StoreForKey(std::string_view key);
+  const PersistentPrefStore* StoreForKey(std::string_view key) const;
 
   const scoped_refptr<PersistentPrefStore> default_pref_store_;
   const scoped_refptr<PersistentPrefStore> selected_pref_store_;

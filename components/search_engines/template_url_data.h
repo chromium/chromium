@@ -6,6 +6,7 @@
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_DATA_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -31,29 +32,29 @@ struct TemplateURLData {
   // Note that unlike in the default constructor, |safe_for_autoreplace| will
   // be set to true. date_created and last_modified will be set to null time
   // value, instead of current time.
-  // StringPiece in arguments is used to pass const char* pointer members
+  // std::string_view in arguments is used to pass const char* pointer members
   // of PrepopulatedEngine structure which can be nullptr.
   TemplateURLData(std::u16string_view name,
                   std::u16string_view keyword,
-                  base::StringPiece search_url,
-                  base::StringPiece suggest_url,
-                  base::StringPiece image_url,
-                  base::StringPiece image_translate_url,
-                  base::StringPiece new_tab_url,
-                  base::StringPiece contextual_search_url,
-                  base::StringPiece logo_url,
-                  base::StringPiece doodle_url,
-                  base::StringPiece search_url_post_params,
-                  base::StringPiece suggest_url_post_params,
-                  base::StringPiece image_url_post_params,
-                  base::StringPiece side_search_param,
-                  base::StringPiece side_image_search_param,
-                  base::StringPiece image_translate_source_language_param_key,
-                  base::StringPiece image_translate_target_language_param_key,
+                  std::string_view search_url,
+                  std::string_view suggest_url,
+                  std::string_view image_url,
+                  std::string_view image_translate_url,
+                  std::string_view new_tab_url,
+                  std::string_view contextual_search_url,
+                  std::string_view logo_url,
+                  std::string_view doodle_url,
+                  std::string_view search_url_post_params,
+                  std::string_view suggest_url_post_params,
+                  std::string_view image_url_post_params,
+                  std::string_view side_search_param,
+                  std::string_view side_image_search_param,
+                  std::string_view image_translate_source_language_param_key,
+                  std::string_view image_translate_target_language_param_key,
                   std::vector<std::string> search_intent_params,
-                  base::StringPiece favicon_url,
-                  base::StringPiece encoding,
-                  base::StringPiece16 image_search_branding_label,
+                  std::string_view favicon_url,
+                  std::string_view encoding,
+                  std::u16string_view image_search_branding_label,
                   const base::Value::List& alternate_urls_list,
                   bool preconnect_to_search_url,
                   bool prefetch_likely_navigations,

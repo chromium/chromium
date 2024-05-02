@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -63,7 +65,7 @@ class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
   ~MockThrottleDelegate() override = default;
 
   void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {}
+                       std::string_view custom_reason) override {}
   void Resume() override {}
 };
 

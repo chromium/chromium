@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/search_engines/default_search_manager.h"
@@ -20,10 +19,10 @@
 
 namespace {
 
-// Converts the C-style string `str` to a base::StringPiece making sure to avoid
+// Converts the C-style string `str` to a std::string_view making sure to avoid
 // dereferencing nullptrs.
-base::StringPiece ToStringPiece(const char* str) {
-  return str ? base::StringPiece(str) : base::StringPiece();
+std::string_view ToStringPiece(const char* str) {
+  return str ? std::string_view(str) : std::string_view();
 }
 
 std::u16string_view ToU16StringView(const char16_t* str) {

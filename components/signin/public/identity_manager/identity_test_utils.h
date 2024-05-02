@@ -7,9 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
@@ -169,7 +169,7 @@ struct AccountAvailabilityOptions {
   const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS;
 
-  explicit AccountAvailabilityOptions(base::StringPiece email);
+  explicit AccountAvailabilityOptions(std::string_view email);
   ~AccountAvailabilityOptions();
 
  private:
@@ -177,8 +177,8 @@ struct AccountAvailabilityOptions {
 
   // For complex options, prefer using `AccountAvailabilityOptionsBuilder`.
   AccountAvailabilityOptions(
-      base::StringPiece email,
-      base::StringPiece gaia_id,
+      std::string_view email,
+      std::string_view gaia_id,
       std::optional<ConsentLevel> consent_level,
       std::optional<std::string> refresh_token,
       raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
@@ -207,7 +207,7 @@ class AccountAvailabilityOptionsBuilder {
   AccountAvailabilityOptionsBuilder& AsPrimary(ConsentLevel);
 
   // Provide a custom `gaia_id` to use for the new account.
-  AccountAvailabilityOptionsBuilder& WithGaiaId(base::StringPiece gaia_id);
+  AccountAvailabilityOptionsBuilder& WithGaiaId(std::string_view gaia_id);
 
   // Whether to add the new account to the Gaia cookie. See
   // `signin::AddCookieAccount()` for more context.
@@ -219,7 +219,7 @@ class AccountAvailabilityOptionsBuilder {
   // NOTE: by default, the builder will auto-generate a refresh token. Call
   // `WithoutRefreshToken()` to avoid it.
   AccountAvailabilityOptionsBuilder& WithRefreshToken(
-      base::StringPiece refresh_token);
+      std::string_view refresh_token);
 
   // Request that we should not attempt to set a refresh token for the account.
   AccountAvailabilityOptionsBuilder& WithoutRefreshToken();
@@ -227,7 +227,7 @@ class AccountAvailabilityOptionsBuilder {
   AccountAvailabilityOptionsBuilder& WithAccessPoint(
       signin_metrics::AccessPoint access_point);
 
-  AccountAvailabilityOptions Build(base::StringPiece email);
+  AccountAvailabilityOptions Build(std::string_view email);
 
  private:
   raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies_ =
@@ -329,7 +329,7 @@ std::string GetTestGaiaIdForEmail(const std::string& email);
 //
 // The returned account info will be valid per `AccountInfo::IsValid()`.
 AccountInfo WithGeneratedUserInfo(const AccountInfo& base_account_info,
-                                  base::StringPiece given_name);
+                                  std::string_view given_name);
 
 // Updates the persistent auth error set on |account_id| which must be a known
 // account, i.e., an account with a refresh token.

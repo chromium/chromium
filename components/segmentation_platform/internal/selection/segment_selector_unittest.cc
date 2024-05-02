@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string_piece.h"
-#include "components/segmentation_platform/internal/execution/model_execution_status.h"
-#include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
@@ -13,9 +11,11 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
+#include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
@@ -39,11 +39,10 @@ using ::testing::NiceMock;
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
   MOCK_METHOD2(RegisterFieldTrial,
-               void(base::StringPiece trial_name,
-                    base::StringPiece group_name));
+               void(std::string_view trial_name, std::string_view group_name));
 
   MOCK_METHOD3(RegisterSubsegmentFieldTrialIfNeeded,
-               void(base::StringPiece trial_name,
+               void(std::string_view trial_name,
                     proto::SegmentId segment_id,
                     int subsegment_rank));
 };
@@ -191,8 +190,8 @@ class SegmentSelectorTest : public testing::Test {
   void ExpectFieldTrials(const std::vector<std::string>& groups) {
     for (const std::string& group : groups) {
       EXPECT_CALL(field_trial_register_,
-                  RegisterFieldTrial(base::StringPiece("Segmentation_TestKey"),
-                                     base::StringPiece(group)));
+                  RegisterFieldTrial(std::string_view("Segmentation_TestKey"),
+                                     std::string_view(group)));
     }
   }
 
@@ -530,8 +529,8 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
   // Previous selection result is not available at this time, so it should
   // record unselected.
   EXPECT_CALL(field_trial_register_,
-              RegisterFieldTrial(base::StringPiece("Segmentation_TestKey"),
-                                 base::StringPiece("Unselected")));
+              RegisterFieldTrial(std::string_view("Segmentation_TestKey"),
+                                 std::string_view("Unselected")));
   SetUpWithConfig(std::move(config));
 
   // Store model metadata, model scores and selection results.
@@ -564,8 +563,8 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
   prefs_->selection = from_history;
 
   EXPECT_CALL(field_trial_register_,
-              RegisterFieldTrial(base::StringPiece("Segmentation_TestKey"),
-                                 base::StringPiece("Share")));
+              RegisterFieldTrial(std::string_view("Segmentation_TestKey"),
+                                 std::string_view("Share")));
 
   // Construct a segment selector. It should read result from last session.
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
@@ -576,7 +575,7 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
   // When segment result is missing, unknown subsegment is recorded, otherwise
   // record metrics based on the subsegment mapping.
   base::RunLoop wait_for_subsegment;
-  std::vector<std::tuple<base::StringPiece, SegmentId, int>> actual_calls;
+  std::vector<std::tuple<std::string_view, SegmentId, int>> actual_calls;
   int call_count = 0;
 
   EXPECT_CALL(field_trial_register_,
@@ -584,7 +583,7 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
       .Times(3)
       .WillRepeatedly(
           Invoke([&wait_for_subsegment, &actual_calls, &call_count](
-                     base::StringPiece trial, SegmentId id, int rank) {
+                     std::string_view trial, SegmentId id, int rank) {
             actual_calls.emplace_back(trial, id, rank);
             call_count++;
             if (call_count == 3)
@@ -598,12 +597,12 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
   EXPECT_THAT(
       actual_calls,
       testing::UnorderedElementsAre(
-          std::make_tuple(base::StringPiece("Segmentation_TestKey_Share"),
+          std::make_tuple(std::string_view("Segmentation_TestKey_Share"),
                           segment_id0, 0),
           std::make_tuple(
-              base::StringPiece("Segmentation_TestKey_NewTab"),
+              std::string_view("Segmentation_TestKey_NewTab"),
               proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0),
-          std::make_tuple(base::StringPiece("Segmentation_TestKey_FeedUser"),
+          std::make_tuple(std::string_view("Segmentation_TestKey_FeedUser"),
                           kSubsegmentEnabledTarget, 3)));
 }
 

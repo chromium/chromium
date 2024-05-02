@@ -9,13 +9,13 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/prefs_export.h"
@@ -120,7 +120,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   // a non-matching |type| are silently skipped. Returns true if a valid value
   // was found in any of the available PrefStores. Most callers should use
   // Preference::GetValue() instead of calling this method directly.
-  bool GetValue(base::StringPiece name,
+  bool GetValue(std::string_view name,
                 base::Value::Type type,
                 const base::Value** out_value) const;
 
@@ -221,12 +221,12 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
                              PrefStoreType last_checked_store) const;
 
   // Get a value from the specified |store|.
-  bool GetValueFromStore(base::StringPiece name,
+  bool GetValueFromStore(std::string_view name,
                          PrefStoreType store,
                          const base::Value** out_value) const;
 
   // Get a value from the specified |store| if its |type| matches.
-  bool GetValueFromStoreWithType(base::StringPiece name,
+  bool GetValueFromStoreWithType(std::string_view name,
                                  base::Value::Type type,
                                  PrefStoreType store,
                                  const base::Value** out_value) const;

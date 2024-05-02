@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_INPUT_CONTEXT_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
@@ -33,7 +34,7 @@ struct InputContext : base::RefCounted<InputContext> {
 
   // Returns the arg value from `metadata_args`.
   std::optional<processing::ProcessedValue> GetMetadataArgument(
-      base::StringPiece arg_name) const;
+      std::string_view arg_name) const;
 
   base::Value ToDebugValue() const;
 

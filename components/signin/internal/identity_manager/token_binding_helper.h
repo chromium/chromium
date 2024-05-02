@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TOKEN_BINDING_HELPER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TOKEN_BINDING_HELPER_H_
 
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 
@@ -59,7 +60,7 @@ class TokenBindingHelper {
   // string if the generation fails.
   void GenerateBindingKeyAssertion(
       const CoreAccountId& account_id,
-      base::StringPiece challenge,
+      std::string_view challenge,
       const GURL& destination_url,
       base::OnceCallback<void(std::string)> callback);
 
@@ -85,7 +86,7 @@ class TokenBindingHelper {
   };
 
   void SignAssertionToken(
-      base::StringPiece challenge,
+      std::string_view challenge,
       const GURL& destination_url,
       base::OnceCallback<void(std::string)> callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>

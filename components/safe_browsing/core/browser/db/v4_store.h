@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/files/file_path.h"
@@ -303,9 +304,9 @@ class V4Store {
                                       size_t removals_count,
                                       HashPrefixMap* prefix_map_to_update);
 
-  // Same as the public GetMatchingHashPrefix method, but takes a StringPiece,
-  // for performance reasons.
-  HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash);
+  // Same as the public GetMatchingHashPrefix method, but takes a
+  // std::string_view, for performance reasons.
+  HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash);
 
   // Merges the prefix map from the old store (|old_hash_prefix_map|) and the
   // update (additions_map) to populate the prefix map for the current store.

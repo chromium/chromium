@@ -8,10 +8,10 @@
 #include <functional>
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/search_engines/template_url.h"
 
 // Holds the host to template url mappings for the search providers. WARNING:
@@ -42,11 +42,11 @@ class SearchHostToURLsMap {
 
   // Returns the best TemplateURL found with a URL using the specified |host|,
   // or nullptr if there are no such TemplateURLs
-  TemplateURL* GetTemplateURLForHost(base::StringPiece host);
+  TemplateURL* GetTemplateURLForHost(std::string_view host);
 
   // Return the TemplateURLSet for the given the |host| or NULL if there are
   // none.
-  TemplateURLSet* GetURLsForHost(base::StringPiece host);
+  TemplateURLSet* GetURLsForHost(std::string_view host);
 
  private:
   friend class SearchHostToURLsMapTest;

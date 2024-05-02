@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -186,13 +187,13 @@ std::string GetCacheExpressionPath(const std::string& cache_expression) {
 // For example, return 0 for "/", since there is no path after the leading
 // slash; return 3 for "/abc/def/gh.html".
 size_t GetPathDepth(const std::string& cache_expression_path) {
-  return base::SplitString(base::StringPiece(cache_expression_path), "/",
+  return base::SplitString(std::string_view(cache_expression_path), "/",
                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)
       .size();
 }
 
 size_t GetHostDepth(const std::string& hostname) {
-  return base::SplitString(base::StringPiece(hostname), ".",
+  return base::SplitString(std::string_view(hostname), ".",
                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)
       .size();
 }
@@ -580,7 +581,7 @@ size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
        content_settings_->GetSettingsForOneType(
            ContentSettingsType::PASSWORD_PROTECTION)) {
     for (auto item : source.setting_value.GetDict()) {
-      if (item.first == base::StringPiece(kPasswordOnFocusCacheKey)) {
+      if (item.first == std::string_view(kPasswordOnFocusCacheKey)) {
         stored_verdict_count_password_on_focus_.value() +=
             item.second.GetDict().size();
       } else {
@@ -606,7 +607,7 @@ size_t VerdictCacheManager::GetStoredRealTimeUrlCheckVerdictCount() {
        content_settings_->GetSettingsForOneType(
            ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA)) {
     for (auto item : source.setting_value.GetDict()) {
-      if (item.first == base::StringPiece(kRealTimeUrlCacheKey)) {
+      if (item.first == std::string_view(kRealTimeUrlCacheKey)) {
         stored_verdict_count_real_time_url_check_.value() +=
             item.second.GetDict().size();
       }

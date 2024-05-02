@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/public/result.h"
+
 #include <sstream>
+#include <string_view>
 
 namespace segmentation_platform {
 
@@ -56,7 +58,7 @@ AnnotatedNumericResult& AnnotatedNumericResult::operator=(
     const AnnotatedNumericResult&) = default;
 
 std::optional<float> AnnotatedNumericResult::GetResultForLabel(
-    base::StringPiece label) const {
+    std::string_view label) const {
   if (status != PredictionStatus::kSucceeded ||
       !result.output_config().predictor().has_generic_predictor()) {
     return std::nullopt;

@@ -4,9 +4,10 @@
 
 #include "components/search_engines/template_url_data.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/i18n/case_conversion.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,25 +63,25 @@ TemplateURLData& TemplateURLData::operator=(const TemplateURLData& other) =
 TemplateURLData::TemplateURLData(
     std::u16string_view name,
     std::u16string_view keyword,
-    base::StringPiece search_url,
-    base::StringPiece suggest_url,
-    base::StringPiece image_url,
-    base::StringPiece image_translate_url,
-    base::StringPiece new_tab_url,
-    base::StringPiece contextual_search_url,
-    base::StringPiece logo_url,
-    base::StringPiece doodle_url,
-    base::StringPiece search_url_post_params,
-    base::StringPiece suggest_url_post_params,
-    base::StringPiece image_url_post_params,
-    base::StringPiece side_search_param,
-    base::StringPiece side_image_search_param,
-    base::StringPiece image_translate_source_language_param_key,
-    base::StringPiece image_translate_target_language_param_key,
+    std::string_view search_url,
+    std::string_view suggest_url,
+    std::string_view image_url,
+    std::string_view image_translate_url,
+    std::string_view new_tab_url,
+    std::string_view contextual_search_url,
+    std::string_view logo_url,
+    std::string_view doodle_url,
+    std::string_view search_url_post_params,
+    std::string_view suggest_url_post_params,
+    std::string_view image_url_post_params,
+    std::string_view side_search_param,
+    std::string_view side_image_search_param,
+    std::string_view image_translate_source_language_param_key,
+    std::string_view image_translate_target_language_param_key,
     std::vector<std::string> search_intent_params,
-    base::StringPiece favicon_url,
-    base::StringPiece encoding,
-    base::StringPiece16 image_search_branding_label,
+    std::string_view favicon_url,
+    std::string_view encoding,
+    std::u16string_view image_search_branding_label,
     const base::Value::List& alternate_urls_list,
     bool preconnect_to_search_url,
     bool prefetch_likely_navigations,

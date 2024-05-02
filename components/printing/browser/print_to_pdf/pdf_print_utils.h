@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/printing/common/print.mojom.h"
 #include "printing/page_range.h"
@@ -20,7 +20,7 @@ namespace print_to_pdf {
 // Converts textual representation of the page range to printing::PageRanges,
 // page range error is returned as the PdfPrintResult variant case.
 absl::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
-    base::StringPiece page_range_text);
+    std::string_view page_range_text);
 
 // Converts print settings to printing::mojom::PrintPagesParamsPtr,
 // document error is returned as the string variant case.

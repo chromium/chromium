@@ -9,10 +9,10 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_name_set.h"
@@ -45,7 +45,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;
   bool IsInitializationComplete() const override;
-  bool GetValue(base::StringPiece key,
+  bool GetValue(std::string_view key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
 
@@ -85,7 +85,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
 
   // Returns true if |key| corresponds to a preference that shall be stored in
   // persistent PrefStore.
-  bool ShallBeStoredInPersistent(base::StringPiece key) const;
+  bool ShallBeStoredInPersistent(std::string_view key) const;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
   std::unique_ptr<ObserverAdapter> ephemeral_pref_store_observer_;

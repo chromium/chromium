@@ -6,11 +6,12 @@
 #define COMPONENTS_PREFS_IN_MEMORY_PREF_STORE_H_
 
 #include <stdint.h>
+
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_map.h"
@@ -27,7 +28,7 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
   InMemoryPrefStore& operator=(const InMemoryPrefStore&) = delete;
 
   // PrefStore implementation.
-  bool GetValue(base::StringPiece key,
+  bool GetValue(std::string_view key,
                 const base::Value** result) const override;
   base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;

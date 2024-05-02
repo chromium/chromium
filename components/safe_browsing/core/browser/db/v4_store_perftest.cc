@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -51,7 +52,7 @@ TEST_F(V4StorePerftest, StressTest) {
   // Keep the full hashes as one big string to avoid tons of allocations /
   // deallocations in the test.
   std::string full_hashes(kNumPrefixes * kMaxHashPrefixLength, 0);
-  base::StringPiece full_hashes_piece = base::StringPiece(full_hashes);
+  std::string_view full_hashes_piece = std::string_view(full_hashes);
   std::vector<std::string> prefixes;
   for (size_t i = 0; i < kNumPrefixes; i++) {
     size_t index = i * kMaxHashPrefixLength;
@@ -69,7 +70,7 @@ TEST_F(V4StorePerftest, StressTest) {
   base::ElapsedTimer timer;
   for (size_t i = 0; i < kNumPrefixes; i++) {
     size_t index = i * kMaxHashPrefixLength;
-    base::StringPiece full_hash =
+    std::string_view full_hash =
         full_hashes_piece.substr(index, kMaxHashPrefixLength);
     matches += !store->GetMatchingHashPrefix(full_hash).empty();
   }

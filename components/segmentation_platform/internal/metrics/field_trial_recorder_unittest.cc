@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/internal/metrics/field_trial_recorder.h"
 
+#include <string_view>
+
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -34,11 +36,10 @@ proto::ClientResult CreateClientResult(proto::PredictionResult pred_result) {
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
   MOCK_METHOD2(RegisterFieldTrial,
-               void(base::StringPiece trial_name,
-                    base::StringPiece group_name));
+               void(std::string_view trial_name, std::string_view group_name));
 
   MOCK_METHOD3(RegisterSubsegmentFieldTrialIfNeeded,
-               void(base::StringPiece trial_name,
+               void(std::string_view trial_name,
                     proto::SegmentId segment_id,
                     int subsegment_rank));
 };
@@ -75,8 +76,8 @@ TEST_F(FieldTrialRecorderTest, RecordUnselectedFieldTrial) {
       std::make_unique<CachedResultProvider>(result_prefs_.get(), configs_);
 
   EXPECT_CALL(field_trial_register_,
-              RegisterFieldTrial(base::StringPiece("Segmentation_test_key"),
-                                 base::StringPiece("Unselected")));
+              RegisterFieldTrial(std::string_view("Segmentation_test_key"),
+                                 std::string_view("Unselected")));
 
   field_trial_recorder_->RecordFieldTrialAtStartup(
       configs_, cached_result_provider_.get());
@@ -92,8 +93,8 @@ TEST_F(FieldTrialRecorderTest, RecordFieldTrial) {
       std::make_unique<CachedResultProvider>(result_prefs_.get(), configs_);
 
   EXPECT_CALL(field_trial_register_,
-              RegisterFieldTrial(base::StringPiece("Segmentation_test_key"),
-                                 base::StringPiece("High")));
+              RegisterFieldTrial(std::string_view("Segmentation_test_key"),
+                                 std::string_view("High")));
 
   field_trial_recorder_->RecordFieldTrialAtStartup(
       configs_, cached_result_provider_.get());
@@ -110,8 +111,8 @@ TEST_F(FieldTrialRecorderTest, RecordFieldTrialForNonClassification) {
       std::make_unique<CachedResultProvider>(result_prefs_.get(), configs_);
 
   EXPECT_CALL(field_trial_register_,
-              RegisterFieldTrial(base::StringPiece("Segmentation_test_key"),
-                                 base::StringPiece("Unselected")));
+              RegisterFieldTrial(std::string_view("Segmentation_test_key"),
+                                 std::string_view("Unselected")));
 
   field_trial_recorder_->RecordFieldTrialAtStartup(
       configs_, cached_result_provider_.get());

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -17,7 +18,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -1002,10 +1002,10 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
 }
 
 HashPrefixStr V4Store::GetMatchingHashPrefix(const FullHashStr& full_hash) {
-  return GetMatchingHashPrefix(base::StringPiece(full_hash));
+  return GetMatchingHashPrefix(std::string_view(full_hash));
 }
 
-HashPrefixStr V4Store::GetMatchingHashPrefix(base::StringPiece full_hash) {
+HashPrefixStr V4Store::GetMatchingHashPrefix(std::string_view full_hash) {
   // It should never be the case that more than one hash prefixes match a given
   // full hash. However, if that happens, this method returns any one of them.
   // It does not guarantee which one of those will be returned.

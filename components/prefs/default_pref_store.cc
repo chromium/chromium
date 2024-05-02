@@ -5,17 +5,17 @@
 #include "components/prefs/default_pref_store.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 
 using base::Value;
 
 DefaultPrefStore::DefaultPrefStore() {}
 
-bool DefaultPrefStore::GetValue(base::StringPiece key,
+bool DefaultPrefStore::GetValue(std::string_view key,
                                 const Value** result) const {
   return prefs_.GetValue(key, result);
 }

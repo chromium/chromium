@@ -5,19 +5,20 @@
 #include "components/prefs/pref_value_map.h"
 
 #include <limits.h>
+
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 PrefValueMap::PrefValueMap() {}
 
 PrefValueMap::~PrefValueMap() {}
 
-bool PrefValueMap::GetValue(base::StringPiece key,
+bool PrefValueMap::GetValue(std::string_view key,
                             const base::Value** value) const {
   auto it = prefs_.find(key);
   if (it == prefs_.end())
@@ -29,7 +30,7 @@ bool PrefValueMap::GetValue(base::StringPiece key,
   return true;
 }
 
-bool PrefValueMap::GetValue(base::StringPiece key, base::Value** value) {
+bool PrefValueMap::GetValue(std::string_view key, base::Value** value) {
   auto it = prefs_.find(key);
   if (it == prefs_.end())
     return false;

@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -380,7 +381,7 @@ class TemplateURLRef {
       const SearchTermsData& search_terms_data) const;
 
   // Converts the specified term in our owner's encoding to a std::u16string.
-  std::u16string SearchTermToString16(const base::StringPiece& term) const;
+  std::u16string SearchTermToString16(std::string_view term) const;
 
   // Returns true if this TemplateURLRef has a replacement term of
   // {google:baseURL} or {google:baseSuggestURL}.

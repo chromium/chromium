@@ -5,11 +5,11 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -130,14 +130,14 @@ void CompareErrorStatusAndCallClosure(
 
 // --- AccountAvailabilityOptions ----------------------------------------------
 
-AccountAvailabilityOptions::AccountAvailabilityOptions(base::StringPiece email)
+AccountAvailabilityOptions::AccountAvailabilityOptions(std::string_view email)
     : email(email) {
   CHECK(!email.empty());
 }
 
 AccountAvailabilityOptions::AccountAvailabilityOptions(
-    base::StringPiece email,
-    base::StringPiece gaia_id,
+    std::string_view email,
+    std::string_view gaia_id,
     std::optional<ConsentLevel> consent_level,
     std::optional<std::string> refresh_token,
     raw_ptr<network::TestURLLoaderFactory> url_loader_factory_for_cookies,
@@ -181,7 +181,7 @@ AccountAvailabilityOptionsBuilder& AccountAvailabilityOptionsBuilder::AsPrimary(
 }
 
 AccountAvailabilityOptionsBuilder&
-AccountAvailabilityOptionsBuilder::WithGaiaId(base::StringPiece gaia_id) {
+AccountAvailabilityOptionsBuilder::WithGaiaId(std::string_view gaia_id) {
   CHECK(!gaia_id.empty());
   gaia_id_ = gaia_id;
   return *this;
@@ -197,7 +197,7 @@ AccountAvailabilityOptionsBuilder::WithCookie(bool with_cookie) {
 
 AccountAvailabilityOptionsBuilder&
 AccountAvailabilityOptionsBuilder::WithRefreshToken(
-    base::StringPiece refresh_token) {
+    std::string_view refresh_token) {
   refresh_token_ = refresh_token;
   return *this;
 }
@@ -216,7 +216,7 @@ AccountAvailabilityOptionsBuilder::WithAccessPoint(
 }
 
 AccountAvailabilityOptions AccountAvailabilityOptionsBuilder::Build(
-    base::StringPiece email) {
+    std::string_view email) {
   return AccountAvailabilityOptions(
       email, gaia_id_, primary_account_consent_level_, refresh_token_,
       with_cookie_ ? url_loader_factory_for_cookies_ : nullptr, access_point_);
@@ -562,7 +562,7 @@ void SetCookieAccounts(
 }
 
 AccountInfo WithGeneratedUserInfo(const AccountInfo& base_account_info,
-                                  base::StringPiece given_name) {
+                                  std::string_view given_name) {
   CHECK(!given_name.empty())
       << "A given name is needed to generate the Gaia info.";
 

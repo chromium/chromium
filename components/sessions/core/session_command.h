@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/sessions/core/sessions_export.h"
 
 namespace base {
@@ -52,8 +52,8 @@ class SESSIONS_EXPORT SessionCommand {
   // The contents of the command.
   char* contents() { return const_cast<char*>(contents_.c_str()); }
   const char* contents() const { return contents_.c_str(); }
-  base::StringPiece contents_as_string_piece() const {
-    return base::StringPiece(contents_);
+  std::string_view contents_as_string_piece() const {
+    return std::string_view(contents_);
   }
   // Identifier for the command.
   id_type id() const { return id_; }

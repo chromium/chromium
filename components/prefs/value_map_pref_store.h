@@ -9,9 +9,9 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/prefs/prefs_export.h"
@@ -27,8 +27,7 @@ class COMPONENTS_PREFS_EXPORT ValueMapPrefStore : public WriteablePrefStore {
   ValueMapPrefStore& operator=(const ValueMapPrefStore&) = delete;
 
   // PrefStore overrides:
-  bool GetValue(base::StringPiece key,
-                const base::Value** value) const override;
+  bool GetValue(std::string_view key, const base::Value** value) const override;
   base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
   void RemoveObserver(PrefStore::Observer* observer) override;

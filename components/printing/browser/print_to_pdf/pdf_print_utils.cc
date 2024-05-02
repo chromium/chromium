@@ -4,6 +4,8 @@
 
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 
+#include <string_view>
+
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -35,13 +37,13 @@ static constexpr double kDefaultMarginInInches =
 }  // namespace
 
 absl::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
-    base::StringPiece page_range_text) {
+    std::string_view page_range_text) {
   printing::PageRanges page_ranges;
   for (const auto& range_string :
        base::SplitStringPiece(page_range_text, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     printing::PageRange range;
-    if (range_string.find("-") == base::StringPiece::npos) {
+    if (range_string.find("-") == std::string_view::npos) {
       if (!base::StringToUint(range_string, &range.from))
         return PdfPrintResult::kPageRangeSyntaxError;
       range.to = range.from;

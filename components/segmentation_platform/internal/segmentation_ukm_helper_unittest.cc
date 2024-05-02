@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <optional>
+#include <string_view>
 
 #include "base/bit_cast.h"
 #include "base/strings/string_number_conversions.h"
@@ -90,8 +91,8 @@ class SegmentationUkmHelperTest : public testing::Test {
     SegmentationUkmHelper::GetInstance()->Initialize();
   }
 
-  void ExpectUkmMetrics(const base::StringPiece entry_name,
-                        const std::vector<base::StringPiece>& keys,
+  void ExpectUkmMetrics(const std::string_view entry_name,
+                        const std::vector<std::string_view>& keys,
                         const std::vector<int64_t>& values) {
     const auto& entries = test_recorder_.GetEntriesByName(entry_name);
     EXPECT_EQ(1u, entries.size());
@@ -104,7 +105,7 @@ class SegmentationUkmHelperTest : public testing::Test {
     }
   }
 
-  void ExpectEmptyUkmMetrics(const base::StringPiece entry_name) {
+  void ExpectEmptyUkmMetrics(const std::string_view entry_name) {
     EXPECT_EQ(0u, test_recorder_.GetEntriesByName(entry_name).size());
   }
 

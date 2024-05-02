@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -19,7 +20,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
@@ -150,7 +150,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
     base::Time response_time,
     bool* parsing_failed) {
   // The response may start with )]}'. Ignore this.
-  base::StringPiece response_sp(*response);
+  std::string_view response_sp(*response);
   if (base::StartsWith(response_sp, kResponsePreamble)) {
     response_sp.remove_prefix(strlen(kResponsePreamble));
   }

@@ -6,12 +6,13 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
@@ -144,7 +145,7 @@ SigninHeaderHelper::ResponseHeaderDictionary
 SigninHeaderHelper::ParseAccountConsistencyResponseHeader(
     const std::string& header_value) {
   ResponseHeaderDictionary dictionary;
-  for (const base::StringPiece& field :
+  for (std::string_view field :
        base::SplitStringPiece(header_value, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     size_t delim = field.find_first_of('=');

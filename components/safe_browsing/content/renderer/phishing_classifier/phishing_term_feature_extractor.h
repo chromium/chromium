@@ -22,12 +22,12 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
 
 namespace safe_browsing {
@@ -118,7 +118,7 @@ class PhishingTermFeatureExtractor {
   void ExtractFeaturesWithTimeout();
 
   // Handles a single word in the page text.
-  void HandleWord(const base::StringPiece16& word);
+  void HandleWord(std::u16string_view word);
 
   // Runs |done_callback_| and then clears all internal state.
   void RunCallback(bool success);

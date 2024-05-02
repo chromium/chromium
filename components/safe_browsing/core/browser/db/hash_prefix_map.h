@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/files/memory_mapped_file.h"
@@ -70,7 +71,7 @@ enum ApplyUpdateResult {
 // The sorted list of hash prefixes.
 using HashPrefixes = std::string;
 
-using HashPrefixesView = base::StringPiece;
+using HashPrefixesView = std::string_view;
 using HashPrefixMapView = std::unordered_map<PrefixSize, HashPrefixesView>;
 
 // Set a common sense limit on the store file size we try to read.
@@ -123,7 +124,7 @@ class HashPrefixMap {
   virtual ApplyUpdateResult IsValid() const = 0;
 
   // Returns a hash prefix if it matches the prefixes stored in this map.
-  virtual HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) = 0;
+  virtual HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash) = 0;
 
   // Migrates the file format between the different types of HashPrefixMap.
   enum class MigrateResult { kUnknown, kSuccess, kFailure, kNotNeeded };
@@ -153,7 +154,7 @@ class InMemoryHashPrefixMap : public HashPrefixMap {
   std::unique_ptr<WriteSession> WriteToDisk(
       V4StoreFileFormat* file_format) override;
   ApplyUpdateResult IsValid() const override;
-  HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) override;
+  HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash) override;
   MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                   V4StoreFileFormat* file_format) override;
   void GetPrefixInfo(google::protobuf::RepeatedPtrField<
@@ -184,7 +185,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
   std::unique_ptr<WriteSession> WriteToDisk(
       V4StoreFileFormat* file_format) override;
   ApplyUpdateResult IsValid() const override;
-  HashPrefixStr GetMatchingHashPrefix(base::StringPiece full_hash) override;
+  HashPrefixStr GetMatchingHashPrefix(std::string_view full_hash) override;
   MigrateResult MigrateFileFormat(const base::FilePath& store_path,
                                   V4StoreFileFormat* file_format) override;
   void GetPrefixInfo(google::protobuf::RepeatedPtrField<
@@ -209,7 +210,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
 
     HashPrefixesView GetView() const;
     bool IsReadable() const { return file_.IsValid(); }
-    HashPrefixStr Matches(base::StringPiece full_hash) const;
+    HashPrefixStr Matches(std::string_view full_hash) const;
     BufferedFileWriter* GetOrCreateWriter(size_t buffer_size);
 
     const std::string& GetExtensionForTesting() const;

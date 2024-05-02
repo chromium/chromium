@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -88,7 +89,7 @@ void ChunkedByteBuffer::Append(const uint8_t* start, size_t length) {
   total_bytes_stored_ += length;
 }
 
-void ChunkedByteBuffer::Append(base::StringPiece string) {
+void ChunkedByteBuffer::Append(std::string_view string) {
   Append(reinterpret_cast<const uint8_t*>(string.data()), string.size());
 }
 

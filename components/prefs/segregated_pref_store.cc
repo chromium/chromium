@@ -5,6 +5,7 @@
 #include "components/prefs/segregated_pref_store.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/pref_name_set.h"
 
@@ -87,7 +87,7 @@ bool SegregatedPrefStore::IsInitializationSuccessful() const {
          selected_observer_.initialization_succeeded();
 }
 
-bool SegregatedPrefStore::GetValue(base::StringPiece key,
+bool SegregatedPrefStore::GetValue(std::string_view key,
                                    const base::Value** result) const {
   return StoreForKey(key)->GetValue(key, result);
 }
@@ -214,14 +214,14 @@ SegregatedPrefStore::~SegregatedPrefStore() {
   selected_pref_store_->RemoveObserver(&selected_observer_);
 }
 
-PersistentPrefStore* SegregatedPrefStore::StoreForKey(base::StringPiece key) {
+PersistentPrefStore* SegregatedPrefStore::StoreForKey(std::string_view key) {
   return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
                                                           : default_pref_store_)
       .get();
 }
 
 const PersistentPrefStore* SegregatedPrefStore::StoreForKey(
-    base::StringPiece key) const {
+    std::string_view key) const {
   return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
                                                           : default_pref_store_)
       .get();

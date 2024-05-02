@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 
 #include <optional>
+#include <string_view>
 
 #include "account_capabilities_fetcher.h"
 #include "base/notreached.h"
@@ -28,7 +29,7 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_android.h"
 #include "components/signin/public/android/test_support_jni_headers/AccountCapabilitiesFetcherTestUtil_jni.h"
 #else
-#include "base/strings/string_piece.h"
+
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/prefs/testing_pref_service.h"
@@ -147,10 +148,10 @@ std::string GenerateValidAccountCapabilitiesResponse(bool capability_value) {
 
 void VerifyAccountCapabilitiesRequest(const network::ResourceRequest& request) {
   EXPECT_EQ(request.method, "POST");
-  base::StringPiece request_string = request.request_body->elements()
-                                         ->at(0)
-                                         .As<network::DataElementBytes>()
-                                         .AsStringPiece();
+  std::string_view request_string = request.request_body->elements()
+                                        ->at(0)
+                                        .As<network::DataElementBytes>()
+                                        .AsStringPiece();
   // The request body should look like:
   // "names=Name1&names=Name2&names=Name3"
   std::vector<std::string> requested_capabilities = base::SplitString(

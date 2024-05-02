@@ -8,13 +8,13 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <tuple>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,7 +43,7 @@ const char kBuiltinKeywordCountry[] = "Builtin Keyword Country";
 const char kStarterPackKeywordVersion[] = "Starter Pack Keyword Version";
 
 const std::string ColumnsForVersion(int version, bool concatenated) {
-  std::vector<base::StringPiece> columns;
+  std::vector<std::string_view> columns;
 
   columns.push_back("id");
   columns.push_back("short_name");

@@ -4,13 +4,14 @@
 
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
@@ -74,7 +75,7 @@ void TokenBindingHelper::ClearAllKeys() {
 
 void TokenBindingHelper::GenerateBindingKeyAssertion(
     const CoreAccountId& account_id,
-    base::StringPiece challenge,
+    std::string_view challenge,
     const GURL& destination_url,
     base::OnceCallback<void(std::string)> callback) {
   CHECK(callback);
@@ -119,7 +120,7 @@ TokenBindingHelper::BindingKeyData::operator=(BindingKeyData&& other) = default;
 TokenBindingHelper::BindingKeyData::~BindingKeyData() = default;
 
 void TokenBindingHelper::SignAssertionToken(
-    base::StringPiece challenge,
+    std::string_view challenge,
     const GURL& destination_url,
     base::OnceCallback<void(std::string)> callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>

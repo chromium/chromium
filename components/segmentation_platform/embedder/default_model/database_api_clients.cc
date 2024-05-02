@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
@@ -129,7 +130,7 @@ void DatabaseApiClients::AddSumGroupQuery(
 
 // static
 void DatabaseApiClients::AddSumQuery(MetadataWriter& writer,
-                                     base::StringPiece metric_name,
+                                     std::string_view metric_name,
                                      int days) {
   std::string query = base::StringPrintf(
       "SELECT SUM(metric_value) FROM metrics WHERE metric_hash = '%" PRIX64

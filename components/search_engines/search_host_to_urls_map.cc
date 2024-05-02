@@ -5,6 +5,7 @@
 #include "components/search_engines/search_host_to_urls_map.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/ranges/algorithm.h"
 #include "components/search_engines/template_url.h"
@@ -53,8 +54,7 @@ void SearchHostToURLsMap::Remove(const TemplateURL* template_url) {
     host_to_urls_map_.erase(set_with_url);
 }
 
-TemplateURL* SearchHostToURLsMap::GetTemplateURLForHost(
-    base::StringPiece host) {
+TemplateURL* SearchHostToURLsMap::GetTemplateURLForHost(std::string_view host) {
   DCHECK(initialized_);
 
   HostToURLsMap::const_iterator iter = host_to_urls_map_.find(host);
@@ -71,7 +71,7 @@ TemplateURL* SearchHostToURLsMap::GetTemplateURLForHost(
 }
 
 SearchHostToURLsMap::TemplateURLSet* SearchHostToURLsMap::GetURLsForHost(
-    base::StringPiece host) {
+    std::string_view host) {
   DCHECK(initialized_);
 
   auto urls_for_host = host_to_urls_map_.find(host);

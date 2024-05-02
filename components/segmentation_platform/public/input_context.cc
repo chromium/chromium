@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/public/input_context.h"
 
+#include <string_view>
+
 #include "base/values.h"
 
 namespace segmentation_platform {
@@ -13,7 +15,7 @@ InputContext::InputContext() = default;
 InputContext::~InputContext() = default;
 
 std::optional<processing::ProcessedValue> InputContext::GetMetadataArgument(
-    base::StringPiece arg_name) const {
+    std::string_view arg_name) const {
   auto it = metadata_args.find(arg_name);
   if (it == metadata_args.end()) {
     return std::nullopt;

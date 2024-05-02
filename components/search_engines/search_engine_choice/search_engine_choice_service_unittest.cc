@@ -5,6 +5,7 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -1436,7 +1437,7 @@ struct RepromptTestParam {
   std::optional<RepromptResult> wildcard_result;
   std::optional<RepromptResult> country_result;
   // Version of the choice.
-  const base::StringPiece choice_version;
+  const std::string_view choice_version;
   // The reprompt params, as sent by the server.  Use `CURRENT_VERSION` for the
   // current Chrome version, and `FUTURE_VERSION` for a future version.
   const char* param_dict;

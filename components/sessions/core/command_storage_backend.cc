@@ -5,8 +5,10 @@
 #include "components/sessions/core/command_storage_backend.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -333,8 +335,8 @@ SessionFileReader::CreateCommandFromEncrypted(const char* data,
   memset(nonce, 0, kNonceLength);
   memcpy(nonce, &command_counter_, sizeof(command_counter_));
   std::string plain_text;
-  if (!aead_->Open(base::StringPiece(data, length),
-                   base::StringPiece(nonce, kNonceLength), base::StringPiece(),
+  if (!aead_->Open(std::string_view(data, length),
+                   std::string_view(nonce, kNonceLength), std::string_view(),
                    &plain_text)) {
     DVLOG(1) << "SessionFileReader::ReadCommand, decryption failed";
     return nullptr;
@@ -821,8 +823,8 @@ bool CommandStorageBackend::AppendEncryptedCommandToFile(
          command_size);
 
   std::string cipher_text;
-  aead_->Seal(base::StringPiece(&command_and_id.front(), command_and_id.size()),
-              base::StringPiece(nonce, kNonceLength), base::StringPiece(),
+  aead_->Seal(std::string_view(&command_and_id.front(), command_and_id.size()),
+              std::string_view(nonce, kNonceLength), std::string_view(),
               &cipher_text);
   DCHECK_LE(cipher_text.size(), std::numeric_limits<size_type>::max());
   const size_type command_and_id_size =

@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
@@ -458,12 +460,12 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   url::Parsed parsed = url::ParseStandardURL(url_unescaped_str);
 
   // 3. In hostname, remove all leading and trailing dots.
-  base::StringPiece host;
+  std::string_view host;
   if (parsed.host.is_nonempty())
-    host = base::StringPiece(url_unescaped_str.data() + parsed.host.begin,
-                             parsed.host.len);
+    host = std::string_view(url_unescaped_str.data() + parsed.host.begin,
+                            parsed.host.len);
 
-  base::StringPiece host_without_end_dots =
+  std::string_view host_without_end_dots =
       base::TrimString(host, ".", base::TrimPositions::TRIM_ALL);
 
   // 4. In hostname, replace consecutive dots with a single dot.
@@ -471,10 +473,10 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
       RemoveConsecutiveChars(host_without_end_dots, '.'));
 
   // 5. In path, replace runs of consecutive slashes with a single slash.
-  base::StringPiece path;
+  std::string_view path;
   if (parsed.path.is_nonempty())
-    path = base::StringPiece(url_unescaped_str.data() + parsed.path.begin,
-                             parsed.path.len);
+    path = std::string_view(url_unescaped_str.data() + parsed.path.begin,
+                            parsed.path.len);
   std::string path_without_consecutive_slash(RemoveConsecutiveChars(path, '/'));
 
   url::Replacements<char> hp_replacements;
@@ -516,7 +518,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 }
 
 // static
-std::string V4ProtocolManagerUtil::RemoveConsecutiveChars(base::StringPiece str,
+std::string V4ProtocolManagerUtil::RemoveConsecutiveChars(std::string_view str,
                                                           const char c) {
   std::string output;
   // Output is at most the length of the original string.

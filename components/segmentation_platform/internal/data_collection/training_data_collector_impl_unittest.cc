@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/data_collection/training_data_collector_impl.h"
 
 #include <map>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -361,7 +362,7 @@ class TrainingDataCollectorImplTest
 
   // TODO(xingliu): Share this test code with SegmentationUkmHelperTest, or test
   // with mock SegmentationUkmHelperTest.
-  void ExpectUkm(std::vector<base::StringPiece> metric_names,
+  void ExpectUkm(std::vector<std::string_view> metric_names,
                  std::vector<int64_t> expected_values) {
     const auto& entries = test_recorder_.GetEntriesByName(
         Segmentation_ModelExecution::kEntryName);
