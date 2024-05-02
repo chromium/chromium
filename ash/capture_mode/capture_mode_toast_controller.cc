@@ -61,8 +61,11 @@ CaptureModeToastController::CaptureModeToastController(
     : capture_session_(session) {}
 
 CaptureModeToastController::~CaptureModeToastController() {
-  if (capture_toast_widget_)
+  // Widget needs to be closed immediately so it does not show in the
+  // screenshot.
+  if (capture_toast_widget_) {
     capture_toast_widget_->CloseNow();
+  }
 }
 
 void CaptureModeToastController::ShowCaptureToast(
@@ -160,6 +163,13 @@ ui::Layer* CaptureModeToastController::MaybeGetToastLayer() {
   return capture_toast_widget_ ? capture_toast_widget_->GetLayer() : nullptr;
 }
 
+void CaptureModeToastController::OnWidgetDestroying(views::Widget* widget) {
+  toast_contents_view_ = nullptr;
+  if (capture_toast_widget_) {
+    capture_toast_widget_->RemoveObserver(this);
+  }
+}
+
 void CaptureModeToastController::BuildCaptureToastWidget(
     const std::u16string& label) {
   // Create the widget before init it to ensure that the `capture_toast_widget_`
@@ -168,6 +178,7 @@ void CaptureModeToastController::BuildCaptureToastWidget(
   capture_toast_widget_->Init(
       CreateWidgetParams(capture_session_->current_root()->GetChildById(
           kShellWindowId_MenuContainer)));
+  capture_toast_widget_->AddObserver(this);
   toast_contents_view_ =
       capture_toast_widget_->SetContentsView(std::make_unique<SystemToastStyle>(
           /*dismiss_callback=*/base::DoNothing(), label,
