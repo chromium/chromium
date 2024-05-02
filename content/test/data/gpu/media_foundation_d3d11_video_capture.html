@@ -1,0 +1,252 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>MediaFoundationD3D11VideoCapture test: camera capture is piped to peerconnection</title>
+</head>
+<body>
+<div id="container">
+    <video id="localVideo" playsinline autoplay muted></video>
+    <video id="remoteVideo" playsinline autoplay></video>
+</div>
+
+<script>
+'use strict';
+
+let startTime;
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+let renderedFramesCount;
+
+
+let localStream;
+let pc1;
+let pc2;
+const offerOptions = {
+  offerToReceiveAudio: 1,
+  offerToReceiveVideo: 1
+};
+
+function logOutput(s) {
+  if (window.domAutomationController) {
+    window.domAutomationController.log(s);
+  } else {
+    console.log(s);
+  }
+}
+
+function sendResult(status) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+
+function getName(pc) {
+  return (pc === pc1) ? 'pc1' : 'pc2';
+}
+
+function getOtherPc(pc) {
+  return (pc === pc1) ? pc2 : pc1;
+}
+
+async function start() {
+  logOutput('Requesting local stream');
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio: false, video: true});
+    logOutput('Received local stream');
+    localVideo.srcObject = stream;
+    localStream = stream;
+  } catch (e) {
+    sendResult('FAILED');
+    logOutput(`getUserMedia() error: ${e.name}`);
+  }
+}
+
+async function call() {
+  logOutput('Starting call');
+  startTime = window.performance.now();
+  const videoTracks = localStream.getVideoTracks();
+  const audioTracks = localStream.getAudioTracks();
+  if (videoTracks.length > 0) {
+    logOutput(`Using video device: ${videoTracks[0].label}`);
+  }
+  if (audioTracks.length > 0) {
+    logOutput(`Using audio device: ${audioTracks[0].label}`);
+  }
+  const configuration = {};
+  logOutput('RTCPeerConnection configuration:', configuration);
+  pc1 = new RTCPeerConnection(configuration);
+  logOutput('Created local peer connection object pc1');
+  pc1.addEventListener('icecandidate', e => onIceCandidate(pc1, e));
+  pc2 = new RTCPeerConnection(configuration);
+  logOutput('Created remote peer connection object pc2');
+  pc2.addEventListener('icecandidate', e => onIceCandidate(pc2, e));
+  pc1.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc1, e));
+  pc2.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc2, e));
+  pc2.addEventListener('track', gotRemoteStream);
+
+  localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
+  logOutput('Added local stream to pc1');
+
+  try {
+    logOutput('pc1 createOffer start');
+    const offer = await pc1.createOffer(offerOptions);
+    await onCreateOfferSuccess(offer);
+  } catch (e) {
+    onCreateSessionDescriptionError(e);
+  }
+}
+
+function onCreateSessionDescriptionError(error) {
+  sendResult('FAILED');
+  logOutput(`Failed to create session description: ${error.toString()}`);
+}
+
+async function onCreateOfferSuccess(desc) {
+  logOutput(`Offer from pc1\n${desc.sdp}`);
+  logOutput('pc1 setLocalDescription start');
+  try {
+    await pc1.setLocalDescription(desc);
+    onSetLocalSuccess(pc1);
+  } catch (e) {
+    onSetSessionDescriptionError();
+  }
+
+  logOutput('pc2 setRemoteDescription start');
+  try {
+    await pc2.setRemoteDescription(desc);
+    onSetRemoteSuccess(pc2);
+  } catch (e) {
+    onSetSessionDescriptionError();
+  }
+
+  logOutput('pc2 createAnswer start');
+  // Since the 'remote' side has no media stream we need
+  // to pass in the right constraints in order for it to
+  // accept the incoming offer of audio and video.
+  try {
+    const answer = await pc2.createAnswer();
+    await onCreateAnswerSuccess(answer);
+  } catch (e) {
+    onCreateSessionDescriptionError(e);
+  }
+}
+
+function onSetLocalSuccess(pc) {
+  logOutput(`${getName(pc)} setLocalDescription complete`);
+}
+
+function onSetRemoteSuccess(pc) {
+  logOutput(`${getName(pc)} setRemoteDescription complete`);
+}
+
+function onSetSessionDescriptionError(error) {
+  sendResult('FAILED');
+  logOutput(`Failed to set session description: ${error.toString()}`);
+}
+
+function gotRemoteStream(e) {
+  if (remoteVideo.srcObject !== e.streams[0]) {
+    remoteVideo.srcObject = e.streams[0];
+    logOutput('pc2 received remote stream');
+  }
+}
+
+async function onCreateAnswerSuccess(desc) {
+  logOutput(`Answer from pc2:\n${desc.sdp}`);
+  logOutput('pc2 setLocalDescription start');
+  try {
+    await pc2.setLocalDescription(desc);
+    onSetLocalSuccess(pc2);
+  } catch (e) {
+    onSetSessionDescriptionError(e);
+  }
+  logOutput('pc1 setRemoteDescription start');
+  try {
+    await pc1.setRemoteDescription(desc);
+    onSetRemoteSuccess(pc1);
+  } catch (e) {
+    onSetSessionDescriptionError(e);
+  }
+}
+
+async function onIceCandidate(pc, event) {
+  try {
+    await (getOtherPc(pc).addIceCandidate(event.candidate));
+    onAddIceCandidateSuccess(pc);
+  } catch (e) {
+    onAddIceCandidateError(pc, e);
+  }
+  logOutput(`${getName(pc)} ICE candidate:\n${event.candidate ? event.candidate.candidate : '(null)'}`);
+}
+
+function onAddIceCandidateSuccess(pc) {
+  logOutput(`${getName(pc)} addIceCandidate success`);
+}
+
+function onAddIceCandidateError(pc, error) {
+  sendResult('FAILED');
+  logOutput(`${getName(pc)} failed to add ICE Candidate: ${error.toString()}`);
+}
+
+function onIceStateChange(pc, event) {
+  if (pc) {
+    logOutput(`${getName(pc)} ICE state: ${pc.iceConnectionState}`);
+    logOutput('ICE state change event: ', event);
+  }
+}
+
+localVideo.addEventListener('loadedmetadata', function() {
+  logOutput(`Local video videoWidth: ${this.videoWidth}px,  videoHeight: ${this.videoHeight}px`);
+  call();
+});
+
+remoteVideo.addEventListener('loadedmetadata', function() {
+  logOutput(`Remote video videoWidth: ${this.videoWidth}px,  videoHeight: ${this.videoHeight}px`);
+});
+
+remoteVideo.addEventListener('resize', () => {
+  logOutput(`Remote video size changed to ${remoteVideo.videoWidth}x${remoteVideo.videoHeight} - Time since pageload ${performance.now().toFixed(0)}ms`);
+  // We'll use the first onsize callback as an indication that video has started
+  // playing out.
+  if (startTime) {
+    const elapsedTime = window.performance.now() - startTime;
+    logOutput('Setup time: ' + elapsedTime.toFixed(3) + 'ms');
+    startTime = null;
+  }
+});
+
+
+remoteVideo.requestVideoFrameCallback(function rVFC(now, metaData) {
+  if (!renderedFramesCount) {
+    renderedFramesCount = 0
+  }
+  renderedFramesCount = renderedFramesCount + 1;
+  const minRequiredFrames = 20;
+  if (renderedFramesCount >= minRequiredFrames) {
+      const localVideoMetrics = localVideo.getVideoPlaybackQuality()
+      const localPlayedFrames = localVideoMetrics.totalVideoFrames - localVideoMetrics.droppedVideoFrames;
+      const remoteVideoMetrics = remoteVideo.getVideoPlaybackQuality()
+      const remotePlayedFrames = remoteVideoMetrics.totalVideoFrames - remoteVideoMetrics.droppedVideoFrames;
+      logOutput(`Captured ${localPlayedFrames} frames. Received ${remotePlayedFrames} frames.`)
+      if (localPlayedFrames >= minRequiredFrames && remotePlayedFrames >= minRequiredFrames) {
+          logOutput('Test complete.');
+          sendResult('SUCCESS');
+      } else {
+          logOutput(`Received too few frames`)
+          sendResult('FAILED');
+      }
+  }
+  remoteVideo.requestVideoFrameCallback(rVFC);
+});
+
+
+start();
+
+</script>
+
+
+</body>
+</html>

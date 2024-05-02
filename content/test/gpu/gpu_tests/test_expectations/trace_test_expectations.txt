@@ -93,6 +93,14 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
+# Trace tests don't support OS-specific tests, so windows-only test is skipped.
+crbug.com/337737554 [ mac ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
+crbug.com/337737554 [ linux ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
+crbug.com/337737554 [ android ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
+crbug.com/337737554 [ fuchsia ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
+crbug.com/337737554 [ chromeos ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
+
+
 # Require page actions - which are only supported in pixel tests.
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLMain [ Skip ]
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLWorker [ Skip ]
@@ -190,6 +198,13 @@ crbug.com/852089 [ android ] WebGPUTraceTest_* [ Skip ]
 crbug.com/dawn/549 [ android ] WebGPUCachingTraceTest_* [ Skip ]
 crbug.com/dawn/549 [ linux renderer-skia-gl ] WebGPUCachingTraceTest_* [ Skip ]
 crbug.com/dawn/549 [ mac ] WebGPUCachingTraceTest_* [ Skip ]
+
+# TODO(crbug.com/40145992): Remove these as the necessary driver is available on
+# more hardware configs.
+crbug.com/40145992 [ win amd ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
+crbug.com/40145992 [ win intel-0x4680 ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
+crbug.com/40145992 [ win nvidia ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
+crbug.com/40145992 [ win qualcomm ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
 
 ###################
 # Failures/Flakes #

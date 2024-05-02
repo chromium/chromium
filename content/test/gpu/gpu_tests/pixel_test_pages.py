@@ -1578,3 +1578,17 @@ class PixelTestPages():
                       base_name + '_VP8_1Frame',
                       test_rect=[0, 0, 0, 0]),
     ]
+
+  # Check what MediaFoundationD3D11VideoCapture works
+  @staticmethod
+  def MediaFoundationD3D11VideoCapturePages(
+      base_name: str) -> List[PixelTestPage]:
+    return [
+        PixelTestPage('media_foundation_d3d11_video_capture.html',
+                      base_name + '_MediaFoundationD3D11VideoCapture',
+                      test_rect=[0, 0, 300, 300],
+                      browser_args=[
+                          '--use-fake-ui-for-media-stream',
+                          '--enable-features=MediaFoundationD3D11VideoCapture'
+                      ]),
+    ]

@@ -114,6 +114,10 @@ _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME =\
 _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME =\
     'StaticBitmapImageToVideoFrameCopier::Convert'
 
+_MFD3D11VC_CAPTURE_EVENT_NAME = 'CopyTextureToGpuMemoryBuffer'
+_MFD3D11VC_MAP_EVENT_NAME = 'GpuMemoryBufferTrackerWin::DuplicateAsUnsafeRegion'
+_MFD3D11VC_PRESENT_EVENT_NAME = 'D3DImageBacking::ProduceGLTexturePassthrough'
+
 # Caching events and constants
 _GPU_HOST_STORE_BLOB_EVENT_NAME =\
     'GpuHostImpl::StoreBlobToDisk'
@@ -271,6 +275,8 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
+    # pylint: disable=too-many-branches
+
     # Include the device level trace tests, even though they're
     # currently skipped on all platforms, to give a hint that they
     # should perhaps be enabled in the future.
@@ -349,6 +355,19 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               test_harness_script=basic_test_harness_script,
               finish_js_condition='domAutomationController._finished',
               success_eval_func='CheckWebGPUCanvasCapture',
+              other_args=p.other_args)
+      ])
+
+    #TODO(crbug.com/337737554): skip these tests on non-windows.
+    for p in namespace.MediaFoundationD3D11VideoCapturePages('TraceTest'):
+      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
+          _TraceTestArguments(
+              browser_args=p.browser_args,
+              category='gpu,' +
+              cls._DisabledByDefaultTraceCategory('video_and_image_capture'),
+              test_harness_script=basic_test_harness_script,
+              finish_js_condition='domAutomationController._finished',
+              success_eval_func='CheckMediaFoundationD3D11VideoCapture',
               other_args=p.other_args)
       ])
 
@@ -591,7 +610,10 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Set up tracing.
     config = tracing_config.TracingConfig()
     config.chrome_trace_config.category_filter.AddExcludedCategory('*')
-    config.chrome_trace_config.category_filter.AddFilter(args.category)
+    if args.category.find(',') != -1:
+      config.chrome_trace_config.category_filter.AddFilterString(args.category)
+    else:
+      config.chrome_trace_config.category_filter.AddFilter(args.category)
     config.enable_chrome_trace = True
     tab = self.tab
     tab.browser.platform.tracing_controller.StartTracing(config, 60)
@@ -1039,6 +1061,33 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         cache_hits += 1
     if cache_hits != 0:
       self.fail('Expected 0 WebGPU cache hits, but got %d.' % cache_hits)
+
+  def _EvaluateSuccess_CheckMediaFoundationD3D11VideoCapture(
+      self, category: str, event_iterator: Iterator, _other_args: dict) -> None:
+    del category  # Unused.
+    os_version = self.browser.platform.GetOSVersionName()
+    assert os_version
+    if os_version.lower() not in ['win10', 'win11']:
+      self.skipTest(
+          'MediaFoundationD3D11VideoCapture only available on win 10+')
+
+    js_succeeded = self.tab.EvaluateJavaScript(
+        'domAutomationController._succeeded')
+    self.assertTrue(js_succeeded)
+
+    found_events = {
+        _MFD3D11VC_CAPTURE_EVENT_NAME: False,
+        _MFD3D11VC_MAP_EVENT_NAME: False,
+        _MFD3D11VC_PRESENT_EVENT_NAME: False,
+    }
+
+    for event in event_iterator:
+      if event.name in found_events:
+        found_events[event.name] = True
+
+    for event_name, found in found_events.items():
+      if not found:
+        self.fail(f'No {event_name} events found')
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
