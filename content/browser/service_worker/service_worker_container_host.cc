@@ -1279,8 +1279,9 @@ ServiceWorkerContainerHost::GetRemoteControllerServiceWorker() {
   return remote_controller;
 }
 
-bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
-                                                    const GURL& script_url) {
+bool ServiceWorkerContainerHostForClient::AllowServiceWorker(
+    const GURL& scope,
+    const GURL& script_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(context_);
   auto* browser_context = context_->wrapper()->browser_context();
@@ -1301,6 +1302,22 @@ bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
       web_contents->OnServiceWorkerAccessed(rfh, scope, allowed);
   }
   return allowed;
+}
+
+bool ServiceWorkerContainerHostForServiceWorker::AllowServiceWorker(
+    const GURL& scope,
+    const GURL& script_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(context_);
+  auto* browser_context = context_->wrapper()->browser_context();
+  // Check that the browser context is not nullptr.  It becomes nullptr
+  // when the service worker process manager is being shutdown.
+  if (!browser_context) {
+    return false;
+  }
+  return GetContentClient()->browser()->AllowServiceWorker(
+      scope, service_worker_security_utils::site_for_cookies(key_),
+      top_frame_origin(), script_url, browser_context);
 }
 
 bool ServiceWorkerContainerHost::IsEligibleForServiceWorkerController() const {

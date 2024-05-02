@@ -398,7 +398,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   // a window client, the check involves the topmost frame url as well as
   // |scope|, and may display tab-level UI.
   // If non-empty, |script_url| is the script the service worker will run.
-  bool AllowServiceWorker(const GURL& scope, const GURL& script_url);
+  virtual bool AllowServiceWorker(const GURL& scope,
+                                  const GURL& script_url) = 0;
 
   // Returns whether this container host is secure enough to have a service
   // worker controller.
@@ -819,6 +820,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForClient final
   void OnExecutionReady() override;
 
   // Implements ServiceWorkerContainerHost.
+  bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
       scoped_refptr<ServiceWorkerVersion> version,
       ::blink::TransferableMessage message,
@@ -912,6 +914,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
   void OnExecutionReady() override;
 
   // Implements ServiceWorkerContainerHost.
+  bool AllowServiceWorker(const GURL& scope, const GURL& script_url) override;
   void DispatchExtendableMessageEvent(
       scoped_refptr<ServiceWorkerVersion> version,
       ::blink::TransferableMessage message,
