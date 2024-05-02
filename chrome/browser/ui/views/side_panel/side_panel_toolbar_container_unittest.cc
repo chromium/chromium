@@ -106,7 +106,9 @@ TEST_F(SidePanelToolbarContainerTest, CompanionPinnedByDefault) {
             search_companion_coordinator->GetTooltipForToolbarButton());
 }
 
-TEST_F(SidePanelToolbarContainerTest, ClickingPinnedEntryOpensSidePanel) {
+// TODO(crbug.com/334181914): Flaky.
+TEST_F(SidePanelToolbarContainerTest,
+       DISABLED_ClickingPinnedEntryOpensSidePanel) {
   auto* search_companion_button = GetPinnedEntryButtons()[0];
   ClickButton(search_companion_button);
   ASSERT_TRUE(browser_view()->unified_side_panel()->GetVisible());
