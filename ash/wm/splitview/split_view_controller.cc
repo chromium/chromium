@@ -145,6 +145,8 @@ constexpr char kTabletSplitViewResizeWithOverviewMaxLatencyHistogram[] =
 // for the purpose of metric collection.
 base::Time g_multi_display_split_view_start_time;
 
+bool g_use_fast_resize_for_testing = false;
+
 bool InTabletMode() {
   return display::Screen::GetScreen()->InTabletMode();
 }
@@ -1772,9 +1774,13 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   }
 
   const bool should_use_window_bounds_in_fast_resize =
-      IsResizingWithDivider() && tablet_resize_mode_ == TabletResizeMode::kFast;
+      g_use_fast_resize_for_testing ||
+      (IsResizingWithDivider() &&
+       tablet_resize_mode_ == TabletResizeMode::kFast);
   if (window_for_minimum_size && should_use_window_bounds_in_fast_resize) {
-    return window_for_minimum_size->GetBoundsInScreen();
+    gfx::Rect bounds_in_screen(window_for_minimum_size->GetTargetBounds());
+    wm::ConvertRectToScreen(root_window_, &bounds_in_screen);
+    return bounds_in_screen;
   }
 
   const int divider_position =
@@ -1792,6 +1798,10 @@ SnapPosition SplitViewController::GetPositionOfSnappedWindow(
   DCHECK(IsWindowInSplitView(window));
   return window == primary_window_ ? SnapPosition::kPrimary
                                    : SnapPosition::kSecondary;
+}
+
+void SplitViewController::SetUseFastResizeForTesting(bool val) {
+  g_use_fast_resize_for_testing = val;
 }
 
 aura::Window* SplitViewController::GetPhysicalLeftOrTopWindow() {

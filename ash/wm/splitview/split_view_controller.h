@@ -370,6 +370,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SnapPosition GetPositionOfSnappedWindow(
       const aura::Window* window) const override;
 
+  static void SetUseFastResizeForTesting(bool val);
+
  private:
   friend class SplitViewControllerTest;
   friend class SplitViewTestApi;
