@@ -243,36 +243,36 @@ using InterestGroupSet = std::set<InterestGroupKey>;
 // used to gate whether an ad can participate in a FLEDGE auction because event
 // level reports need to include both the owner and ad URL for the purposes of
 // an auction.
-std::string BLINK_COMMON_EXPORT KAnonKeyForAdBid(const InterestGroup& group,
-                                                 const GURL& ad_url);
+// DEPRECATED_KAnonKeyForAdBid should only be used for upgrades of
+// the InterestGroups database. Use HashedKAnonKeyForAdBid instead.
 std::string BLINK_COMMON_EXPORT
-KAnonKeyForAdBid(const InterestGroup& group,
-                 const std::string& ad_url_from_gurl_spec);
+DEPRECATED_KAnonKeyForAdBid(const InterestGroup& group,
+                            const std::string& ad_url_from_gurl_spec);
 std::string BLINK_COMMON_EXPORT
-KAnonKeyForAdBid(const InterestGroup& group,
-                 const blink::AdDescriptor& ad_descriptor);
-std::string BLINK_COMMON_EXPORT KAnonKeyForAdBid(const url::Origin& owner,
-                                                 const GURL& bidding_url,
-                                                 const GURL& ad_url);
+HashedKAnonKeyForAdBid(const url::Origin& owner,
+                       const GURL& bidding_url,
+                       const std::string& ad_url_from_gurl_spec);
 std::string BLINK_COMMON_EXPORT
-KAnonKeyForAdBid(const url::Origin& owner,
-                 const GURL& bidding_url,
-                 const blink::AdDescriptor& ad_descriptor);
+HashedKAnonKeyForAdBid(const InterestGroup& group,
+                       const std::string& ad_url_from_gurl_spec);
 std::string BLINK_COMMON_EXPORT
-KAnonKeyForAdBid(const url::Origin& owner,
-                 const GURL& bidding_url,
-                 const std::string& ad_url_from_gurl_spec);
-
+HashedKAnonKeyForAdBid(const InterestGroup& group,
+                       const blink::AdDescriptor& ad_descriptor);
 // Calculates the k-anonymity key for an ad component that is used for
 // determining if an ad component is k-anonymous for the purposes of bidding and
 // winning an auction. Since ad components are not provided to reporting, we
 // only are concerned with micro-targetting. This means we can just use the ad
 // url as the k-anonymity key.
-std::string BLINK_COMMON_EXPORT KAnonKeyForAdComponentBid(const GURL& ad_url);
+// DEPRECATED_KAnonKeyForAdComponentBid should only be used for upgrades of
+// the InterestGroups database. Use HashedKAnonKeyForAdComponentBid instead.
 std::string BLINK_COMMON_EXPORT
-KAnonKeyForAdComponentBid(const blink::AdDescriptor& ad_descriptor);
+DEPRECATED_KAnonKeyForAdComponentBid(const std::string& ad_url_from_gurl_spec);
 std::string BLINK_COMMON_EXPORT
-KAnonKeyForAdComponentBid(const std::string& ad_url_from_gurl_spec);
+HashedKAnonKeyForAdComponentBid(const std::string& ad_url_from_gurl_spec);
+std::string BLINK_COMMON_EXPORT
+HashedKAnonKeyForAdComponentBid(const blink::AdDescriptor& ad_descriptor);
+std::string BLINK_COMMON_EXPORT
+HashedKAnonKeyForAdComponentBid(const GURL& ad_url);
 
 // Calculates the k-anonymity key for reporting the interest group name in
 // reportWin along with the given Ad.
@@ -282,9 +282,14 @@ KAnonKeyForAdComponentBid(const std::string& ad_url_from_gurl_spec);
 // the interest group name  --- along with the interest group owner and ad URL
 // would make the user too identifiable. If this key is not k-anonymous then we
 // do not provide the interest group name to reportWin.
+// DEPRECATED_KAnonKeyForAdNameReporting should only be used for upgrades of
+// the InterestGroups database. Use HashedKAnonKeyForAdNameReporting instead.
 std::string BLINK_COMMON_EXPORT
-KAnonKeyForAdNameReporting(const InterestGroup& group,
-                           const InterestGroup::Ad& ad);
+DEPRECATED_KAnonKeyForAdNameReporting(const InterestGroup& group,
+                                      const InterestGroup::Ad& ad);
+std::string BLINK_COMMON_EXPORT
+HashedKAnonKeyForAdNameReporting(const InterestGroup& group,
+                                 const InterestGroup::Ad& ad);
 
 }  // namespace blink
 

@@ -380,8 +380,8 @@ void InterestGroupManagerImpl::RecordDebugReportCooldown(
 }
 
 void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
-    base::flat_set<std::string> keys) {
-  k_anonymity_manager_->RegisterAdKeysAsJoined(std::move(keys));
+    base::flat_set<std::string> hashed_keys) {
+  k_anonymity_manager_->RegisterAdKeysAsJoined(std::move(hashed_keys));
 }
 
 void InterestGroupManagerImpl::GetInterestGroup(
@@ -529,14 +529,14 @@ void InterestGroupManagerImpl::UpdateKAnonymity(
 }
 
 void InterestGroupManagerImpl::GetLastKAnonymityReported(
-    const std::string& key,
+    const std::string& hashed_key,
     base::OnceCallback<void(std::optional<base::Time>)> callback) {
-  caching_storage_.GetLastKAnonymityReported(key, std::move(callback));
+  caching_storage_.GetLastKAnonymityReported(hashed_key, std::move(callback));
 }
 
 void InterestGroupManagerImpl::UpdateLastKAnonymityReported(
-    const std::string& key) {
-  caching_storage_.UpdateLastKAnonymityReported(key);
+    const std::string& hashed_key) {
+  caching_storage_.UpdateLastKAnonymityReported(hashed_key);
 }
 
 void InterestGroupManagerImpl::GetInterestGroupAdAuctionData(

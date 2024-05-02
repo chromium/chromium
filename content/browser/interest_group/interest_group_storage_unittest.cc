@@ -28,6 +28,7 @@
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "crypto/sha2.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -893,9 +894,9 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 
   base::Time update_time = base::Time::Now();
   StorageInterestGroup::KAnonymityData kanon_bid{
-      blink::KAnonKeyForAdBid(g, ad1_url), true, update_time};
+      blink::HashedKAnonKeyForAdBid(g, ad1_url.spec()), true, update_time};
   StorageInterestGroup::KAnonymityData kanon_report{
-      blink::KAnonKeyForAdNameReporting(g, g.ads.value()[0]), true,
+      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[0]), true,
       update_time};
   storage->UpdateKAnonymity(kanon_bid);
   storage->UpdateKAnonymity(kanon_report);
@@ -916,11 +917,11 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 
   update_time = base::Time::Now();
   kanon_bid = StorageInterestGroup::KAnonymityData{
-      blink::KAnonKeyForAdBid(g, ad2_url), true, update_time};
+      blink::HashedKAnonKeyForAdBid(g, ad2_url.spec()), true, update_time};
   StorageInterestGroup::KAnonymityData kanon_component{
-      blink::KAnonKeyForAdComponentBid(ad3_url), true, update_time};
+      blink::HashedKAnonKeyForAdComponentBid(ad3_url), true, update_time};
   kanon_report = StorageInterestGroup::KAnonymityData{
-      blink::KAnonKeyForAdNameReporting(g, g.ads.value()[1]), true,
+      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[1]), true,
       update_time};
   storage->UpdateKAnonymity(kanon_bid);
   storage->UpdateKAnonymity(kanon_component);
@@ -968,12 +969,14 @@ TEST_F(InterestGroupStorageTest,
   g3.expiry =
       base::Time::Now() + InterestGroupStorage::kHistoryLength + base::Hours(2);
 
-  std::string k_anon_bid_key_1 = blink::KAnonKeyForAdBid(g1, ad1_url);
-  std::string k_anon_bid_key_2 = blink::KAnonKeyForAdBid(g2, ad2_url);
+  std::string k_anon_bid_key_1 =
+      blink::HashedKAnonKeyForAdBid(g1, ad1_url.spec());
+  std::string k_anon_bid_key_2 =
+      blink::HashedKAnonKeyForAdBid(g2, ad2_url.spec());
   std::string k_anon_component_key_1 =
-      blink::KAnonKeyForAdComponentBid(ad1_url);
+      blink::HashedKAnonKeyForAdComponentBid(ad1_url);
   std::string k_anon_component_key_3 =
-      blink::KAnonKeyForAdComponentBid(ad3_url);
+      blink::HashedKAnonKeyForAdComponentBid(ad3_url);
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
@@ -1172,12 +1175,13 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   // Update the k-anonymity data.
   base::Time update_kanon_time = base::Time::Now();
   StorageInterestGroup::KAnonymityData ad1_bid_kanon{
-      blink::KAnonKeyForAdBid(g, ad1_url), true, update_kanon_time};
+      blink::HashedKAnonKeyForAdBid(g, ad1_url.spec()), true,
+      update_kanon_time};
   StorageInterestGroup::KAnonymityData ad1_report_kanon{
-      blink::KAnonKeyForAdNameReporting(g, g.ads.value()[0]), true,
+      blink::HashedKAnonKeyForAdNameReporting(g, g.ads.value()[0]), true,
       update_kanon_time};
   StorageInterestGroup::KAnonymityData ad2_bid_kanon{
-      blink::KAnonKeyForAdComponentBid(ad2_url), true, update_kanon_time};
+      blink::HashedKAnonKeyForAdComponentBid(ad2_url), true, update_kanon_time};
   storage->UpdateKAnonymity(ad1_bid_kanon);
   storage->UpdateKAnonymity(ad1_report_kanon);
   storage->UpdateKAnonymity(ad2_bid_kanon);
@@ -1272,7 +1276,7 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   g1.ads.emplace();
   g1.ads->push_back(blink::InterestGroup::Ad(ad1_url, "metadata1"));
 
-  std::string k_anon_key = blink::KAnonKeyForAdBid(g1, ad1_url);
+  std::string k_anon_key = blink::HashedKAnonKeyForAdBid(g1, ad1_url.spec());
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
   storage->JoinInterestGroup(g1, joining_originA.GetURL());
@@ -2282,17 +2286,19 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
       EXPECT_THAT(kanon_data,
                   testing::UnorderedElementsAre(
                       StorageInterestGroup::KAnonymityData{
-                          "AdBid\n"
-                          "https://owner.example.com/\n"
-                          "https://owner.example.com/bidder.js\n"
-                          "https://ads.example.com/1",
+                          crypto::SHA256HashString(
+                              "AdBid\n"
+                              "https://owner.example.com/\n"
+                              "https://owner.example.com/bidder.js\n"
+                              "https://ads.example.com/1"),
                           false, base::Time::Min()},
                       StorageInterestGroup::KAnonymityData{
-                          base::StrCat({"NameReport\n"
-                                        "https://owner.example.com/\n"
-                                        "https://owner.example.com/bidder.js\n"
-                                        "https://ads.example.com/1\n",
-                                        ig.interest_group.name}),
+                          crypto::SHA256HashString(base::StrCat(
+                              {"NameReport\n"
+                               "https://owner.example.com/\n"
+                               "https://owner.example.com/bidder.js\n"
+                               "https://ads.example.com/1\n",
+                               ig.interest_group.name})),
                           false, base::Time::Min()}));
     }
   }
@@ -2315,17 +2321,19 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
       EXPECT_THAT(kanon_data,
                   testing::UnorderedElementsAre(
                       StorageInterestGroup::KAnonymityData{
-                          "AdBid\n"
-                          "https://owner.example.com/\n"
-                          "https://owner.example.com/bidder.js\n"
-                          "https://ads.example.com/1",
+                          crypto::SHA256HashString(
+                              "AdBid\n"
+                              "https://owner.example.com/\n"
+                              "https://owner.example.com/bidder.js\n"
+                              "https://ads.example.com/1"),
                           false, base::Time::Min()},
                       StorageInterestGroup::KAnonymityData{
-                          base::StrCat({"NameReport\n"
-                                        "https://owner.example.com/\n"
-                                        "https://owner.example.com/bidder.js\n"
-                                        "https://ads.example.com/1\n",
-                                        ig.interest_group.name}),
+                          crypto::SHA256HashString(base::StrCat(
+                              {"NameReport\n"
+                               "https://owner.example.com/\n"
+                               "https://owner.example.com/bidder.js\n"
+                               "https://ads.example.com/1\n",
+                               ig.interest_group.name})),
                           false, base::Time::Min()}));
     }
   }
@@ -2372,10 +2380,10 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV16) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
 
   StorageInterestGroup::KAnonymityData k_anon_bid{
-      "AdBid\n"
-      "https://owner.example.com/\n"
-      "https://owner.example.com/bidder.js\n"
-      "https://ads.example.com/1",
+      crypto::SHA256HashString("AdBid\n"
+                               "https://owner.example.com/\n"
+                               "https://owner.example.com/bidder.js\n"
+                               "https://ads.example.com/1"),
       true, base::Time::Min()};
   auto expected_interest_group_matcher = testing::UnorderedElementsAre(
       testing::AllOf(
@@ -2415,9 +2423,9 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV16) {
   // In the v16 table, there was a k-anon key that doesn't correspond with an
   // interest group in the interest group table -- make sure this was migrated
   // as well.
-  std::string key_without_ig_in_ig_table =
+  std::string key_without_ig_in_ig_table = crypto::SHA256HashString(
       "AdBid\nhttps://owner.example2.com/\nhttps://owner.example2.com/"
-      "bidder.js\nhttps://ads.example2.com/1";
+      "bidder.js\nhttps://ads.example2.com/1");
   std::optional<base::Time> last_reported =
       storage->GetLastKAnonymityReported(key_without_ig_in_ig_table);
   EXPECT_EQ(last_reported, base::Time::Min() + base::Microseconds(8));
@@ -2636,9 +2644,9 @@ TEST_F(InterestGroupStorageTest, SetGetLastKAnonReported) {
       blink::InterestGroup::Ad(ad3_url, "component_metadata3"));
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
-  std::string k_anon_key_1 = blink::KAnonKeyForAdBid(g, ad1_url);
-  std::string k_anon_key_2 = blink::KAnonKeyForAdBid(g, ad2_url);
-  std::string k_anon_key_3 = blink::KAnonKeyForAdComponentBid(ad3_url);
+  std::string k_anon_key_1 = blink::HashedKAnonKeyForAdBid(g, ad1_url.spec());
+  std::string k_anon_key_2 = blink::HashedKAnonKeyForAdBid(g, ad2_url.spec());
+  std::string k_anon_key_3 = blink::HashedKAnonKeyForAdComponentBid(ad3_url);
 
   std::optional<base::Time> last_report =
       storage->GetLastKAnonymityReported(k_anon_key_1);
@@ -2694,7 +2702,7 @@ TEST_F(InterestGroupStorageTest, SetGetLastKAnonReported) {
   task_environment().FastForwardBy(base::Seconds(1));
 
   std::string group_name_key =
-      blink::KAnonKeyForAdNameReporting(g, g.ads->at(0));
+      blink::HashedKAnonKeyForAdNameReporting(g, g.ads->at(0));
   last_report = storage->GetLastKAnonymityReported(group_name_key);
   EXPECT_EQ(last_report, base::Time::Min());
   storage->UpdateLastKAnonymityReported(group_name_key);
@@ -2815,8 +2823,8 @@ TEST_F(InterestGroupStorageTest, OnlyDeletesExpiredKAnon) {
   g.ads->push_back(blink::InterestGroup::Ad(ad2_url, "metadata2"));
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
-  std::string k_anon_key_1 = blink::KAnonKeyForAdBid(g, ad1_url);
-  std::string k_anon_key_2 = blink::KAnonKeyForAdBid(g, ad2_url);
+  std::string k_anon_key_1 = blink::HashedKAnonKeyForAdBid(g, ad1_url.spec());
+  std::string k_anon_key_2 = blink::HashedKAnonKeyForAdBid(g, ad2_url.spec());
 
   storage->JoinInterestGroup(g, GURL("https://owner.example.com/join"));
 

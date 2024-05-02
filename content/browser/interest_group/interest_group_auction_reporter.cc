@@ -91,12 +91,12 @@ bool IsKAnonForReporting(
     return true;
   }
 
-  std::string reporting_key = KAnonKeyForAdNameReporting(
+  std::string reporting_key = HashedKAnonKeyForAdNameReporting(
       storage_interest_group->interest_group, chosen_ad);
   auto kanon = base::ranges::find(
       storage_interest_group->reporting_ads_kanon, reporting_key,
       [](const StorageInterestGroup::KAnonymityData& data) {
-        return data.key;
+        return data.hashed_key;
       });
   if (kanon == storage_interest_group->reporting_ads_kanon.end() ||
       !kanon->is_k_anonymous) {

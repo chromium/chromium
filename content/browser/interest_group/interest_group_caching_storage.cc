@@ -293,21 +293,21 @@ void InterestGroupCachingStorage::UpdateKAnonymity(
 }
 
 void InterestGroupCachingStorage::GetLastKAnonymityReported(
-    const std::string& key,
+    const std::string& hashed_key,
     base::OnceCallback<void(std::optional<base::Time>)> callback) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetLastKAnonymityReported)
-      .WithArgs(key)
+      .WithArgs(hashed_key)
       .Then(std::move(callback));
 }
 
 void InterestGroupCachingStorage::UpdateLastKAnonymityReported(
-    const std::string& key) {
+    const std::string& hashed_key) {
   // We don't need to invalidate any cached objects here because this value is
   // not loaded in GetInterestGroupsForOwner.
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::UpdateLastKAnonymityReported)
-      .WithArgs(key);
+      .WithArgs(hashed_key);
 }
 
 void InterestGroupCachingStorage::GetInterestGroup(

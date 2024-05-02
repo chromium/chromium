@@ -424,8 +424,9 @@ bool BidderWorklet::IsMainAdKAnon(
   }
   if (!BidderWorklet::IsKAnon(
           bidder_worklet_non_shared_params,
-          blink::KAnonKeyForAdBid(url::Origin::Create(script_source_url),
-                                  script_source_url, bid->ad_descriptor))) {
+          blink::HashedKAnonKeyForAdBid(url::Origin::Create(script_source_url),
+                                        script_source_url,
+                                        bid->ad_descriptor.url.spec()))) {
     return false;
   }
   return true;
@@ -435,8 +436,9 @@ bool BidderWorklet::IsMainAdKAnon(
 bool BidderWorklet::IsComponentAdKAnon(
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const blink::AdDescriptor& ad_component_descriptor) {
-  return IsKAnon(bidder_worklet_non_shared_params,
-                 blink::KAnonKeyForAdComponentBid(ad_component_descriptor));
+  return IsKAnon(
+      bidder_worklet_non_shared_params,
+      blink::HashedKAnonKeyForAdComponentBid(ad_component_descriptor));
 }
 
 // static
@@ -1145,8 +1147,8 @@ void BidderWorklet::V8State::GenerateBid(
       for (const auto& ad : *bidder_worklet_non_shared_params->ads) {
         if (BidderWorklet::IsKAnon(
                 bidder_worklet_non_shared_params.get(),
-                blink::KAnonKeyForAdBid(owner_, script_source_url_,
-                                        ad.render_url()))) {
+                blink::HashedKAnonKeyForAdBid(owner_, script_source_url_,
+                                              ad.render_url()))) {
           has_kanon_ads = true;
           break;
         }
@@ -1406,8 +1408,9 @@ BidderWorklet::V8State::RunGenerateBidOnce(
              const std::string& ad_url_from_gurl_spec) {
             return restrict_to_kanon_ads &&
                    !BidderWorklet::IsKAnon(
-                       params, blink::KAnonKeyForAdBid(*owner, *bidding_url,
-                                                       ad_url_from_gurl_spec));
+                       params,
+                       blink::HashedKAnonKeyForAdBid(*owner, *bidding_url,
+                                                     ad_url_from_gurl_spec));
           },
           restrict_to_kanon_ads, &bidder_worklet_non_shared_params, &owner_,
           &script_source_url_);
@@ -1419,8 +1422,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
              const std::string& ad_url_from_gurl_spec) {
             return restrict_to_kanon_ads &&
                    !BidderWorklet::IsKAnon(
-                       params,
-                       blink::KAnonKeyForAdComponentBid(ad_url_from_gurl_spec));
+                       params, blink::HashedKAnonKeyForAdComponentBid(
+                                   ad_url_from_gurl_spec));
           },
           restrict_to_kanon_ads, &bidder_worklet_non_shared_params);
 

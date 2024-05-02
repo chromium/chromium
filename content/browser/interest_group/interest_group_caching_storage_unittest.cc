@@ -327,7 +327,7 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   previously_loaded_igs = loaded_igs;
 
   StorageInterestGroup::KAnonymityData k_anon_data{
-      blink::KAnonKeyForAdBid(ig1, GURL(kAdURL)), true, base::Time::Now()};
+      blink::HashedKAnonKeyForAdBid(ig1, kAdURL), true, base::Time::Now()};
   caching_storage->UpdateKAnonymity(k_anon_data);
   task_environment().FastForwardBy(base::Minutes(1));
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
@@ -345,13 +345,13 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   // UpdateLastKAnonymityReported does not alter any cached values but does
   // update the reported time.
   base::Time update_time = base::Time::Now();
-  caching_storage->UpdateLastKAnonymityReported(k_anon_data.key);
+  caching_storage->UpdateLastKAnonymityReported(k_anon_data.hashed_key);
   task_environment().FastForwardBy(base::Minutes(1));
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
 
   std::optional<base::Time> loaded_time =
-      GetLastKAnonymityReported(caching_storage.get(), k_anon_data.key);
+      GetLastKAnonymityReported(caching_storage.get(), k_anon_data.hashed_key);
   ASSERT_EQ(loaded_time, update_time);
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());

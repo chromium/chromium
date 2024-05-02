@@ -148,7 +148,7 @@ TEST_F(InterestGroupKAnonymityManagerTest,
   manager->JoinInterestGroup(g, top_frame);
   // Set k_anon value to true so that it gets returned with the interest group.
   manager->UpdateKAnonymity(
-      {blink::KAnonKeyForAdBid(g, g.ads->at(0).render_url()), true,
+      {blink::HashedKAnonKeyForAdBid(g, g.ads->at(0).render_url()), true,
        base::Time::Min()});
 
   {
@@ -202,9 +202,10 @@ TEST_F(InterestGroupKAnonymityManagerTest,
   blink::InterestGroup group = MakeInterestGroup(owner, "foo");
   group.bidding_url = GURL("https://www.example.com/bidding.js");
 
-  const std::string kAd1KAnonBidKey = KAnonKeyForAdBid(group, GURL(kAdURL));
+  const std::string kAd1KAnonBidKey =
+      HashedKAnonKeyForAdBid(group, GURL(kAdURL).spec());
   const std::string kAd1KAnonReportNameKey =
-      KAnonKeyForAdNameReporting(group, group.ads.value()[0]);
+      HashedKAnonKeyForAdNameReporting(group, group.ads.value()[0]);
 
   auto manager = CreateManager();
   EXPECT_FALSE(GetGroup(manager.get(), owner, name));
@@ -265,7 +266,8 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
 
   auto manager = CreateManager(/*has_error=*/true);
   blink::InterestGroup g = MakeInterestGroup(owner, "foo");
-  const std::string kAd1KAnonBidKey = KAnonKeyForAdBid(g, GURL(kAdURL));
+  const std::string kAd1KAnonBidKey =
+      HashedKAnonKeyForAdBid(g, GURL(kAdURL).spec());
 
   manager->JoinInterestGroup(g, top_frame);
 
@@ -364,7 +366,7 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
   const GURL ad1 = GURL(kAdURL);
 
   blink::InterestGroup group1 = MakeInterestGroup(owner, "foo");
-  const std::string kAd1KAnonKey = KAnonKeyForAdBid(group1, ad1);
+  const std::string kAd1KAnonKey = HashedKAnonKeyForAdBid(group1, ad1.spec());
 
   // Join one group twice, and an overlapping group once.
   manager->JoinInterestGroup(group1, top_frame);

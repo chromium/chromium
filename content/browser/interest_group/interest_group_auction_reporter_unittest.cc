@@ -154,7 +154,8 @@ class InterestGroupAuctionReporterTest
     auto losing_interest_group =
         blink::TestInterestGroupBuilder(kLosingBidderOrigin, kLosingBidderName)
             .SetBiddingUrl(kLosingBidderScriptUrl)
-            // A non-empty ad list is needed by KAnonKeyForAdBid().
+            // An interest group needs at least one ad to participate in an
+            // auction.
             .SetAds({{{GURL("https://ad.render.url.test/"), "null"}}})
             .Build();
     interest_group_manager_impl_->JoinInterestGroup(
@@ -175,8 +176,10 @@ class InterestGroupAuctionReporterTest
     // actually use any strings for the sake of these tests, but seems best to
     // use accurate ones.
     std::vector<std::string> k_anon_keys_to_join{
-        KAnonKeyForAdBid(interest_group, (*interest_group.ads)[0].render_url()),
-        KAnonKeyForAdNameReporting(interest_group, (*interest_group.ads)[0]),
+        HashedKAnonKeyForAdBid(interest_group,
+                               (*interest_group.ads)[0].render_url()),
+        HashedKAnonKeyForAdNameReporting(interest_group,
+                                         (*interest_group.ads)[0]),
     };
     k_anon_keys_to_join_ =
         base::flat_set<std::string>(std::move(k_anon_keys_to_join));
@@ -432,7 +435,8 @@ class InterestGroupAuctionReporterTest
         blink::TestInterestGroupBuilder(kWinningBidderOrigin,
                                         kWinningBidderName)
             .SetBiddingUrl(kWinningBidderScriptUrl)
-            // A non-empty ad list is needed by KAnonKeyForAdBid().
+            // An interest group needs at least one ad to participate in an
+            // auction.
             .SetAds({{{GURL("https://ad.render.url.test/"),
                        "\"This be metadata\""}}})
             .Build();

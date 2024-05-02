@@ -50,7 +50,7 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
 
   // Notify the k-anonymity service that these ad keys won an auction.
   // Internally this calls RegisterIDAsJoined().
-  void RegisterAdKeysAsJoined(base::flat_set<std::string> keys);
+  void RegisterAdKeysAsJoined(base::flat_set<std::string> hashed_keys);
 
  private:
   // Callback from k-anonymity service QuerySets(). Saves the updated results to
@@ -62,17 +62,17 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
 
   // Starts fetching the LastKAnonymityReported time for `url` from the
   // database.
-  void RegisterIDAsJoined(const std::string& key);
+  void RegisterIDAsJoined(const std::string& hashed_key);
 
   // Called by the database when the update time for `url` has been retrieved.
   // If the last reported time is too long ago, calls JoinSet() on the
   // k-anonymity service.
-  void OnGotLastReportedTime(std::string key,
+  void OnGotLastReportedTime(std::string hashed_key,
                              std::optional<base::Time> last_update_time);
 
   // Callback from k-anonymity service JoinSet(). Updates the LastReported time
   // for key in the database, regardless of status (fail close).
-  void JoinSetCallback(std::string key, bool status);
+  void JoinSetCallback(std::string hashed_key, bool status);
 
   // Requests the k-anonymity status of elements of `k_anon_data` that
   // haven't been updated in 24 hours or more. Results are passed to

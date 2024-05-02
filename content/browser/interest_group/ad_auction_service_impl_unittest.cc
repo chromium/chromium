@@ -6007,12 +6007,13 @@ function scoreAd(
                 ->ad_json);
 
   // The auction should also trigger a k-anon "join" for the winning ad.
-  EXPECT_THAT(GetKAnonJoinedIds(),
-              ::testing::UnorderedElementsAre(
-                  KAnonKeyForAdBid(interest_group,
-                                   interest_group.ads.value()[0].render_url()),
-                  KAnonKeyForAdNameReporting(interest_group,
-                                             interest_group.ads.value()[0])));
+  EXPECT_THAT(
+      GetKAnonJoinedIds(),
+      ::testing::UnorderedElementsAre(
+          HashedKAnonKeyForAdBid(interest_group,
+                                 interest_group.ads.value()[0].render_url()),
+          HashedKAnonKeyForAdNameReporting(interest_group,
+                                           interest_group.ads.value()[0])));
 }
 
 // Add an interest group, and run an ad auction. Seller rejects the bid. Bid
@@ -10659,10 +10660,10 @@ function scoreAd(
       EXPECT_THAT(
           GetKAnonJoinedIds(),
           ::testing::UnorderedElementsAre(
-              KAnonKeyForAdBid(interest_group,
-                               interest_group.ads.value()[0].render_url()),
-              KAnonKeyForAdNameReporting(interest_group,
-                                         interest_group.ads.value()[0])));
+              HashedKAnonKeyForAdBid(
+                  interest_group, interest_group.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(interest_group,
+                                               interest_group.ads.value()[0])));
       break;
     }
     case auction_worklet::mojom::KAnonymityBidMode::kEnforce: {
@@ -10673,10 +10674,10 @@ function scoreAd(
       EXPECT_THAT(
           GetKAnonJoinedIds(),
           ::testing::UnorderedElementsAre(
-              KAnonKeyForAdBid(interest_group,
-                               interest_group.ads.value()[0].render_url()),
-              KAnonKeyForAdNameReporting(interest_group,
-                                         interest_group.ads.value()[0])));
+              HashedKAnonKeyForAdBid(
+                  interest_group, interest_group.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(interest_group,
+                                               interest_group.ads.value()[0])));
       break;
     }
   }

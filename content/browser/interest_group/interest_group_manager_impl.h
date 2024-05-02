@@ -270,7 +270,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Reports the ad keys to the k-anonymity service. Should be called when
   // FLEDGE selects an ad.
-  void RegisterAdKeysAsJoined(base::flat_set<std::string> keys);
+  void RegisterAdKeysAsJoined(base::flat_set<std::string> hashed_keys);
 
   // Gets a single interest group.
   void GetInterestGroup(
@@ -424,10 +424,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Gets the last time that the key was reported to the k-anonymity server.
   void GetLastKAnonymityReported(
-      const std::string& key,
+      const std::string& hashed_key,
       base::OnceCallback<void(std::optional<base::Time>)> callback);
   // Updates the last time that the key was reported to the k-anonymity server.
-  void UpdateLastKAnonymityReported(const std::string& key);
+  void UpdateLastKAnonymityReported(const std::string& hashed_key);
 
   void GetInterestGroupAdAuctionData(
       url::Origin top_level_origin,

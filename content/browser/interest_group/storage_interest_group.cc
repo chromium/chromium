@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/base64.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -20,7 +21,8 @@ StorageInterestGroup::~StorageInterestGroup() = default;
 
 std::ostream& operator<<(std::ostream& out,
                          const StorageInterestGroup::KAnonymityData& kanon) {
-  return out << "KAnonymityData[key=`" << kanon.key
+  return out << "KAnonymityData[hashed_key=`"
+             << base::Base64Encode(kanon.hashed_key)
              << "`, is_k_anonymous=" << kanon.is_k_anonymous
              << ", last_updated=`" << kanon.last_updated << "`]";
 }

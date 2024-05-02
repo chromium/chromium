@@ -56,7 +56,7 @@ void InterestGroupKAnonymityManager::QueryKAnonymityData(
   for (const StorageInterestGroup::KAnonymityData& k_anon_data_item :
        k_anon_data) {
     if (k_anon_data_item.last_updated < check_time - min_wait) {
-      ids_to_query.push_back(k_anon_data_item.key);
+      ids_to_query.push_back(k_anon_data_item.hashed_key);
     }
 
     if (ids_to_query.size() >= kQueryBatchSizeLimit) {
@@ -80,13 +80,13 @@ void InterestGroupKAnonymityManager::QueryKAnonymityData(
 }
 
 void InterestGroupKAnonymityManager::QuerySetsCallback(
-    std::vector<std::string> unhashed_query,
+    std::vector<std::string> hashed_query,
     base::Time update_time,
     std::vector<bool> status) {
-  DCHECK_LE(status.size(), unhashed_query.size());
-  int size = std::min(unhashed_query.size(), status.size());
+  DCHECK_LE(status.size(), hashed_query.size());
+  int size = std::min(hashed_query.size(), status.size());
   for (int i = 0; i < size; i++) {
-    StorageInterestGroup::KAnonymityData data = {unhashed_query[i], status[i],
+    StorageInterestGroup::KAnonymityData data = {hashed_query[i], status[i],
                                                  update_time};
     interest_group_manager_->UpdateKAnonymity(data);
   }
@@ -94,8 +94,8 @@ void InterestGroupKAnonymityManager::QuerySetsCallback(
 }
 
 void InterestGroupKAnonymityManager::RegisterAdKeysAsJoined(
-    base::flat_set<std::string> keys) {
-  for (const auto& key : keys) {
+    base::flat_set<std::string> hashed_keys) {
+  for (const auto& key : hashed_keys) {
     RegisterIDAsJoined(key);
   }
   // TODO(behamilton): Consider proactively starting a query here to improve the
@@ -104,18 +104,19 @@ void InterestGroupKAnonymityManager::RegisterAdKeysAsJoined(
 }
 
 void InterestGroupKAnonymityManager::RegisterIDAsJoined(
-    const std::string& key) {
-  if (joins_in_progress.contains(key))
+    const std::string& hashed_key) {
+  if (joins_in_progress.contains(hashed_key)) {
     return;
-  joins_in_progress.insert(key);
+  }
+  joins_in_progress.insert(hashed_key);
   interest_group_manager_->GetLastKAnonymityReported(
-      key,
+      hashed_key,
       base::BindOnce(&InterestGroupKAnonymityManager::OnGotLastReportedTime,
-                     weak_ptr_factory_.GetWeakPtr(), key));
+                     weak_ptr_factory_.GetWeakPtr(), hashed_key));
 }
 
 void InterestGroupKAnonymityManager::OnGotLastReportedTime(
-    std::string key,
+    std::string hashed_key,
     std::optional<base::Time> last_update_time) {
   KAnonymityServiceDelegate* k_anonymity_service =
       k_anonymity_service_callback_.Run();
@@ -123,29 +124,30 @@ void InterestGroupKAnonymityManager::OnGotLastReportedTime(
     return;
   }
   if (!last_update_time) {
-    joins_in_progress.erase(key);
+    joins_in_progress.erase(hashed_key);
     return;
   }
 
   // If it has been long enough since we last joined
   if (base::Time::Now() < last_update_time.value_or(base::Time()) +
                               k_anonymity_service->GetJoinInterval()) {
-    joins_in_progress.erase(key);
+    joins_in_progress.erase(hashed_key);
     return;
   }
 
   k_anonymity_service->JoinSet(
-      key, base::BindOnce(&InterestGroupKAnonymityManager::JoinSetCallback,
-                          weak_ptr_factory_.GetWeakPtr(), key));
+      hashed_key,
+      base::BindOnce(&InterestGroupKAnonymityManager::JoinSetCallback,
+                     weak_ptr_factory_.GetWeakPtr(), hashed_key));
 }
 
-void InterestGroupKAnonymityManager::JoinSetCallback(std::string key,
+void InterestGroupKAnonymityManager::JoinSetCallback(std::string hashed_key,
                                                      bool status) {
   if (status) {
     // Update the last reported time if the request succeeded.
-    interest_group_manager_->UpdateLastKAnonymityReported(key);
+    interest_group_manager_->UpdateLastKAnonymityReported(hashed_key);
   }
-  joins_in_progress.erase(key);
+  joins_in_progress.erase(hashed_key);
 }
 
 }  // namespace content

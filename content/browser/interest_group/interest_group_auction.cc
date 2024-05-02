@@ -200,8 +200,8 @@ const blink::InterestGroup::Ad* FindMatchingAd(
   if (bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon) {
     const std::string kanon_key =
         is_component_ad
-            ? blink::KAnonKeyForAdComponentBid(ad_descriptor)
-            : blink::KAnonKeyForAdBid(interest_group, ad_descriptor);
+            ? blink::HashedKAnonKeyForAdComponentBid(ad_descriptor)
+            : blink::HashedKAnonKeyForAdBid(interest_group, ad_descriptor);
     if (!IsKAnon(kanon_keys, kanon_key)) {
       return nullptr;
     }
@@ -1569,13 +1569,13 @@ class InterestGroupAuction::BuyerHelper
     std::vector<std::pair<std::string, bool>> kanon_entries;
     for (const auto& ad_kanon : storage_interest_group->bidding_ads_kanon) {
       if (IsKAnonymous(ad_kanon, start_time)) {
-        kanon_entries.emplace_back(ad_kanon.key, true);
+        kanon_entries.emplace_back(ad_kanon.hashed_key, true);
       }
     }
     for (const auto& component_ad_kanon :
          storage_interest_group->component_ads_kanon) {
       if (IsKAnonymous(component_ad_kanon, start_time)) {
-        kanon_entries.emplace_back(component_ad_kanon.key, true);
+        kanon_entries.emplace_back(component_ad_kanon.hashed_key, true);
       }
     }
     return base::flat_map<std::string, bool>(std::move(kanon_entries));
@@ -3668,14 +3668,14 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
     DCHECK(scored_bid->bid);
     const blink::InterestGroup& interest_group =
         *scored_bid->bid->interest_group;
-    k_anon_keys_to_join.push_back(blink::KAnonKeyForAdBid(
+    k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdBid(
         interest_group, scored_bid->bid->bid_ad->render_url()));
-    k_anon_keys_to_join.push_back(blink::KAnonKeyForAdNameReporting(
+    k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdNameReporting(
         interest_group, *scored_bid->bid->bid_ad));
     for (const blink::AdDescriptor& ad_component_descriptor :
          scored_bid->bid->ad_component_descriptors) {
       k_anon_keys_to_join.push_back(
-          blink::KAnonKeyForAdComponentBid(ad_component_descriptor));
+          blink::HashedKAnonKeyForAdComponentBid(ad_component_descriptor));
     }
   }
   return base::flat_set<std::string>(std::move(k_anon_keys_to_join));

@@ -176,10 +176,10 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
 
   // Gets the last time that the key was reported to the k-anonymity server.
   void GetLastKAnonymityReported(
-      const std::string& key,
+      const std::string& hashed_key,
       base::OnceCallback<void(std::optional<base::Time>)> callback);
   // Updates the last time that the key was reported to the k-anonymity server.
-  void UpdateLastKAnonymityReported(const std::string& key);
+  void UpdateLastKAnonymityReported(const std::string& hashed_key);
 
   // Gets a single interest group.
   void GetInterestGroup(

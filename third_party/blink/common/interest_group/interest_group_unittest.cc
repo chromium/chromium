@@ -8,9 +8,9 @@
 
 namespace blink {
 
-TEST(InterestGroupTest, KAnonKeyForAdNameReporting) {
-  // Make sure that KAnonKeyForAdNameReporting properly prioritizes and
-  // incorporates various kinds of reporting IDs.
+TEST(InterestGroupTest, DEPRECATED_KAnonKeyForAdNameReporting) {
+  // Make sure that DEPRECATED_KAnonKeyForAdNameReporting properly prioritizes
+  // and incorporates various kinds of reporting IDs.
   InterestGroup ig;
   ig.owner = url::Origin::Create(GURL("https://example.org"));
   ig.name = "ig_one";
@@ -30,15 +30,15 @@ TEST(InterestGroupTest, KAnonKeyForAdNameReporting) {
   EXPECT_EQ(
       "NameReport\nhttps://example.org/\nhttps://example.org/bid.js\n"
       "https://ad1.com/\nig_one",
-      KAnonKeyForAdNameReporting(ig, ig.ads->at(0)));
+      DEPRECATED_KAnonKeyForAdNameReporting(ig, ig.ads->at(0)));
   EXPECT_EQ(
       "BuyerReportId\nhttps://example.org/\nhttps://example.org/bid.js\n"
       "https://ad2.com/\nbid",
-      KAnonKeyForAdNameReporting(ig, ig.ads->at(1)));
+      DEPRECATED_KAnonKeyForAdNameReporting(ig, ig.ads->at(1)));
   EXPECT_EQ(
       "BuyerAndSellerReportId\nhttps://example.org/\n"
       "https://example.org/bid.js\nhttps://ad3.com/\nbsid",
-      KAnonKeyForAdNameReporting(ig, ig.ads->at(2)));
+      DEPRECATED_KAnonKeyForAdNameReporting(ig, ig.ads->at(2)));
 }
 
 // Test ParseTrustedBiddingSignalsSlotSizeMode() and
