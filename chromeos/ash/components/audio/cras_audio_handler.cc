@@ -2022,7 +2022,11 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
 
   if (!hotplug_devices.empty()) {
     // Looks like a new chrome session starts.
-    SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
+    if (features::IsAudioSelectionImprovementEnabled()) {
+      HandleSystemBoots(is_input, devices);
+    } else {
+      SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
+    }
     return;
   }
 
@@ -2106,6 +2110,65 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
   // error. Restore the previously selected active.
   VLOG(1) << "Odd case from cras, the active node is lost unexpectedly.";
   SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
+}
+
+void CrasAudioHandler::HandleSystemBoots(bool is_input,
+                                         const AudioDeviceList& devices) {
+  // If there is only one device, activate it.
+  if (devices.size() == 1) {
+    SwitchToDevice(devices.front(), /*notify=*/true,
+                   DeviceActivateType::kActivateByPriority);
+    return;
+  }
+
+  // If the set of devices was seen before, activate the preferred one.
+  const std::optional<AudioDevice> preferred_device =
+      GetPreferredDeviceIfDeviceSetSeenBefore(
+          is_input, GetSimpleUsageAudioDevices(audio_devices_, is_input));
+  if (preferred_device.has_value()) {
+    // Activate this device.
+    SwitchToDevice(preferred_device.value(), /*notify=*/true,
+                   DeviceActivateType::kActivateByPriority);
+    return;
+  }
+
+  // Otherwise when the device set was not seen before, if a 3.5mm headphone is
+  // connected, activate it. Do not show notification.
+  for (const AudioDevice& device : devices) {
+    if (device.type == AudioDeviceType::kHeadphone ||
+        device.type == AudioDeviceType::kMic) {
+      SwitchToDevice(device, /*notify=*/true,
+                     DeviceActivateType::kActivateByPriority);
+      return;
+    }
+  }
+
+  // Otherwise, activate the most recent activated device and show
+  // notification.
+  if (ActivateMostRecentActiveDevice(is_input)) {
+    should_show_notification_ = true;
+    return;
+  }
+
+  // Otherwise when no most recent activated device, if there is an internal
+  // device, activate it and show notification.
+  for (const AudioDevice& device : devices) {
+    if (device.type == AudioDeviceType::kInternalSpeaker ||
+        device.type == AudioDeviceType::kInternalMic) {
+      SwitchToDevice(device, /*notify=*/true,
+                     DeviceActivateType::kActivateByPriority);
+      should_show_notification_ = true;
+      return;
+    }
+  }
+
+  // Otherwise when no most recent activated device and no internal device (a
+  // brand new chromebox), activate the highest priority and show
+  // notification.
+  // TODO(zhangwenyu): Add metrics for this case to understand how frequent it
+  // happens.
+  SwitchToTopPriorityDevice(devices);
+  should_show_notification_ = true;
 }
 
 void CrasAudioHandler::AddDeviceToMostRecentActivatedList(

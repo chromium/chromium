@@ -939,6 +939,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // set.
   void HandleHotPlugDeviceWithNotification(const AudioDevice& hotplug_device);
 
+  // Handles the system boots or restarts case.
+  // - If the device boots with only one device, activate it automatically.
+  // - If the device set was seen before, activate the preferred one.
+  // - Otherwise if a 3.5mm headphone is connected, activate it and don't show
+  // notification.
+  // - Otherwise activate the most recent activated device and show
+  // notification.
+  // - Otherwise if there is an internal device, activate it and show
+  // notification.
+  // - Otherwise when no most recent activated device and no internal device (a
+  // brand new chromebox), activate the highest priority device based on the
+  // pre-determined priority list and show notification.
+  void HandleSystemBoots(bool is_input, const AudioDeviceList& devices);
+
   // Adds a device to most recently activated device list.
   void AddDeviceToMostRecentActivatedList(const AudioDevice& device);
 
