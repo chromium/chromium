@@ -389,7 +389,7 @@ void AttributionInternalsHandlerImpl::OnReportSent(
       break;
   }
 
-  observer_->OnReportSent(
+  observer_->OnReportHandled(
       WebUIReport(report, is_debug_report, std::move(status)));
 }
 
@@ -461,7 +461,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
         AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
     DCHECK(result.new_event_level_report().has_value());
 
-    observer_->OnReportDropped(
+    observer_->OnReportHandled(
         WebUIReport(*report, /*is_debug_report=*/false,
                     ReportStatus::NewReplacedByHigherPriorityReport(
                         result.new_event_level_report()

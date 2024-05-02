@@ -180,15 +180,12 @@ interface Observer {
   // Called when a source is registered, regardless of success or failure.
   OnSourceHandled(WebUISourceRegistration source);
 
-  // Called when a report is sent, regardless of success.
-  OnReportSent(WebUIReport report);
+  // Called when a report is sent or replaced in storage by a higher-priority
+  // report.
+  OnReportHandled(WebUIReport report);
 
   // Called when a verbose debug report is sent, regardless of success.
   OnDebugReportSent(WebUIDebugReport report);
-
-  // Called when a report is dropped from storage or prevented from being
-  // created in the first place.
-  OnReportDropped(WebUIReport report);
 
   // Called when a trigger is registered, regardless of success or failure.
   OnTriggerHandled(WebUITrigger trigger);

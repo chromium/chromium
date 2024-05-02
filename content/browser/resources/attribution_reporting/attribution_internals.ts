@@ -886,16 +886,12 @@ class AttributionInternals implements ObserverInterface {
     this.updateReports();
   }
 
-  onReportSent(mojo: WebUIReport): void {
+  onReportHandled(mojo: WebUIReport): void {
     this.addSentOrDroppedReport(mojo);
   }
 
   onDebugReportSent(mojo: WebUIDebugReport): void {
     this.debugReports.addRow(verboseDebugReport(mojo));
-  }
-
-  onReportDropped(mojo: WebUIReport): void {
-    this.addSentOrDroppedReport(mojo);
   }
 
   onSourceHandled(mojo: WebUISourceRegistration): void {
