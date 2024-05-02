@@ -53,8 +53,8 @@ EVENT_TYPE(REQUEST_ALIVE)
 //                               the host cache>,
 //     "is_speculative": <Whether this request was started by the DNS
 //                        prefetcher>,
-//     "network_isolation_key": <NetworkAnonymizationKey associated with the
-//                               request>,
+//     "network_anonymization_key": <NetworkAnonymizationKey associated with the
+//                                   request>,
 //     "secure_dns_policy": <SecureDnsPolicy of the request>,
 //   }
 //
@@ -106,9 +106,10 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_CREATE_JOB)
 //   {
 //     "dns_query_type": <DnsQueryType of the job>,
 //     "host": <Serialized scheme/host/port associated with the job>,
-//     "network_isolation_key": <NetworkAnonymizationKey associated with the
-//     job>, "secure_dns_mode": <SecureDnsMode of the job>, "source_dependency":
-//     <Source id, if any, of what created the job>,
+//     "network_anonymization_key": <NetworkAnonymizationKey associated with the
+//                                   job>,
+//     "secure_dns_mode": <SecureDnsMode of the job>,
+//     "source_dependency": <Source id, if any, of what created the job>,
 //   }
 //
 // The END phase will contain these parameters:
