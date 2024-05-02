@@ -1508,14 +1508,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
 
   num_frames_in_flight_++;
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   TRACE_COUNTER("gpu.capture", "NumFramesInFlight", num_frames_in_flight_);
-#else
-  // TODO(crbug.com/42050015): Delete when Perfetto is the default.
-  TRACE_COUNTER_ID1("gpu.capture",
-                    "FrameSinkVideoCapturerImpl::num_frames_in_flight_", this,
-                    num_frames_in_flight_);
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Send the frame to the consumer.
   consumer_->OnFrameCaptured(std::move(handle), std::move(info), content_rect,
