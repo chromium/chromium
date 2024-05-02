@@ -56,7 +56,7 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
 
   // Determine whether this resource is using a software SharedImage or a legacy
   // shared bitmap.
-  if (resource->transferable.mailbox_holder.mailbox.IsSharedImage()) {
+  if (resource->transferable.IsSoftwareSharedImage()) {
     DCHECK(shared_image_manager_ && sync_point_manager_);
     auto it = resource_shared_images_.find(id);
     if (it == resource_shared_images_.end()) {

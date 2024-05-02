@@ -106,4 +106,9 @@ std::vector<ReturnedResource> TransferableResource::ReturnResources(
   return out;
 }
 
+bool TransferableResource::IsSoftwareSharedImage() const {
+  CHECK(is_software);
+  return mailbox_holder.mailbox.IsSharedImage();
+}
+
 }  // namespace viz

@@ -121,6 +121,10 @@ struct VIZ_COMMON_EXPORT TransferableResource {
       const std::vector<TransferableResource>& input);
   bool is_null() const { return mailbox_holder.mailbox.IsZero(); }
 
+  // Returns true if this resource (which must be software) is holding a
+  // SharedImage ID rather than a SharedBitmapId.
+  bool IsSoftwareSharedImage() const;
+
   // TODO(danakj): Some of these fields are only GL, some are only Software,
   // some are both but used for different purposes (like the mailbox name).
   // It would be nice to group things together and make it more clear when
@@ -131,8 +135,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // own book-keeping but need not be set at all.
   ResourceId id = kInvalidResourceId;
 
-  // Indicates if the resource is gpu or software backed. If gpu, the
-  // mailbox field is a gpu::Mailbox, else it is a SharedBitmapId.
+  // Indicates if the resource is gpu or software backed.
   bool is_software = false;
 
   // The number of pixels in the gpu mailbox/software bitmap.

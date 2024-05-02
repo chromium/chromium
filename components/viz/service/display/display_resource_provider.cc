@@ -248,8 +248,8 @@ void DisplayResourceProvider::ReceiveFromChild(
 
     // If using legacy shared bitmaps, verify that the format is supported.
     DCHECK(!transferable_resource.is_software ||
-           transferable_resource.mailbox_holder.mailbox.IsSharedImage() ||
-           (!transferable_resource.mailbox_holder.mailbox.IsSharedImage() &&
+           transferable_resource.IsSoftwareSharedImage() ||
+           (!transferable_resource.IsSoftwareSharedImage() &&
             transferable_resource.format.IsBitmapFormatSupported()));
     resources_.emplace(local_id,
                        ChildResource(child_id, transferable_resource));

@@ -19,6 +19,7 @@
 
 namespace viz {
 class SharedBitmap;
+struct TransferableResource;
 }
 
 namespace gpu {
@@ -53,9 +54,6 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   void SetZero();
   void SetName(const int8_t* name);
 
-  // Indicates whether this mailbox is used with the SharedImage system.
-  bool IsSharedImage() const;
-
   // Generate a unique unguessable mailbox name for use with the SharedImage
   // system.
   static Mailbox GenerateForSharedImage();
@@ -76,8 +74,10 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   // A temporary solution until when kSharedBitmapToSharedImage is enabled by
   // default and the legacy ShareBitmap path is removed.
   static Mailbox GenerateLegacySharedBitmapMailbox();
+  bool IsSharedImage() const;
 
   friend class viz::SharedBitmap;
+  friend struct viz::TransferableResource;
 };
 
 }  // namespace gpu
