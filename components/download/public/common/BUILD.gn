@@ -81,8 +81,10 @@ component("public") {
     "//base",
     "//components/download/network",
     "//components/download/public/background_service:public",
+    "//components/keyed_service/core",
     "//components/services/quarantine/public/mojom",
     "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
     "//services/network/public/cpp",
     "//services/network/public/mojom:url_loader_base",
   ]
@@ -96,7 +98,6 @@ component("public") {
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp",
-    "//storage/browser",
     "//ui/base",
   ]
 
