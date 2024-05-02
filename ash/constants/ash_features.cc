@@ -1400,6 +1400,11 @@ BASE_FEATURE(kGrowthCampaignsShowNudgeInDefaultParent,
              "GrowthCampaignsShowNudgeInDefaultParent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether growth campaigns triggering when loading campaigns complete.
+BASE_FEATURE(kGrowthCampaignsTriggerAtLoadComplete,
+             "GrowthCampaignsTriggerAtLoadComplete",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether growth campaigns triggering by app open event is enabled.
 // This flag is used as a kill switch to disable the feature in the case that
 // the feature introduces any unexpected behaviours.
@@ -3650,6 +3655,10 @@ bool IsGrowthCampaignsInDemoModeEnabled() {
 
 bool IsGrowthCampaignsShowNudgeInDefaultParentEnabled() {
   return base::FeatureList::IsEnabled(kGrowthCampaignsShowNudgeInDefaultParent);
+}
+
+bool IsGrowthCampaignsTriggerAtLoadComplete() {
+  return base::FeatureList::IsEnabled(kGrowthCampaignsTriggerAtLoadComplete);
 }
 
 bool IsGrowthCampaignsTriggerByAppOpenEnabled() {

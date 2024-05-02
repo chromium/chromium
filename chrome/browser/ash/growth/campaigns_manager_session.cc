@@ -85,10 +85,15 @@ void MaybeTriggerCampaignsWhenAppOpened() {
 }
 
 void MaybeTriggerCampaignsWhenCampaignsLoaded() {
+  if (!ash::features::IsGrowthCampaignsTriggerAtLoadComplete()) {
+    return;
+  }
+
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  // TODO(b/318885858): Trigger nudge if nudge campaigns is matched.
+  MaybeTriggerSlot(growth::Slot::kNudge);
+  MaybeTriggerSlot(growth::Slot::kNotification);
 }
 
 const GURL FindActiveWebAppBrowser(Profile* profile,

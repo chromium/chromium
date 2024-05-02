@@ -452,6 +452,8 @@ BASE_DECLARE_FEATURE(kGrowthCampaignsInDemoMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsShowNudgeInDefaultParent);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerAtLoadComplete);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGrowthCampaignsTriggerByAppOpen);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonWithText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1087,6 +1089,8 @@ bool IsGrowthCampaignsInConsumerSessionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGrowthCampaignsInDemoModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsShowNudgeInDefaultParentEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGrowthCampaignsTriggerAtLoadComplete();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGrowthCampaignsTriggerByAppOpenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreGlanceablesV2Enabled();
