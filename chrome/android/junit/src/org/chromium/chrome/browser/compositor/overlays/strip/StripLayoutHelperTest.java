@@ -2344,9 +2344,9 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         groupTabs(1, 3);
 
-        // Fake a click on the tab group to collapse.
+        // Collapse the group.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[1]);
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[1], true);
 
         // Start reorder mode on fourth tab. Drag past the collapsed group.
         // -50 < -groupTitleWidth(46)
@@ -3925,6 +3925,48 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         groupTabs(0, 3);
 
+        // Fake a click on the group indicator.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+
+        // Verify the proper event was sent to the TabGroupModelFilter.
+        verify(mTabGroupModelFilter).setTabGroupCollapsed(0, true);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testHandleGroupTitleClick_Expand() {
+        // Initialize with 4 tabs. Group first three tabs.
+        initializeTest(false, false, true, 3, 4);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        groupTabs(0, 3);
+
+        // Mark the group as collapsed. Fake a click on the group indicator.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
+        when(mTabGroupModelFilter.getTabGroupCollapsed(0)).thenReturn(true);
+        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+
+        // Verify the proper event was sent to the TabGroupModelFilter.
+        verify(mTabGroupModelFilter).setTabGroupCollapsed(0, false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
+        ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
+    })
+    public void testUpdateTabGroupCollapsed_Collapse() {
+        // Initialize with 4 tabs. Group first three tabs.
+        initializeTest(false, false, true, 3, 4);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        groupTabs(0, 3);
+
         // Verify initial dimensions.
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
         // - groupTitleWidth(46) = 684.
@@ -3936,8 +3978,8 @@ public class StripLayoutHelperTest {
         assertEquals("Tab width is incorrect.", initialTabWidth, views[3].getWidth(), EPSILON);
         assertEquals("Tab width is incorrect.", initialTabWidth, views[4].getWidth(), EPSILON);
 
-        // Fake a click on the tab group to collapse.
-        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+        // Collapse the group.
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
 
         // Verify final dimensions.
         float collapsedWidth = TAB_OVERLAP_WIDTH;
@@ -3953,16 +3995,16 @@ public class StripLayoutHelperTest {
         ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS,
         ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
     })
-    public void testHandleGroupTitleClick_Expand() {
+    public void testUpdateTabGroupCollapsed_Expand() {
         // Initialize with 4 tabs. Group first three tabs.
         initializeTest(false, false, true, 3, 4);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         groupTabs(0, 3);
 
-        // Fake a click on the tab group to collapse.
+        // Collapse the group.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
 
         // Verify initial dimensions.
         float collapsedWidth = TAB_OVERLAP_WIDTH;
@@ -3973,7 +4015,7 @@ public class StripLayoutHelperTest {
         assertEquals("Tab width is incorrect.", initialTabWidth, views[4].getWidth(), EPSILON);
 
         // Fake a click on the tab group to expand.
-        mStripLayoutHelper.handleGroupTitleClick((StripLayoutGroupTitle) views[0]);
+        mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], false);
 
         // Verify final dimensions.
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)

@@ -288,6 +288,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 }
 
                 @Override
+                public void didChangeTabGroupCollapsed(int rootId, boolean isCollapsed) {
+                    final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+                    if (groupTitle == null) return;
+
+                    updateTabGroupCollapsed(groupTitle, isCollapsed, true);
+                }
+
+                @Override
                 public void didChangeGroupRootId(int oldRootId, int newRootId) {
                     releaseResourcesForGroupTitle(oldRootId);
 
@@ -2474,21 +2482,35 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         return groupedTabs;
     }
 
+    void collapseTabGroupForTesting(StripLayoutGroupTitle groupTitle, boolean isCollapsed) {
+        updateTabGroupCollapsed(groupTitle, isCollapsed, true);
+    }
+
     @Override
     public void handleGroupTitleClick(StripLayoutGroupTitle groupTitle) {
         if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
+        if (groupTitle == null) return;
+
+        int rootId = groupTitle.getRootId();
+        boolean isCollapsed = mTabGroupModelFilter.getTabGroupCollapsed(rootId);
+        assert isCollapsed == groupTitle.isCollapsed();
+
+        mTabGroupModelFilter.setTabGroupCollapsed(rootId, !isCollapsed);
+    }
+
+    private void updateTabGroupCollapsed(
+            StripLayoutGroupTitle groupTitle, boolean isCollapsed, boolean animate) {
+        if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
+        if (groupTitle.isCollapsed() == isCollapsed) return;
 
         List<Animator> collapseAnimationList = null;
-        boolean animate = !mAnimationsDisabledForTesting;
-        if (animate) collapseAnimationList = new ArrayList<>();
+        if (animate && !mAnimationsDisabledForTesting) collapseAnimationList = new ArrayList<>();
 
         finishAnimations();
-
-        boolean collapsing = !groupTitle.isCollapsed();
-        groupTitle.setCollapsed(collapsing);
+        groupTitle.setCollapsed(isCollapsed);
         for (StripLayoutTab tab : getGroupedTabs(groupTitle.getRootId())) {
-            tab.setCollapsed(collapsing);
-            if (collapsing) {
+            tab.setCollapsed(isCollapsed);
+            if (isCollapsed) {
                 // The expand animation will be handled by the resize call below, since we'll need
                 // to first update mCachedTabWidth.
                 if (collapseAnimationList != null) {
@@ -2511,10 +2533,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
 
         List<Animator> resizeAnimationList = resizeTabStrip(animate, false, animate);
-        if (animate) {
+        if (collapseAnimationList != null) {
             if (resizeAnimationList != null) collapseAnimationList.addAll(resizeAnimationList);
-            AnimatorListener listener = getCollapseAnimatorListener();
-            startAnimationList(collapseAnimationList, listener);
+            startAnimationList(collapseAnimationList, getCollapseAnimatorListener());
         }
     }
 
@@ -2546,21 +2567,19 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private StripLayoutGroupTitle createGroupTitle(int rootId) {
         int colorId = TabGroupColorUtils.getTabGroupColor(rootId);
         // If the color is invalid, temporarily assign a default placeholder color.
-        if (colorId == INVALID_COLOR_ID) {
-            colorId = TabGroupColorId.GREY;
-        }
-
+        if (colorId == INVALID_COLOR_ID) colorId = TabGroupColorId.GREY;
         @ColorInt
         int color = ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, colorId, mIncognito);
+
         String titleString = mTabGroupModelFilter.getTabGroupTitle(rootId);
         float textWidth = 0;
-
         if (mLayerTitleCache != null) {
             textWidth =
                     mLayerTitleCache.getGroupTitleWidth(mIncognito, titleString)
                             / mContext.getResources().getDisplayMetrics().density;
         }
 
+        // Delay setting the collapsed state, since mStripViews may not yet be up to date.
         StripLayoutGroupTitle groupTitle =
                 new StripLayoutGroupTitle(this, mIncognito, rootId, titleString, textWidth, color);
         updateGroupAccessibilityDescription(groupTitle);
@@ -2682,6 +2701,12 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         int oldGroupCount = mStripGroupTitles.length;
         mStripGroupTitles = groupTitles;
         if (mStripGroupTitles.length != oldGroupCount) {
+            for (int i = 0; i < mStripGroupTitles.length; ++i) {
+                final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+                boolean isCollapsed =
+                        mTabGroupModelFilter.getTabGroupCollapsed(groupTitle.getRootId());
+                updateTabGroupCollapsed(groupTitle, isCollapsed, false);
+            }
             resizeTabStrip(true, false, false);
         }
     }
