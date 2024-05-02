@@ -86,6 +86,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       // after that.
       worker_permissions_policy(PermissionsPolicy::CreateFromParentPolicy(
           parent_permissions_policy,
+          /*header_policy=*/{},
           ParsedPermissionsPolicy() /* container_policy */,
           starter_origin ? starter_origin->ToUrlOrigin() : url::Origin())),
       agent_cluster_id(agent_cluster_id),

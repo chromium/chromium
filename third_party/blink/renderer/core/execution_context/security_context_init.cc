@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -113,7 +114,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   // inherited policies. https://crbug.com/898688.
   if (frame.InViewSourceMode()) {
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
-        PermissionsPolicy::CreateFromParentPolicy(nullptr, {}, origin));
+        PermissionsPolicy::CreateFromParentPolicy(nullptr, /*header_policy=*/{},
+                                                  {}, origin));
     return;
   }
 
@@ -207,8 +209,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
         // enabled permissions or information about the embedder's permissions
         // policies, so we create a permissions policy with every permission
         // disabled.
-        permissions_policy =
-            PermissionsPolicy::CreateFixedForFencedFrame(origin, {});
+        permissions_policy = PermissionsPolicy::CreateFixedForFencedFrame(
+            origin, /*header_policy=*/permissions_policy_header_, {});
       } else if (fenced_frame_properties->parent_permissions_info()
                      .has_value()) {
         // Fenced frames with flexible permissions are allowed to inherit
@@ -220,7 +222,9 @@ void SecurityContextInit::ApplyPermissionsPolicy(
                 fenced_frame_properties->parent_permissions_info()->origin);
 
         permissions_policy = PermissionsPolicy::CreateFlexibleForFencedFrame(
-            parent_permissions_policy.get(), container_policy, origin);
+            parent_permissions_policy.get(),
+            /*header_policy=*/permissions_policy_header_, container_policy,
+            origin);
 
         // Warn if a disallowed permissions policy is attempted to be enabled.
         for (const auto& policy : container_policy) {
@@ -244,7 +248,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
         // checked separately in
         // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
         permissions_policy = PermissionsPolicy::CreateFixedForFencedFrame(
-            origin, fenced_frame_properties->effective_enabled_permissions());
+            origin, /*header_policy=*/permissions_policy_header_,
+            fenced_frame_properties->effective_enabled_permissions());
       }
     } else {
       auto* parent_permissions_policy = frame.Tree().Parent()
@@ -254,9 +259,10 @@ void SecurityContextInit::ApplyPermissionsPolicy(
                                                   ->GetPermissionsPolicy()
                                             : nullptr;
       permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
-          parent_permissions_policy, container_policy, origin);
+          parent_permissions_policy,
+          /*header_policy=*/permissions_policy_header_, container_policy,
+          origin);
     }
-    permissions_policy->SetHeaderPolicy(permissions_policy_header_);
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
         std::move(permissions_policy));
   }
@@ -272,10 +278,10 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   if (!parsed_report_only_permissions_policy_header.empty()) {
     std::unique_ptr<PermissionsPolicy> report_only_policy =
         PermissionsPolicy::CreateFromParentPolicy(
-            nullptr /* parent_policy */, {} /* container_policy */,
+            nullptr /* parent_policy */,
+            /*header_policy=*/parsed_report_only_permissions_policy_header,
+            {} /* container_policy */,
             execution_context_->GetSecurityOrigin()->ToUrlOrigin());
-    report_only_policy->SetHeaderPolicy(
-        parsed_report_only_permissions_policy_header);
     execution_context_->GetSecurityContext().SetReportOnlyPermissionsPolicy(
         std::move(report_only_policy));
   }

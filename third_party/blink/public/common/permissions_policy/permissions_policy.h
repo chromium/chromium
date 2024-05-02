@@ -171,6 +171,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
+      const ParsedPermissionsPolicy& header_policy,
       const ParsedPermissionsPolicy& container_policy,
       const url::Origin& origin);
 
@@ -181,6 +182,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // allowed, but only a specific list of permissions are allowed to be enabled.
   static std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
       const PermissionsPolicy* parent_policy,
+      const ParsedPermissionsPolicy& header_policy,
       const ParsedPermissionsPolicy& container_policy,
       const url::Origin& subframe_origin);
 
@@ -190,6 +192,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // cross-channel communication.
   static std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
+      const ParsedPermissionsPolicy& header_policy,
       base::span<const blink::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);
 
@@ -284,6 +287,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const PermissionsPolicyFeatureList& feature_list);
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
+      const ParsedPermissionsPolicy& header_policy,
       const ParsedPermissionsPolicy& container_policy,
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
@@ -295,12 +299,14 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   static std::unique_ptr<PermissionsPolicy> CreateFlexibleForFencedFrame(
       const PermissionsPolicy* parent_policy,
+      const ParsedPermissionsPolicy& header_policy,
       const ParsedPermissionsPolicy& container_policy,
       const url::Origin& subframe_origin,
       const PermissionsPolicyFeatureList& features);
 
   static std::unique_ptr<PermissionsPolicy> CreateFixedForFencedFrame(
       const url::Origin& origin,
+      const ParsedPermissionsPolicy& header_policy,
       const PermissionsPolicyFeatureList& features,
       base::span<const blink::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);

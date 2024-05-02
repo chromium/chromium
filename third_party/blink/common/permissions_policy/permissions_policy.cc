@@ -89,9 +89,11 @@ bool PermissionsPolicy::Allowlist::MatchesOpaqueSrc() const {
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const PermissionsPolicy* parent_policy,
+    const ParsedPermissionsPolicy& header_policy,
     const ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin) {
-  return CreateFromParentPolicy(parent_policy, container_policy, origin,
+  return CreateFromParentPolicy(parent_policy, header_policy, container_policy,
+                                origin,
                                 GetPermissionsPolicyFeatureList(origin));
 }
 
@@ -418,10 +420,11 @@ PermissionsPolicy::~PermissionsPolicy() = default;
 std::unique_ptr<PermissionsPolicy>
 PermissionsPolicy::CreateFlexibleForFencedFrame(
     const PermissionsPolicy* parent_policy,
+    const ParsedPermissionsPolicy& header_policy,
     const ParsedPermissionsPolicy& container_policy,
     const url::Origin& subframe_origin) {
   return CreateFlexibleForFencedFrame(
-      parent_policy, container_policy, subframe_origin,
+      parent_policy, header_policy, container_policy, subframe_origin,
       GetPermissionsPolicyFeatureList(subframe_origin));
 }
 
@@ -429,6 +432,7 @@ PermissionsPolicy::CreateFlexibleForFencedFrame(
 std::unique_ptr<PermissionsPolicy>
 PermissionsPolicy::CreateFlexibleForFencedFrame(
     const PermissionsPolicy* parent_policy,
+    const ParsedPermissionsPolicy& header_policy,
     const ParsedPermissionsPolicy& container_policy,
     const url::Origin& subframe_origin,
     const PermissionsPolicyFeatureList& features) {
@@ -441,16 +445,18 @@ PermissionsPolicy::CreateFlexibleForFencedFrame(
       inherited_policies[feature.first] = false;
     }
   }
-  return base::WrapUnique(
-      new PermissionsPolicy(subframe_origin, {}, inherited_policies, features));
+  return base::WrapUnique(new PermissionsPolicy(
+      subframe_origin, CreateAllowlistsAndReportingEndpoints(header_policy),
+      inherited_policies, features));
 }
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     const url::Origin& origin,
+    const ParsedPermissionsPolicy& header_policy,
     base::span<const blink::mojom::PermissionsPolicyFeature>
         effective_enabled_permissions) {
-  return CreateFixedForFencedFrame(origin,
+  return CreateFixedForFencedFrame(origin, header_policy,
                                    GetPermissionsPolicyFeatureList(origin),
                                    effective_enabled_permissions);
 }
@@ -458,6 +464,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     const url::Origin& origin,
+    const ParsedPermissionsPolicy& header_policy,
     const PermissionsPolicyFeatureList& features,
     base::span<const blink::mojom::PermissionsPolicyFeature>
         effective_enabled_permissions) {
@@ -470,13 +477,15 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFixedForFencedFrame(
     inherited_policies[feature] = true;
   }
 
-  return base::WrapUnique(
-      new PermissionsPolicy(origin, {}, inherited_policies, features));
+  return base::WrapUnique(new PermissionsPolicy(
+      origin, CreateAllowlistsAndReportingEndpoints(header_policy),
+      inherited_policies, features));
 }
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const PermissionsPolicy* parent_policy,
+    const ParsedPermissionsPolicy& header_policy,
     const ParsedPermissionsPolicy& container_policy,
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features) {
@@ -485,8 +494,9 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     inherited_policies[feature.first] = InheritedValueForFeature(
         origin, parent_policy, feature, container_policy);
   }
-  return base::WrapUnique(
-      new PermissionsPolicy(origin, {}, inherited_policies, features));
+  return base::WrapUnique(new PermissionsPolicy(
+      origin, CreateAllowlistsAndReportingEndpoints(header_policy),
+      inherited_policies, features));
 }
 
 // Implements Permissions Policy 9.9: Is feature enabled in document for origin?

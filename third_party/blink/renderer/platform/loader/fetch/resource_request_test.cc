@@ -23,10 +23,11 @@ namespace {
 
 std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
     const PermissionsPolicy* parent,
+    ParsedPermissionsPolicy header_policy,
     const url::Origin& origin) {
   ParsedPermissionsPolicy empty_container_policy;
   return PermissionsPolicy::CreateFromParentPolicy(
-      parent, empty_container_policy, origin);
+      parent, header_policy, empty_container_policy, origin);
 }
 
 }  // namespace
@@ -109,7 +110,7 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // +--------------------------------------------------------+
 
     std::unique_ptr<PermissionsPolicy> policy =
-        CreateFromParentPolicy(nullptr, origin_a);
+        CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a);
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
         mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
@@ -176,9 +177,8 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy =
-        CreateFromParentPolicy(nullptr, origin_a);
-    policy->SetHeaderPolicy(
+    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
+        nullptr,
         {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
            /*self_if_matches=*/origin_a,
@@ -188,7 +188,8 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
            /*allowed_origins=*/{},
            /*self_if_matches=*/origin_a,
            /*matches_all_origins=*/false,
-           /*matches_opaque_src=*/false}}});
+           /*matches_opaque_src=*/false}}},
+        origin_a);
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
         mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
@@ -257,9 +258,8 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy =
-        CreateFromParentPolicy(nullptr, origin_a);
-    policy->SetHeaderPolicy(
+    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
+        nullptr,
         {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
            /*self_if_matches=*/std::nullopt,
@@ -269,7 +269,8 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
            /*allowed_origins=*/{},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
-           /*matches_opaque_src=*/false}}});
+           /*matches_opaque_src=*/false}}},
+        origin_a);
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
         mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
@@ -340,9 +341,8 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy =
-        CreateFromParentPolicy(nullptr, origin_a);
-    policy->SetHeaderPolicy(
+    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
+        nullptr,
         {{{mojom::blink::PermissionsPolicyFeature::kBrowsingTopics,
            /*allowed_origins=*/{},
            /*self_if_matches=*/std::nullopt,
@@ -352,7 +352,8 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
            /*allowed_origins=*/{},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/true,
-           /*matches_opaque_src=*/false}}});
+           /*matches_opaque_src=*/false}}},
+        origin_a);
 
     EXPECT_TRUE(policy->IsFeatureEnabledForOrigin(
         mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));
@@ -423,9 +424,8 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
     // |                          sharedStorageWritable: true}) |
     // +--------------------------------------------------------+
 
-    std::unique_ptr<PermissionsPolicy> policy =
-        CreateFromParentPolicy(nullptr, origin_a);
-    policy->SetHeaderPolicy(
+    std::unique_ptr<PermissionsPolicy> policy = CreateFromParentPolicy(
+        nullptr,
         {{{mojom::blink::PermissionsPolicyFeature::
                kBrowsingTopics, /*allowed_origins=*/
            {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
@@ -437,7 +437,8 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
            {*blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
            /*self_if_matches=*/std::nullopt,
            /*matches_all_origins=*/false,
-           /*matches_opaque_src=*/false}}});
+           /*matches_opaque_src=*/false}}},
+        origin_a);
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
         mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));

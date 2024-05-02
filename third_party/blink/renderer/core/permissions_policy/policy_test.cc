@@ -32,14 +32,13 @@ class PolicyTest : public testing::Test {
 
     auto origin = SecurityOrigin::CreateFromString(kSelfOrigin);
 
-    auto permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
-        nullptr, {}, origin->ToUrlOrigin());
     auto header = PermissionsPolicyParser::ParseHeader(
         "fullscreen *; payment 'self'; midi 'none'; camera 'self' "
         "https://example.com https://example.net",
         "gyroscope=(self \"https://*.example.com\" \"https://example.net\")",
         origin.get(), dummy_logger_, dummy_logger_);
-    permissions_policy->SetHeaderPolicy(header);
+    auto permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
+        nullptr, header, {}, origin->ToUrlOrigin());
 
     auto& security_context =
         page_holder_->GetFrame().DomWindow()->GetSecurityContext();
@@ -319,4 +318,3 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
 }
 
 }  // namespace blink
-

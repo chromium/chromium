@@ -573,7 +573,7 @@ struct ClientHintsExtendedData {
         permissions = fenced_frame_properties->effective_enabled_permissions();
       }
       permissions_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          resource_origin, permissions);
+          resource_origin, /*header_policy=*/{}, permissions);
     } else {
       RenderFrameHostImpl* main_frame =
           frame_tree_node->frame_tree().GetMainFrame();

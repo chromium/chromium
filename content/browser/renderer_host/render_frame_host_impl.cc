@@ -643,7 +643,7 @@ DetermineWhetherToForbidTrustTokenOperation(
       // permissions policies, so we create a permissions policy with every
       // permission disabled.
       subframe_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          subframe_origin, {});
+          subframe_origin, /*header_policy=*/{}, {});
     } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
       // Fenced frames with flexible permissions are allowed to inherit certain
       // permissions from their parent's permissions policy.
@@ -652,7 +652,8 @@ DetermineWhetherToForbidTrustTokenOperation(
       blink::ParsedPermissionsPolicy container_policy =
           commit_params.frame_policy.container_policy;
       subframe_policy = blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
-          parent_policy, container_policy, subframe_origin);
+          parent_policy, /*header_policy=*/{}, container_policy,
+          subframe_origin);
     } else {
       // Fenced frames with fixed permissions have a list of required permission
       // policies to load and can't be granted extra policies, so use the
@@ -661,7 +662,7 @@ DetermineWhetherToForbidTrustTokenOperation(
       // separately in
       // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
       subframe_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          subframe_origin,
+          subframe_origin, /*header_policy=*/{},
           fenced_frame_properties->effective_enabled_permissions());
     }
   } else {
@@ -677,7 +678,7 @@ DetermineWhetherToForbidTrustTokenOperation(
         commit_params.frame_policy.container_policy;
 
     subframe_policy = blink::PermissionsPolicy::CreateFromParentPolicy(
-        parent_policy, container_policy, subframe_origin);
+        parent_policy, /*header_policy=*/{}, container_policy, subframe_origin);
   }
 
   switch (operation) {
@@ -12211,7 +12212,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
       // permissions policies, so we create a permissions policy with every
       // permission disabled.
       permissions_policy_ = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          last_committed_origin_, {});
+          last_committed_origin_, /*header_policy=*/{}, {});
     } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
       // Fenced frames with flexible permissions are allowed to inherit certain
       // permissions from their parent's permissions policy.
@@ -12221,7 +12222,8 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
           browsing_context_state_->effective_frame_policy().container_policy;
       permissions_policy_ =
           blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
-              parent_policy, container_policy, last_committed_origin_);
+              parent_policy, /*header_policy=*/{}, container_policy,
+              last_committed_origin_);
     } else {
       // Fenced frames with fixed permissions have a list of required permission
       // policies to load and can't be granted extra policies, so use the
@@ -12230,7 +12232,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
       // separately in
       // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
       permissions_policy_ = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          last_committed_origin_,
+          last_committed_origin_, /*header_policy=*/{},
           fenced_frame_properties->effective_enabled_permissions());
     }
     return;
@@ -12256,7 +12258,8 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
       browsing_context_state_->effective_frame_policy().container_policy;
 
   permissions_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
-      parent_policy, container_policy, last_committed_origin_);
+      parent_policy, /*header_policy=*/{}, container_policy,
+      last_committed_origin_);
 }
 
 void RenderFrameHostImpl::CreateAudioInputStreamFactory(
