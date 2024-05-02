@@ -75,7 +75,7 @@
 <translation id="1394661041439318933">باتری قاب دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="1397738625398125236">دروازه را می‌توان پینگ کرد</translation>
 <translation id="1398634363027580500">‏تأخیر بسیار بالا در HTTPS</translation>
-<translation id="1407069428457324124">زمینه تیره</translation>
+<translation id="1407069428457324124">زمینه تاریک</translation>
 <translation id="1413240736185167732">انجام نشد - فیلتر کار نکرد</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">ارکیده</translation>
@@ -162,7 +162,7 @@
 <translation id="1782199038061388045">ترجمه</translation>
 <translation id="1788485524395674731">این برنامه را سرپرست شما مدیریت می‌کند</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
-<translation id="1801418420130173017">غیرفعال کردن زمینه تیره</translation>
+<translation id="1801418420130173017">غیرفعال کردن زمینه تاریک</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1808803439260407870">هنر کلاسیک</translation>
 <translation id="1815850098929213707">کلید انتخاب‌شده <ph name="KEYS" /> است. برای ویرایش کنترل، روی دکمه ضربه بزنید</translation>
@@ -180,7 +180,7 @@
 <translation id="1856388568474281774">جهت‌نمای پایین</translation>
 <translation id="1858620243986915808">پیوست کردن نماگرفت</translation>
 <translation id="1871413952174074704">‏«نام نقطه دستیابی» نمی‌تواند بیشتر از <ph name="CHAR_LIMIT" /> نویسه داشته باشد</translation>
-<translation id="1871569928317311284">خاموش کردن زمینه تیره</translation>
+<translation id="1871569928317311284">خاموش کردن زمینه تاریک</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">پروانه</translation>
 <translation id="188114911237521550">خاموش کردن حالت تاریک</translation>
@@ -732,7 +732,7 @@
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="522307662484862935">نشانی ایمیل لحاظ نشود</translation>
-<translation id="5227902338748591677">زمان‌بندی زمینه تیره</translation>
+<translation id="5227902338748591677">زمان‌بندی زمینه تاریک</translation>
 <translation id="5229344016299762883">خروج از حالت تمام‌صفحه</translation>
 <translation id="5234764350956374838">رد کردن</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{سرپرستتان «<ph name="APP_NAME" />» را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید، به‌طور خودکار اجرا شود.}=2{سرپرستتان «<ph name="APP_NAME" />» و ۱ برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}one{سرپرستتان «<ph name="APP_NAME" />» و # برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}other{سرپرستتان «<ph name="APP_NAME" />» و # برنامه دیگر را طوری راه‌اندازی کرده است که هر بار به سیستم وارد می‌شوید به‌طور خودکار اجرا شوند.}}</translation>
@@ -787,7 +787,7 @@
 <translation id="554067135846762198">مرجانی و مازویی</translation>
 <translation id="5543701552415191873">قفل‌شده</translation>
 <translation id="554517032089923082">GTC</translation>
-<translation id="5559898619118303662">رفتن خودکار به زمینه تیره هنگام غروب</translation>
+<translation id="5559898619118303662">رفتن خودکار به زمینه تاریک هنگام غروب</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> با طیف <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -917,7 +917,7 @@
 <translation id="6278428485366576908">زمینه</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6283581480003247988">آبی و بنفش</translation>
-<translation id="6284632978374966585">روشن کردن زمینه تیره</translation>
+<translation id="6284632978374966585">روشن کردن زمینه تاریک</translation>
 <translation id="628726841779494414">چاپگرهایتان را در تنظیمات چاپگر مدیریت کنید</translation>
 <translation id="6292095526077353682">درحین شارژ، محافظ صفحه برای مدت زیر نشان داده شود</translation>
 <translation id="629550705077076970">کم‌نور کردن صفحه‌کلید</translation>
@@ -929,7 +929,7 @@
 <translation id="6324916366299863871">ویرایش میان‌بر</translation>
 <translation id="6325525973963619867">ناموفق بود</translation>
 <translation id="6327262166342360252">این کاغذدیواری ازطریق هوش مصنوعی بااستفاده از نوشتار زیر ایجاد شده است: «<ph name="PROMPT" />».</translation>
-<translation id="6331191339300272798">زمینه تیره خودکار</translation>
+<translation id="6331191339300272798">زمینه تاریک خودکار</translation>
 <translation id="6340526405444716530">شخصی‌سازی</translation>
 <translation id="6348738456043757611">نام کاربری و گذرواژه</translation>
 <translation id="6352210854422428614">سیاره دیگر</translation>
@@ -1381,7 +1381,7 @@
 <translation id="8855781559874488009">‏نمی‌توان ازطریق دیوار آتش به وب‌سایت‌های HTTP متصل شد</translation>
 <translation id="885701979325669005">فضای ذخیره‌سازی</translation>
 <translation id="885704831271383379">تاریک‌تر کردن صفحه‌کلید</translation>
-<translation id="8863170912498892583">فعال کردن زمینه تیره</translation>
+<translation id="8863170912498892583">فعال کردن زمینه تاریک</translation>
 <translation id="8863888432376731307">دریافت <ph name="INTENT" /> برای «<ph name="QUERY" />» و موارد دیگر</translation>
 <translation id="8864415976656252616">محتوای پیشنهادی وجود ندارد. محتوای راهنمای برتر را ببینید.</translation>
 <translation id="8868741746785112895">شناسه منحصربه‌فرد جهانی</translation>

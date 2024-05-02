@@ -1685,7 +1685,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2244790431750694258"><ph name="APP_NAME" /> – <ph name="APP_TITLE" /></translation>
 <translation id="2245603955208828424">Pomocou klávesov so šípkami prechádzajte položkami po písmenách</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> sa bude automaticky aktualizovať na pozadí. Budete tak získavať najnovšie funkcie a zlepšenia zabezpečenia. Predvoľby aktualizácie môžete skontrolovať v Nastaveniach.</translation>
-<translation id="2246549592927364792">Chcete získavať popisy obrázkov od Googlu?</translation>
+<translation id="2246549592927364792">Chcete získavať opisy obrázkov od Googlu?</translation>
 <translation id="2247738527273549923">Zariadenie spravuje vaša organizácia</translation>
 <translation id="2247870315273396641">Ukážka hlasu</translation>
 <translation id="224835741840550119">Vyčistite si zariadenie</translation>
@@ -5949,7 +5949,7 @@ Na tento účet sa môžu vzťahovať povolenia, ktoré ste už udelili webom a�
 <translation id="5507756662695126555">Zrušenie zamietnutia</translation>
 <translation id="5509693895992845810">Uložiť &amp;ako...</translation>
 <translation id="5509914365760201064">Vydavateľ: <ph name="CERTIFICATE_AUTHORITY" /></translation>
-<translation id="5510775624736435856">Získavať popisy obrázkov od Googlu</translation>
+<translation id="5510775624736435856">Získavať opisy obrázkov od Googlu</translation>
 <translation id="5511379779384092781">Veľmi malý</translation>
 <translation id="5511823366942919280">Naozaj chcete toto zariadenie nastaviť ako zariadenie Shark?</translation>
 <translation id="5512739112435045339">Uvoľnite v zariadení priestor. Potom skúste položku znova stiahnuť.</translation>
@@ -10230,7 +10230,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8777628254805677039">heslo používateľa typu root</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">Weby si môžu pomocou súborov cookie zobrazovať iba vašu aktivitu prehliadania na nich</translation>
-<translation id="8780123805589053431">Získavať popisy obrázkov od Googlu</translation>
+<translation id="8780123805589053431">Získavať opisy obrázkov od Googlu</translation>
 <translation id="8780443667474968681">Hlasové vyhľadávanie bolo vypnuté</translation>
 <translation id="8781834595282316166">Nová karta v skupine</translation>
 <translation id="8781980678064919987">Pri zavretí krytu vypnúť</translation>

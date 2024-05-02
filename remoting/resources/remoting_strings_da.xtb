@@ -100,7 +100,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="533625276787323658">Der er intet at oprette forbindelse til</translation>
 <translation id="5397086374758643919">Afinstallationsprogram til host for Chrome Fjernskrivebord</translation>
-<translation id="5419418238395129586">Sidst online: <ph name="DATE" /></translation>
+<translation id="5419418238395129586">Senest online: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Hosten har lukket ned.</translation>
 <translation id="5601503069213153581">Pinkode</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -192,5 +192,5 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="9213184081240281106">Ugyldig hostkonfiguration.</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
-<translation id="992215271654996353"><ph name="HOSTNAME" /> (sidst online <ph name="DATE_OR_TIME" />)</translation>
+<translation id="992215271654996353"><ph name="HOSTNAME" /> (senest online <ph name="DATE_OR_TIME" />)</translation>
 </translationbundle>
