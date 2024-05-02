@@ -191,8 +191,7 @@ BufferStatus StarboardAudioDecoder::PushBuffer(CastDecoderBuffer* buffer) {
 
   decoded_bytes_ += size_of_buffer;
 
-  return PushBufferInternal(std::move(sample),
-                            GetDrmInfo(config_.encryption_scheme, *buffer),
+  return PushBufferInternal(std::move(sample), GetDrmInfo(*buffer),
                             std::move(data_copy), size_of_buffer);
 }
 

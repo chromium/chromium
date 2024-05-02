@@ -69,31 +69,26 @@ void DrmInfoWrapper::UpdateSubsampleInfo() {
       subsample_mappings_.empty() ? nullptr : subsample_mappings_.data();
 }
 
-DrmInfoWrapper GetDrmInfo(EncryptionScheme encryption_scheme,
-                          const CastDecoderBuffer& buffer) {
-  StarboardDrmEncryptionScheme sb_encryption_scheme;
-
-  switch (encryption_scheme) {
-    case EncryptionScheme::kUnencrypted:
-      return DrmInfoWrapper();
-    case EncryptionScheme::kAesCtr:
-      sb_encryption_scheme = kStarboardDrmEncryptionSchemeAesCtr;
-      break;
-    case EncryptionScheme::kAesCbc:
-      sb_encryption_scheme = kStarboardDrmEncryptionSchemeAesCbc;
-      break;
-  }
-
-  if (!buffer.decrypt_config()) {
+DrmInfoWrapper GetDrmInfo(const CastDecoderBuffer& buffer) {
+  const CastDecryptConfig* decrypt_config = buffer.decrypt_config();
+  if (!decrypt_config) {
     return DrmInfoWrapper();
   }
 
   // Populate drm_sample_info.
   StarboardDrmSampleInfo drm_info;
-  drm_info.encryption_scheme = sb_encryption_scheme;
 
-  const CastDecryptConfig* decrypt_config = buffer.decrypt_config();
-  DCHECK(decrypt_config);
+  switch (decrypt_config->encryption_scheme()) {
+    case EncryptionScheme::kUnencrypted:
+      return DrmInfoWrapper();
+    case EncryptionScheme::kAesCtr:
+      drm_info.encryption_scheme = kStarboardDrmEncryptionSchemeAesCtr;
+      break;
+    case EncryptionScheme::kAesCbc:
+      drm_info.encryption_scheme = kStarboardDrmEncryptionSchemeAesCbc;
+      break;
+  }
+
   drm_info.encryption_pattern.crypt_byte_block =
       decrypt_config->pattern().encrypt_blocks;
   drm_info.encryption_pattern.skip_byte_block =

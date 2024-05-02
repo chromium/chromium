@@ -210,7 +210,7 @@ TEST_F(StarboardVideoDecoderTest, PopulatesDrmInfoInSamples) {
   };
 
   VideoConfig config = GetBasicConfig();
-  config.encryption_scheme = EncryptionScheme::kAesCtr;
+  config.encryption_scheme = EncryptionScheme::kAesCbc;
 
   const ::media::EncryptionPattern encryption_pattern(5, 6);
   std::unique_ptr<::media::DecryptConfig> decrypt_config =
@@ -264,7 +264,7 @@ TEST_F(StarboardVideoDecoderTest, PopulatesDrmInfoInSamples) {
             MediaPipelineBackend::BufferStatus::kBufferPending);
 
   EXPECT_EQ(actual_drm_info.encryption_scheme,
-            kStarboardDrmEncryptionSchemeAesCtr);
+            kStarboardDrmEncryptionSchemeAesCbc);
   EXPECT_EQ(actual_drm_info.encryption_pattern.crypt_byte_block,
             encryption_pattern.crypt_byte_block());
   EXPECT_EQ(actual_drm_info.encryption_pattern.skip_byte_block,

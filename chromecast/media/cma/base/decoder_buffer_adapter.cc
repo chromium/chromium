@@ -4,12 +4,31 @@
 
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 
+#include "base/notreached.h"
 #include "chromecast/media/cma/base/cast_decrypt_config_impl.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "media/base/decoder_buffer.h"
 
 namespace chromecast {
 namespace media {
+
+namespace {
+
+// Converts a chromium EncryptionScheme to a cast one.
+EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
+  switch (scheme) {
+    case ::media::EncryptionScheme::kUnencrypted:
+      return EncryptionScheme::kUnencrypted;
+    case ::media::EncryptionScheme::kCenc:
+      return EncryptionScheme::kAesCtr;
+    case ::media::EncryptionScheme::kCbcs:
+      return EncryptionScheme::kAesCbc;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+}  // namespace
 
 DecoderBufferAdapter::DecoderBufferAdapter(
     const scoped_refptr<::media::DecoderBuffer>& buffer)
@@ -45,7 +64,8 @@ DecoderBufferAdapter::DecoderBufferAdapter(
 
     decrypt_config_.reset(new CastDecryptConfigImpl(
         decrypt_config->key_id(), decrypt_config->iv(), pattern,
-        std::move(subsamples)));
+        std::move(subsamples),
+        ToEncryptionScheme(decrypt_config->encryption_scheme())));
   }
 }
 

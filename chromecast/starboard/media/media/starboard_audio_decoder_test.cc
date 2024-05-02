@@ -279,7 +279,9 @@ TEST_F(StarboardAudioDecoderTest, PopulatesDrmInfoInSamples) {
   };
 
   AudioConfig config = GetBasicConfig();
-  config.encryption_scheme = EncryptionScheme::kAesCtr;
+  // Match the behavior of AudioPipelineImpl::Initialize by setting this to
+  // unencrypted even for encrypted content.
+  config.encryption_scheme = EncryptionScheme::kUnencrypted;
 
   const ::media::EncryptionPattern encryption_pattern(5, 6);
   std::unique_ptr<::media::DecryptConfig> decrypt_config =
@@ -334,7 +336,7 @@ TEST_F(StarboardAudioDecoderTest, PopulatesDrmInfoInSamples) {
             MediaPipelineBackend::BufferStatus::kBufferPending);
 
   EXPECT_EQ(actual_drm_info.encryption_scheme,
-            kStarboardDrmEncryptionSchemeAesCtr);
+            kStarboardDrmEncryptionSchemeAesCbc);
   EXPECT_EQ(actual_drm_info.encryption_pattern.crypt_byte_block,
             encryption_pattern.crypt_byte_block());
   EXPECT_EQ(actual_drm_info.encryption_pattern.skip_byte_block,

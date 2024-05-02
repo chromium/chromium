@@ -58,11 +58,9 @@ class DrmInfoWrapper {
   std::vector<StarboardDrmSubSampleMapping> subsample_mappings_;
 };
 
-// Extracts and returns DRM info from `buffer`. If `encryption_scheme` is
-// kUnencrypted, the StarboardDrmSampleInfo returned by GetDrmSampleInfo will be
-// null.
-DrmInfoWrapper GetDrmInfo(EncryptionScheme encryption_scheme,
-                          const CastDecoderBuffer& buffer);
+// Extracts and returns DRM info from `buffer`. If the buffer is not encrypted,
+// the StarboardDrmSampleInfo returned by GetDrmSampleInfo will be null.
+DrmInfoWrapper GetDrmInfo(const CastDecoderBuffer& buffer);
 
 }  // namespace media
 }  // namespace chromecast
