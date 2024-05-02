@@ -28,6 +28,8 @@
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Core/Replacement.h"
 #include "clang/Tooling/Tooling.h"
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/FormatVariadic.h"
 #include "llvm/Support/TargetSelect.h"
@@ -57,21 +59,6 @@ llvm::cl::opt<std::string> fields_of_interest_option(
                    "interest that are to be rewritten"),
     llvm::cl::init("value"),
     llvm::cl::cat(rewriter_category));
-
-// Splits a string at each comma.
-// For example, `Explode("foo,bar,")` returns `{"foo", "bar", ""}`.
-std::vector<std::string> Explode(std::string_view s) {
-  std::vector<std::string> substrings;
-  for (;;) {
-    size_t pos = s.find(',');
-    substrings.push_back(std::string(s.substr(0, pos)));
-    if (pos == std::string::npos) {
-      break;
-    }
-    s = s.substr(pos + 1);
-  }
-  return substrings;
-}
 
 // Generates substitution directives according to the format documented in
 // tools/clang/scripts/run_tool.py.
@@ -191,28 +178,34 @@ namespace matchers {
 
 auto IsClassOfInterest() {
   using namespace clang::ast_matchers;
-  using namespace clang::ast_matchers::internal;
-  static std::vector<std::string> names = Explode(classes_of_interest_option);
-  return cxxRecordDecl(Matcher<clang::NamedDecl>(new HasNameMatcher(names)));
+  static auto names = [] {
+    llvm::SmallVector<llvm::StringRef> names;
+    llvm::StringRef(classes_of_interest_option).split(names, ",");
+    return names;
+  }();
+  return cxxRecordDecl(hasAnyName(names));
 }
 
 auto IsFieldOfInterest() {
   using namespace clang::ast_matchers;
-  using namespace clang::ast_matchers::internal;
-  static std::vector<std::string> names = Explode(fields_of_interest_option);
-  return fieldDecl(Matcher<clang::NamedDecl>(new HasNameMatcher(names)));
+  static auto names = [] {
+    llvm::SmallVector<llvm::StringRef> names;
+    llvm::StringRef(fields_of_interest_option).split(names, ",");
+    return names;
+  }();
+  return fieldDecl(hasAnyName(names));
 }
 
 // Matches `object.member` and `object->member` where `member` is a
 // member-of-interest of a class-of-interest
 auto IsMemberExprOfInterest() {
   using namespace clang::ast_matchers;
-  return memberExpr(allOf(member(allOf(IsFieldOfInterest(),
-                                       fieldDecl(hasParent(cxxRecordDecl(
-                                           IsClassOfInterest()))))),
-                          // Avoids matching memberExprs in defaulted
-                          // constructors and operators.
-                          unless(hasAncestor(functionDecl(isDefaulted())))))
+  return memberExpr(
+             allOf(member(allOf(IsFieldOfInterest(),
+                                fieldDecl(hasParent(IsClassOfInterest())))),
+                   // Avoids matching memberExprs in defaulted
+                   // constructors and operators.
+                   unless(hasAncestor(functionDecl(isDefaulted())))))
       .bind("member_expr");
 }
 
