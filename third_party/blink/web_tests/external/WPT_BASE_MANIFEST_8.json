@@ -352381,7 +352381,7 @@
      "request": {
       "destination": {
        "fetch-destination.https-expected.txt": [
-        "9b051e2d80d4b7bab91c616db7105ce77fd948e8",
+        "660ac627c71ded4940f9bc5f9b60a93689564435",
         []
        ],
        "resources": {
@@ -371063,6 +371063,10 @@
          "19765bd501b636fce433540d9e6735f51d66151d",
          []
         ],
+        "parse-error-expected.txt": [
+         "4455cd15af8e67a8b7ed7b67f3d17f1dc165a63b",
+         []
+        ],
         "parse-error.json": [
          "98232c64fce9360c79f119cf6de8f670f69f1c44",
          []
@@ -371089,6 +371093,10 @@
         ],
         "utf-8.json": [
          "088d98235873d4dd5107ef2f00b10625773fe8db",
+         []
+        ],
+        "valid-content-type-expected.txt": [
+         "48d67bd8cbd595e46245742b527de765dcada013",
          []
         ],
         "windows-1250.json": [
@@ -388068,7 +388076,7 @@
        []
       ],
       "range-request-with-synth-head-worker.js": [
-       "6025d91b1a2893a0b542835662446088c45ce108",
+       "6b6395aecaef26feeb59e81b2283e7ff02f9e6ae",
        []
       ],
       "redirect-worker.js": [
@@ -388584,7 +388592,7 @@
          ]
         },
         "router-rules.js": [
-         "dd7b3f550207a6e644a4a64a49ba82ec0dee88ff",
+         "fdc1c9e063787053a24be52829862c39bed6a883",
          []
         ],
         "simple-test-for-condition-main-resource.html": [
