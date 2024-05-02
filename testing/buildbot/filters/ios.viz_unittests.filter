@@ -75,3 +75,18 @@
 -ToColorSpace/ColorTransformPixelTest.Basic/79
 -ToColorSpace/ColorTransformPixelTest.Basic/94
 -ToColorSpace/ColorTransformPixelTest.Basic/95
+
+# TODO(crbug.com/337673256): These tests has been failing with happening in a
+# "suitable for blending" color space since https://crrev.com/c/5478271.
+-HdrVideoCases/ColorTransformPixelTest.Basic/52
+-HdrVideoCases/ColorTransformPixelTest.Basic/54
+-HdrVideoCases/ColorTransformPixelTest.Basic/56
+-HdrVideoCases/ColorTransformPixelTest.Basic/57
+-HdrVideoCases/ColorTransformPixelTest.Basic/58
+-HdrVideoCases/ColorTransformPixelTest.Basic/59
+-HdrVideoCases/ColorTransformPixelTest.Basic/60
+-HdrVideoCases/ColorTransformPixelTest.Basic/61
+-HdrVideoCases/ColorTransformPixelTest.Basic/62
+-HdrVideoCases/ColorTransformPixelTest.Basic/63
+-HdrVideoCases/ColorTransformPixelTest.Basic/68
+-HdrVideoCases/ColorTransformPixelTest.Basic/70
