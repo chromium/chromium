@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
 #include "base/hash/md5.h"
+#include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -23,10 +24,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/shortcuts/linux_xdg_wrapper.h"
+#include "chrome/browser/shortcuts/linux_xdg_wrapper_impl.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
 namespace shortcuts {
@@ -73,7 +78,7 @@ ShortcutCreatorResult CreateExecutableFile(const base::FilePath& file_path,
 ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
     const std::string& shortcut_name,
     const GURL& shortcut_url,
-    gfx::Image icon,
+    const gfx::Image& icon,
     const base::FilePath& profile_path,
     LinuxXdgWrapper& xdg_wrapper) {
   CHECK(!shortcut_name.empty());
@@ -141,6 +146,21 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
   }
   return non_fatal_failure ? ShortcutCreatorResult::kSuccessWithErrors
                            : ShortcutCreatorResult::kSuccess;
+}
+
+void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
+                                 const GURL& shortcut_url,
+                                 gfx::ImageFamily icon_images,
+                                 const base::FilePath& profile_path,
+                                 ShortcutCreatorCallback complete) {
+  const gfx::Image* image = icon_images.GetBest(gfx::Size(128, 128));
+  CHECK(image);
+  CHECK_EQ(image->Size().width(), 128);
+  LinuxXdgWrapperImpl wrapper_impl;
+  ShortcutCreatorResult result = CreateShortcutOnLinuxDesktop(
+      shortcut_name, shortcut_url, *image, profile_path, wrapper_impl);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(complete), result));
 }
 
 }  // namespace shortcuts

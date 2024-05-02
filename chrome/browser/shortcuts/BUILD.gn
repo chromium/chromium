@@ -48,6 +48,8 @@ source_set("shortcuts") {
   if (is_linux) {
     sources += [
       "linux_xdg_wrapper.h",
+      "linux_xdg_wrapper_impl.cc",
+      "linux_xdg_wrapper_impl.h",
       "shortcut_creator_linux.cc",
       "shortcut_creator_linux.h",
     ]

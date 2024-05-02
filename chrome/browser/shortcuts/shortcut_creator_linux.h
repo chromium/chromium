@@ -22,9 +22,6 @@ class Image;
 namespace shortcuts {
 class LinuxXdgWrapper;
 
-// TODO(crbug.com/333024272): Hook up CreateShortcutOnUserDesktop to
-// CreateShortcutOnLinuxDesktop on linux.
-
 // Creates a shortcut on the user's desktop and installs it into the system's
 // desktop menu. The icon is written into the user's profile directory. This
 // method makes blocking calls and must be called on an appropriate task runner.
@@ -42,7 +39,7 @@ class LinuxXdgWrapper;
 ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
     const std::string& shortcut_name,
     const GURL& shortcut_url,
-    gfx::Image icon,
+    const gfx::Image& icon,
     const base::FilePath& profile_path,
     LinuxXdgWrapper& xdg_wrapper);
 
