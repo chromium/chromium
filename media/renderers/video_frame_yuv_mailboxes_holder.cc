@@ -17,14 +17,8 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
-#include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace media {
 
@@ -65,12 +59,6 @@ viz::SharedImageFormat VideoPixelFormatToSharedImageFormat(
   }
 }
 
-GLenum PlaneGLFormat(int num_channels,
-                     viz::RasterContextProvider* context_provider) {
-  return context_provider->GetGrGLTextureFormat(PlaneSharedImageFormat(
-      num_channels, context_provider->ContextCapabilities().texture_rg));
-}
-
 }  // namespace
 
 VideoFrameYUVMailboxesHolder::VideoFrameYUVMailboxesHolder() = default;
@@ -82,8 +70,6 @@ VideoFrameYUVMailboxesHolder::~VideoFrameYUVMailboxesHolder() {
 void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
   if (holders_[0].mailbox.IsZero())
     return;
-
-  ReleaseTextures();
 
   // Don't destroy shared images we don't own.
   if (!created_shared_images_)
@@ -246,10 +232,6 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     created_shared_images_ = true;
   }
 
-  // If we have cached shared images that have been imported release them to
-  // prevent writing to a shared image for which we're holding read access.
-  ReleaseTextures();
-
   for (size_t plane = 0; plane < num_planes_; ++plane) {
     int num_channels = yuva_info_.numChannelsInPlane(plane);
     SkColorType color_type = SkYUVAPixmapInfo::DefaultColorTypeForDataType(
@@ -262,111 +244,6 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
         SkPixmap(info, video_frame->data(plane), video_frame->stride(plane)));
     mailboxes[plane] = holders_[plane].mailbox;
   }
-}
-
-GrYUVABackendTextures VideoFrameYUVMailboxesHolder::VideoFrameToSkiaTextures(
-    const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    bool for_surface) {
-  gpu::Mailbox mailboxes[kMaxPlanes];
-  VideoFrameToMailboxes(video_frame, raster_context_provider, mailboxes,
-                        /*allow_multiplanar_for_upload=*/false);
-  ImportTextures(for_surface);
-  GrBackendTexture backend_textures[SkYUVAInfo::kMaxPlanes];
-  for (size_t plane = 0; plane < num_planes_; ++plane) {
-    backend_textures[plane] = GrBackendTextures::MakeGL(
-        plane_sizes_[plane].width(), plane_sizes_[plane].height(),
-        skgpu::Mipmapped::kNo, textures_[plane].texture);
-  }
-  return GrYUVABackendTextures(yuva_info_, backend_textures,
-                               kTopLeft_GrSurfaceOrigin);
-}
-
-bool VideoFrameYUVMailboxesHolder::VideoFrameToPlaneSkSurfaces(
-    const VideoFrame* video_frame,
-    viz::RasterContextProvider* raster_context_provider,
-    sk_sp<SkSurface> surfaces[SkYUVAInfo::kMaxPlanes]) {
-  for (size_t plane = 0; plane < SkYUVAInfo::kMaxPlanes; ++plane)
-    surfaces[plane] = nullptr;
-
-  if (!video_frame->HasTextures()) {
-    // The below call to VideoFrameToSkiaTextures would blit |video_frame| into
-    // a temporary SharedImage, which would be exposed as a SkSurface. That is
-    // probably undesirable (it has no current use cases), so just return an
-    // error.
-    DLOG(ERROR) << "VideoFrameToPlaneSkSurfaces requires texture backing.";
-    return false;
-  }
-
-  GrDirectContext* gr_context = raster_context_provider->GrContext();
-  DCHECK(gr_context);
-  GrYUVABackendTextures yuva_backend_textures = VideoFrameToSkiaTextures(
-      video_frame, raster_context_provider, /*for_surface=*/true);
-
-  bool result = true;
-  for (size_t plane = 0; plane < num_planes_; ++plane) {
-    const int num_channels = yuva_info_.numChannelsInPlane(plane);
-    SkColorType color_type = SkYUVAPixmapInfo::DefaultColorTypeForDataType(
-        SkYUVAPixmaps::DataType::kUnorm8, num_channels);
-    // Gray is not renderable.
-    if (color_type == kGray_8_SkColorType)
-      color_type = kAlpha_8_SkColorType;
-
-    auto surface = SkSurfaces::WrapBackendTexture(
-        gr_context, yuva_backend_textures.texture(plane),
-        kTopLeft_GrSurfaceOrigin, /*sampleCnt=*/1, color_type,
-        SkColorSpace::MakeSRGB(), nullptr);
-    if (!surface) {
-      DLOG(ERROR)
-          << "VideoFrameToPlaneSkSurfaces failed to make surface for plane "
-          << plane << " of " << num_planes_ << ".";
-      result = false;
-    }
-    surfaces[plane] = surface;
-  }
-  return result;
-}
-
-void VideoFrameYUVMailboxesHolder::ImportTextures(bool for_surface) {
-  DCHECK(!imported_textures_)
-      << "Textures should always be released after converting video frame. "
-         "Call ReleaseTextures() for each call to VideoFrameToSkiaTextures()";
-
-  auto* ri = provider_->RasterInterface();
-  for (size_t plane = 0; plane < num_planes_; ++plane) {
-    textures_[plane].texture.fID =
-        ri->CreateAndConsumeForGpuRaster(holders_[plane].mailbox);
-    ri->BeginSharedImageAccessDirectCHROMIUM(
-        textures_[plane].texture.fID,
-        for_surface ? GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM
-                    : GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-
-    int num_channels = yuva_info_.numChannelsInPlane(plane);
-    textures_[plane].texture.fTarget = holders_[plane].texture_target;
-    textures_[plane].texture.fFormat =
-        PlaneGLFormat(num_channels, provider_.get());
-  }
-
-  imported_textures_ = true;
-}
-
-void VideoFrameYUVMailboxesHolder::ReleaseTextures() {
-  if (!imported_textures_)
-    return;
-
-  auto* ri = provider_->RasterInterface();
-  DCHECK(ri);
-  for (auto& tex_info : textures_) {
-    if (!tex_info.texture.fID)
-      continue;
-
-    ri->EndSharedImageAccessDirectCHROMIUM(tex_info.texture.fID);
-    ri->DeleteGpuRasterTexture(tex_info.texture.fID);
-
-    tex_info.texture.fID = 0;
-  }
-
-  imported_textures_ = false;
 }
 
 // static

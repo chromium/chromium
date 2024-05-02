@@ -5,7 +5,6 @@
 #ifndef MEDIA_RENDERERS_VIDEO_FRAME_RGBA_TO_YUVA_CONVERTER_H_
 #define MEDIA_RENDERERS_VIDEO_FRAME_RGBA_TO_YUVA_CONVERTER_H_
 
-#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/media_export.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 
@@ -20,6 +19,7 @@ struct MailboxHolder;
 
 namespace viz {
 class RasterContextProvider;
+class SharedImageFormat;
 }  // namespace viz
 
 namespace media {
