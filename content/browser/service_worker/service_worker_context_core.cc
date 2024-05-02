@@ -130,42 +130,43 @@ void SuccessReportingCallback(
   }
 }
 
-bool IsSameOriginClientContainerHost(
+bool IsSameOriginServiceWorkerClient(
     const blink::StorageKey& key,
     bool allow_reserved_client,
     bool allow_back_forward_cached_client,
-    ServiceWorkerContainerHost* container_host) {
-  DCHECK(container_host->IsContainerForClient());
-  // If |container_host| is in BackForwardCache, it should be skipped in
+    ServiceWorkerContainerHost& service_worker_client) {
+  DCHECK(service_worker_client.IsContainerForClient());
+  // If |service_worker_client| is in BackForwardCache, it should be skipped in
   // iteration, because (1) hosts in BackForwardCache should never be exposed to
   // web as clients and (2) hosts could be in an unknown state after eviction
   // and before deletion.
   // When |allow_back_forward_cached_client| is true, do not skip the cached
   // client.
   if (!allow_back_forward_cached_client &&
-      container_host->IsInBackForwardCache()) {
+      service_worker_client.IsInBackForwardCache()) {
     return false;
   }
-  return container_host->key() == key &&
-         (allow_reserved_client || container_host->is_execution_ready());
+  return service_worker_client.key() == key &&
+         (allow_reserved_client || service_worker_client.is_execution_ready());
 }
 
-bool IsSameOriginWindowClientContainerHost(
+bool IsSameOriginWindowServiceWorkerClient(
     const blink::StorageKey& key,
     bool allow_reserved_client,
-    ServiceWorkerContainerHost* container_host) {
-  DCHECK(container_host->IsContainerForClient());
-  // If |container_host| is in BackForwardCache, it should be skipped in
-  // iteration, because (1) hosts in BackForwardCache should never be exposed to
-  // web as clients and (2) hosts could be in an unknown state after eviction
-  // and before deletion.
+    ServiceWorkerContainerHost& service_worker_client) {
+  DCHECK(service_worker_client.IsContainerForClient());
+  // If |service_worker_client| is in BackForwardCache, it should be skipped in
+  // iteration, because (1) service worker clients in BackForwardCache should
+  // never be exposed to web as clients and (2) service worker clients could be
+  // in an unknown state after eviction and before deletion.
   if (IsBackForwardCacheEnabled()) {
-    if (container_host->IsInBackForwardCache())
+    if (service_worker_client.IsInBackForwardCache()) {
       return false;
+    }
   }
-  return container_host->IsContainerForWindowClient() &&
-         container_host->key() == key &&
-         (allow_reserved_client || container_host->is_execution_ready());
+  return service_worker_client.IsContainerForWindowClient() &&
+         service_worker_client.key() == key &&
+         (allow_reserved_client || service_worker_client.is_execution_ready());
 }
 
 class ClearAllServiceWorkersHelper
@@ -232,40 +233,47 @@ int GetWarmedUpServiceWorkerCount(
 
 }  // namespace
 
-ServiceWorkerContextCore::ContainerHostIterator::~ContainerHostIterator() =
-    default;
+ServiceWorkerContextCore::ServiceWorkerClientIterator::
+    ~ServiceWorkerClientIterator() = default;
+
+ServiceWorkerContainerHost&
+ServiceWorkerContextCore::ServiceWorkerClientIterator::operator*() const {
+  DCHECK(!IsAtEnd());
+  return *iterator_->second;
+}
 
 ServiceWorkerContainerHost*
-ServiceWorkerContextCore::ContainerHostIterator::GetContainerHost() {
+ServiceWorkerContextCore::ServiceWorkerClientIterator::operator->() const {
   DCHECK(!IsAtEnd());
-  return container_host_iterator_->second.get();
+  return iterator_->second.get();
 }
 
-void ServiceWorkerContextCore::ContainerHostIterator::Advance() {
+ServiceWorkerContextCore::ServiceWorkerClientIterator&
+ServiceWorkerContextCore::ServiceWorkerClientIterator::operator++() {
   DCHECK(!IsAtEnd());
-  container_host_iterator_++;
-  ForwardUntilMatchingContainerHost();
+  ++iterator_;
+  ForwardUntilMatchingServiceWorkerClient();
+  return *this;
 }
 
-bool ServiceWorkerContextCore::ContainerHostIterator::IsAtEnd() {
-  return container_host_iterator_ == map_->end();
+bool ServiceWorkerContextCore::ServiceWorkerClientIterator::IsAtEnd() const {
+  return iterator_ == map_->end();
 }
 
-ServiceWorkerContextCore::ContainerHostIterator::ContainerHostIterator(
-    ContainerHostByClientUUIDMap* map,
-    ContainerHostPredicate predicate)
-    : map_(map),
-      predicate_(std::move(predicate)),
-      container_host_iterator_(map_->begin()) {
-  ForwardUntilMatchingContainerHost();
+ServiceWorkerContextCore::ServiceWorkerClientIterator::
+    ServiceWorkerClientIterator(ContainerHostByClientUUIDMap* map,
+                                ContainerHostPredicate predicate)
+    : map_(map), predicate_(std::move(predicate)), iterator_(map_->begin()) {
+  ForwardUntilMatchingServiceWorkerClient();
 }
 
-void ServiceWorkerContextCore::ContainerHostIterator::
-    ForwardUntilMatchingContainerHost() {
+void ServiceWorkerContextCore::ServiceWorkerClientIterator::
+    ForwardUntilMatchingServiceWorkerClient() {
   while (!IsAtEnd()) {
-    if (predicate_.is_null() || predicate_.Run(GetContainerHost()))
+    if (predicate_.is_null() || predicate_.Run(**this)) {
       return;
-    container_host_iterator_++;
+    }
+    ++iterator_;
   }
   return;
 }
@@ -364,56 +372,47 @@ ServiceWorkerContextCore::~ServiceWorkerContextCore() {
   job_coordinator_->AbortAll();
 }
 
-std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator>
-ServiceWorkerContextCore::GetClientContainerHostIterator(
+ServiceWorkerContextCore::ServiceWorkerClientIterator
+ServiceWorkerContextCore::GetServiceWorkerClients(
     const blink::StorageKey& key,
     bool include_reserved_clients,
     bool include_back_forward_cached_clients) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return base::WrapUnique(new ContainerHostIterator(
+  return ServiceWorkerClientIterator(
       &container_host_by_uuid_,
-      base::BindRepeating(IsSameOriginClientContainerHost, key,
+      base::BindRepeating(IsSameOriginServiceWorkerClient, key,
                           include_reserved_clients,
-                          include_back_forward_cached_clients)));
+                          include_back_forward_cached_clients));
 }
 
-std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator>
-ServiceWorkerContextCore::GetWindowClientContainerHostIterator(
+ServiceWorkerContextCore::ServiceWorkerClientIterator
+ServiceWorkerContextCore::GetWindowServiceWorkerClients(
     const blink::StorageKey& key,
     bool include_reserved_clients) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return base::WrapUnique(new ContainerHostIterator(
+  return ServiceWorkerClientIterator(
       &container_host_by_uuid_,
-      base::BindRepeating(IsSameOriginWindowClientContainerHost, key,
-                          include_reserved_clients)));
+      base::BindRepeating(IsSameOriginWindowServiceWorkerClient, key,
+                          include_reserved_clients));
 }
 
 void ServiceWorkerContextCore::HasMainFrameWindowClient(
     const blink::StorageKey& key,
     BoolCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<ContainerHostIterator> container_host_iterator =
-      GetWindowClientContainerHostIterator(key,
-                                           /*include_reserved_clients=*/false);
-
-  if (container_host_iterator->IsAtEnd()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
-    return;
-  }
 
   bool has_main_frame = false;
-  while (!container_host_iterator->IsAtEnd()) {
-    ServiceWorkerContainerHost* container_host =
-        container_host_iterator->GetContainerHost();
-    DCHECK(container_host->IsContainerForWindowClient());
+  for (auto it =
+           GetWindowServiceWorkerClients(key,
+                                         /*include_reserved_clients=*/false);
+       !it.IsAtEnd(); ++it) {
+    DCHECK(it->IsContainerForWindowClient());
     auto* render_frame_host =
-        RenderFrameHostImpl::FromID(container_host->GetRenderFrameHostId());
+        RenderFrameHostImpl::FromID(it->GetRenderFrameHostId());
     if (render_frame_host && !render_frame_host->GetParent()) {
       has_main_frame = true;
       break;
     }
-    container_host_iterator->Advance();
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

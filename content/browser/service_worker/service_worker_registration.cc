@@ -313,41 +313,42 @@ void ServiceWorkerRegistration::ClaimClients() {
   const bool include_reserved_clients = false;
   // Include clients in BackForwardCache in order to evict them if needed.
   const bool include_back_forward_cached_clients = true;
-  for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
-           context_->GetClientContainerHostIterator(
-               key_, include_reserved_clients,
-               include_back_forward_cached_clients);
-       !it->IsAtEnd(); it->Advance()) {
-    ServiceWorkerContainerHost* container_host = it->GetContainerHost();
+  for (auto it = context_->GetServiceWorkerClients(
+           key_, include_reserved_clients, include_back_forward_cached_clients);
+       !it.IsAtEnd(); ++it) {
     // "1. If client’s execution ready flag is unset or client’s discarded flag
     //     is set, continue."
     // |include_reserved_clients| ensures only execution ready clients are
     // returned.
-    DCHECK(container_host->is_execution_ready());
+    DCHECK(it->is_execution_ready());
 
     // This is part of step 5 but performed here as an optimization. Do nothing
     // if this version is already the controller.
-    if (container_host->controller() == active_version())
+    if (it->controller() == active_version()) {
       continue;
+    }
 
     // "2. If client is not a secure context, continue."
-    if (!container_host->IsEligibleForServiceWorkerController())
+    if (!it->IsEligibleForServiceWorkerController()) {
       continue;
+    }
 
     // "3. Let registration be the result of running Match Service Worker
     //     Registration algorithm passing client’s creation URL as the argument.
     //  4. If registration is not the service worker's containing service worker
     //     registration, continue."
-    if (container_host->MatchRegistration() != this)
+    if (it->MatchRegistration() != this) {
       continue;
+    }
 
     // Evict the client in BackForwardCache.
-    if (container_host->IsInBackForwardCache())
-      container_host->EvictFromBackForwardCache(
+    if (it->IsInBackForwardCache()) {
+      it->EvictFromBackForwardCache(
           BackForwardCacheMetrics::NotRestoredReason::kServiceWorkerClaim);
+    }
 
     // The remaining steps are performed here:
-    container_host->ClaimedByRegistration(this);
+    it->ClaimedByRegistration(this);
   }
 }
 

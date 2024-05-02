@@ -84,30 +84,34 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   // Iterates over ServiceWorkerContainerHost objects in the
   // ContainerHostByClientUUIDMap.
-  // Note: As ContainerHostIterator is operating on a member of
+  // Note: As ServiceWorkerClientIterator is operating on a member of
   // ServiceWorkerContextCore, users must ensure the ServiceWorkerContextCore
-  // instance always outlives the ContainerHostIterator one.
-  class CONTENT_EXPORT ContainerHostIterator {
+  // instance always outlives the ServiceWorkerClientIterator one.
+  class CONTENT_EXPORT ServiceWorkerClientIterator final {
    public:
-    ContainerHostIterator(const ContainerHostIterator&) = delete;
-    ContainerHostIterator& operator=(const ContainerHostIterator&) = delete;
+    ServiceWorkerClientIterator(const ServiceWorkerClientIterator&) = delete;
+    ServiceWorkerClientIterator& operator=(const ServiceWorkerClientIterator&) =
+        delete;
 
-    ~ContainerHostIterator();
-    ServiceWorkerContainerHost* GetContainerHost();
-    void Advance();
-    bool IsAtEnd();
+    ~ServiceWorkerClientIterator();
+
+    ServiceWorkerClientIterator& operator++();
+    bool IsAtEnd() const;
+
+    ServiceWorkerContainerHost& operator*() const;
+    ServiceWorkerContainerHost* operator->() const;
 
    private:
     friend class ServiceWorkerContextCore;
     using ContainerHostPredicate =
-        base::RepeatingCallback<bool(ServiceWorkerContainerHost*)>;
-    ContainerHostIterator(ContainerHostByClientUUIDMap* map,
-                          ContainerHostPredicate predicate);
-    void ForwardUntilMatchingContainerHost();
+        base::RepeatingCallback<bool(ServiceWorkerContainerHost&)>;
+    ServiceWorkerClientIterator(ContainerHostByClientUUIDMap* map,
+                                ContainerHostPredicate predicate);
+    void ForwardUntilMatchingServiceWorkerClient();
 
     const raw_ptr<ContainerHostByClientUUIDMap, DanglingUntriaged> map_;
     ContainerHostPredicate predicate_;
-    ContainerHostByClientUUIDMap::iterator container_host_iterator_;
+    ContainerHostByClientUUIDMap::iterator iterator_;
   };
 
   class TestVersionObserver : public base::CheckedObserver {
@@ -206,21 +210,21 @@ class CONTENT_EXPORT ServiceWorkerContextCore
     return job_coordinator_.get();
   }
 
-  // Returns a ContainerHost iterator for all service worker clients for the
+  // Returns an iterator for all service worker clients for the
   // `key`. If `include_reserved_clients` is true, this includes clients that
   // are not execution ready (i.e., for windows, the document has not yet been
   // created and for workers, the final response after redirects has not yet
   // been delivered). If `include_back_forward_cached_clients` is true, this
   // includes the clients whose documents are stored in BackForward Cache.
-  std::unique_ptr<ContainerHostIterator> GetClientContainerHostIterator(
+  ServiceWorkerClientIterator GetServiceWorkerClients(
       const blink::StorageKey& key,
       bool include_reserved_clients,
       bool include_back_forward_cached_clients);
 
-  // Returns a ContainerHost iterator for service worker window clients for the
+  // Returns an iterator for service worker window clients for the
   // `key`. If `include_reserved_clients` is false, this only returns clients
   // that are execution ready.
-  std::unique_ptr<ContainerHostIterator> GetWindowClientContainerHostIterator(
+  ServiceWorkerClientIterator GetWindowServiceWorkerClients(
       const blink::StorageKey& key,
       bool include_reserved_clients);
 

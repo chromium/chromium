@@ -259,12 +259,11 @@ void GetNonWindowClients(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (options->include_uncontrolled) {
     if (controller->context()) {
-      for (auto it = controller->context()->GetClientContainerHostIterator(
+      for (auto it = controller->context()->GetServiceWorkerClients(
                controller->key(), false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
-           !it->IsAtEnd(); it->Advance()) {
-        AddNonWindowClient(it->GetContainerHost(), options->client_type,
-                           &clients);
+           !it.IsAtEnd(); ++it) {
+        AddNonWindowClient(&*it, options->client_type, &clients);
       }
     }
   } else {
@@ -306,11 +305,11 @@ void GetWindowClients(
       clients_info;
   if (options->include_uncontrolled) {
     if (controller->context()) {
-      for (auto it = controller->context()->GetClientContainerHostIterator(
+      for (auto it = controller->context()->GetServiceWorkerClients(
                controller->key(), false /* include_reserved_clients */,
                false /* include_back_forward_cached_clients */);
-           !it->IsAtEnd(); it->Advance()) {
-        AddWindowClient(it->GetContainerHost(), &clients_info);
+           !it.IsAtEnd(); ++it) {
+        AddWindowClient(&*it, &clients_info);
       }
     }
   } else {
@@ -618,31 +617,31 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
     return;
   }
 
-  for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
-           context->GetClientContainerHostIterator(
-               key, true /* include_reserved_clients */,
-               false /* include_back_forward_cached_clients */);
-       !it->IsAtEnd(); it->Advance()) {
-    ServiceWorkerContainerHost* container_host = it->GetContainerHost();
-    if (!container_host->IsContainerForWindowClient())
+  for (auto it = context->GetServiceWorkerClients(
+           key, true /* include_reserved_clients */,
+           false /* include_back_forward_cached_clients */);
+       !it.IsAtEnd(); ++it) {
+    if (!it->IsContainerForWindowClient()) {
       continue;
+    }
 
-    if (container_host->GetRenderFrameHostId() != rfh_id)
+    if (it->GetRenderFrameHostId() != rfh_id) {
       continue;
+    }
 
     // DidNavigate must be called with a preparation complete client (the
     // navigation was committed), but the client might not be execution ready
     // yet (Blink hasn't yet created the Document).
-    DCHECK(container_host->is_response_committed());
-    if (!container_host->is_execution_ready()) {
-      container_host->AddExecutionReadyCallback(base::BindOnce(
-          &DidGetExecutionReadyClient, context, container_host->client_uuid(),
-          script_url, key, std::move(callback)));
+    DCHECK(it->is_response_committed());
+    if (!it->is_execution_ready()) {
+      it->AddExecutionReadyCallback(base::BindOnce(
+          &DidGetExecutionReadyClient, context, it->client_uuid(), script_url,
+          key, std::move(callback)));
       return;
     }
 
-    DidGetExecutionReadyClient(context, container_host->client_uuid(),
-                               script_url, key, std::move(callback));
+    DidGetExecutionReadyClient(context, it->client_uuid(), script_url, key,
+                               std::move(callback));
     return;
   }
 

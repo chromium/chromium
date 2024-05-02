@@ -296,12 +296,11 @@ class ServiceWorkerContainerHostTest : public testing::Test {
 
   bool CanFindClientContainerHost(ServiceWorkerContainerHost* container_host) {
     if (context_) {
-      for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
-               context_->GetClientContainerHostIterator(
-                   container_host->key(), false /* include_reserved_clients */,
-                   false /* include_back_forward_cached_clients */);
-           !it->IsAtEnd(); it->Advance()) {
-        if (container_host == it->GetContainerHost()) {
+      for (auto it = context_->GetServiceWorkerClients(
+               container_host->key(), false /* include_reserved_clients */,
+               false /* include_back_forward_cached_clients */);
+           !it.IsAtEnd(); ++it) {
+        if (container_host == &*it) {
           return true;
         }
       }

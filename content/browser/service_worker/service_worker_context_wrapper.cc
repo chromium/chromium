@@ -1152,14 +1152,12 @@ ServiceWorkerContextWrapper::GetWindowClientFrameRoutingIds(
       new std::vector<GlobalRenderFrameHostId>());
   if (!context_core_)
     return rfh_ids;
-  for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
-           context_core_->GetWindowClientContainerHostIterator(
-               key,
-               /*include_reserved_clients=*/false);
-       !it->IsAtEnd(); it->Advance()) {
-    ServiceWorkerContainerHost* container_host = it->GetContainerHost();
-    DCHECK(container_host->IsContainerForWindowClient());
-    rfh_ids->push_back(container_host->GetRenderFrameHostId());
+  for (auto it = context_core_->GetWindowServiceWorkerClients(
+           key,
+           /*include_reserved_clients=*/false);
+       !it.IsAtEnd(); ++it) {
+    DCHECK(it->IsContainerForWindowClient());
+    rfh_ids->push_back(it->GetRenderFrameHostId());
   }
 
   return rfh_ids;

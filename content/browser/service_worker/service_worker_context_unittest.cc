@@ -1180,11 +1180,11 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
 
   // Iterate over the client container hosts that belong to kOrigin1.
   std::set<ServiceWorkerContainerHost*> results;
-  for (auto it = context()->GetClientContainerHostIterator(
+  for (auto it = context()->GetServiceWorkerClients(
            kKey1, true /* include_reserved_clients */,
            false /* include_back_forward_cached_clients */);
-       !it->IsAtEnd(); it->Advance()) {
-    results.insert(it->GetContainerHost());
+       !it.IsAtEnd(); ++it) {
+    results.insert(&*it);
   }
   EXPECT_EQ(2u, results.size());
   EXPECT_TRUE(base::Contains(results, container_host1.get()));
@@ -1193,11 +1193,11 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   // Iterate over the container hosts that belong to kOrigin2. This should not
   // include worker_host4->container_host() as it's not for controllee.
   results.clear();
-  for (auto it = context()->GetClientContainerHostIterator(
+  for (auto it = context()->GetServiceWorkerClients(
            kKey2, true /* include_reserved_clients */,
            false /* include_back_forward_cached_clients */);
-       !it->IsAtEnd(); it->Advance()) {
-    results.insert(it->GetContainerHost());
+       !it.IsAtEnd(); ++it) {
+    results.insert(&*it);
   }
   EXPECT_EQ(1u, results.size());
   EXPECT_TRUE(base::Contains(results, container_host2.get()));
