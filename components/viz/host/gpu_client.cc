@@ -164,15 +164,6 @@ void GpuClient::OnEstablishGpuChannel(
   }
 }
 
-void GpuClient::OnCreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                        gfx::GpuMemoryBufferHandle handle) {
-  auto it = pending_create_callbacks_.find(id);
-  DCHECK(it != pending_create_callbacks_.end());
-  CreateGpuMemoryBufferCallback callback = std::move(it->second);
-  pending_create_callbacks_.erase(it);
-  std::move(callback).Run(std::move(handle));
-}
-
 void GpuClient::ClearCallback() {
   if (!callback_)
     return;
@@ -241,67 +232,8 @@ void GpuClient::CreateVideoEncodeAcceleratorProvider(
   }
 }
 
-void GpuClient::CreateGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    mojom::GpuMemoryBufferFactory::CreateGpuMemoryBufferCallback callback) {
-  auto* gpu_memory_buffer_manager = delegate_->GetGpuMemoryBufferManager();
-
-  if (pending_create_callbacks_.find(id) != pending_create_callbacks_.end()) {
-    gpu_memory_buffer_factory_receivers_.ReportBadMessage(
-        "GpuMemoryBufferId already in use");
-    return;
-  }
-
-  if (!gpu::GpuMemoryBufferSupport::IsSizeValid(size)) {
-    gpu_memory_buffer_factory_receivers_.ReportBadMessage("Invalid GMB size");
-    return;
-  }
-
-  if (!gpu_memory_buffer_manager) {
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-    return;
-  }
-
-  pending_create_callbacks_[id] = std::move(callback);
-  gpu_memory_buffer_manager->AllocateGpuMemoryBuffer(
-      id, client_id_, size, format, usage, gpu::kNullSurfaceHandle,
-      base::BindOnce(&GpuClient::OnCreateGpuMemoryBuffer,
-                     weak_factory_.GetWeakPtr(), id));
-}
-
-void GpuClient::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id) {
-  if (auto* gpu_memory_buffer_manager =
-          delegate_->GetGpuMemoryBufferManager()) {
-    gpu_memory_buffer_manager->DestroyGpuMemoryBuffer(id, client_id_);
-  }
-}
-
-void GpuClient::CopyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion shared_memory,
-    CopyGpuMemoryBufferCallback callback) {
-  auto* gpu_memory_buffer_manager = delegate_->GetGpuMemoryBufferManager();
-
-  if (!gpu_memory_buffer_manager) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  gpu_memory_buffer_manager->CopyGpuMemoryBufferAsync(
-      std::move(buffer_handle), std::move(shared_memory), std::move(callback));
-}
-
-void GpuClient::CreateGpuMemoryBufferFactory(
-    mojo::PendingReceiver<mojom::GpuMemoryBufferFactory> receiver) {
-  gpu_memory_buffer_factory_receivers_.Add(this, std::move(receiver));
-}
-
 void GpuClient::CreateClientGpuMemoryBufferFactory(
     mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) {
-  CHECK(base::FeatureList::IsEnabled(features::kUseClientGmbInterface));
   // Send the PendingReceiver to GpuService via IPC.
   if (auto* gpu_host = delegate_->EnsureGpuHost()) {
     gpu_host->gpu_service()->BindClientGmbInterface(std::move(receiver),

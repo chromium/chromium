@@ -7969,10 +7969,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"use-client-gmb-interface", flag_descriptions::kUseClientGmbInterfaceName,
-     flag_descriptions::kUseClientGmbInterfaceDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kUseClientGmbInterface)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"scalable-iph-debug", flag_descriptions::kScalableIphDebugName,
      flag_descriptions::kScalableIphDebugDescription, kOsCrOS,

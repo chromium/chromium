@@ -233,9 +233,6 @@ extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
-extern const char kUseClientGmbInterfaceName[];
-extern const char kUseClientGmbInterfaceDescription[];
-
 extern const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[];
 extern const char
     kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription[];

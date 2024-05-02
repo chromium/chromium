@@ -424,15 +424,6 @@ BASE_FEATURE(kUseGpuSchedulerDfs,
 #endif
 );
 
-// Use the ClientGmb interface to create GpuMemoryBuffers. This is supposed to
-// reduce number of IPCs happening while creating GpuMemoryBuffers by allowing
-// Renderers to do IPC directly to GPU process. This feature is now enabled by
-// default on all platforms.
-BASE_FEATURE(kUseClientGmbInterface,
-             "UseClientGmbInterface",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 // When the application is in background, whether to perform immediate GPU
 // cleanup when executing deferred requests.
 BASE_FEATURE(kGpuCleanupInBackground,

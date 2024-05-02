@@ -877,7 +877,6 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
 void GpuServiceImpl::BindClientGmbInterface(
     mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> pending_receiver,
     int client_id) {
-  CHECK(base::FeatureList::IsEnabled(features::kUseClientGmbInterface));
   // Bind the receiver to the IO tread. All IPC in this interface will be
   // then received on the IO thread.
   if (main_runner_->BelongsToCurrentThread()) {
@@ -1491,7 +1490,6 @@ void GpuServiceImpl::OnOverlayCapsChanged() {
 
 bool GpuServiceImpl::IsNativeBufferSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) {
-  CHECK(base::FeatureList::IsEnabled(features::kUseClientGmbInterface));
   // Note that we are initializing the |supported_gmb_configurations_| here to
   // make sure gpu service have already initialized and required metadata like
   // supported buffer configurations have already been sent from browser

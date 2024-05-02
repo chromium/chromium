@@ -16,30 +16,8 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 
-interface GpuMemoryBufferFactory {
-  // Tells the GPU service to create a new GPU memory buffer.
-  CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
-                        gfx.mojom.Size size,
-                        gfx.mojom.BufferFormat format,
-                        gfx.mojom.BufferUsage usage)
-      => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
-
-  // Tells the GPU process to destroy GPU memory buffer.
-  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id);
-  // Copies GMB pixel data to |shared_memory|.
-  // Returns |true| if the copy has succeeded.
-  CopyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferHandle buffer_handle,
-                     mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
-                     => (bool success);
-};
-
 // API exposed to clients with lower level of trust, e.g. Renderers.
 interface Gpu {
-  // Note: The bound-to GpuMemoryBufferFactory instance is only guaranteed to
-  // stay alive for as long as the invoked Gpu instance.
-  CreateGpuMemoryBufferFactory(
-      pending_receiver<GpuMemoryBufferFactory> receiver);
-
   // Creates a  direct channel between renderer and gpu process for GMB
   // creation.
   CreateClientGpuMemoryBufferFactory(

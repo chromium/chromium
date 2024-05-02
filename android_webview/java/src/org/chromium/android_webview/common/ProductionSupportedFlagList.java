@@ -440,9 +440,6 @@ public final class ProductionSupportedFlagList {
                 GpuFeatures.CANVAS_CONTEXT_LOST_IN_BACKGROUND,
                 "Free Canvas2D resources when the webview is in the background."),
         Flag.baseFeature(
-                GpuFeatures.USE_CLIENT_GMB_INTERFACE,
-                "Uses the ClientGmbInetrface to create GpuMemoryBuffers for Renderers."),
-        Flag.baseFeature(
                 GpuFeatures.USE_GPU_SCHEDULER_DFS, "Uses the new SchedulerDFS GPU job scheduler."),
         Flag.baseFeature(
                 BlinkFeatures.UACH_OVERRIDE_BLANK,

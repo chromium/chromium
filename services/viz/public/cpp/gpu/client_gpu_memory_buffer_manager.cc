@@ -24,21 +24,17 @@
 namespace viz {
 
 ClientGpuMemoryBufferManager::ClientGpuMemoryBufferManager(
-    mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu,
     mojo::PendingRemote<gpu::mojom::ClientGmbInterface> gpu_direct)
     : thread_("GpuMemoryThread"),
       gpu_memory_buffer_support_(
           std::make_unique<gpu::GpuMemoryBufferSupport>()),
-      pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
-      use_client_gmb_interface_(
-          base::FeatureList::IsEnabled(features::kUseClientGmbInterface)) {
+      pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()) {
   CHECK(thread_.Start());
   // The thread is owned by this object. Which means the task will not run if
   // the object has been destroyed. So Unretained() is safe.
   thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ClientGpuMemoryBufferManager::InitThread,
-                                base::Unretained(this), std::move(gpu),
-                                std::move(gpu_direct)));
+                                base::Unretained(this), std::move(gpu_direct)));
 }
 
 ClientGpuMemoryBufferManager::~ClientGpuMemoryBufferManager() {
@@ -49,19 +45,11 @@ ClientGpuMemoryBufferManager::~ClientGpuMemoryBufferManager() {
 }
 
 void ClientGpuMemoryBufferManager::InitThread(
-    mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu_remote,
     mojo::PendingRemote<gpu::mojom::ClientGmbInterface> gpu_direct_remote) {
-  gpu_.Bind(std::move(gpu_remote));
-  gpu_.set_disconnect_handler(
-      base::BindOnce(&ClientGpuMemoryBufferManager::DisconnectGpuOnThread,
-                     base::Unretained(this)));
-
-  if (use_client_gmb_interface_) {
     gpu_direct_.Bind(std::move(gpu_direct_remote));
     gpu_direct_.set_disconnect_handler(
         base::BindOnce(&ClientGpuMemoryBufferManager::DisconnectGpuOnThread,
                        base::Unretained(this)));
-  }
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -71,7 +59,6 @@ void ClientGpuMemoryBufferManager::TearDownThread() {
 }
 
 void ClientGpuMemoryBufferManager::DisconnectGpuOnThread() {
-  gpu_.reset();
   gpu_direct_.reset();
   for (base::WaitableEvent* waiter : pending_allocation_waiters_) {
     waiter->Signal();
@@ -94,12 +81,6 @@ void ClientGpuMemoryBufferManager::AllocateGpuMemoryBufferOnThread(
     gpu_direct_->CreateGpuMemoryBuffer(
         gfx::GpuMemoryBufferId(++counter_), size, format, usage,
         gpu::kNullSurfaceHandle,
-        base::BindOnce(
-            &ClientGpuMemoryBufferManager::OnGpuMemoryBufferAllocatedOnThread,
-            base::Unretained(this), handle, wait));
-  } else if (gpu_) {
-    gpu_->CreateGpuMemoryBuffer(
-        gfx::GpuMemoryBufferId(++counter_), size, format, usage,
         base::BindOnce(
             &ClientGpuMemoryBufferManager::OnGpuMemoryBufferAllocatedOnThread,
             base::Unretained(this), handle, wait));
@@ -132,15 +113,7 @@ void ClientGpuMemoryBufferManager::DeletedGpuMemoryBuffer(
                        base::Unretained(this), id));
     return;
   }
-
-  // Note that when |use_client_gmb_interface_| is enabled, both |gpu_| and
-  // |gpu_direct_| would be connected. |gpu_direct_| should be used to destroy
-  // GMB in that case.
-  if (gpu_direct_) {
-    gpu_direct_->DestroyGpuMemoryBuffer(id);
-  } else if (gpu_) {
-    gpu_->DestroyGpuMemoryBuffer(id);
-  }
+  gpu_direct_->DestroyGpuMemoryBuffer(id);
 }
 
 std::unique_ptr<gfx::GpuMemoryBuffer>
@@ -200,14 +173,9 @@ void ClientGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     return;
   }
 
-  if (gpu_direct_) {
     gpu_direct_->CopyGpuMemoryBuffer(std::move(buffer_handle),
                                      std::move(memory_region),
                                      std::move(callback));
-  } else if (gpu_) {
-    gpu_->CopyGpuMemoryBuffer(std::move(buffer_handle),
-                              std::move(memory_region), std::move(callback));
-  }
 }
 
 bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(

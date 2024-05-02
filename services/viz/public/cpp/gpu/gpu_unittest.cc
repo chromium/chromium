@@ -48,9 +48,6 @@ class TestGpuImpl : public mojom::Gpu {
   }
 
   // mojom::Gpu overrides:
-  void CreateGpuMemoryBufferFactory(
-      mojo::PendingReceiver<mojom::GpuMemoryBufferFactory> receiver) override {}
-
   void CreateClientGpuMemoryBufferFactory(
       mojo::PendingReceiver<gpu::mojom::ClientGmbInterface> receiver) override {
   }

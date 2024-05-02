@@ -319,13 +319,6 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
-const char kUseClientGmbInterfaceName[] =
-    "Use ClientGmb interface to create GpuMemoryBuffers.";
-const char kUseClientGmbInterfaceDescription[] =
-    " Use new ClientGmb interface to create GpuMemoryBuffers when enabled."
-    " This is expected to reduce number of IPCs happening while creating "
-    " GpuMemoryBuffers.";
-
 const char kTextBasedAudioDescriptionName[] = "Enable audio descriptions.";
 const char kTextBasedAudioDescriptionDescription[] =
     "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "

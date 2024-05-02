@@ -28,8 +28,7 @@
 
 namespace viz {
 
-class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
-                                  public mojom::Gpu {
+class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
  public:
   using ConnectionErrorHandlerClosure =
       base::OnceCallback<void(GpuClient* client)>;
@@ -67,23 +66,6 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
       mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // mojom::GpuMemoryBufferFactory overrides:
-  void CreateGpuMemoryBuffer(
-      gfx::GpuMemoryBufferId id,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      mojom::GpuMemoryBufferFactory::CreateGpuMemoryBufferCallback callback)
-      override;
-  void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id) override;
-  void CopyGpuMemoryBuffer(gfx::GpuMemoryBufferHandle buffer_handle,
-                           base::UnsafeSharedMemoryRegion shared_memory,
-                           CopyGpuMemoryBufferCallback callback) override;
-
-  // mojom::Gpu overrides:
-  void CreateGpuMemoryBufferFactory(
-      mojo::PendingReceiver<mojom::GpuMemoryBufferFactory> receiver) override;
-
   // mojom::ClientGmbInterface is direct interface between renderer and GPU
   // process to create GpuMemoryBuffers.
   void CreateClientGpuMemoryBufferFactory(
@@ -114,22 +96,12 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const gpu::SharedImageCapabilities& shared_image_capabilities,
       GpuHostImpl::EstablishChannelStatus status);
-  void OnCreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                               gfx::GpuMemoryBufferHandle handle);
   void ClearCallback();
 
   std::unique_ptr<GpuClientDelegate> delegate_;
   const int client_id_;
   const uint64_t client_tracing_id_;
 
-  // Note that this map is placed before the ReceiverSet below, because pending
-  // response callbacks cannot be destroyed while their originating connection
-  // is still active.
-  std::map<gfx::GpuMemoryBufferId, CreateGpuMemoryBufferCallback>
-      pending_create_callbacks_;
-
-  mojo::ReceiverSet<mojom::GpuMemoryBufferFactory>
-      gpu_memory_buffer_factory_receivers_;
   mojo::ReceiverSet<mojom::Gpu> gpu_receivers_;
   bool gpu_channel_requested_ = false;
   EstablishGpuChannelCallback callback_;

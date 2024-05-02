@@ -41,8 +41,6 @@ class Gpu::GpuPtrIO {
   ~GpuPtrIO() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
   void Initialize(mojo::PendingRemote<mojom::Gpu> gpu_remote,
-                  mojo::PendingReceiver<mojom::GpuMemoryBufferFactory>
-                      memory_buffer_factory_receiver,
                   mojo::PendingReceiver<gpu::mojom::ClientGmbInterface>
                       client_gmb_interface_receiver) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -50,12 +48,8 @@ class Gpu::GpuPtrIO {
     gpu_remote_.Bind(std::move(gpu_remote));
     gpu_remote_.set_disconnect_handler(
         base::BindOnce(&GpuPtrIO::ConnectionError, base::Unretained(this)));
-    gpu_remote_->CreateGpuMemoryBufferFactory(
-        std::move(memory_buffer_factory_receiver));
-    if (base::FeatureList::IsEnabled(features::kUseClientGmbInterface)) {
       gpu_remote_->CreateClientGpuMemoryBufferFactory(
           std::move(client_gmb_interface_receiver));
-    }
   }
 
   void EstablishGpuChannel(scoped_refptr<EstablishRequest> establish_request) {
@@ -267,10 +261,6 @@ Gpu::Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
   DCHECK(main_task_runner_);
   DCHECK(io_task_runner_);
 
-  mojo::PendingRemote<mojom::GpuMemoryBufferFactory> gpu_memory_buffer_factory;
-  auto gpu_memory_buffer_factory_receiver =
-      gpu_memory_buffer_factory.InitWithNewPipeAndPassReceiver();
-
   mojo::PendingRemote<gpu::mojom::ClientGmbInterface> client_gmb_interface;
   auto client_gmb_interface_receiver =
       client_gmb_interface.InitWithNewPipeAndPassReceiver();
@@ -278,7 +268,7 @@ Gpu::Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
   // Note that since |gpu_memory_buffer_manager_| is a owned by this object, it
   // is safe to provide a |this| pointer to it.
   gpu_memory_buffer_manager_ = std::make_unique<ClientGpuMemoryBufferManager>(
-      std::move(gpu_memory_buffer_factory), std::move(client_gmb_interface));
+      std::move(client_gmb_interface));
   // Initialize mojo::Remote<mojom::Gpu> on the IO thread. |gpu_| can only be
   // used on the IO thread after this point. It is safe to use base::Unretained
   // with |gpu_| for IO thread tasks as |gpu_| is destroyed by an IO thread task
@@ -287,7 +277,6 @@ Gpu::Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
       FROM_HERE,
       base::BindOnce(&GpuPtrIO::Initialize, base::Unretained(gpu_.get()),
                      std::move(gpu_remote),
-                     std::move(gpu_memory_buffer_factory_receiver),
                      std::move(client_gmb_interface_receiver)));
 }
 
