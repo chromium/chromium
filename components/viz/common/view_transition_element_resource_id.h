@@ -41,12 +41,13 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
 
   uint32_t local_id() const { return local_id_; }
   const blink::ViewTransitionToken& transition_token() const {
-    return transition_token_;
+    CHECK(transition_token_);
+    return *transition_token_;
   }
 
  private:
   // Refers to a specific view transition - globally unique.
-  blink::ViewTransitionToken transition_token_;
+  std::optional<blink::ViewTransitionToken> transition_token_;
 
   // Refers to a specific snapshot resource within a specific transition
   // Unique only with respect to a given `transition_token_`.

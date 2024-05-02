@@ -36,7 +36,7 @@ bool ViewTransitionElementResourceId::IsValid() const {
 std::string ViewTransitionElementResourceId::ToString() const {
   return base::StringPrintf(
       "ViewTransitionElementResourceId : %u [transition: %s]", local_id_,
-      transition_token_.ToString().c_str());
+      transition_token_ ? transition_token_->ToString().c_str() : "invalid");
 }
 
 }  // namespace viz
