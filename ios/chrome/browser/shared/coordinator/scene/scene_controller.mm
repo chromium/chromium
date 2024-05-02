@@ -1715,7 +1715,7 @@ using UserFeedbackDataCallback =
     configuration.data = data;
     configuration.handler = handler;
     configuration.singleSignOnService =
-        GetApplicationContext()->GetSSOService();
+        GetApplicationContext()->GetSingleSignOnService();
 
     NSError* error;
     ios::provider::StartUserFeedbackFlow(configuration, baseViewController,

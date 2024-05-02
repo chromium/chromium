@@ -50,7 +50,7 @@ std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
 
   ApplicationContext* application_context = GetApplicationContext();
   drive::DriveServiceConfiguration configuration{};
-  configuration.sso_service = application_context->GetSSOService();
+  configuration.sso_service = application_context->GetSingleSignOnService();
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
   configuration.pref_service = chrome_browser_state->GetPrefs();

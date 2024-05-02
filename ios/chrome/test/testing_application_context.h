@@ -86,7 +86,7 @@ class TestingApplicationContext : public ApplicationContext {
   SafeBrowsingService* GetSafeBrowsingService() override;
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
-  id<SingleSignOnService> GetSSOService() override;
+  id<SingleSignOnService> GetSingleSignOnService() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
   segmentation_platform::OTRWebStateObserver*
   GetSegmentationOTRWebStateObserver() override;

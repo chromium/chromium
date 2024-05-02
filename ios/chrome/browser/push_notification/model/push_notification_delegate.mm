@@ -194,7 +194,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   config.accountIDs = accountPreferenceMap.allKeys;
   config.preferenceMap = accountPreferenceMap;
   config.deviceToken = deviceToken;
-  config.ssoService = GetApplicationContext()->GetSSOService();
+  config.ssoService = GetApplicationContext()->GetSingleSignOnService();
 
   if (browserState) {
     AuthenticationService* authService =

@@ -368,7 +368,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       [[UserFeedbackConfiguration alloc] init];
   configuration.data = userFeedbackData;
   configuration.handler = applicationHandler;
-  configuration.singleSignOnService = GetApplicationContext()->GetSSOService();
+  configuration.singleSignOnService =
+      GetApplicationContext()->GetSingleSignOnService();
 
   UIViewController* controller =
       ios::provider::CreateUserFeedbackViewController(configuration);

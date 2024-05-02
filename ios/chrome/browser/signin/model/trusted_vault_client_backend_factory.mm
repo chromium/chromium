@@ -40,7 +40,7 @@ TrustedVaultClientBackendFactory::BuildServiceInstanceFor(
       [[TrustedVaultConfiguration alloc] init];
 
   ApplicationContext* application_context = GetApplicationContext();
-  configuration.ssoService = application_context->GetSSOService();
+  configuration.ssoService = application_context->GetSingleSignOnService();
 
   return ios::provider::CreateTrustedVaultClientBackend(configuration);
 }

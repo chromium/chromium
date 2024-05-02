@@ -249,7 +249,7 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
   return browser_policy_connector_.get();
 }
 
-id<SingleSignOnService> TestingApplicationContext::GetSSOService() {
+id<SingleSignOnService> TestingApplicationContext::GetSingleSignOnService() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!single_sign_on_service_) {
     single_sign_on_service_ = ios::provider::CreateSSOService();
@@ -262,7 +262,7 @@ SystemIdentityManager* TestingApplicationContext::GetSystemIdentityManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!system_identity_manager_) {
     system_identity_manager_ =
-        ios::provider::CreateSystemIdentityManager(GetSSOService());
+        ios::provider::CreateSystemIdentityManager(GetSingleSignOnService());
   }
   return system_identity_manager_.get();
 }

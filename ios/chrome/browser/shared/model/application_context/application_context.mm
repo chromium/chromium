@@ -17,6 +17,10 @@ ApplicationContext::ApplicationContext() {}
 
 ApplicationContext::~ApplicationContext() {}
 
+id<SingleSignOnService> ApplicationContext::GetSSOService() {
+  return GetSingleSignOnService();
+}
+
 // static
 void ApplicationContext::SetApplicationContext(ApplicationContext* context) {
   g_application_context = context;
