@@ -41,6 +41,9 @@ class DriveUploadObserver
   DriveUploadObserver(const DriveUploadObserver&) = delete;
   DriveUploadObserver& operator=(const DriveUploadObserver&) = delete;
 
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadObserverTest, NoSyncUpdates);
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadObserverTest, NoFileMetadata);
+
  private:
   friend base::RefCounted<DriveUploadObserver>;
 
@@ -69,6 +72,13 @@ class DriveUploadObserver
 
   void OnImmediatelyUploadDone(drive::FileError error);
 
+  void StartNoSyncUpdateTimer();
+
+  void NoSyncTimedOut();
+
+  void OnGetDriveMetadata(drive::FileError error,
+                          drivefs::mojom::FileMetadataPtr metadata);
+
   raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   const raw_ptr<drive::DriveIntegrationService> drive_integration_service_;
@@ -88,6 +98,9 @@ class DriveUploadObserver
 
   // Upload callback run once with upload success/failure.
   base::OnceCallback<void(bool)> upload_callback_;
+
+  // If there's no sync updates received, the timer will timeout.
+  base::OneShotTimer no_sync_update_timeout_;
 
   base::ScopedObservation<::file_manager::io_task::IOTaskController,
                           ::file_manager::io_task::IOTaskController::Observer>

@@ -306,10 +306,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, ImmediatelyUpload) {
   SimulateDriveUploadQueued();
 
   // Check that the source file has been moved to Drive.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    CheckPathExistsOnDrive(observed_relative_drive_path);
-  }
+  CheckPathExistsOnDrive(observed_relative_drive_path);
 }
 
 // Send progress updates then completed sync events.
@@ -335,10 +332,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, SuccessfulSync) {
   SimulateDriveUploadCompleted();
 
   // Check that the source file has been moved to Drive.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    CheckPathExistsOnDrive(observed_relative_drive_path);
-  }
+  CheckPathExistsOnDrive(observed_relative_drive_path);
 }
 
 // Send syncing error event, the cached file should be deleted.
@@ -346,10 +340,6 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, ErrorSync) {
   const std::string test_file_name = "id3Audio.mp3";
   base::FilePath source_file_path =
       SetUpSourceFile(test_file_name, drive_mount_point_);
-  base::FilePath observed_relative_drive_path;
-  drive_integration_service()->GetRelativeDrivePath(
-      drive_root_dir_.AppendASCII(test_file_name_),
-      &observed_relative_drive_path);
 
   base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
   base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
@@ -363,6 +353,76 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, ErrorSync) {
   auto future = base::test::TestFuture<void>();
   on_delete_callback_ = future.GetCallback();
   SimulateDriveUploadFailure();
+  EXPECT_TRUE(future.Wait());
+
+  RemoveObservers();
+}
+
+// When the sync timer times out and no download url in the file metadata, the
+// upload will fail and the file will be deleted from the cache.
+IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, NoSyncUpdates) {
+  const std::string test_file_name = "popup.pdf";
+  base::FilePath source_file_path =
+      SetUpSourceFile(test_file_name, drive_mount_point_);
+
+  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
+  base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
+  scoped_refptr<DriveUploadObserver> drive_upload_observer =
+      new DriveUploadObserver(profile(),
+                              drive_root_dir_.AppendASCII(test_file_name_),
+                              progress_callback.Get());
+  drive_upload_observer->Run(upload_callback.Get());
+
+  EXPECT_TRUE(drive_upload_observer->no_sync_update_timeout_.IsRunning());
+
+  SetUpObservers();
+
+  auto future = base::test::TestFuture<void>();
+  on_delete_callback_ = future.GetCallback();
+
+  EXPECT_CALL(upload_callback, Run(/*success=*/false));
+
+  drivefs::FakeMetadata metadata;
+  metadata.path = observed_relative_drive_path();
+  metadata.original_name = test_file_name_;
+  fake_drivefs().SetMetadata(std::move(metadata));
+
+  drive_upload_observer->no_sync_update_timeout_.FireNow();
+
+  base::RunLoop loop;
+  loop.RunUntilIdle();
+  EXPECT_TRUE(future.Wait());
+
+  RemoveObservers();
+}
+
+// When the sync timer times out and no file metadata is returned, the upload
+// will fail and the file will be deleted from the cache.
+IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, NoFileMetadata) {
+  const std::string test_file_name = "popup.pdf";
+  base::FilePath source_file_path =
+      SetUpSourceFile(test_file_name, drive_mount_point_);
+
+  base::MockCallback<base::RepeatingCallback<void(int)>> progress_callback;
+  base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
+  scoped_refptr<DriveUploadObserver> drive_upload_observer =
+      new DriveUploadObserver(profile(),
+                              drive_root_dir_.AppendASCII(test_file_name_),
+                              progress_callback.Get());
+  drive_upload_observer->Run(upload_callback.Get());
+
+  EXPECT_TRUE(drive_upload_observer->no_sync_update_timeout_.IsRunning());
+
+  SetUpObservers();
+
+  auto future = base::test::TestFuture<void>();
+  on_delete_callback_ = future.GetCallback();
+
+  EXPECT_CALL(upload_callback, Run(/*success=*/false));
+  drive_upload_observer->no_sync_update_timeout_.FireNow();
+
+  base::RunLoop loop;
+  loop.RunUntilIdle();
   EXPECT_TRUE(future.Wait());
 
   RemoveObservers();

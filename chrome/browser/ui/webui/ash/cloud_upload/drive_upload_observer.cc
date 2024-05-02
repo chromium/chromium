@@ -14,6 +14,8 @@ namespace ash::cloud_upload {
 
 namespace {
 
+const int kNoSyncUpdatesTimeOutMs = 60000;  // 1 Minute.
+
 file_manager::io_task::IOTaskController* GetIOTaskController(Profile* profile) {
   DCHECK(profile);
 
@@ -103,12 +105,13 @@ void DriveUploadObserver::Run(base::OnceCallback<void(bool)> upload_callback) {
     return;
   }
 
-  // TODO(ayaelattar): Handle the case when the file was already uploaded and
-  // start a timer in case the upload being stuck.
+  StartNoSyncUpdateTimer();
 }
 
 void DriveUploadObserver::OnEndUpload(bool success) {
-  std::vector<storage::FileSystemURL> file_urls;
+  if (no_sync_update_timeout_.IsRunning()) {
+    no_sync_update_timeout_.Reset();
+  }
 
   // If the file sync to to Drive was unsuccessful, delete the file from the
   // Local cache.
@@ -144,6 +147,9 @@ void DriveUploadObserver::OnSyncingStatusUpdate(
     if (base::FilePath(item->path) != observed_drive_path_) {
       continue;
     }
+
+    // Restart the timer.
+    StartNoSyncUpdateTimer();
 
     switch (item->state) {
       case drivefs::mojom::ItemEvent::State::kQueued: {
@@ -225,6 +231,38 @@ void DriveUploadObserver::OnImmediatelyUploadDone(drive::FileError error) {
   } else {
     OnEndUpload(/*success=*/false);
   }
+}
+
+void DriveUploadObserver::StartNoSyncUpdateTimer() {
+  no_sync_update_timeout_.Start(
+      FROM_HERE, base::Milliseconds(kNoSyncUpdatesTimeOutMs),
+      base::BindOnce(&DriveUploadObserver::NoSyncTimedOut,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveUploadObserver::NoSyncTimedOut() {
+  drive_integration_service_->GetDriveFsInterface()->GetMetadata(
+      observed_drive_path_,
+      base::BindOnce(&DriveUploadObserver::OnGetDriveMetadata,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveUploadObserver::OnGetDriveMetadata(
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
+  if (error != drive::FileError::FILE_ERROR_OK || !metadata) {
+    OnEndUpload(/*success=*/false);
+    return;
+  }
+
+  GURL download_url(metadata->download_url);
+  if (download_url.is_valid()) {
+    // The file was already uploaded.
+    OnEndUpload(/*success=*/true);
+    return;
+  }
+
+  OnEndUpload(/*success=*/false);
 }
 
 }  // namespace ash::cloud_upload
