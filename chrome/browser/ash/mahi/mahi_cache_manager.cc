@@ -4,14 +4,24 @@
 
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 
+#include <memory>
 #include <string>
 
-#include "mahi_cache_manager.h"
 #include "url/gurl.h"
+
+namespace {
+
+// Interval at which we check for cache deletion.
+constexpr auto kClearingInterval = base::Minutes(30);
+
+// Retention for the cache. Set at 7 days.
+constexpr auto kCacheRetention = base::Days(7);
+
+}  // namespace
 
 namespace ash {
 
-MahiCacheManager::MahiData::MahiData() = default;
+MahiCacheManager::MahiData::MahiData() : creation_time(base::Time::Now()) {}
 
 MahiCacheManager::MahiData::MahiData(
     const std::string& url,
@@ -25,7 +35,8 @@ MahiCacheManager::MahiData::MahiData(
       favicon_image(favicon_image),
       page_content(page_content),
       summary(summary),
-      previous_qa(previous_qa) {}
+      previous_qa(previous_qa),
+      creation_time(base::Time::Now()) {}
 
 MahiCacheManager::MahiData::MahiData(const MahiData&) = default;
 
@@ -34,7 +45,11 @@ MahiCacheManager::MahiData& MahiCacheManager::MahiData::operator=(
 
 MahiCacheManager::MahiData::~MahiData() = default;
 
-MahiCacheManager::MahiCacheManager() = default;
+MahiCacheManager::MahiCacheManager()
+    : periodic_timer_(std::make_unique<base::RepeatingTimer>()) {
+  periodic_timer_->Start(FROM_HERE, kClearingInterval, this,
+                         &MahiCacheManager::OnTimerFired);
+}
 
 MahiCacheManager::~MahiCacheManager() = default;
 
@@ -61,6 +76,17 @@ std::vector<MahiCacheManager::MahiQA> MahiCacheManager::GetQAForUrl(
 
 void MahiCacheManager::ClearCache() {
   page_cache_.clear();
+}
+
+void MahiCacheManager::OnTimerFired() {
+  for (auto iter = page_cache_.begin(); iter != page_cache_.end();
+       /* no increment */) {
+    if ((base::Time::Now() - iter->second.creation_time) >= kCacheRetention) {
+      iter = page_cache_.erase(iter);
+    } else {
+      iter++;
+    }
+  }
 }
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/timer/timer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -46,6 +47,9 @@ class MahiCacheManager {
     std::u16string summary;
     // List of previous questions and answers for this page.
     std::vector<MahiQA> previous_qa;
+
+    // Time of creation of this object.
+    base::Time creation_time;
   };
 
   MahiCacheManager();
@@ -71,6 +75,12 @@ class MahiCacheManager {
 
  private:
   friend class MahiCacheManagerTest;
+
+  // Called when the |periodic_timer_| triggers.
+  void OnTimerFired();
+
+  // Timer to trigger periodically for clearing cache.
+  std::unique_ptr<base::RepeatingTimer> periodic_timer_;
 
   // A map from a url to it's corresponding data. It's used to store the cache
   // for mahi.

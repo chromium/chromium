@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -31,6 +32,10 @@ class MahiCacheManagerTest : public testing::Test {
             "http://url1.com", u"title 1", std::nullopt, u"page content 1",
             u"summary 1",
             {{u"Question 1", u"Answer 1"}, {u"Question 2", u"Answer 2"}});
+
+    // Next item in the cache is logged 5 hours later.
+    task_environment_.FastForwardBy(base::Hours(5));
+
     mahi_cache_manager_->page_cache_[GURL("http://url2.com/")] =
         MahiCacheManager::MahiData("http://url2.com", u"title 2", std::nullopt,
                                    u"page content 2", u"summary 2",
@@ -38,6 +43,10 @@ class MahiCacheManagerTest : public testing::Test {
   }
 
   void TearDown() override { mahi_cache_manager_.reset(); }
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   std::unique_ptr<MahiCacheManager> mahi_cache_manager_;
@@ -108,6 +117,26 @@ TEST_F(MahiCacheManagerTest, GetQAFromCacheURLWithRef) {
 
 TEST_F(MahiCacheManagerTest, ClearCacheSuccessfully) {
   GetMahiCacheManager()->ClearCache();
+  EXPECT_EQ(GetPageCache().size(), 0u);
+}
+
+TEST_F(MahiCacheManagerTest, CorrectlyClearCacheWithRetention) {
+  // Current cache size.
+  EXPECT_EQ(GetPageCache().size(), 2u);
+
+  // Fast forward 162h (24 * 7 - 6). At this point no cache is deleted yet.
+  task_environment_.FastForwardBy(base::Hours(24 * 7 - 6));
+  EXPECT_EQ(GetPageCache().size(), 2u);
+
+  // Two hours later, the first cache should be deleted.
+  task_environment_.FastForwardBy(base::Hours(2));
+  EXPECT_EQ(GetPageCache().size(), 1u);
+  auto result = GetMahiCacheManager()->GetSummaryForUrl("http://url2.com");
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), u"summary 2");
+
+  // Four hours later, the second cache should be deleted.
+  task_environment_.FastForwardBy(base::Hours(4));
   EXPECT_EQ(GetPageCache().size(), 0u);
 }
 
