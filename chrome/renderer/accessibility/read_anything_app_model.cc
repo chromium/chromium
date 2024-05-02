@@ -1051,12 +1051,11 @@ std::string ReadAnythingAppModel::GetHtmlTag(
     return "div";
   }
 
-  // Some divs are marked with role=heading and aria-level=# to indicate
-  // the heading level, so use the <h#> tag directly.
-  if (ax_node->GetRole() == ax::mojom::Role::kHeading) {
-    std::string aria_level = GetAriaLevel(ax_node);
-    if (!aria_level.empty()) {
-      return "h" + aria_level;
+  if (ui::IsHeading(ax_node->GetRole())) {
+    int32_t hierarchical_level =
+        ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
+    if (hierarchical_level) {
+      return std::format("h{}", hierarchical_level);
     }
   }
 
@@ -1094,12 +1093,6 @@ std::string ReadAnythingAppModel::GetImageDataUrl(
   std::string url =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kImageDataUrl);
   return url;
-}
-
-std::string ReadAnythingAppModel::GetAriaLevel(ui::AXNode* ax_node) const {
-  std::string aria_level;
-  ax_node->GetHtmlAttribute("aria-level", &aria_level);
-  return aria_level;
 }
 
 std::string ReadAnythingAppModel::GetHtmlTagForPDF(
@@ -1158,8 +1151,12 @@ std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
     return "span";
   }
 
-  std::string aria_level = GetAriaLevel(ax_node);
-  return !aria_level.empty() ? "h" + aria_level : html_tag;
+  int32_t hierarchical_level =
+      ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
+  if (hierarchical_level) {
+    return std::format("h{}", hierarchical_level);
+  }
+  return html_tag;
 }
 
 int ReadAnythingAppModel::GetNextSentence(const std::u16string& text) {

@@ -412,7 +412,6 @@ class ReadAnythingAppModel {
                                const std::string& html_tag) const;
   std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
                                       const std::string& html_tag) const;
-  std::string GetAriaLevel(ui::AXNode* ax_node) const;
 
   // Uses the current AXNodePosition to return the next node that should be
   // spoken by Read Aloud.

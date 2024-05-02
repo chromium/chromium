@@ -746,7 +746,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ui::AXNodeData node2;
   node2.id = 3;
   node2.role = ax::mojom::Role::kHeading;
-  node2.html_attributes.emplace_back("aria-level", "3");
+  node2.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 3);
 
   ui::AXNodeData node3;
   node3.id = 4;
@@ -767,7 +767,7 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDF) {
   ui::AXNodeData node2;
   node2.id = 3;
   node2.role = ax::mojom::Role::kHeading;
-  node2.html_attributes.emplace_back("aria-level", "2");
+  node2.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 2);
 
   ui::AXNodeData root;
   root.id = 1;
