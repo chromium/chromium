@@ -2085,7 +2085,6 @@ static_library("browser") {
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/accessibility:utils",
-    "//chrome/browser/apps/app_service/webapk:prefs",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
@@ -5813,7 +5812,6 @@ static_library("browser") {
     deps += [
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service/app_icon",
-      "//chrome/browser/apps/app_service/webapk",
       "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
