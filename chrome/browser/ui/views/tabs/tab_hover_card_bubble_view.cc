@@ -65,16 +65,10 @@ namespace {
 
 // Maximum number of lines that a title label occupies.
 constexpr int kHoverCardTitleMaxLines = 2;
-
-constexpr int kHorizontalMargin = 18;
-constexpr int kVerticalMargin = 10;
+// Spacing used to separate the title and domain labels.
 constexpr int kTitleDomainSpacing = 4;
-constexpr int kFootnoteVerticalMargin = 8;
-constexpr auto kTitleMargins =
-    gfx::Insets::VH(kVerticalMargin, kHorizontalMargin);
-constexpr auto kAlertMargins =
-    gfx::Insets::VH(kFootnoteVerticalMargin, kHorizontalMargin);
-constexpr auto kTextAreaRefreshMargins = gfx::Insets::VH(12, 12);
+// Margins space surrounding the text (title and domain) in the hover card.
+constexpr auto kTextMargins = gfx::Insets::VH(12, 12);
 
 // Calculates an appropriate size to display a preview image in the hover card.
 // For the vast majority of images, the |preferred_size| is used, but extremely
@@ -389,19 +383,12 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
   // navigating through the tab strip.
   set_focus_traversable_from_anchor_view(false);
 
-  if (features::IsChromeRefresh2023()) {
     title_label_ = AddChildView(std::make_unique<FadeLabelView>(
         kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
         views::style::STYLE_BODY_3_EMPHASIS));
     domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
         1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
     domain_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
-  } else {
-    title_label_ = AddChildView(std::make_unique<FadeLabelView>(
-        kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE));
-    domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
-        1, views::style::CONTEXT_DIALOG_BODY_TEXT));
-  }
 
   if (bubble_params_.show_image_preview) {
     thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));
@@ -430,17 +417,15 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
   // element because it is no longer above another text element and needs a
   // bottom margin.
 
-  gfx::Insets title_margins =
-      features::IsChromeRefresh2023() ? kTextAreaRefreshMargins : kTitleMargins;
+  gfx::Insets title_margins = kTextMargins;
   domain_label_->SetVisible(bubble_params_.show_domain);
   domain_label_->SetProperty(views::kElementIdentifierKey,
                              kHoverCardDomainLabelElementId);
   if (bubble_params_.show_domain) {
-    gfx::Insets domain_margins = title_margins;
-    domain_margins.set_top(features::IsChromeRefresh2023() ? kTitleDomainSpacing
-                                                           : 0);
-    domain_label_->SetProperty(views::kMarginsKey, domain_margins);
     title_margins.set_bottom(0);
+    gfx::Insets domain_margins = kTextMargins;
+    domain_margins.set_top(kTitleDomainSpacing);
+    domain_label_->SetProperty(views::kMarginsKey, domain_margins);
   }
 
   title_label_->SetProperty(views::kMarginsKey, title_margins);
@@ -461,9 +446,6 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
 
   views::BubbleDialogDelegateView::CreateBubble(this);
   set_adjust_if_offscreen(true);
-  const gfx::Insets alert_margins =
-      features::IsChromeRefresh2023() ? kTextAreaRefreshMargins : kAlertMargins;
-  GetBubbleFrameView()->SetFootnoteMargins(alert_margins);
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);

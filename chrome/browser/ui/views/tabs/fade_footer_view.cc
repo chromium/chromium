@@ -23,13 +23,12 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+// Spacing to separate the icon from its corresponding label.
 constexpr int kIconLabelSpacing = 8;
-constexpr int kFooterVerticalMargins = 8;
-constexpr int kFooterHorizontalMargins = 12;
-constexpr auto kFooterBorderThickness = gfx::Insets::TLBR(1, 0, 0, 0);
-constexpr auto kFooterMargins =
-    gfx::Insets::VH(kFooterVerticalMargins, kFooterHorizontalMargins);
-constexpr auto kFooterRefreshMargins = gfx::Insets::VH(12, 12);
+// Margins used to surround the entire footer contents.
+constexpr auto kFooterMargins = gfx::Insets::VH(12, 12);
+// Spacing used to separate two footer rows.
+constexpr int kFooterRowSpacing = 8;
 }  // namespace
 
 template <typename T>
@@ -60,10 +59,8 @@ FooterRow<T>::FooterRow(bool is_fade_out_view)
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded, true));
 
-  if (features::IsChromeRefresh2023()) {
     footer_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
     footer_label_->SetTextStyle(views::style::STYLE_BODY_4);
-  }
 
   // Vertically align the icon to the top line of the label
   const int offset = (footer_label_->GetLineHeight() -
@@ -189,16 +186,13 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FooterView, kHoverCardFooterElementId);
 
 FooterView::FooterView() {
   SetProperty(views::kElementIdentifierKey, kHoverCardFooterElementId);
-  const gfx::Insets footer_margins =
-      features::IsChromeRefresh2023() ? kFooterRefreshMargins : kFooterMargins;
   flex_layout_ =
       views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
-      .SetInteriorMargin(footer_margins)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::VH(kFooterVerticalMargins, 0));
+      .SetInteriorMargin(kFooterMargins)
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(kFooterRowSpacing, 0));
   alert_row_ = AddChildView(std::make_unique<AlertFadeView>(
       std::make_unique<FadeAlertFooterRow>(/* is_fade_out_view =*/false),
       std::make_unique<FadeAlertFooterRow>(/* is_fade_out_view =*/true)));
@@ -221,11 +215,6 @@ FooterView::FooterView() {
 
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
-
-  if (!features::IsChromeRefresh2023()) {
-    SetBorder(views::CreateThemedSolidSidedBorder(
-        kFooterBorderThickness, ui::kColorBubbleFooterBorder));
-  }
 }
 
 void FooterView::SetAlertData(const AlertFooterRowData& data) {
