@@ -1291,7 +1291,9 @@ export async function trashTogglingHiddenFilesNavigatesAwayFromTrash() {
 
   // Expect current directory goes back to MyFiles.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
-  await directoryTree.waitForItemLostByLabel('.Trash');
+  if (directoryTree.isNewTree) {
+    await directoryTree.waitForItemLostByLabel('.Trash');
+  }
 
   // Show hidden files again.
   await remoteCall.showHiddenFiles(appId);
@@ -1304,5 +1306,7 @@ export async function trashTogglingHiddenFilesNavigatesAwayFromTrash() {
 
   // Expect current directory goes back to MyFiles.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
-  await directoryTree.waitForItemLostByLabel('.Trash');
+  if (directoryTree.isNewTree) {
+    await directoryTree.waitForItemLostByLabel('.Trash');
+  }
 }

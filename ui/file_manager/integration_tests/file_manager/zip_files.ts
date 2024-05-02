@@ -949,6 +949,9 @@ export async function zipCloseFromContextMenu() {
   await remoteCall.waitAndClickElement(
       appId, '[command="#unmount"]:not([hidden]):not([disabled])');
 
-  // Check: the zip mount should disappear from the directory tree.
-  await directoryTree.waitForItemLostByLabel(ENTRIES.zipArchive.nameText);
+  // Old tree implementation doesn't support this.
+  if (directoryTree.isNewTree) {
+    // Check: the zip mount should disappear from the directory tree.
+    await directoryTree.waitForItemLostByLabel(ENTRIES.zipArchive.nameText);
+  }
 }
