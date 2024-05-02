@@ -2106,9 +2106,6 @@ extern const char kWebBluetoothDescription[];
 extern const char kWebBluetoothNewPermissionsBackendName[];
 extern const char kWebBluetoothNewPermissionsBackendDescription[];
 
-extern const char kWebMidiName[];
-extern const char kWebMidiDescription[];
-
 extern const char kWebOtpBackendName[];
 extern const char kWebOtpBackendDescription[];
 extern const char kWebOtpBackendSmsVerification[];

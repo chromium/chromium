@@ -9360,10 +9360,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-    {"web-midi", flag_descriptions::kWebMidiName,
-     flag_descriptions::kWebMidiDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWebMidi)},
-
     {"enable-commerce-developer", flag_descriptions::kCommerceDeveloperName,
      flag_descriptions::kCommerceDeveloperDescription, kOsAll,
      FEATURE_VALUE_TYPE(commerce::kCommerceDeveloper)},

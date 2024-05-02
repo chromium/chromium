@@ -1104,10 +1104,6 @@ BASE_FEATURE(kWebBluetoothNewPermissionsBackend,
              "WebBluetoothNewPermissionsBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the browser process components of the Web MIDI API. This flag does not
-// control whether the API is exposed in Blink.
-BASE_FEATURE(kWebMidi, "WebMidi", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls which backend is used to retrieve OTP on Android. When disabled
 // we use User Consent API.
 BASE_FEATURE(kWebOtpBackendAuto,

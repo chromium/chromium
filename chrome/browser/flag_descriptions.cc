@@ -3601,11 +3601,6 @@ const char kWebBluetoothNewPermissionsBackendDescription[] =
     "persistent storage of device permissions and Web Bluetooth features such "
     "as BluetoothDevice.watchAdvertisements() and Bluetooth.getDevices()";
 
-const char kWebMidiName[] = "Web MIDI";
-const char kWebMidiDescription[] =
-    "Enables the implementation of the Web MIDI API. When disabled the "
-    "interface will still be exposed by Blink.";
-
 const char kWebOtpBackendName[] = "Web OTP";
 const char kWebOtpBackendDescription[] =
     "Enables Web OTP API that uses the specified backend.";
