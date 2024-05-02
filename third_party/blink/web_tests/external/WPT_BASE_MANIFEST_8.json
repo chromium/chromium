@@ -5338,6 +5338,17 @@
        {}
       ]
      ],
+     "moveBefore": {
+      "tentative": {
+       "chrome-338071841-crash.html": [
+        "26adfb1cbfae116e0a88a7ff2cbf24cdb9a5e7f7",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     },
      "node-appendchild-crash.html": [
       "245de87f2d36ed39eec30cd627aa3c21bd4ff115",
       [
@@ -18417,6 +18428,15 @@
     }
    },
    "pointerevents": {
+    "deviceproperties": {
+     "unique-id-is-unique-manual.tentative.html": [
+      "55db05353f5a2f5d543b2c0ba2caf1f066537341",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "html": {
      "pointerevent_drag_interaction-manual.html": [
       "1a80d239b8930a74cd5e764c6307980082e6766b",
@@ -120284,6 +120304,19 @@
        {}
       ]
      ],
+     "min-size-auto-overflow-clip.html": [
+      "ec3bc5f5932a2c47796063cafff5162dc4f01284",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/min-size-auto-overflow-clip-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "multiline-column-max-height.html": [
       "5a165233f855d10de870d110a2d9ed8c0abc147b",
       [
@@ -133742,6 +133775,19 @@
        }
       }
      },
+     "min-size-auto-overflow-clip.html": [
+      "3dfd2c18f51834d476f6501cddfa179fac07b4b1",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/min-size-auto-overflow-clip-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nested-grid-item-block-size-001.html": [
       "e2892ecc3c656243f26e5512be9ac01e2cd4de36",
       [
@@ -137327,7 +137373,7 @@
        ]
       ],
       "repeating-gradient-hsl-and-oklch.html": [
-       "71e615d91980e4177aadabb2c25f0c05ee13324e",
+       "82e65d1dac7fe268fa6b91a76b47d405bb0d95ea",
        [
         null,
         [
@@ -137336,7 +137382,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             2000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "srgb-gradient.html": [
@@ -233864,6 +233926,19 @@
        }
       ]
      ],
+     "new-content-ancestor-clipped.html": [
+      "69a8de5f527a459f2a85b562dee46b8298bbb65e",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-ancestor-clipped-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "new-content-captures-clip-path.html": [
       "19af2493d05ed1e0d4fd82a01dcb8f5dc304a731",
       [
@@ -289561,10 +289636,6 @@
       "be955258530b6634f6233f8c5b6670f6c83f54e5",
       []
      ],
-     "comp_embedded_control-expected.txt": [
-      "495de6dde7f9abab9348af261de51a152ceb1192",
-      []
-     ],
      "comp_label-expected.txt": [
       "c1aa470742a095637b00998bd7b93e596ad88216",
       []
@@ -290464,7 +290535,7 @@
       []
      ],
      "helpers.js": [
-      "e5c749931e03c2335d1a5f9f076fe3caaee70fa7",
+      "054df6b97295a5a54d46a1813b4096c31a52f027",
       []
      ],
      "reporting_origin.py": [
@@ -310961,6 +311032,10 @@
        []
       ]
      },
+     "min-size-auto-overflow-clip-ref.html": [
+      "2503af6df34f3e3be6a8c6d880d67e2fe6fb9615",
+      []
+     ],
      "order": {
       "order-with-column-reverse-ref.html": [
        "c8b9be7c4ec9d7238a45db8d7b06fc93eb92c889",
@@ -320435,6 +320510,10 @@
        }
       }
      },
+     "min-size-auto-overflow-clip-ref.html": [
+      "64e6ff2d9994a74bea6fbf8be74de93239075006",
+      []
+     ],
      "nested-grid-item-block-size-001-ref.html": [
       "a037967e493fa5eba3914db3c8f38914ee1d8729",
       []
@@ -340505,6 +340584,10 @@
       "79e89801391530b6fb074545a92db68493667f05",
       []
      ],
+     "new-content-ancestor-clipped-ref.html": [
+      "caa99f280796f2ccae9b926f14f8355599f02add",
+      []
+     ],
      "new-content-captures-clip-path-ref.html": [
       "a216bff8b049bac3ce549bf1f6c79392e0d851e5",
       []
@@ -348860,7 +348943,7 @@
       []
      ],
      "inserthorizontalrule-expected.txt": [
-      "54c86a9774af9cccf903ea7f4fdfe59fcbc41d21",
+      "bed8707a57fa8946144f9b7ea486b33871d7fd33",
       []
      ],
      "inserthtml-expected.txt": [
@@ -388501,7 +388584,7 @@
          ]
         },
         "router-rules.js": [
-         "ba492226ffb88dc727bf596cbcfb2cfa12b91ca7",
+         "dd7b3f550207a6e644a4a64a49ba82ec0dee88ff",
          []
         ],
         "simple-test-for-condition-main-resource.html": [
@@ -417484,8 +417567,67 @@
       }
      ]
     ],
+    "referrer-policy.sub.https.html": [
+     "ee4e0c9a8c1e54f442d9b2d6f9de509351bab71b",
+     [
+      "attribution-reporting/referrer-policy.sub.https.html?method=a",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "attribution-reporting/referrer-policy.sub.https.html?method=a&noreferrer",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "attribution-reporting/referrer-policy.sub.https.html?method=img",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "attribution-reporting/referrer-policy.sub.https.html?method=img&noreferrer",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "attribution-reporting/referrer-policy.sub.https.html?method=open",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "attribution-reporting/referrer-policy.sub.https.html?method=open&noreferrer",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "attribution-reporting/referrer-policy.sub.https.html?method=script",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ],
+     [
+      "attribution-reporting/referrer-policy.sub.https.html?method=script&noreferrer",
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "request-format.sub.https.html": [
-     "a9e36dd126771f12089367a2fabf0171a9ace7bf",
+     "83a2d8f6bdfe786c7f01862840b4ed716ddae813",
      [
       "attribution-reporting/request-format.sub.https.html?method=a&expected-eligible=navigation-source",
       {
@@ -527409,6 +527551,37 @@
        }
       ]
      ],
+     "score-ad-browser-signals.https.window.js": [
+      "f20412cfc7857279ff7aabfbfd68d825be5d8051",
+      [
+       "fledge/tentative/score-ad-browser-signals.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "send-report-to.https.window.js": [
       "e3cf0a95f17c171444d79a2b0f16d0fe1f1acbd4",
       [
@@ -592354,6 +592527,13 @@
       {}
      ]
     ],
+    "inert-and-find-flat-tree.html": [
+     "951497e2c0914a4587a2ffea7e92b3a289fa41bd",
+     [
+      null,
+      {}
+     ]
+    ],
     "inert-and-find.html": [
      "87555b0097e9ac98e2edaec0f0a07dd253e2a6e3",
      [
@@ -633811,7 +633991,7 @@
         ]
        ],
        "static-router-invalid-rules.https.html": [
-        "9ef7cfdc9f34766e905f4b4469f212313f6d0d9d",
+        "15b8ef5742d7d901e46110f9898e8f3374a2e261",
         [
          null,
          {}
@@ -634750,11 +634930,12 @@
       ]
      ],
      "focus-navigation-slot-nested-2levels.html": [
-      "7d733ea7c2ec1f1eaa93cf1977be53fd8ff3ad4c",
+      "1b867cc2a9b8da2955662179044a4455bff07d52",
       [
        null,
        {
-        "testdriver": true
+        "testdriver": true,
+        "timeout": "long"
        }
       ]
      ],
