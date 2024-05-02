@@ -109,6 +109,10 @@ class CORE_EXPORT AttributionSrcLoader
 
   network::AttributionReportingRuntimeFeatures GetRuntimeFeatures() const;
 
+  // Records whether the permission policy allows for Attribution support to
+  // 'Conversions.AllowedByPermissionPolicy'.
+  static void RecordAttributionFeatureAllowed(bool enabled);
+
  private:
   class ResourceClient;
 

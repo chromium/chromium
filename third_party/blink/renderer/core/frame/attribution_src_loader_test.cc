@@ -430,7 +430,7 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestsInvalidEligibleHeaders) {
   }
 }
 
-TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
+TEST_F(AttributionSrcLoaderTest, AttributionSrcRequest_HistogramsRecorded) {
   base::HistogramTester histograms;
 
   KURL url1 = ToKURL(kUrl);
@@ -445,6 +445,9 @@ TEST_F(AttributionSrcLoaderTest, AttributionSrcRequestStatusHistogram) {
 
   attribution_src_loader_->Register(AtomicString(kUrl2), /*element=*/nullptr,
                                     network::mojom::ReferrerPolicy::kDefault);
+
+  // True = 1.
+  histograms.ExpectBucketCount("Conversions.AllowedByPermissionPolicy", 1, 2);
 
   // kRequested = 0.
   histograms.ExpectUniqueSample("Conversions.AttributionSrcRequestStatus", 0,

@@ -3243,6 +3243,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AllowedByPermissionPolicy" enum="BooleanAllowed"
+    expires_after="2024-12-31">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether an attribution event is allowed by the client's permission
+    policy. This is emitted whenever the permission policy is checked upon an
+    attribution event.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AndroidOperationResult.{Operation}"
     enum="ConversionAndroidOperationResult" expires_after="2024-09-15">
   <owner>linnan@chromium.org</owner>

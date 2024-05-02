@@ -430,6 +430,10 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
   visitor->Trace(local_frame_);
 }
 
+void AttributionSrcLoader::RecordAttributionFeatureAllowed(bool enabled) {
+  base::UmaHistogramBoolean("Conversions.AllowedByPermissionPolicy", enabled);
+}
+
 Vector<KURL> AttributionSrcLoader::ParseAttributionSrc(
     const AtomicString& attribution_src,
     HTMLElement* element) {
@@ -635,8 +639,10 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
     return std::nullopt;
   }
 
-  if (!window->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kAttributionReporting)) {
+  bool enabled = window->IsFeatureEnabled(
+      mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
+  RecordAttributionFeatureAllowed(enabled);
+  if (!enabled) {
     maybe_log_audit_issue(
         AttributionReportingIssueType::kPermissionPolicyDisabled);
     return std::nullopt;

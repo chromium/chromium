@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/fetch/attribution_reporting_to_mojom.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -60,6 +61,7 @@ TEST(AttributionReportingToMojomTest, Convert) {
   };
 
   for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
     SCOPED_TRACE(base::StringPrintf(
         "event_source_eligible=%d,trigger_eligible=%d",
         test_case.event_source_eligible, test_case.trigger_eligible));
@@ -78,6 +80,8 @@ TEST(AttributionReportingToMojomTest, Convert) {
                     scope.GetExceptionState()));
 
       EXPECT_FALSE(scope.GetExceptionState().HadException());
+      histograms.ExpectBucketCount("Conversions.AllowedByPermissionPolicy", 1,
+                                   1);
     }
 
     {
@@ -90,6 +94,8 @@ TEST(AttributionReportingToMojomTest, Convert) {
                     scope.GetExceptionState()));
 
       EXPECT_TRUE(scope.GetExceptionState().HadException());
+      histograms.ExpectBucketCount("Conversions.AllowedByPermissionPolicy", 0,
+                                   1);
     }
   }
 }
