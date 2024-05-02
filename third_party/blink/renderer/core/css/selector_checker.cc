@@ -2130,7 +2130,16 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoFileSelectorButton:
       return MatchesUAShadowElement(
           element, shadow_element_names::kPseudoFileUploadButton);
-    case CSSSelector::kPseudoSelectDatalist:
+    case CSSSelector::kPseudoSelectFallbackButton:
+      return MatchesUAShadowElement(
+          element, shadow_element_names::kSelectFallbackButton);
+    case CSSSelector::kPseudoSelectFallbackButtonIcon:
+      return MatchesUAShadowElement(
+          element, shadow_element_names::kSelectFallbackButtonIcon);
+    case CSSSelector::kPseudoSelectFallbackButtonText:
+      return MatchesUAShadowElement(
+          element, shadow_element_names::kSelectFallbackButtonText);
+    case CSSSelector::kPseudoSelectFallbackDatalist:
       return MatchesUAShadowElement(
           element, shadow_element_names::kSelectFallbackDatalist);
     case CSSSelector::kPseudoPlaceholder:

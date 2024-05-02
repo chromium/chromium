@@ -320,7 +320,7 @@ const cc::OverscrollBehavior kOverscrollBehaviorContain =
 const cc::OverscrollBehavior kOverscrollBehaviorNone =
     cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kNone);
 
-class WebFrameTest : public testing::Test {
+class WebFrameTest : public PageTestBase {
  protected:
   WebFrameTest()
       : base_url_("http://internal.test/"),
@@ -509,7 +509,6 @@ class WebFrameTest : public testing::Test {
   std::string not_base_url_;
   std::string chrome_url_;
 
-  test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   url::ScopedSchemeRegistryForTests scoped_registry_;
 };

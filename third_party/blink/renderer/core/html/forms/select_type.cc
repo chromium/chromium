@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/html/forms/menu_list_inner_element.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
@@ -146,6 +147,7 @@ class MenuListSelectType final : public SelectType {
   Member<const ComputedStyle> option_style_;
   Member<HTMLSlotElement> button_slot_;
   Member<HTMLButtonElement> default_button_;
+  Member<HTMLSpanElement> default_button_selected_option_;
   Member<HTMLDataListElement> default_datalist_;
   Member<HTMLSlotElement> default_datalist_options_slot_;
   Member<HTMLSlotElement> datalist_slot_;
@@ -164,6 +166,7 @@ void MenuListSelectType::Trace(Visitor* visitor) const {
   visitor->Trace(option_style_);
   visitor->Trace(button_slot_);
   visitor->Trace(default_button_);
+  visitor->Trace(default_button_selected_option_);
   visitor->Trace(default_datalist_);
   visitor->Trace(default_datalist_options_slot_);
   visitor->Trace(datalist_slot_);
@@ -420,7 +423,20 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     default_button_ = MakeGarbageCollected<HTMLButtonElement>(doc);
     default_button_->setAttribute(html_names::kTypeAttr,
                                   AtomicString("popover"));
+    default_button_->SetShadowPseudoId(
+        shadow_element_names::kSelectFallbackButton);
     button_slot_->AppendChild(default_button_);
+
+    default_button_selected_option_ =
+        MakeGarbageCollected<HTMLSpanElement>(doc);
+    default_button_selected_option_->SetShadowPseudoId(
+        shadow_element_names::kSelectFallbackButtonText);
+    default_button_->AppendChild(default_button_selected_option_);
+
+    auto* default_button_icon = MakeGarbageCollected<HTMLDivElement>(doc);
+    default_button_icon->SetShadowPseudoId(
+        shadow_element_names::kSelectFallbackButtonIcon);
+    default_button_->AppendChild(default_button_icon);
 
     datalist_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
     datalist_slot_->SetIdAttribute(shadow_element_names::kSelectDatalist);
@@ -782,7 +798,7 @@ void MenuListSelectType::UpdateTextStyleAndContent() {
     // Copy the text of the selected <option> into the fallback <button> so that
     // the user can see what the selected option is, just like the
     // appearance:auto case.
-    default_button_->setTextContent(text);
+    default_button_selected_option_->setTextContent(text);
   }
   if (auto* box = select_->GetLayoutBox()) {
     if (auto* cache = select_->GetDocument().ExistingAXObjectCache())

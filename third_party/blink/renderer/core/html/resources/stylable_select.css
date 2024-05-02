@@ -27,7 +27,8 @@ select::select-fallback-datalist {
   overflow: auto;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 0.25em;
-  padding: 0.25em 0;
+  padding-block: 0.25em;
+  padding-inline: 0;
   background-color: Field;
   margin: 0;
   inset: auto;
@@ -129,4 +130,54 @@ select:open > datalist {
    * by default because the <datalist> will have display:none on it by default.
    */
   display: block;
+}
+
+select::select-fallback-button {
+  color: FieldText;
+  background-color: Field;
+  appearance: none;
+  padding: 0.25em;
+  border: 1px solid ButtonBorder;
+  /* TODO(crbug.com/1511354): Adding border-radius here makes it impossible to
+   * pass the reftest due to indistinguishable differences in a few pixels. */
+  cursor: default;
+  font-size: inherit;
+  text-align: inherit;
+  display: inline-flex;
+  flex-grow: 1;
+  flex-shrink: 1;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+select::select-fallback-button-icon {
+  /* TODO(crbug.com/337904202): This background-image affects layout in
+   * appearance:auto mode even though it is not rendered. */
+  background-image: light-dark(
+    url(data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2214%22%20viewBox%3D%220%200%2020%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M4%206%20L10%2012%20L%2016%206%22%20stroke%3D%22WindowText%22%20stroke-width%3D%223%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E),
+    url(data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2214%22%20viewBox%3D%220%200%2020%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M4%206%20L10%2012%20L%2016%206%22%20stroke%3D%22%2523ffffff%22%2520stroke-width%3D%223%22%2520stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3));
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 1;
+  outline: none;
+  margin-inline-start: 0.25em;
+  padding-block: 2px;
+  padding-inline: 3px;
+  block-size: 1.0em;
+  inline-size: 1.2em;
+  min-inline-size: 1.2em;
+  max-inline-size: 1.2em;
+  display: block;
+}
+
+select::select-fallback-button-text {
+  color: inherit;
+  min-inline-size: 0px;
+  max-block-size: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: hidden;
+  display: inline;
 }

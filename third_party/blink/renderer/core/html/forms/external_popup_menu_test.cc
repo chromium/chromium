@@ -197,7 +197,7 @@ class TestLocalFrameExternalPopupClient : public FakeLocalFrameHost {
   gfx::Rect bounds_;
 };
 
-class ExternalPopupMenuTest : public testing::Test {
+class ExternalPopupMenuTest : public PageTestBase {
  public:
   ExternalPopupMenuTest() : base_url_("http://www.test.com") {}
 
@@ -248,7 +248,6 @@ class ExternalPopupMenuTest : public testing::Test {
   WebLocalFrameImpl* MainFrame() const { return helper_.LocalMainFrame(); }
 
  private:
-  test::TaskEnvironment task_environment_;
   TestLocalFrameExternalPopupClient frame_host_;
   frame_test_helpers::TestWebFrameClient web_frame_client_;
   std::string base_url_;

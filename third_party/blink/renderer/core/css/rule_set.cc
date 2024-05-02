@@ -287,7 +287,10 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
         case CSSSelector::kPseudoSlotted:
-        case CSSSelector::kPseudoSelectDatalist:
+        case CSSSelector::kPseudoSelectFallbackButton:
+        case CSSSelector::kPseudoSelectFallbackButtonIcon:
+        case CSSSelector::kPseudoSelectFallbackButtonText:
+        case CSSSelector::kPseudoSelectFallbackDatalist:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
           pseudo_type = selector->GetPseudoType();
@@ -519,7 +522,10 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
       return;
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
-    case CSSSelector::kPseudoSelectDatalist:
+    case CSSSelector::kPseudoSelectFallbackButton:
+    case CSSSelector::kPseudoSelectFallbackButtonIcon:
+    case CSSSelector::kPseudoSelectFallbackButtonText:
+    case CSSSelector::kPseudoSelectFallbackDatalist:
       if (it->FollowsPart()) {
         AddToRuleSet(part_pseudo_rules_, rule_data);
       } else if (it->FollowsSlotted()) {
@@ -533,7 +539,16 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
           case CSSSelector::kPseudoFileSelectorButton:
             name = shadow_element_names::kPseudoFileUploadButton;
             break;
-          case CSSSelector::kPseudoSelectDatalist:
+          case CSSSelector::kPseudoSelectFallbackButton:
+            name = shadow_element_names::kSelectFallbackButton;
+            break;
+          case CSSSelector::kPseudoSelectFallbackButtonIcon:
+            name = shadow_element_names::kSelectFallbackButtonIcon;
+            break;
+          case CSSSelector::kPseudoSelectFallbackButtonText:
+            name = shadow_element_names::kSelectFallbackButtonText;
+            break;
+          case CSSSelector::kPseudoSelectFallbackDatalist:
             name = shadow_element_names::kSelectFallbackDatalist;
             break;
           default:

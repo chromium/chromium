@@ -94,6 +94,18 @@
       Symbol: "kSelectDatalist",
     },
     {
+      name: "select-fallback-button",
+      Symbol: "kSelectFallbackButton",
+    },
+    {
+      name: "select-fallback-button-icon",
+      Symbol: "kSelectFallbackButtonIcon",
+    },
+    {
+      name: "select-fallback-button-text",
+      Symbol: "kSelectFallbackButtonText",
+    },
+    {
       name: "select-fallback-datalist",
       Symbol: "kSelectFallbackDatalist",
     },
