@@ -91,14 +91,6 @@
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2023"
   },
-  {
-    "prefix": "unsafe_webgpu",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["regress/regress-1104580.html"],
-    "args": ["--enable-unsafe-webgpu", "--disable-threaded-compositing",
-             "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
 
   "The threaded virtual suite tests with threaded compositing, which is the",
   "configuration that we ship.  Because this is testing what we ship (in a way",
