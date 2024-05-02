@@ -69,6 +69,16 @@ ErrorCode GetMojoErrorFromPackError(const PackResult::ErrorCode pack_error) {
   }
 }
 
+FeatureId ToFeatureId(std::string_view feature_id) {
+  if (feature_id == kHandwritingFeatureId) {
+    return FeatureId::HANDWRITING_RECOGNITION;
+  } else if (feature_id == kTtsFeatureId) {
+    return FeatureId::TTS;
+  }
+
+  return FeatureId::UNSUPPORTED_UNKNOWN;
+}
+
 // Called when GetPackState() or InstallPack() functions from Language Packs
 // are complete.
 void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
@@ -76,6 +86,7 @@ void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
   auto info = LanguagePackInfo::New();
   info->pack_state = GetPackStateFromStatusCode(pack_result.pack_state);
   info->error = GetMojoErrorFromPackError(pack_result.operation_error);
+  info->feature_id = ToFeatureId(pack_result.feature_id);
   if (pack_result.pack_state == PackResult::StatusCode::kInstalled) {
     info->path = pack_result.path;
   }
@@ -100,16 +111,6 @@ void OnInstallBasePackComplete(
 void OnUninstallComplete(LanguagePacksImpl::UninstallPackCallback mojo_callback,
                          const PackResult& result) {
   std::move(mojo_callback).Run();
-}
-
-FeatureId ToFeatureId(std::string_view feature_id) {
-  if (feature_id == kHandwritingFeatureId) {
-    return FeatureId::HANDWRITING_RECOGNITION;
-  } else if (feature_id == kTtsFeatureId) {
-    return FeatureId::TTS;
-  }
-
-  return FeatureId::UNSUPPORTED_UNKNOWN;
 }
 
 }  // namespace
@@ -147,6 +148,7 @@ void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
   } else {
     auto info = LanguagePackInfo::New();
     info->pack_state = PackState::ERROR;
+    info->feature_id = feature_id;
     std::move(mojo_callback).Run(std::move(info));
   }
 }
@@ -164,6 +166,7 @@ void LanguagePacksImpl::InstallPack(FeatureId feature_id,
   } else {
     auto info = LanguagePackInfo::New();
     info->pack_state = PackState::ERROR;
+    info->feature_id = feature_id;
     std::move(mojo_callback).Run(std::move(info));
   }
 }
