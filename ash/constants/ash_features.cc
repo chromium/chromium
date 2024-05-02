@@ -2020,6 +2020,9 @@ BASE_FEATURE(kNotificationsInContextMenu,
              "NotificationsInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// For more info, see go/crosforest.
+BASE_FEATURE(kOakFeature, "OakFeature", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
              "OnDeviceGrammarCheck",
@@ -4011,6 +4014,10 @@ bool IsNotificationScrollBarEnabled() {
 
 bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
+}
+
+bool IsOakFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kOakFeature);
 }
 
 bool IsNssDbClientCertsRollbackEnabled() {

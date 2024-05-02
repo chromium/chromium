@@ -683,7 +683,7 @@ void OverviewGrid::PrepareForOverview() {
 
   MaybeInitBirchBarWidget();
 
-  if (IsForestFeatureEnabled()) {
+  if (features::IsOakFeatureEnabled() || IsForestFeatureEnabled()) {
     scoped_overview_wallpaper_clipper_ =
         std::make_unique<ScopedOverviewWallpaperClipper>(this);
   }
@@ -1660,7 +1660,7 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
 }
 
 gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
-  if (!IsForestFeatureEnabled()) {
+  if (!features::IsOakFeatureEnabled() && !IsForestFeatureEnabled()) {
     return gfx::Insets();
   }
 
@@ -1691,10 +1691,11 @@ gfx::Insets OverviewGrid::GetGridHorizontalPaddings() const {
 }
 
 gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
-  const bool forest_enabled = IsForestFeatureEnabled();
+  const bool oak_enabled =
+      features::IsOakFeatureEnabled() || IsForestFeatureEnabled();
 
   // Use compact paddings for partial overview.
-  if (forest_enabled &&
+  if (oak_enabled &&
       SplitViewController::Get(root_window_)->InSplitViewMode()) {
     return gfx::Insets::VH(kCompactPaddingForEffectiveBounds, 0);
   }
@@ -1711,11 +1712,11 @@ gfx::Insets OverviewGrid::GetGridVerticalPaddings() const {
       desks_bar_view_ || desks_util::ShouldDesksBarBeCreated();
 
   const int no_desk_bar_padding =
-      forest_enabled ? kSpaciousPaddingForEffectiveBounds : 0;
+      oak_enabled ? kSpaciousPaddingForEffectiveBounds : 0;
   vertical_paddings.set_top(has_desk_bar ? GetDesksBarHeight()
                                          : no_desk_bar_padding);
 
-  if (!forest_enabled) {
+  if (!oak_enabled) {
     return vertical_paddings;
   }
 
@@ -2998,7 +2999,11 @@ bool OverviewGrid::FitWindowRectsInBounds(
 void OverviewGrid::MaybeCenterOverviewItems(
     std::vector<gfx::RectF>& out_window_rects,
     const base::flat_set<OverviewItemBase*>& ignored_items) {
-  if (!IsForestFeatureEnabled() || out_window_rects.empty()) {
+  if (!features::IsOakFeatureEnabled() && !IsForestFeatureEnabled()) {
+    return;
+  }
+
+  if (out_window_rects.empty()) {
     return;
   }
 

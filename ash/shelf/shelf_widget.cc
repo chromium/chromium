@@ -490,7 +490,9 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
   const bool in_app = ShelfConfig::Get()->is_in_app();
 
   const bool in_overview_mode = ShelfConfig::Get()->in_overview_mode();
-  const bool in_oak_session = IsForestFeatureEnabled() && in_overview_mode;
+  const bool in_oak_session =
+      in_overview_mode &&
+      (features::IsOakFeatureEnabled() || IsForestFeatureEnabled());
   const bool split_view = ShelfConfig::Get()->in_split_view_with_overview();
   bool show_opaque_background =
       (!in_oak_session) && (!tablet_mode || in_app || split_view);

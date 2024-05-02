@@ -126,8 +126,9 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   auto* layer = view->layer();
   layer->SetFillsBoundsOpaquely(false);
 
-  if (IsForestFeatureEnabled() && !type_is_desk_button) {
-    // Forests feature needs a transparent desks bar background. Still needs the
+  if ((features::IsOakFeatureEnabled() || IsForestFeatureEnabled()) &&
+      !type_is_desk_button) {
+    // Oak feature needs a transparent desks bar background. Still needs the
     // view layer to perform animations.
     return;
   }
@@ -630,8 +631,9 @@ int DeskBarViewBase::GetPreferredBarHeight(aura::Window* root,
         height = kDeskBarZeroStateHeight;
       } else {
         height = DeskPreviewView::GetHeight(root) +
-                 (IsForestFeatureEnabled() ? kExpandedDeskBarHeightWithOak
-                                           : kDeskBarNonPreviewAllocatedHeight);
+                 (features::IsOakFeatureEnabled() || IsForestFeatureEnabled()
+                      ? kExpandedDeskBarHeightWithOak
+                      : kDeskBarNonPreviewAllocatedHeight);
       }
       break;
   }

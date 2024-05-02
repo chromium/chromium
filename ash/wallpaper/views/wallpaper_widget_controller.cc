@@ -140,7 +140,7 @@ void WallpaperWidgetController::OnColorProviderChanged() {
 }
 
 void WallpaperWidgetController::CreateWallpaperUnderlayLayer() {
-  if (!IsForestFeatureFlagEnabled()) {
+  if (!features::IsOakFeatureEnabled() && !IsForestFeatureFlagEnabled()) {
     return;
   }
 
