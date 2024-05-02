@@ -49,6 +49,33 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
          should_wait(syncer::ModelType::CONTACT_INFO);
 }
 
+// Quasi duplicates of rank one, those conflicting token has low quality qualify
+// for silent removal.
+bool IsSilentlyRemovableQuasiDuplicate(
+    const AutofillProfile& profile,
+    const std::vector<AutofillProfile>& other_profiles,
+    const AutofillProfileComparator& comparator) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillSilentlyRemoveQuasiDuplicates)) {
+    return false;
+  }
+  const std::vector<FieldTypeSet> incompatible_sets =
+      AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
+          profile, other_profiles, comparator);
+  // Only rank one quasi duplicates are silently removed. Note that all sets in
+  // `incompatible_sets` have the same size.
+  if (incompatible_sets.empty() || incompatible_sets.back().size() != 1) {
+    return false;
+  }
+  // Return true if any of the conflicting tokens is low quality in the profile.
+  return base::ranges::any_of(
+      incompatible_sets, [&](const FieldTypeSet& incompatible_set) {
+        CHECK_EQ(incompatible_set.size(), 1u);
+        return AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
+            profile, *incompatible_set.begin());
+      });
+}
+
 // - Merges local profiles occurring earlier in `profiles` with mergeable other
 //   local profiles later in `profiles`, deleting the earlier one.
 // - Deletes local profiles that are subsets of account profiles.
@@ -106,6 +133,13 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
       superset_account_profile->set_last_modifier_id(
           AutofillProfile::kInitialCreatorOrModifierChrome);
       adm.UpdateProfile(*superset_account_profile);
+      continue;
+    }
+    // `*local_profile_it` might be a low quality quasi duplicate.
+    if (IsSilentlyRemovableQuasiDuplicate(*local_profile_it, profiles,
+                                          comparator)) {
+      adm.RemoveProfile(local_profile_it->guid());
+      num_profiles_deleted++;
     }
   }
   autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(

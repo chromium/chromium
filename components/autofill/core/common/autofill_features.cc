@@ -696,6 +696,13 @@ BASE_FEATURE(kAutofillLogDeduplicationMetrics,
              "AutofillLogDeduplicationMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, low-quality quasi duplicates of rank one are silently removed
+// during the once-per-milestone deduplication routine.
+// TODO(b/325450676): Remove when launched.
+BASE_FEATURE(kAutofillSilentlyRemoveQuasiDuplicates,
+             "AutofillSilentlyRemoveQuasiDuplicates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.

@@ -234,6 +234,48 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
       UnorderedElementsAre(Pointee(account_profile), Pointee(local_profile)));
 }
 
+// Tests that quasi duplicates are not silently removed, if the corresponding
+// token doesn't have low quality.
+TEST_F(AddressDataCleanerTest, Deduplicate_QuasiDuplicate_NoQuality) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillTrackProfileTokenQuality,
+                            features::kAutofillSilentlyRemoveQuasiDuplicates},
+      /*disabled_features=*/{});
+  const AutofillProfile profile = test::GetFullProfile();
+  test_adm_.AddProfile(profile);
+  AutofillProfile quasi_duplicate = test::GetFullProfile();
+  quasi_duplicate.SetRawInfo(COMPANY_NAME, u"some company");
+  test_adm_.AddProfile(quasi_duplicate);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+  EXPECT_THAT(test_adm_.GetProfiles(),
+              UnorderedElementsAre(Pointee(profile), Pointee(quasi_duplicate)));
+}
+
+// Tests that quasi duplicates are silently removed, if the corresponding
+// token has low quality.
+TEST_F(AddressDataCleanerTest, Deduplicate_QuasiDuplicate_LowQuality) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillTrackProfileTokenQuality,
+                            features::kAutofillSilentlyRemoveQuasiDuplicates},
+      /*disabled_features=*/{});
+  const AutofillProfile profile = test::GetFullProfile();
+  test_adm_.AddProfile(profile);
+  AutofillProfile quasi_duplicate = test::GetFullProfile();
+  quasi_duplicate.SetRawInfo(COMPANY_NAME, u"some company");
+  for (int i = 0; i < 5; ++i) {
+    test_api(quasi_duplicate.token_quality())
+        .AddObservation(COMPANY_NAME,
+                        ProfileTokenQuality::ObservationType::kEditedFallback);
+  }
+  test_adm_.AddProfile(quasi_duplicate);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+  EXPECT_THAT(test_adm_.GetProfiles(), UnorderedElementsAre(Pointee(profile)));
+}
+
 TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
   // Create a disused address (deletable).
   AutofillProfile profile1 = test::GetFullProfile();
