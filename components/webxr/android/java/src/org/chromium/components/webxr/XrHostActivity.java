@@ -9,10 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.SurfaceView;
-import android.view.View;
-
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
 
 // TODO(crbug.com/40904930): Investigate if this would benefit from
 // extending ChromeBaseAppCompatActivity
@@ -23,29 +19,6 @@ import org.chromium.ui.base.WindowAndroid;
  * browser when done cleaner.
  */
 public class XrHostActivity extends Activity {
-
-    private static class XrActivityWindow extends WindowAndroid {
-        public XrActivityWindow(Context context) {
-            super(context);
-        }
-
-        @Override
-        public void onActivityStarted() {
-            super.onActivityStarted();
-        }
-
-        @Override
-        public void onActivityStopped() {
-            super.onActivityStopped();
-        }
-    }
-
-    private XrActivityWindow mWindow;
-
-    private WindowAndroid mOriginalWindow;
-
-    private WebContents mWebContents;
-
     /**
      * Creates an Intent to start the {@link XrHostActivity}.
      * @param context  Context to use when constructing the Intent.
@@ -71,14 +44,6 @@ public class XrHostActivity extends Activity {
 
         SurfaceView defaultView = new SurfaceView(this);
         setContentView(defaultView);
-
-        mWebContents = XrSessionCoordinator.getWebContents();
-        assert mWebContents != null;
-
-        mOriginalWindow = mWebContents.getTopLevelNativeWindow();
-        mWindow = new XrActivityWindow(this);
-        mWindow.setAnimationPlaceholderView(defaultView);
-        mWebContents.setTopLevelNativeWindow(mWindow);
     }
 
     @Override
@@ -90,17 +55,10 @@ public class XrHostActivity extends Activity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        mWindow.onActivityStarted();
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
 
-        onXrSessionEnded();
+        XrSessionCoordinator.endActiveSessionFromXrHost();
 
         finishAndRemoveTask();
     }
@@ -109,28 +67,6 @@ public class XrHostActivity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
 
-        onXrSessionEnded();
-    }
-
-    public void onXrSessionEnded() {
         XrSessionCoordinator.endActiveSessionFromXrHost();
-
-        if (mOriginalWindow == null) {
-            return;
-        }
-
-        mWindow.onVisibilityChanged(false);
-        mWindow.onActivityStopped();
-
-        mWebContents.setTopLevelNativeWindow(mOriginalWindow);
-
-        // Need this because original visibility change event
-        // can be happen before window swap.
-        Activity originalActivity = mOriginalWindow.getActivity().get();
-        mOriginalWindow.onVisibilityChanged(
-            originalActivity.getWindow().getDecorView()
-                .getWindowVisibility() == View.VISIBLE);
-
-        mOriginalWindow = null;
     }
 }

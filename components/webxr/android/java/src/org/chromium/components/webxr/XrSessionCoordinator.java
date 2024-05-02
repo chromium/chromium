@@ -83,14 +83,6 @@ public class XrSessionCoordinator {
         return window.getActivity().get();
     }
 
-    public static WebContents getWebContents() {
-        if (sActiveSessionInstance == null) {
-            return null;
-        }
-
-        return sActiveSessionInstance.mWebContents;
-    }
-
     @CalledByNative
     private static XrSessionCoordinator create(long nativeXrSessionCoordinator) {
         ThreadUtils.assertOnUiThread();
@@ -182,7 +174,7 @@ public class XrSessionCoordinator {
     }
 
     @CalledByNative
-    private void startXrSession(final WebContents webContents) {
+    private void startXrSession() {
         if (DEBUG_LOGS) Log.i(TAG, "startXrSession");
         // The higher levels should have guaranteed that we're only called if there isn't any other
         // active session going on.
@@ -190,7 +182,6 @@ public class XrSessionCoordinator {
 
         // The active session must be set before creating the host activity, since it will be
         // notified once the activity is ready.
-        mWebContents = webContents;
         sActiveSessionInstance = this;
         mActiveSessionType = SessionType.VR;
         sActiveSessionAvailableSupplier.set(SessionType.VR);
@@ -333,7 +324,7 @@ public class XrSessionCoordinator {
      *
      * @return True if an active session was notified that the activity is ready.
      */
-    public static boolean onXrHostActivityReady(XrHostActivity activity) {
+    public static boolean onXrHostActivityReady(Activity activity) {
         if (DEBUG_LOGS) Log.i(TAG, "onXrHostActivityReady");
         if (sActiveSessionInstance != null) {
             sActiveSessionInstance.handleXrHostActivityReady(activity);
@@ -342,7 +333,7 @@ public class XrSessionCoordinator {
         return false;
     }
 
-    private void handleXrHostActivityReady(XrHostActivity activity) {
+    private void handleXrHostActivityReady(Activity activity) {
         if (mNativeXrSessionCoordinator == 0) return;
         mXrHostActivity = new WeakReference(activity);
         XrSessionCoordinatorJni.get()

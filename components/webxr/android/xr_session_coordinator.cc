@@ -91,8 +91,6 @@ void XrSessionCoordinator::RequestVrSession(
 }
 
 void XrSessionCoordinator::RequestXrSession(
-    int render_process_id,
-    int render_frame_id,
     ActivityReadyCallback ready_callback,
     device::JavaShutdownCallback shutdown_callback) {
   DVLOG(1) << __func__;
@@ -101,9 +99,7 @@ void XrSessionCoordinator::RequestXrSession(
   activity_ready_callback_ = std::move(ready_callback);
   java_shutdown_callback_ = std::move(shutdown_callback);
 
-  Java_XrSessionCoordinator_startXrSession(
-      env, j_xr_session_coordinator_,
-      webxr::GetJavaWebContents(render_process_id, render_frame_id));
+  Java_XrSessionCoordinator_startXrSession(env, j_xr_session_coordinator_);
 }
 
 void XrSessionCoordinator::EndSession() {

@@ -55,11 +55,8 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
       int render_process_id,
       int render_frame_id) override;
 
-  void RequestXrSession(
-      int render_process_id,
-      int render_frame_id,
-      ActivityReadyCallback ready_callback,
-      device::JavaShutdownCallback shutdown_callback);
+  void RequestXrSession(ActivityReadyCallback ready_callback,
+                        device::JavaShutdownCallback shutdown_callback);
 
   // Methods called from the Java side.
   void OnDrawingSurfaceReady(
