@@ -36,10 +36,6 @@ AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
 // Returns true if Switch Access point scanning is enabled.
 AX_BASE_EXPORT bool IsMagnifierDebugDrawRectEnabled();
 
-// Optionally disable AXMenuList, which makes the internal pop-up menu
-// UI for a select element directly accessible.
-AX_BASE_EXPORT extern const char kDisableAXMenuList[];
-
 // For development / testing only.
 // When enabled the switch generates expectations files upon running an
 // ax_inspect test. For example, when running content_browsertests, it saves

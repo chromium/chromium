@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] el-optgroup
-  assert_equals: <optgroup label="x" data-testname="el-optgroup" data-expectedrole="group" class="ex">\n    <option>x1</option>\n    <option>x2</option>\n  </optgroup> expected "group" but got "none"
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.

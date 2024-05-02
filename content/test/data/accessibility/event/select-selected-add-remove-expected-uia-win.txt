@@ -12,8 +12,6 @@ SelectionItemIsSelected changed on role=option, name=Option6
 SelectionItem_ElementSelected on role=option, name=Option6
 === Start Continuation ===
 SelectionItemIsSelected changed on role=combobox, name=Combo3
-SelectionItemIsSelected changed on role=listitem, name=Option8
 SelectionItem_ElementRemovedFromSelection on role=combobox, name=Combo3
-SelectionItem_ElementSelected on role=listitem, name=Option8
 === Start Continuation ===
 Selection_Invalidated on role=listbox, name=Combo4

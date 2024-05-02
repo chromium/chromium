@@ -46,12 +46,6 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
   AccessibilityActionBrowserTest() {}
   ~AccessibilityActionBrowserTest() override {}
 
-  void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kDisableAXMenuList);
-    ContentBrowserTest::SetUp();
-  }
-
  protected:
   BrowserAccessibility* FindNode(ax::mojom::Role role,
                                  const std::string& name_or_value) {
@@ -1413,13 +1407,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   ASSERT_TRUE(click_waiter.WaitForNotification());
 }
 
-// These tests only makes sense on platforms where the popup menu is implemented
-// internally as an HTML page in a popup, not where it's a native popup.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(USE_ATK)
-IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
-                       OpenSelectPopupWithNoAXMenuList) {
+// Only run this test on platforms where Blink expands and draws a popup.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, OpenSelectPopup) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
-      <head><title>No AXMenuList</title></head>
+      <head><title>OpenSelectPopup</title></head>
       <body>
         <select>
           <option selected>One</option>
@@ -1432,9 +1424,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   BrowserAccessibility* target =
       FindNode(ax::mojom::Role::kComboBoxSelect, "One");
   ASSERT_NE(nullptr, target);
-
-  EXPECT_EQ(0U, target->PlatformChildCount());
-  EXPECT_EQ(nullptr, FindNode(ax::mojom::Role::kListBox, ""));
+  EXPECT_EQ(1U, target->InternalChildCount());
+  EXPECT_TRUE(target->HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(target->HasState(ax::mojom::State::kExpanded));
+#if BUILDFLAG(IS_WIN)
+  // On Windows, a collapsed menulist is not in the platform tree, to prevent
+  // screen readers from reading all options -- AXNode::IsLeaf() returns true.
+  EXPECT_EQ(nullptr, FindNode(ax::mojom::Role::kMenuListPopup, ""));
+#else
+  EXPECT_NE(nullptr, FindNode(ax::mojom::Role::kMenuListPopup, ""));
+#endif
+  BrowserAccessibility* closed_popup = target->InternalGetChild(0);
+  EXPECT_EQ(ax::mojom::Role::kMenuListPopup, closed_popup->GetRole());
+  EXPECT_TRUE(closed_popup->HasState(ax::mojom::State::kInvisible));
+  EXPECT_EQ(3U, closed_popup->InternalChildCount());
 
   // Call DoDefaultAction.
   AccessibilityNotificationWaiter waiter2(
@@ -1445,44 +1448,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Three");
 
-  ASSERT_EQ(1U, target->PlatformChildCount());
-  BrowserAccessibility* popup_web_area = target->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kGroup, popup_web_area->GetRole());
-
-  BrowserAccessibility* listbox = FindNode(ax::mojom::Role::kListBox, "");
-  ASSERT_TRUE(listbox);
-  EXPECT_EQ(3U, listbox->PlatformChildCount());
+  EXPECT_TRUE(target->HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(target->HasState(ax::mojom::State::kCollapsed));
+  ASSERT_EQ(1U, target->InternalChildCount());
+  BrowserAccessibility* open_popup = target->PlatformGetChild(0);
+  EXPECT_EQ(1U, target->InternalChildCount());
+  EXPECT_EQ(ax::mojom::Role::kMenuListPopup, open_popup->GetRole());
+  EXPECT_FALSE(open_popup->HasState(ax::mojom::State::kInvisible));
+  EXPECT_EQ(3U, open_popup->InternalChildCount());
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !(BUILDFLAG(IS_IOS)
 
-// This test was added after a bug was causing popup's accessible nodes to not
-// be added to the tree when the AXMenuList feature was disabled to prevent a
-// similar regression to occur again.
-IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
-                       OpenInputColorPopupWithNoAXMenuList) {
-  LoadInitialAccessibilityTreeFromHtml(R"HTML(
-      <body>
-        <input type="color" aria-label="color picker">
-      </body>
-      )HTML");
-
-  BrowserAccessibility* target =
-      FindNode(ax::mojom::Role::kColorWell, "color picker");
-  ASSERT_NE(nullptr, target);
-
-  EXPECT_EQ(0U, target->PlatformChildCount());
-
-  // Call DoDefaultAction.
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kClicked);
-  GetManager()->DoDefaultAction(*target);
-  ASSERT_TRUE(waiter.WaitForNotification());
-
-  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
-                                                "Format toggler");
-
-  ASSERT_EQ(1U, target->PlatformChildCount());
-  BrowserAccessibility* popup_web_area = target->PlatformGetChild(0);
-  EXPECT_EQ(ax::mojom::Role::kGroup, popup_web_area->GetRole());
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(USE_ATK)
 }  // namespace content

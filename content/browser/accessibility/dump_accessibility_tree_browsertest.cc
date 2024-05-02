@@ -103,10 +103,6 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // AccessibilitySelectListOpen.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "HTMLSelectListElement");
-  // kDisableAXMenuList is true on Chrome OS by default. Make it consistent
-  // for these cross-platform tests.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kDisableAXMenuList, "false");
 }
 
 std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {

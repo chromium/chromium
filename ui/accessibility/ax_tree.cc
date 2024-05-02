@@ -2487,10 +2487,12 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
     // However, in the collapsed container case (e.g. a combobox), items can
     // still be chosen/navigated. However, the options in these collapsed
     // containers are historically marked invisible. Therefore, in that case,
-    // count the invisible items. Only check 2 levels up, as combobox containers
+    // count the invisible items. Only check 3 levels up, as combobox containers
     // are never higher.
     if (child->data().IsInvisible() && !IsCollapsed(local_parent) &&
-        !IsCollapsed(local_parent->parent())) {
+        !IsCollapsed(local_parent->parent()) &&
+        (!local_parent->parent() ||
+         !IsCollapsed(local_parent->parent()->parent()))) {
       continue;
     }
 

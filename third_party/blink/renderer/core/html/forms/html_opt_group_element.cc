@@ -170,8 +170,7 @@ void HTMLOptGroupElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DEFINE_STATIC_LOCAL(AtomicString, label_padding, ("0 2px 1px 2px"));
   DEFINE_STATIC_LOCAL(AtomicString, label_min_height, ("1.2em"));
   auto* label = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  label->setAttribute(html_names::kRoleAttr, AtomicString("group"));
-  label->setAttribute(html_names::kAriaLabelAttr, AtomicString());
+  label->setAttribute(html_names::kAriaHiddenAttr, AtomicString("true"));
   label->SetInlineStyleProperty(CSSPropertyID::kPadding, label_padding);
   label->SetInlineStyleProperty(CSSPropertyID::kMinHeight, label_min_height);
   label->SetIdAttribute(shadow_element_names::kIdOptGroupLabel);

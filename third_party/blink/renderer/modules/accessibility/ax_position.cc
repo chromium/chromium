@@ -777,14 +777,14 @@ const AXPosition AXPosition::AsValidDOMPosition(
   const AXObject* last_child = container->LastChildIncludingIgnored();
   if ((IsTextPosition() && (!container->GetNode() ||
                             container->GetNode()->IsMarkerPseudoElement())) ||
-      container->IsMockObject() || container->IsVirtualObject() ||
+      container->IsVirtualObject() ||
       (!child && last_child &&
        (!last_child->GetNode() ||
         last_child->GetNode()->IsMarkerPseudoElement() ||
-        last_child->IsMockObject() || last_child->IsVirtualObject())) ||
+        last_child->IsVirtualObject())) ||
       (child &&
        (!child->GetNode() || child->GetNode()->IsMarkerPseudoElement() ||
-        child->IsMockObject() || child->IsVirtualObject()))) {
+        child->IsVirtualObject()))) {
     AXPosition result;
     if (adjustment_behavior == AXPositionAdjustmentBehavior::kMoveRight)
       result = CreateNextPosition();

@@ -33,6 +33,11 @@ Tests name sources in <option>s.
                     value : x
                 }
             }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
         ]
         type : computedString
         value : label
@@ -84,6 +89,11 @@ Tests name sources in <option>s.
                     type : computedString
                     value : x
                 }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
             }
         ]
         type : computedString
@@ -146,6 +156,11 @@ Tests name sources in <option>s.
                     value : x
                 }
             }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
         ]
         type : computedString
         value : label
@@ -197,6 +212,11 @@ Tests name sources in <option>s.
                     type : computedString
                     value : x
                 }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
             }
         ]
         type : computedString

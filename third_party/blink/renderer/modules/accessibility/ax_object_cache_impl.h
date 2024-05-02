@@ -334,8 +334,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Create an AXObject, and do not check if a previous one exists.
   // Also, initialize the object and add it to maps for later retrieval.
   AXObject* CreateAndInit(Node*, LayoutObject*, AXObject* parent);
-  // Used for objects without backing DOM nodes, layout objects, etc.
-  AXObject* CreateAndInit(ax::mojom::blink::Role, AXObject* parent);
 
   // Note that these functions do NOT guarantee that an AXObject will
   // be created. For instance, not all HTMLElements can have an AXObject,
@@ -399,14 +397,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleNodeLostFocusWithCleanLayout(Node*);
   void HandleNodeGainedFocusWithCleanLayout(Node*);
   void NodeIsAttachedWithCleanLayout(Node*);
-  void DidShowMenuListPopupWithCleanLayout(Node*);
-  void DidHideMenuListPopupWithCleanLayout(Node*);
   void HandleScrollPositionChangedWithCleanLayout(Node*);
   void HandleValidationMessageVisibilityChangedWithCleanLayout(const Node*);
-  void HandleUpdateActiveMenuOptionWithCleanLayout(Node*);
   void HandleEditableTextContentChangedWithCleanLayout(Node*);
   void UpdateAriaOwnsWithCleanLayout(Node*);
   void UpdateTableRoleWithCleanLayout(Node*);
+  void HandleUpdateMenuListPopupWithCleanLayout(Node*, bool did_show = false);
 
   AXID GenerateAXID() const override;
 
@@ -489,9 +485,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   Element* GetActiveAriaModalDialog() const;
 
-  static bool UseAXMenuList() { return use_ax_menu_list_; }
-  static bool ShouldCreateAXMenuListFor(const Node*);
-  static bool ShouldCreateAXMenuListOptionFor(const Node*);
   static bool IsRelevantPseudoElement(const Node& node);
   static bool IsRelevantPseudoElementDescendant(
       const LayoutObject& layout_object);
@@ -776,14 +769,13 @@ class MODULES_EXPORT AXObjectCacheImpl
     kAriaOwnsChanged = 3,
     kAriaPressedChanged = 4,
     kAriaSelectedChanged = 5,
-    kDidHideMenuListPopup = 6,
-    kDidShowMenuListPopup = 7,
-    kEditableTextContentChanged = 8,
-    kFocusableChanged = 9,
+    kEditableTextContentChanged = 6,
+    kFocusableChanged = 7,
+    kDidShowMenuListPopup = 9,
     kIdChanged = 10,
-    kMarkDirtyFromHandleScroll = 12,
-    kNodeGainedFocus = 13,
-    kNodeLostFocus = 14,
+    kMarkDirtyFromHandleScroll = 11,
+    kNodeGainedFocus = 12,
+    kNodeLostFocus = 13,
     kPostNotificationFromHandleLoadComplete = 15,
     kPostNotificationFromHandleLoadStart = 16,
     kPostNotificationFromHandleScrolledToAnchor = 17,
@@ -794,18 +786,19 @@ class MODULES_EXPORT AXObjectCacheImpl
     kRoleChangeFromRoleOrType = 22,
     kRoleMaybeChangedFromEventListener = 23,
     kRoleMaybeChangedFromHref = 24,
-    kSectionOrRegionRoleMaybeChangedFromLabel = 25,
-    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 26,
-    kSectionOrRegionRoleMaybeChangedFromTitle = 27,
-    kTextChangedOnNode = 28,
-    kTextChangedOnClosestNodeForLayoutObject = 29,
-    kTextMarkerDataAdded = 30,
-    kUpdateActiveMenuOption = 31,
+    kRoleMaybeChangedOnSelect = 25,
+    kSectionOrRegionRoleMaybeChangedFromLabel = 26,
+    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 27,
+    kSectionOrRegionRoleMaybeChangedFromTitle = 28,
+    kTextChangedOnNode = 29,
+    kTextChangedOnClosestNodeForLayoutObject = 30,
+    kTextMarkerDataAdded = 31,
     kNodeIsAttached = 32,
-    kUpdateAriaOwns = 33,
-    kUpdateTableRole = 34,
-    kUseMapAttributeChanged = 35,
-    kValidationMessageVisibilityChanged = 36,
+    kUpdateActiveMenuOption = 33,
+    kUpdateAriaOwns = 34,
+    kUpdateTableRole = 35,
+    kUseMapAttributeChanged = 36,
+    kValidationMessageVisibilityChanged = 37,
 
     // These updates are associated with an AXID:
     kChildrenChanged = 100,
@@ -1167,10 +1160,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // A set of currently active event intents.
   BlinkAXEventIntentsSet active_event_intents_;
-
-  // If false, exposes the internal accessibility tree of a select pop-up
-  // instead.
-  static bool use_ax_menu_list_;
 
   HeapMojoRemote<mojom::blink::RenderAccessibilityHost>
       render_accessibility_host_;

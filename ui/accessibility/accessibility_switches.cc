@@ -61,10 +61,6 @@ bool IsMagnifierDebugDrawRectEnabled() {
       ::switches::kEnableMagnifierDebugDrawRect);
 }
 
-// Optionally disable AXMenuList, which makes the internal pop-up menu
-// UI for a select element directly accessible.
-const char kDisableAXMenuList[] = "disable-ax-menu-list";
-
 const char kGenerateAccessibilityTestExpectations[] =
     "generate-accessibility-test-expectations";
 

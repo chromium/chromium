@@ -275,7 +275,6 @@ class WebSettings {
   virtual void SetPreferredContrast(mojom::PreferredContrast) = 0;
   virtual void SetNavigationControls(NavigationControls) = 0;
   virtual void SetAriaModalPrunesAXTree(bool) = 0;
-  virtual void SetUseAXMenuList(bool) = 0;
   virtual void SetSelectionClipboardBufferAvailable(bool) = 0;
   virtual void SetAccessibilityIncludeSvgGElement(bool) = 0;
   virtual void SetWebXRImmersiveArAllowed(bool) = 0;
