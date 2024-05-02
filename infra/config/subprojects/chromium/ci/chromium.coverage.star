@@ -487,6 +487,7 @@ coverage_builder(
             "reclient",
             "chromeos_codecs",
             "pdf_xfa",
+            "release",
         ],
     ),
     builderless = True,
