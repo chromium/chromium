@@ -367,7 +367,11 @@ size_t MinidumpContextAMD64Writer::ContextSize() const {
 
 bool MinidumpXSaveAMD64CetU::InitializeFromSnapshot(
     const CPUContextX86_64* context_snapshot) {
-  DCHECK_EQ(context_snapshot->xstate.cet_u.cetmsr, 1ull);
+  // Exception records do not carry CET registers but we have to provide the
+  // same shaped context for threads and exception contexts, so both 0 (no ssp
+  // present) and 1 (ssp present) are expected.
+  DCHECK(context_snapshot->xstate.cet_u.cetmsr == 0ull ||
+         context_snapshot->xstate.cet_u.cetmsr == 1ull);
   cet_u_.cetmsr = context_snapshot->xstate.cet_u.cetmsr;
   cet_u_.ssp = context_snapshot->xstate.cet_u.ssp;
   return true;
