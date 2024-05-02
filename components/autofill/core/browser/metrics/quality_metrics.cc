@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
@@ -22,6 +23,60 @@
 namespace autofill::autofill_metrics {
 
 namespace {
+
+// Logs metrics related to how long it took the user from load/interaction time
+// till form submission.
+void LogDurationMetrics(const FormStructure& form,
+                        const base::TimeTicks& load_time,
+                        const base::TimeTicks& interaction_time,
+                        const base::TimeTicks& submission_time) {
+  size_t num_detected_field_types =
+      base::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
+                             &std::unique_ptr<AutofillField>::operator*);
+  bool form_has_autofilled_fields = base::ranges::any_of(
+      form, [](const auto& field) { return field->is_autofilled(); });
+  bool has_observed_one_time_code_field =
+      base::ranges::any_of(form, [](const auto& field) {
+        return field->Type().html_type() == HtmlFieldType::kOneTimeCode;
+      });
+  if (num_detected_field_types >= kMinRequiredFieldsForHeuristics ||
+      num_detected_field_types >= kMinRequiredFieldsForQuery) {
+    // `submission_time` should always be available.
+    CHECK(!submission_time.is_null());
+    // The |load_time| might be unset, in the case that the form was
+    // dynamically added to the DOM.
+    // Submission should chronologically follow form load, however
+    // this might not be true in case of a timezone change. Therefore make
+    // sure to log the elapsed time between submission time and load time only
+    // if it is positive. Same is applied below.
+    if (!load_time.is_null() && submission_time >= load_time) {
+      base::TimeDelta elapsed = submission_time - load_time;
+      if (form_has_autofilled_fields) {
+        AutofillMetrics::LogFormFillDurationFromLoadWithAutofill(elapsed);
+      } else {
+        AutofillMetrics::LogFormFillDurationFromLoadWithoutAutofill(elapsed);
+      }
+    }
+    // The |interaction_time| might be unset, in the case that the user
+    // submitted a blank form.
+    if (!interaction_time.is_null() && submission_time >= interaction_time) {
+      base::TimeDelta elapsed = submission_time - interaction_time;
+      AutofillMetrics::LogFormFillDurationFromInteraction(
+          form.GetFormTypes(), form_has_autofilled_fields, elapsed);
+    }
+  }
+  if (has_observed_one_time_code_field) {
+    if (!load_time.is_null() && submission_time >= load_time) {
+      base::TimeDelta elapsed = submission_time - load_time;
+      AutofillMetrics::LogFormFillDurationFromLoadForOneTimeCode(elapsed);
+    }
+    if (!interaction_time.is_null() && submission_time >= interaction_time) {
+      base::TimeDelta elapsed = submission_time - interaction_time;
+      AutofillMetrics::LogFormFillDurationFromInteractionForOneTimeCode(
+          elapsed);
+    }
+  }
+}
 
 void LogPredictionMetrics(
     const FormStructure& form,
@@ -56,6 +111,10 @@ void LogQualityMetrics(
 
   LogPredictionMetrics(form_structure, form_interactions_ukm_logger,
                        observed_submission);
+  if (observed_submission) {
+    LogDurationMetrics(form_structure, load_time, interaction_time,
+                       submission_time);
+  }
 
   // Determine the type of the form.
   DenseSet<FormType> form_types = form_structure.GetFormTypes();
@@ -63,13 +122,11 @@ void LogQualityMetrics(
   bool address_form = base::Contains(form_types, FormType::kAddressForm);
 
   FieldTypeSet autofilled_field_types;
-  size_t num_detected_field_types = 0;
 
   // Tracks how many fields are filled, unfilled or corrected.
   autofill_metrics::FormGroupFillingStats address_field_stats;
   autofill_metrics::FormGroupFillingStats cc_field_stats;
   autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
-
   // Same as above, but keyed by `FillingMethod`.
   base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
       address_field_stats_by_filling_method;
@@ -79,11 +136,9 @@ void LogQualityMetrics(
   bool form_has_previously_autofilled_fields = base::ranges::any_of(
       form_structure,
       [](const auto& field) { return field->previously_autofilled(); });
-  bool has_observed_one_time_code_field = false;
   // A perfectly filled form is submitted as it was filled from Autofill without
   // subsequent changes.
   bool perfect_filling = true;
-
   // Determine the correct suffix for the metric, depending on whether or
   // not a submission was observed.
   const AutofillMetrics::QualityMetricType metric_type =
@@ -92,24 +147,16 @@ void LogQualityMetrics(
 
   for (auto& field : form_structure) {
     CHECK(field);
-
     AutofillType type = field->Type();
     const FieldTypeGroup group = type.group();
-
     form_interactions_ukm_logger->LogFieldFillStatus(form_structure, *field,
                                                      metric_type);
-
-    if (type.html_type() == HtmlFieldType::kOneTimeCode) {
-      has_observed_one_time_code_field = true;
-    }
-
     // The form was not perfectly filled if a field was user-edited. Notice that
     // this means that in a perfect filling, a field must either be autofilled,
     // empty, have same value as pageload or have value set by JavaScript.
     if (field->is_user_edited() && !field->is_autofilled()) {
       perfect_filling = false;
     }
-
     // Field filling statistics that are only emitted if the form was submitted
     // but independent of the existence of a possible type.
     if (observed_submission) {
@@ -119,7 +166,6 @@ void LogQualityMetrics(
         AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
             form_interactions_ukm_logger, form_structure, *field);
       }
-
       // For any field that belongs to either an address or a credit card form,
       // collect the type-unspecific field filling statistics.
       // Those are only emitted when autofill was used on at least one field of
@@ -129,12 +175,10 @@ void LogQualityMetrics(
           form_type_of_field == FormType::kAddressForm;
       const bool credit_card_form_field =
           form_type_of_field == FormType::kCreditCardForm;
-
       if (is_address_form_field || credit_card_form_field) {
         // Address and credit cards fields are mutually exclusive.
         autofill_metrics::FormGroupFillingStats& group_stats =
             is_address_form_field ? address_field_stats : cc_field_stats;
-
         // Get the filling status of this field and add it to the form group
         // counter.
         group_stats.AddFieldFillingStatus(
@@ -154,7 +198,6 @@ void LogQualityMetrics(
           AddFillingStatsForFillingMethod(
               *field, address_field_stats_by_filling_method);
         }
-
         const std::string_view form_type_name =
             FormTypeToStringView(form_type_of_field);
         LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
@@ -168,7 +211,6 @@ void LogQualityMetrics(
             field->may_use_prefilled_placeholder());
       }
     }
-
     ///////////////////////////////////////////////////////////////////////////
     /// WARNING: Everything below this line is conditioned on having a possible
     /// field type. This means the field must contain a value that can be found
@@ -176,7 +218,6 @@ void LogQualityMetrics(
     ///////////////////////////////////////////////////////////////////////////
     const FieldTypeSet& field_types = field->possible_types();
     CHECK(!field_types.empty());
-
     // For every field that has a heuristics prediction for a
     // NUMERIC_QUANTITY, log if there was a colliding server
     // prediction and if the NUMERIC_QUANTITY was a false-positive prediction.
@@ -187,11 +228,9 @@ void LogQualityMetrics(
       bool field_has_non_empty_server_prediction =
           field->server_type() != UNKNOWN_TYPE &&
           field->server_type() != NO_SERVER_DATA;
-
       // Log if there was a colliding server prediction.
       AutofillMetrics::LogNumericQuantityCollidesWithServerPrediction(
           field_has_non_empty_server_prediction);
-
       // If there was a collision, log if the NUMERIC_QUANTITY was a false
       // positive since the field was correctly filled.
       if ((field->is_autofilled() || field->previously_autofilled()) &&
@@ -203,15 +242,11 @@ void LogQualityMetrics(
                 !field->previously_autofilled());
       }
     }
-
     // Skip all remaining metrics if there wasn't a single possible field type
     // detected.
     if (!FieldHasMeaningfulPossibleFieldTypes(*field)) {
       continue;
     }
-
-    ++num_detected_field_types;
-
     if (field->is_autofilled()) {
       autofilled_field_types.insert(type.GetStorableType());
     }
@@ -221,53 +256,9 @@ void LogQualityMetrics(
           field->label_source());
     }
   }
-
   // We log "submission" and duration metrics if we are here after observing a
   // submission event.
   if (observed_submission) {
-    if (num_detected_field_types >= kMinRequiredFieldsForHeuristics ||
-        num_detected_field_types >= kMinRequiredFieldsForQuery) {
-      // Unlike the other times, the |submission_time| should always be
-      // available.
-      CHECK(!submission_time.is_null());
-
-      // The |load_time| might be unset, in the case that the form was
-      // dynamically added to the DOM.
-      // Submission should chronologically follow form load, however
-      // this might not be true in case of a timezone change. Therefore make
-      // sure to log the elapsed time between submission time and load time only
-      // if it is positive. Same is applied below.
-      if (!load_time.is_null() && submission_time >= load_time) {
-        base::TimeDelta elapsed = submission_time - load_time;
-        if (form_has_autofilled_fields) {
-          AutofillMetrics::LogFormFillDurationFromLoadWithAutofill(elapsed);
-        } else {
-          AutofillMetrics::LogFormFillDurationFromLoadWithoutAutofill(elapsed);
-        }
-      }
-
-      // The |interaction_time| might be unset, in the case that the user
-      // submitted a blank form.
-      if (!interaction_time.is_null() && submission_time >= interaction_time) {
-        // Submission should always chronologically follow interaction.
-        base::TimeDelta elapsed = submission_time - interaction_time;
-        AutofillMetrics::LogFormFillDurationFromInteraction(
-            form_structure.GetFormTypes(), form_has_autofilled_fields, elapsed);
-      }
-    }
-
-    if (has_observed_one_time_code_field) {
-      if (!load_time.is_null() && submission_time >= load_time) {
-        base::TimeDelta elapsed = submission_time - load_time;
-        AutofillMetrics::LogFormFillDurationFromLoadForOneTimeCode(elapsed);
-      }
-      if (!interaction_time.is_null() && submission_time >= interaction_time) {
-        base::TimeDelta elapsed = submission_time - interaction_time;
-        AutofillMetrics::LogFormFillDurationFromInteractionForOneTimeCode(
-            elapsed);
-      }
-    }
-
     // The perfect filling metric is only recorded if Autofill was used on at
     // least one field. This conditions this metric on Assistance, Readiness and
     // Acceptance.
