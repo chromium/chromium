@@ -41,8 +41,7 @@ enum class NudgeDuration {
   kMaxValue = kLongDuration
 };
 
-using HoverStateChangeCallback =
-    base::RepeatingCallback<void(bool is_hovering)>;
+using HoverChangedCallback = base::RepeatingCallback<void(bool is_hovered)>;
 using NudgeClickCallback = base::RepeatingCallback<void()>;
 using NudgeDismissCallback = base::RepeatingCallback<void()>;
 
@@ -123,8 +122,8 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // If true, set the `anchor_view` as parent.
   bool set_anchor_view_as_parent = false;
 
-  // Nudge action callbacks.
-  HoverStateChangeCallback hover_state_change_callback;
+  // Nudge action custom callbacks.
+  HoverChangedCallback hover_changed_callback;
   NudgeClickCallback click_callback;
   NudgeDismissCallback dismiss_callback;
 

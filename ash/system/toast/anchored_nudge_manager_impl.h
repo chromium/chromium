@@ -92,7 +92,6 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   class AnchorViewObserver;
   class AnchorViewWidgetObserver;
   class NudgeWidgetObserver;
-  class NudgeHoverObserver;
   class PausableTimer;
 
   // Returns the registry which keeps track of when a nudge was last shown.
@@ -133,9 +132,6 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // Used to cache and keep track of nudges that are currently displayed, so
   // they can be dismissed or their contents updated.
   std::map<std::string, raw_ptr<AnchoredNudge>> shown_nudges_;
-
-  std::map<std::string, std::unique_ptr<NudgeHoverObserver>>
-      nudge_hover_observers_;
 
   // Maps an `AnchoredNudge` `id` to an observation of that nudge's
   // `anchor_view`, which is used to close the nudge whenever its anchor view is

@@ -78,7 +78,7 @@ void OnboardingNudgeController::ShowNudgeIfNeeded() {
   AnchoredNudgeData nudge_data = {kPhoneHubNudgeId, NudgeCatalogName::kPhoneHub,
                                   nudge_text, anchored_view_};
   nudge_data.anchored_to_shelf = true;
-  nudge_data.hover_state_change_callback =
+  nudge_data.hover_changed_callback =
       base::BindRepeating(&OnboardingNudgeController::OnNudgeHoverStateChanged,
                           weak_ptr_factory_.GetWeakPtr());
   nudge_data.click_callback =

@@ -178,11 +178,12 @@ class SystemNudgeView::FocusableChildrenObserver : public views::ViewObserver {
 
 SystemNudgeView::SystemNudgeView(
     const AnchoredNudgeData& nudge_data,
-    base::RepeatingCallback<void(/*has_hover_or_focus=*/bool)>
+    base::RepeatingCallback<void(/*is_hovered_or_has_focus=*/bool)>
         hover_or_focus_changed_callback)
     : shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation4)),
       is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)),
+      hover_changed_callback_(std::move(nudge_data.hover_changed_callback)),
       hover_or_focus_changed_callback_(
           std::move(hover_or_focus_changed_callback)) {
   // Painted to layer so the view can be semi-transparent and set rounded
@@ -478,7 +479,7 @@ void SystemNudgeView::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void SystemNudgeView::HandleOnChildFocusStateChanged(bool focus_entered) {
-  hover_or_focus_changed_callback_.Run(HasHoverOrChildHasFocus());
+  hover_or_focus_changed_callback_.Run(IsHoveredOrChildHasFocus());
 }
 
 void SystemNudgeView::HandleOnMouseHovered(bool mouse_entered) {
@@ -486,10 +487,13 @@ void SystemNudgeView::HandleOnMouseHovered(bool mouse_entered) {
     close_button_->SetVisible(mouse_entered);
   }
 
-  hover_or_focus_changed_callback_.Run(HasHoverOrChildHasFocus());
+  if (hover_changed_callback_) {
+    hover_changed_callback_.Run(mouse_entered);
+  }
+  hover_or_focus_changed_callback_.Run(IsHoveredOrChildHasFocus());
 }
 
-bool SystemNudgeView::HasHoverOrChildHasFocus() {
+bool SystemNudgeView::IsHoveredOrChildHasFocus() {
   views::View::Views focusable_views;
   GetViewsInGroup(kFocusableViewsGroupId, &focusable_views);
   bool child_has_focus =

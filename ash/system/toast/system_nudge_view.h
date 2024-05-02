@@ -68,8 +68,8 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
   // Handles mouse enter/exit events to either show or hide `close_button_`.
   void HandleOnMouseHovered(bool mouse_entered);
 
-  // Returns true if the nudge has mouse hover or a child is focused.
-  bool HasHoverOrChildHasFocus();
+  // Returns true if the nudge is mouse hovered or a child is focused.
+  bool IsHoveredOrChildHasFocus();
 
   // Sets the corner radius for the nudge view, shadow and highlight border.
   void SetNudgeRoundedCornerRadius(const gfx::RoundedCornersF& rounded_corners);
@@ -87,9 +87,13 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
   // Observes focus state changes in the nudge's focusable children.
   std::unique_ptr<FocusableChildrenObserver> focusable_children_observer_;
 
-  // Callback that triggers whenever the hover or focus state changes and
-  // receives an "or" bool of both states.
-  base::RepeatingCallback<void(/*has_hover_or_focus=*/bool)>
+  // Custom callback triggered whenever the nudge's hover state changes. It may
+  // be empty since it's an optional parameter set in `nudge_data`.
+  const base::RepeatingCallback<void(/*is_hovered=*/bool)>
+      hover_changed_callback_;
+
+  // Callback triggered whenever the hover or focus state changes.
+  const base::RepeatingCallback<void(/*is_hovered_or_has_focus=*/bool)>
       hover_or_focus_changed_callback_;
 };
 
