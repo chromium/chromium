@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/service/image_transport_surface.h"
 
+#include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/init/gl_factory.h"
@@ -29,7 +30,13 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
     return new gl::GLSurfaceStub;
   }
 
-  return gl::init::CreateViewGLSurface(display, surface_handle);
+  scoped_refptr<gl::GLSurface> surface =
+      gl::init::CreateViewGLSurface(display, surface_handle);
+
+  if (!surface)
+    return surface;
+  return base::MakeRefCounted<PassThroughImageTransportSurface>(
+      delegate, surface.get(), false);
 }
 
 }  // namespace gpu

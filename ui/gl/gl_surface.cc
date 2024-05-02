@@ -476,4 +476,11 @@ scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
   return surface;
 }
 
+scoped_refptr<GLSurface> InitializeGLSurface(scoped_refptr<GLSurface> surface) {
+  if (!surface->Initialize(GLSurfaceFormat())) {
+    return nullptr;
+  }
+  return surface;
+}
+
 }  // namespace gl

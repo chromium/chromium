@@ -18,6 +18,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
+#include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -125,7 +126,8 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
   if (!initialize_success)
     return scoped_refptr<gl::GLSurface>();
 
-  return surface;
+  return scoped_refptr<gl::GLSurface>(
+      new PassThroughImageTransportSurface(delegate, surface.get(), false));
 }
 
 }  // namespace gpu

@@ -129,12 +129,15 @@ void PassThroughImageTransportSurface::TrackMultiSurfaceSwap() {
 
 void PassThroughImageTransportSurface::UpdateVSyncEnabled() {
   if (is_gpu_vsync_disabled_) {
+    SetVSyncEnabled(false);
     return;
   }
 
+  bool should_override_vsync = false;
   if (is_multi_window_swap_vsync_override_enabled_) {
-    SetVSyncEnabled(!multiple_surfaces_swapped_);
+    should_override_vsync = multiple_surfaces_swapped_;
   }
+  SetVSyncEnabled(!should_override_vsync);
 }
 
 void PassThroughImageTransportSurface::StartSwapBuffers() {

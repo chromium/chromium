@@ -47,7 +47,6 @@
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
@@ -202,9 +201,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       surface_ = nullptr;
       LOG(ERROR) << "ContextResult::kSurfaceFailure: Failed to create surface.";
       return gpu::ContextResult::kSurfaceFailure;
-    }
-    if (!features::UseGpuVsync()) {
-      surface_->SetVSyncEnabled(false);
     }
   } else
 #endif
