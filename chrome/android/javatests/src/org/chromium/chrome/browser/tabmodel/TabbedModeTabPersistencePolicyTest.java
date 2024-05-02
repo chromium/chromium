@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -71,6 +72,7 @@ public class TabbedModeTabPersistencePolicyTest {
     @Mock ProfileProvider mProfileProvider;
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
+    @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
@@ -153,7 +155,8 @@ public class TabbedModeTabPersistencePolicyTest {
                                     new OneshotSupplierImpl<>();
                             profileProviderSupplier.set(mProfileProvider);
                             TabbedModeTabModelOrchestrator tmpOrchestrator =
-                                    new TabbedModeTabModelOrchestrator(false);
+                                    new TabbedModeTabModelOrchestrator(
+                                            false, mActivityLifecycleDispatcher);
                             tmpOrchestrator.createTabModels(
                                     new ChromeTabbedActivity(),
                                     profileProviderSupplier,

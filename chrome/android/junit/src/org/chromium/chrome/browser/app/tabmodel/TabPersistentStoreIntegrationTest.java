@@ -39,6 +39,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -102,6 +103,7 @@ public class TabPersistentStoreIntegrationTest {
     @Mock private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
     @Mock private Resources mResources;
     @Mock private PersistedTabData.Natives mPersistedTabDataJni;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private PausedExecutorService mExecutor = new PausedExecutorService();
 
@@ -125,7 +127,9 @@ public class TabPersistentStoreIntegrationTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
-        mOrchestrator = new TabbedModeTabModelOrchestrator(/* tabMergingEnabled= */ true);
+        mOrchestrator =
+                new TabbedModeTabModelOrchestrator(
+                        /* tabMergingEnabled= */ true, mActivityLifecycleDispatcher);
         mOrchestrator.createTabModels(
                 mChromeActivity,
                 profileProviderSupplier,

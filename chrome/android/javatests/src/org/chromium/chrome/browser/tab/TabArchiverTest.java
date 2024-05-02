@@ -95,7 +95,7 @@ public class TabArchiverTest {
                                                 .get()
                                                 .getOriginalProfile()));
         mArchivedTabModel = mArchivedTabModelOrchestrator.getTabModelSelector().getModel(false);
-        mArchivedTabCreator = mArchivedTabModelOrchestrator.getArchivedTabCreator();
+        mArchivedTabCreator = mArchivedTabModelOrchestrator.getArchivedTabCreatorForTesting();
         runOnUiThreadBlocking(
                 () ->
                         // Clear out all archived tabs between tests.

@@ -56,18 +56,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                 @Override
                 public void onApplicationStateChange(@ApplicationState int newState) {
                     if (ApplicationStatus.isEveryActivityDestroyed()) {
-                        // This block can be called at times where sProfileMap may be null
-                        // (crbug.com/335684785). Probably not necessary now that the application
-                        // state listener is unregistered.
-                        if (sProfileMap != null) {
-                            // Destroy the profile map, which will also destroy all orchestrators.
-                            // Null it out so if we go from 1 -> 0 -> 1 activities, #getForProfile
-                            // will still work.
-                            sProfileMap.destroy();
-                            sProfileMap = null;
-                        }
-                        ApplicationStatus.unregisterApplicationStateListener(
-                                sApplicationStateListener);
+                        destroyProfileKeyedMap();
                     }
                 }
             };
@@ -84,10 +73,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private TabArchiver mTabArchiver;
     private TabArchiveSettings mTabArchiveSettings;
     private TabCreator mArchivedTabCreator;
+    private boolean mInitCalled;
     private boolean mNativeLibraryReadyCalled;
     private boolean mLoadStateCalled;
     private boolean mRestoreTabsCalled;
-    private boolean mDestroyCalled;
     private boolean mDeclutterInitializationCalled;
     private boolean mRescueTabsCalled;
 
@@ -114,10 +103,17 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                                 PostTask.createTaskRunner(TaskTraits.UI_BEST_EFFORT)));
     }
 
-    /** Destroys the singleton profile keyed map for testing. */
-    public static void destroyProfileKeyedMapForTesting() {
+    /** Destroys the singleton profile keyed map. */
+    public static void destroyProfileKeyedMap() {
+        // This block can be called at times where sProfileMap may be null
+        // (crbug.com/335684785). Probably not necessary now that the application
+        // state listener is unregistered.
+        if (sProfileMap == null) return;
+        // Null it out so if we go from 1 -> 0 -> 1 activities, #getForProfile
+        // will still work.
         sProfileMap.destroy();
         sProfileMap = null;
+        ApplicationStatus.unregisterApplicationStateListener(sApplicationStateListener);
     }
 
     private ArchivedTabModelOrchestrator(Profile profile, TaskRunner taskRunner) {
@@ -136,21 +132,30 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     @Override
     public void destroy() {
-        if (mDestroyCalled) return;
-
-        mWindow.destroy();
-        mWindow = null;
+        if (mWindow != null) {
+            mWindow.destroy();
+            mWindow = null;
+        }
 
         super.destroy();
-        mDestroyCalled = true;
     }
 
     /**
-     * Creates the {@link TabModelSelector} and the {@link TabPersistentStore} if not already
-     * created.
+     * Creates and initiailzes the class and fields, this must be called in the UI thread and can be
+     * expensive therefore it should be called from DeferredStartupHandler. Although the lifecycle
+     * methods inherited from {@link TabModelOrchestrator} are public, they aren't meant to be
+     * called directly. - The {@link TabModelSelector} and the {@link TabPersistentStore} are
+     * created. - The #onNativeLibraryReady method is called which plumbs these signals to the
+     * TabModelSelector and TabPersistentStore. - The tab state is loaded. - The tab state is
+     * restored.
+     *
+     * <p>Calling this multiple times (e.g. from separate chrome windows) has no effect and is safe
+     * to do.
      */
-    public void maybeCreateTabModels() {
-        if (mArchivedTabCreator != null) return;
+    public void maybCreateAndInitTabModels(TabContentManager tabContentManager) {
+        if (mInitCalled) return;
+        ThreadUtils.assertOnUiThread();
+        assert tabContentManager != null;
 
         Context context = ContextUtils.getApplicationContext();
         // TODO(crbug.com/331841977): Investigate removing the WindowAndroid requirement when
@@ -178,6 +183,13 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         wireSelectorAndStore();
         markTabModelsInitialized();
+
+        // This will be called from a deferred task which sets up the entire class, so therefore all
+        // of the methods required for proper initialization need to be called here.
+        onNativeLibraryReady(tabContentManager);
+        loadState(/* ignoreIncognitoFiles= */ true, /* onStandardActiveIndexRead= */ null);
+        restoreTabs(/* setActiveTab= */ false);
+        mInitCalled = true;
     }
 
     /** Begins the process of decluttering tabs if it hasn't been started already. */
@@ -193,17 +205,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     /**
-     * Schedules a declutter event to happen after a certain interval. See {@link
-     * TabArchiveSettings#getDeclutterIntervalTimeDeltaHours} for details.
-     */
-    private void runDeclutterAndScheduleNext() {
-        mTabArchiver.triggerScheduledDeclutter();
-        mTaskRunner.postDelayedTask(
-                this::runDeclutterAndScheduleNext,
-                TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
-    }
-
-    /**
      * Begins the process of rescuing archived tabs if it hasn't been started already. Rescuing tabs
      * will move them from the archived tab model into the normal tab model of the context this is
      * called from.
@@ -216,6 +217,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         mRescueTabsCalled = true;
     }
+
+    // TabModelOrchestrator lifecycle methods.
 
     @Override
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
@@ -257,12 +260,25 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         assert false : "Not reached.";
     }
 
-    /** Returns the {@link TabCreator} for archived tabs. */
-    public TabCreator getArchivedTabCreator() {
-        return mArchivedTabCreatorManager.getTabCreator(false);
+    // Private methods
+
+    /**
+     * Schedules a declutter event to happen after a certain interval. See {@link
+     * TabArchiveSettings#getDeclutterIntervalTimeDeltaHours} for details.
+     */
+    private void runDeclutterAndScheduleNext() {
+        mTabArchiver.triggerScheduledDeclutter();
+        mTaskRunner.postDelayedTask(
+                this::runDeclutterAndScheduleNext,
+                TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
     }
 
     // Testing-specific methods
+
+    /** Returns the {@link TabCreator} for archived tabs. */
+    public TabCreator getArchivedTabCreatorForTesting() {
+        return mArchivedTabCreatorManager.getTabCreator(false);
+    }
 
     public void resetBeginDeclutterForTesting() {
         mDeclutterInitializationCalled = false;

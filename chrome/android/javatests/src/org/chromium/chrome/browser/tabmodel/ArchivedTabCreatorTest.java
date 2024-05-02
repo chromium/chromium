@@ -77,7 +77,7 @@ public class ArchivedTabCreatorTest {
                                     .get()
                                     .getOriginalProfile();
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
-                    mTabCreator = mOrchestrator.getArchivedTabCreator();
+                    mTabCreator = mOrchestrator.getArchivedTabCreatorForTesting();
                 });
     }
 

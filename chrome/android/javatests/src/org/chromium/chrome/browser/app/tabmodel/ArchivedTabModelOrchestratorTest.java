@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
@@ -23,6 +25,7 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,11 +63,28 @@ public class ArchivedTabModelOrchestratorTest {
         }
     }
 
+    private static class FakeDeferredStartupHandler extends DeferredStartupHandler {
+        private List<Runnable> mTasks = new ArrayList<>();
+
+        @Override
+        public void addDeferredTask(Runnable task) {
+            mTasks.add(task);
+        }
+
+        public void runAllTasks() {
+            for (Runnable task : mTasks) {
+                task.run();
+            }
+            mTasks.clear();
+        }
+    }
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private Profile mProfile;
     private FakeTaskRunner mTaskRunner;
+    private FakeDeferredStartupHandler mDeferredStartupHandler;
     private ArchivedTabModelOrchestrator mOrchestrator;
     private TabModel mArchivedTabModel;
     private TabModel mRegularTabModel;
@@ -72,12 +92,9 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Before
     public void setUp() throws Exception {
+        mDeferredStartupHandler = new FakeDeferredStartupHandler();
+        DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
         mActivityTestRule.startMainActivityOnBlankPage();
-
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.sAndroidTabDeclutterArchiveTimeDeltaHours, "0");
-        FeatureList.setTestValues(testValues);
 
         runOnUiThreadBlocking(
                 () -> {
@@ -88,28 +105,52 @@ public class ArchivedTabModelOrchestratorTest {
                                     .get()
                                     .getOriginalProfile();
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
-                    mOrchestrator.getArchiveSettingsForTesting().resetSettingsForTesting();
                     mTaskRunner = new FakeTaskRunner();
                     mOrchestrator.setTaskRunnerForTesting(mTaskRunner);
+                });
+    }
+
+    private void finishLoading() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mDeferredStartupHandler.runAllTasks();
+                    assert mOrchestrator.areTabModelsInitialized();
+                    mOrchestrator.getArchiveSettingsForTesting().resetSettingsForTesting();
                     mArchivedTabModel = mOrchestrator.getTabModelSelector().getModel(false);
                     mRegularTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
                     mRegularTabCreator = mActivityTestRule.getActivity().getTabCreator(false);
                 });
     }
 
+    private void setupDeclutterSettingsForTest() {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.sAndroidTabDeclutterArchiveTimeDeltaHours, "0");
+        FeatureList.setTestValues(testValues);
+    }
+
+    @Test
+    @MediumTest
+    public void testDeferredInitialization() {
+        assertFalse(mOrchestrator.areTabModelsInitialized());
+        finishLoading();
+        assertTrue(mOrchestrator.areTabModelsInitialized());
+    }
+
     @Test
     @MediumTest
     public void testBeginDeclutter() {
+        finishLoading();
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
-
+        setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
-        assertEquals(1, mTaskRunner.mDelayedTasks.size());
+        assertEquals(2, mTaskRunner.mDelayedTasks.size());
         assertEquals(0, mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
     }
@@ -117,6 +158,7 @@ public class ArchivedTabModelOrchestratorTest {
     @Test
     @MediumTest
     public void testScheduledDeclutter() {
+        finishLoading();
         mOrchestrator.getArchiveSettingsForTesting().setArchiveEnabled(false);
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
@@ -124,6 +166,8 @@ public class ArchivedTabModelOrchestratorTest {
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
 
+        setupDeclutterSettingsForTest();
+        mTaskRunner.mDelayedTasks.clear();
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
@@ -146,12 +190,14 @@ public class ArchivedTabModelOrchestratorTest {
     @Test
     @MediumTest
     public void testRescueTabs() {
+        finishLoading();
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
 
+        setupDeclutterSettingsForTest();
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
@@ -167,8 +213,8 @@ public class ArchivedTabModelOrchestratorTest {
     @Test
     @MediumTest
     public void testDestroyBeforeActivityDestroyed() {
-        runOnUiThreadBlocking(
-                () -> ArchivedTabModelOrchestrator.destroyProfileKeyedMapForTesting());
+        finishLoading();
+        runOnUiThreadBlocking(() -> ArchivedTabModelOrchestrator.destroyProfileKeyedMap());
         // The PKM is already destroyed, but the ATMO shouldn't crash when it
         // receives an activity destroyed event.
     }

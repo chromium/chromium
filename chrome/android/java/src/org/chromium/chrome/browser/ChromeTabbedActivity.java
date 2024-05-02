@@ -2413,7 +2413,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected TabModelOrchestrator createTabModelOrchestrator() {
         boolean tabMergingEnabled =
                 mMultiInstanceManager != null && mMultiInstanceManager.isTabModelMergingEnabled();
-        mTabModelOrchestrator = new TabbedModeTabModelOrchestrator(tabMergingEnabled);
+        mTabModelOrchestrator =
+                new TabbedModeTabModelOrchestrator(tabMergingEnabled, getLifecycleDispatcher());
         if (ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
             mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
             mTabModelOrchestrator.setStartupInfoObservableSupplier(mTabModelStartupInfoSupplier);

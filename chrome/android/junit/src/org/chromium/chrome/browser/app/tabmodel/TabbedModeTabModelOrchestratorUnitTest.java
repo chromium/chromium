@@ -24,6 +24,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -42,6 +43,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     @Mock private ProfileProvider mProfileProvider;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
     @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -50,7 +52,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     // is not performed.
     private class TabbedModeTabModelOrchestratorApi31 extends TabbedModeTabModelOrchestrator {
         public TabbedModeTabModelOrchestratorApi31() {
-            super(/* tabMergingEnabled= */ false);
+            super(/* tabMergingEnabled= */ false, mActivityLifecycleDispatcher);
         }
 
         @Override
