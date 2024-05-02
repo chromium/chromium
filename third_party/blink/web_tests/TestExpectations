@@ -4109,6 +4109,10 @@ crbug.com/1041993 http/tests/origin_trials/sample-api-script-added-after-css-dec
 # Sheriff 2020-01-20
 crbug.com/1043357 http/tests/credentialmanagement/credentialscontainer-get-with-virtual-authenticator.html [ Failure Pass Timeout ]
 
+# Will change clip-path and mix-blend-mode don't trigger a Backdrop Root
+crbug.com/338250112 external/wpt/css/filter-effects/backdrop-filter-backdrop-root-clip-path.html [ Failure ]
+crbug.com/338250112 external/wpt/css/filter-effects/backdrop-filter-backdrop-root-mix-blend-mode.html [ Failure ]
+
 # Ref_Tests which fail when SkiaRenderer is enable, and which cannot be
 # rebaselined. TODO(jonross): triage these into any existing bugs or file more
 # specific bugs.
