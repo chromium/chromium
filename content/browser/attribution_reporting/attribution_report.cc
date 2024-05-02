@@ -13,12 +13,14 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/overloaded.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/http/http_request_headers.h"
@@ -146,12 +148,7 @@ AttributionReport::AggregatableAttributionData::~AggregatableAttributionData() =
 
 base::CheckedNumeric<int64_t>
 AttributionReport::AggregatableAttributionData::BudgetRequired() const {
-  base::CheckedNumeric<int64_t> budget_required = 0;
-  for (const blink::mojom::AggregatableReportHistogramContribution&
-           contribution : contributions) {
-    budget_required += contribution.value;
-  }
-  return budget_required;
+  return GetTotalAggregatableValues(contributions);
 }
 
 AttributionReport::NullAggregatableData::NullAggregatableData(

@@ -3243,6 +3243,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AggregatableReport.TotalBudgetPerReport"
+    units="budget consumed" expires_after="2024-10-30">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the total budget consumed per aggregatable report. Recorded as
+    100,000 when the total budget exceeds 65,536. Recorded when creating the
+    aggregatable histogram.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AllowedByPermissionPolicy" enum="BooleanAllowed"
     expires_after="2024-12-31">
   <owner>tquintanilla@chromium.org</owner>

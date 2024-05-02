@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 
+#include <stdint.h>
+
 #include <iterator>
 #include <optional>
 #include <utility>
@@ -13,6 +15,7 @@
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -129,6 +132,18 @@ CreateAggregatableHistogram(
       contributions.size(),
       attribution_reporting::kMaxAggregationKeysPerSource + 1);
 
+  // If total values exceeds the max, log the metrics as 100,000 to measure
+  // how often the max is exceeded.
+  static_assert(attribution_reporting::kMaxAggregatableValue == 65536);
+  const int64_t max_value = attribution_reporting::kMaxAggregatableValue + 1;
+  int adjusted_value = std::min(
+      max_value,
+      static_cast<int64_t>(
+          GetTotalAggregatableValues(contributions).ValueOrDefault(max_value)));
+  base::UmaHistogramCounts100000(
+      "Conversions.AggregatableReport.TotalBudgetPerReport",
+      adjusted_value == max_value ? 100000 : adjusted_value);
+
   return contributions;
 }
 
@@ -201,6 +216,17 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),
           AttributionReport::CommonAggregatableData::kVersion,
           AttributionReport::CommonAggregatableData::kApiIdentifier));
+}
+
+base::CheckedNumeric<int64_t> GetTotalAggregatableValues(
+    const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
+        contributions) {
+  base::CheckedNumeric<int64_t> total_value = 0;
+  for (const blink::mojom::AggregatableReportHistogramContribution&
+           contribution : contributions) {
+    total_value += contribution.value;
+  }
+  return total_value;
 }
 
 }  // namespace content

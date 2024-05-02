@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -126,6 +127,8 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       "Conversions.AggregatableReport.DroppedKeysPercentage", 33, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.NumContributionsPerReport2", 2, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.TotalBudgetPerReport", 34432, 1);
 }
 
 TEST(AggregatableAttributionUtilsTest,
@@ -261,6 +264,8 @@ TEST(AggregatableAttributionUtilsTest,
       "Conversions.AggregatableReport.DroppedKeysPercentage", 100, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.NumContributionsPerReport2", 0, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.TotalBudgetPerReport", 0, 1);
 }
 
 TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
@@ -366,6 +371,46 @@ TEST(AggregatableAttributionUtilsTest,
           "source_registration_time");
   ASSERT_TRUE(source_registration_time);
   EXPECT_EQ(*source_registration_time, "0");
+}
+
+TEST(AggregatableAttributionUtilsTest, TotalBudgetMetrics) {
+  const struct {
+    const char* desc;
+    attribution_reporting::AggregationKeys::Keys keys;
+    AggregatableValues::Values values;
+    int expected;
+  } kTestCases[] = {
+      {
+          .desc = "within-max",
+          .keys = {{"a", 1}, {"b", 2}},
+          .values = {{"a", 1}, {"b", 65535}},
+          .expected = 65536,
+      },
+      {
+          .desc = "exceed-max",
+          .keys = {{"a", 1}, {"b", 2}},
+          .values = {{"a", 10}, {"b", 65536}},
+          .expected = 100000,
+      },
+  };
+
+  for (auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    base::Time now = base::Time::Now();
+
+    base::HistogramTester histograms;
+    std::ignore = CreateAggregatableHistogram(
+        attribution_reporting::FilterData(), SourceType::kEvent,
+        /*source_time=*/now,
+        /*trigger_time=*/now,
+        *attribution_reporting::AggregationKeys::FromKeys(test_case.keys),
+        {attribution_reporting::AggregatableTriggerData()},
+        {*AggregatableValues::Create(test_case.values, FilterPair())});
+    histograms.ExpectUniqueSample(
+        "Conversions.AggregatableReport.TotalBudgetPerReport",
+        test_case.expected, 1);
+  }
 }
 
 }  // namespace content
