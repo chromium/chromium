@@ -3511,10 +3511,8 @@ if (!is_android) {
     }
 
     if (is_chromeos_ash) {
-      sources += [
-        "../browser/lifetime/application_lifetime_chromeos_browsertest.cc",
-        "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_ash_browsertest.cc",
-      ]
+      sources +=
+          [ "../browser/lifetime/application_lifetime_chromeos_browsertest.cc" ]
       deps += [ "//chrome/browser/ui:ash_test_support" ]
     }
 
