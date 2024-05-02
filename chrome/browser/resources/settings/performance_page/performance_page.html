@@ -30,7 +30,7 @@
     justify-content: space-between;
   }
 </style>
-<settings-toggle-button id="toggleButton" on-change="onChange_"
+<settings-toggle-button id="toggleButton" on-change="onMemorySaverModeChange_"
     pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
     label="$i18n{memorySaverModeLabel}"
     sub-label="$i18n{memorySaverModeDescription}"
@@ -43,7 +43,7 @@
       opened="[[isMemorySaverModeEnabled_(
           prefs.performance_tuning.high_efficiency_mode.state.value)]]">
     <div class="high-efficiency-radio-group">
-      <settings-radio-group id="radioGroup" on-change="onChange_"
+      <settings-radio-group id="radioGroup" on-change="onMemorySaverModeChange_"
           pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
           group-aria-label="$i18n{memorySaverModeRadioGroupAriaLabel}">
         <controlled-radio-button id="enabledHeurusticButton"
@@ -59,6 +59,14 @@
       </settings-radio-group>
     </div>
   </iron-collapse>
+</template>
+<template is="dom-if" if="[[isDiscardRingImprovementsEnabled_]]">
+  <settings-toggle-button id="discardRingTreatmentToggleButton"
+      on-change="onDiscardRingChange_"
+      pref="{{prefs.performance_tuning.discard_ring_treatment.enabled}}"
+      label="$i18n{discardRingTreatmentEnabledLabel}"
+      sub-label="$i18n{discardRingTreatmentEnabledDescription}">
+  </settings-toggle-button>
 </template>
 <tab-discard-exception-list id="exceptionList" prefs="{{prefs}}">
 </tab-discard-exception-list>

@@ -7,8 +7,8 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrIconButtonElement, IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement} from 'chrome://settings/settings.js';
-import {convertDateToWindowsEpoch, MEMORY_SAVER_MODE_PREF, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MEMORY_SAVER_MODE_PREF, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -24,6 +24,15 @@ const memorySaverModeMockPrefs = {
     time_before_discard_in_minutes: {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: 1,
+    },
+  },
+};
+
+const discardRingStateMockPrefs = {
+  discard_ring_treatment: {
+    enabled: {
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
     },
   },
 };
@@ -63,6 +72,7 @@ suite('PerformancePage', function() {
     performancePage.set('prefs', {
       performance_tuning: {
         ...memorySaverModeMockPrefs,
+        ...discardRingStateMockPrefs,
         ...tabDiscardingMockPrefs(),
       },
     });
@@ -111,6 +121,7 @@ suite('PerformancePageMultistate', function() {
   let enabledHeurusticButton: HTMLElement;
   let radioGroup: SettingsRadioGroupElement;
   let radioGroupCollapse: IronCollapseElement;
+  let discardRingTreatmentToggleButton: SettingsToggleButtonElement;
 
   /**
    * Used to get elements form the performance page that may or may not exist,
@@ -135,6 +146,7 @@ suite('PerformancePageMultistate', function() {
     performancePage.set('prefs', {
       performance_tuning: {
         ...memorySaverModeMockPrefs,
+        ...discardRingStateMockPrefs,
         ...tabDiscardingMockPrefs(),
       },
     });
@@ -145,6 +157,8 @@ suite('PerformancePageMultistate', function() {
         getPerformancePageElement('enabledHeurusticButton');
     radioGroup = getPerformancePageElement('radioGroup');
     radioGroupCollapse = getPerformancePageElement('radioGroupCollapse');
+    discardRingTreatmentToggleButton =
+        getPerformancePageElement('discardRingTreatmentToggleButton');
   });
 
   test('testMemorySaverModeDisabled', function() {
@@ -199,6 +213,16 @@ suite('PerformancePageMultistate', function() {
     assertEquals(
         performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
         MemorySaverModeState.DISABLED);
+  });
+
+  test('testDiscardTingTreatmentChangeState', async function() {
+    performancePage.setPrefValue(DISCARD_RING_PREF, false);
+
+    discardRingTreatmentToggleButton.click();
+    const enabled = await performanceMetricsProxy.whenCalled(
+        'recordDiscardRingTreatmentEnabledChanged');
+    assertTrue(enabled);
+    assertEquals(performancePage.getPref(DISCARD_RING_PREF).value, true);
   });
 });
 

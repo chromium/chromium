@@ -11,6 +11,7 @@ export class TestPerformanceMetricsProxy extends TestBrowserProxy implements
     super([
       'recordBatterySaverModeChanged',
       'recordMemorySaverModeChanged',
+      'recordDiscardRingTreatmentEnabledChanged',
       'recordExceptionListAction',
     ]);
   }
@@ -21,6 +22,10 @@ export class TestPerformanceMetricsProxy extends TestBrowserProxy implements
 
   recordMemorySaverModeChanged(state: MemorySaverModeState) {
     this.methodCalled('recordMemorySaverModeChanged', state);
+  }
+
+  recordDiscardRingTreatmentEnabledChanged(enabled: boolean) {
+    this.methodCalled('recordDiscardRingTreatmentEnabledChanged', enabled);
   }
 
   recordExceptionListAction(action: MemorySaverModeExceptionListAction) {

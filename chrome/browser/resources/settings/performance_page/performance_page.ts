@@ -25,6 +25,9 @@ import type {ExceptionListElement} from './tab_discard/exception_list.js';
 export const MEMORY_SAVER_MODE_PREF =
     'performance_tuning.high_efficiency_mode.state';
 
+export const DISCARD_RING_PREF =
+    'performance_tuning.discard_ring_treatment.enabled';
+
 const SettingsPerformancePageElementBase = PrefsMixin(PolymerElement);
 
 export interface SettingsPerformancePageElement {
@@ -54,6 +57,14 @@ export class SettingsPerformancePageElement extends
         },
       },
 
+      isDiscardRingImprovementsEnabled_: {
+        readOnly: true,
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isDiscardRingImprovementsEnabled');
+        },
+      },
+
       memorySaverModeStateEnum_: {
         readOnly: true,
         type: Object,
@@ -79,9 +90,16 @@ export class SettingsPerformancePageElement extends
 
   private isMemorySaverMultistateModeEnabled_: boolean;
 
-  private onChange_() {
+  private isDiscardRingImprovementsEnabled_: boolean;
+
+  private onMemorySaverModeChange_() {
     this.metricsProxy_.recordMemorySaverModeChanged(
         this.getPref<number>(MEMORY_SAVER_MODE_PREF).value);
+  }
+
+  private onDiscardRingChange_() {
+    this.metricsProxy_.recordDiscardRingTreatmentEnabledChanged(
+        this.getPref<boolean>(DISCARD_RING_PREF).value);
   }
 
   private isMemorySaverModeEnabled_(value: number): boolean {

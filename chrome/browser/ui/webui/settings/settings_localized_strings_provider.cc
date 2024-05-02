@@ -809,6 +809,10 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ACTIVE_SITE_ARIA_DESCRIPTION},
       {"preloadingToggleSummary",
        IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY},
+      {"discardRingTreatmentEnabledLabel",
+       IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_LABEL},
+      {"discardRingTreatmentEnabledDescription",
+       IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

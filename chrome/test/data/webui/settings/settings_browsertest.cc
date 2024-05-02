@@ -690,9 +690,16 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageTest, MAYBE_ExceptionList) {
 }
 
 class SettingsPerformancePageMultistateTest : public SettingsBrowserTest {
+ protected:
+  SettingsPerformancePageMultistateTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {performance_manager::features::kMemorySaverMultistateMode,
+         performance_manager::features::kDiscardRingImprovements},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      performance_manager::features::kMemorySaverMultistateMode};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsPerformancePageMultistateTest, Controls) {

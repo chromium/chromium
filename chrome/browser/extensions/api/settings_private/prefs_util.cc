@@ -1144,6 +1144,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[performance_manager::user_tuning::prefs::
                      kManagedTabDiscardingExceptions] =
       settings_api::PrefType::kList;
+  (*s_allowlist)
+      [performance_manager::user_tuning::prefs::kDiscardRingTreatmentEnabled] =
+          settings_api::PrefType::kBoolean;
 
   // AI settings.
   (*s_allowlist)

@@ -33,6 +33,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       kBatterySaverModeState,
       static_cast<int>(BatterySaverModeState::kEnabledBelowThreshold));
   registry->RegisterTimePref(kLastBatteryUseTimestamp, base::Time());
+  registry->RegisterBooleanPref(kDiscardRingTreatmentEnabled, true);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -80,6 +81,18 @@ BatterySaverModeState GetCurrentBatterySaverModeState(
   }
 
   return static_cast<BatterySaverModeState>(state);
+}
+
+bool ShouldShowDiscardRingTreatment(PrefService* pref_service) {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardRingImprovements)) {
+    return true;
+  }
+  return pref_service->GetBoolean(kDiscardRingTreatmentEnabled);
+#endif
 }
 
 void MigrateMemorySaverModePref(PrefService* pref_service) {

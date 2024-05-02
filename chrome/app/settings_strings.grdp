@@ -1295,6 +1295,12 @@
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_LINK_OS_SETTING_DESCRIPTION" desc="Description on the OS settings link to turn on energy saver mode">
     Turn on Energy Saver to extend battery life
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_LABEL" desc="Label for a performance settings toggle that controls whether the inactive tab UI is shown">
+    Inactive tabs appearance
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION" desc="Label for a performance settings toggle description that controls whether the inactive tab UI is shown">
+    A dotted circle appears around site icons.
+  </message>
 
   <!-- Languages Page -->
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">

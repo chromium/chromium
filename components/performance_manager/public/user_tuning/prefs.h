@@ -70,6 +70,11 @@ inline constexpr char kTabDiscardingExceptionsWithTime[] =
 inline constexpr char kManagedTabDiscardingExceptions[] =
     "performance_tuning.tab_discarding.exceptions_managed";
 
+// The pref storing whether the discard ring treatment should appear around
+// favicons on tabs.
+inline constexpr char kDiscardRingTreatmentEnabled[] =
+    "performance_tuning.discard_ring_treatment.enabled";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -81,6 +86,8 @@ base::TimeDelta GetCurrentMemorySaverModeTimeBeforeDiscard(
 
 BatterySaverModeState GetCurrentBatterySaverModeState(
     PrefService* pref_service);
+
+bool ShouldShowDiscardRingTreatment(PrefService* pref_service);
 
 // This function migrates the old, boolean Memory Saver preference to the new,
 // integer one that represents a value of the `MemorySaverModeState` enum. This
