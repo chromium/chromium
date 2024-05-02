@@ -14,15 +14,21 @@
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
+#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/check_deref.h"
+#include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
+#include "chrome/browser/ash/privacy_hub/content_block_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::privacy_hub_util {
@@ -185,6 +191,67 @@ std::pair<base::Time, base::Time> SunriseSunsetSchedule() {
                                    default_sunset_time)
                              : default_sunrise_time;
   return std::make_pair(sunrise_time, sunset_time);
+}
+
+bool ContentBlocked(ContentType type) {
+  switch (type) {
+    case ContentType::MEDIASTREAM_CAMERA: {
+      auto* const controller = CameraPrivacySwitchController::Get();
+      CHECK(controller);
+      return controller->IsCameraUsageAllowed();
+    }
+    case ContentType::MEDIASTREAM_MIC: {
+      auto* const controller = MicrophonePrivacySwitchController::Get();
+      CHECK(controller);
+      return controller->IsMicrophoneUsageAllowed();
+    }
+    case ContentType::GEOLOCATION: {
+      if (!features::IsCrosPrivacyHubLocationEnabled()) {
+        return true;
+      }
+      auto* const controller = GeolocationPrivacySwitchController::Get();
+      CHECK(controller);
+      return controller->IsGeolocationUsageAllowedForApps();
+    }
+    default: {
+      // If the provided content type is not controllable in ChromeOS, then it
+      // is not blocked.
+      return false;
+    }
+  }
+}
+
+std::unique_ptr<base::CheckedObserver> CreateObservationForBlockedContent(
+    ContentBlockCallback callback) {
+  return ContentBlockObservation::Create(std::move(callback));
+}
+
+void OpenSystemSettings(Profile* profile, ContentType type) {
+  const char* settings_path = "";
+  switch (type) {
+    case ContentType::MEDIASTREAM_CAMERA: {
+      settings_path = chromeos::settings::mojom::kPrivacyHubCameraSubpagePath;
+      break;
+    }
+    case ContentType::MEDIASTREAM_MIC: {
+      settings_path =
+          chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath;
+      break;
+    }
+    case ContentType::GEOLOCATION: {
+      settings_path =
+          chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath;
+      break;
+    }
+    default: {
+      // This should only be called for camera, microphone, or geolocation.
+      NOTREACHED();
+      return;
+    }
+  }
+
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
+                                                               settings_path);
 }
 
 }  // namespace ash::privacy_hub_util

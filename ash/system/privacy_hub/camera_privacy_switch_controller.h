@@ -60,7 +60,7 @@ class ASH_EXPORT CameraPrivacySwitchController
   void OnPreferenceChanged(const std::string& pref_name);
 
   // Retrieves the current value of the user pref.
-  CameraSWPrivacySwitchSetting GetUserSwitchPreference();
+  CameraSWPrivacySwitchSetting GetUserSwitchPreference() const;
 
   // Sets Privacy switch API for testing.
   void SetCameraPrivacySwitchAPIForTest(
@@ -94,6 +94,9 @@ class ASH_EXPORT CameraPrivacySwitchController
   // switch.
   bool UsingCameraLEDFallback();
 
+  // Returns false if the camera is globally blocked by the OS level switch.
+  bool IsCameraUsageAllowed() const;
+
  private:
   // Sets the value of the global camera permission in the camera backend.
   void SetCameraSWPrivacySwitch(CameraSWPrivacySwitchSetting value);
@@ -102,6 +105,7 @@ class ASH_EXPORT CameraPrivacySwitchController
   void SetUserSwitchPreference(CameraSWPrivacySwitchSetting value);
 
   PrefService& prefs();
+  const PrefService& prefs() const;
   void RestorePreviousPrefValueMaybe();
   void StorePreviousPrefValue();
 

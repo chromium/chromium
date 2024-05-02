@@ -3170,6 +3170,8 @@ source_set("ash") {
     "printing/usb_printer_util.h",
     "printing/zeroconf_printer_detector.cc",
     "printing/zeroconf_printer_detector.h",
+    "privacy_hub/content_block_observation.cc",
+    "privacy_hub/content_block_observation.h",
     "privacy_hub/privacy_hub_hats_trigger.cc",
     "privacy_hub/privacy_hub_hats_trigger.h",
     "privacy_hub/privacy_hub_util.cc",

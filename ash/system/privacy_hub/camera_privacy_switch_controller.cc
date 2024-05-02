@@ -146,7 +146,7 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
 }
 
 CameraSWPrivacySwitchSetting
-CameraPrivacySwitchController::GetUserSwitchPreference() {
+CameraPrivacySwitchController::GetUserSwitchPreference() const {
   const bool allowed = prefs().GetBoolean(prefs::kUserCameraAllowed);
 
   return allowed ? CameraSWPrivacySwitchSetting::kEnabled
@@ -224,6 +224,11 @@ PrefService& CameraPrivacySwitchController::prefs() {
   return CHECK_DEREF(pref_change_registrar_->prefs());
 }
 
+const PrefService& CameraPrivacySwitchController::prefs() const {
+  CHECK(pref_change_registrar_);
+  return CHECK_DEREF(pref_change_registrar_->prefs());
+}
+
 // static
 CameraPrivacySwitchController* CameraPrivacySwitchController::Get() {
   PrivacyHubController* privacy_hub_controller =
@@ -291,6 +296,15 @@ bool CameraPrivacySwitchController::UsingCameraLEDFallback() {
   auto* privacy_hub_controller = PrivacyHubController::Get();
   CHECK(privacy_hub_controller);
   return privacy_hub_controller->UsingCameraLEDFallback();
+}
+
+bool CameraPrivacySwitchController::IsCameraUsageAllowed() const {
+  switch (GetUserSwitchPreference()) {
+    case CameraSWPrivacySwitchSetting::kEnabled:
+      return true;
+    case CameraSWPrivacySwitchSetting::kDisabled:
+      return false;
+  }
 }
 
 void CameraPrivacySwitchController::ShowNotification() {

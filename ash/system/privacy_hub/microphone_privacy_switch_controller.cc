@@ -84,6 +84,11 @@ void MicrophonePrivacySwitchController::OnActiveUserPrefServiceChanged(
   SetSystemMute();
 }
 
+bool MicrophonePrivacySwitchController::IsMicrophoneUsageAllowed() const {
+  return pref_change_registrar_->prefs()->GetBoolean(
+      prefs::kUserMicrophoneAllowed);
+}
+
 void MicrophonePrivacySwitchController::OnInputMuteChanged(
     bool mute_on,
     CrasAudioHandler::InputMuteChangeMethod method) {
