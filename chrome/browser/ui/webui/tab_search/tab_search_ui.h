@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,15 +26,13 @@ namespace ui {
 class ColorChangeHandler;
 }
 
-class TabSearchUIConfig : public content::WebUIConfig {
- public:
-  TabSearchUIConfig();
-  ~TabSearchUIConfig() override;
+class TabSearchUI;
 
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
+class TabSearchUIConfig : public content::DefaultWebUIConfig<TabSearchUI> {
+ public:
+  TabSearchUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUITabSearchHost) {}
 };
 
 class TabSearchUI : public TopChromeWebUIController,

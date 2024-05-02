@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/webui/flags/flags_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "components/flags_ui/flags_ui_constants.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
@@ -215,17 +214,6 @@ FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
       profile, base::BindOnce(&FinishInitialization<T>,
                               weak_factory.GetWeakPtr(), profile, handler));
   return handler;
-}
-
-FlagsUIConfig::FlagsUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIFlagsHost) {}
-
-FlagsUIConfig::~FlagsUIConfig() = default;
-
-std::unique_ptr<content::WebUIController> FlagsUIConfig::CreateWebUIController(
-    content::WebUI* web_ui,
-    const GURL& url) {
-  return std::make_unique<FlagsUI>(web_ui);
 }
 
 FlagsUI::FlagsUI(content::WebUI* web_ui)

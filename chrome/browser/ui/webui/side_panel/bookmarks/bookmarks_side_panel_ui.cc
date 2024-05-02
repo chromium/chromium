@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources.h"
 #include "chrome/grit/side_panel_bookmarks_resources_map.h"
@@ -50,18 +49,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
-
-BookmarksSidePanelUIConfig::BookmarksSidePanelUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  chrome::kChromeUIBookmarksSidePanelHost) {}
-
-BookmarksSidePanelUIConfig::~BookmarksSidePanelUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-BookmarksSidePanelUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                  const GURL& url) {
-  return std::make_unique<BookmarksSidePanelUI>(web_ui);
-}
 
 BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui, true) {
