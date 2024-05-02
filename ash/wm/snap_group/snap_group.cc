@@ -94,8 +94,15 @@ const aura::Window* SnapGroup::GetWindowOfSnapViewType(
 }
 
 void SnapGroup::ShowDivider() {
-  const gfx::Rect window1_bounds = window1_->GetTargetBounds();
-  const gfx::Rect window2_bounds = window2_->GetTargetBounds();
+  // TODO(b/338130287): Determine whether `window1_` should always be
+  // `primary_window`.
+  const bool is_left_or_top = IsPhysicalLeftOrTop(window1_);
+  aura::Window* primary_window = is_left_or_top ? window1_ : window2_;
+  aura::Window* secondary_window = is_left_or_top ? window2_ : window1_;
+
+  const gfx::Rect window1_bounds = primary_window->GetTargetBounds();
+  const gfx::Rect window2_bounds = secondary_window->GetTargetBounds();
+
   int edge_gap = 0;
   if (IsSnapGroupLayoutHorizontal()) {
     edge_gap = window2_bounds.x() - window1_bounds.right();
@@ -113,7 +120,7 @@ void SnapGroup::ShowDivider() {
       edge_gap < kSplitviewDividerShortSideLength;
 
   snap_group_divider_.SetDividerPosition(
-      GetEquivalentDividerPosition(window1_, account_for_divider_width));
+      GetEquivalentDividerPosition(primary_window, account_for_divider_width));
   snap_group_divider_.SetVisible(true);
 }
 

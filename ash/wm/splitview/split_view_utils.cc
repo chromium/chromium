@@ -381,7 +381,7 @@ void DoSplitviewClipRectAnimation(
 }
 
 int GetWindowLength(aura::Window* window, bool horizontal) {
-  const auto& bounds = window->bounds();
+  const auto& bounds = window->GetTargetBounds();
   return horizontal ? bounds.width() : bounds.height();
 }
 
