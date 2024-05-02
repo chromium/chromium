@@ -602,7 +602,13 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_INP_ClickWithPresentation) {
   ASSERT_TRUE(VerifyInpUkmAndTraceData(*analyzer));
 }
 
-IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
+// TODO(crbug.com/338061920): Flaky on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_LayoutShift DISABLED_LayoutShift
+#else
+#define MAYBE_LayoutShift LayoutShift
+#endif  //  BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LayoutShift) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
 
