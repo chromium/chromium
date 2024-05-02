@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -16,6 +17,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
@@ -23,6 +25,8 @@
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/holding_space_display_client.h"
 #include "chrome/browser/ui/ash/download_status/notification_display_client.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "net/base/mime_util.h"
@@ -153,15 +157,6 @@ std::optional<std::u16string> GetText(
   return file_path.get().BaseName().LossyDisplayName();
 }
 
-// Returns true if the file referred to by `file_path` is of an image MIME type.
-bool HasSupportedImageMimeType(const base::FilePath& file_path) {
-  std::string mime_type;
-  if (net::GetMimeTypeFromFile(file_path, &mime_type)) {
-    return blink::IsSupportedImageMimeType(mime_type);
-  }
-  return false;
-}
-
 // Opens the download file specified by `file_path` under the file system
 // associated with `profile`.
 void OpenFile(Profile* profile, const base::FilePath& file_path) {
@@ -270,13 +265,47 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
   }
   const base::FilePath& full_path = *download_status.full_path;
   switch (download_status.state) {
-    case crosapi::mojom::DownloadState::kComplete:
+    case crosapi::mojom::DownloadState::kComplete: {
+      const base::FilePath::StringType ext = full_path.Extension();
+      std::string mime_type;
+      const bool has_mime_type = ext.empty()
+                                     ? false
+                                     : net::GetWellKnownMimeTypeFromExtension(
+                                           ext.substr(1), &mime_type);
+
       // NOTE: `kOpenFile` is not shown so it doesn't require an icon/text_id.
       command_infos.emplace_back(
           base::BindRepeating(&DisplayManager::PerformCommand,
                               weak_ptr_factory_.GetWeakPtr(),
                               CommandType::kOpenFile, full_path),
           /*icon=*/nullptr, /*text_id=*/-1, CommandType::kOpenFile);
+
+      if (base::FeatureList::IsEnabled(features::kFileNotificationRevamp)) {
+        std::optional<std::pair<CommandType, /*text_id=*/int>>
+            media_app_command_metadata;
+
+        if (mime_type == "application/pdf") {
+          media_app_command_metadata =
+              std::make_pair(CommandType::kEditWithMediaApp,
+                             IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT);
+        } else if (base::StartsWith(mime_type, "audio/",
+                                    base::CompareCase::SENSITIVE) ||
+                   base::StartsWith(mime_type, "video/",
+                                    base::CompareCase::SENSITIVE)) {
+          media_app_command_metadata =
+              std::make_pair(CommandType::kOpenWithMediaApp,
+                             IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN);
+        }
+
+        if (media_app_command_metadata) {
+          command_infos.emplace_back(
+              base::BindRepeating(&DisplayManager::PerformCommand,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  media_app_command_metadata->first, full_path),
+              /*icon=*/nullptr, media_app_command_metadata->second,
+              media_app_command_metadata->first);
+        }
+      }
 
       // NOTE: The `kShowInFolder` button does not have an icon.
       command_infos.emplace_back(
@@ -291,8 +320,8 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
       // 2. The download file is an image.
       // NOTE: The `kCopyToClipboard` button does not require an icon.
       if (const gfx::ImageSkia& image = download_status.image;
-          !image.isNull() && !image.size().IsEmpty() &&
-          HasSupportedImageMimeType(full_path)) {
+          !image.isNull() && !image.size().IsEmpty() && has_mime_type &&
+          blink::IsSupportedImageMimeType(mime_type)) {
         command_infos.emplace_back(
             base::BindRepeating(&DisplayManager::PerformCommand,
                                 weak_ptr_factory_.GetWeakPtr(),
@@ -301,6 +330,7 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
             CommandType::kCopyToClipboard);
       }
       break;
+    }
     case crosapi::mojom::DownloadState::kInProgress:
       // NOTE: `kShowInBrowser` is not shown so doesn't require an icon/text_id.
       command_infos.emplace_back(
@@ -351,6 +381,14 @@ void DisplayManager::PerformCommand(
       scw.WriteFilenames(ui::FileInfosToURIList(
           /*filenames=*/{ui::FileInfo(std::get<base::FilePath>(param),
                                       /*display_name=*/base::FilePath())}));
+      break;
+    }
+    case CommandType::kEditWithMediaApp:
+    case CommandType::kOpenWithMediaApp: {
+      SystemAppLaunchParams app_launch_params;
+      app_launch_params.launch_paths.push_back(std::get<base::FilePath>(param));
+      LaunchSystemWebAppAsync(profile_, SystemWebAppType::MEDIA,
+                              app_launch_params);
       break;
     }
     case CommandType::kOpenFile:

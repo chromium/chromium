@@ -24,7 +24,9 @@ namespace ash::download_status {
 enum class CommandType {
   kCancel,
   kCopyToClipboard,
+  kEditWithMediaApp,
   kOpenFile,
+  kOpenWithMediaApp,
   kPause,
   kResume,
   kShowInBrowser,

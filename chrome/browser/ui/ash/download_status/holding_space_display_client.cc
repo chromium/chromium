@@ -46,8 +46,12 @@ std::optional<HoldingSpaceCommandId> ConvertCommandTypeToId(CommandType type) {
       return HoldingSpaceCommandId::kCancelItem;
     case CommandType::kCopyToClipboard:
       return std::nullopt;
+    case CommandType::kEditWithMediaApp:
+      return std::nullopt;
     case CommandType::kOpenFile:
       return HoldingSpaceCommandId::kOpenItem;
+    case CommandType::kOpenWithMediaApp:
+      return std::nullopt;
     case CommandType::kPause:
       return HoldingSpaceCommandId::kPauseItem;
     case CommandType::kResume:
@@ -71,8 +75,12 @@ std::optional<holding_space_metrics::ItemAction> ConvertCommandTypeToAction(
       return ItemAction::kCancel;
     case CommandType::kCopyToClipboard:
       return std::nullopt;
+    case CommandType::kEditWithMediaApp:
+      return std::nullopt;
     case CommandType::kOpenFile:
       return ItemAction::kLaunch;
+    case CommandType::kOpenWithMediaApp:
+      return std::nullopt;
     case CommandType::kPause:
       return ItemAction::kPause;
     case CommandType::kResume:

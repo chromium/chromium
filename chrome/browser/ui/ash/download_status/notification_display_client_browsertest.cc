@@ -21,6 +21,7 @@
 #include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "ash/webui/media_app_ui/url_constants.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -44,8 +45,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -129,8 +132,12 @@ int GetCommandTextId(CommandType command_type) {
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_CANCEL;
     case CommandType::kCopyToClipboard:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_COPY_TO_CLIPBOARD;
+    case CommandType::kEditWithMediaApp:
+      return IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT;
     case CommandType::kOpenFile:
       NOTREACHED_NORETURN();
+    case CommandType::kOpenWithMediaApp:
+      return IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN;
     case CommandType::kPause:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_PAUSE;
     case CommandType::kResume:
@@ -672,6 +679,129 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ImageDownload) {
               ElementsAre(Field(&ui::FileInfo::path, *download->full_path)));
 }
 
+// Verifies that the PDF download notification works as expected.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, PdfDownload) {
+  WaitForTestSystemAppInstall();
+
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+
+  // Create an pdf download.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr download = CreateDownloadStatus(
+      profile,
+      /*extension=*/"pdf", crosapi::mojom::DownloadState::kInProgress,
+      crosapi::mojom::DownloadProgress::New(
+          /*loop=*/false, /*received_bytes=*/0,
+          /*total_bytes=*/1024, /*visible=*/true));
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+
+  // An in-progress PDF download's notification should not have a 'Open and
+  // Edit' button.
+  const std::u16string edit_text = l10n_util::GetStringUTF16(
+      GetCommandTextId(CommandType::kEditWithMediaApp));
+  EXPECT_THAT(popup_view->GetActionButtonsForTest(),
+              Not(Contains(Pointee(
+                  Property(&views::LabelButton::GetText, Eq(edit_text))))));
+
+  // Complete `download`. Then check action buttons.
+  MarkDownloadStatusCompleted(*download);
+  Update(download->Clone());
+  const std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+      action_buttons = popup_view->GetActionButtonsForTest();
+  EXPECT_THAT(
+      action_buttons,
+      ElementsAre(
+          Pointee(Property(&views::LabelButton::GetText, Eq(edit_text))),
+          Pointee(Property(&views::LabelButton::GetText,
+                           Eq(l10n_util::GetStringUTF16(GetCommandTextId(
+                               CommandType::kShowInFolder)))))));
+
+  // Click the 'Open and edit' button. Then verify the click is recorded and
+  // the Media App is launched.
+  content::TestNavigationObserver observer =
+      content::TestNavigationObserver(GURL(kChromeUIMediaAppURL));
+  observer.StartWatchingNewWebContents();
+  base::UserActionTester tester;
+  auto edit_button_iter = base::ranges::find(action_buttons, edit_text,
+                                             &views::LabelButton::GetText);
+  ASSERT_NE(edit_button_iter, action_buttons.cend());
+  test::Click(*edit_button_iter, ui::EF_NONE);
+  EXPECT_EQ(
+      tester.GetActionCount("DownloadNotificationV2.Button_EditWithMediaApp"),
+      1);
+  observer.Wait();
+}
+
+// Verifies that the audio download notification works as expected.
+IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, AudioDownload) {
+  WaitForTestSystemAppInstall();
+
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+
+  // Create an mp3 download.
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr download = CreateDownloadStatus(
+      profile,
+      /*extension=*/"mp3", crosapi::mojom::DownloadState::kInProgress,
+      crosapi::mojom::DownloadProgress::New(
+          /*loop=*/false, /*received_bytes=*/0,
+          /*total_bytes=*/1024, /*visible=*/true));
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+
+  // An in-progress audio file download's notification should not have a 'Open'
+  // button.
+  const std::u16string open_text = l10n_util::GetStringUTF16(
+      GetCommandTextId(CommandType::kOpenWithMediaApp));
+  EXPECT_THAT(popup_view->GetActionButtonsForTest(),
+              Not(Contains(Pointee(
+                  Property(&views::LabelButton::GetText, Eq(open_text))))));
+
+  // Complete `download`. Then check action buttons.
+  MarkDownloadStatusCompleted(*download);
+  Update(download->Clone());
+  const std::vector<raw_ptr<views::LabelButton, VectorExperimental>>
+      action_buttons = popup_view->GetActionButtonsForTest();
+  EXPECT_THAT(
+      action_buttons,
+      ElementsAre(
+          Pointee(Property(&views::LabelButton::GetText, Eq(open_text))),
+          Pointee(Property(&views::LabelButton::GetText,
+                           Eq(l10n_util::GetStringUTF16(GetCommandTextId(
+                               CommandType::kShowInFolder)))))));
+
+  // Click the 'Open' button. Then verify the click is recorded and the Media
+  // App is launched.
+  content::TestNavigationObserver observer =
+      content::TestNavigationObserver(GURL(kChromeUIMediaAppURL));
+  observer.StartWatchingNewWebContents();
+  base::UserActionTester tester;
+  auto open_button_iter = base::ranges::find(action_buttons, open_text,
+                                             &views::LabelButton::GetText);
+  ASSERT_NE(open_button_iter, action_buttons.cend());
+  test::Click(*open_button_iter, ui::EF_NONE);
+  EXPECT_EQ(
+      tester.GetActionCount("DownloadNotificationV2.Button_OpenWithMediaApp"),
+      1);
+  observer.Wait();
+}
 
 // Verifies that when an in-progress download is interrupted, its notification
 // should be removed.

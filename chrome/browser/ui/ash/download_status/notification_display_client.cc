@@ -146,8 +146,12 @@ const char* GetMetricString(CommandType command) {
       return "DownloadNotificationV2.Button_Cancel";
     case CommandType::kCopyToClipboard:
       return "DownloadNotificationV2.Button_CopyToClipboard";
+    case CommandType::kEditWithMediaApp:
+      return "DownloadNotificationV2.Button_EditWithMediaApp";
     case CommandType::kOpenFile:
       return "DownloadNotificationV2.Click_Completed";
+    case CommandType::kOpenWithMediaApp:
+      return "DownloadNotificationV2.Button_OpenWithMediaApp";
     case CommandType::kPause:
       return "DownloadNotificationV2.Button_Pause";
     case CommandType::kResume:
@@ -170,6 +174,8 @@ bool IsBodyClickCommandType(CommandType command) {
       return true;
     case CommandType::kCancel:
     case CommandType::kCopyToClipboard:
+    case CommandType::kEditWithMediaApp:
+    case CommandType::kOpenWithMediaApp:
     case CommandType::kPause:
     case CommandType::kResume:
     case CommandType::kShowInFolder:
@@ -184,6 +190,8 @@ bool IsButtonClickCommandType(CommandType command) {
   switch (command) {
     case CommandType::kCancel:
     case CommandType::kCopyToClipboard:
+    case CommandType::kEditWithMediaApp:
+    case CommandType::kOpenWithMediaApp:
     case CommandType::kPause:
     case CommandType::kResume:
     case CommandType::kShowInFolder:
