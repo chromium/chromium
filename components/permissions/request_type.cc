@@ -257,6 +257,8 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     case ContentSettingsType::WEB_PRINTING:
       return RequestType::kWebPrinting;
 #endif
+    case ContentSettingsType::FEDERATED_IDENTITY_API:
+      return RequestType::kIdentityProvider;
     default:
       return std::nullopt;
   }
