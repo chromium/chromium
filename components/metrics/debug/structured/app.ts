@@ -80,7 +80,7 @@ export class StructuredMetricsInternalsAppElement extends CustomElement {
     const kvTemplate =
         this.getRequiredElement<HTMLTemplateElement>('#summary-row-template');
     const eventTableBody =
-        this.getRequiredElement<HTMLElement>('#sm-event-body');
+      this.getRequiredElement<HTMLElement>('#sm-events-body');
 
     updateStructuredMetricsEvents(
         eventTableBody, events, eventTemplate, eventDetailsTemplate,
