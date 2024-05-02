@@ -4,6 +4,7 @@
 
 #include "ash/system/brightness/brightness_controller_chromeos.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -234,6 +235,11 @@ void BrightnessControllerChromeos::AmbientLightSensorEnabledChanged(
     known_user.RemovePref(active_account_id_.value(),
                           prefs::kAmbientLightSensorDisabledReason);
   }
+
+  // Save the current ambient light sensor enabled status into local state.
+  known_user.SetPath(active_account_id_.value(),
+                     prefs::kDisplayAmbientLightSensorEnabled,
+                     std::make_optional<base::Value>(change.sensor_enabled()));
 }
 
 void BrightnessControllerChromeos::RecordHistogramForBrightnessAction(

@@ -88,6 +88,30 @@ int GetAmbientLightSensorDisabledReasonPrefValue(
       ->GetInt();
 }
 
+// Return true if there is a KnownUser pref for the ambient light sensor
+// enabled status.
+bool HasDisplayAmbientLightSensorEnabledPrefValue(
+    const user_manager::KnownUser& known_user,
+    const AccountId& account_id) {
+  const base::Value* pref_value =
+      known_user.FindPath(account_id, prefs::kDisplayAmbientLightSensorEnabled);
+  if (!pref_value) {
+    return false;
+  }
+
+  return pref_value->is_bool();
+}
+
+// Gets the KnownUser ambient light sensor enabled pref value. Only call
+// this function if HasDisplayAmbientLightSensorEnabledPrefValue is true.
+bool GetDisplayAmbientLightSensorEnabledPrefValue(
+    const user_manager::KnownUser& known_user,
+    const AccountId& account_id) {
+  return known_user
+      .FindPath(account_id, prefs::kDisplayAmbientLightSensorEnabled)
+      ->GetBool();
+}
+
 constexpr char kUserEmail[] = "user@example.com";
 constexpr char kUserEmailSecondary[] = "user2@example.com";
 constexpr double kInitialBrightness = 51.0;
@@ -674,6 +698,52 @@ TEST_F(BrightnessControllerChromeosTest, AmbientLightSensorDisabledReasonPref) {
     EXPECT_EQ(expected_cause, GetAmbientLightSensorDisabledReasonPrefValue(
                                   known_user, account_id));
   }
+}
+
+TEST_F(BrightnessControllerChromeosTest, AmbientLightSensorEnabledPref) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  SetBatteryPower();
+
+  // Set the ambient light sensor to be enabled initially.
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  // Wait for AmbientLightSensorEnabledChange observer to be notified.
+  run_loop_.RunUntilIdle();
+
+  // On the login screen, focus a user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  user_manager::KnownUser known_user(local_state());
+
+  // There should not be a pref set initially because a user account wasn't
+  // focused at the time of the change.
+  EXPECT_FALSE(
+      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+
+  // Disable the ambient light sensor.
+  power_manager_client()->SetAmbientLightSensorEnabled(false);
+  // Wait for AmbientLightSensorEnabledChange observer to be notified.
+  run_loop_.RunUntilIdle();
+
+  // After the ambient light sensor status is disabled, the pref should be
+  // stored with the correct value.
+  EXPECT_TRUE(
+      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  EXPECT_FALSE(
+      GetDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+
+  // Re-enable the ambient light sensor.
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  // Wait for AmbientLightSensorEnabledChange observer to be notified.
+  run_loop_.RunUntilIdle();
+
+  // After the ambient light sensor status is re-enabled, the pref should be
+  // stored with the correct value.
+  EXPECT_TRUE(
+      HasDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
+  EXPECT_TRUE(
+      GetDisplayAmbientLightSensorEnabledPrefValue(known_user, account_id));
 }
 
 class BrightnessControllerChromeosTest_NonApplicableSessionStates

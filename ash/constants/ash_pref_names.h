@@ -878,6 +878,11 @@ const char kDisplayPopularityRevNumber[] = "display_popularity.revision_number";
 const char kInternalDisplayScreenBrightnessPercent[] =
     "settings.display.internal_screen_brightness_percent";
 
+// A boolean pref which stores whether the ambient light sensor is enabled for
+// the internal display.
+inline constexpr char kDisplayAmbientLightSensorEnabled[] =
+    "settings.display.ambient_light_sensor_enabled";
+
 // An integer pref which stores the reason that the ambient light sensor was
 // disabled. This pref can be used if we need to systematically re-enable the
 // ambient light sensor for a subset of users (e.g. those who didn't manually
