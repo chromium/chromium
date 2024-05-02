@@ -7,12 +7,16 @@
 #include <inttypes.h>
 
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 
 namespace gfx {
 
 bool DelegatedInkPoint::MatchesDelegatedInkMetadata(
     const DelegatedInkMetadata* metadata) const {
+  if (!metadata) {
+    return false;
+  }
   // The maximum difference allowed when comparing a DelegatedInkPoint |point_|
   // to the |point_| on a DelegatedInkMetadata. Some precision loss can occur
   // when moving between coordinate spaces in the browser and renderer,
@@ -23,8 +27,11 @@ bool DelegatedInkPoint::MatchesDelegatedInkMetadata(
   // a delegated ink trail anyway, since it is a very small difference and will
   // only be visible for a single frame.
   constexpr float kEpsilon = 0.05f;
-
-  return metadata && timestamp_ == metadata->timestamp() &&
+  TRACE_EVENT_INSTANT2("delegated_ink_trails",
+                       "DelegatedInkPoint::MatchesDelegatedInkMetadata",
+                       TRACE_EVENT_SCOPE_THREAD, "metadata",
+                       metadata->ToString(), "point", ToString());
+  return timestamp_ == metadata->timestamp() &&
          point_.IsWithinDistance(metadata->point(), kEpsilon);
 }
 
