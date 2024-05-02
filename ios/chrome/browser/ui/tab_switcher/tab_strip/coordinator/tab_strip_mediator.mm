@@ -421,10 +421,18 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       const bool newCollapsed = updatedGroup->visual_data().is_collapsed();
       if (oldCollapsed != newCollapsed) {
         if (newCollapsed) {
+          const bool updateActiveIndex =
+              updatedGroup->range().contains(webStateList->active_index());
+          if (updateActiveIndex) {
+            // If the active WebState will be collapsed, set the `selectItem`
+            // to `nil` to ensure a smooth animation.
+            [self.consumer selectItem:nil];
+          }
           [self.consumer collapseGroup:updatedGroupItem];
-          // If the active WebState is now collapsed, activate an existing or
-          // new non-collapsed WebState.
-          if (updatedGroup->range().contains(webStateList->active_index())) {
+
+          if (updateActiveIndex) {
+            // If the active WebState is now collapsed, activate an existing or
+            // new non-collapsed WebState.
             __weak __typeof(self) weakSelf = self;
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, base::BindOnce(^{
