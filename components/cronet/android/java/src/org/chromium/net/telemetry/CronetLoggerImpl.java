@@ -195,12 +195,13 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.didConnectionMigrationSucceed(),
                     samplesRateLimitedCount,
                     convertToProtoCronetRequestTerminalState(trafficInfo.getTerminalState()),
-                    /* user_callback_exception_count= */ -1,
+                    /* nonfinal_user_callback_exception_count= */ -1,
                     /* total_idle_time_millis= */ -1,
                     /* total_user_executor_execute_latency_millis= */ -1,
                     /* read_count= */ -1,
                     /* on_upload_read_count= */ -1,
-                    OptionalBoolean.fromBoolean(trafficInfo.getIsBidiStream()).getValue());
+                    OptionalBoolean.fromBoolean(trafficInfo.getIsBidiStream()).getValue(),
+                    /* final_user_callback_threw= */ OptionalBoolean.UNSET.getValue());
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);

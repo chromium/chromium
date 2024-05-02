@@ -57,9 +57,9 @@ public final class CronetStatsLog {
      * response_body_size, int http_status_code, long negotiated_protocol_hash, int
      * headers_latency_millis, int overall_latency_millis, boolean connection_migration_attempted,
      * boolean connection_migration_successful, int samples_rate_limited, int terminal_state, int
-     * user_callback_exception_count, long total_idle_time_millis, long
+     * nonfinal_user_callback_exception_count, long total_idle_time_millis, long
      * total_user_executor_execute_latency_millis, int read_count, int on_upload_read_count, int
-     * is_bidi_stream);<br>
+     * is_bidi_stream, int final_user_callback_threw);<br>
      */
     public static final int CRONET_TRAFFIC_REPORTED = 704;
 
@@ -344,6 +344,14 @@ public final class CronetStatsLog {
     public static final int CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__OPTIONAL_BOOLEAN_TRUE = 1;
     public static final int CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__OPTIONAL_BOOLEAN_FALSE = 2;
 
+    // Values for CronetTrafficReported.final_user_callback_threw
+    public static final int
+            CRONET_TRAFFIC_REPORTED__FINAL_USER_CALLBACK_THREW__OPTIONAL_BOOLEAN_UNSET = 0;
+    public static final int
+            CRONET_TRAFFIC_REPORTED__FINAL_USER_CALLBACK_THREW__OPTIONAL_BOOLEAN_TRUE = 1;
+    public static final int
+            CRONET_TRAFFIC_REPORTED__FINAL_USER_CALLBACK_THREW__OPTIONAL_BOOLEAN_FALSE = 2;
+
     // Values for CronetEngineBuilderInitialized.author
     public static final int CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_UNSPECIFIED = 0;
     public static final int CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_API = 1;
@@ -529,7 +537,8 @@ public final class CronetStatsLog {
             long arg16,
             int arg17,
             int arg18,
-            int arg19) {
+            int arg19,
+            int arg20) {
         final StatsEvent.Builder builder = StatsEvent.newBuilder();
         builder.setAtomId(code);
         builder.writeLong(arg1);
@@ -551,6 +560,7 @@ public final class CronetStatsLog {
         builder.writeInt(arg17);
         builder.writeInt(arg18);
         builder.writeInt(arg19);
+        builder.writeInt(arg20);
 
         builder.usePooledBuffer();
         StatsLog.write(builder.build());
