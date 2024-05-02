@@ -256,8 +256,9 @@ VelocityTrackerStrategy* CreateStrategy(VelocityTracker::Strategy strategy) {
 // regression.
 //
 // TODO(b/332930087): clean this up after the validation has been completed.
-BASE_DECLARE_FEATURE(kUseOldestTimestamp){"UseOldestTimestamp",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kUseOldestTimestamp,
+             "UseOldestTimestamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

@@ -93,8 +93,9 @@ BASE_FEATURE(kOptimizedRealtimeThreadingMac,
 #endif
 );
 
-const Feature kUserInteractiveCompositingMac{"UserInteractiveCompositingMac",
-                                             FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUserInteractiveCompositingMac,
+             "UserInteractiveCompositingMac",
+             FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

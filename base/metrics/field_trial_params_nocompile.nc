@@ -10,19 +10,19 @@
 
 namespace base {
 
-constexpr Feature kFeature{"NoCompileFeature", FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNoCompileFeature, "NoCompileFeature", FEATURE_DISABLED_BY_DEFAULT);
 
 // Must supply an enum template argument.
-constexpr FeatureParam<> kParam1{&kFeature, "Param"};            // expected-error {{too few template arguments}}
-constexpr FeatureParam<void> kParam2{&kFeature, "Param"};        // expected-error@*:* {{unsupported FeatureParam<> type}}
-constexpr FeatureParam<size_t> kParam3{&kFeature, "Param", 1u};  // expected-error@*:* {{unsupported FeatureParam<> type}}
+constexpr FeatureParam<> kParam1{&kNoCompileFeature, "Param"};            // expected-error {{too few template arguments}}
+constexpr FeatureParam<void> kParam2{&kNoCompileFeature, "Param"};        // expected-error@*:* {{unsupported FeatureParam<> type}}
+constexpr FeatureParam<size_t> kParam3{&kNoCompileFeature, "Param", 1u};  // expected-error@*:* {{unsupported FeatureParam<> type}}
 
 enum Param { kFoo, kBar };
 
 // Options pointer must be non-null.
-constexpr FeatureParam<Param> kParam4{&kFeature, "Param", kFoo, nullptr};  // expected-error {{no matching constructor}}
+constexpr FeatureParam<Param> kParam4{&kNoCompileFeature, "Param", kFoo, nullptr};  // expected-error {{no matching constructor}}
 
 constexpr FeatureParam<Param>::Option kParamOptions[] = {};
-constexpr FeatureParam<Param> kParam5{&kFeature, "Param", kFoo, &kParamOptions};  // expected-error {{no matching constructor}}
+constexpr FeatureParam<Param> kParam5{&kNoCompileFeature, "Param", kFoo, &kParamOptions};  // expected-error {{no matching constructor}}
 
 }  // namespace base

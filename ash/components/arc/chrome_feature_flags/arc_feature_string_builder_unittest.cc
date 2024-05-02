@@ -19,12 +19,12 @@ constexpr char kTestParamsFeatureName3[] = "test_params_feature3";
 
 TEST(ArcFeatureStringBuilderTest, AddFeatureParams) {
   base::test::ScopedFeatureList feature_list;
-  base::Feature test_feature1{kTestParamsFeatureName1,
-                              base::FEATURE_ENABLED_BY_DEFAULT};
-  base::Feature test_feature2{kTestParamsFeatureName2,
-                              base::FEATURE_ENABLED_BY_DEFAULT};
-  base::Feature test_feature3{kTestParamsFeatureName3,
-                              base::FEATURE_ENABLED_BY_DEFAULT};
+  static BASE_FEATURE(test_feature1, kTestParamsFeatureName1,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(test_feature2, kTestParamsFeatureName2,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(test_feature3, kTestParamsFeatureName3,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
 
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
@@ -45,12 +45,12 @@ TEST(ArcFeatureStringBuilderTest, AddFeatureParams) {
 
 TEST(ArcFeatureStringBuilderTest, DisableFeature) {
   base::test::ScopedFeatureList feature_list;
-  base::Feature test_feature1{kTestParamsFeatureName1,
-                              base::FEATURE_DISABLED_BY_DEFAULT};
-  base::Feature test_feature2{kTestParamsFeatureName2,
-                              base::FEATURE_DISABLED_BY_DEFAULT};
-  base::Feature test_feature3{kTestParamsFeatureName3,
-                              base::FEATURE_ENABLED_BY_DEFAULT};
+  static BASE_FEATURE(test_feature1, kTestParamsFeatureName1,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(test_feature2, kTestParamsFeatureName2,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(test_feature3, kTestParamsFeatureName3,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
 
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/

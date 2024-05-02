@@ -47,14 +47,14 @@ class CastFeaturesTest : public testing::Test {
 
 TEST_F(CastFeaturesTest, EnableDisableMultipleBooleanFeatures) {
   // Declare several boolean features.
-  base::Feature bool_feature{kTestBooleanFeatureName,
-                             base::FEATURE_DISABLED_BY_DEFAULT};
-  base::Feature bool_feature_2{kTestBooleanFeatureName2,
-                               base::FEATURE_ENABLED_BY_DEFAULT};
-  base::Feature bool_feature_3{kTestBooleanFeatureName3,
-                               base::FEATURE_DISABLED_BY_DEFAULT};
-  base::Feature bool_feature_4{kTestBooleanFeatureName4,
-                               base::FEATURE_ENABLED_BY_DEFAULT};
+  static BASE_FEATURE(bool_feature, kTestBooleanFeatureName,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(bool_feature_2, kTestBooleanFeatureName2,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(bool_feature_3, kTestBooleanFeatureName3,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(bool_feature_4, kTestBooleanFeatureName4,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
 
   // Properly register them
   chromecast::SetFeaturesForTest(
@@ -80,8 +80,8 @@ TEST_F(CastFeaturesTest, EnableDisableMultipleBooleanFeatures) {
 
 TEST_F(CastFeaturesTest, EnableSingleFeatureWithParams) {
   // Define a feature with params.
-  base::Feature test_feature{kTestParamsFeatureName,
-                             base::FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(test_feature, kTestParamsFeatureName,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
   chromecast::SetFeaturesForTest({&test_feature});
 
   // Pass params via DCS.
@@ -116,14 +116,14 @@ TEST_F(CastFeaturesTest, EnableSingleFeatureWithParams) {
 
 TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
   // Declare several boolean features.
-  base::Feature bool_feature{kTestBooleanFeatureName,
-                             base::FEATURE_DISABLED_BY_DEFAULT};
-  base::Feature bool_feature_2{kTestBooleanFeatureName2,
-                               base::FEATURE_ENABLED_BY_DEFAULT};
-  base::Feature bool_feature_3{kTestBooleanFeatureName3,
-                               base::FEATURE_DISABLED_BY_DEFAULT};
-  base::Feature bool_feature_4{kTestBooleanFeatureName4,
-                               base::FEATURE_ENABLED_BY_DEFAULT};
+  static BASE_FEATURE(bool_feature, kTestBooleanFeatureName,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(bool_feature_2, kTestBooleanFeatureName2,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(bool_feature_3, kTestBooleanFeatureName3,
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(bool_feature_4, kTestBooleanFeatureName4,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
 
   // Override those features with DCS configs.
   base::Value::List experiments;
@@ -134,8 +134,8 @@ TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
   features.Set(kTestBooleanFeatureName4, true);
 
   // Also override a param feature with DCS config.
-  base::Feature params_feature{kTestParamsFeatureName,
-                               base::FEATURE_ENABLED_BY_DEFAULT};
+  static BASE_FEATURE(params_feature, kTestParamsFeatureName,
+                      base::FEATURE_ENABLED_BY_DEFAULT);
   chromecast::SetFeaturesForTest({&bool_feature, &bool_feature_2,
                                   &bool_feature_3, &bool_feature_4,
                                   &params_feature});
