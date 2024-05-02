@@ -345,9 +345,9 @@ std::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
                                device::AuthenticatorAttachment::kAny;
     win_handles_security_key =
         transport_availability.make_credential_attachment ==
-             device::AuthenticatorAttachment::kCrossPlatform ||
-         transport_availability.make_credential_attachment ==
-             device::AuthenticatorAttachment::kAny;
+            device::AuthenticatorAttachment::kCrossPlatform ||
+        transport_availability.make_credential_attachment ==
+            device::AuthenticatorAttachment::kAny;
     win_handles_hybrid =
         WebAuthnApiSupportsHybrid() && win_handles_security_key;
   }
@@ -2166,7 +2166,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
 
   if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
       enclave_enabled_ && !is_get_assertion) {
-    const std::u16string name = u"Google Password Manager (UNTRANSLATED)";
+    const std::u16string name =
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER);
     model_->mechanisms.emplace_back(
         Mechanism::Enclave(), name, name, kIcloudKeychainIcon,
         base::BindRepeating(&AuthenticatorRequestDialogController::StartEnclave,
