@@ -286,6 +286,7 @@ public class TabListMediatorUnitTest {
     @Mock ShoppingPersistedTabData mShoppingPersistedTabData;
     @Mock SelectionDelegate<Integer> mSelectionDelegate;
     @Mock ModalDialogManager mModalDialogManager;
+    @Mock Runnable mRefreshTabListRunnable;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -1106,7 +1107,8 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        UiType.CLOSABLE);
+                        UiType.CLOSABLE,
+                        mRefreshTabListRunnable);
         mMediator.initWithNative(mProfile);
 
         // mTabModelObserverCaptor captures on every initWithNative call.
@@ -2773,7 +2775,8 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.CLOSABLE);
+                        TabProperties.UiType.CLOSABLE,
+                        mRefreshTabListRunnable);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -2807,7 +2810,8 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.CLOSABLE);
+                        TabProperties.UiType.CLOSABLE,
+                        mRefreshTabListRunnable);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3176,7 +3180,8 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.SELECTABLE);
+                        TabProperties.UiType.SELECTABLE,
+                        mRefreshTabListRunnable);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3221,7 +3226,8 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.SELECTABLE);
+                        TabProperties.UiType.SELECTABLE,
+                        mRefreshTabListRunnable);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3266,7 +3272,8 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         getClass().getSimpleName(),
-                        TabProperties.UiType.SELECTABLE);
+                        TabProperties.UiType.SELECTABLE,
+                        mRefreshTabListRunnable);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3746,7 +3753,8 @@ public class TabListMediatorUnitTest {
                         handler,
                         null,
                         getClass().getSimpleName(),
-                        uiType);
+                        uiType,
+                        mRefreshTabListRunnable);
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);
 

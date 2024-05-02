@@ -406,7 +406,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
         // Hardcode TabGroupColorId.GREY as the tab group color for render testing purposes.
         Tab tab = cta.getTabModelSelector().getCurrentTab();
@@ -1700,7 +1700,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Click the close action button to close the group
@@ -1718,6 +1718,112 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.TAB_GROUP_PANE_ANDROID
     })
+    public void testTabGroupOverflowMenuInTabSwitcher_renameGroupAccept() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the rename action button to rename the group
+        String renameButtonText = cta.getString(R.string.rename_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(renameButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the visual data dialog exists.
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Wait until the keyboard is showing.
+        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        CriteriaHelper.pollUiThread(
+                () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
+
+        // Change the title.
+        editGroupVisualDataDialogTitle(cta, "Test");
+        // Change the color.
+        String blueColor =
+                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String notSelectedStringBlue =
+                cta.getString(
+                        R.string
+                                .accessibility_tab_group_color_picker_color_item_not_selected_description,
+                        blueColor);
+        onView(withContentDescription(notSelectedStringBlue)).perform(click());
+
+        // Accept the change.
+        onView(withId(R.id.positive_button)).perform(click());
+        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
+        // Check that the title change is reflected.
+        verifyFirstCardTitle("Test");
+        // Verify the color icon exists.
+        verifyFirstCardColor(TabGroupColorId.BLUE);
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
+    public void testTabGroupOverflowMenuInTabSwitcher_renameGroupDecline() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Click the rename action button to rename the group
+        String renameButtonText = cta.getString(R.string.rename_tab_group_menu_item);
+        onView(withId(R.id.action_button)).perform(click());
+        onView(allOf(withText(renameButtonText), withId(R.id.menu_item_text))).perform(click());
+
+        // Verify that the modal dialog is now showing.
+        verifyModalDialogShowingAnimationCompleteInTabSwitcher();
+        // Verify the visual data dialog exists.
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        // Wait until the keyboard is showing.
+        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        CriteriaHelper.pollUiThread(
+                () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
+
+        // Change the title.
+        editGroupVisualDataDialogTitle(cta, "Test");
+        // Change the color.
+        String blueColor =
+                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String notSelectedStringBlue =
+                cta.getString(
+                        R.string
+                                .accessibility_tab_group_color_picker_color_item_not_selected_description,
+                        blueColor);
+        onView(withContentDescription(notSelectedStringBlue)).perform(click());
+
+        // Decline the change.
+        onView(withId(R.id.negative_button)).perform(click());
+        verifyModalDialogHidingAnimationCompleteInTabSwitcher();
+        // Check that the title change is reflected.
+        verifyFirstCardTitle("2 tabs");
+        // Verify the color icon exists.
+        verifyFirstCardColor(TabGroupColorId.GREY);
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_GROUP_PANE_ANDROID
+    })
     public void testTabGroupOverflowMenuInTabSwitcher_ungroup() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1725,7 +1831,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Click the ungroup action button to ungroup the group
@@ -1750,7 +1856,7 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 2);
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Click the delete action button to close the group
@@ -1778,7 +1884,7 @@ public class TabSwitcherLayoutTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.TabGroupParity.TabGroupCreationDialogResultAction", 2);
 
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         // Verify the color icon exists.
         onView(allOf(withId(R.id.tab_favicon), withParent(withId(R.id.card_view))))
                 .check(matches(isDisplayed()));
@@ -1802,7 +1908,7 @@ public class TabSwitcherLayoutTest {
                 .check(matches(isDisplayed()));
 
         // Change the title.
-        editGroupCreationDialogTitle(cta, "Test");
+        editGroupVisualDataDialogTitle(cta, "Test");
         // Change the color.
         String blueColor =
                 cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
@@ -1886,7 +1992,7 @@ public class TabSwitcherLayoutTest {
         closeSoftKeyboard();
 
         // Change the title.
-        editGroupCreationDialogTitle(cta, "");
+        editGroupVisualDataDialogTitle(cta, "");
         // Change the color.
         String blueColor =
                 cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
@@ -1921,7 +2027,7 @@ public class TabSwitcherLayoutTest {
                 .check(matches(isDisplayed()));
 
         // Change the title and accept.
-        editGroupCreationDialogTitle(cta, "");
+        editGroupVisualDataDialogTitle(cta, "");
         onView(withId(R.id.positive_button)).perform(click());
 
         // Verify that the change was rejected and the dialog is still showing.
@@ -1950,7 +2056,7 @@ public class TabSwitcherLayoutTest {
                 .check(matches(isDisplayed()));
 
         // Change the title.
-        editGroupCreationDialogTitle(cta, "Test");
+        editGroupVisualDataDialogTitle(cta, "Test");
         // Change the color.
         String blueColor =
                 cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
@@ -2073,7 +2179,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> filter.setTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo"));
         verifyTabSwitcherCardCount(cta, 2);
@@ -2144,7 +2250,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(3), normalTabModel.getTabAt(4)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 4);
 
         // Assert default color 1 was set properly.
@@ -2166,7 +2272,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup2);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 3);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2244,7 +2350,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         int[] ungroupedRootId = new int[1];
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2315,7 +2421,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Assert default color was set properly.
@@ -2372,7 +2478,7 @@ public class TabSwitcherLayoutTest {
                 new ArrayList<>(
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
-        verifyGroupCreationDialogOpenedAndDismiss(cta);
+        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
         // Assert default color was set properly.
@@ -2720,7 +2826,7 @@ public class TabSwitcherLayoutTest {
                 withId(R.id.tab_list_recycler_view));
     }
 
-    private void editGroupCreationDialogTitle(ChromeTabbedActivity cta, String title) {
+    private void editGroupVisualDataDialogTitle(ChromeTabbedActivity cta, String title) {
         onView(withId(R.id.title_input_text))
                 .perform(click())
                 .perform(replaceText(title))
@@ -2772,7 +2878,7 @@ public class TabSwitcherLayoutTest {
                         });
     }
 
-    private void verifyGroupCreationDialogOpenedAndDismiss(ChromeTabbedActivity cta) {
+    private void verifyGroupVisualDataDialogOpenedAndDismiss(ChromeTabbedActivity cta) {
         // Verify that the modal dialog is now showing.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
         // Verify the visual data dialog exists.
@@ -2782,7 +2888,7 @@ public class TabSwitcherLayoutTest {
         KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
         CriteriaHelper.pollUiThread(
                 () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolderForTesting()));
-        // Dismiss the tab group creation dialog.
+        // Dismiss the tab group visual data dialog.
         dismissAllModalDialogs();
         // Verify that the modal dialog is now hidden.
         verifyModalDialogHidingAnimationCompleteInTabSwitcher();

@@ -53,7 +53,6 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                 new TabGroupVisualDataDialogManager(
                         mActivity,
                         mModalDialogManager,
-                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE,
                         TabGroupVisualDataDialogManager.DialogType.TAB_GROUP_CREATION,
                         R.string.tab_group_creation_dialog_title);
     }

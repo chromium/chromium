@@ -129,7 +129,6 @@ public class TabGroupCreationDialogManager implements Destroyable {
                 new TabGroupVisualDataDialogManager(
                         activity,
                         modalDialogManager,
-                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE,
                         TabGroupVisualDataDialogManager.DialogType.TAB_GROUP_CREATION,
                         R.string.tab_group_creation_dialog_title);
         mShowDialogDelegate = createShowDialogDelegate();

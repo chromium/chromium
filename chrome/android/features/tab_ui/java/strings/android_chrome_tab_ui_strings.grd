@@ -753,6 +753,15 @@
       <message name="IDS_UNGROUP_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to ungroup a tab group.">
         Ungroup
       </message>
+      <message name="IDS_TAB_GROUP_RENAME_DIALOG_TITLE" desc="When users edit an existing tab group, a dialog will pop up and this text is the title of that dialog. [CHAR_LIMIT=24]">
+        Rename tab group
+      </message>
+      <message name="IDS_TAB_GROUP_RENAME_POSITIVE_BUTTON_TEXT" desc="When users edit an existing tab group, a dialog will pop up and this text represents the button to accept the current selections. [CHAR_LIMIT=24]">
+        Continue
+      </message>
+      <message name="IDS_TAB_GROUP_RENAME_NEGATIVE_BUTTON_TEXT" desc="When users edit an existing tab group, a dialog will pop up and this text represents the button to decline the current selections. [CHAR_LIMIT=24]">
+        Cancel
+      </message>
       <message name="IDS_CLOSE_ALL_TABS_AND_GROUPS_DIALOG_MESSAGE" desc="Description of the action of closing all tabs and groups, shown in a confirmation dialog.">
         Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.
       </message>

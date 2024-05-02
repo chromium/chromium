@@ -94,7 +94,9 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -109,6 +111,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -373,6 +376,8 @@ class TabListMediator {
     // enabled.
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable OnScrollListener mOnScrollListener;
+    private TabGroupVisualDataDialogManager mTabGroupVisualDataDialogManager;
+    private @Nullable Runnable mRefreshTabListRunnable;
 
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
@@ -841,6 +846,7 @@ class TabListMediator {
      *     PriceWelcomeMessage.
      * @param componentName This is a unique string to identify different components.
      * @param uiType The type of UI this mediator should be building.
+     * @param refreshTabListRunnable The runnable to perform when refreshing the GTS tab list.
      */
     public TabListMediator(
             Context context,
@@ -859,7 +865,8 @@ class TabListMediator {
             @Nullable TabGridDialogHandler dialogHandler,
             @NonNull Supplier<PriceWelcomeMessageController> priceWelcomeMessageControllerSupplier,
             String componentName,
-            @UiType int uiType) {
+            @UiType int uiType,
+            @Nullable Runnable refreshTabListRunnable) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
@@ -878,6 +885,8 @@ class TabListMediator {
         mUiType = uiType;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mProfile = regularTabModelSupplier.get().getProfile();
+        mTabGroupVisualDataDialogManager = null;
+        mRefreshTabListRunnable = refreshTabListRunnable;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -1789,6 +1798,11 @@ class TabListMediator {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
         unregisterOnScrolledListener();
+
+        if (mTabGroupVisualDataDialogManager != null) {
+            mTabGroupVisualDataDialogManager.destroy();
+            mTabGroupVisualDataDialogManager = null;
+        }
     }
 
     private void addTabInfoToModel(final PseudoTab pseudoTab, int index, boolean isSelected) {
@@ -2588,10 +2602,12 @@ class TabListMediator {
         // the associated helper is implemented on the TabGroupModelFilter.
         if (menuId == R.id.close_tab) {
             closeTabGroup(tabId, /* hideTabGroups= */ true);
-        } else if (menuId == R.id.delete_tab) {
-            closeTabGroup(tabId, /* hideTabGroups= */ false);
+        } else if (menuId == R.id.edit_group_name) {
+            renameTabGroup(tabId);
         } else if (menuId == R.id.ungroup_tab) {
             ungroupTabGroup(tabId);
+        } else if (menuId == R.id.delete_tab) {
+            closeTabGroup(tabId, /* hideTabGroups= */ false);
         }
     }
 
@@ -2601,6 +2617,79 @@ class TabListMediator {
         int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
+    }
+
+    private void renameTabGroup(int tabId) {
+        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+        int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+
+        mTabGroupVisualDataDialogManager =
+                new TabGroupVisualDataDialogManager(
+                        mContext,
+                        mModalDialogManager,
+                        TabGroupVisualDataDialogManager.DialogType.TAB_GROUP_EDIT,
+                        R.string.tab_group_rename_dialog_title);
+
+        ModalDialogProperties.Controller dialogController =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {
+                        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE
+                                && !mTabGroupVisualDataDialogManager.validateCurrentGroupTitle()) {
+                            mTabGroupVisualDataDialogManager.focusCurrentGroupTitle();
+                            return;
+                        }
+
+                        final @DialogDismissalCause int cause;
+                        if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                            cause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
+                        } else {
+                            cause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
+                        }
+
+                        mModalDialogManager.dismissDialog(model, cause);
+                    }
+
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {
+                        if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                            @TabGroupColorId
+                            int defaultColorId =
+                                    mTabGroupVisualDataDialogManager.getDefaultColorId();
+                            @TabGroupColorId
+                            int currentColorId =
+                                    mTabGroupVisualDataDialogManager.getCurrentColorId();
+                            boolean didChangeColor = currentColorId != defaultColorId;
+                            filter.setTabGroupColor(rootId, currentColorId);
+
+                            String defaultGroupTitle =
+                                    mTabGroupVisualDataDialogManager.getDefaultGroupTitle();
+                            String inputGroupTitle =
+                                    mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
+                            boolean didChangeTitle =
+                                    !Objects.equals(defaultGroupTitle, inputGroupTitle);
+                            // This check must be included in case the user has a null title
+                            // which is displayed as a tab count and chooses not to change it.
+                            if (didChangeTitle) {
+                                filter.setTabGroupTitle(rootId, inputGroupTitle);
+                            }
+
+                            if (didChangeColor || didChangeTitle) {
+                                // Refresh the GTS tab list with the newly set color and title.
+                                if (mRefreshTabListRunnable != null) {
+                                    mRefreshTabListRunnable.run();
+                                }
+                            }
+                        }
+
+                        mTabGroupVisualDataDialogManager.hideDialog();
+                        // Reset the stored manager each time it is used.
+                        mTabGroupVisualDataDialogManager = null;
+                    }
+                };
+
+        mTabGroupVisualDataDialogManager.showDialog(rootId, filter, dialogController);
     }
 
     private void ungroupTabGroup(int tabId) {

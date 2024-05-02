@@ -192,7 +192,8 @@ public class TabListCoordinator
                 false,
                 0,
                 0,
-                0);
+                0,
+                /* refreshTabListRunnable= */ null);
     }
 
     TabListCoordinator(
@@ -219,7 +220,8 @@ public class TabListCoordinator
             boolean hasEmptyView,
             int emptyImageResId,
             int emptyHeadingStringResId,
-            int emptySubheadingStringResId) {
+            int emptySubheadingStringResId,
+            @Nullable Runnable refreshTabListRunnable) {
         mMode = mode;
         mItemType = itemType;
         mContext = context;
@@ -370,7 +372,8 @@ public class TabListCoordinator
                         dialogHandler,
                         priceWelcomeMessageControllerSupplier,
                         componentName,
-                        itemType);
+                        itemType,
+                        refreshTabListRunnable);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             // Ignore attachToParent initially. In some contexts multiple TabListCoordinators are

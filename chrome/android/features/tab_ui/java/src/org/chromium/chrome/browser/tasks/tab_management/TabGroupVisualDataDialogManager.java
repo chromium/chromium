@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.DialogTitle;
 
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -44,9 +45,8 @@ public class TabGroupVisualDataDialogManager {
         int TAB_GROUP_EDIT = 1;
     }
 
-    private final Activity mActivity;
+    private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final @ModalDialogProperties.ButtonStyles int mButtonStyle;
     private final @DialogType int mDialogType;
     private final @StringRes int mDialogTitleRes;
     // TODO(b/333921547): This class uses a member model rather than an instanced model in the
@@ -64,20 +64,18 @@ public class TabGroupVisualDataDialogManager {
     /**
      * The manager responsible for handling trigger logic for tab group visual data modal dialogs.
      *
-     * @param activity The current activity.
+     * @param context The current context.
      * @param modalDialogManager The current modalDialogManager.
-     * @param buttonStyle An enum describing the styling of buttons and whether there are 1 or 2.
      * @param dialogType An enum describing the type of dialog to construct with regards to UI.
+     * @param dialogTitleRes The resource id of the string to be used for the dialog title.
      */
     public TabGroupVisualDataDialogManager(
-            @NonNull Activity activity,
+            @NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
-            @ModalDialogProperties.ButtonStyles int buttonStyle,
             @DialogType int dialogType,
             @StringRes int dialogTitleRes) {
-        mActivity = activity;
+        mContext = context;
         mModalDialogManager = modalDialogManager;
-        mButtonStyle = buttonStyle;
         mDialogType = dialogType;
         mDialogTitleRes = dialogTitleRes;
     }
@@ -101,7 +99,7 @@ public class TabGroupVisualDataDialogManager {
         }
 
         mCustomView =
-                LayoutInflater.from(mActivity).inflate(R.layout.tab_group_visual_data_dialog, null);
+                LayoutInflater.from(mContext).inflate(R.layout.tab_group_visual_data_dialog, null);
         mTextInputLayout = mCustomView.findViewById(R.id.tab_group_title);
 
         DialogTitle dialogTitle = mCustomView.findViewById(R.id.visual_data_dialog_title);
@@ -118,7 +116,7 @@ public class TabGroupVisualDataDialogManager {
         // support incognito color themes and should just follow the system theme.
         mColorPickerCoordinator =
                 new ColorPickerCoordinator(
-                        mActivity,
+                        mContext,
                         colors,
                         R.layout.tab_group_color_picker_container,
                         ColorPickerType.TAB_GROUP,
@@ -196,15 +194,20 @@ public class TabGroupVisualDataDialogManager {
     }
 
     private void createDefaultGroupTitle(int rootId, TabGroupModelFilter filter) {
+        int tabCount = filter.getRelatedTabCountForRootId(rootId);
+        String defaultGroupTitle =
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.bottom_tab_grid_title_placeholder, tabCount, tabCount);
+
         if (mDialogType == DialogType.TAB_GROUP_CREATION) {
-            int tabCount = filter.getRelatedTabCountForRootId(rootId);
-            mDefaultGroupTitle =
-                    mActivity
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.bottom_tab_grid_title_placeholder,
-                                    tabCount,
-                                    tabCount);
+            mDefaultGroupTitle = defaultGroupTitle;
+        } else if (mDialogType == DialogType.TAB_GROUP_EDIT) {
+            mDefaultGroupTitle = TabGroupTitleUtils.getTabGroupTitle(rootId);
+
+            if (mDefaultGroupTitle == null) {
+                mDefaultGroupTitle = defaultGroupTitle;
+            }
         }
     }
 
@@ -215,15 +218,26 @@ public class TabGroupVisualDataDialogManager {
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mCustomView);
 
-        if (mButtonStyle == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE) {
+        if (mDialogType == DialogType.TAB_GROUP_CREATION) {
             builder.with(
                             ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                            mActivity
-                                    .getResources()
+                            mContext.getResources()
                                     .getString(R.string.tab_group_creation_positive_button_text))
                     .with(
                             ModalDialogProperties.BUTTON_STYLES,
                             ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE);
+        } else if (mDialogType == DialogType.TAB_GROUP_EDIT) {
+            builder.with(
+                            ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                            mContext.getResources()
+                                    .getString(R.string.tab_group_rename_positive_button_text))
+                    .with(
+                            ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                            mContext.getResources()
+                                    .getString(R.string.tab_group_rename_negative_button_text))
+                    .with(
+                            ModalDialogProperties.BUTTON_STYLES,
+                            ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
         }
 
         mModel = builder.build();

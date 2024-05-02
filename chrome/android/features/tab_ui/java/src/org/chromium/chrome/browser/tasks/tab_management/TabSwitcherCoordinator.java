@@ -254,7 +254,8 @@ public class TabSwitcherCoordinator
                             true,
                             emptyImageResId,
                             emptyHeadingStringResId,
-                            emptySubheadingStringResId);
+                            emptySubheadingStringResId,
+                            () -> refreshTabList());
 
             mTabListCoordinator.setOnLongPressTabItemEventListener(this);
 
