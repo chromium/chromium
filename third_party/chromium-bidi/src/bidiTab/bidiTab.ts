@@ -48,6 +48,11 @@ declare global {
 
     // Set from the server side if verbose logging is required.
     sendDebugMessage?: ((message: string) => void) | null;
+
+    // Required to prevent the user from closing the tab.
+    onbeforeunload:
+      | ((this: WindowEventHandlers, ev: BeforeUnloadEvent) => any)
+      | null;
   }
 }
 

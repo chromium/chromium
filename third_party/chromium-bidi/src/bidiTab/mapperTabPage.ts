@@ -26,6 +26,10 @@ export function generatePage() {
     return;
   }
   globalThis.document.documentElement.innerHTML = mapperPageSource;
+
+  // Show a confirmation dialog when the user tries to leave the Mapper tab.
+  globalThis.window.onbeforeunload = () =>
+    'Closing or reloading this tab will stop the BiDi process. Are you sure you want to leave?';
 }
 
 function stringify(message: unknown) {

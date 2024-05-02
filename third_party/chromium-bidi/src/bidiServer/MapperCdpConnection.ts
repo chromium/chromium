@@ -160,6 +160,13 @@ export class MapperServerCdpConnection {
 
     const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
 
+    // Click on the body to interact with the page in order to "beforeunload" being
+    // triggered when the tab is closed.
+    await mapperCdpClient.sendCommand('Runtime.evaluate', {
+      expression: 'document.body.click()',
+      userGesture: true,
+    });
+
     const bidiSession = new SimpleTransport(
       async (message) => await this.#sendMessage(mapperCdpClient, message)
     );
