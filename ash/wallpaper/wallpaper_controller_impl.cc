@@ -2032,14 +2032,8 @@ void WallpaperControllerImpl::ShowOobeWallpaper() {
     file_path = base::FilePath(
         FILE_PATH_LITERAL("/usr/share/chromeos-assets/animated_splash_screen/"
                           "oobe_wallpaper.jpg"));
-  } else if (features::IsOobeJellyModalEnabled()) {
-    file_path =
-        base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/wallpaper/"
-                                         "oobe_wallpaper.jpg"));
   } else {
-    OnOobeWallpaperDecoded(base::FilePath(),
-                           CreateSolidColorWallpaper(kOobeWallpaperColor));
-    return;
+    file_path = GetDefaultWallpaperPath(user_manager::UserType::kRegular);
   }
 
   if (!cached_oobe_wallpaper_.image.isNull() &&
@@ -2056,9 +2050,7 @@ void WallpaperControllerImpl::ShowOobeWallpaper() {
 void WallpaperControllerImpl::OnOobeWallpaperDecoded(
     const base::FilePath& path,
     const gfx::ImageSkia& image) {
-  // TODO (b/268463435) also check for path.empty when solid wallpaper is
-  // removed from ShowOobeWallpaper
-  if (image.isNull()) {
+  if (path.empty() || image.isNull()) {
     LOG(ERROR) << "Failed to decode OOBE wallpaper.";
     wallpaper_metrics_manager_->LogWallpaperResult(
         WallpaperType::kOobe, SetWallpaperResult::kDecodingError);
@@ -2072,9 +2064,14 @@ void WallpaperControllerImpl::OnOobeWallpaperDecoded(
     cached_oobe_wallpaper_.file_path = path;
   }
 
-  WallpaperInfo info(cached_oobe_wallpaper_.file_path.value(),
-                     WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kOobe,
-                     base::Time::Now());
+  const bool use_small =
+      (GetAppropriateResolution() == WallpaperResolution::kSmall);
+  WallpaperLayout layout =
+      use_small ? WallpaperLayout::WALLPAPER_LAYOUT_CENTER
+                : WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED;
+
+  WallpaperInfo info(cached_oobe_wallpaper_.file_path.value(), layout,
+                     WallpaperType::kOobe, base::Time::Now());
   ShowWallpaperImage(cached_oobe_wallpaper_.image, info,
                      /*preview_mode=*/false, /*is_override=*/false);
 }
