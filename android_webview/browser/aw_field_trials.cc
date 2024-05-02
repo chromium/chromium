@@ -194,4 +194,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(ui::kConvertTrackpadEventsToMouse);
   aw_feature_overrides.DisableFeature(
       ::features::kMouseAndTrackpadDropdownMenu);
+
+  // TODO(crbug.com/40272633): Web MIDI permission prompt for all usage.
+  aw_feature_overrides.DisableFeature(blink::features::kBlockMidiByDefault);
 }

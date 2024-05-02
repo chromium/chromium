@@ -168,9 +168,9 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, DefaultPolicy) {
   content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
   content::RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
 
-  // Midi is allowed by default in the top level frame but not in subframes.
+  // Midi is ask by default in the top level frame but not in subframes.
   permissions::MidiPermissionContext midi(profile());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, parent));
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetPermissionForFrame(&midi, parent));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetPermissionForFrame(&midi, child));
 
   // Geolocation is ask by default in top level frames but not in subframes.
@@ -232,8 +232,8 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, EnabledForChildFrame) {
   content::RenderFrameHost* child = AddChildRFH(
       parent, kOrigin2, blink::mojom::PermissionsPolicyFeature::kMidiFeature);
   permissions::MidiPermissionContext midi(profile());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, parent));
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetPermissionForFrame(&midi, child));
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetPermissionForFrame(&midi, parent));
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetPermissionForFrame(&midi, child));
 
   // Enable geolocation for the child frame.
   child = AddChildRFH(parent, kOrigin2,

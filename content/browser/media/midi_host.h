@@ -78,6 +78,10 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
  protected:
   MidiHost(int renderer_process_id, midi::MidiService* midi_service);
 
+  void SetHasMidiPermissionForTesting(bool value) {
+    has_midi_permission_ = value;
+  }
+
  private:
   // Use this to call methods on |midi_client_|. It makes sure that midi_client_
   // is only accessed on the IO thread.

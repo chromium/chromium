@@ -42,7 +42,7 @@ TEST_F(MidiPermissionContextTests, TestNoSysexAllowedAllOrigins) {
                                      insecure_url, secure_url)
                 .status);
 
-  EXPECT_EQ(PermissionStatus::GRANTED,
+  EXPECT_EQ(PermissionStatus::ASK,
             permission_context
                 .GetPermissionStatus(nullptr /* render_frame_host */,
                                      secure_url, secure_url)

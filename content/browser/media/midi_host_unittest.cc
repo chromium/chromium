@@ -105,7 +105,9 @@ class FakeMidiManagerFactory : public midi::MidiService::ManagerFactory {
 class MidiHostForTesting : public MidiHost {
  public:
   MidiHostForTesting(int renderer_process_id, midi::MidiService* midi_service)
-      : MidiHost(renderer_process_id, midi_service) {}
+      : MidiHost(renderer_process_id, midi_service) {
+    SetHasMidiPermissionForTesting(true);
+  }
 
   MidiHostForTesting(const MidiHostForTesting&) = delete;
   MidiHostForTesting& operator=(const MidiHostForTesting&) = delete;
