@@ -75,14 +75,7 @@ enum FeatureState {
 // Features should *not* be defined in header files; do not use this macro in
 // header files.
 #define BASE_FEATURE(feature, name, default_state) \
-  constinit const base::Feature feature(           \
-      name, default_state, base::internal::FeatureMacroHandshake::kSecret)
-
-// Secret handshake to (try to) ensure all places that construct a base::Feature
-// go through the helper `BASE_FEATURE()` macro above.
-namespace internal {
-enum class FeatureMacroHandshake { kSecret };
-}
+  constinit const base::Feature feature(name, default_state)
 
 // The Feature struct is used to define the default state for a feature. There
 // must only ever be one struct instance for a given feature name—generally
@@ -106,9 +99,7 @@ enum class FeatureMacroHandshake { kSecret };
 // [1]:
 // https://crsrc.org/c/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants
 struct BASE_EXPORT LOGICALLY_CONST Feature {
-  constexpr Feature(const char* name,
-                    FeatureState default_state,
-                    internal::FeatureMacroHandshake)
+  constexpr Feature(const char* name, FeatureState default_state)
       : name(name), default_state(default_state) {
 #if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
     if (std::string_view(name).find(BUILDFLAG(BANNED_BASE_FEATURE_PREFIX)) ==
