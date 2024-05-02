@@ -37,6 +37,11 @@ class KeyboardBrightnessControlDelegate {
   // Sets whether the ambient light sensor should be used in keyboard brightness
   // calculations.
   virtual void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) = 0;
+
+  // Asynchronously invokes |callback| with the current keyboard ambient light
+  // enabled status, In case of error, it is called with nullopt.
+  virtual void HandleGetKeyboardAmbientLightSensorEnabled(
+      base::OnceCallback<void(std::optional<bool>)> callback) = 0;
 };
 
 }  // namespace ash

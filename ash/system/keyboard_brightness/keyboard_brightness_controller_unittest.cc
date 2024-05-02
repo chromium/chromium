@@ -32,6 +32,9 @@ class FakeKeyboardBrightnessControlDelegate
   }
   void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {}
 
+  void HandleGetKeyboardAmbientLightSensorEnabled(
+      base::OnceCallback<void(std::optional<bool>)> callback) override {}
+
   double keyboard_brightness() { return keyboard_brightness_; }
 
   void OnReceiveHasKeyboardBacklight(
@@ -82,13 +85,28 @@ TEST_F(KeyboardBrightnessControllerTest, SetKeyboardAmbientLightSensorEnabled) {
   // Disable the ambient light sensor.
   keyboard_brightness_control_delegate()
       ->HandleSetKeyboardAmbientLightSensorEnabled(false);
+
   // Verify that the ambient light sensor is now disabled.
   EXPECT_FALSE(power_manager_client()->keyboard_ambient_light_sensor_enabled());
+
+  keyboard_brightness_control_delegate()
+      ->HandleGetKeyboardAmbientLightSensorEnabled(base::BindOnce(
+          [](std::optional<bool> is_ambient_light_sensor_enabled) {
+            EXPECT_FALSE(is_ambient_light_sensor_enabled.value());
+          }));
+
   // Re-enabled the ambient light sensor
   keyboard_brightness_control_delegate()
       ->HandleSetKeyboardAmbientLightSensorEnabled(true);
+
   // Verify that the ambient light sensor is enabled.
   EXPECT_TRUE(power_manager_client()->keyboard_ambient_light_sensor_enabled());
+
+  keyboard_brightness_control_delegate()
+      ->HandleGetKeyboardAmbientLightSensorEnabled(base::BindOnce(
+          [](std::optional<bool> is_ambient_light_sensor_enabled) {
+            EXPECT_TRUE(is_ambient_light_sensor_enabled.value());
+          }));
 }
 
 }  // namespace ash
