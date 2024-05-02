@@ -2359,7 +2359,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend that re-authn requires user mediation.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              RequiresUserMediation(GURL(kRpUrl)))
+              RequiresUserMediation(url::Origin::Create(GURL(kRpUrl))))
       .WillOnce(Return(true));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -2396,7 +2396,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend that re-authn does not require user mediation.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              RequiresUserMediation(GURL(kRpUrl)))
+              RequiresUserMediation(url::Origin::Create(GURL(kRpUrl))))
       .WillOnce(Return(false));
 
   // Pretend that auto re-authn is disabled in settings.
@@ -2684,7 +2684,7 @@ TEST_F(FederatedAuthRequestImplTest,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
       .WillOnce(Return(false));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              RequiresUserMediation(GURL(kRpUrl)))
+              RequiresUserMediation(url::Origin::Create(GURL(kRpUrl))))
       .WillOnce(Return(true));
 
   RequestExpectations expectations = {
@@ -2727,7 +2727,7 @@ TEST_F(FederatedAuthRequestImplTest,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
       .WillOnce(Return(false));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              RequiresUserMediation(GURL(kRpUrl)))
+              RequiresUserMediation(url::Origin::Create(GURL(kRpUrl))))
       .WillOnce(Return(false));
 
   RequestExpectations expectations = {
@@ -6967,7 +6967,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
       .Times(0);
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              RequiresUserMediation(GURL(kRpUrl)))
+              RequiresUserMediation(url::Origin::Create(GURL(kRpUrl))))
       .Times(0);
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())

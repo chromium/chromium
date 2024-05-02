@@ -3077,20 +3077,13 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
 }
 
 bool FederatedAuthRequestImpl::RequiresUserMediation() {
-  std::string site = webid::FormatUrlWithDomain(origin().GetURL(),
-                                                /*for_display=*/false);
-  return auto_reauthn_permission_delegate_->RequiresUserMediation(GURL(site));
+  return auto_reauthn_permission_delegate_->RequiresUserMediation(origin());
 }
 
 void FederatedAuthRequestImpl::SetRequiresUserMediation(
     bool requires_user_mediation) {
-  // Get the domain and set RequiresUserMediation to the given value on it.
-  // Include the scheme to make sure that for example that http://domain and
-  // https://domain are not treated as the same.
-  std::string site = webid::FormatUrlWithDomain(origin().GetURL(),
-                                                /*for_display=*/false);
   auto_reauthn_permission_delegate_->SetRequiresUserMediation(
-      GURL(site), requires_user_mediation);
+      origin(), requires_user_mediation);
 }
 
 void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,

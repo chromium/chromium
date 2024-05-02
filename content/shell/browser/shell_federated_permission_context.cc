@@ -76,18 +76,18 @@ bool ShellFederatedPermissionContext::IsAutoReauthnEmbargoed(
 }
 
 void ShellFederatedPermissionContext::SetRequiresUserMediation(
-    const GURL& rp_url,
+    const url::Origin& rp_origin,
     bool requires_user_mediation) {
   if (requires_user_mediation) {
-    require_user_mediation_sites_.insert(rp_url);
+    require_user_mediation_sites_.insert(net::SchemefulSite(rp_origin));
   } else {
-    require_user_mediation_sites_.erase(rp_url);
+    require_user_mediation_sites_.erase(net::SchemefulSite(rp_origin));
   }
 }
 
 bool ShellFederatedPermissionContext::RequiresUserMediation(
-    const GURL& rp_url) {
-  return require_user_mediation_sites_.contains(rp_url);
+    const url::Origin& rp_origin) {
+  return require_user_mediation_sites_.contains(net::SchemefulSite(rp_origin));
 }
 
 base::Time ShellFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(

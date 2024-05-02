@@ -71,8 +71,9 @@ void FederatedIdentityAutoReauthnPermissionContext::RemoveEmbargoForAutoReauthn(
 }
 
 void FederatedIdentityAutoReauthnPermissionContext::SetRequiresUserMediation(
-    const GURL& rp_url,
+    const url::Origin& rp_origin,
     bool requires_user_mediation) {
+  const GURL rp_url = rp_origin.GetURL();
   host_content_settings_map_->SetContentSettingDefaultScope(
       rp_url, rp_url,
       ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
@@ -80,7 +81,8 @@ void FederatedIdentityAutoReauthnPermissionContext::SetRequiresUserMediation(
 }
 
 bool FederatedIdentityAutoReauthnPermissionContext::RequiresUserMediation(
-    const GURL& rp_url) {
+    const url::Origin& rp_origin) {
+  const GURL rp_url = rp_origin.GetURL();
   return host_content_settings_map_->GetContentSetting(
              rp_url, rp_url,
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION) ==
