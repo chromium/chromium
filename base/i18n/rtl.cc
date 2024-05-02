@@ -208,6 +208,8 @@ TextDirection GetTextDirectionForLocaleInStartUp(const char* locale_name) {
   if (forced_direction != UNKNOWN_DIRECTION)
     return forced_direction;
 
+  CHECK(locale_name && locale_name[0]);
+
   // This list needs to be updated in alphabetical order if we add more RTL
   // locales.
   static const char kRTLLanguageCodes[][3] = {"ar", "fa", "he", "iw", "ur"};
