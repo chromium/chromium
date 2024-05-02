@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SUPERVISED_USER_CHROMEOS_MOCK_LARGE_ICON_SERVICE_H_
 
 #include "components/favicon/core/large_icon_service.h"
+#include "components/favicon_base/favicon_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -50,7 +51,9 @@ class MockLargeIconService : public favicon::LargeIconService {
               GetLargeIconRawBitmapForPageUrl,
               (const GURL& page_url,
                int min_source_size_in_pixel,
-               favicon_base::FaviconRawBitmapCallback callback,
+               std::optional<int> size_in_pixel_to_resize_to,
+               NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+               favicon_base::LargeIconCallback callback,
                base::CancelableTaskTracker* tracker),
               (override));
   MOCK_METHOD(base::CancelableTaskTracker::TaskId,

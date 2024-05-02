@@ -21,7 +21,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace favicon_base {
-struct FaviconRawBitmapResult;
+struct LargeIconResult;
 }
 
 namespace webapps {
@@ -97,8 +97,7 @@ class AddToHomescreenDataFetcher {
 
   // Grabs the favicon for the current URL.
   void FetchFavicon();
-  void OnFaviconFetched(
-      const favicon_base::FaviconRawBitmapResult& bitmap_result);
+  void OnFaviconFetched(const favicon_base::LargeIconResult& result);
 
   // Creates an icon to display to the user to confirm the add to home screen
   // from the given |base_icon|. If |use_for_launcher| is true, the created icon

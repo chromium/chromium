@@ -20,13 +20,18 @@
 
 namespace favicon {
 
+using NoBigEnoughIconBehavior = LargeIconService::NoBigEnoughIconBehavior;
+
 namespace {
 
-bool IsDbResultAdequate(const favicon_base::FaviconRawBitmapResult& db_result,
-                        int min_source_size) {
+bool ShouldReturnBitmap(const favicon_base::FaviconRawBitmapResult& db_result,
+                        int min_source_size,
+                        NoBigEnoughIconBehavior no_big_enough_icon_behavior) {
   return db_result.is_valid() &&
          db_result.pixel_size.width() == db_result.pixel_size.height() &&
-         db_result.pixel_size.width() >= min_source_size;
+         (db_result.pixel_size.width() >= min_source_size ||
+          no_big_enough_icon_behavior ==
+              NoBigEnoughIconBehavior::kReturnBitmap);
 }
 
 // Wraps the PNG data in |db_result| in a gfx::Image. If |desired_size| is not
@@ -55,20 +60,24 @@ gfx::Image ResizeLargeIconOnBackgroundThread(
 void ProcessIconOnBackgroundThread(
     const favicon_base::FaviconRawBitmapResult& db_result,
     int min_source_size,
-    int desired_size,
+    int size_to_resize_to,
+    LargeIconService::NoBigEnoughIconBehavior no_big_enough_icon_behavior,
     favicon_base::FaviconRawBitmapResult* raw_result,
     SkBitmap* bitmap,
     GURL* icon_url,
-    favicon_base::FallbackIconStyle* fallback_icon_style) {
-  if (IsDbResultAdequate(db_result, min_source_size)) {
-    gfx::Image image;
-    image = ResizeLargeIconOnBackgroundThread(db_result, desired_size);
+    std::unique_ptr<favicon_base::FallbackIconStyle>* fallback_icon_style) {
+  if (ShouldReturnBitmap(db_result, min_source_size,
+                         no_big_enough_icon_behavior)) {
+    gfx::Image image =
+        ResizeLargeIconOnBackgroundThread(db_result, size_to_resize_to);
 
     if (!image.IsEmpty()) {
       if (raw_result) {
         *raw_result = db_result;
-        if (desired_size != 0)
-          raw_result->pixel_size = gfx::Size(desired_size, desired_size);
+        if (size_to_resize_to != 0) {
+          raw_result->pixel_size =
+              gfx::Size(size_to_resize_to, size_to_resize_to);
+        }
         raw_result->bitmap_data = image.As1xPNGBytes();
       }
       if (bitmap) {
@@ -81,14 +90,17 @@ void ProcessIconOnBackgroundThread(
     }
   }
 
-  if (!fallback_icon_style)
+  if (!fallback_icon_style ||
+      no_big_enough_icon_behavior !=
+          NoBigEnoughIconBehavior::kReturnFallbackColor) {
     return;
+  }
 
-  *fallback_icon_style = favicon_base::FallbackIconStyle();
+  *fallback_icon_style = std::make_unique<favicon_base::FallbackIconStyle>();
   int fallback_icon_size = 0;
   if (db_result.is_valid()) {
     favicon_base::SetDominantColorAsBackground(*db_result.bitmap_data,
-                                               fallback_icon_style);
+                                               fallback_icon_style->get());
     // The size must be positive, we cap to 128 to avoid the sparse histogram
     // to explode (having too many different values, server-side). Size 128
     // already indicates that there is a problem in the code, 128 px _should_ be
@@ -105,20 +117,20 @@ void ProcessIconOnBackgroundThread(
 
 LargeIconWorker::LargeIconWorker(
     int min_source_size_in_pixel,
-    int desired_size_in_pixel,
+    int size_in_pixel_to_resize_to,
+    NoBigEnoughIconBehavior no_big_enough_icon_behavior,
     favicon_base::LargeIconCallback raw_bitmap_callback,
     favicon_base::LargeIconImageCallback image_callback,
     base::CancelableTaskTracker* tracker)
     : min_source_size_in_pixel_(min_source_size_in_pixel),
-      desired_size_in_pixel_(desired_size_in_pixel),
+      size_in_pixel_to_resize_to_(size_in_pixel_to_resize_to),
+      no_big_enough_icon_behavior_(no_big_enough_icon_behavior),
       raw_bitmap_callback_(std::move(raw_bitmap_callback)),
       image_callback_(std::move(image_callback)),
       background_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      tracker_(tracker),
-      fallback_icon_style_(
-          std::make_unique<favicon_base::FallbackIconStyle>()) {}
+      tracker_(tracker) {}
 
 LargeIconWorker::~LargeIconWorker() = default;
 
@@ -126,12 +138,12 @@ void LargeIconWorker::OnIconLookupComplete(
     const favicon_base::FaviconRawBitmapResult& db_result) {
   tracker_->PostTaskAndReply(
       background_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ProcessIconOnBackgroundThread, db_result,
-                     min_source_size_in_pixel_, desired_size_in_pixel_,
-                     raw_bitmap_callback_ ? &raw_bitmap_result_ : nullptr,
-                     image_callback_ ? &bitmap_result_ : nullptr,
-                     image_callback_ ? &icon_url_ : nullptr,
-                     fallback_icon_style_.get()),
+      base::BindOnce(
+          &ProcessIconOnBackgroundThread, db_result, min_source_size_in_pixel_,
+          size_in_pixel_to_resize_to_, no_big_enough_icon_behavior_,
+          raw_bitmap_callback_ ? &raw_bitmap_result_ : nullptr,
+          image_callback_ ? &bitmap_result_ : nullptr,
+          image_callback_ ? &icon_url_ : nullptr, &fallback_icon_style_),
       base::BindOnce(&LargeIconWorker::OnIconProcessingComplete, this));
 }
 
@@ -140,19 +152,21 @@ base::CancelableTaskTracker::TaskId LargeIconWorker::GetLargeIconRawBitmap(
     FaviconService* favicon_service,
     const GURL& page_url,
     int min_source_size_in_pixel,
-    int desired_size_in_pixel,
+    int size_in_pixel_to_resize_to,
+    NoBigEnoughIconBehavior no_big_enough_icon_behavior,
     favicon_base::LargeIconCallback raw_bitmap_callback,
     favicon_base::LargeIconImageCallback image_callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK_LE(1, min_source_size_in_pixel);
-  DCHECK_LE(0, desired_size_in_pixel);
+  DCHECK_LE(0, size_in_pixel_to_resize_to);
 
   auto worker = base::MakeRefCounted<LargeIconWorker>(
-      min_source_size_in_pixel, desired_size_in_pixel,
-      std::move(raw_bitmap_callback), std::move(image_callback), tracker);
+      min_source_size_in_pixel, size_in_pixel_to_resize_to,
+      no_big_enough_icon_behavior, std::move(raw_bitmap_callback),
+      std::move(image_callback), tracker);
 
   int max_size_in_pixel =
-      std::max(desired_size_in_pixel, min_source_size_in_pixel);
+      std::max(size_in_pixel_to_resize_to, min_source_size_in_pixel);
 
   static const base::NoDestructor<std::vector<favicon_base::IconTypeSet>>
       large_icon_types({{favicon_base::IconType::kWebManifestIcon},

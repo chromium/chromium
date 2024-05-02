@@ -21,6 +21,17 @@ namespace favicon {
 // implementation of this uses Google's favicon service.
 class LargeIconService : public KeyedService {
  public:
+  // Controls the behavior when there is no icon bigger than the minimum size to
+  // return.
+  enum class NoBigEnoughIconBehavior {
+    // Return the biggest favicon bitmap available.
+    kReturnBitmap = 0,
+    // Extract the dominant color of the smaller image.
+    kReturnFallbackColor = 1,
+    // Empty return.
+    kReturnEmpty = 2,
+  };
+
   LargeIconService(const LargeIconService&) = delete;
   LargeIconService& operator=(const LargeIconService&) = delete;
 
@@ -57,16 +68,19 @@ class LargeIconService : public KeyedService {
       favicon_base::LargeIconImageCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
-  // Requests the best large icon raw bitmap for the page at |page_url|.
-  // If there are several icons cached in the favicon database for |page_url|
-  // which are > |minimum_size_in_pixels|, selects an icon to return based on an
-  // LargeIconService-hard-coded ordering of preference for certain
-  // IconTypes. If no icon is larger than |minimum_size_in_pixels|, the largest
-  // one will be returned.
+  // Queries the favicon database for an icon larger than
+  // `min_source_size_in_pixel`. If `size_in_pixel_to_resize_to` is specified,
+  // the returned icon will be resized to the passed-in size. The resizing also
+  // occurs if there is no big enough icon and `no_big_enough_icon_behavior` ==
+  // NoBigEnoughIconBehavior::kReturnBitmap. `no_big_enough_icon_behavior`
+  // controls the returned value if there is no icon larger than
+  // `min_source_size_in_pixel` in the database.
   virtual base::CancelableTaskTracker::TaskId GetLargeIconRawBitmapForPageUrl(
       const GURL& page_url,
       int min_source_size_in_pixel,
-      favicon_base::FaviconRawBitmapCallback callback,
+      std::optional<int> size_in_pixel_to_resize_to,
+      NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+      favicon_base::LargeIconCallback callback,
       base::CancelableTaskTracker* tracker) = 0;
 
   // Behaves the same as GetLargeIconRawBitmapOrFallbackStyleForPageUrl, except

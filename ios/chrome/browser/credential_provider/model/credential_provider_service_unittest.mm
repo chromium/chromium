@@ -79,7 +79,9 @@ class MockLargeIconService : public favicon::LargeIconService {
               GetLargeIconRawBitmapForPageUrl,
               (const GURL&,
                int,
-               favicon_base::FaviconRawBitmapCallback,
+               std::optional<int>,
+               LargeIconService::NoBigEnoughIconBehavior,
+               favicon_base::LargeIconCallback,
                base::CancelableTaskTracker*),
               (override));
   MOCK_METHOD(base::CancelableTaskTracker::TaskId,

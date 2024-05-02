@@ -201,14 +201,16 @@ void InstallableIconFetcher::FetchFavicon() {
   favicon_service->GetLargeIconRawBitmapForPageUrl(
       web_contents_->GetLastCommittedURL(),
       GetIdealPrimaryIconSizeInPx(IconPurpose::ANY),
+      /*size_in_pixel_to_resize_to=*/std::nullopt,
+      favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
       base::BindOnce(&InstallableIconFetcher::OnFaviconFetched,
                      weak_ptr_factory_.GetWeakPtr()),
       &favicon_task_tracker_);
 }
 
 void InstallableIconFetcher::OnFaviconFetched(
-    const favicon_base::FaviconRawBitmapResult& bitmap_result) {
-  if (!bitmap_result.is_valid()) {
+    const favicon_base::LargeIconResult& result) {
+  if (!result.bitmap.is_valid()) {
     EndWithError(InstallableStatusCode::NO_ACCEPTABLE_ICON);
     return;
   }
@@ -217,11 +219,11 @@ void InstallableIconFetcher::OnFaviconFetched(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ProcessFaviconInBackground, bitmap_result,
+      base::BindOnce(&ProcessFaviconInBackground, result.bitmap,
                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                      base::BindOnce(&InstallableIconFetcher::OnIconFetched,
                                     weak_ptr_factory_.GetWeakPtr(),
-                                    bitmap_result.icon_url, IconPurpose::ANY),
+                                    result.bitmap.icon_url, IconPurpose::ANY),
                      base::BindOnce(&InstallableIconFetcher::EndWithError,
                                     weak_ptr_factory_.GetWeakPtr())));
 }

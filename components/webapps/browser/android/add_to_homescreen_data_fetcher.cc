@@ -284,21 +284,22 @@ void AddToHomescreenDataFetcher::FetchFavicon() {
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx() - 1;
   favicon::GetLargeIconService(web_contents_->GetBrowserContext())
       ->GetLargeIconRawBitmapForPageUrl(
-          shortcut_info_.url, threshold_to_get_any_largest_icon,
+          shortcut_info_.url, threshold_to_get_any_largest_icon, std::nullopt,
+          favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
           base::BindOnce(&AddToHomescreenDataFetcher::OnFaviconFetched,
                          weak_ptr_factory_.GetWeakPtr()),
           &favicon_task_tracker_);
 }
 
 void AddToHomescreenDataFetcher::OnFaviconFetched(
-    const favicon_base::FaviconRawBitmapResult& bitmap_result) {
+    const favicon_base::LargeIconResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!web_contents_) {
     return;
   }
 
-  shortcut_info_.best_primary_icon_url = bitmap_result.icon_url;
+  shortcut_info_.best_primary_icon_url = result.bitmap.icon_url;
 
   // The user is waiting for the icon to be processed before they can
   // proceed with add to homescreen. But if we shut down, there's no point
@@ -309,7 +310,7 @@ void AddToHomescreenDataFetcher::OnFaviconFetched(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&CreateLauncherIconFromFaviconInBackground,
-                     shortcut_info_.url, bitmap_result,
+                     shortcut_info_.url, result.bitmap,
                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                      base::BindOnce(&AddToHomescreenDataFetcher::OnIconCreated,
                                     weak_ptr_factory_.GetWeakPtr())));

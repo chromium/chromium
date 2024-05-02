@@ -20,7 +20,7 @@ class WebContents;
 }  // namespace content
 
 namespace favicon_base {
-struct FaviconRawBitmapResult;
+struct LargeIconResult;
 }
 
 namespace webapps {
@@ -54,8 +54,7 @@ class InstallableIconFetcher {
       const SkBitmap& bitmap);
 
   void FetchFavicon();
-  void OnFaviconFetched(
-      const favicon_base::FaviconRawBitmapResult& bitmap_result);
+  void OnFaviconFetched(const favicon_base::LargeIconResult& result);
 
   void OnIconFetched(const GURL& icon_url,
                      const blink::mojom::ManifestImageResource_Purpose purpose,
