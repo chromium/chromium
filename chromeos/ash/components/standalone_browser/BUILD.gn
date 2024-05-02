@@ -15,6 +15,8 @@ component("standalone_browser") {
     "browser_support.h",
     "lacros_availability.cc",
     "lacros_availability.h",
+    "lacros_selection.cc",
+    "lacros_selection.h",
     "migrator_util.cc",
     "migrator_util.h",
     "standalone_browser_features.cc",
@@ -39,6 +41,7 @@ source_set("unit_tests") {
 
   sources = [
     "lacros_availability_unittest.cc",
+    "lacros_selection_unittest.cc",
     "migrator_util_unittest.cc",
     "test_util_unittest.cc",
   ]
@@ -48,8 +51,12 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/constants:constants",
     "//base/test:test_support",
+    "//components/account_id",
+    "//components/policy:generated",
+    "//components/policy/core/common",
     "//components/prefs:test_support",
     "//components/user_manager:test_support",
+    "//content/test:test_support",
     "//testing/gtest:gtest",
   ]
 }

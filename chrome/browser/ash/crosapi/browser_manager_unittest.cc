@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom.h"
@@ -300,9 +301,10 @@ class BrowserManagerTest : public testing::Test {
     EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
   }
 
-  void ExpectCallingLoad(browser_util::LacrosSelection load_selection =
-                             browser_util::LacrosSelection::kRootfs,
-                         const std::string& lacros_path = "/run/lacros") {
+  void ExpectCallingLoad(
+      ash::standalone_browser::LacrosSelection load_selection =
+          ash::standalone_browser::LacrosSelection::kRootfs,
+      const std::string& lacros_path = "/run/lacros") {
     EXPECT_CALL(*browser_loader_, Load(_))
         .WillOnce([load_selection, lacros_path](
                       BrowserLoader::LoadCompletionCallback callback) {
@@ -402,7 +404,7 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
   std::unique_ptr<BrowserManagerScopedKeepAlive> keep_alive =
       fake_browser_manager_->KeepAlive(BrowserManager::Feature::kTestOnly);
 
-  ExpectCallingLoad(browser_util::LacrosSelection::kStateful,
+  ExpectCallingLoad(ash::standalone_browser::LacrosSelection::kStateful,
                     kSampleLacrosPath);
 
   // On simulated termination, KeepAlive restarts Lacros. Since there is an

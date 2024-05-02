@@ -605,17 +605,17 @@ crosapi::mojom::BrowserInitParams::DeviceType ConvertDeviceType(
 }
 
 crosapi::mojom::BrowserInitParams::LacrosSelection GetLacrosSelection(
-    std::optional<browser_util::LacrosSelection> selection) {
+    std::optional<ash::standalone_browser::LacrosSelection> selection) {
   if (!selection.has_value()) {
     return crosapi::mojom::BrowserInitParams::LacrosSelection::kUnspecified;
   }
 
   switch (selection.value()) {
-    case browser_util::LacrosSelection::kRootfs:
+    case ash::standalone_browser::LacrosSelection::kRootfs:
       return crosapi::mojom::BrowserInitParams::LacrosSelection::kRootfs;
-    case browser_util::LacrosSelection::kStateful:
+    case ash::standalone_browser::LacrosSelection::kStateful:
       return crosapi::mojom::BrowserInitParams::LacrosSelection::kStateful;
-    case browser_util::LacrosSelection::kDeployedLocally:
+    case ash::standalone_browser::LacrosSelection::kDeployedLocally:
       return crosapi::mojom::BrowserInitParams::LacrosSelection::kUnspecified;
   }
 }
@@ -736,7 +736,7 @@ InitialBrowserAction::~InitialBrowserAction() = default;
 void InjectBrowserInitParams(
     mojom::BrowserInitParams* params,
     bool is_keep_alive_enabled,
-    std::optional<browser_util::LacrosSelection> lacros_selection) {
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection) {
   params->crosapi_version = crosapi::mojom::Crosapi::Version_;
   params->deprecated_ash_metrics_enabled_has_value = true;
   PrefService* local_state = g_browser_process->local_state();
@@ -993,7 +993,7 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
     bool include_post_login_params) {
   mojom::BrowserInitParamsPtr params = mojom::BrowserInitParams::New();
   InjectBrowserInitParams(params.get(), is_keep_alive_enabled,
@@ -1016,7 +1016,7 @@ mojom::BrowserPostLoginParamsPtr GetBrowserPostLoginParams(
 base::ScopedFD CreateStartupData(
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<LacrosSelection> lacros_selection,
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
     bool include_post_login_params) {
   const auto& data = GetBrowserInitParams(
       std::move(initial_browser_action), is_keep_alive_enabled,

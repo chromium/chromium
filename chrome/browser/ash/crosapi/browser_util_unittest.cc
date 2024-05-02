@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -37,7 +38,6 @@
 
 using ash::standalone_browser::LacrosAvailability;
 using crosapi::browser_util::LacrosLaunchSwitchSource;
-using crosapi::browser_util::LacrosSelection;
 using user_manager::User;
 using version_info::Channel;
 
@@ -75,33 +75,6 @@ class ScopedLacrosAvailabilityCache {
     }
     ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
         policy, false, false);
-  }
-};
-
-// This implementation of RAII for LacrosSelection is to make it easy reset
-// the state between runs.
-class ScopedLacrosSelectionCache {
- public:
-  explicit ScopedLacrosSelectionCache(
-      browser_util::LacrosSelectionPolicy lacros_selection) {
-    SetLacrosSelection(lacros_selection);
-  }
-  ScopedLacrosSelectionCache(const ScopedLacrosSelectionCache&) = delete;
-  ScopedLacrosSelectionCache& operator=(const ScopedLacrosSelectionCache&) =
-      delete;
-  ~ScopedLacrosSelectionCache() {
-    browser_util::ClearLacrosSelectionCacheForTest();
-  }
-
- private:
-  void SetLacrosSelection(
-      browser_util::LacrosSelectionPolicy lacros_selection) {
-    policy::PolicyMap policy;
-    policy.Set(policy::key::kLacrosSelection, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(GetLacrosSelectionPolicyName(lacros_selection)),
-               /*external_data_fetcher=*/nullptr);
-    browser_util::CacheLacrosSelection(policy);
   }
 };
 
@@ -551,16 +524,18 @@ TEST_F(BrowserUtilTest, GetRootfsLacrosVersionMayBlockBadJson) {
 TEST_F(BrowserUtilTest, StatefulLacrosSelectionUpdateChannel) {
   // Assert that when no Lacros stability switch is specified, we return the
   // "unknown" channel.
-  ASSERT_EQ(Channel::UNKNOWN, browser_util::GetLacrosSelectionUpdateChannel(
-                                  LacrosSelection::kStateful));
+  ASSERT_EQ(Channel::UNKNOWN,
+            browser_util::GetLacrosSelectionUpdateChannel(
+                ash::standalone_browser::LacrosSelection::kStateful));
 
   // Assert that when a Lacros stability switch is specified, we return the
   // relevant channel name associated to that switch value.
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
   cmdline->AppendSwitchNative(browser_util::kLacrosStabilitySwitch,
                               browser_util::kLacrosStabilityChannelBeta);
-  ASSERT_EQ(Channel::BETA, browser_util::GetLacrosSelectionUpdateChannel(
-                               LacrosSelection::kStateful));
+  ASSERT_EQ(Channel::BETA,
+            browser_util::GetLacrosSelectionUpdateChannel(
+                ash::standalone_browser::LacrosSelection::kStateful));
   cmdline->RemoveSwitch(browser_util::kLacrosStabilitySwitch);
 }
 
@@ -795,89 +770,6 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
   EXPECT_TRUE(browser_util::IsLacrosEnabledForMigration(
       user, browser_util::PolicyInitState::kAfterInit));
-}
-
-TEST_F(BrowserUtilTest, LacrosSelection) {
-  // Neither policy nor command line have any preference on Lacros selection.
-  EXPECT_FALSE(browser_util::DetermineLacrosSelection());
-
-  {
-    // LacrosSelection policy has precedence over command line.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kRootfs);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionStateful);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kRootfs);
-  }
-
-  {
-    // LacrosSelection allows command line check, but command line is not set.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kUserChoice);
-    EXPECT_FALSE(browser_util::DetermineLacrosSelection());
-  }
-
-  {
-    // LacrosSelection allows command line check.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kUserChoice);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionRootfs);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kRootfs);
-  }
-
-  {
-    // LacrosSelection allows command line check.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kUserChoice);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionStateful);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kStateful);
-  }
-}
-
-// LacrosSelection has no effect on non-googlers.
-TEST_F(BrowserUtilTest, LacrosSelectionPolicyIgnoreNonGoogle) {
-  AddRegularUser("user@random.com");
-
-  base::test::ScopedCommandLine cmd_line;
-  cmd_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kLacrosSelectionPolicyIgnore);
-
-  {
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kRootfs);
-    EXPECT_EQ(browser_util::GetCachedLacrosSelectionPolicy(),
-              browser_util::LacrosSelectionPolicy::kRootfs);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kRootfs);
-  }
-}
-
-// LacrosSelection has an effect on googlers.
-TEST_F(BrowserUtilTest, LacrosSelectionPolicyIgnoreGoogleDisableToUserChoice) {
-  AddRegularUser("user@google.com");
-
-  base::test::ScopedCommandLine cmd_line;
-  cmd_line.GetProcessCommandLine()->AppendSwitch(
-      ash::switches::kLacrosSelectionPolicyIgnore);
-
-  {
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kRootfs);
-    EXPECT_EQ(browser_util::GetCachedLacrosSelectionPolicy(),
-              browser_util::LacrosSelectionPolicy::kUserChoice);
-    EXPECT_FALSE(browser_util::DetermineLacrosSelection());
-  }
 }
 
 // Lacros Only flag is hidden in guest sessions

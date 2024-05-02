@@ -19,11 +19,11 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader_factory.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -189,25 +189,25 @@ class FakeLacrosSelectionLoaderFactory : public LacrosSelectionLoaderFactory {
 class ScopedLacrosSelectionCache {
  public:
   explicit ScopedLacrosSelectionCache(
-      browser_util::LacrosSelectionPolicy lacros_selection) {
+      ash::standalone_browser::LacrosSelectionPolicy lacros_selection) {
     SetLacrosSelection(lacros_selection);
   }
   ScopedLacrosSelectionCache(const ScopedLacrosSelectionCache&) = delete;
   ScopedLacrosSelectionCache& operator=(const ScopedLacrosSelectionCache&) =
       delete;
   ~ScopedLacrosSelectionCache() {
-    browser_util::ClearLacrosSelectionCacheForTest();
+    ash::standalone_browser::ClearLacrosSelectionCacheForTest();
   }
 
  private:
   void SetLacrosSelection(
-      browser_util::LacrosSelectionPolicy lacros_selection) {
+      ash::standalone_browser::LacrosSelectionPolicy lacros_selection) {
     policy::PolicyMap policy;
     policy.Set(policy::key::kLacrosSelection, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(GetLacrosSelectionPolicyName(lacros_selection)),
                /*external_data_fetcher=*/nullptr);
-    browser_util::CacheLacrosSelection(policy);
+    ash::standalone_browser::CacheLacrosSelection(policy);
   }
 };
 
@@ -321,11 +321,11 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionSameVersions) {
 
 TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsRootfs) {
   ScopedLacrosSelectionCache cache(
-      browser_util::LacrosSelectionPolicy::kRootfs);
+      ash::standalone_browser::LacrosSelectionPolicy::kRootfs);
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      browser_util::kLacrosSelectionSwitch,
-      browser_util::kLacrosSelectionStateful);
+      ash::standalone_browser::kLacrosSelectionSwitch,
+      ash::standalone_browser::kLacrosSelectionStateful);
 
   // Set stateful lacros version newer than rootfs to test that the selection
   // policy is prioritized higher.
@@ -350,11 +350,11 @@ TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsRootfs) {
 TEST_F(BrowserLoaderTest,
        OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsRootfs) {
   ScopedLacrosSelectionCache cache(
-      browser_util::LacrosSelectionPolicy::kUserChoice);
+      ash::standalone_browser::LacrosSelectionPolicy::kUserChoice);
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      browser_util::kLacrosSelectionSwitch,
-      browser_util::kLacrosSelectionRootfs);
+      ash::standalone_browser::kLacrosSelectionSwitch,
+      ash::standalone_browser::kLacrosSelectionRootfs);
 
   // Set stateful lacros version newer than rootfs to test that the user choice
   // is prioritized higher.
@@ -379,11 +379,11 @@ TEST_F(BrowserLoaderTest,
 TEST_F(BrowserLoaderTest,
        OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsStateful) {
   ScopedLacrosSelectionCache cache(
-      browser_util::LacrosSelectionPolicy::kUserChoice);
+      ash::standalone_browser::LacrosSelectionPolicy::kUserChoice);
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      browser_util::kLacrosSelectionSwitch,
-      browser_util::kLacrosSelectionStateful);
+      ash::standalone_browser::kLacrosSelectionSwitch,
+      ash::standalone_browser::kLacrosSelectionStateful);
 
   // Set rootfs lacros version newer than rootfs to test that the user choice
   // is prioritized higher.

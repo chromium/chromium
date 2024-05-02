@@ -85,6 +85,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
@@ -1196,7 +1197,8 @@ void BrowserManager::ResumeLaunch() {
   // If Lacros selection (rootfs/stateful) for this user is forced to a
   // different value than the Lacros that was launched at login screen,
   // we need to reload and relaunch the correct version of Lacros.
-  auto user_lacros_selection = browser_util::DetermineLacrosSelection();
+  auto user_lacros_selection =
+      ash::standalone_browser::DetermineLacrosSelection();
   if (user_lacros_selection.has_value() &&
       lacros_selection_ != LacrosSelection::kDeployedLocally &&
       lacros_selection_ != user_lacros_selection) {

@@ -14,6 +14,7 @@
 #include "base/files/scoped_file.h"
 #include "base/token.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
@@ -59,7 +60,7 @@ struct InitialBrowserAction {
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
     bool include_post_login_params = true);
 
 // Creates a memory backed file containing the serialized |params|,
@@ -70,7 +71,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 base::ScopedFD CreateStartupData(
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
     bool include_post_login_params = true);
 
 // Serializes and writes post-login parameters into the given FD.

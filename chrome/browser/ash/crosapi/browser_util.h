@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -66,29 +67,6 @@ enum class LacrosLaunchSwitchSource {
   // the policy might still not be used, but it is programmatically overridden
   // and not by the user (e.g. special Googler user case).
   kForcedByPolicy = 3
-};
-
-// Represents the policy indicating which Lacros browser to launch, named
-// LacrosSelection. The values shall be consistent with the controlling
-// policy. Unlike `LacrosSelection` representing which lacros to select,
-// `LacrosSelectionPolicy` represents how to decide which lacros to select.
-// Stateful option from `LacrosSelection` is omitted due to a breakage risks in
-// case of version skew (e.g. when the latest stateful Lacros available in omaha
-// is older than the rootfs Lacros on the device).
-enum class LacrosSelectionPolicy {
-  // Indicates that the user decides which Lacros browser to launch: rootfs or
-  // stateful.
-  kUserChoice = 0,
-  // Indicates that rootfs Lacros will always be launched.
-  kRootfs = 1,
-};
-
-// Represents the different options available for lacros selection.
-enum class LacrosSelection {
-  kRootfs = 0,
-  kStateful = 1,
-  kDeployedLocally = 2,
-  kMaxValue = kDeployedLocally,
 };
 
 // Represents the values of the LacrosDataBackwardMigrationMode string enum
@@ -146,12 +124,6 @@ extern const char kLacrosStabilityChannelCanary[];
 extern const char kLacrosStabilityChannelDev[];
 extern const char kLacrosStabilityChannelBeta[];
 extern const char kLacrosStabilityChannelStable[];
-
-// A command-line switch that can also be set from chrome://flags that chooses
-// which selection of Lacros to use.
-extern const char kLacrosSelectionSwitch[];
-extern const char kLacrosSelectionRootfs[];
-extern const char kLacrosSelectionStateful[];
 
 // The internal name in about_flags.cc for the `LacrosDataBackwardMigrationMode`
 // policy.
@@ -259,20 +231,6 @@ void CacheLacrosAvailability(const policy::PolicyMap& map);
 // LacrosDataBackwardMigrationMode policy.
 void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map);
 
-// To be called at primary user login, to cache the policy value for
-// LacrosSelection policy. The effective value of the policy does not
-// change for the duration of the user session, so cached value shall be
-// checked.
-void CacheLacrosSelection(const policy::PolicyMap& map);
-
-// Returns cached value of LacrosSelection policy. See `CacheLacrosSelection`
-// for details.
-LacrosSelectionPolicy GetCachedLacrosSelectionPolicy();
-
-// Returns lacros selection option according to LarcrosSelectionPolicy and
-// lacros-selection flag. Returns nullopt if there is no preference.
-std::optional<LacrosSelection> DetermineLacrosSelection();
-
 // Returns the lacros ComponentInfo for a given channel.
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel);
 
@@ -281,7 +239,7 @@ ComponentInfo GetLacrosComponentInfo();
 
 // Returns the update channel associated with the given loaded lacros selection.
 version_info::Channel GetLacrosSelectionUpdateChannel(
-    LacrosSelection selection);
+    ash::standalone_browser::LacrosSelection selection);
 
 // Returns the currently installed version of lacros-chrome managed by the
 // component updater. Will return an empty / invalid version if no lacros
@@ -307,9 +265,6 @@ void ClearLacrosAvailabilityCacheForTest();
 
 // Clears the cached value for LacrosDataBackwardMigrationMode.
 void ClearLacrosDataBackwardMigrationModeCacheForTest();
-
-// Clears the cached value for LacrosSelection policy.
-void ClearLacrosSelectionCacheForTest();
 
 // Returns true if profile migraiton is enabled. If profile migration is
 // enabled, the completion of it is required to enable Lacros.
@@ -370,11 +325,6 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
 void SetLacrosLaunchSwitchSourceForTest(
     ash::standalone_browser::LacrosAvailability test_value);
 
-// Parses the string representation of LacrosSelection policy value into the
-// enum value. Returns nullopt on unknown value.
-std::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
-    std::string_view value);
-
 // Parses the string representation of LacrosDataBackwardMigrationMode policy
 // value into the enum value. Returns nullopt on unknown value.
 std::optional<LacrosDataBackwardMigrationMode>
@@ -383,10 +333,6 @@ ParseLacrosDataBackwardMigrationMode(std::string_view value);
 // Returns the policy string representation from the given enum value.
 std::string_view GetLacrosDataBackwardMigrationModeName(
     LacrosDataBackwardMigrationMode value);
-
-// Returns the LacrosSelection policy value name from the given value. Returned
-// std::string_view is guaranteed to never be invalidated.
-std::string_view GetLacrosSelectionPolicyName(LacrosSelectionPolicy value);
 
 // Stores that "Go to files button" on the migration error screen is clicked.
 void SetGotoFilesClicked(PrefService* local_state,

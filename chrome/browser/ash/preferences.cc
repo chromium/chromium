@@ -60,6 +60,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/components/disks/disks_prefs.h"
@@ -159,7 +160,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       ::prefs::kLacrosSelection,
       static_cast<int>(
-          crosapi::browser_util::LacrosSelectionPolicy::kUserChoice));
+          ash::standalone_browser::LacrosSelectionPolicy::kUserChoice));
   registry->RegisterStringPref(::prefs::kLacrosDataBackwardMigrationMode, "");
   registry->RegisterBooleanPref(prefs::kDeviceSystemWideTracingEnabled, true);
   registry->RegisterBooleanPref(

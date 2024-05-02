@@ -200,6 +200,7 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
@@ -669,7 +670,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
         map, IsNewProfile(), IsRegularProfile());
     crosapi::browser_util::CacheLacrosAvailability(map);
     crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(map);
-    crosapi::browser_util::CacheLacrosSelection(map);
+    ash::standalone_browser::CacheLacrosSelection(map);
   }
 #endif
 }
@@ -1185,7 +1186,7 @@ void ProfileImpl::OnPrefsLoaded(CreateMode create_mode, bool success) {
           map, IsNewProfile(), IsRegularProfile());
       crosapi::browser_util::CacheLacrosAvailability(map);
       crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(map);
-      crosapi::browser_util::CacheLacrosSelection(map);
+      ash::standalone_browser::CacheLacrosSelection(map);
     }
 
     ash::UserSessionManager::GetInstance()->RespectLocalePreferenceWrapper(

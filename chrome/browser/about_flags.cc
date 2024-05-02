@@ -288,6 +288,7 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -1074,11 +1075,11 @@ const char kProjectorServerSideSpeechRecognition[] =
 const FeatureEntry::Choice kLacrosSelectionChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kLacrosSelectionStatefulDescription,
-     crosapi::browser_util::kLacrosSelectionSwitch,
-     crosapi::browser_util::kLacrosSelectionStateful},
+     ash::standalone_browser::kLacrosSelectionSwitch,
+     ash::standalone_browser::kLacrosSelectionStateful},
     {flag_descriptions::kLacrosSelectionRootfsDescription,
-     crosapi::browser_util::kLacrosSelectionSwitch,
-     crosapi::browser_util::kLacrosSelectionRootfs},
+     ash::standalone_browser::kLacrosSelectionSwitch,
+     ash::standalone_browser::kLacrosSelectionRootfs},
 };
 
 const char kLacrosSelectionPolicyIgnoreInternalName[] =
@@ -11335,8 +11336,8 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
   // Skip lacros-selection if it is controlled by LacrosSelection policy.
   if (!strcmp(kLacrosSelectionInternalName, entry.internal_name)) {
-    return crosapi::browser_util::GetCachedLacrosSelectionPolicy() !=
-           crosapi::browser_util::LacrosSelectionPolicy::kUserChoice;
+    return ash::standalone_browser::GetCachedLacrosSelectionPolicy() !=
+           ash::standalone_browser::LacrosSelectionPolicy::kUserChoice;
   }
 
   if (!strcmp(kPreferDcheckInternalName, entry.internal_name)) {

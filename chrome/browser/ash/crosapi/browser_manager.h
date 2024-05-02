@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "components/component_updater/component_updater_service.h"
@@ -91,7 +92,7 @@ class FilesAppLauncher;
 class PersistentForcedExtensionKeepAlive;
 class TestMojoConnectionManager;
 
-using browser_util::LacrosSelection;
+using ash::standalone_browser::LacrosSelection;
 using component_updater::ComponentUpdateService;
 
 // Manages the lifetime of lacros-chrome, and its loading status. Observes the
