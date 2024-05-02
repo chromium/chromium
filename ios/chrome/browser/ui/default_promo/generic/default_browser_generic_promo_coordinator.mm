@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_commands.h"
 #import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_mediator.h"
 #import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_view_controller.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 using base::RecordAction;
@@ -35,7 +36,8 @@ using base::UserMetricsAction;
 // Default browser promo command handler.
 @property(nonatomic, readonly) id<DefaultBrowserGenericPromoCommands>
     defaultBrowserPromoHandler;
-
+// Feature engagement tracker reference.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
 @end
 
 @implementation DefaultBrowserGenericPromoCoordinator
@@ -44,6 +46,10 @@ using base::UserMetricsAction;
 
 - (void)start {
   [self recordVideoDefaultBrowserPromoShown];
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  self.tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
   self.mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
 
   [self showPromo];
@@ -53,6 +59,15 @@ using base::UserMetricsAction;
 
 - (void)stop {
   LogUserInteractionWithFullscreenPromo();
+
+  if (self.promoWasFromRemindMeLater && self.tracker) {
+    self.tracker->Dismissed(
+        feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
+  }
+
+  [self.promosUIHandler promoWasDismissed];
+  self.promosUIHandler = nil;
+
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   self.viewController = nil;
   self.mediator = nil;
@@ -92,15 +107,12 @@ using base::UserMetricsAction;
       IOSDefaultBrowserVideoPromoAction::kTertiaryActionTapped);
   RecordAction(UserMetricsAction(
       "IOS.DefaultBrowserVideoPromo.Fullscreen.RemindMeLater"));
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
-  tracker->NotifyEvent(
-      feature_engagement::events::kDefaultBrowserPromoRemindMeLater);
-
+  if (self.tracker) {
+    self.tracker->NotifyEvent(
+        feature_engagement::events::kDefaultBrowserPromoRemindMeLater);
+  }
   PromosManager* promosManager =
-      PromosManagerFactory::GetForBrowserState(browserState);
+      PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
   promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::DefaultBrowserRemindMeLater);
 
@@ -134,7 +146,11 @@ using base::UserMetricsAction;
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
   self.viewController = [[DefaultBrowserGenericPromoViewController alloc] init];
   self.viewController.actionHandler = self;
-  self.viewController.hasRemindMeLater = self.hasRemindMeLater;
+  BOOL hasRemindMeLater =
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
+      !self.promoWasFromRemindMeLater;
+  self.viewController.hasRemindMeLater = hasRemindMeLater;
   self.viewController.presentationController.delegate = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES

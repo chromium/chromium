@@ -8,8 +8,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -77,17 +79,20 @@ class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
 // Tests that the proper metrics and FET events are fired when tapping Remind Me
 // Later.
 TEST_F(DefaultBrowserGenericPromoCoordinatorTest, TestRemindMeLater) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature}, {});
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
   EXPECT_NSEQ(nil, view_controller_.presentedViewController);
 
-  coordinator_.hasRemindMeLater = YES;
+  coordinator_.promoWasFromRemindMeLater = NO;
   [coordinator_ start];
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserVideoPromo.Appear"));
 
-  // This should present a VideoDefaultBrowserPromoViewController.
+  // This should present a GenericDefaultBrowserPromoViewController.
   ASSERT_TRUE([view_controller_.presentedViewController
       isKindOfClass:[DefaultBrowserGenericPromoViewController class]]);
    DefaultBrowserGenericPromoViewController* generic_promo_view_controller =

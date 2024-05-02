@@ -159,7 +159,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_commands.h"
-#import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_manager.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/download/features.h"
@@ -535,8 +535,8 @@ enum class ToolbarKind {
 @property(nonatomic, strong) WhatsNewCoordinator* whatsNewCoordinator;
 
 // The manager used to display a default browser promo.
-@property(nonatomic, strong)
-    DefaultBrowserPromoManager* defaultBrowserPromoManager;
+@property(nonatomic, strong) DefaultBrowserGenericPromoCoordinator*
+    defaultBrowserGenericPromoCoordinator;
 
 // The webState of the active tab.
 @property(nonatomic, readonly) web::WebState* activeWebState;
@@ -1466,8 +1466,8 @@ enum class ToolbarKind {
   [_dockingPromoCoordinator stop];
   _dockingPromoCoordinator = nil;
 
-  [self.defaultBrowserPromoManager stop];
-  self.defaultBrowserPromoManager = nil;
+  [self.defaultBrowserGenericPromoCoordinator stop];
+  self.defaultBrowserGenericPromoCoordinator = nil;
 
   [self.choiceCoordinator stop];
   self.choiceCoordinator = nil;
@@ -2062,8 +2062,8 @@ enum class ToolbarKind {
 #pragma mark - DefaultBrowserPromoCommands
 
 - (void)hidePromo {
-  [self.defaultBrowserPromoManager stop];
-  self.defaultBrowserPromoManager = nil;
+  [self.defaultBrowserGenericPromoCoordinator stop];
+  self.defaultBrowserGenericPromoCoordinator = nil;
 }
 
 #pragma mark - FeedCommands
@@ -2290,29 +2290,33 @@ enum class ToolbarKind {
 }
 
 - (void)maybeDisplayDefaultBrowserPromo {
-  if (self.defaultBrowserPromoManager) {
+  if (self.defaultBrowserGenericPromoCoordinator) {
     // The default browser promo manager is already being displayed. Early
     // return as this is expected if a default browser promo was open and the
     // app was backgrounded.
     return;
   }
 
-  self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.defaultBrowserPromoManager.promosUIHandler =
+  self.defaultBrowserGenericPromoCoordinator =
+      [[DefaultBrowserGenericPromoCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  self.defaultBrowserGenericPromoCoordinator.promosUIHandler =
       self.promosManagerCoordinator;
-  [self.defaultBrowserPromoManager start];
+  self.defaultBrowserGenericPromoCoordinator.handler = self;
+  [self.defaultBrowserGenericPromoCoordinator start];
 }
 
 - (void)displayDefaultBrowserPromoAfterRemindMeLater {
-  self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  self.defaultBrowserPromoManager.promosUIHandler =
+  self.defaultBrowserGenericPromoCoordinator =
+      [[DefaultBrowserGenericPromoCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+  self.defaultBrowserGenericPromoCoordinator.promosUIHandler =
       self.promosManagerCoordinator;
-  self.defaultBrowserPromoManager.promoWasFromRemindMeLater = YES;
-  [self.defaultBrowserPromoManager start];
+  self.defaultBrowserGenericPromoCoordinator.handler = self;
+  self.defaultBrowserGenericPromoCoordinator.promoWasFromRemindMeLater = YES;
+  [self.defaultBrowserGenericPromoCoordinator start];
 }
 
 - (void)showOmniboxPositionChoicePromo {

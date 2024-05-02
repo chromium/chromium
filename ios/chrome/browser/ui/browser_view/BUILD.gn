@@ -153,7 +153,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:default_promo_ui",
     "//ios/chrome/browser/ui/default_promo/generic",
-    "//ios/chrome/browser/ui/default_promo/promo_handler",
     "//ios/chrome/browser/ui/dialogs:dialogs_internal",
     "//ios/chrome/browser/ui/download",
     "//ios/chrome/browser/ui/download:features",
