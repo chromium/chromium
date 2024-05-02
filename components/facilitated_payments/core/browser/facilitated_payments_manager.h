@@ -14,10 +14,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/payments/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
@@ -131,6 +133,9 @@ class FacilitatedPaymentsManager {
       ValidPixCodeDetectionResult_HasPixAccounts_ApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      ValidPixCodeDetectionResult_InvalidPixCodeString_ApiClientNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       InvalidPixCodeDetectionResultDoesNotTriggerApiClient);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            AbsenceOfPixAccountsDoesNotTriggerApiClient);
@@ -138,6 +143,13 @@ class FacilitatedPaymentsManager {
                            UnavailabilityOfPdmDoesNotTriggerApiClient);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            ValidPixDetectionResultToPixPaymentPromptShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           PixCodeValidated_ApiClientTriggered);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           PixCodeValidationFailed_NoApiClientTriggered);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
@@ -161,6 +173,13 @@ class FacilitatedPaymentsManager {
   // represents the result of the document scan.
   void ProcessPixCodeDetectionResult(mojom::PixCodeDetectionResult result,
                                      const std::string& pix_code);
+
+  // Called by the utility process after validation of the `pix_code`. If the
+  // utility processes has disconnected (e.g., due to a crash in the validation
+  // code), then `is_pix_code_valid` contains an error string instead of the
+  // boolean validation result.
+  void OnPixCodeValidated(std::string pix_code,
+                          base::expected<bool, std::string> is_pix_code_valid);
 
   // Starts `pix_code_detection_latency_measuring_timestamp_`.
   void StartPixCodeDetectionLatencyTimer();
@@ -220,6 +239,9 @@ class FacilitatedPaymentsManager {
 
   // Informs whether this instance was created in a test.
   bool is_test_ = false;
+
+  // Utility process validator for PIX code strings.
+  data_decoder::DataDecoder utility_process_validator_;
 
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };

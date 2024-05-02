@@ -151,6 +151,20 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     return;
   }
 
+  utility_process_validator_.ValidatePixCode(
+      pix_code, base::BindOnce(&FacilitatedPaymentsManager::OnPixCodeValidated,
+                               weak_ptr_factory_.GetWeakPtr(), pix_code));
+}
+
+void FacilitatedPaymentsManager::OnPixCodeValidated(
+    std::string pix_code,
+    base::expected<bool, std::string> is_pix_code_valid) {
+  if (!is_pix_code_valid.has_value() || !is_pix_code_valid.value()) {
+    Reset();
+    return;
+  }
+
+  initiate_payment_request_details_->pix_code_ = std::move(pix_code);
   api_client_->IsAvailable(
       base::BindOnce(&FacilitatedPaymentsManager::OnApiAvailabilityReceived,
                      weak_ptr_factory_.GetWeakPtr()));

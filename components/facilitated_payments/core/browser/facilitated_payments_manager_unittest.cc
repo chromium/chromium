@@ -10,6 +10,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -21,6 +22,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -278,6 +280,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   base::OneShotTimer page_load_timer_;
   std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 // Test that the `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is
@@ -951,7 +954,30 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   EXPECT_CALL(*api_client_, IsAvailable(testing::_));
 
   manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kValidPixCodeFound,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F");
+
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
+}
+
+// If the renderer indicates that a valid PIX code is detected, but sends an
+// invalid code to the browser, the manager does not proceed to check whether
+// the API is available.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       ValidPixCodeDetectionResult_InvalidPixCodeString_ApiClientNotTriggered) {
+  personal_data_manager_->payments_data_manager().AddMaskedBankAccountForTest(
+      CreatePixBankAccount(1));
+
+  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+
+  manager_->ProcessPixCodeDetectionResult(
       mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
+
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
 }
 
 // When an invalid PIX code is detected, the manager does not check whether the
@@ -965,6 +991,39 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 
   manager_->ProcessPixCodeDetectionResult(
       mojom::PixCodeDetectionResult::kInvalidPixCodeFound, std::string());
+}
+
+// If the PIX code has been validated, then the manager checks for API
+// availability.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       PixCodeValidated_ApiClientTriggered) {
+  EXPECT_CALL(*api_client_, IsAvailable(testing::_));
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/true);
+}
+
+// If the PIX code validation in the utility process has returned `false`, then
+// the manager does not check the API for availability.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       PixCodeValidationFailed_NoApiClientTriggered) {
+  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/false);
+}
+
+// If the validation utility process has disconnected (e.g., due to a crash in
+// the validation code), then the manager does not check the API for
+// availability.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered) {
+  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+
+  manager_->OnPixCodeValidated(
+      /*pix_code=*/std::string(),
+      /*is_pix_code_valid=*/base::unexpected(
+          "Data Decoder terminated unexpectedly"));
 }
 
 // If the user doesn't have any linked PIX accounts, the manager does not check
@@ -1015,7 +1074,12 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                                              testing::_));
 
   manager_->ProcessPixCodeDetectionResult(
-      mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
+      mojom::PixCodeDetectionResult::kValidPixCodeFound,
+      "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F");
+
+  // The DataDecoder (utility process) validates the PIX code string
+  // asynchronously.
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace payments::facilitated

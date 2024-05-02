@@ -27,6 +27,7 @@ static_library("browser") {
     "//components/facilitated_payments/core/features",
     "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
     "//components/optimization_guide/core",
+    "//services/data_decoder/public/cpp",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
@@ -49,6 +50,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
   ]
 }
