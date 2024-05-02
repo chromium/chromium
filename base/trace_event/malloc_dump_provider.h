@@ -7,6 +7,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
@@ -44,7 +45,7 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
     size_t capacity_in_bytes = 0;
   };
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  using ExtremeLUDGetStatsCallback = ExtremeLUDStats (*)();
+  using ExtremeLUDGetStatsCallback = RepeatingCallback<ExtremeLUDStats()>;
   static void SetExtremeLUDGetStatsCallback(
       ExtremeLUDGetStatsCallback callback);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -75,9 +76,9 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   base::Lock emit_metrics_on_memory_dump_lock_;
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // The injected stats-report function of the Extreme LUD. Non-null iff the
-  // Extreme LUD is enabled.
-  static ExtremeLUDGetStatsCallback extreme_lud_get_stats_callback_;
+  // Returns a reference to the injected stats-report function of the Extreme
+  // LUD. The returned callback is_null() if the Extreme LUD is not enabled.
+  static ExtremeLUDGetStatsCallback& GetExtremeLUDGetStatsCallback();
   // To be accurate, this requires the dump provider to be created very early,
   // which is the case. The alternative would be to drop the first data point,
   // which is not desirable as early process activity is highly relevant.
@@ -88,7 +89,7 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   size_t last_cumulative_elud_quarantined_bytes_ = 0;
   size_t last_cumulative_elud_quarantined_count_ = 0;
   size_t last_cumulative_elud_miss_count_ = 0;
-#endif
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 };
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)

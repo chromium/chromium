@@ -6,6 +6,7 @@
 
 #include <atomic>
 
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/malloc_dump_provider.h"
 #include "components/gwp_asan/client/sampling_state.h"
@@ -242,7 +243,7 @@ void InstallExtremeLightweightDetectorHooks(
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::trace_event::MallocDumpProvider::SetExtremeLUDGetStatsCallback(
-      GetStats);
+      base::BindRepeating(GetStats));
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 

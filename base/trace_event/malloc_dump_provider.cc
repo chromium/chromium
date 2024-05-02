@@ -41,6 +41,7 @@
 #endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/no_destructor.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
@@ -318,15 +319,20 @@ MallocDumpProvider* MallocDumpProvider::GetInstance() {
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // static
-MallocDumpProvider::ExtremeLUDGetStatsCallback
-    MallocDumpProvider::extreme_lud_get_stats_callback_ = nullptr;
-
-// static
 void MallocDumpProvider::SetExtremeLUDGetStatsCallback(
     ExtremeLUDGetStatsCallback callback) {
-  DCHECK(callback);
-  DCHECK(!extreme_lud_get_stats_callback_);
-  extreme_lud_get_stats_callback_ = callback;
+  DCHECK(!callback.is_null());
+  auto& extreme_lud_get_stats_callback = GetExtremeLUDGetStatsCallback();
+  DCHECK(extreme_lud_get_stats_callback.is_null());
+  extreme_lud_get_stats_callback = std::move(callback);
+}
+
+// static
+MallocDumpProvider::ExtremeLUDGetStatsCallback&
+MallocDumpProvider::GetExtremeLUDGetStatsCallback() {
+  static NoDestructor<MallocDumpProvider::ExtremeLUDGetStatsCallback>
+      extreme_lud_get_stats_callback;
+  return *extreme_lud_get_stats_callback;
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -438,9 +444,11 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   partitions_dump = pmd->CreateAllocatorDump("malloc/partitions");
   pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
 
-  if (extreme_lud_get_stats_callback_) {  // The Extreme LUD is enabled.
+  auto& extreme_lud_get_stats_callback = GetExtremeLUDGetStatsCallback();
+  if (!extreme_lud_get_stats_callback.is_null()) {
+    // The Extreme LUD is enabled.
     elud_dump = pmd->CreateAllocatorDump("malloc/extreme_lud");
-    elud_stats = extreme_lud_get_stats_callback_();
+    elud_stats = extreme_lud_get_stats_callback.Run();
     ReportPartitionAllocLightweightQuarantineStats(elud_dump,
                                                    elud_stats.lq_stats);
   }
