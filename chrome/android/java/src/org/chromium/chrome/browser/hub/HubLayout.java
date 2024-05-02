@@ -85,6 +85,8 @@ public class HubLayout extends Layout implements HubLayoutController {
 
     private @Nullable SceneLayer mCurrentSceneLayer;
 
+    private boolean mFullyShown;
+
     /** Scene layer to facilitate thumbnail capture prior to starting a transition animation. */
     private @Nullable StaticTabSceneLayer mTabSceneLayer;
 
@@ -296,6 +298,8 @@ public class HubLayout extends Layout implements HubLayoutController {
             mCurrentSceneLayer = mEmptySceneLayer;
             mCurrentAnimationRunner = null;
             resetLayoutTabs(/* clearVisibleIds= */ true);
+            // We are now fully shown as all animations are finished.
+            mFullyShown = true;
 
             // This is a legacy value from the stack tab switcher, we are using at a proxy for Hub
             // shown. Prior to Hub this was recorded in when the TabSwitcherMediator finished
@@ -311,6 +315,9 @@ public class HubLayout extends Layout implements HubLayoutController {
 
         try (TraceEvent e = TraceEvent.scoped("HubLayout.startHiding")) {
             super.startHiding();
+
+            // Since we are hiding this is no-longer fully shown.
+            mFullyShown = false;
 
             // Use the EXPAND_NEW_TAB animation if it is already prepared.
             if (getCurrentAnimationType() == HubLayoutAnimationType.EXPAND_NEW_TAB) {
@@ -393,6 +400,10 @@ public class HubLayout extends Layout implements HubLayoutController {
             mCurrentSceneLayer = mEmptySceneLayer;
             // Don't clear the visible ids because the next layout might have already updated them.
             resetLayoutTabs(/* clearVisibleIds= */ false);
+
+            // This is defensive and probably is not necessary as it is set in startHiding; however,
+            // to ensure the toolbar does not become broken also set this here.
+            mFullyShown = false;
 
             // This is a legacy value from the stack tab switcher, we are using at a proxy for Hub
             // hidden.
@@ -564,6 +575,14 @@ public class HubLayout extends Layout implements HubLayoutController {
         layoutTab.set(LayoutTab.IS_ACTIVE_LAYOUT_SUPPLIER, this::isActive);
         layoutTab.set(LayoutTab.CONTENT_OFFSET, browserControls.getContentOffset());
         mTabSceneLayer.update(layoutTab);
+    }
+
+    @Override
+    public boolean forceHideBrowserControlsAndroidView() {
+        // Fixes being able to click the toolbar through the Hub on LFF devices see b/337616153.
+        // This is not always `true` because it results in a visible flicker when exiting the Hub
+        // into an NTP when using the expand animation.
+        return mFullyShown;
     }
 
     @Override
