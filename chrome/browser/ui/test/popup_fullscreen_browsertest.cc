@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <string>
-#include "build/chromeos_buildflags.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,22 +14,14 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/test/fullscreen_test_util.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/base_paths_win.h"
-#include "base/test/scoped_path_override.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -423,94 +415,5 @@ IN_PROC_BROWSER_TEST_P(PopupFullscreenPermissionPolicyTest,
   EXPECT_EQ(fullscreen_controller->IsTabFullscreen(),
             GetParam().is_fullscreen_expected_allowed());
 }
-
-// Tests the automatic fullscreen content setting in IWA and non-IWA contexts.
-class PopupAutomaticFullscreenTest : public PopupFullscreenTestBase,
-                                     public testing::WithParamInterface<bool> {
- public:
-  PopupAutomaticFullscreenTest() {
-    feature_list_.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
-         features::kAutomaticFullscreenContentSetting},
-        {});
-  }
-
-  void SetUpOnMainThread() override {
-    auto allow_content_settings = [&](const GURL& url) {
-      auto* map =
-          HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-      map->SetContentSettingDefaultScope(
-          url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN,
-          CONTENT_SETTING_ALLOW);
-      map->SetContentSettingDefaultScope(url, url,
-                                         ContentSettingsType::WINDOW_MANAGEMENT,
-                                         CONTENT_SETTING_ALLOW);
-    };
-    if (GetParam()) {
-      auto dev_server = web_app::CreateAndStartDevServer(
-          FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-      auto url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-          browser()->profile(), dev_server->GetOrigin());
-      allow_content_settings(url_info.origin().GetURL());
-      frame_ =
-          web_app::OpenIsolatedWebApp(browser()->profile(), url_info.app_id());
-      EXPECT_TRUE(WaitForRenderFrameReady(frame_));
-    } else {
-      ASSERT_TRUE(embedded_test_server()->Start());
-      const GURL url = embedded_test_server()->GetURL("/simple.html");
-      allow_content_settings(url);
-      ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
-      frame_ = browser()
-                   ->tab_strip_model()
-                   ->GetActiveWebContents()
-                   ->GetPrimaryMainFrame();
-      EXPECT_TRUE(WaitForRenderFrameReady(frame_));
-    }
-  }
-
-  void TearDownOnMainThread() override { frame_ = nullptr; }
-
- protected:
-  raw_ptr<content::RenderFrameHost, DanglingUntriaged> frame_ = nullptr;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  // Stop test from installing OS hooks.
-  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
-};
-
-IN_PROC_BROWSER_TEST_P(PopupAutomaticFullscreenTest,
-                       PopupFullscreenWithoutTransientActivation) {
-  base::HistogramTester histograms;
-  EXPECT_FALSE(EvalJs(frame_, "navigator.userActivation.isActive",
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                   .ExtractBool());
-  Browser* popup = OpenPopup(frame_, "open('.', '', 'popup,fullscreen')",
-                             /*user_gesture=*/false);
-  content::WebContents* popup_contents =
-      popup->tab_strip_model()->GetActiveWebContents();
-  content::WaitForHTMLFullscreen(popup_contents);
-  EXPECT_TRUE(EvalJs(popup_contents,
-                     "!!document.fullscreenElement && "
-                     "document.fullscreenElement == document.documentElement")
-                  .ExtractBool());
-  FullscreenController* fullscreen_controller =
-      popup->exclusive_access_manager()->fullscreen_controller();
-  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
-  EXPECT_TRUE(fullscreen_controller->IsTabFullscreen());
-
-  // Navigate away in order to flush use counters.
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_);
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(url::kAboutBlankURL)));
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  if (!GetParam()) {  // TODO(crbug.com/41497058): Test use counter in IWA too.
-    histograms.ExpectBucketCount(
-        "Blink.UseCounter.Features",
-        blink::mojom::WebFeature::kFullscreenAllowedByContentSetting, 1);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(, PopupAutomaticFullscreenTest, ::testing::Bool());
 
 }  // namespace

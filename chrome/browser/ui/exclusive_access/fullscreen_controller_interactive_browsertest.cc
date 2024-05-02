@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -902,8 +903,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  // Stop test from installing OS hooks.
-  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, RequestFullscreenNoGesture) {

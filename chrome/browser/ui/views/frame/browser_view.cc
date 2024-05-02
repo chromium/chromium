@@ -2055,6 +2055,11 @@ void BrowserView::RestoreFocus() {
 }
 
 void BrowserView::FullscreenStateChanging() {
+  // Skip view changes during close, especially to avoid making new OS requests.
+  if (frame_->IsClosed()) {
+    return;
+  }
+
   bool fullscreen = IsFullscreen();
   ProcessFullscreen(
       fullscreen, GURL(),
