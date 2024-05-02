@@ -6221,8 +6221,9 @@ void AXObjectCacheImpl::ResetPluginTreeSerializer() {
 }
 
 void AXObjectCacheImpl::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
-  CHECK(plugin_tree_source_ && plugin_serializer_);
-  plugin_serializer_->MarkSubtreeDirty(node_id);
+  if (plugin_serializer_.get()) {
+    plugin_serializer_->MarkSubtreeDirty(node_id);
+  }
 }
 
 }  // namespace blink
