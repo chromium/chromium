@@ -28,7 +28,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowHomepageManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -40,7 +39,7 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowMultiInstanceManagerApi31.class, ShadowHomepageManager.class})
+        shadows = {ShadowMultiInstanceManagerApi31.class})
 public class MultiWindowUtilsUnitTest {
     /** Shadows {@link MultiInstanceManagerApi31} class for testing. */
     @Implements(MultiInstanceManagerApi31.class)
@@ -65,28 +64,6 @@ public class MultiWindowUtilsUnitTest {
         @Implementation
         public static SparseIntArray getWindowIdsOfRunningTabbedActivities() {
             return sWindowIdsOfRunningTabbedActivities;
-        }
-    }
-
-    /** Shadow for {@link HomepageManager}. */
-    @Implements(HomepageManager.class)
-    public static class ShadowHomepageManager {
-        static GURL sHomepageGurl;
-        static boolean sIsHomepageEnabled;
-
-        @Implementation
-        public static boolean isHomepageEnabled() {
-            return sIsHomepageEnabled;
-        }
-
-        @Implementation
-        public static GURL getHomepageGurl() {
-            return sHomepageGurl;
-        }
-
-        public static void reset() {
-            sIsHomepageEnabled = false;
-            sHomepageGurl = NTP_GURL;
         }
     }
 
@@ -117,6 +94,7 @@ public class MultiWindowUtilsUnitTest {
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
+    @Mock HomepageManager mHomepageManager;
 
     @Before
     public void setUp() {
@@ -162,14 +140,15 @@ public class MultiWindowUtilsUnitTest {
                         return super.isOpenInOtherWindowSupported(activity);
                     }
                 };
-        ShadowHomepageManager.sIsHomepageEnabled = true;
-        ShadowHomepageManager.sHomepageGurl = NTP_GURL;
+
+        when(mHomepageManager.isHomepageEnabled()).thenReturn(true);
+        when(mHomepageManager.getHomepageGurl()).thenReturn(NTP_GURL);
+        HomepageManager.setInstanceForTesting(mHomepageManager);
     }
 
     @After
     public void tearDown() {
         ShadowMultiInstanceManagerApi31.reset();
-        ShadowHomepageManager.reset();
         mOverrideOpenInNewWindowSupported = false;
     }
 
@@ -247,7 +226,7 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     public void testIsMoveOtherWindowSupported_HasOneTabWithHomePageDisabled_ReturnsTrue() {
-        ShadowHomepageManager.sIsHomepageEnabled = false;
+        when(mHomepageManager.isHomepageEnabled()).thenReturn(false);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
         mOverrideOpenInNewWindowSupported = true;
         assertTrue(
@@ -267,8 +246,8 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void
             testIsMoveOtherWindowSupported_HasOneTabWithHomePageEnabledAsCustomUrl_ReturnsFalse() {
-        ShadowHomepageManager.sHomepageGurl = TEST_GURL;
-        ShadowHomepageManager.sIsHomepageEnabled = true;
+        when(mHomepageManager.getHomepageGurl()).thenReturn(TEST_GURL);
+        when(mHomepageManager.isHomepageEnabled()).thenReturn(true);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
         assertFalse(
                 "Should return false when called for last tab with homepage set as a custom url.",
@@ -285,26 +264,26 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testHasAtMostOneTabWithHomepageEnabledAsCustomUrl_ReturnsTrue() {
-        ShadowHomepageManager.sHomepageGurl = TEST_GURL;
+    public void testHasAtMostOneTabWithHomepageEnabled_OneTab_HasCustomHomepage() {
+        when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(true);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
         assertTrue(
-                "Should return true for last tab with homepage set to a custom url.",
+                "Should return true with one tab and custom homepage.",
                 mUtils.hasAtMostOneTabWithHomepageEnabled(mTabModelSelector));
     }
 
     @Test
-    public void testHasAtMostOneTabWithHomepageEnabledAsNtp_ReturnsFalse() {
+    public void testHasAtMostOneTabWithHomepageEnabled_OneTab_NoCustomHomepage() {
+        when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(false);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
         assertFalse(
-                "Should return true for last tab with homepage as NTP.",
+                "Should return false with one tab and no custom homepage.",
                 mUtils.hasAtMostOneTabWithHomepageEnabled(mTabModelSelector));
     }
 
     @Test
-    public void
-            testHasAtMostOneTabWithHomepageEnabledAsCustomUrl_WithMoreThanOneTab_ReturnsFalse() {
-        ShadowHomepageManager.sHomepageGurl = TEST_GURL;
+    public void testHasAtMostOneTabWithHomepageEnabled_WithMoreThanOneTab_HasCustomHomepage() {
+        when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(true);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
         assertFalse(
                 "Should return false for multiple tabs.",
@@ -312,11 +291,11 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testHasAtMostOneTabWith_WithHomepageDisabled_ReturnsFalse() {
-        ShadowHomepageManager.sIsHomepageEnabled = false;
-        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+    public void testHasAtMostOneTabWithHomepageEnabled_WithMoreThanOneTab_NoCustomHomepage() {
+        when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(false);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
         assertFalse(
-                "Should return false for homepage disabled.",
+                "Should return false for multiple tabs.",
                 mUtils.hasAtMostOneTabWithHomepageEnabled(mTabModelSelector));
     }
 

@@ -725,7 +725,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             if (getTabModelSelector().getTotalTabCount() == 0) {
                                 // If the last tab is closed, and homepage is enabled, then exit
                                 // Chrome.
-                                if (HomepageManager.shouldCloseAppWithZeroTabs()) {
+                                if (HomepageManager.getInstance().shouldCloseAppWithZeroTabs()) {
                                     finish();
                                 } else if (isPendingClosure) {
                                     NewTabPageUma.recordNtpImpression(
@@ -1811,7 +1811,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         String url = null;
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
         if (!shouldShowOverviewPageOnStart) {
-            GURL homepageGurl = HomepageManager.getHomepageGurl();
+            GURL homepageGurl = HomepageManager.getInstance().getHomepageGurl();
             if (homepageGurl.isEmpty()) {
                 url = UrlConstants.NTP_URL;
             } else {

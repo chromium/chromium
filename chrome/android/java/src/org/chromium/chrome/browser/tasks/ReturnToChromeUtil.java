@@ -514,13 +514,14 @@ public final class ReturnToChromeUtil {
 
     /**
      * Returns whether to use Chrome's homepage. This function doesn't distinguish whether to show
-     * NTP or Start though. If checking whether to show Start as homepage, use
-     * {@link ReturnToChromeUtil#shouldShowStartSurfaceAsTheHomePage(Context)} instead.
+     * NTP or Start though. If checking whether to show Start as homepage, use {@link
+     * ReturnToChromeUtil#shouldShowStartSurfaceAsTheHomePage(Context)} instead.
      */
     @VisibleForTesting
     public static boolean useChromeHomepage() {
-        GURL homePageGurl = HomepageManager.getHomepageGurl();
-        return HomepageManager.isHomepageEnabled()
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        GURL homePageGurl = homepageManager.getHomepageGurl();
+        return homepageManager.isHomepageEnabled()
                 && ((HomepagePolicyManager.isInitializedWithNative()
                                 || sSkipInitializationCheckForTesting)
                         && (homePageGurl.isEmpty() || UrlUtilities.isNtpUrl(homePageGurl)));

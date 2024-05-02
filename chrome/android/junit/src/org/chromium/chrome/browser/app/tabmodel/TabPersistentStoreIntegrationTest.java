@@ -23,11 +23,9 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
@@ -81,15 +79,6 @@ import java.util.concurrent.atomic.AtomicInteger;
     ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
 })
 public class TabPersistentStoreIntegrationTest {
-    /** Shadow for {@link HomepageManager}. */
-    @Implements(HomepageManager.class)
-    static class ShadowHomepageManager {
-        @Implementation
-        public static boolean shouldCloseAppWithZeroTabs() {
-            return false;
-        }
-    }
-
     @Rule public JniMocker jniMocker = new JniMocker();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -257,10 +246,11 @@ public class TabPersistentStoreIntegrationTest {
     @Test
     @SmallTest
     @Feature({"TabPersistentStore"})
-    @Config(
-            manifest = Config.NONE,
-            shadows = {ShadowHomepageManager.class})
     public void testCloseAllTabsPersistsState() {
+        HomepageManager homepageManager = Mockito.mock(HomepageManager.class);
+        when(homepageManager.shouldCloseAppWithZeroTabs()).thenReturn(false);
+        HomepageManager.setInstanceForTesting(homepageManager);
+
         AtomicInteger timesMetadataSaved = new AtomicInteger();
         observeOnMetadataSavedAsynchronously(timesMetadataSaved);
 

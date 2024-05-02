@@ -209,7 +209,9 @@ public class AppLaunchDrawBlocker {
 
         boolean shouldBlockWithoutIntent =
                 shouldBlockDrawForNtpOnColdStartWithoutIntent(
-                        tabState, HomepageManager.isHomepageNonNtp(), singleUrlBarMode);
+                        tabState,
+                        HomepageManager.getInstance().isHomepageNonNtp(),
+                        singleUrlBarMode);
 
         if (shouldBlockDrawForNtpOnColdStartWithIntent(
                 hasValidIntentUrl,

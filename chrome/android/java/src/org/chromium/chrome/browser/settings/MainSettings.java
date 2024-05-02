@@ -304,7 +304,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
-        setOnOffSummary(homepagePref, HomepageManager.isHomepageEnabled());
+        setOnOffSummary(homepagePref, HomepageManager.getInstance().isHomepageEnabled());
 
         if (HomeModulesConfigManager.getInstance().hasModuleShownInSettings()) {
             addPreferenceIfAbsent(PREF_HOME_MODULES_CONFIG);

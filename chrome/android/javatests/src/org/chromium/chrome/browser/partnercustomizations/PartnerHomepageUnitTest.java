@@ -175,8 +175,8 @@ public class PartnerHomepageUnitTest {
         Assert.assertEquals(
                 TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
-        Assert.assertFalse(HomepageManager.isHomepageEnabled());
-        Assert.assertTrue(HomepageManager.getHomepageGurl().isEmpty());
+        Assert.assertFalse(mHomepageManager.isHomepageEnabled());
+        Assert.assertTrue(mHomepageManager.getHomepageGurl().isEmpty());
     }
 
     /**
@@ -211,8 +211,8 @@ public class PartnerHomepageUnitTest {
         Assert.assertEquals(
                 TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
-        Assert.assertTrue(HomepageManager.isHomepageEnabled());
-        Assert.assertEquals(TEST_CUSTOM_HOMEPAGE_GURL, HomepageManager.getHomepageGurl());
+        Assert.assertTrue(mHomepageManager.isHomepageEnabled());
+        Assert.assertEquals(TEST_CUSTOM_HOMEPAGE_GURL, mHomepageManager.getHomepageGurl());
     }
 
     /**
@@ -244,8 +244,8 @@ public class PartnerHomepageUnitTest {
         Assert.assertFalse(mPartnerBrowserCustomizations.isInitialized());
         Assert.assertFalse(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
         Assert.assertNull(mPartnerBrowserCustomizations.getHomePageUrl());
-        Assert.assertFalse(HomepageManager.isHomepageEnabled());
-        Assert.assertTrue(HomepageManager.getHomepageGurl().isEmpty());
+        Assert.assertFalse(mHomepageManager.isHomepageEnabled());
+        Assert.assertTrue(mHomepageManager.getHomepageGurl().isEmpty());
 
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback(), 2000);
 
@@ -290,8 +290,8 @@ public class PartnerHomepageUnitTest {
         Assert.assertFalse(mPartnerBrowserCustomizations.isInitialized());
         Assert.assertFalse(mPartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled());
         Assert.assertNull(mPartnerBrowserCustomizations.getHomePageUrl());
-        Assert.assertFalse(HomepageManager.isHomepageEnabled());
-        Assert.assertTrue(HomepageManager.getHomepageGurl().isEmpty());
+        Assert.assertFalse(mHomepageManager.isHomepageEnabled());
+        Assert.assertTrue(mHomepageManager.getHomepageGurl().isEmpty());
 
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback(), 3000);
 
@@ -302,10 +302,10 @@ public class PartnerHomepageUnitTest {
         Assert.assertEquals(
                 TestPartnerBrowserCustomizationsDelayedProvider.HOMEPAGE_URI,
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
-        Assert.assertTrue(HomepageManager.isHomepageEnabled());
+        Assert.assertTrue(mHomepageManager.isHomepageEnabled());
         Assert.assertEquals(
                 TestPartnerBrowserCustomizationsDelayedProvider.HOMEPAGE_URI,
-                HomepageManager.getHomepageGurl().getSpec());
+                mHomepageManager.getHomepageGurl().getSpec());
     }
 
     /**
@@ -339,15 +339,15 @@ public class PartnerHomepageUnitTest {
         Assert.assertEquals(
                 TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 mPartnerBrowserCustomizations.getHomePageUrl().getSpec());
-        Assert.assertTrue(HomepageManager.isHomepageEnabled());
+        Assert.assertTrue(mHomepageManager.isHomepageEnabled());
         Assert.assertEquals(
                 TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
-                HomepageManager.getHomepageGurl().getSpec());
+                mHomepageManager.getHomepageGurl().getSpec());
     }
 
     private void assertHomePageIsNtp() {
         // The home page should default to the NTP
-        Assert.assertTrue(HomepageManager.isHomepageEnabled());
-        Assert.assertEquals(ChromeUrlConstants.nativeNtpGurl(), HomepageManager.getHomepageGurl());
+        Assert.assertTrue(mHomepageManager.isHomepageEnabled());
+        Assert.assertEquals(ChromeUrlConstants.nativeNtpGurl(), mHomepageManager.getHomepageGurl());
     }
 }

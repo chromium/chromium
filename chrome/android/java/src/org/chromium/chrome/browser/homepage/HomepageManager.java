@@ -66,6 +66,12 @@ public class HomepageManager
         return sInstance;
     }
 
+    public static void setInstanceForTesting(HomepageManager homepageManager) {
+        HomepageManager prevValue = sInstance;
+        sInstance = homepageManager;
+        ResettersForTesting.register(() -> sInstance = prevValue);
+    }
+
     /** Adds a HomepageStateListener to receive updates when the homepage state changes. */
     public void addListener(HomepageStateListener listener) {
         mHomepageStateListeners.addObserver(listener);
@@ -97,17 +103,15 @@ public class HomepageManager
     /**
      * @return Whether or not homepage is enabled.
      */
-    public static boolean isHomepageEnabled() {
-        return HomepagePolicyManager.isHomepageManagedByPolicy()
-                || getInstance().getPrefHomepageEnabled();
+    public boolean isHomepageEnabled() {
+        return HomepagePolicyManager.isHomepageManagedByPolicy() || getPrefHomepageEnabled();
     }
 
     /**
      * @return Whether to close the app when the user has zero tabs.
      */
-    public static boolean shouldCloseAppWithZeroTabs() {
-        return HomepageManager.isHomepageEnabled()
-                && !UrlUtilities.isNtpUrl(HomepageManager.getHomepageGurl());
+    public boolean shouldCloseAppWithZeroTabs() {
+        return isHomepageEnabled() && !UrlUtilities.isNtpUrl(getHomepageGurl());
     }
 
     /**
@@ -129,10 +133,10 @@ public class HomepageManager
      * @see #getPrefHomepageUseChromeNtp()
      * @see #getPrefHomepageUseDefaultUri()
      */
-    public static @Nullable GURL getHomepageGurl() {
+    public @Nullable GURL getHomepageGurl() {
         if (!isHomepageEnabled()) return GURL.emptyGURL();
 
-        GURL homepageGurl = getInstance().getHomepageGurlIgnoringEnabledState();
+        GURL homepageGurl = getHomepageGurlIgnoringEnabledState();
         if (homepageGurl.isEmpty()) {
             homepageGurl = ChromeUrlConstants.nativeNtpGurl();
         }
@@ -149,9 +153,9 @@ public class HomepageManager
 
     /**
      * @return A GURL for the default homepage URI if the homepage is partner provided, or the new
-     *         tab page if the homepage button is force enabled via flag.
+     *     tab page if the homepage button is force enabled via flag.
      */
-    public static GURL getDefaultHomepageGurl() {
+    public GURL getDefaultHomepageGurl() {
         if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
             return PartnerBrowserCustomizations.getInstance().getHomePageUrl();
         }
@@ -195,11 +199,12 @@ public class HomepageManager
     /**
      * Determines whether the homepage is set to something other than the NTP or empty/null.
      * Normally, when loading the homepage the NTP is loaded as a fallback if the homepage is null
-     * or empty. So while other helper methods that check if a given string is the NTP
-     * will reject null and empty, this method does the opposite.
+     * or empty. So while other helper methods that check if a given string is the NTP will reject
+     * null and empty, this method does the opposite.
+     *
      * @return Whether the current homepage is something other than the NTP.
      */
-    public static boolean isHomepageNonNtp() {
+    public boolean isHomepageNonNtp() {
         GURL currentHomepage = getHomepageGurl();
         return !currentHomepage.isEmpty() && !UrlUtilities.isNtpUrl(currentHomepage);
     }
@@ -330,10 +335,10 @@ public class HomepageManager
     /**
      * Record histogram "Settings.Homepage.LocationType" with the current homepage location type.
      */
-    public static void recordHomepageLocationTypeIfEnabled() {
+    public void recordHomepageLocationTypeIfEnabled() {
         if (!isHomepageEnabled()) return;
 
-        int homepageLocationType = getInstance().getHomepageLocationType();
+        int homepageLocationType = getHomepageLocationType();
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.Homepage.LocationType",
                 homepageLocationType,

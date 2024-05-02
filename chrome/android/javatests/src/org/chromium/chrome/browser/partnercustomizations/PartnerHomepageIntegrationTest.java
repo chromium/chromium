@@ -124,8 +124,10 @@ public class PartnerHomepageIntegrationTest {
         // Disable homepage.
         toggleHomepageSwitchPreference(false);
 
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
         // Assert no homepage button.
-        Assert.assertFalse(HomepageManager.isHomepageEnabled());
+        Assert.assertFalse(homepageManager.isHomepageEnabled());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
@@ -141,7 +143,7 @@ public class PartnerHomepageIntegrationTest {
         toggleHomepageSwitchPreference(true);
 
         // Assert homepage button.
-        Assert.assertTrue(HomepageManager.isHomepageEnabled());
+        Assert.assertTrue(homepageManager.isHomepageEnabled());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(

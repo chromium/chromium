@@ -239,7 +239,8 @@ public class MultiWindowUtils implements ActivityStateListener {
         // url other than the NTP. We should not allow dragging the last tab or display 'Move to
         // other window' in this scenario as the source window might be closed before drag n drop
         // completes properly and thus cause other complications.
-        boolean shouldAppCloseWithZeroTabs = HomepageManager.shouldCloseAppWithZeroTabs();
+        boolean shouldAppCloseWithZeroTabs =
+                HomepageManager.getInstance().shouldCloseAppWithZeroTabs();
         return hasAtMostOneTab && shouldAppCloseWithZeroTabs;
     }
 

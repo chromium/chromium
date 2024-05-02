@@ -95,19 +95,23 @@ public class HomepageManagerTest {
 
     @Test
     public void testIsHomepageNonNtp() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
         ShadowHomepagePolicyManager.sHomepageUrl = GURL.emptyGURL();
         Assert.assertFalse(
-                "Empty string should fall back to NTP.", HomepageManager.isHomepageNonNtp());
+                "Empty string should fall back to NTP.", homepageManager.isHomepageNonNtp());
 
         ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.EXAMPLE_URL;
-        Assert.assertTrue("Random web page is not the NTP.", HomepageManager.isHomepageNonNtp());
+        Assert.assertTrue("Random web page is not the NTP.", homepageManager.isHomepageNonNtp());
 
         ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.NTP_NATIVE_URL;
-        Assert.assertFalse("NTP should be considered the NTP.", HomepageManager.isHomepageNonNtp());
+        Assert.assertFalse("NTP should be considered the NTP.", homepageManager.isHomepageNonNtp());
     }
 
     @Test
     public void testGetDefaultHomepageGurlPreferenceKeysMigration() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
         Mockito.doNothing()
                 .when(mPartnerBrowserCustomizations)
                 .setPartnerHomepageListener(ArgumentMatchers.any());
@@ -122,7 +126,7 @@ public class HomepageManagerTest {
         ChromeSharedPreferences.getInstance()
                 .writeString(ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null);
         Assert.assertEquals(
-                ChromeUrlConstants.nativeNtpGurl(), HomepageManager.getDefaultHomepageGurl());
+                ChromeUrlConstants.nativeNtpGurl(), homepageManager.getDefaultHomepageGurl());
 
         final GURL blueUrl = JUnitTestGURLs.BLUE_1;
         ChromeSharedPreferences.getInstance()
@@ -131,7 +135,7 @@ public class HomepageManagerTest {
                         blueUrl.getSpec());
         ChromeSharedPreferences.getInstance()
                 .writeString(ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null);
-        Assert.assertEquals(blueUrl, HomepageManager.getDefaultHomepageGurl());
+        Assert.assertEquals(blueUrl, homepageManager.getDefaultHomepageGurl());
 
         // getDefaultHomepageGurl() should have forced the usage of the new pref key.
         String deprecatedKeyValue =
@@ -157,7 +161,7 @@ public class HomepageManagerTest {
                 .writeString(
                         ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,
                         serializedRedGurl);
-        Assert.assertEquals(redUrl, HomepageManager.getDefaultHomepageGurl());
+        Assert.assertEquals(redUrl, homepageManager.getDefaultHomepageGurl());
 
         final GURL url1 = JUnitTestGURLs.URL_1;
         final GURL url2 = JUnitTestGURLs.URL_2;
@@ -170,7 +174,7 @@ public class HomepageManagerTest {
                 .writeString(
                         ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,
                         serializedGurl2);
-        Assert.assertEquals(url2, HomepageManager.getDefaultHomepageGurl());
+        Assert.assertEquals(url2, homepageManager.getDefaultHomepageGurl());
     }
 
     @Test
@@ -220,13 +224,15 @@ public class HomepageManagerTest {
     @Test
     @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testOverrideNtpHomepage() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
         DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         ShadowHomepagePolicyManager.sHomepageUrl = GURL.emptyGURL();
         DseNewTabUrlManager.SWAP_OUT_NTP.setForTesting(true);
         Assert.assertTrue(DseNewTabUrlManager.SWAP_OUT_NTP.getValue());
 
         Assert.assertNull(DseNewTabUrlManager.getDSENewTabUrl(null));
-        Assert.assertEquals(ChromeUrlConstants.nativeNtpGurl(), HomepageManager.getHomepageGurl());
+        Assert.assertEquals(ChromeUrlConstants.nativeNtpGurl(), homepageManager.getHomepageGurl());
 
         TemplateUrlService templateUrlService = Mockito.mock(TemplateUrlService.class);
         initializeProfile(false, templateUrlService);
@@ -234,7 +240,7 @@ public class HomepageManagerTest {
         Assert.assertEquals(
                 JUnitTestGURLs.SEARCH_URL.getSpec(),
                 DseNewTabUrlManager.getDSENewTabUrl(templateUrlService));
-        Assert.assertEquals(JUnitTestGURLs.SEARCH_URL, HomepageManager.getHomepageGurl());
+        Assert.assertEquals(JUnitTestGURLs.SEARCH_URL, homepageManager.getHomepageGurl());
 
         ProfileManager.resetForTesting();
     }

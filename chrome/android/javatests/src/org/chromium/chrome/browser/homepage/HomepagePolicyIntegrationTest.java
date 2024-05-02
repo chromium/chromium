@@ -44,8 +44,6 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * Integration test for {@link HomepagePolicyManager}. Checking if enabling HomepageLocation policy
  * will reflect the expected behaviors for {@link HomepageSettings} and home button.
@@ -77,7 +75,6 @@ public class HomepagePolicyIntegrationTest {
 
     @Before
     public void setUp() {
-
         // Give some user pref setting, simulate user that have their customized preference.
         // Use shared preference manager, not to change the order object created in tests.
         mHomepageTestRule.useCustomizedHomepageForTest(GOOGLE_HTML);
@@ -211,11 +208,7 @@ public class HomepagePolicyIntegrationTest {
     }
 
     private String getHomepageUrlOnUiThread() {
-        AtomicReference<String> res = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    res.set(HomepageManager.getHomepageGurl().getSpec());
-                });
-        return res.get();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> HomepageManager.getInstance().getHomepageGurl().getSpec());
     }
 }

@@ -1426,7 +1426,7 @@ public class ToolbarManager
 
         mHomepageStateListener =
                 () -> {
-                    mHomepageEnabledSupplier.set(HomepageManager.isHomepageEnabled());
+                    mHomepageEnabledSupplier.set(HomepageManager.getInstance().isHomepageEnabled());
                     // Whether to show start surface as homepage is affected by whether homepage URI
                     // is customized. So we add a supplier to observe homepage URI change.
                     mStartSurfaceAsHomepageSupplier.set(
@@ -2053,7 +2053,7 @@ public class ToolbarManager
 
     @VisibleForTesting
     static String homepageUrl() {
-        GURL homepageGurl = HomepageManager.getHomepageGurl();
+        GURL homepageGurl = HomepageManager.getInstance().getHomepageGurl();
         if (homepageGurl.isEmpty()) {
             return UrlConstants.NTP_URL;
         } else {

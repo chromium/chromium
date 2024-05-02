@@ -172,7 +172,7 @@ public class ToolbarTabControllerImplTest {
     @Test
     public void openHomepage_loadsHomePage() {
         mToolbarTabController.openHomepage();
-        GURL homePageGurl = HomepageManager.getHomepageGurl();
+        GURL homePageGurl = HomepageManager.getInstance().getHomepageGurl();
         if (homePageGurl.isEmpty()) {
             homePageGurl = ChromeUrlConstants.nativeNtpGurl();
         }

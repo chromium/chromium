@@ -389,9 +389,11 @@ public class ProcessInitializationHandler {
                     PartnerBrowserCustomizations.getInstance()
                             .setOnInitializeAsyncFinished(
                                     () -> {
-                                        GURL homepageGurl = HomepageManager.getHomepageGurl();
+                                        HomepageManager homepageManager =
+                                                HomepageManager.getInstance();
+                                        GURL homepageGurl = homepageManager.getHomepageGurl();
                                         LaunchMetrics.recordHomePageLaunchMetrics(
-                                                HomepageManager.isHomepageEnabled(),
+                                                homepageManager.isHomepageEnabled(),
                                                 UrlUtilities.isNtpUrl(homepageGurl),
                                                 homepageGurl);
                                     });
@@ -420,7 +422,7 @@ public class ProcessInitializationHandler {
 
         tasks.add(() -> LocaleManager.getInstance().recordStartupMetrics());
 
-        tasks.add(HomepageManager::recordHomepageLocationTypeIfEnabled);
+        tasks.add(() -> HomepageManager.getInstance().recordHomepageLocationTypeIfEnabled());
 
         // Starts syncing with GSA.
         tasks.add(() -> AppHooks.get().createGsaHelper().startSync());
