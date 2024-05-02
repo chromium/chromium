@@ -12509,6 +12509,7 @@ regressions. -->
     <variant name="ShowHistory"/>
     <variant name="ShowHistoryClustersSidePanel"/>
     <variant name="ShowKaleidoscope"/>
+    <variant name="ShowLensOverlay"/>
     <variant name="ShowPasswordManager"/>
     <variant name="ShowPaymentMethods"/>
     <variant name="ShowPerformanceSettings"/>

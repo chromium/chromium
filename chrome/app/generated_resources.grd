@@ -1767,6 +1767,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_SHOW_PERFORMANCE" desc="The text label of the Performance menu item">
           Performance
         </message>
+        <message name="IDS_SHOW_LENS_OVERLAY" desc="The text label of the Lens overlay menu item">
+          Search with Google Lens
+        </message>
         <message name="IDS_SHOW_SEARCH_COMPANION" desc="The text label of the Chrome Search Companion menu item">
           Sear&amp;ch this page with Google...
         </message>
@@ -1822,6 +1825,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_SHOW_PERFORMANCE" desc="In Title Case: The text label of the Performance menu item">
           Performance
+        </message>
+        <message name="IDS_SHOW_LENS_OVERLAY" desc="In Title Case: The text label of the Lens overlay menu item">
+          Search with Google Lens
         </message>
         <message name="IDS_SHOW_SEARCH_COMPANION" desc="In Title Case: The text label of the Chrome Search Companion menu item">
           Sear&amp;ch This Page with Google...

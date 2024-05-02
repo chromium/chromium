@@ -270,6 +270,7 @@ void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
 void RunScreenAILayoutExtraction(Browser* browser);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
+void ExecLensOverlay(Browser* browser);
 void ExecLensRegionSearch(Browser* browser);
 
 // Commerce

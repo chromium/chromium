@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -2201,6 +2202,20 @@ void RunScreenAILayoutExtraction(Browser* browser) {
       ->AnnotateScreenshot(web_contents);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
+void ExecLensOverlay(Browser* browser) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  CHECK(web_contents);
+
+  // TODO(https://crbug.com/330808104): This should become a CHECK. If the
+  // menu item is clickable, then the controller must be enabled.
+  LensOverlayController* const controller =
+      LensOverlayController::GetController(web_contents);
+  if (controller && controller->Enabled()) {
+    controller->ShowUI();
+  }
+}
 
 void ExecLensRegionSearch(Browser* browser) {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

@@ -1035,6 +1035,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
 #endif
 
+    case IDC_CONTENT_CONTEXT_LENS_OVERLAY:
+      ExecLensOverlay(browser_);
+      break;
+
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
       ExecLensRegionSearch(browser_);
@@ -1422,6 +1426,11 @@ void BrowserCommandController::InitCommandState() {
     command_updater_.UpdateCommandEnabled(IDC_DEBUG_TOGGLE_TABLET_MODE, true);
     command_updater_.UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE, true);
     command_updater_.UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE_DETAILS,
+                                          true);
+  }
+
+  if (lens::features::IsLensOverlayEnabled()) {
+    command_updater_.UpdateCommandEnabled(IDC_CONTENT_CONTEXT_LENS_OVERLAY,
                                           true);
   }
 

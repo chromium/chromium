@@ -87,6 +87,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -154,6 +155,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowLensOverlay);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
@@ -1069,7 +1071,15 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_BOOKMARK_ALL_TABS);
       break;
-      // Search companion.
+    // Lens overlay.
+    case IDC_CONTENT_CONTEXT_LENS_OVERLAY:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.ShowLensOverlay",
+                                      delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_LENS_OVERLAY);
+      break;
+    // Search companion.
     case IDC_SHOW_SEARCH_COMPANION:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes(
@@ -1751,8 +1761,15 @@ void AppMenuModel::Build() {
   AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT, kPrintMenuIcon);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (companion::IsCompanionFeatureEnabled() &&
-      !browser()->profile()->IsIncognitoProfile()) {
+  if (lens::features::IsLensOverlayEnabled()) {
+    AddItemWithStringIdAndVectorIcon(this, IDC_CONTENT_CONTEXT_LENS_OVERLAY,
+                                     IDS_SHOW_LENS_OVERLAY,
+                                     vector_icons::kGoogleGLogoMonochromeIcon);
+    SetElementIdentifierAt(
+        GetIndexOfCommandId(IDC_CONTENT_CONTEXT_LENS_OVERLAY).value(),
+        kShowLensOverlay);
+  } else if (companion::IsCompanionFeatureEnabled() &&
+             !browser()->profile()->IsIncognitoProfile()) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SEARCH_COMPANION,
                                      IDS_SHOW_SEARCH_COMPANION,
                                      vector_icons::kGoogleGLogoMonochromeIcon);
