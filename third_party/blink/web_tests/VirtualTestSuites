@@ -1408,7 +1408,7 @@
               "external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html"],
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing"],
-    "expires": "May 1, 2024"
+    "expires": "December 1, 2024"
   },
   {
     "prefix": "view-transition-on-navigation",
@@ -1418,8 +1418,11 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ViewTransitionOnNavigation,PageSwapEvent",
              "--enable-threaded-compositing"],
-    "expires": "May 1, 2024"
+    "expires": "December 1, 2024"
   },
+
+  "This virtual test suite ensures the ViewTransition feature works correctly",
+  "for non-sRGB color spaces.",
   {
     "prefix": "view-transition-wide-gamut",
     "platforms": ["Linux", "Mac", "Win"],
@@ -1434,8 +1437,11 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing",
              "--force-color-profile=display-p3-d65"],
-    "expires": "May 1, 2024"
+    "expires": "never"
   },
+
+  "This virtual test suite ensures state cached from the old is also added to",
+  "the serialization code-path for cross-document transitions.",
   {
     "prefix": "view-transition-mpa-serialization",
     "platforms": ["Linux", "Mac", "Win"],
@@ -1451,7 +1457,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing",
              "--enable-blink-features=SerializeViewTransitionStateInSPA"],
-    "expires": "May 1, 2024"
+    "expires": "never"
   },
   {
     "prefix": "domparser-includeshadowroots-enabled",
