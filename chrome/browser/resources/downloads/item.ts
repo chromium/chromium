@@ -14,13 +14,13 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 // <if expr="_google_chrome">
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 // </if>
+import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
 import './strings.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';

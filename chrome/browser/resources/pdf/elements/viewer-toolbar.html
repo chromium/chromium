@@ -131,7 +131,7 @@
     margin-inline-start: 12px;
   }
 
-  paper-progress {
+  cr-progress {
     --paper-progress-active-color: var(--google-blue-300);
     --paper-progress-container-color: transparent;
     --paper-progress-height: 3px;
@@ -140,13 +140,13 @@
     width: 100%;
   }
 
-  paper-progress,
+  cr-progress,
   #center,
   #end {
     transition: opacity 100ms cubic-bezier(0, 0, 0.2, 1);
   }
 
-  paper-progress,
+  cr-progress,
   :host([loading_]) #menuButton,
   :host([loading_]) #center,
   :host([loading_]) #end {
@@ -155,7 +155,7 @@
     visibility: hidden;
   }
 
-  :host([loading_]) paper-progress,
+  :host([loading_]) cr-progress,
   #menuButton,
   #center,
   #end {
@@ -277,8 +277,8 @@
         on-click="onMoreClick_"></cr-icon-button>
   </div>
 </div>
-<paper-progress id="progress" value="[[loadProgress]]" hidden="[[!loading_]]">
-</paper-progress>
+<cr-progress id="progress" value="[[loadProgress]]" hidden="[[!loading_]]">
+</cr-progress>
 
 <cr-action-menu id="menu" on-open-changed="onMoreOpenChanged_">
   <button id="two-page-view-button"
