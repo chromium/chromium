@@ -2211,11 +2211,9 @@ TEST_P(IntersectingMultiplanarVideoQuadPixelTest, YUVVideoQuads) {
     baseline = baseline.InsertBeforeExtensionASCII(kANGLEMetalStr);
   }
 
-  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
-  // upload support lands for Windows for multiplanar SI.
   this->AppendBackgroundAndRunTest(cc::FuzzyPixelComparator()
                                        .DiscardAlpha()
-                                       .SetErrorPixelsPercentageLimit(50.0f)
+                                       .SetErrorPixelsPercentageLimit(0.50f)
                                        .SetAvgAbsErrorLimit(1.2f)
                                        .SetAbsErrorLimit(2),
                                    baseline);
@@ -2422,15 +2420,9 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
-  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
-  // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes.png")),
-      cc::FuzzyPixelComparator()
-          .DiscardAlpha()
-          .SetErrorPixelsPercentageLimit(100.f)
-          .SetAvgAbsErrorLimit(1.2f)
-          .SetAbsErrorLimit(2)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 class VideoRendererPixelHiLoColorSpaceTest
@@ -2515,14 +2507,15 @@ TEST_P(VideoRendererPixelHiLoColorSpaceTest, SimpleYUVRect) {
   base::FilePath expected_result =
       base::FilePath(FILE_PATH_LITERAL("yuv_stripes.png"));
   expected_result = expected_result.InsertBeforeExtensionASCII(GetName());
-  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
-  // upload support lands for Windows for multiplanar SI.
-  EXPECT_TRUE(this->RunPixelTest(&pass_list, expected_result,
-                                 cc::FuzzyPixelComparator()
-                                     .DiscardAlpha()
-                                     .SetErrorPixelsPercentageLimit(100.f)
-                                     .SetAvgAbsErrorLimit(1.0f)
-                                     .SetAbsErrorLimit(2)));
+  // YCgCo color space supports highbit formats.
+  if (IsHighbit() &&
+      GetColorSpace().GetMatrixID() == gfx::ColorSpace::MatrixID::YCOCG) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_highbit");
+  }
+
+  EXPECT_TRUE(
+      this->RunPixelTest(&pass_list, expected_result,
+                         cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -2555,15 +2548,9 @@ TEST_P(VideoRendererPixelHiLoTest, MAYBE_ClippedYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
-  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
-  // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_clipped.png")),
-      cc::FuzzyPixelComparator()
-          .DiscardAlpha()
-          .SetErrorPixelsPercentageLimit(100.f)
-          .SetAvgAbsErrorLimit(1.2f)
-          .SetAbsErrorLimit(2)));
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 #endif  // #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 
@@ -2612,14 +2599,9 @@ TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
   if (is_skia_graphite()) {
     expected_result = expected_result.InsertBeforeExtensionASCII(kGraphiteStr);
   }
-  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
-  // upload support lands for Windows for multiplanar SI.
-  EXPECT_TRUE(this->RunPixelTest(&pass_list, expected_result,
-                                 cc::FuzzyPixelComparator()
-                                     .DiscardAlpha()
-                                     .SetErrorPixelsPercentageLimit(100.f)
-                                     .SetAvgAbsErrorLimit(1.2f)
-                                     .SetAbsErrorLimit(2)));
+  EXPECT_TRUE(
+      this->RunPixelTest(&pass_list, expected_result,
+                         cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 TEST_P(VideoRendererPixelTest, SimpleYUVRectBlack) {
