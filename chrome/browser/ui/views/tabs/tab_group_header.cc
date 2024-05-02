@@ -124,10 +124,6 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   title_->SetElideBehavior(gfx::FADE_TAIL);
   if (features::IsChromeRefresh2023()) {
     title_->SetLineHeight(20);
-    if (base::FeatureList::IsEnabled(
-            features::kChromeRefresh2023TopChromeFont)) {
-      title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
-    }
   } else {
     title_->SetTextStyle(views::style::STYLE_BODY_4);
   }
