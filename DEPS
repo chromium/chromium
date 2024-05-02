@@ -1024,6 +1024,9 @@ deps = {
   'src/net/third_party/quiche/src':
     Var('quiche_git') + '/quiche.git' + '@' +  Var('quiche_revision'),
 
+  'src/testing/libfuzzer/fuzzers/wasm_corpus':
+    Var('chromium_git') + '/v8/fuzzer_wasm_corpus.git' + '@' +  'f650ff816f2ef227f61ea2e9f222aa69708ab367',
+
   'src/tools/luci-go': {
       'packages': [
         {
@@ -4941,18 +4944,6 @@ hooks = [
                 'src/third_party/apache-win32',
     ],
   },
-  {
-    'name': 'wasm_fuzzer',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '-u',
-                '--bucket', 'v8-wasm-fuzzer',
-                '-s', 'src/v8/test/fuzzer/wasm_corpus.tar.gz.sha1',
-    ],
-  },
   # Download selected models from TFHub as testdata.
   {
     'name': 'download_tfhub_models',
@@ -4965,7 +4956,6 @@ hooks = [
                 '-s', 'src/third_party/tfhub_models/models.tar.gz.sha1',
     ],
   },
-
   # Pull down Node binaries for WebUI toolchain.
   # The Linux binary is always downloaded regardless of host os and architecture
   # since remote node actions run on Linux worker.
