@@ -1084,16 +1084,8 @@ TEST_F(AddressDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-class AddressDataManagerExplicitSigninTest
-    : public base::test::WithFeatureOverride,
-      public AddressDataManagerTest {
- public:
-  AddressDataManagerExplicitSigninTest()
-      : base::test::WithFeatureOverride(
-            ::switches::kExplicitBrowserSigninUIOnDesktop) {}
-};
 
-TEST_P(AddressDataManagerExplicitSigninTest,
+TEST_F(AddressDataManagerTest,
        IsEligibleForAddressAccountStorageSigninPending) {
   // Setup account in auth error.
   CoreAccountInfo account_info =
@@ -1116,12 +1108,9 @@ TEST_P(AddressDataManagerExplicitSigninTest,
   ASSERT_TRUE(sync_service_.GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
 
-  // Account storage is eligible when explicit signin UI is enabled.
-  EXPECT_EQ(address_data_manager().IsEligibleForAddressAccountStorage(),
-            ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
+  // Account storage is not eligible.
+  EXPECT_FALSE(address_data_manager().IsEligibleForAddressAccountStorage());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AddressDataManagerExplicitSigninTest);
 
 TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
   ResetAddressDataManager(

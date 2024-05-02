@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
-#include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -88,13 +87,6 @@ AddressDataManager::AddressDataManager(
     webdata_service_observer_.Observe(webdata_service_.get());
   }
 
-  if (sync_service_ && identity_manager_) {
-    contact_info_precondition_checker_ =
-        std::make_unique<ContactInfoPreconditionChecker>(
-            sync_service_, identity_manager_,
-            /*on_precondition_changed=*/base::DoNothing());
-  }
-
   SetPrefService(pref_service);
   SetStrikeDatabase(strike_database);
   // `IsAutofillProfileEnabled()` relies on the `pref_service_`, which is only
@@ -115,7 +107,6 @@ AddressDataManager::~AddressDataManager() {
 void AddressDataManager::Shutdown() {
   // These classes' sync observers needs to be unregistered.
   address_data_cleaner_.reset();
-  contact_info_precondition_checker_.reset();
 }
 
 void AddressDataManager::AddObserver(AddressDataManager::Observer* obs) {
@@ -303,15 +294,6 @@ void AddressDataManager::RemoveProfile(const std::string& guid) {
 bool AddressDataManager::IsEligibleForAddressAccountStorage() const {
   if (!sync_service_) {
     return false;
-  }
-
-  if (::switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    return contact_info_precondition_checker_ &&
-           contact_info_precondition_checker_->GetPreconditionState() ==
-               syncer::ModelTypeController::PreconditionState::
-                   kPreconditionsMet &&
-           sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-               syncer::UserSelectableType::kAutofill);
   }
 
   // The CONTACT_INFO data type is only running for eligible users. See
@@ -599,14 +581,10 @@ bool AddressDataManager::IsAutofillUserSelectableTypeEnabled() const {
 }
 
 bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
-  return sync_service_ && !sync_service_->GetAccountInfo().IsEmpty() &&
+  return IsEligibleForAddressAccountStorage() && sync_service_ &&
          !sync_service_->HasSyncConsent() &&
          !sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
              syncer::UserSelectableType::kAutofill) &&
-         contact_info_precondition_checker_ &&
-         contact_info_precondition_checker_->GetPreconditionState() ==
-             syncer::ModelTypeController::PreconditionState::
-                 kPreconditionsMet &&
          base::FeatureList::IsEnabled(
              syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
          pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
