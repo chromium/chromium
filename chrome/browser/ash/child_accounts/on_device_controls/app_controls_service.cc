@@ -7,8 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace ash {
-namespace on_device_controls {
+namespace ash::on_device_controls {
 
 // static
 void AppControlsService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -20,5 +19,4 @@ AppControlsService::AppControlsService() = default;
 
 AppControlsService::~AppControlsService() = default;
 
-}  // namespace on_device_controls
-}  // namespace ash
+}  // namespace ash::on_device_controls

@@ -18,8 +18,7 @@ namespace {
 constexpr char kServiceName[] = "AppsControlsService";
 }
 
-namespace ash {
-namespace on_device_controls {
+namespace ash::on_device_controls {
 
 // static
 AppControlsServiceFactory* AppControlsServiceFactory::GetInstance() {
@@ -70,5 +69,4 @@ void AppControlsServiceFactory::RegisterProfilePrefs(
   AppControlsService::RegisterProfilePrefs(registry);
 }
 
-}  // namespace on_device_controls
-}  // namespace ash
+}  // namespace ash::on_device_controls

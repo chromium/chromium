@@ -19,8 +19,7 @@ constexpr char const* kOnDeviceControlsRegions[] = {
 
 }  // namespace
 
-namespace ash {
-namespace on_device_controls {
+namespace ash::on_device_controls {
 
 std::string GetDeviceRegionCode() {
   const std::optional<std::string_view> region_code =
@@ -51,5 +50,4 @@ bool IsOnDeviceControlsRegion(const std::string& region_code) {
   return false;
 }
 
-}  // namespace on_device_controls
-}  // namespace ash
+}  // namespace ash::on_device_controls

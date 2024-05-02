@@ -20,8 +20,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace ash {
-namespace on_device_controls {
+namespace ash::on_device_controls {
 
 class AppControlsService;
 
@@ -55,7 +54,6 @@ class AppControlsServiceFactory : public ProfileKeyedServiceFactory {
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 
-}  // namespace on_device_controls
-}  // namespace ash
+}  // namespace ash::on_device_controls
 
-#endif
+#endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_ON_DEVICE_CONTROLS_APP_CONTROLS_SERVICE_FACTORY_H_
