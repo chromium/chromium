@@ -56,6 +56,37 @@ void LogNumericQuantityMetrics(const FormStructure& form) {
   }
 }
 
+void LogPerfectFillingMetric(const FormStructure& form) {
+  bool form_has_autofilled_fields = base::ranges::any_of(
+      form, [](const auto& field) { return field->is_autofilled(); });
+  bool form_has_previously_autofilled_fields = base::ranges::any_of(
+      form, [](const auto& field) { return field->previously_autofilled(); });
+  // The perfect filling metric is only recorded if Autofill was used on at
+  // least one field. This conditions this metric on Assistance, Readiness and
+  // Acceptance.
+  if (form_has_autofilled_fields || form_has_previously_autofilled_fields) {
+    // A perfectly filled form is submitted as it was filled from Autofill
+    // without subsequent changes. This means that in a perfect filling
+    // scenario, a field is either autofilled, empty, has value at page load or
+    // has value set by JS.
+    bool perfect_filling = base::ranges::none_of(form, [](const auto& field) {
+      return field->is_user_edited() && !field->is_autofilled();
+    });
+    // Perfect filling is recorded for addresses and credit cards separately.
+    // Note that a form can be both an address and a credit card form
+    // simultaneously.
+    DenseSet<FormType> form_types = form.GetFormTypes();
+    if (base::Contains(form_types, FormType::kAddressForm)) {
+      AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/true,
+                                                 perfect_filling);
+    }
+    if (base::Contains(form_types, FormType::kCreditCardForm)) {
+      AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/false,
+                                                 perfect_filling);
+    }
+  }
+}
+
 void LogPreFillMetrics(const FormStructure& form) {
   for (const std::unique_ptr<AutofillField>& field : form) {
     const FormType form_type_of_field =
@@ -226,25 +257,13 @@ void LogQualityMetrics(
     LogNumericQuantityMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);
+    LogPerfectFillingMetric(form_structure);
     LogPreFillMetrics(form_structure);
     LogFieldFillingStatsAndScoreMetrics(form_structure);
   }
 
-  // Determine the type of the form.
-  DenseSet<FormType> form_types = form_structure.GetFormTypes();
-  bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
-  bool address_form = base::Contains(form_types, FormType::kAddressForm);
-
   FieldTypeSet autofilled_field_types;
 
-  bool form_has_autofilled_fields = base::ranges::any_of(
-      form_structure, [](const auto& field) { return field->is_autofilled(); });
-  bool form_has_previously_autofilled_fields = base::ranges::any_of(
-      form_structure,
-      [](const auto& field) { return field->previously_autofilled(); });
-  // A perfectly filled form is submitted as it was filled from Autofill without
-  // subsequent changes.
-  bool perfect_filling = true;
   // Determine the correct suffix for the metric, depending on whether or
   // not a submission was observed.
   const AutofillMetrics::QualityMetricType metric_type =
@@ -255,12 +274,6 @@ void LogQualityMetrics(
     CHECK(field);
     form_interactions_ukm_logger->LogFieldFillStatus(form_structure, *field,
                                                      metric_type);
-    // The form was not perfectly filled if a field was user-edited. Notice that
-    // this means that in a perfect filling, a field must either be autofilled,
-    // empty, have same value as pageload or have value set by JavaScript.
-    if (field->is_user_edited() && !field->is_autofilled()) {
-      perfect_filling = false;
-    }
     // Field filling statistics that are only emitted if the form was submitted
     // but independent of the existence of a possible type.
     if (observed_submission) {
@@ -295,23 +308,8 @@ void LogQualityMetrics(
   // We log "submission" and duration metrics if we are here after observing a
   // submission event.
   if (observed_submission) {
-    // The perfect filling metric is only recorded if Autofill was used on at
-    // least one field. This conditions this metric on Assistance, Readiness and
-    // Acceptance.
-    if (form_has_autofilled_fields || form_has_previously_autofilled_fields) {
-      // Perfect filling is recorded for addresses and credit cards separately.
-      // Note that a form can be both an address and a credit card form
-      // simultaneously.
-      if (address_form) {
-        AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/true,
-                                                   perfect_filling);
-      }
-      if (card_form) {
-        AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/false,
-                                                   perfect_filling);
-      }
-    }
-    if (card_form) {
+    if (base::Contains(form_structure.GetFormTypes(),
+                       FormType::kCreditCardForm)) {
       AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
           autofilled_field_types);
     }
