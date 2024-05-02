@@ -41,12 +41,14 @@ namespace base {
 namespace {
 
 constexpr char kFeatureOnByDefaultName[] = "OnByDefault";
-constinit Feature kFeatureOnByDefault(kFeatureOnByDefaultName,
-                                      FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureOnByDefault,
+             kFeatureOnByDefaultName,
+             FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kFeatureOffByDefaultName[] = "OffByDefault";
-constinit Feature kFeatureOffByDefault(kFeatureOffByDefaultName,
-                                       FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureOffByDefault,
+             kFeatureOffByDefaultName,
+             FEATURE_DISABLED_BY_DEFAULT);
 
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
@@ -176,9 +178,8 @@ TEST_F(FeatureListTest, CheckFeatureIdentity) {
 
   // Now, call it with a distinct struct for |kFeatureOnByDefaultName|, which
   // should return false.
-  struct Feature kFeatureOnByDefault2 {
-    kFeatureOnByDefaultName, FEATURE_ENABLED_BY_DEFAULT
-  };
+  static BASE_FEATURE(kFeatureOnByDefault2, kFeatureOnByDefaultName,
+                      FEATURE_ENABLED_BY_DEFAULT);
   EXPECT_FALSE(feature_list->CheckFeatureIdentity(kFeatureOnByDefault2));
 }
 
@@ -512,8 +513,8 @@ TEST_F(FeatureListTest, GetFeatureOverrides) {
   auto feature_list = std::make_unique<FeatureList>();
   feature_list->InitFromCommandLine("A,X", "D");
 
-  Feature feature_b = {"B", FEATURE_ENABLED_BY_DEFAULT};
-  Feature feature_c = {"C", FEATURE_DISABLED_BY_DEFAULT};
+  static BASE_FEATURE(feature_b, "B", FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(feature_c, "C", FEATURE_DISABLED_BY_DEFAULT);
   std::vector<FeatureList::FeatureOverrideInfo> overrides;
   overrides.push_back({std::cref(feature_b),
                        FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE});
@@ -741,10 +742,13 @@ TEST_F(FeatureListTest, SetEarlyAccessInstance_ReplaceByRealList) {
     defined(GTEST_HAS_DEATH_TEST)
 using FeatureListDeathTest = FeatureListTest;
 TEST_F(FeatureListDeathTest, DiesWithBadFeatureName) {
+  // TODO(dcheng): Add a nocompile version of this test. In general, people
+  // should not be constructing features at runtime anyway but just in case...
   EXPECT_DEATH(
       Feature(
           StrCat({BUILDFLAG(BANNED_BASE_FEATURE_PREFIX), "MyFeature"}).c_str(),
-          FEATURE_DISABLED_BY_DEFAULT),
+          FEATURE_DISABLED_BY_DEFAULT,
+          internal::FeatureMacroHandshake::kSecret),
       StrCat({"Invalid feature name ", BUILDFLAG(BANNED_BASE_FEATURE_PREFIX),
               "MyFeature"}));
 }
