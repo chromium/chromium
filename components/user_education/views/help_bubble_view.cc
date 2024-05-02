@@ -876,7 +876,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // If the anchor view is not a MenuItemView and the primary window
   // widget is not the anchor widget, do not use the window anchor bounds.
   if (!GetAnchorAsMenuItem(this) &&
-      widget->GetPrimaryWindowWidget() != widget) {
+      anchor_widget()->GetPrimaryWindowWidget() != anchor_widget()) {
     frame_view->set_use_anchor_window_bounds(false);
   }
 
