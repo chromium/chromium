@@ -25,6 +25,30 @@ namespace autofill::autofill_metrics {
 
 namespace {
 
+void LogPreFillMetrics(const FormStructure& form) {
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    const FormType form_type_of_field =
+        FieldTypeGroupToFormType(field->Type().group());
+    const bool is_address_form_field =
+        form_type_of_field == FormType::kAddressForm;
+    const bool credit_card_form_field =
+        form_type_of_field == FormType::kCreditCardForm;
+    if (is_address_form_field || credit_card_form_field) {
+      const std::string_view form_type_name =
+          FormTypeToStringView(form_type_of_field);
+      LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
+                              field->Type().GetStorableType());
+      LogPreFilledValueChanged(
+          form_type_name, field->initial_value_changed(), field->value(),
+          field->field_log_events(), field->possible_types(),
+          field->Type().GetStorableType(), field->is_autofilled());
+      LogPreFilledFieldClassifications(form_type_name,
+                                       field->initial_value_changed(),
+                                       field->may_use_prefilled_placeholder());
+    }
+  }
+}
+
 void LogFieldFillingStatsAndScoreMetrics(const FormStructure& form) {
   // Tracks how many fields are filled, unfilled or corrected.
   autofill_metrics::FormGroupFillingStats address_field_stats;
@@ -170,6 +194,7 @@ void LogQualityMetrics(
   if (observed_submission) {
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);
+    LogPreFillMetrics(form_structure);
     LogFieldFillingStatsAndScoreMetrics(form_structure);
   }
 
@@ -196,8 +221,6 @@ void LogQualityMetrics(
 
   for (auto& field : form_structure) {
     CHECK(field);
-    AutofillType type = field->Type();
-    const FieldTypeGroup group = type.group();
     form_interactions_ukm_logger->LogFieldFillStatus(form_structure, *field,
                                                      metric_type);
     // The form was not perfectly filled if a field was user-edited. Notice that
@@ -214,28 +237,6 @@ void LogQualityMetrics(
       if (field->is_autofilled() || field->previously_autofilled()) {
         AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
             form_interactions_ukm_logger, form_structure, *field);
-      }
-      // For any field that belongs to either an address or a credit card form,
-      // collect the type-unspecific field filling statistics.
-      // Those are only emitted when autofill was used on at least one field of
-      // the form.
-      const FormType form_type_of_field = FieldTypeGroupToFormType(group);
-      const bool is_address_form_field =
-          form_type_of_field == FormType::kAddressForm;
-      const bool credit_card_form_field =
-          form_type_of_field == FormType::kCreditCardForm;
-      if (is_address_form_field || credit_card_form_field) {
-        const std::string_view form_type_name =
-            FormTypeToStringView(form_type_of_field);
-        LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
-                                type.GetStorableType());
-        LogPreFilledValueChanged(
-            form_type_name, field->initial_value_changed(), field->value(),
-            field->field_log_events(), field->possible_types(),
-            type.GetStorableType(), field->is_autofilled());
-        LogPreFilledFieldClassifications(
-            form_type_name, field->initial_value_changed(),
-            field->may_use_prefilled_placeholder());
       }
     }
     ///////////////////////////////////////////////////////////////////////////
@@ -275,7 +276,7 @@ void LogQualityMetrics(
       continue;
     }
     if (field->is_autofilled()) {
-      autofilled_field_types.insert(type.GetStorableType());
+      autofilled_field_types.insert(field->Type().GetStorableType());
     }
     if (observed_submission) {
       base::UmaHistogramEnumeration(
