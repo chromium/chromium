@@ -5,16 +5,15 @@
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/cr_progress/cr_progress.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './progress_indicator_polymer_demo.html.js';
+import {getTemplate} from './progress_indicator_demo.html.js';
 
-class ProgressIndicatorPolymerDemoElement extends PolymerElement {
+class ProgressIndicatorDemoElement extends PolymerElement {
   static get is() {
-    return 'progress-indicator-polymer-demo';
+    return 'progress-indicator-demo';
   }
 
   static get template() {
@@ -22,8 +21,8 @@ class ProgressIndicatorPolymerDemoElement extends PolymerElement {
   }
 }
 
-export const tagName = ProgressIndicatorPolymerDemoElement.is;
+export const tagName = ProgressIndicatorDemoElement.is;
 
 customElements.define(
-    ProgressIndicatorPolymerDemoElement.is,
-    ProgressIndicatorPolymerDemoElement);
+    ProgressIndicatorDemoElement.is,
+    ProgressIndicatorDemoElement);

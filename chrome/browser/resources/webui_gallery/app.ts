@@ -94,14 +94,9 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'nav_menu/nav_menu_demo.js',
             },
             {
-              name: 'Progress indicators, Polymer',
-              path: 'progress-polymer',
-              src: 'progress_indicators/progress_indicator_polymer_demo.js',
-            },
-            {
-              name: 'Progress indicators, non-Polymer',
-              path: 'progress-nonpolymer',
-              src: 'progress_indicators/progress_indicator_native_demo.js',
+              name: 'Progress indicators',
+              path: 'progress',
+              src: 'progress_indicators/progress_indicator_demo.js',
             },
             {
               name: 'Radio buttons and groups',

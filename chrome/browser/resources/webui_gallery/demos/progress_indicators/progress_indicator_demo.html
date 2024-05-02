@@ -1,4 +1,24 @@
 <style include="demo">
+  :host {
+    --spinner-size: 28px;
+  }
+
+  .spinner {
+    mask-image: url(//resources/images/throbber_small.svg);
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: var(--spinner-size) var(--spinner-size);
+    background-color: var(--google-blue-500);
+    height: var(--spinner-size);
+    width: var(--spinner-size);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .spinner {
+      background-color: var(--google-blue-300);
+    }
+  }
+
   cr-progress {
     --paper-progress-active-color: var(--google-blue-500);
   }
@@ -6,16 +26,6 @@
   @media (prefers-color-scheme: dark) {
     cr-progress {
       --paper-progress-active-color: var(--google-blue-300);
-    }
-  }
-
-  paper-spinner-lite {
-    --paper-spinner-color: var(--google-blue-500);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    paper-spinner-lite {
-      --paper-spinner-color: var(--google-blue-300);
     }
   }
 
@@ -38,9 +48,9 @@
   <cr-progress indeterminate></cr-progress>
 </div>
 
-<h1>paper-spinner-lite</h1>
+<h1>spinner, 28px</h1>
 <div class="demos">
-  <paper-spinner-lite active></paper-spinner-lite>
+  <div class="spinner"></div>
 </div>
 
 <h1>Loading gradients</h1>
