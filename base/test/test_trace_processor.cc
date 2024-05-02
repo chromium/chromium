@@ -15,7 +15,6 @@
 
 namespace base::test {
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace {
 // Emitting the chrome_track_event.descriptor into the trace allows the trace
@@ -172,6 +171,5 @@ TestTraceProcessor::RunQuery(const std::string& query) {
   return base::ok(result_or_error.result());
 }
 
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace base::test

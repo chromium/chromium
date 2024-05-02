@@ -18,13 +18,12 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define TEST_TRACE_PROCESSOR_ENABLED
 #endif
 
 namespace base::test {
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 using perfetto::protos::gen::TraceConfig;
 
@@ -76,7 +75,6 @@ class TestTraceProcessor {
   std::unique_ptr<perfetto::TracingSession> session_;
 };
 
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace base::test
 

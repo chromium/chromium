@@ -12,7 +12,6 @@
 
 namespace base::test {
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 class TestTraceProcessorExample : public ::testing::Test {
  private:
@@ -72,6 +71,5 @@ TEST_F(TestTraceProcessorExample, BasicTraceConfig) {
                                      std::vector<std::string>{"test_event"}));
 }
 
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace base::test
