@@ -5,13 +5,13 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {BrowserUtil} from '/common/browser_util.js';
 import {constants} from '/common/constants.js';
 import {LocalStorage} from '/common/local_storage.js';
 
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';

@@ -6,12 +6,11 @@
  * @fileoverview Sends Text-To-Speech commands to Chrome's native TTS
  * extension API.
  */
-
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {constants} from '/common/constants.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {Personality, QueueMode, TtsSpeechProperties} from '../common/tts_types.js';

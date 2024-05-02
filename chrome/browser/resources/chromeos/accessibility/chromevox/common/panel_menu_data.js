@@ -8,9 +8,8 @@
  */
 
 import {AutomationPredicate} from '/common/automation_predicate.js';
+import {BridgeCallbackId} from '/common/bridge_callback_manager.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
-
-import {BridgeCallbackId} from './bridge_callback_manager.js';
 
 /** @enum {number} */
 export const PanelNodeMenuId = {

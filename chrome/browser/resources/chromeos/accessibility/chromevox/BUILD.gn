@@ -75,8 +75,6 @@ ts_modules = [
   "common/braille/braille_command_data.ts",
   "common/braille/braille_key_types.ts",
   "common/braille/braille_table.ts",
-  "common/bridge_callback_manager.ts",
-  "common/bridge_helper.ts",
   "common/command_store.ts",
   "common/earcon_id.ts",
   "common/key_sequence.ts",

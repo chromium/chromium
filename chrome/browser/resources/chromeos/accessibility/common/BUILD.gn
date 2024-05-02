@@ -55,6 +55,8 @@ ts_modules = [
   "array_util.ts",
   "automation_predicate.ts",
   "automation_util.ts",
+  "bridge_callback_manager.ts",
+  "bridge_helper.ts",
   "chrome_event_handler.ts",
   "constants.ts",
   "cursors/cursor.ts",

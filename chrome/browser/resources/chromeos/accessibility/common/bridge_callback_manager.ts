@@ -10,6 +10,7 @@
 import {ActionType, BridgeHelper, TargetType} from './bridge_helper.js';
 
 type MaybeFunction = Function | null;
+
 /** Contexts should be constants, defined in a central place. */
 export type ContextType = string;
 

@@ -5,10 +5,10 @@
 /**
  * @fileoverview Tracks event sources.
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
 import {EventSourceType} from '../common/event_source_type.js';
 
 export class EventSource {

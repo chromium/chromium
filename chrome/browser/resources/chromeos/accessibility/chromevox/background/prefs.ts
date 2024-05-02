@@ -6,11 +6,11 @@
  * @fileoverview Common page for reading and writing preferences from
  * the background context (background page or options page).
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {LocalStorage} from '/common/local_storage.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {Personality} from '../common/tts_types.js';

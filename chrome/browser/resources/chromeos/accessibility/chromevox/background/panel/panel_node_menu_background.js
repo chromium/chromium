@@ -8,12 +8,12 @@
  */
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
+import {BridgeCallbackId} from '/common/bridge_callback_manager.js';
 import {constants} from '/common/constants.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {AutomationTreeWalker} from '/common/tree_walker.js';
 
-import {BridgeCallbackId} from '../../common/bridge_callback_manager.js';
 import {BridgeContext} from '../../common/bridge_constants.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelBridge} from '../../common/panel_bridge.js';

@@ -6,11 +6,11 @@
  * @fileoverview Handles gesture-based commands.
  */
 import {AutomationPredicate} from '/common/automation_predicate.js';
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {EventGenerator} from '/common/event_generator.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../../common/bridge_constants.js';
-import {BridgeHelper} from '../../common/bridge_helper.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {GestureCommandData, GestureGranularity} from '../../common/gesture_command_data.js';
 import {QueueMode} from '../../common/tts_types.js';

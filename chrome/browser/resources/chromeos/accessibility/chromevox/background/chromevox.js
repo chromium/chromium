@@ -6,11 +6,11 @@
  * @fileoverview Defines a global object that holds references to the three
  * different output engines.
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
 import {Spannable} from '../common/spannable.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';

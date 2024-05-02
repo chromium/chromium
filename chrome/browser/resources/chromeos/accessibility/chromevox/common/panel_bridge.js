@@ -6,9 +6,9 @@
  * @fileoverview Provides an interface for other renderers to communicate with
  * the ChromeVox panel.
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 
 import {BridgeConstants} from './bridge_constants.js';
-import {BridgeHelper} from './bridge_helper.js';
 import {PanelNodeMenuItemData} from './panel_menu_data.js';
 
 export class PanelBridge {

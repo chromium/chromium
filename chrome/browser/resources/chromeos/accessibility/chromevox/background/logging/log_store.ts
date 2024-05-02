@@ -5,10 +5,10 @@
 /**
  * @fileoverview Store ChromeVox log.
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../../common/bridge_constants.js';
-import {BridgeHelper} from '../../common/bridge_helper.js';
 import {BaseLog, LogType, TextLog, TreeLog} from '../../common/log_types.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {TreeDumper} from '../../common/tree_dumper.js';

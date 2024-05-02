@@ -7,6 +7,7 @@
  */
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {BrowserUtil} from '/common/browser_util.js';
 import {constants} from '/common/constants.js';
 import {Cursor, CursorUnit} from '/common/cursors/cursor.js';
@@ -18,7 +19,6 @@ import {RectUtil} from '/common/rect_util.js';
 
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
-import {BridgeHelper} from '../../common/bridge_helper.js';
 import {Command} from '../../common/command.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EarconId} from '../../common/earcon_id.js';

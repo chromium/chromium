@@ -5,11 +5,11 @@
 /**
  * @fileoverview Forces user actions down a predetermined path.
  */
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
-import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';
 import {KeySequence, SerializedKeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';

@@ -7,12 +7,12 @@
  * the background context.
  */
 import {AsyncUtil} from '/common/async_util.js';
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {constants} from '/common/constants.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../../common/bridge_constants.js';
-import {BridgeHelper} from '../../common/bridge_helper.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {PanelBridge} from '../../common/panel_bridge.js';
 import {ALL_PANEL_MENU_NODE_DATA} from '../../common/panel_menu_data.js';

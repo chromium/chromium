@@ -6,10 +6,10 @@
  * @fileoverview Creates event stream logger.
  */
 import {AsyncUtil} from '/common/async_util.js';
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {LocalStorage} from '/common/local_storage.js';
 
 import {BridgeConstants} from '../../common/bridge_constants.js';
-import {BridgeHelper} from '../../common/bridge_helper.js';
 import {EventLog} from '../../common/log_types.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 
