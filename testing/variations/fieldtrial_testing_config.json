@@ -17898,6 +17898,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "omnibox_allowed_package_names": "org.chromium.customtabsclient"
+                    },
                     "enable_features": [
                         "SearchInCCT"
                     ]
