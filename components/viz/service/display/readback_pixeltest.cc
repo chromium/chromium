@@ -24,6 +24,7 @@
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/service/display/viz_pixel_test.h"
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
@@ -420,9 +421,11 @@ bool can_run_nv12_test(bool use_multiplanar_si) {
 
 }  // namespace
 
-// Superclass providing common functionality to SkiaReadbackPixelTest variants.
-class SkiaReadbackPixelTest : public cc::PixelTest {
+// Superclass providing common functionality to ReadbackPixelTest variants.
+class ReadbackPixelTest : public VizPixelTest {
  public:
+  explicit ReadbackPixelTest(RendererType type) : VizPixelTest(type) {}
+
   bool ScaleByHalf() const {
     DCHECK(is_initialized_);
     return scale_by_half_;
@@ -473,11 +476,17 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
                        : FILE_PATH_LITERAL("one_of_16_color_rects.png"));
   }
 
+  // Returns an appropriate shard image usage.
+  uint32_t GetUsage() const {
+    return is_software_renderer() ? gpu::SHARED_IMAGE_USAGE_CPU_WRITE
+                                  : gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  }
+
   // All subclasses should call it from within their virtual SetUp() method.
   void SetUpReadbackPixeltest(bool scale_by_half) {
     DCHECK(!is_initialized_);
 
-    SetUpSkiaRenderer(gfx::SurfaceOrigin::kBottomLeft);
+    VizPixelTest::SetUp();
 
     scale_by_half_ = scale_by_half;
 
@@ -550,7 +559,7 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
             ? SinglePlaneFormat::kBGRA_8888
             : SinglePlaneFormat::kRGBA_8888;
     ResourceId resource_id =
-        CreateGpuResource(source_size, format, MakePixelSpan(bitmap));
+        CreateSharedImageResource(source_size, format, MakePixelSpan(bitmap));
 
     std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
         cc::SendResourceAndGetChildToParentMap(
@@ -573,27 +582,31 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
     return pass;
   }
 
-  // TODO(kylechar): Create an OOP-R style GPU resource with no GL dependencies.
-  ResourceId CreateGpuResource(const gfx::Size& size,
-                               SharedImageFormat format,
-                               base::span<const uint8_t> pixels) {
+  // Creates a shared image resource containing `bitmap` and returns the
+  // resource id for it.
+  ResourceId CreateSharedImageResource(const gfx::Size& size,
+                                       SharedImageFormat format,
+                                       base::span<const uint8_t> pixels) {
     gpu::SharedImageInterface* sii =
         child_context_provider_->SharedImageInterface();
     DCHECK(sii);
     auto client_shared_image = sii->CreateSharedImage(
-        {format, size, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-         "TestPixels"},
-        pixels);
+        {format, size, gfx::ColorSpace(), GetUsage(), "TestPixels"}, pixels);
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-    TransferableResource gl_resource = TransferableResource::MakeGpu(
-        client_shared_image, GL_TEXTURE_2D, sync_token, size, format,
-        /*is_overlay_candidate=*/false);
+    TransferableResource resource =
+        is_software_renderer()
+            ? TransferableResource::MakeSoftwareSharedImage(
+                  client_shared_image, sync_token, size, format)
+            : TransferableResource::MakeGpu(client_shared_image, GL_TEXTURE_2D,
+                                            sync_token, size, format,
+                                            /*is_overlay_candidate=*/false);
+
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, child_context_provider_,
                        std::move(client_shared_image));
     return child_resource_provider_->ImportResource(
-        gl_resource, std::move(release_callback));
+        resource, std::move(release_callback));
   }
 
   bool is_initialized_ = false;
@@ -604,14 +617,15 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
   SkBitmap expected_bitmap_;
 };
 
-class SkiaReadbackPixelTestRGBA
-    : public SkiaReadbackPixelTest,
+class ReadbackPixelTestRGBA
+    : public ReadbackPixelTest,
       public testing::WithParamInterface<
-          std::tuple<bool, CopyOutputResult::Destination>> {
+          std::tuple<RendererType, bool, CopyOutputResult::Destination>> {
  public:
-  SkiaReadbackPixelTestRGBA()
-      : should_scale_by_half_(std::get<0>(GetParam())),
-        request_destination_(std::get<1>(GetParam())) {}
+  ReadbackPixelTestRGBA()
+      : ReadbackPixelTest(std::get<0>(GetParam())),
+        should_scale_by_half_(std::get<1>(GetParam())),
+        request_destination_(std::get<2>(GetParam())) {}
 
   CopyOutputResult::Format RequestFormat() const {
     return CopyOutputResult::Format::RGBA;
@@ -622,7 +636,7 @@ class SkiaReadbackPixelTestRGBA
   }
 
   void SetUp() override {
-    SkiaReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
+    ReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
   }
 
  private:
@@ -630,8 +644,8 @@ class SkiaReadbackPixelTestRGBA
   CopyOutputResult::Destination request_destination_;
 };
 
-// Test that SkiaRenderer RGBA readback works correctly.
-TEST_P(SkiaReadbackPixelTestRGBA, ExecutesCopyRequest) {
+// Test that RGBA readback works correctly.
+TEST_P(ReadbackPixelTestRGBA, ExecutesCopyRequest) {
   // Generates a RenderPass which contains one quad that spans the full output.
   // The quad has our source image, so the framebuffer should contain the source
   // image after DrawFrame().
@@ -691,35 +705,32 @@ TEST_P(SkiaReadbackPixelTestRGBA, ExecutesCopyRequest) {
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
-    All,
-    SkiaReadbackPixelTestRGBA,
+    ,
+    ReadbackPixelTestRGBA,
     testing::Combine(
+        testing::Values(RendererType::kSkiaGL),
         // Result scaling: Scale by half?
         testing::Values(true, false),
-        testing::Values(CopyOutputResult::Destination::kSystemMemory,
-                        CopyOutputResult::Destination::kNativeTextures)));
-#else
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SkiaReadbackPixelTestRGBA,
-    testing::Combine(
-        testing::Values(true, false),
+#if BUILDFLAG(IS_ANDROID)
         // Exclude NativeTexture for Android test.
         testing::Values(CopyOutputResult::Destination::kSystemMemory)));
+#else
+        testing::Values(CopyOutputResult::Destination::kSystemMemory,
+                        CopyOutputResult::Destination::kNativeTextures)));
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-class SkiaReadbackPixelTestRGBAWithBlit
-    : public SkiaReadbackPixelTest,
+class ReadbackPixelTestRGBAWithBlit
+    : public ReadbackPixelTest,
       public testing::WithParamInterface<
-          std::tuple<bool, LetterboxingBehavior, bool>> {
+          std::tuple<RendererType, bool, LetterboxingBehavior, bool>> {
  public:
-  SkiaReadbackPixelTestRGBAWithBlit()
-      : should_scale_by_half_(std::get<0>(GetParam())),
-        letterboxing_behavior_(std::get<1>(GetParam())),
-        populates_gpu_memory_buffer_(std::get<2>(GetParam())) {}
+  ReadbackPixelTestRGBAWithBlit()
+      : ReadbackPixelTest(std::get<0>(GetParam())),
+        should_scale_by_half_(std::get<1>(GetParam())),
+        letterboxing_behavior_(std::get<2>(GetParam())),
+        populates_gpu_memory_buffer_(std::get<3>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
     return CopyOutputResult::Destination::kNativeTextures;
@@ -730,7 +741,7 @@ class SkiaReadbackPixelTestRGBAWithBlit
   }
 
   void SetUp() override {
-    SkiaReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
+    ReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
   }
 
   LetterboxingBehavior GetLetterboxingBehavior() const {
@@ -750,8 +761,8 @@ class SkiaReadbackPixelTestRGBAWithBlit
   bool populates_gpu_memory_buffer_ = false;
 };
 
-// Test that SkiaRenderer RGBA readback works correctly using existing textures.
-TEST_P(SkiaReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
+// Test that RGBA readback works correctly using existing textures.
+TEST_P(ReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
   const gfx::Rect result_selection = GetRequestArea();
 
   // Generate a shared image that will be owned by us. They will be used as the
@@ -857,8 +868,9 @@ TEST_P(SkiaReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    SkiaReadbackPixelTestRGBAWithBlit,
+    ReadbackPixelTestRGBAWithBlit,
     testing::Combine(
+        testing::Values(RendererType::kSkiaGL),
         testing::Bool(),  // Result scaling: Scale by half?
         testing::Values(LetterboxingBehavior::kDoNotLetterbox,
                         LetterboxingBehavior::kLetterbox),
@@ -875,15 +887,16 @@ INSTANTIATE_TEST_SUITE_P(
 // formats (WrappedSkImageBackingFactory and ExternalVkImageBackingFactory
 // don't support cross-thread access, while AHardwareBufferImageBackingFactory
 // doesn't support the plane formats).
-class SkiaReadbackPixelTestNV12
-    : public SkiaReadbackPixelTest,
+class ReadbackPixelTestNV12
+    : public ReadbackPixelTest,
       public testing::WithParamInterface<
-          std::tuple<bool, CopyOutputResult::Destination, bool>> {
+          std::tuple<RendererType, bool, CopyOutputResult::Destination, bool>> {
  public:
-  SkiaReadbackPixelTestNV12()
-      : should_scale_by_half_(std::get<0>(GetParam())),
-        request_destination_(std::get<1>(GetParam())),
-        use_multiplanar_si_(std::get<2>(GetParam())) {}
+  ReadbackPixelTestNV12()
+      : ReadbackPixelTest(std::get<0>(GetParam())),
+        should_scale_by_half_(std::get<1>(GetParam())),
+        request_destination_(std::get<2>(GetParam())),
+        use_multiplanar_si_(std::get<3>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
     return request_destination_;
@@ -895,7 +908,7 @@ class SkiaReadbackPixelTestNV12
   }
 
   void SetUp() override {
-    SkiaReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
+    ReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
   }
 
   bool use_multiplanar_si() { return use_multiplanar_si_; }
@@ -906,8 +919,8 @@ class SkiaReadbackPixelTestNV12
   bool use_multiplanar_si_ = false;
 };
 
-// Test that SkiaRenderer NV12 readback works correctly.
-TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
+// Test that NV12 readback works correctly.
+TEST_P(ReadbackPixelTestNV12, ExecutesCopyRequest) {
   // Generates a RenderPass which contains one quad that spans the full output.
   // The quad has our source image, so the framebuffer should contain the source
   // image after DrawFrame().
@@ -996,8 +1009,9 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    SkiaReadbackPixelTestNV12,
+    ReadbackPixelTestNV12,
     testing::Combine(
+        testing::Values(RendererType::kSkiaGL),
         // Result scaling: Scale by half?
         testing::Values(true, false),
         testing::Values(CopyOutputResult::Destination::kSystemMemory,
@@ -1005,16 +1019,17 @@ INSTANTIATE_TEST_SUITE_P(
         // Use MultiplanarSharedImage?
         testing::Values(true, false)));
 
-class SkiaReadbackPixelTestNV12WithBlit
-    : public SkiaReadbackPixelTest,
+class ReadbackPixelTestNV12WithBlit
+    : public ReadbackPixelTest,
       public testing::WithParamInterface<
-          std::tuple<bool, LetterboxingBehavior, bool, bool>> {
+          std::tuple<RendererType, bool, LetterboxingBehavior, bool, bool>> {
  public:
-  SkiaReadbackPixelTestNV12WithBlit()
-      : should_scale_by_half_(std::get<0>(GetParam())),
-        letterboxing_behavior_(std::get<1>(GetParam())),
-        populates_gpu_memory_buffer_(std::get<2>(GetParam())),
-        use_multiplanar_si_(std::get<3>(GetParam())) {}
+  ReadbackPixelTestNV12WithBlit()
+      : ReadbackPixelTest(std::get<0>(GetParam())),
+        should_scale_by_half_(std::get<1>(GetParam())),
+        letterboxing_behavior_(std::get<2>(GetParam())),
+        populates_gpu_memory_buffer_(std::get<3>(GetParam())),
+        use_multiplanar_si_(std::get<4>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
     return CopyOutputResult::Destination::kNativeTextures;
@@ -1026,7 +1041,7 @@ class SkiaReadbackPixelTestNV12WithBlit
   }
 
   void SetUp() override {
-    SkiaReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
+    ReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
   }
 
   LetterboxingBehavior GetLetterboxingBehavior() const {
@@ -1049,8 +1064,8 @@ class SkiaReadbackPixelTestNV12WithBlit
   bool use_multiplanar_si_ = false;
 };
 
-// Test that SkiaRenderer NV12 readback works correctly using existing textures.
-TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
+// Test that NV12 readback works correctly using existing textures.
+TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   if (!can_run_nv12_test(use_multiplanar_si())) {
     GTEST_SKIP();
   }
@@ -1249,8 +1264,9 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    SkiaReadbackPixelTestNV12WithBlit,
+    ReadbackPixelTestNV12WithBlit,
     testing::Combine(
+        testing::Values(RendererType::kSkiaGL),
         testing::Bool(),  // Result scaling: Scale by half?
         testing::Values(LetterboxingBehavior::kDoNotLetterbox,
                         LetterboxingBehavior::kLetterbox),
