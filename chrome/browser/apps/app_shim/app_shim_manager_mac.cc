@@ -67,7 +67,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

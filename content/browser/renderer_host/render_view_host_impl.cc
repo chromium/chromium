@@ -66,7 +66,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
-#include "content/public/browser/notification_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/storage_partition.h"

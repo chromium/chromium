@@ -36,7 +36,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/window.h"

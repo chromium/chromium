@@ -30,8 +30,6 @@
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_request_id.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/site_instance.h"

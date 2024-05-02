@@ -146,10 +146,9 @@ class CONTENT_EXPORT BrowserThread {
   // UI), and thread switching delays can mean that the final UI tasks executes
   // before the IO task's stack unwinds. This would lead to the object
   // destructing on the IO thread, which often is not what you want (i.e. to
-  // unregister from NotificationService, to notify other objects on the
-  // creating thread etc). Note: see base::OnTaskRunnerDeleter and
-  // base::RefCountedDeleteOnSequence to bind to SequencedTaskRunner instead of
-  // specific BrowserThreads.
+  // notify other objects on the creating thread etc). Note: see
+  // base::OnTaskRunnerDeleter and base::RefCountedDeleteOnSequence to bind to
+  // SequencedTaskRunner instead of specific BrowserThreads.
   template <ID thread>
   struct DeleteOnThread {
     template <typename T>

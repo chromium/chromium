@@ -146,8 +146,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_factory.h"

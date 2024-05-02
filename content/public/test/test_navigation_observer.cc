@@ -260,8 +260,7 @@ void TestNavigationObserver::OnDidFinishNavigation(
   // frame, so the DCHECK has been updated to ignore these cases. We also only
   // enforce this check if we haven't already called EventTriggered (since this
   // will reset navigation_started and can cause errors in subsequent
-  // DidFinishNavigation calls). All this being said, we should, in general,
-  // move away from NotificationService and related events.
+  // DidFinishNavigation calls).
   DCHECK(was_event_consumed_ || !navigation_handle->IsInPrimaryMainFrame() ||
          web_contents_state->navigation_started);
 
