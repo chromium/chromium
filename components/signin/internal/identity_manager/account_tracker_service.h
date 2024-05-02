@@ -138,6 +138,11 @@ class AccountTrackerService {
   // Returns a reference to the corresponding Java AccountTrackerService object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  // Returns a pointer to the native counterpart of the given Java
+  // `AccountTrackerService`.
+  static AccountTrackerService* FromAccountTrackerServiceAndroid(
+      const base::android::JavaRef<jobject>& j_account_tracker_service);
+
   // Seeds the accounts with |core_account_infos|.
   void LegacySeedAccountsInfo(
       JNIEnv* env,

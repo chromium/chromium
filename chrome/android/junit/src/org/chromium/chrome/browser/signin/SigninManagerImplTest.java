@@ -472,7 +472,7 @@ public class SigninManagerImplTest {
                             return null;
                         })
                 .when(mNativeMock)
-                .isAccountManaged(anyLong(), any(), any());
+                .isAccountManaged(anyLong(), any(), any(), any());
 
         doAnswer(
                         (args) -> {

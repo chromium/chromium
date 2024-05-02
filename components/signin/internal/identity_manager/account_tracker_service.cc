@@ -933,6 +933,14 @@ AccountTrackerService::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
+// static
+AccountTrackerService* AccountTrackerService::FromAccountTrackerServiceAndroid(
+    const jni_zero::JavaRef<jobject>& j_account_tracker_service) {
+  return reinterpret_cast<AccountTrackerService*>(
+      signin::Java_AccountTrackerService_getNativePointer(
+          jni_zero::AttachCurrentThread(), j_account_tracker_service));
+}
+
 void AccountTrackerService::LegacySeedAccountsInfo(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& core_account_infos) {

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -14,14 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/android/chrome_jni_headers/SigninManagerImpl_jni.h"
-#include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/sync/service/sync_service.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-
-#include "base/android/callback_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -31,16 +24,25 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_switches.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 using base::android::JavaParamRef;
 
@@ -280,10 +282,23 @@ void SigninManagerAndroid::FetchPolicyBeforeSignIn(
 
 void SigninManagerAndroid::IsAccountManaged(
     JNIEnv* env,
+    const JavaParamRef<jobject>& j_account_tracker_service,
     const JavaParamRef<jobject>& j_account_info,
     const JavaParamRef<jobject>& j_callback) {
   CoreAccountInfo account = ConvertFromJavaCoreAccountInfo(env, j_account_info);
   base::android::ScopedJavaGlobalRef<jobject> callback(env, j_callback);
+
+  if (!base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp) &&
+      base::FeatureList::IsEnabled(switches::kEnterprisePolicyOnSignin)) {
+    // Force seed the account, since requesting management status would require
+    // access token, and this operation would result in a crash if done on a
+    // non seeded account. See https://crbug.com/332900316.
+    AccountTrackerService* account_tracker_service =
+        AccountTrackerService::FromAccountTrackerServiceAndroid(
+            j_account_tracker_service);
+
+    account_tracker_service->SeedAccountInfo(account.gaia, account.email);
+  }
 
   RegisterPolicyWithAccount(
       account, base::BindOnce(

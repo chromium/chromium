@@ -32,4 +32,8 @@ specific_include_rules = {
   "chrome_entry_point_for_test\.cc": [
     "+chrome/utility/chrome_content_utility_client.h",
   ],
+  # TODO(b/40284908): Remove this after SeedAccountsRevamp is fully rolled out.
+  "signin_manager_android.cc": [
+    "+components/signin/internal/identity_manager",
+  ],
 }
