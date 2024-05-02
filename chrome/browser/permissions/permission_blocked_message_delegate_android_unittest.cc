@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
+#include "chrome/browser/permissions/permission_blocked_message_delegate_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +17,7 @@ using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
 
 }  // namespace
 
-class MockDelegate : public NotificationBlockedMessageDelegate::Delegate {
+class MockDelegate : public PermissionBlockedMessageDelegate::Delegate {
  public:
   ~MockDelegate() override = default;
   MockDelegate(const base::WeakPtr<permissions::PermissionPromptAndroid>&
@@ -33,13 +33,14 @@ class MockDelegate : public NotificationBlockedMessageDelegate::Delegate {
               ReasonForUsingQuietUi,
               (),
               (override));
+  MOCK_METHOD(ContentSettingsType, GetContentSettingsType, (), (override));
 };
 
-class NotificationBlockedMessageDelegateAndroidTest
+class PermissionBlockedMessageDelegateAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  NotificationBlockedMessageDelegateAndroidTest() = default;
-  ~NotificationBlockedMessageDelegateAndroidTest() override = default;
+  PermissionBlockedMessageDelegateAndroidTest() = default;
+  ~PermissionBlockedMessageDelegateAndroidTest() override = default;
 
   void ExpectEnqueued() {
     EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
@@ -55,7 +56,7 @@ class NotificationBlockedMessageDelegateAndroidTest
   }
 
   void ShowMessage(std::unique_ptr<MockDelegate> delegate) {
-    controller_ = std::make_unique<NotificationBlockedMessageDelegate>(
+    controller_ = std::make_unique<PermissionBlockedMessageDelegate>(
         web_contents(), std::move(delegate));
   }
 
@@ -97,13 +98,13 @@ class NotificationBlockedMessageDelegateAndroidTest
   void TearDown() override;
 
  protected:
-  std::unique_ptr<NotificationBlockedMessageDelegate> controller_;
+  std::unique_ptr<PermissionBlockedMessageDelegate> controller_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   std::unique_ptr<MockDelegate> delegate_;
   raw_ptr<permissions::PermissionRequestManager> manager_ = nullptr;
 };
 
-void NotificationBlockedMessageDelegateAndroidTest::SetUp() {
+void PermissionBlockedMessageDelegateAndroidTest::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
@@ -113,16 +114,18 @@ void NotificationBlockedMessageDelegateAndroidTest::SetUp() {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
 }
 
-void NotificationBlockedMessageDelegateAndroidTest::TearDown() {
+void PermissionBlockedMessageDelegateAndroidTest::TearDown() {
   messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
-TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByTimeout) {
+TEST_F(PermissionBlockedMessageDelegateAndroidTest, DismissByTimeout) {
   auto delegate = GetMockDelegate();
 
   EXPECT_CALL(*delegate, Accept).Times(0);
   EXPECT_CALL(*delegate, Deny).Times(0);
+  EXPECT_CALL(*delegate, GetContentSettingsType)
+      .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
 
   ExpectEnqueued();
 
@@ -131,13 +134,15 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByTimeout) {
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
-TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByPrimaryAction) {
+TEST_F(PermissionBlockedMessageDelegateAndroidTest, DismissByPrimaryAction) {
   auto delegate = GetMockDelegate();
   EXPECT_CALL(*delegate, ShouldUseQuietUI)
       .WillRepeatedly(testing::Return(true));
 
   EXPECT_CALL(*delegate, Accept).Times(0);
   EXPECT_CALL(*delegate, Deny);
+  EXPECT_CALL(*delegate, GetContentSettingsType)
+      .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
 
   ExpectEnqueued();
 
@@ -146,8 +151,7 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest, DismissByPrimaryAction) {
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
-TEST_F(NotificationBlockedMessageDelegateAndroidTest,
-       DismissByDialogDismissed) {
+TEST_F(PermissionBlockedMessageDelegateAndroidTest, DismissByDialogDismissed) {
   auto delegate = GetMockDelegate();
 
   EXPECT_CALL(*delegate, ShouldUseQuietUI)
@@ -155,6 +159,8 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest,
   EXPECT_CALL(*delegate, ReasonForUsingQuietUi)
       .WillRepeatedly(testing::Return(
           std::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)));
+  EXPECT_CALL(*delegate, GetContentSettingsType)
+      .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
 
   ExpectEnqueued();
 
@@ -169,7 +175,7 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest,
   TriggerDialogDismiss();
 }
 
-TEST_F(NotificationBlockedMessageDelegateAndroidTest,
+TEST_F(PermissionBlockedMessageDelegateAndroidTest,
        DismissByDialogOnAllowForThisSite) {
   auto delegate = GetMockDelegate();
 
@@ -178,6 +184,8 @@ TEST_F(NotificationBlockedMessageDelegateAndroidTest,
   EXPECT_CALL(*delegate, ReasonForUsingQuietUi)
       .WillRepeatedly(testing::Return(
           std::optional<QuietUiReason>(QuietUiReason::kEnabledInPrefs)));
+  EXPECT_CALL(*delegate, GetContentSettingsType)
+      .WillRepeatedly(testing::Return(ContentSettingsType::NOTIFICATIONS));
 
   ExpectEnqueued();
 

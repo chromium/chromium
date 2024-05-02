@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
+#include "chrome/browser/permissions/permission_blocked_message_delegate_android.h"
 
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -10,6 +10,7 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/permissions/quiet_permission_prompt_model_android.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/permission_request.h"
@@ -22,54 +23,68 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-NotificationBlockedMessageDelegate::NotificationBlockedMessageDelegate(
+PermissionBlockedMessageDelegate::PermissionBlockedMessageDelegate(
     content::WebContents* web_contents,
     std::unique_ptr<Delegate> delegate)
     : content::WebContentsObserver(web_contents),
       web_contents_(web_contents),
       delegate_(std::move(delegate)) {
   message_ = std::make_unique<messages::MessageWrapper>(
-      messages::MessageIdentifier::NOTIFICATION_BLOCKED,
+      messages::MessageIdentifier::PERMISSION_BLOCKED,
       base::BindOnce(
-          &NotificationBlockedMessageDelegate::HandlePrimaryActionClick,
+          &PermissionBlockedMessageDelegate::HandlePrimaryActionClick,
           base::Unretained(this)),
-      base::BindOnce(&NotificationBlockedMessageDelegate::HandleDismissCallback,
+      base::BindOnce(&PermissionBlockedMessageDelegate::HandleDismissCallback,
                      base::Unretained(this)));
-  message_->SetTitle(l10n_util::GetStringUTF16(
-      IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE));
+  const ContentSettingsType content_setting_type =
+      delegate_->GetContentSettingsType();
+  int title = 0;
+  int icon = 0;
+  switch (content_setting_type) {
+    case ContentSettingsType::NOTIFICATIONS:
+      title = IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE;
+      icon = IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF;
+      break;
+    case ContentSettingsType::GEOLOCATION:
+      title = IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_TITLE;
+      icon = IDR_ANDROID_MESSAGE_LOCATION_OFF;
+      break;
+    default:
+      NOTREACHED();
+  }
+  message_->SetTitle(l10n_util::GetStringUTF16(title));
 
   // IDS_OK: notification will still be blocked if primary button is clicked.
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_OK));
-  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
-      IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF));
+  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(icon));
   message_->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
 
-  message_->SetSecondaryActionCallback(base::BindRepeating(
-      &NotificationBlockedMessageDelegate::HandleManageClick,
-      base::Unretained(this)));
+  message_->SetSecondaryActionCallback(
+      base::BindRepeating(&PermissionBlockedMessageDelegate::HandleManageClick,
+                          base::Unretained(this)));
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
       messages::MessagePriority::kNormal);
 }
 
-NotificationBlockedMessageDelegate::~NotificationBlockedMessageDelegate() {
+PermissionBlockedMessageDelegate::~PermissionBlockedMessageDelegate() {
   DismissInternal();
 }
 
-void NotificationBlockedMessageDelegate::OnContinueBlocking() {
+void PermissionBlockedMessageDelegate::OnContinueBlocking() {
   has_interacted_with_dialog_ = true;
   dialog_controller_.reset();
   delegate_->Deny();
 }
 
-void NotificationBlockedMessageDelegate::OnAllowForThisSite() {
+void PermissionBlockedMessageDelegate::OnAllowForThisSite() {
   has_interacted_with_dialog_ = true;
   dialog_controller_.reset();
   delegate_->Accept();
 }
 
-void NotificationBlockedMessageDelegate::OnLearnMoreClicked() {
+void PermissionBlockedMessageDelegate::OnLearnMoreClicked() {
   should_reshow_dialog_on_focus_ = true;
   dialog_controller_->DismissDialog();
   delegate_->SetLearnMoreClicked();
@@ -81,12 +96,12 @@ void NotificationBlockedMessageDelegate::OnLearnMoreClicked() {
       /*navigation_handle_callback=*/{});
 }
 
-void NotificationBlockedMessageDelegate::OnOpenedSettings() {
+void PermissionBlockedMessageDelegate::OnOpenedSettings() {
   should_reshow_dialog_on_focus_ = true;
   delegate_->SetManageClicked();
 }
 
-void NotificationBlockedMessageDelegate::OnDialogDismissed() {
+void PermissionBlockedMessageDelegate::OnDialogDismissed() {
   if (!dialog_controller_) {
     // Dismissed by clicking on dialog buttons.
     return;
@@ -106,7 +121,11 @@ void NotificationBlockedMessageDelegate::OnDialogDismissed() {
   }
 }
 
-void NotificationBlockedMessageDelegate::OnWebContentsFocused(
+ContentSettingsType PermissionBlockedMessageDelegate::GetContentSettingsType() {
+  return delegate_->GetContentSettingsType();
+}
+
+void PermissionBlockedMessageDelegate::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
   if (should_reshow_dialog_on_focus_ && dialog_controller_) {
     // This will be true only if the user has been redirected to
@@ -123,21 +142,21 @@ void NotificationBlockedMessageDelegate::OnWebContentsFocused(
   }
 }
 
-void NotificationBlockedMessageDelegate::HandlePrimaryActionClick() {
+void PermissionBlockedMessageDelegate::HandlePrimaryActionClick() {
   DCHECK(delegate_->ShouldUseQuietUI());
   delegate_->Deny();
 }
 
-void NotificationBlockedMessageDelegate::HandleManageClick() {
+void PermissionBlockedMessageDelegate::HandleManageClick() {
   DCHECK(!dialog_controller_);
-  dialog_controller_ = std::make_unique<NotificationBlockedDialogController>(
-      this, web_contents_);
+  dialog_controller_ =
+      std::make_unique<PermissionBlockedDialogController>(this, web_contents_);
   dialog_controller_->ShowDialog(*delegate_->ReasonForUsingQuietUi());
   messages::MessageDispatcherBridge::Get()->DismissMessage(
       message_.get(), messages::DismissReason::SECONDARY_ACTION);
 }
 
-void NotificationBlockedMessageDelegate::HandleDismissCallback(
+void PermissionBlockedMessageDelegate::HandleDismissCallback(
     messages::DismissReason reason) {
   message_.reset();
 
@@ -156,59 +175,70 @@ void NotificationBlockedMessageDelegate::HandleDismissCallback(
   // |permission_prompt_|.
 }
 
-void NotificationBlockedMessageDelegate::DismissInternal() {
+void PermissionBlockedMessageDelegate::DismissInternal() {
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         message_.get(), messages::DismissReason::UNKNOWN);
   }
 }
 
-void NotificationBlockedMessageDelegate::Delegate::Accept() {
-  if (!permission_prompt_)
+void PermissionBlockedMessageDelegate::Delegate::Accept() {
+  if (!permission_prompt_) {
     return;
+  }
   permission_prompt_->Accept();
 }
 
-void NotificationBlockedMessageDelegate::Delegate::Deny() {
-  if (!permission_prompt_)
+void PermissionBlockedMessageDelegate::Delegate::Deny() {
+  if (!permission_prompt_) {
     return;
+  }
   permission_prompt_->Deny();
 }
 
-void NotificationBlockedMessageDelegate::Delegate::Closing() {
-  if (!permission_prompt_)
+void PermissionBlockedMessageDelegate::Delegate::Closing() {
+  if (!permission_prompt_) {
     return;
+  }
   permission_prompt_->Closing();
 }
 
-void NotificationBlockedMessageDelegate::Delegate::SetManageClicked() {
-  if (!permission_prompt_)
+void PermissionBlockedMessageDelegate::Delegate::SetManageClicked() {
+  if (!permission_prompt_) {
     return;
+  }
   permission_prompt_->SetManageClicked();
 }
 
-void NotificationBlockedMessageDelegate::Delegate::SetLearnMoreClicked() {
-  if (!permission_prompt_)
+void PermissionBlockedMessageDelegate::Delegate::SetLearnMoreClicked() {
+  if (!permission_prompt_) {
     return;
+  }
   permission_prompt_->SetLearnMoreClicked();
 }
 
-bool NotificationBlockedMessageDelegate::Delegate::ShouldUseQuietUI() {
+bool PermissionBlockedMessageDelegate::Delegate::ShouldUseQuietUI() {
   return permission_prompt_->ShouldCurrentRequestUseQuietUI();
 }
 
 std::optional<permissions::PermissionUiSelector::QuietUiReason>
-NotificationBlockedMessageDelegate::Delegate::ReasonForUsingQuietUi() {
+PermissionBlockedMessageDelegate::Delegate::ReasonForUsingQuietUi() {
   return permission_prompt_->ReasonForUsingQuietUi();
 }
 
-NotificationBlockedMessageDelegate::Delegate::~Delegate() {
+ContentSettingsType
+PermissionBlockedMessageDelegate::Delegate::GetContentSettingsType() {
+  // QuietUI is only supported for notifications and geolocation so there will
+  // be only one ContentSettingsType in the queue.
+  return permission_prompt_->GetContentSettingType(0);
+}
+PermissionBlockedMessageDelegate::Delegate::~Delegate() {
   Closing();
 }
 
-NotificationBlockedMessageDelegate::Delegate::Delegate() {}
+PermissionBlockedMessageDelegate::Delegate::Delegate() {}
 
-NotificationBlockedMessageDelegate::Delegate::Delegate(
+PermissionBlockedMessageDelegate::Delegate::Delegate(
     const base::WeakPtr<permissions::PermissionPromptAndroid>&
         permission_prompt)
     : permission_prompt_(permission_prompt) {}

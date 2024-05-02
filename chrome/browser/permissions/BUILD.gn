@@ -95,10 +95,10 @@ source_set("permissions") {
 
   if (is_android) {
     sources += [
-      "notification_blocked_dialog_controller_android.cc",
-      "notification_blocked_dialog_controller_android.h",
-      "notification_blocked_message_delegate_android.cc",
-      "notification_blocked_message_delegate_android.h",
+      "permission_blocked_dialog_controller_android.cc",
+      "permission_blocked_dialog_controller_android.h",
+      "permission_blocked_message_delegate_android.cc",
+      "permission_blocked_message_delegate_android.h",
       "permission_infobar_delegate_android.cc",
       "permission_infobar_delegate_android.h",
       "permission_update_message_controller_android.cc",
@@ -169,7 +169,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
-      "notification_blocked_message_delegate_android_unittest.cc",
+      "permission_blocked_message_delegate_android_unittest.cc",
       "permission_prompt_android_unittest.cc",
       "permission_update_message_controller_android_unittest.cc",
     ]

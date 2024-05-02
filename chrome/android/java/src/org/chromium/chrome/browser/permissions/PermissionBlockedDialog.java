@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -34,21 +35,21 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 
 /**
  * Dialog triggered by the user clicking on the "manage" button in the Messages 2.0 flavor of quiet
- * permission prompt for notifications.
+ * permission prompt for notifications and geolocation.
  */
-public class NotificationBlockedDialog implements ModalDialogProperties.Controller {
+public class PermissionBlockedDialog implements ModalDialogProperties.Controller {
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
     private long mNativeDialogController;
     private PropertyModel mPropertyModel;
 
     @CalledByNative
-    private static NotificationBlockedDialog create(
+    private static PermissionBlockedDialog create(
             long nativeDialogController, @NonNull WindowAndroid windowAndroid) {
-        return new NotificationBlockedDialog(nativeDialogController, windowAndroid);
+        return new PermissionBlockedDialog(nativeDialogController, windowAndroid);
     }
 
-    public NotificationBlockedDialog(long nativeDialogController, WindowAndroid windowAndroid) {
+    public PermissionBlockedDialog(long nativeDialogController, WindowAndroid windowAndroid) {
         mNativeDialogController = nativeDialogController;
         mContext = windowAndroid.getActivity().get();
 
@@ -77,7 +78,7 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
                     new NoUnderlineClickableSpan(
                             mContext,
                             (v) -> {
-                                NotificationBlockedDialogJni.get()
+                              PermissionBlockedDialogJni.get()
                                         .onLearnMoreClicked(mNativeDialogController);
                             }),
                     start,
@@ -103,11 +104,11 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
         if (buttonType == ButtonType.POSITIVE) {
-            NotificationBlockedDialogJni.get().onPrimaryButtonClicked(mNativeDialogController);
+          PermissionBlockedDialogJni.get().onPrimaryButtonClicked(mNativeDialogController);
             mModalDialogManager.dismissDialog(
                     mPropertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         } else if (buttonType == ButtonType.NEGATIVE) {
-            NotificationBlockedDialogJni.get().onNegativeButtonClicked(mNativeDialogController);
+          PermissionBlockedDialogJni.get().onNegativeButtonClicked(mNativeDialogController);
             mModalDialogManager.dismissDialog(
                     mPropertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }
@@ -115,7 +116,7 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
-        NotificationBlockedDialogJni.get().onDialogDismissed(mNativeDialogController);
+      PermissionBlockedDialogJni.get().onDialogDismissed(mNativeDialogController);
         mNativeDialogController = 0;
     }
 
@@ -124,12 +125,29 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
         mModalDialogManager.dismissDialog(mPropertyModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 
+    /**
+     * This method launches the site settings screen
+     *
+     * @param contentSettingsType The ContentSettingsType to which the site settings screen should
+     *     navigate to.
+     */
     @CalledByNative
-    private void showSettings() {
+    private void showSettings(int contentSettingsType) {
+        int preferenceKey = 0;
+        switch (contentSettingsType) {
+            case ContentSettingsType.NOTIFICATIONS:
+                preferenceKey = SiteSettingsCategory.Type.NOTIFICATIONS;
+                break;
+            case ContentSettingsType.GEOLOCATION:
+                preferenceKey = SiteSettingsCategory.Type.DEVICE_LOCATION;
+                break;
+            default:
+                assert false : "Should not be reached";
+        }
         Bundle fragmentArguments = new Bundle();
         fragmentArguments.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,
-                SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
+                SiteSettingsCategory.preferenceKey(preferenceKey));
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(
                 mContext, SingleCategorySettings.class, fragmentArguments);
@@ -137,12 +155,12 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
 
     @NativeMethods
     interface Natives {
-        void onPrimaryButtonClicked(long nativeNotificationBlockedDialogController);
+        void onPrimaryButtonClicked(long nativePermissionBlockedDialogController);
 
-        void onNegativeButtonClicked(long nativeNotificationBlockedDialogController);
+        void onNegativeButtonClicked(long nativePermissionBlockedDialogController);
 
-        void onLearnMoreClicked(long nativeNotificationBlockedDialogController);
+        void onLearnMoreClicked(long nativePermissionBlockedDialogController);
 
-        void onDialogDismissed(long nativeNotificationBlockedDialogController);
+        void onDialogDismissed(long nativePermissionBlockedDialogController);
     }
 }

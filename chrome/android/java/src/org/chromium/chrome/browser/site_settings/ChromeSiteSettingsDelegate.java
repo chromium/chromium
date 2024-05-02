@@ -174,6 +174,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PERMISSION_DEDICATED_CPSS_SETTING_ANDROID);
+    }
+
+    @Override
     public boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI);
     }

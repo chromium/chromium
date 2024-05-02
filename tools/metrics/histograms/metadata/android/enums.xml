@@ -1005,6 +1005,7 @@ chromium-metrics-reviews@google.com.
   <int value="45" label="PromptHatsCameraGenericInvitation"/>
   <int value="46" label="PromptHatsMicrophoneCustomInvitation"/>
   <int value="47" label="PromptHatsMicrophoneGenericInvitation"/>
+  <int value="48" label="PermissionBlocked"/>
 </enum>
 
 <enum name="MinimizeAppAndCloseTabType">

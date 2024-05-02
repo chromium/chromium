@@ -64,6 +64,8 @@ public interface SiteSettingsDelegate {
      */
     boolean isQuietNotificationPromptsFeatureEnabled();
 
+    boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled();
+
     /**
      * @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled.
      */

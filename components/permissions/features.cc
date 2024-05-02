@@ -96,6 +96,10 @@ BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
              "BlockNotificationPromptsIfDisabledOnAppLevel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
+             "PermissionDedicatedCpssSettingAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #else
 
 // When enabled, chooser permissions grants will have a last visited timestamp

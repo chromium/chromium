@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_NOTIFICATION_BLOCKED_DIALOG_CONTROLLER_ANDROID_H_
-#define CHROME_BROWSER_PERMISSIONS_NOTIFICATION_BLOCKED_DIALOG_CONTROLLER_ANDROID_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_BLOCKED_DIALOG_CONTROLLER_ANDROID_H_
+#define CHROME_BROWSER_PERMISSIONS_PERMISSION_BLOCKED_DIALOG_CONTROLLER_ANDROID_H_
 
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/permissions/quiet_permission_prompt_model_android.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_ui_selector.h"
 
 namespace content {
@@ -19,7 +20,7 @@ class WebContents;
 // Controller for dialog triggered by the user clicking on the "manage"
 // button in the Messages 2.0 flavor of quiet notification permission
 // prompt (see: NotificationBlockedMessageDelegate).
-class NotificationBlockedDialogController {
+class PermissionBlockedDialogController {
  public:
   // The implementor of this interface may destroy the
   // `NotificationBlockedDialogController` instance immediately in
@@ -31,12 +32,13 @@ class NotificationBlockedDialogController {
     virtual void OnLearnMoreClicked() = 0;
     virtual void OnOpenedSettings() = 0;
     virtual void OnDialogDismissed() = 0;
+    virtual ContentSettingsType GetContentSettingsType() = 0;
   };
 
   // Both the `delegate` and `web_contents` should outlive `this`.
-  NotificationBlockedDialogController(Delegate* delegate,
+  PermissionBlockedDialogController(Delegate* delegate,
                                       content::WebContents* web_contents_);
-  ~NotificationBlockedDialogController();
+  ~PermissionBlockedDialogController();
 
   void ShowDialog(
       permissions::PermissionUiSelector::QuietUiReason quiet_ui_reason);
@@ -62,4 +64,4 @@ class NotificationBlockedDialogController {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
-#endif  // CHROME_BROWSER_PERMISSIONS_NOTIFICATION_BLOCKED_DIALOG_CONTROLLER_ANDROID_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_BLOCKED_DIALOG_CONTROLLER_ANDROID_H_

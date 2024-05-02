@@ -45,6 +45,12 @@ found in the LICENSE file.
         android:title="@string/enable_notifications_vibrate_title"
         android:summary="@string/enable_notifications_vibrate_summary"
         android:defaultValue="true" />
+    <!-- Three state radiogroup preference for permissions that support quiet
+         prompts. Currently supported by Notifications and Geolocation. -->
+    <org.chromium.components.browser_ui.site_settings.TriStatePermissionPreference
+        android:key="notifications_tri_state_toggle" />
+    <org.chromium.components.browser_ui.site_settings.TriStatePermissionPreference
+        android:key="location_tri_state_toggle" />
     <!-- A checkbox to request mobile view when the window is narrow.
          Only shown in the Desktop site category. -->
     <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference

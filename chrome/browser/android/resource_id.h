@@ -62,6 +62,8 @@ DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PASSWORD_MANAGER_ERROR,
                     R.drawable.ic_key_error)
 DECLARE_RESOURCE_ID(IDR_ANDROID_IC_MOBILE_FRIENDLY,
                     R.drawable.ic_mobile_friendly)
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_LOCATION_OFF,
+                    R.drawable.permission_location_off)
 
 // Unified Password Manager resources
 // Color logo is used for Google branded builds only.

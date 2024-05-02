@@ -408,6 +408,8 @@ public class MessagesMetrics {
                 return "PromptHatsMicrophoneCustomInvitation";
             case MessageIdentifier.PROMPT_HATS_MICROPHONE_GENERIC_INVITATION:
                 return "PromptHatsMicrophoneGenericInvitation";
+            case MessageIdentifier.PERMISSION_BLOCKED:
+                return "PermissionBlocked";
             default:
                 return "Unknown";
         }

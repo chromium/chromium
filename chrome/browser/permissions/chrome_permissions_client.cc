@@ -72,7 +72,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
+#include "chrome/browser/permissions/permission_blocked_message_delegate_android.h"
 #include "chrome/browser/permissions/permission_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -107,8 +107,11 @@ bool ShouldUseQuietUI(content::WebContents* web_contents,
                       ContentSettingsType type) {
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
-  return type == ContentSettingsType::NOTIFICATIONS &&
-         manager->ShouldCurrentRequestUseQuietUI();
+  if (type != ContentSettingsType::NOTIFICATIONS &&
+      type != ContentSettingsType::GEOLOCATION) {
+    return false;
+  }
+  return manager->ShouldCurrentRequestUseQuietUI();
 }
 #endif
 
@@ -565,9 +568,9 @@ ChromePermissionsClient::MaybeCreateMessageUI(
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
   if (ShouldUseQuietUI(web_contents, type)) {
     auto delegate =
-        std::make_unique<NotificationBlockedMessageDelegate::Delegate>(
+        std::make_unique<PermissionBlockedMessageDelegate::Delegate>(
             std::move(prompt));
-    return std::make_unique<NotificationBlockedMessageDelegate>(
+    return std::make_unique<PermissionBlockedMessageDelegate>(
         web_contents, std::move(delegate));
   }
 

@@ -15,6 +15,36 @@ using PrimaryButtonBehavior =
 using SecondaryButtonBehavior =
     QuietPermissionPromptModelAndroid::SecondaryButtonBehavior;
 
+std::u16string GetPermissionBlockedTitle(
+    ContentSettingsType content_settings_type) {
+  switch (content_settings_type) {
+    case ContentSettingsType::NOTIFICATIONS:
+      return l10n_util::GetStringUTF16(
+          IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE);
+    case ContentSettingsType::GEOLOCATION:
+      return l10n_util::GetStringUTF16(
+          IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_TITLE);
+    default:
+      NOTREACHED();
+      return std::u16string();
+  }
+}
+
+std::u16string GetGeolocationBlockedUIDescription(QuietUiReason reason) {
+  switch (reason) {
+    case QuietUiReason::kEnabledInPrefs:
+      return l10n_util::GetStringUTF16(
+          IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI);
+    case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
+    case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
+      return l10n_util::GetStringUTF16(
+          IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_PREDICTION_SERVICE);
+    default:
+      NOTREACHED();
+      return std::u16string();
+  }
+}
+
 std::u16string GetNotificationBlockedUIDescription(QuietUiReason reason) {
   switch (reason) {
     case QuietUiReason::kEnabledInPrefs:
@@ -39,6 +69,20 @@ std::u16string GetNotificationBlockedUIDescription(QuietUiReason reason) {
   return std::u16string();
 }
 
+std::u16string GetPermissionBlockedUIDescription(
+    QuietUiReason reason,
+    ContentSettingsType content_settings_type) {
+  switch (content_settings_type) {
+    case ContentSettingsType::NOTIFICATIONS:
+      return GetNotificationBlockedUIDescription(reason);
+    case ContentSettingsType::GEOLOCATION:
+      return GetGeolocationBlockedUIDescription(reason);
+    default:
+      NOTREACHED();
+      return std::u16string();
+  }
+}
+
 }  // namespace
 
 QuietPermissionPromptModelAndroid::QuietPermissionPromptModelAndroid() =
@@ -48,13 +92,14 @@ QuietPermissionPromptModelAndroid::~QuietPermissionPromptModelAndroid() =
 QuietPermissionPromptModelAndroid::QuietPermissionPromptModelAndroid(
     const QuietPermissionPromptModelAndroid& other) = default;
 
-QuietPermissionPromptModelAndroid GetQuietNotificationPermissionPromptModel(
-    permissions::PermissionUiSelector::QuietUiReason reason) {
+QuietPermissionPromptModelAndroid GetQuietPermissionPromptModel(
+    permissions::PermissionUiSelector::QuietUiReason reason,
+    ContentSettingsType content_settings_type) {
   QuietPermissionPromptModelAndroid model;
-  model.title = l10n_util::GetStringUTF16(
-      IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE);
 
-  model.description = GetNotificationBlockedUIDescription(reason);
+  model.title = GetPermissionBlockedTitle(content_settings_type);
+  model.description =
+      GetPermissionBlockedUIDescription(reason, content_settings_type);
 
   switch (reason) {
     case QuietUiReason::kEnabledInPrefs:
