@@ -41,6 +41,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_HUB;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
@@ -48,6 +49,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickNthTabInDialog;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInDialog;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeNthTabInDialog;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.finishActivity;
@@ -101,6 +103,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -542,6 +545,48 @@ public class TabGridDialogTest {
             clickScrimToExitDialog(cta);
             verifyTabStripFaviconCount(cta, 2);
         }
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ANDROID_TAB_GROUP_STABLE_IDS)
+    public void testTabGroupDialogRemainsOpenOnSyncUpdate() {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        createTabs(cta, false, 3);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 3);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        leaveTabSwitcher(cta);
+
+        TabModel model = cta.getTabModelSelector().getModel(false);
+        addBlankTabs(cta, false, 3);
+        enterTabSwitcher(cta);
+        createTabGroup(
+                cta, false, List.of(model.getTabAt(3), model.getTabAt(4), model.getTabAt(5)));
+
+        // Open dialog and verify dialog is showing correct content.
+        openDialogFromTabSwitcherAndVerify(cta, 3, null);
+
+        Callback<Integer> closeTabAt =
+                (index) -> {
+                    model.closeTab(model.getTabAt(index));
+                };
+        // Close two tabs in the current group
+        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(0));
+        verifyShowingDialog(cta, 2, null);
+        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(0));
+        verifyShowingDialog(cta, 1, null);
+
+        // Close two tabs in the GTS background group, dialog should still show.
+        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
+        verifyShowingDialog(cta, 1, null);
+        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
+        verifyShowingDialog(cta, 1, null);
+        TestThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(1));
+        verifyShowingDialog(cta, 1, null);
     }
 
     @Test

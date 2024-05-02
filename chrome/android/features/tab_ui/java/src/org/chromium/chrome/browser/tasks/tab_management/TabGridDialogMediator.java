@@ -193,6 +193,8 @@ public class TabGridDialogMediator
                             @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
+                        if (!isVisible()) return;
+
                         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
                         if (filter == null || !filter.isTabModelRestored()) {
                             return;
@@ -209,6 +211,7 @@ public class TabGridDialogMediator
 
                     @Override
                     public void tabClosureUndone(Tab tab) {
+                        // Allow this to update when invisible so the undo bar is handled correctly.
                         updateDialog();
                         updateGridTabSwitcher();
                         dismissSingleTabSnackbar(tab.getId());
@@ -216,6 +219,8 @@ public class TabGridDialogMediator
 
                     @Override
                     public void didSelectTab(Tab tab, int type, int lastId) {
+                        if (!isVisible()) return;
+
                         if (type == TabSelectionType.FROM_USER) {
                             // Cancel the zooming into tab grid card animation.
                             hideDialog(false);
@@ -226,6 +231,18 @@ public class TabGridDialogMediator
 
                     @Override
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                        if (!isVisible()) return;
+
+                        // Ignore updates to tabs in other tab groups.
+                        boolean closingTabIsCurrentTab = tab.getId() == mCurrentTabId;
+                        if (!closingTabIsCurrentTab) {
+                            Tab currentTab =
+                                    TabModelUtils.getTabById(
+                                            mCurrentTabModelFilterSupplier.get().getTabModel(),
+                                            mCurrentTabId);
+                            if (tab.getRootId() != currentTab.getRootId()) return;
+                        }
+
                         List<Tab> relatedTabs = getRelatedTabs(tab.getId());
                         // If the group is empty, update the animation and hide the dialog.
                         if (relatedTabs.size() == 0) {
@@ -234,7 +251,7 @@ public class TabGridDialogMediator
                         }
                         // If current tab is closed and tab group is not empty, hand over ID of the
                         // next tab in the group to mCurrentTabId.
-                        if (tab.getId() == mCurrentTabId) {
+                        if (closingTabIsCurrentTab) {
                             mCurrentTabId = relatedTabs.get(0).getId();
                         }
                         updateDialog();
@@ -243,16 +260,22 @@ public class TabGridDialogMediator
 
                     @Override
                     public void tabPendingClosure(Tab tab) {
-                        if (!mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE)) return;
+                        if (!isVisible()) return;
 
+                        // TODO(b/338447134): This shouldn't show a snackbar if the tab isn't in
+                        // this group. However, background closures are currently not-undoable so
+                        // this is fine for now...
                         showSingleTabClosureSnackbar(tab);
                     }
 
                     @Override
                     public void multipleTabsPendingClosure(
                             List<Tab> closedTabs, boolean isAllTabs) {
-                        if (!mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE)) return;
+                        if (!isVisible()) return;
 
+                        // TODO(b/338447134): This shouldn't show a snackbar if the tabs aren't in
+                        // this group. However, background closures are currently not-undoable so
+                        // this is fine for now...
                         if (closedTabs.size() == 1) {
                             showSingleTabClosureSnackbar(closedTabs.get(0));
                             return;
@@ -275,11 +298,13 @@ public class TabGridDialogMediator
 
                     @Override
                     public void tabClosureCommitted(Tab tab) {
+                        // Allow this to update while invisible so the snackbar updates correctly.
                         dismissSingleTabSnackbar(tab.getId());
                     }
 
                     @Override
                     public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                        // Allow this to update while invisible so the snackbar updates correctly.
                         if (tabs.size() == 1) {
                             dismissSingleTabSnackbar(tabs.get(0).getId());
                             return;
@@ -289,6 +314,7 @@ public class TabGridDialogMediator
 
                     @Override
                     public void allTabsClosureCommitted(boolean isIncognito) {
+                        // Allow this to update while invisible so the snackbar updates correctly.
                         dismissAllSnackbars();
                     }
 
@@ -478,7 +504,7 @@ public class TabGridDialogMediator
 
             mDialogController.prepareDialog();
             mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
-        } else if (mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE)) {
+        } else if (isVisible()) {
             mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
         }
     }
