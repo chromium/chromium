@@ -4705,7 +4705,9 @@
     # The following builders in this group have been migrated to set their
     # targets in the builders' declarations in
     # //infra/config/subprojects/ci/chromium.linux.star
+    #   Linux Builder (Wayland)
     #   Linux Builder (dbg)
+    #   Linux Tests (Wayland)
     #   Linux Tests (dbg)(1)
     'name': 'chromium.linux',
     'mixins': ['chromium-tester-service-account'],
@@ -4729,11 +4731,6 @@
           'scripts': 'chromium_linux_scripts',
         }
       },
-      'Linux Builder (Wayland)': {
-        'additional_compile_targets': [
-          'chrome'
-        ],
-      },
       'Linux Tests': {
         'mixins': [
           'isolate_profile_data',
@@ -4742,20 +4739,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
           'isolated_scripts': 'chromium_linux_rel_isolated_scripts_once',
-        },
-      },
-      'Linux Tests (Wayland)': {
-        'mixins': [
-          'linux-jammy',
-          'isolate_profile_data',
-         ],
-        'args': [
-          '--no-xvfb',
-          '--use-weston',
-          '--ozone-platform=wayland',
-        ],
-        'test_suites': {
-         'gtest_tests': 'chromium_linux_gtests',
         },
       },
       # For documentation, see //services/network/README.md.

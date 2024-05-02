@@ -7,6 +7,7 @@
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
+load("./chrome_settings.star", "targets_config")
 load("./enums.star", "enums")
 load("./structs.star", "structs")
 load("./targets-internal/common.star", _targets_common = "common")
@@ -793,7 +794,7 @@ targets = struct(
 # Code for generating targets spec files                                       #
 ################################################################################
 
-def register_targets(*, parent_key, name, targets, settings):
+def register_targets(*, parent_key, builder_group, builder_name, name, targets, settings):
     """Register the targets for a builder.
 
     This will create the necessary nodes and edges so that the targets spec for
@@ -812,6 +813,8 @@ def register_targets(*, parent_key, name, targets, settings):
     """
     targets_key = _targets_common.create_bundle(
         name = name,
+        builder_group = builder_group,
+        builder_name = builder_name,
         targets = args.listify(targets),
         mixins = _builder_defaults.mixins.get(),
         settings = settings or _settings(),
@@ -977,6 +980,7 @@ def get_targets_spec_generator():
       will be returned.
     """
     bundle_resolver = _get_bundle_resolver()
+    autoshard_exceptions = targets_config().autoshard_exceptions
 
     def get_targets_spec(parent_node):
         bundle_nodes = graph.children(parent_node.key, _targets_nodes.BUNDLE.kind)
@@ -989,6 +993,14 @@ def get_targets_spec_generator():
         settings = bundle_node.props.settings
         if not settings:
             fail("internal error: settings should be set for bundle_node")
+        builder_group = bundle_node.props.builder_group
+        if not builder_group:
+            fail("internal error: builder_group should be set for bundle_node")
+        builder_name = bundle_node.props.builder_name
+        if not builder_name:
+            fail("internal error: builder_name should be set for bundle_node")
+
+        current_autoshard_exceptions = autoshard_exceptions.get(builder_group, {}).get(builder_name, {})
 
         additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_node, settings)
         sort_key_and_specs_by_type_key = {}
@@ -996,6 +1008,8 @@ def get_targets_spec_generator():
             spec_value = dict(spec.value)
             type_key, sort_key, spec_value = spec.handler.finalize(name, settings, spec_value)
             finalized_spec = {k: v for k, v in spec_value.items() if v not in ([], None)}
+            if name in current_autoshard_exceptions:
+                spec_value["swarming"]["shards"] = current_autoshard_exceptions[name]
             sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, finalized_spec))
 
         specs_by_type_key = {}

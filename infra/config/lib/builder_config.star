@@ -515,6 +515,8 @@ def register_builder_config(
             targets = targets,
             settings = targets_settings,
             parent_key = builder_config_key,
+            builder_group = builder_group,
+            builder_name = name,
         )
 
     graph.add_edge(builder_config_key, keys.builder(bucket, name))

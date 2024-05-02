@@ -159,6 +159,7 @@ def _create_bundle(
         additional_compile_targets = [],
         targets = [],
         builder_group = None,
+        builder_name = None,
         settings = None,
         mixins = [],
         per_test_modifications = {}):
@@ -170,6 +171,7 @@ def _create_bundle(
 
     bundle_key = _targets_nodes.BUNDLE.add(name, props = dict(
         builder_group = builder_group,
+        builder_name = builder_name,
         settings = settings,
         tests_to_remove = tests_to_remove,
         # Record the stacktrace so that failures actually point out the failing
@@ -407,6 +409,7 @@ def _spec_init(node, settings, **kwargs):
         ci_only = None,
         experiment_percentage = None,
         precommit_args = [],
+        retry_only_failed_tests = None,
         isolate_profile_data = None,
         swarming = _swarming(enable = settings.use_swarming),
         merge = binary_test_config.merge,

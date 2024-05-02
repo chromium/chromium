@@ -306,6 +306,9 @@ ci.builder(
             "ozone_headless",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = "chrome",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "bld-wl",
@@ -465,6 +468,69 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.LINUX,
         ),
         build_gs_bucket = "chromium-linux-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_linux_gtests",
+        ],
+        mixins = [
+            targets.mixin(
+                args = [
+                    "--no-xvfb",
+                    "--use-weston",
+                    "--ozone-platform=wayland",
+                ],
+            ),
+            "linux-jammy",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            # https://crbug.com/1084469
+            "browser_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter",
+                ],
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+            ),
+            "headless_browsertests": targets.remove(
+                reason = "Wayland bot doesn't support headless mode",
+            ),
+            "interactive_ui_tests": targets.mixin(
+                # https://crbug.com/1192997
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter",
+                ],
+            ),
+            "ozone_x11_unittests": targets.remove(
+                reason = "x11 tests don't make sense for wayland",
+            ),
+            # https://crbug.com/1184127
+            "unit_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter",
+                ],
+                # Only retry the individual failed tests instead of rerunning entire
+                # shards.
+                retry_only_failed_tests = True,
+            ),
+            "views_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter",
+                ],
+            ),
+        },
     ),
     console_view_entry = consoles.console_view_entry(
         category = "release",

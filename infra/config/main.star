@@ -165,6 +165,10 @@ chrome_settings.per_builder_outputs(
     root_dir = "builders",
 )
 
+chrome_settings.targets(
+    autoshard_exceptions_file = "//targets/autoshard_exceptions.json",
+)
+
 # An all-purpose public realm.
 luci.realm(
     name = "public",
