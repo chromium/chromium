@@ -73,7 +73,7 @@ namespace {{namespace}} {
 // NOTE: Multiple inheritance is not allowed here, since the class must be
 // reinterpret_cast-able to CSSUnresolvedProperty. See css_property_instances.cc.tmpl
 // (the cast happens in GetPropertyInternal()).
-class {{class_name}} final : public {{property.superclass}} {
+class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
  public:
   constexpr {{class_name}}() : {{property.superclass}}({{ctor_args | join(', ')}}) { }
   const char* GetPropertyName() const override;

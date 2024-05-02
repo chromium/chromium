@@ -1178,8 +1178,7 @@ void PhysicalBoxFragment::AddOutlineRectsForInlineBox(
       }
 
       AddOutlineRectsForDescendant(child, collector, additional_offset,
-                                   outline_type,
-                                   To<LayoutBoxModelObject>(layout_object));
+                                   outline_type, layout_object);
     }
   }
 }

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
-
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -32,6 +30,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture.h"
+#include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
@@ -337,7 +336,7 @@ class PictureInPictureControllerTestWithWidget : public RenderingTest {
   WebViewImpl* GetWebView() const { return helper_.GetWebView(); }
 
   void ResetMediaPlayerAndMediaSource() {
-    DynamicTo<HTMLMediaElement>(Video())->ResetMediaPlayerAndMediaSource();
+    Video()->ResetMediaPlayerAndMediaSource();
   }
 
  private:

@@ -329,14 +329,6 @@ void HTMLObjectElement::RenderFallbackContent(
   ReattachFallbackContent();
 }
 
-// static
-bool HTMLObjectElement::IsClassOf(const FrameOwner& owner) {
-  auto* owner_element = DynamicTo<HTMLFrameOwnerElement>(owner);
-  if (!owner_element)
-    return false;
-  return IsA<HTMLObjectElement>(owner_element);
-}
-
 bool HTMLObjectElement::IsExposed() const {
   // http://www.whatwg.org/specs/web-apps/current-work/#exposed
   for (HTMLObjectElement* ancestor =

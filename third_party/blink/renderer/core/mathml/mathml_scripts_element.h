@@ -33,10 +33,6 @@ class CORE_EXPORT MathMLScriptsElement : public MathMLElement {
 };
 
 template <>
-inline bool IsElementOfType<const MathMLScriptsElement>(const Node& node) {
-  return IsA<MathMLScriptsElement>(node);
-}
-template <>
 struct DowncastTraits<MathMLScriptsElement> {
   static bool AllowFrom(const Node& node) {
     auto* mathml_element = DynamicTo<MathMLElement>(node);

@@ -1914,7 +1914,7 @@ String StylePropertySerializer::GetShorthandValueForGrid(
   auto HasInitialValueListValue = [](const CSSValueList* value_list,
                                      auto* definition) -> bool {
     return value_list && value_list->length() == 1 &&
-           value_list->First() == *(To<Longhand>(definition()).InitialValue());
+           value_list->First() == *(definition().InitialValue());
   };
   auto HasInitialIdentifierValue = [](const CSSValue* value,
                                       CSSValueID initial_value) -> bool {
@@ -1948,7 +1948,7 @@ String StylePropertySerializer::GetShorthandValueForGrid(
   // `grid-auto-*` along with named lines is not valid per the grammar.
   if ((auto_flow_value_list || auto_row_value_list || auto_column_value_list) &&
       *template_area_value !=
-          *(To<Longhand>(GetCSSPropertyGridTemplateAreas()).InitialValue())) {
+          *GetCSSPropertyGridTemplateAreas().InitialValue()) {
     return String();
   }
 
@@ -1957,10 +1957,10 @@ String StylePropertySerializer::GetShorthandValueForGrid(
   // author specifying `none` and uninitialized.
   const bool non_initial_template_rows =
       (*template_row_values !=
-       *(To<Longhand>(GetCSSPropertyGridTemplateRows()).InitialValue()));
+       *GetCSSPropertyGridTemplateRows().InitialValue());
   const bool non_initial_template_columns =
       *template_column_values !=
-      *(To<Longhand>(GetCSSPropertyGridTemplateColumns()).InitialValue());
+      *GetCSSPropertyGridTemplateColumns().InitialValue();
 
   // `grid-template-*` and `grid-auto-*` are mutually exclusive per direction.
   if ((non_initial_template_rows && specified_non_initial_auto_rows) ||

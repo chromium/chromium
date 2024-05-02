@@ -51,14 +51,13 @@ Vector<GridTrackSize, 1> InterpolableGridTrackRepeater::CreateTrackSizes(
 }
 
 InterpolableGridTrackRepeater* InterpolableGridTrackRepeater::RawClone() const {
-  InterpolableList* values(DynamicTo<InterpolableList>(values_->Clone()));
+  InterpolableList* values(values_->Clone());
   return MakeGarbageCollected<InterpolableGridTrackRepeater>(values, repeater_);
 }
 
 InterpolableGridTrackRepeater* InterpolableGridTrackRepeater::RawCloneAndZero()
     const {
-  InterpolableList* values(
-      DynamicTo<InterpolableList>(values_->CloneAndZero()));
+  InterpolableList* values(values_->CloneAndZero());
   return MakeGarbageCollected<InterpolableGridTrackRepeater>(values, repeater_);
 }
 

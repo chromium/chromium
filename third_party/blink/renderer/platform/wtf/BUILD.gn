@@ -296,6 +296,7 @@ source_set("wtf_unittests_sources") {
     "atomic_operations_test.cc",
     "bit_field_test.cc",
     "bloom_filter_test.cc",
+    "casting_test.cc",
     "cross_thread_functional_test.cc",
     "decimal_test.cc",
     "deque_test.cc",

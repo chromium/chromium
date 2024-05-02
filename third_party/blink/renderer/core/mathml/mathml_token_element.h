@@ -39,10 +39,6 @@ class CORE_EXPORT MathMLTokenElement : public MathMLElement {
 };
 
 template <>
-inline bool IsElementOfType<const MathMLTokenElement>(const Node& node) {
-  return IsA<MathMLTokenElement>(node);
-}
-template <>
 struct DowncastTraits<MathMLTokenElement> {
   static bool AllowFrom(const Node& node) {
     auto* mathml_element = DynamicTo<MathMLElement>(node);

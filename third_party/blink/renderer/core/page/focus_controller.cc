@@ -128,7 +128,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     // Slot scope might have to follow reading order if its closest layout
     // parent is a reading-order container.
     // TODO(crbug.com/336358906): Re-evaluate for content-visibility case.
-    Element* closest_layout_parent = DynamicTo<Element>(slot);
+    Element* closest_layout_parent = &slot;
     while (closest_layout_parent && !closest_layout_parent->GetLayoutObject()) {
       closest_layout_parent = closest_layout_parent->parentElement();
     }

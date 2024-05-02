@@ -41,7 +41,7 @@ void LayoutInlineListItem::WillBeRemovedFromTree() {
 
 LayoutObject* LayoutInlineListItem::Marker() const {
   NOT_DESTROYED();
-  return To<Element>(GetNode())->PseudoElementLayoutObject(kPseudoIdMarker);
+  return GetNode()->PseudoElementLayoutObject(kPseudoIdMarker);
 }
 
 void LayoutInlineListItem::UpdateMarkerTextIfNeeded() {

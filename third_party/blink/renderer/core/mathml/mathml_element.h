@@ -65,16 +65,6 @@ class CORE_EXPORT MathMLElement : public Element {
   std::optional<bool> BooleanAttribute(const QualifiedName& name) const;
 };
 
-template <typename T>
-bool IsElementOfType(const MathMLElement&);
-template <>
-inline bool IsElementOfType<const MathMLElement>(const MathMLElement&) {
-  return true;
-}
-template <>
-inline bool IsElementOfType<const MathMLElement>(const Node& node) {
-  return IsA<MathMLElement>(node);
-}
 template <>
 struct DowncastTraits<MathMLElement> {
   static bool AllowFrom(const Node& node) { return node.IsMathMLElement(); }

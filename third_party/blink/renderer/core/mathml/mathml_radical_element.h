@@ -25,10 +25,6 @@ class CORE_EXPORT MathMLRadicalElement : public MathMLRowElement {
 };
 
 template <>
-inline bool IsElementOfType<const MathMLRadicalElement>(const Node& node) {
-  return IsA<MathMLRadicalElement>(node);
-}
-template <>
 struct DowncastTraits<MathMLRadicalElement> {
   static bool AllowFrom(const Node& node) {
     auto* mathml_element = DynamicTo<MathMLElement>(node);

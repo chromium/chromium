@@ -60,14 +60,13 @@ NGGridTrackList InterpolableGridTrackList::CreateNGGridTrackList(
 }
 
 InterpolableGridTrackList* InterpolableGridTrackList::RawClone() const {
-  InterpolableList* values(DynamicTo<InterpolableList>(values_->Clone()));
+  InterpolableList* values(values_->Clone());
   return MakeGarbageCollected<InterpolableGridTrackList>(std::move(values),
                                                          progress_);
 }
 
 InterpolableGridTrackList* InterpolableGridTrackList::RawCloneAndZero() const {
-  InterpolableList* values(
-      DynamicTo<InterpolableList>(values_->CloneAndZero()));
+  InterpolableList* values(values_->CloneAndZero());
   return MakeGarbageCollected<InterpolableGridTrackList>(std::move(values),
                                                          progress_);
 }

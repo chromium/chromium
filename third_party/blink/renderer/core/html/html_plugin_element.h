@@ -239,10 +239,6 @@ class CORE_EXPORT HTMLPlugInElement
 };
 
 template <>
-inline bool IsElementOfType<const HTMLPlugInElement>(const Node& node) {
-  return IsA<HTMLPlugInElement>(node);
-}
-template <>
 struct DowncastTraits<HTMLPlugInElement> {
   static bool AllowFrom(const Node& node) {
     auto* html_element = DynamicTo<HTMLElement>(node);

@@ -355,6 +355,7 @@
     {
       name: "object",
       constructorNeedsCreateElementFlags: true,
+      noTypeHelpers: true,
     },
     {
       name: "ol",

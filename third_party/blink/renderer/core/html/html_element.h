@@ -408,19 +408,12 @@ class CORE_EXPORT HTMLElement : public Element {
   int OffsetTopOrLeft(bool top);
 };
 
-template <typename T>
-bool IsElementOfType(const HTMLElement&);
-template <>
-inline bool IsElementOfType<const HTMLElement>(const HTMLElement&) {
-  return true;
-}
-template <>
-inline bool IsElementOfType<const HTMLElement>(const Node& node) {
-  return IsA<HTMLElement>(node);
-}
 template <>
 struct DowncastTraits<HTMLElement> {
   static bool AllowFrom(const Node& node) { return node.IsHTMLElement(); }
+  static bool AllowFrom(const Element& element) {
+    return element.IsHTMLElement();
+  }
 };
 
 inline HTMLElement::HTMLElement(const QualifiedName& tag_name,

@@ -76,7 +76,7 @@ PartRootUnion* ChildNodePart::clone(PartRootCloneOptions* options,
     return nullptr;
   }
   auto& document = GetDocument();
-  auto* fragment = To<DocumentFragment>(DocumentFragment::Create(document));
+  auto* fragment = DocumentFragment::Create(document);
   NodeCloningData data{CloneOption::kPreserveDOMParts};
   data.SetPartRootCloneOptions(options);
   auto& fragment_part_root = fragment->getPartRoot();

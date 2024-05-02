@@ -25,10 +25,6 @@ class CORE_EXPORT MathMLUnderOverElement final : public MathMLScriptsElement {
 };
 
 template <>
-inline bool IsElementOfType<const MathMLUnderOverElement>(const Node& node) {
-  return IsA<MathMLUnderOverElement>(node);
-}
-template <>
 struct DowncastTraits<MathMLUnderOverElement> {
   static bool AllowFrom(const Node& node) {
     auto* mathml_element = DynamicTo<MathMLElement>(node);

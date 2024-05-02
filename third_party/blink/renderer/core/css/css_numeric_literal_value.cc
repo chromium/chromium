@@ -287,7 +287,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // be represented in non-exponential format with 6 digit precision.
       constexpr int kMinInteger = -999999;
       constexpr int kMaxInteger = 999999;
-      double value = To<CSSNumericLiteralValue>(this)->DoubleValue();
+      double value = DoubleValue();
       // If the value is small integer, go the fast path.
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {

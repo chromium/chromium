@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
@@ -1010,18 +1011,14 @@ class CORE_EXPORT HTMLMediaElement
 };
 
 template <>
-inline bool IsElementOfType<const HTMLMediaElement>(const Node& node) {
-  return IsA<HTMLMediaElement>(node);
-}
-template <>
 struct DowncastTraits<HTMLMediaElement> {
   static bool AllowFrom(const Node& node) {
     auto* html_element = DynamicTo<HTMLElement>(node);
     return html_element && AllowFrom(*html_element);
   }
   static bool AllowFrom(const HTMLElement& html_element) {
-    return IsA<HTMLAudioElement>(html_element) ||
-           IsA<HTMLVideoElement>(html_element);
+    return html_element.HasTagName(html_names::kAudioTag) ||
+           html_element.HasTagName(html_names::kVideoTag);
   }
 };
 
