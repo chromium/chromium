@@ -97,7 +97,6 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
-#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
@@ -117,8 +116,6 @@ using user_manager::prefs::kDeviceLocalAccountPendingDataRemoval;
 using user_manager::prefs::kDeviceLocalAccountsWithSavedData;
 using user_manager::prefs::kRegularUsersPref;
 }  // namespace prefs
-using user_manager::MultiUserSignInPolicy;
-using user_manager::MultiUserSignInPolicyController;
 
 namespace {
 
@@ -231,7 +228,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
           g_browser_process ? g_browser_process->local_state() : nullptr,
           CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
-      multi_user_sign_in_policy_controller_(GetLocalState(), this),
       mount_performer_(std::make_unique<MountPerformer>()) {
   // UserManager instance should be used only on UI thread.
   // (or in unit tests)
@@ -346,11 +342,6 @@ void ChromeUserManagerImpl::Shutdown() {
   }
 
   cloud_external_data_policy_handlers_.clear();
-}
-
-MultiUserSignInPolicyController*
-ChromeUserManagerImpl::GetMultiUserSignInPolicyController() {
-  return &multi_user_sign_in_policy_controller_;
 }
 
 void ChromeUserManagerImpl::RemoveUserInternal(
@@ -568,9 +559,6 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
                                                 : account_id.GetUserEmail());
   }
 
-  multi_user_sign_in_policy_controller_.RemoveCachedValues(
-      account_id.GetUserEmail());
-
   UserManagerBase::RemoveNonCryptohomeData(account_id);
 }
 
@@ -785,12 +773,6 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
     profile_observations_.push_back(std::move(observation));
   }
 
-  // TODO(b/278643115): Merge into UserManagerBase::OnUserProfileCreated().
-  if (user && IsUserLoggedIn() && !IsLoggedInAsGuest() &&
-      !IsLoggedInAsAnyKioskApp() && !profile->IsOffTheRecord()) {
-    multi_user_sign_in_policy_controller_.StartObserving(user);
-  }
-
   ProcessPendingUserSwitchId();
 }
 
@@ -802,9 +784,6 @@ void ChromeUserManagerImpl::OnProfileWillBeDestroyed(Profile* profile) {
   // fully ready for tests.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (user) {
-    // TODO(b/278643115): Merge into
-    // UserManagerBase::OnUserProfileWillBeDestroyed().
-    multi_user_sign_in_policy_controller_.StopObserving(user);
     OnUserProfileWillBeDestroyed(user->GetAccountId());
   }
 }

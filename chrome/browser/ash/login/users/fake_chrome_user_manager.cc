@@ -26,7 +26,6 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_names.h"
@@ -204,11 +203,6 @@ void FakeChromeUserManager::LoginUser(const AccountId& account_id,
 
   // NOTE: This does not match production. See function comment.
   SimulateUserProfileLoad(account_id);
-}
-
-user_manager::MultiUserSignInPolicyController*
-FakeChromeUserManager::GetMultiUserSignInPolicyController() {
-  return multi_user_sign_in_policy_controller_;
 }
 
 void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {

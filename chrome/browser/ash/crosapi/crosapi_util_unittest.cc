@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -69,11 +70,12 @@ class CrosapiUtilTest : public testing::Test {
 
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    browser_util::RegisterLocalStatePrefs(pref_service_.registry());
+    user_manager::UserManagerBase::RegisterProfilePrefs(
+        pref_service_.registry());
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
+        TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
     testing_profile_ = profile_manager_->CreateTestingProfile(
         TestingProfile::kDefaultProfileUserName);
@@ -87,6 +89,10 @@ class CrosapiUtilTest : public testing::Test {
   }
 
   void TearDown() override {
+    for (const auto& account_id : profile_created_accounts_) {
+      fake_user_manager_->OnUserProfileWillBeDestroyed(account_id);
+    }
+
     cloud_policy_store_ = nullptr;
     testing_profile_ = nullptr;
     profile_manager_.reset();
@@ -100,6 +106,7 @@ class CrosapiUtilTest : public testing::Test {
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
     fake_user_manager_->OnUserProfileCreated(account_id, &pref_service_);
+    profile_created_accounts_.push_back(account_id);
   }
 
   policy::MockCloudPolicyStore* GetCloudPolicyStore() {
@@ -108,6 +115,7 @@ class CrosapiUtilTest : public testing::Test {
 
   // The order of these members is relevant for both construction and
   // destruction timing.
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
@@ -115,6 +123,7 @@ class CrosapiUtilTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> testing_profile_;
   TestingPrefServiceSimple pref_service_;
+  std::vector<AccountId> profile_created_accounts_;
   raw_ptr<policy::MockCloudPolicyStore> cloud_policy_store_ = nullptr;
 };
 

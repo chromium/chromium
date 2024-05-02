@@ -27,7 +27,6 @@
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
 
@@ -68,8 +67,6 @@ class ChromeUserManagerImpl
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
-  user_manager::MultiUserSignInPolicyController*
-  GetMultiUserSignInPolicyController() override;
   bool IsEnterpriseManaged() const override;
 
   // DeviceSettingsService::Observer:
@@ -170,9 +167,6 @@ class ChromeUserManagerImpl
 
   base::CallbackListSubscription ephemeral_users_enabled_subscription_;
   base::CallbackListSubscription local_accounts_subscription_;
-
-  user_manager::MultiUserSignInPolicyController
-      multi_user_sign_in_policy_controller_;
 
   std::vector<std::unique_ptr<policy::CloudExternalDataPolicyHandler>>
       cloud_external_data_policy_handlers_;

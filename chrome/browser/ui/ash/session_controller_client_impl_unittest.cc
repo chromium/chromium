@@ -76,16 +76,11 @@ class SessionControllerClientImplTest : public testing::Test {
 
     // Initialize the UserManager singleton.
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    controller_ =
-        std::make_unique<user_manager::MultiUserSignInPolicyController>(
-            TestingBrowserProcess::GetGlobal()->local_state(),
-            user_manager_.Get());
-    user_manager_->set_multi_user_sign_in_policy_controller(controller_.get());
     // Initialize AssistantBrowserDelegate singleton.
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
+        TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
 
     browser_manager_ = std::make_unique<crosapi::FakeBrowserManager>();
@@ -112,8 +107,6 @@ class SessionControllerClientImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     assistant_delegate_.reset();
-    user_manager_->set_multi_user_sign_in_policy_controller(nullptr);
-    controller_.reset();
     user_manager_.Reset();
 
     ash::LoginState::Shutdown();
@@ -174,12 +167,12 @@ class SessionControllerClientImplTest : public testing::Test {
 
  private:
   // Sorted in the production initialization order.
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   session_manager::SessionManager session_manager_;
   ash::SessionTerminationManager session_termination_manager_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
-  std::unique_ptr<user_manager::MultiUserSignInPolicyController> controller_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;

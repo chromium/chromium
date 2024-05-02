@@ -211,7 +211,8 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   ASSERT_TRUE(testing_profile_manager.SetUp());
 
   // Set up UserManager to fake the login state.
-  user_manager::FakeUserManager user_manager;
+  user_manager::FakeUserManager user_manager(
+      TestingBrowserProcess::GetGlobal()->local_state());
   user_manager.Initialize();
   base::ScopedClosureRunner user_manager_teardown(base::BindLambdaForTesting(
       [&user_manager]() { user_manager.Destroy(); }));

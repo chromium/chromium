@@ -382,7 +382,8 @@ class FloatingWorkspaceServiceTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
+    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
+        TestingBrowserProcess::GetGlobal()->local_state()));
     account_id_ = AccountId::FromUserEmail(kTestAccount);
     const std::string username_hash =
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id_);

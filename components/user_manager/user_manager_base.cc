@@ -122,8 +122,7 @@ void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-void UserManagerBase::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
+void UserManagerBase::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kMultiProfileUserBehaviorPref,
                                std::string(MultiUserSignInPolicyToPrefValue(
                                    MultiUserSignInPolicy::kUnrestricted)));
@@ -143,7 +142,8 @@ UserManagerBase::UserManagerBase(
     : delegate_(std::move(delegate)),
       task_runner_(std::move(task_runner)),
       local_state_(local_state),
-      cros_settings_(cros_settings) {
+      cros_settings_(cros_settings),
+      multi_user_sign_in_policy_controller_(local_state, this) {
   // |local_state| can be nullptr only for testing.
   if (!local_state) {
     CHECK_IS_TEST();
@@ -1290,6 +1290,10 @@ bool UserManagerBase::OnUserProfileCreated(const AccountId& account_id,
   user->SetProfileIsCreated();
   user->SetProfilePrefs(prefs);
 
+  if (IsUserLoggedIn() && !IsLoggedInAsGuest() && !IsLoggedInAsAnyKioskApp()) {
+    multi_user_sign_in_policy_controller_.StartObserving(user);
+  }
+
   for (auto& observer : observer_list_) {
     observer.OnUserProfileCreated(*user);
   }
@@ -1304,6 +1308,9 @@ void UserManagerBase::OnUserProfileWillBeDestroyed(
                                [](auto& ptr) { return ptr->GetAccountId(); });
   auto* user = it == user_storage_.end() ? nullptr : it->get();
   CHECK(user);
+
+  multi_user_sign_in_policy_controller_.StopObserving(user);
+
   user->SetProfilePrefs(nullptr);
 }
 
@@ -1358,6 +1365,9 @@ bool UserManagerBase::LoadForceOnlineSignin(const AccountId& account_id) const {
 }
 
 void UserManagerBase::RemoveNonCryptohomeData(const AccountId& account_id) {
+  multi_user_sign_in_policy_controller_.RemoveCachedValues(
+      account_id.GetUserEmail());
+
   ScopedDictPrefUpdate(local_state_.get(), prefs::kUserDisplayName)
       ->Remove(account_id.GetUserEmail());
 
@@ -1437,6 +1447,11 @@ bool UserManagerBase::HasBrowserRestarted() const {
   return base::SysInfo::IsRunningOnChromeOS() &&
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              ash::switches::kLoginUser);
+}
+
+MultiUserSignInPolicyController*
+UserManagerBase::GetMultiUserSignInPolicyController() {
+  return &multi_user_sign_in_policy_controller_;
 }
 
 void UserManagerBase::Initialize() {

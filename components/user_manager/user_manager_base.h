@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_export.h"
@@ -36,10 +37,6 @@ class CrosSettings;
 namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
-
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
 
 namespace user_manager {
 
@@ -108,7 +105,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Registers UserManagerBase preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // UserManager implementation:
   void Shutdown() override;
@@ -207,6 +204,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void SetUserAffiliated(const AccountId& account_id,
                          bool is_affiliated) override;
   bool HasBrowserRestarted() const final;
+  MultiUserSignInPolicyController* GetMultiUserSignInPolicyController()
+      override;
 
   void Initialize() override;
 
@@ -421,6 +420,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Interface to the signed settings store.
   const raw_ptr<ash::CrosSettings> cros_settings_;
+
+  // Handles multi-user sign-in policy.
+  MultiUserSignInPolicyController multi_user_sign_in_policy_controller_;
 
   // Indicates stage of loading user from prefs.
   UserLoadStage user_loading_stage_ = STAGE_NOT_LOADED;

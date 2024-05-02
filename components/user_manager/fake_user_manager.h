@@ -116,8 +116,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
-  MultiUserSignInPolicyController* GetMultiUserSignInPolicyController()
-      override;
 
   // UserManagerBase overrides:
   void SetEphemeralModeConfig(

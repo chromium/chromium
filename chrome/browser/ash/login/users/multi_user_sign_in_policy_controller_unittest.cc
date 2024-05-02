@@ -129,15 +129,12 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
   MultiUserSignInPolicyControllerTest& operator=(
       const MultiUserSignInPolicyControllerTest&) = delete;
 
-  ~MultiUserSignInPolicyControllerTest() override {}
+  ~MultiUserSignInPolicyControllerTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
+        TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
-    controller_ = std::make_unique<MultiUserSignInPolicyController>(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        fake_user_manager_.Get());
 
     for (const auto& account_id : test_users_) {
       fake_user_manager_->AddUser(account_id);
@@ -160,7 +157,6 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
     for (const auto& account_id : test_users_) {
       fake_user_manager_->OnUserProfileWillBeDestroyed(account_id);
     }
-    controller_.reset();
     profile_manager_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -168,10 +164,8 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
   void LoginUser(size_t user_index) {
     ASSERT_LT(user_index, test_users_.size());
     fake_user_manager_->LoginUser(test_users_[user_index], false);
-    auto* user = fake_user_manager_->FindUserAndModify(test_users_[user_index]);
     fake_user_manager_->OnUserProfileCreated(
         test_users_[user_index], user_profiles_[user_index]->GetPrefs());
-    controller_->StartObserving(user);
   }
 
   void SetOwner(size_t user_index) {
@@ -189,23 +183,25 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
   }
 
   MultiUserSignInPolicy GetCachedBehavior(size_t user_index) {
-    return controller_->GetCachedValue(test_users_[user_index].GetUserEmail());
+    return controller()->GetCachedValue(test_users_[user_index].GetUserEmail());
   }
 
   void SetCachedBehavior(size_t user_index, MultiUserSignInPolicy policy) {
-    controller_->SetCachedValue(test_users_[user_index].GetUserEmail(), policy);
+    controller()->SetCachedValue(test_users_[user_index].GetUserEmail(),
+                                 policy);
   }
 
-  MultiUserSignInPolicyController* controller() { return controller_.get(); }
+  MultiUserSignInPolicyController* controller() {
+    return fake_user_manager_->GetMultiUserSignInPolicyController();
+  }
 
   TestingProfile* profile(int index) { return user_profiles_[index]; }
 
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
   TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-
-  std::unique_ptr<MultiUserSignInPolicyController> controller_;
 
   std::vector<raw_ptr<TestingProfile, VectorExperimental>> user_profiles_;
 

@@ -124,8 +124,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
-  user_manager::MultiUserSignInPolicyController*
-  GetMultiUserSignInPolicyController() override;
 
   // user_manager::UserManagerBase override.
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
@@ -144,11 +142,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
 
   void set_ephemeral_mode_config(EphemeralModeConfig ephemeral_mode_config) {
     fake_ephemeral_mode_config_ = std::move(ephemeral_mode_config);
-  }
-
-  void set_multi_user_sign_in_policy_controller(
-      user_manager::MultiUserSignInPolicyController* controller) {
-    multi_user_sign_in_policy_controller_ = controller;
   }
 
   void set_current_user_ephemeral(bool user_ephemeral) {
@@ -177,9 +170,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   EphemeralModeConfig fake_ephemeral_mode_config_;
   bool current_user_ephemeral_ = false;
   bool current_user_child_ = false;
-
-  raw_ptr<user_manager::MultiUserSignInPolicyController>
-      multi_user_sign_in_policy_controller_ = nullptr;
 
   // If set this is the active user. If empty, the first created user is the
   // active user.
