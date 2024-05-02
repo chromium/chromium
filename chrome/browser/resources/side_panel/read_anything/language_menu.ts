@@ -65,7 +65,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
 
   private languageSearchValue_: string;
   private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
-  private enabledLanguagesInPref: string[] = [];
+  private readonly enabledLanguagesInPref: string[];
 
   // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
