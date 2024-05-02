@@ -96,7 +96,8 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
@@ -133,8 +134,8 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
 
   // Creates a `GameDashboardContext` for the given `window` and
   // adds it to `game_window_contexts_`, if `GameDashboardContext` doesn't
-  // exist, the given window is a game, and the `window` has a known
-  // `WindowState`. Otherwise, no object is created.
+  // exist, the given window is a game, the `window` is parented, and the
+  // `window` has a valid `WindowState`. Otherwise, no object is created.
   void MaybeCreateGameDashboardContext(aura::Window* window);
 
   // Checks whether the given window is a game, and then calls
