@@ -783,7 +783,8 @@ static Node* NonBoundaryShadowTreeRootNode(const Position& position) {
              : nullptr;
 }
 
-void FrameSelection::SelectAll(SetSelectionBy set_selection_by) {
+void FrameSelection::SelectAll(SetSelectionBy set_selection_by,
+                               bool canonicalize_selection) {
   if (auto* select_element =
           DynamicTo<HTMLSelectElement>(GetDocument().FocusedElement())) {
     if (select_element->CanSelectAll()) {
@@ -835,13 +836,20 @@ void FrameSelection::SelectAll(SetSelectionBy set_selection_by) {
       return;
   }
 
-  // TODO(editing-dev): Should we pass in set_selection_by?
-  SetSelection(SelectionInDOMTree::Builder().SelectAllChildren(*root).Build(),
+  const SelectionInDOMTree& dom_selection =
+      SelectionInDOMTree::Builder().SelectAllChildren(*root).Build();
+  if (canonicalize_selection) {
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  }
+  SetSelection(canonicalize_selection
+                   ? CreateVisibleSelection(dom_selection).AsSelection()
+                   : dom_selection,
                SetSelectionOptions::Builder()
                    .SetShouldCloseTyping(true)
                    .SetShouldClearTypingStyle(true)
                    .SetShouldShowHandle(IsHandleVisible())
                    .Build());
+
   SelectFrameElementInParentIfFullySelected();
   // TODO(editing-dev): Should we pass in set_selection_by?
   NotifyTextControlOfSelectionChange(SetSelectionBy::kUser);
@@ -853,7 +861,7 @@ void FrameSelection::SelectAll(SetSelectionBy set_selection_by) {
 }
 
 void FrameSelection::SelectAll() {
-  SelectAll(SetSelectionBy::kSystem);
+  SelectAll(SetSelectionBy::kSystem, false);
 }
 
 // Implementation of |SVGTextControlElement::selectSubString()|
