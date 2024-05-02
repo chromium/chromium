@@ -93,6 +93,7 @@ const char kResponseSuccessKey[] = "ok";
 const char kResponseErrorKey[] = "err";
 
 const char kRegisterCommandName[] = "device/register";
+const char kForgetCommandName[] = "device/forget";
 const char kWrapKeyCommandName[] = "keys/wrap";
 const char kGenKeyPairCommandName[] = "keys/genpair";
 const char kRecoveryKeyStoreWrapCommandName[] = "recovery_key_store/wrap";

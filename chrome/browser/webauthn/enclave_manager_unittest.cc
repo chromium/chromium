@@ -929,6 +929,51 @@ TEST_F(EnclaveManagerTest, AddICloudRecoveryKey) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+TEST_F(EnclaveManagerTest, Unenroll) {
+  ASSERT_TRUE(Register());
+
+  ASSERT_TRUE(manager_.is_registered());
+  BoolCallback unenroll_callback;
+  manager_.Unenroll(unenroll_callback.callback());
+  unenroll_callback.WaitForCallback();
+  EXPECT_TRUE(std::get<0>(unenroll_callback.result().value()));
+  ASSERT_FALSE(manager_.is_registered());
+
+  // Things should be in a good state such that we can register again.
+  ASSERT_TRUE(Register());
+  ASSERT_TRUE(manager_.is_registered());
+}
+
+TEST_F(EnclaveManagerTest, UnenrollRace) {
+  ASSERT_TRUE(Register());
+
+  // Should be safe to race multiple unenroll requests. The ones after the first
+  // will fail when pending requests are cancelled.
+  ASSERT_TRUE(manager_.is_registered());
+  BoolCallback unenroll_callback1;
+  BoolCallback unenroll_callback2;
+  BoolCallback unenroll_callback3;
+  manager_.Unenroll(unenroll_callback1.callback());
+  manager_.Unenroll(unenroll_callback2.callback());
+  manager_.Unenroll(unenroll_callback3.callback());
+  unenroll_callback1.WaitForCallback();
+  unenroll_callback2.WaitForCallback();
+  unenroll_callback3.WaitForCallback();
+  EXPECT_TRUE(std::get<0>(unenroll_callback1.result().value()));
+  EXPECT_FALSE(std::get<0>(unenroll_callback2.result().value()));
+  EXPECT_FALSE(std::get<0>(unenroll_callback3.result().value()));
+  ASSERT_FALSE(manager_.is_registered());
+}
+
+TEST_F(EnclaveManagerTest, UnenrollWithoutRegistering) {
+  ASSERT_FALSE(manager_.is_registered());
+  BoolCallback unenroll_callback;
+  manager_.Unenroll(unenroll_callback.callback());
+  unenroll_callback.WaitForCallback();
+  EXPECT_TRUE(std::get<0>(unenroll_callback.result().value()));
+  ASSERT_FALSE(manager_.is_registered());
+}
+
 // Tests that rely on `ScopedMockUnexportableKeyProvider` only work on
 // platforms where EnclaveManager uses `GetUnexportableKeyProvider`, as opposed
 // to `GetSoftwareUnsecureUnexportableKeyProvider`.

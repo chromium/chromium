@@ -75,6 +75,7 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kResponseErrorKey[];
 
 // Command names
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterCommandName[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kForgetCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrapKeyCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGenKeyPairCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)

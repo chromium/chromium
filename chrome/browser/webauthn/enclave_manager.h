@@ -61,7 +61,7 @@ namespace trusted_vault {
 struct GpmPinMetadata;
 class RecoveryKeyStoreConnection;
 class TrustedVaultAccessTokenFetcherFrontend;
-}
+}  // namespace trusted_vault
 
 // EnclaveManager stores and manages the passkey enclave state. One instance
 // exists per-profile, owned by `EnclaveManagerFactory`.
@@ -169,6 +169,10 @@ class EnclaveManager : public KeyedService {
       std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key,
       Callback callback);
 #endif  // BUILDFLAG(IS_MAC)
+  // Send a request to the enclave to delete the registration for the current
+  // user, erase local keys, and erase local state for the user. Safe to call in
+  // any state and is a no-op if no registration exists.
+  void Unenroll(Callback callback);
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.
@@ -306,6 +310,8 @@ class EnclaveManager : public KeyedService {
   // in an unrecoverable state. In this case the registration state needs to be
   // reset, and can be initiated from scratch.
   void ClearRegistration();
+
+  void UnregisterComplete(Callback callback, bool success);
 
   // Store the secret that `TakeSecret` will make available.
   void SetSecret(int32_t key_version, base::span<const uint8_t> secret);

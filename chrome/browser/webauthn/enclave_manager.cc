@@ -105,6 +105,7 @@ struct EnclaveManager::PendingAction {
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::enclave::ICloudRecoveryKey> icloud_recovery_key;
 #endif  // BUILDFLAG(IS_MAC)
+  bool unregister = false;  // whether to unregister from the enclave.
 };
 
 namespace {
@@ -329,6 +330,18 @@ cbor::Value BuildRegistrationMessage(
   cbor::Value::ArrayValue requests;
   requests.emplace_back(std::move(request1));
   requests.emplace_back(std::move(request2));
+
+  return cbor::Value(std::move(requests));
+}
+
+cbor::Value BuildUnregisterMessage(const std::string& device_id) {
+  cbor::Value::MapValue request;
+  request.emplace(enclave::kRequestCommandKey, enclave::kForgetCommandName);
+  request.emplace(enclave::kRegisterDeviceIdKey,
+                  std::vector<uint8_t>(device_id.begin(), device_id.end()));
+
+  cbor::Value::ArrayValue requests;
+  requests.emplace_back(std::move(request));
 
   return cbor::Value(std::move(requests));
 }
@@ -1020,6 +1033,8 @@ class EnclaveManager::StateMachine {
 #endif  // BUILDFLAG(IS_MAC)
     kChangingPIN,
     kRenewingPIN,
+    kWaitingForEnclaveTokenForUnregister,
+    kUnregistering,
   };
 
   enum class FetchedFile {
@@ -1145,6 +1160,14 @@ class EnclaveManager::StateMachine {
         DoJoiningICloudKeychainToDomain(std::move(event));
         break;
 #endif  // BUILDFLAG(IS_MAC)
+
+      case State::kWaitingForEnclaveTokenForUnregister:
+        DoWaitingForEnclaveTokenForUnregister(std::move(event));
+        break;
+
+      case State::kUnregistering:
+        DoUnregistering(std::move(event));
+        break;
     }
 
     FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
@@ -1218,6 +1241,10 @@ class EnclaveManager::StateMachine {
       case State::kJoiningICloudKeychainToDomain:
         return "JoiningICloudKeychainToDomain";
 #endif  // BUILDFLAG(IS_MAC)
+      case State::kWaitingForEnclaveTokenForUnregister:
+        return "WaitingForEnclaveTokenForUnregister";
+      case State::kUnregistering:
+        return "Unregistering";
     }
   }
 
@@ -1376,6 +1403,18 @@ class EnclaveManager::StateMachine {
       is_pin_renewal_ = true;
       state_ = State::kDownloadingRecoveryKeyStoreKeys;
       DownloadRecoveryKeyStoreKeys();
+      return;
+    }
+
+    if (action_->unregister) {
+      if (!user_->registered()) {
+        success_ = true;
+        state_ = State::kStop;
+        return;
+      }
+
+      state_ = State::kWaitingForEnclaveTokenForUnregister;
+      GetAccessTokenInternal(GaiaConstants::kPasskeysEnclaveOAuth2Scope);
       return;
     }
 
@@ -2056,6 +2095,44 @@ class EnclaveManager::StateMachine {
         PinMetadata::FromProto(*wrapped_pin_proto_), response.GetArray()[0]);
   }
 
+  void DoWaitingForEnclaveTokenForUnregister(Event event) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    access_token_fetcher_.reset();
+    if (absl::holds_alternative<Failure>(event)) {
+      FIDO_LOG(ERROR) << "Failed to get access token for enclave";
+      state_ = State::kStop;
+      return;
+    }
+
+    state_ = State::kUnregistering;
+    std::string token = std::move(absl::get_if<AccessToken>(&event)->value());
+    enclave::Transact(manager_->network_context_factory_,
+                      enclave::GetEnclaveIdentity(), std::move(token),
+                      /*reauthentication_token=*/std::nullopt,
+                      BuildUnregisterMessage(user_->device_id()),
+                      enclave::SigningCallback(),
+                      base::BindOnce(&StateMachine::OnEnclaveResponse,
+                                     weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void DoUnregistering(Event event) {
+    state_ = State::kStop;
+    if (absl::holds_alternative<Failure>(event)) {
+      return;
+    }
+
+    cbor::Value response =
+        std::move(absl::get_if<EnclaveResponse>(&event)->value());
+    if (!IsAllOk(response, 1)) {
+      FIDO_LOG(ERROR) << "Unregister request resulted in error response: "
+                      << cbor::DiagnosticWriter::Write(response);
+      return;
+    }
+
+    success_ = true;
+  }
+
   // Start the process of uploading a Vault, and inserting it into the security
   // domain, based on an enclave response. The `response` value should be an
   // element from an enclave's response array. I.e. including the "ok" wrapping.
@@ -2449,6 +2526,25 @@ void EnclaveManager::AddICloudRecoveryKey(
   Act();
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+void EnclaveManager::Unenroll(EnclaveManager::Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto action = std::make_unique<PendingAction>();
+  action->callback =
+      base::BindOnce(&EnclaveManager::UnregisterComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  action->unregister = true;
+
+  if (!user_ || !is_registered()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(action->callback), true));
+    return;
+  }
+
+  pending_actions_.emplace_back(std::move(action));
+  Act();
+}
 
 void EnclaveManager::GetHardwareKeyForSignature(
     base::OnceCallback<void(
@@ -3237,7 +3333,14 @@ void EnclaveManager::ClearRegistration() {
   WriteState(local_state_.get());
 
   CancelAllActions();
-  Stopped();
+}
+
+void EnclaveManager::UnregisterComplete(EnclaveManager::Callback callback,
+                                        bool success) {
+  if (success) {
+    ClearRegistration();
+  }
+  std::move(callback).Run(success);
 }
 
 void EnclaveManager::SetSecret(int32_t key_version,
