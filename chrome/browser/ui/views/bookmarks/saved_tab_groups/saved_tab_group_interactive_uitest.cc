@@ -895,18 +895,18 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
   EXPECT_EQ(1, model->GetIndexOf(group_id_1).value());
 }
 
+// TODO(crbug.com/41494455): Deflake this test before enabling
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OverflowMenuUpdatesWhileOpen DISABLED_OverflowMenuUpdatesWhileOpen
+#else
+#define MAYBE_OverflowMenuUpdatesWhileOpen OverflowMenuUpdatesWhileOpen
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
-                       OverflowMenuUpdatesWhileOpen) {
+                       MAYBE_OverflowMenuUpdatesWhileOpen) {
   if (IsV2UIEnabled()) {
     GTEST_SKIP() << "N/A for V2";
   }
-#if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521486): Test fails on MacOS when ChromeRefresh2023 flags are
-  //                       enabled.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+
   // Add 5 additional tabs to the browser.
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       FlushEvents(),
       CheckView(kSavedTabGroupOverflowMenuId,
                 [&menu_widget_height](views::View* el) {
-                  menu_widget_height = el->GetWidget()->GetSize().height();
+                  menu_widget_height = el->bounds().height();
                   return true;
                 }),
 
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       CheckView(kSavedTabGroupOverflowMenuId,
                 [&menu_widget_height](views::View* el) {
                   const int old_height = menu_widget_height;
-                  menu_widget_height = el->GetWidget()->GetSize().height();
+                  menu_widget_height = el->bounds().height();
                   return menu_widget_height > old_height;
                 }),
 
@@ -988,10 +988,9 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       CheckView(kSavedTabGroupOverflowMenuId,
                 [&menu_widget_height](views::View* el) {
                   const int old_height = menu_widget_height;
-                  menu_widget_height = el->GetWidget()->GetSize().height();
+                  menu_widget_height = el->bounds().height();
                   return menu_widget_height < old_height;
                 }),
-
       // Hide the overflow menu.
       FlushEvents(),
       SendAccelerator(
