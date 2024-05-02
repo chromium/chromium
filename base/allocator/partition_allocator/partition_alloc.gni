@@ -175,7 +175,7 @@ declare_args() {
       (is_win || is_android || is_linux || is_mac || is_chromeos)
 
   # Use probe-on-destruct unowned ptr detection with ASAN.
-  use_asan_unowned_ptr = false
+  use_raw_ptr_asan_unowned_impl = false
 }
 
 # Use the version of raw_ptr<T> that allows the embedder to implement custom
@@ -271,7 +271,7 @@ if (!use_partition_alloc) {
   enable_backup_ref_ptr_support = false
   use_raw_ptr_backup_ref_impl = false
   use_asan_backup_ref_ptr = false
-  use_asan_unowned_ptr = false
+  use_raw_ptr_asan_unowned_impl = false
   use_raw_ptr_hookable_impl = false
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
@@ -326,7 +326,7 @@ assert(has_64_bit_pointers || !backup_ref_ptr_poison_oob_ptr,
 # AsanBackupRefPtr and AsanUnownedPtr are mutually exclusive variants of
 # raw_ptr.
 assert(
-    !use_asan_unowned_ptr || !use_asan_backup_ref_ptr,
+    !use_raw_ptr_asan_unowned_impl || !use_asan_backup_ref_ptr,
     "Both AsanUnownedPtr and AsanBackupRefPtr can't be enabled at the same " +
         "time")
 
@@ -336,7 +336,7 @@ assert(
     "Both BackupRefPtr and AsanBackupRefPtr can't be enabled at the same time")
 
 # BackupRefPtr and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
-assert(!enable_backup_ref_ptr_support || !use_asan_unowned_ptr,
+assert(!enable_backup_ref_ptr_support || !use_raw_ptr_asan_unowned_impl,
        "Both BackupRefPtr and AsanUnownedPtr can't be enabled at the same time")
 
 # RawPtrHookableImpl and BackupRefPtr are mutually exclusive variants of
@@ -349,14 +349,14 @@ assert(
 # RawPtrHookableImpl and AsanUnownedPtr are mutually exclusive variants of
 # raw_ptr.
 assert(
-    !use_raw_ptr_hookable_impl || !use_asan_unowned_ptr,
+    !use_raw_ptr_hookable_impl || !use_raw_ptr_asan_unowned_impl,
     "Both RawPtrHookableImpl and AsanUnownedPtr can't be enabled at the same " +
         "time")
 
 assert(!use_asan_backup_ref_ptr || is_asan,
        "AsanBackupRefPtr requires AddressSanitizer")
 
-assert(!use_asan_unowned_ptr || is_asan,
+assert(!use_raw_ptr_asan_unowned_impl || is_asan,
        "AsanUnownedPtr requires AddressSanitizer")
 
 # AsanBackupRefPtr is not supported outside Chromium. The implementation is

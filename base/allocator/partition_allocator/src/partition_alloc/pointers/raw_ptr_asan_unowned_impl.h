@@ -13,7 +13,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_forward.h"
 
-#if !BUILDFLAG(USE_ASAN_UNOWNED_PTR)
+#if !BUILDFLAG(USE_RAW_PTR_ASAN_UNOWNED_IMPL)
 #error "Included under wrong build option"
 #endif
 

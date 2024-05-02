@@ -124,7 +124,7 @@ component("raw_ptr") {
       "pointers/raw_ptr_hookable_impl.cc",
       "pointers/raw_ptr_hookable_impl.h",
     ]
-  } else if (use_asan_unowned_ptr) {
+  } else if (use_raw_ptr_asan_unowned_impl) {
     sources += [
       "pointers/raw_ptr_asan_unowned_impl.cc",
       "pointers/raw_ptr_asan_unowned_impl.h",
@@ -195,9 +195,13 @@ pa_buildflag_header("partition_alloc_buildflags") {
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
-    "USE_ASAN_UNOWNED_PTR=$use_asan_unowned_ptr",
+    "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
+
+    # TODO(bartekn): Remove once PDFium switches to
+    # USE_RAW_PTR_ASAN_UNOWNED_IMPL.
+    "USE_ASAN_UNOWNED_PTR=$use_raw_ptr_asan_unowned_impl",
 
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
 
