@@ -274,6 +274,7 @@
                    authService:authenticationService];
   _shortcutsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
+  _shortcutsMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
   _shortcutsMediator.dispatcher =
       static_cast<id<ApplicationCommands, BrowserCoordinatorCommands>>(
           self.browser->GetCommandDispatcher());
