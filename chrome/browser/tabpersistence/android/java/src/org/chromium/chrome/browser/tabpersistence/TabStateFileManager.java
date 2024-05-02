@@ -16,7 +16,6 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
@@ -45,12 +44,7 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.channels.WritableByteChannel;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -84,15 +78,9 @@ public class TabStateFileManager {
     /** Overrides the Chrome channel/package name to test a variant channel-specific behaviour. */
     private static String sChannelNameOverrideForTest;
 
-    private static Deque<FlatBufferMigrationTask> sPendingFlatBufferMigrations = new ArrayDeque<>();
-    private static List<FlatBufferMigrationTask> sExecutingFlatBufferMigrations =
-            new LinkedList<>();
-
     private static boolean sDeferredStartupComplete;
 
     private static final long NO_TAB_GROUP_ID = 0L;
-
-    private static final int MAX_CONCURRENT_FLATBUFFER_MIGRATIONS = 1;
 
     /** Enum representing the exception that occurred during {@link restoreTabState}. */
     @IntDef({
@@ -420,23 +408,6 @@ public class TabStateFileManager {
                         "Failed to read tabGroupId token from tab state."
                                 + " Assuming tabGroupId is null");
             }
-            // If FlatBuffer schema is enabled, but we restored using Legacy TabState, that
-            // means the FlatBuffer file doesn't exist yet (e.g. Tab has gone uninteracted with
-            // and there hasn't been an opportunity to migrate it to the FlatBuffer format).
-            // So a migration should be initiated.
-            if (isFlatBufferSchemaEnabled()) {
-                Pair<Integer, Boolean> params = parseInfoFromFilename(file.getName());
-                PostTask.runOrPostTask(
-                        TaskTraits.UI_BEST_EFFORT,
-                        () -> {
-                            ThreadUtils.assertOnUiThread();
-                            migrateTabToFlatBuffer(
-                                    /* tabId= */ params.first,
-                                    /* isEncrypted= */ params.second,
-                                    tabState,
-                                    file.getParentFile());
-                        });
-            }
             return tabState;
         } finally {
             StreamUtil.closeQuietly(stream);
@@ -465,35 +436,12 @@ public class TabStateFileManager {
         // FlatBuffers safely.
         saveStateInternal(
                 getTabStateFile(directory, tabId, isEncrypted, false), tabState, isEncrypted);
-        if (isFlatBufferSchemaEnabled()) {
-            if (sDeferredStartupComplete && isFinishedFlatBufferMigration()) {
-                // If deferred startup is complete and all existing or pending FlatBuffer migrations
-                // are complete simply save the FlatBuffer file. If we save the FlatBuffer file
-                // before deferred startup, there is risk the additional save may cause Jank.
-                // If we initiate another save while migrations are in progress, there is the
-                // risk that a pending FlatBuffer migration may finish after this save, making
-                // this save ineffectual.
-                saveStateInternal(
-                        getTabStateFile(directory, tabId, isEncrypted, true),
-                        tabState,
-                        isEncrypted);
-            } else {
-                // Otherwise, the save should follow the migration path (save in accordance
-                // with the migration queue which is flushed after deferred startup is complete.
-                migrateTabToFlatBuffer(tabId, isEncrypted, tabState, directory);
-            }
-        }
-    }
-
-    private static void migrateTabToFlatBuffer(
-            int tabId, boolean isEncrypted, TabState tabState, File directory) {
-        // Cancel any existing save for this Tab. It will be overwritten anyway.
-        cancelMigrationIfExists(tabId, isEncrypted);
-        sPendingFlatBufferMigrations.add(
-                new FlatBufferMigrationTask(
-                        /* tabId= */ tabId, /* isEncrypted= */ isEncrypted, tabState, directory));
-        if (sDeferredStartupComplete) {
-            processNextFlatBufferMigration();
+        if (isFlatBufferSchemaEnabled() && sDeferredStartupComplete) {
+            // If deferred startup is complete save the FlatBuffer file. If we save the
+            // FlatBuffer file before deferred startup, there is risk the additional save may
+            // cause Jank.
+            saveStateInternal(
+                    getTabStateFile(directory, tabId, isEncrypted, true), tabState, isEncrypted);
         }
     }
 
@@ -742,104 +690,7 @@ public class TabStateFileManager {
         if (!isFlatBufferSchemaEnabled()) {
             return;
         }
-        processNextFlatBufferMigration();
         sDeferredStartupComplete = true;
-    }
-
-    /***
-     * Cancel migration of a {@link Tab} to FlatBuffer format (for example if a {@link Tab} is closed.
-     * @param tabId identifier for a {@link Tab}
-     * @param isEncrypted if a {@link Tab} is incognito or not.
-     */
-    public static void cancelMigrationIfExists(int tabId, boolean isEncrypted) {
-        if (!isFlatBufferSchemaEnabled()) {
-            return;
-        }
-        Optional<FlatBufferMigrationTask> pendingFlatBufferMigrationTask =
-                sPendingFlatBufferMigrations.stream()
-                        .filter(f -> f.mTabId == tabId && f.mIsEncrypted == isEncrypted)
-                        .findFirst();
-        if (pendingFlatBufferMigrationTask.isPresent()) {
-            sPendingFlatBufferMigrations.remove(pendingFlatBufferMigrationTask.get());
-            return;
-        }
-        Optional<FlatBufferMigrationTask> sExecutingFlatBufferMigrationTask =
-                sExecutingFlatBufferMigrations.stream()
-                        .filter(f -> f.mTabId == tabId && f.mIsEncrypted == isEncrypted)
-                        .findFirst();
-        if (sExecutingFlatBufferMigrationTask.isPresent()) {
-            sExecutingFlatBufferMigrationTask.get().cancel(false);
-            sExecutingFlatBufferMigrations.remove(sExecutingFlatBufferMigrationTask.get());
-            processNextFlatBufferMigration();
-        }
-    }
-
-    private static class FlatBufferMigrationTask extends AsyncTask<Void> {
-        protected int mTabId;
-        protected boolean mIsEncrypted;
-        protected TabState mTabState;
-        protected File mStateDirectory;
-
-        FlatBufferMigrationTask(
-                int tabId, boolean isEncrypted, TabState tabState, File stateDirectory) {
-            mTabId = tabId;
-            mIsEncrypted = isEncrypted;
-            mTabState = tabState;
-            mStateDirectory = stateDirectory;
-        }
-
-        @Override
-        protected Void doInBackground() {
-            saveStateInternal(
-                    getTabStateFile(
-                            mStateDirectory, mTabId, mIsEncrypted, /* isFlatbuffer= */ true),
-                    mTabState,
-                    mIsEncrypted);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void v) {
-            if (isCancelled()) {
-                deleteOnCancel();
-                return;
-            }
-            sExecutingFlatBufferMigrations.remove(this);
-            processNextFlatBufferMigration();
-        }
-
-        private void deleteOnCancel() {
-            PostTask.runOrPostTask(
-                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                    () -> {
-                        ThreadUtils.assertOnBackgroundThread();
-                        File file =
-                                getTabStateFile(
-                                        mStateDirectory,
-                                        mTabId,
-                                        mIsEncrypted,
-                                        /* isFlatbuffer= */ true);
-                        if (file.exists() && !file.delete()) {
-                            Log.e(TAG, "Failed to delete TabState: " + file);
-                        }
-                    });
-        }
-    }
-
-    private static void processNextFlatBufferMigration() {
-        if (sPendingFlatBufferMigrations.isEmpty()
-                || sExecutingFlatBufferMigrations.size() >= MAX_CONCURRENT_FLATBUFFER_MIGRATIONS) {
-            return;
-        }
-        FlatBufferMigrationTask nextFlatBufferMigrationTask =
-                sPendingFlatBufferMigrations.removeFirst();
-        sExecutingFlatBufferMigrations.add(nextFlatBufferMigrationTask);
-        nextFlatBufferMigrationTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static boolean isFinishedFlatBufferMigration() {
-        return sPendingFlatBufferMigrations.isEmpty() && sExecutingFlatBufferMigrations.isEmpty();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

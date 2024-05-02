@@ -170,8 +170,6 @@ public class TabPersistentStore {
                         }
                         if (tab.isClosing()) {
                             PersistedTabData.onTabClose(tab);
-                            TabStateFileManager.cancelMigrationIfExists(
-                                    tab.getId(), tab.isIncognito());
                             removeTabFromQueues(tab);
                         }
                     }
