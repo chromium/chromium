@@ -220,6 +220,17 @@ void LogDurationMetrics(const FormStructure& form,
   }
 }
 
+void LogExtractionMetrics(const FormStructure& form) {
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    CHECK(!field->possible_types().empty());
+    if (FieldHasMeaningfulPossibleFieldTypes(*field)) {
+      base::UmaHistogramEnumeration(
+          "Autofill.LabelInference.InferredLabelSource.AtSubmission2",
+          field->label_source());
+    }
+  }
+}
+
 void LogPredictionMetrics(
     const FormStructure& form,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
@@ -290,22 +301,10 @@ void LogQualityMetrics(
   LogFillingMetrics(form_structure, form_interactions_ukm_logger,
                     observed_submission);
   if (observed_submission) {
+    LogExtractionMetrics(form_structure);
     LogNumericQuantityMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);
-  }
-
-  for (auto& field : form_structure) {
-    CHECK(field);
-    CHECK(!field->possible_types().empty());
-    if (!FieldHasMeaningfulPossibleFieldTypes(*field)) {
-      continue;
-    }
-    if (observed_submission) {
-      base::UmaHistogramEnumeration(
-          "Autofill.LabelInference.InferredLabelSource.AtSubmission2",
-          field->label_source());
-    }
   }
 }
 
