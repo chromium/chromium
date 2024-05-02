@@ -26,7 +26,7 @@ const CGFloat kEntrypointHeightMultiplier = 0.72;
 // The margins before and after the entrypoint's label used as multipliers of
 // the entrypoint container's height.
 const CGFloat kLabelTrailingSpaceMultiplier = 0.375;
-const CGFloat kLabelLeadingSpaceMultiplier = 0.1;
+const CGFloat kLabelLeadingSpaceMultiplier = 0.095;
 
 // Amount of time animating the entrypoint into the location bar should take.
 const NSTimeInterval kEntrypointDisplayingAnimationTime = 0.8;
@@ -41,6 +41,10 @@ const CGSize kEntrypointContainerShadowOffset = {0, 3};
 
 // The point size of the entrypoint's symbol.
 const CGFloat kEntrypointSymbolPointSize = 15;
+
+// The colorset used for the Contextual Panel's entrypoint background.
+NSString* const kContextualPanelEntrypointBackgroundColor =
+    @"contextual_panel_entrypoint_background_color";
 
 // Accessibility identifier for the entrypoint's image view.
 NSString* const kContextualPanelEntrypointImageViewIdentifier =
@@ -125,7 +129,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 - (UIButton*)configuredEntrypointContainer {
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  button.backgroundColor =
+      [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
   button.clipsToBounds = NO;
 
   // Configure shadow.
@@ -330,6 +335,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
 - (void)hideEntrypoint {
   [self transitionToSmallEntrypoint];
+  [self transitionToContextualPanelOpenedState:NO];
 
   _entrypointDisplayed = NO;
   self.view.hidden = YES;
@@ -340,6 +346,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 }
 
 - (void)transitionToLargeEntrypoint {
+  if (_largeTrailingConstraint.active) {
+    return;
+  }
+
   __weak ContextualPanelEntrypointViewController* weakSelf = self;
 
   void (^animateTransitionToLargeEntrypoint)() = ^{
@@ -356,12 +366,17 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   [UIView animateWithDuration:kLargeEntrypointDisplayingAnimationTime
                         delay:0
-                      options:UIViewAnimationOptionCurveEaseOut
+                      options:(UIViewAnimationOptionCurveEaseOut |
+                               UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToLargeEntrypoint
                    completion:nil];
 }
 
 - (void)transitionToSmallEntrypoint {
+  if (_smallTrailingConstraint.active) {
+    return;
+  }
+
   __weak ContextualPanelEntrypointViewController* weakSelf = self;
 
   void (^animateTransitionToSmallEntrypoint)() = ^{
@@ -378,9 +393,24 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   [UIView animateWithDuration:kLargeEntrypointDisplayingAnimationTime
                         delay:0
-                      options:UIViewAnimationOptionCurveEaseOut
+                      options:(UIViewAnimationOptionCurveEaseOut |
+                               UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToSmallEntrypoint
                    completion:nil];
+}
+
+- (void)transitionToContextualPanelOpenedState:(BOOL)opened {
+  // Using `clipsToBounds` to remove the shadow when in "opened" state.
+  _entrypointContainer.clipsToBounds = opened;
+
+  _imageView.tintColor = opened ? [UIColor colorNamed:kGrey600Color]
+                                : [UIColor colorNamed:kBlue600Color];
+
+  _entrypointContainer.backgroundColor =
+      opened ? [UIColor colorNamed:kTertiaryBackgroundColor]
+             : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+
+  [self transitionToSmallEntrypoint];
 }
 
 #pragma mark - ContextualPanelEntrypointMutator

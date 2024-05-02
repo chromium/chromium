@@ -42,6 +42,10 @@ class ContextualPanelTabHelper
   // configs.
   base::WeakPtr<ContextualPanelItemConfiguration> GetFirstCachedConfig();
 
+  // Getter and setter for is_contextual_panel_currently_opened_.
+  bool IsContextualPanelCurrentlyOpened();
+  void SetContextualPanelCurrentlyOpened(bool opened);
+
   // Getter and setter for large_entrypoint_shown_for_curent_page_navigation_.
   bool WasLargeEntrypointShown();
   void SetLargeEntrypointShown(bool shown);
@@ -93,6 +97,9 @@ class ContextualPanelTabHelper
   void AllRequestsFinished();
 
   WEB_STATE_USER_DATA_KEY_DECL();
+
+  // Whether the Contextual Panel is currently opened for the current tab.
+  bool is_contextual_panel_currently_opened_ = false;
 
   // Whether the large Contextual Panel entrypoint has been shown for the
   // current navigation.

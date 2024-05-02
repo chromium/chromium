@@ -45,6 +45,11 @@ class ContextualPanelBrowserAgent
   base::WeakPtr<ContextualPanelItemConfiguration>
   GetEntrypointConfigurationForCurrentTab();
 
+  // Getter and setter for whether the Contextual Panel of the currently
+  // observed ContextualPanelTabHelper is opened.
+  bool IsContextualPanelOpenedForCurrentTab();
+  void SetContextualPanelOpenedForCurrentTab(bool opened);
+
   // Getter and setter for whether the large entrypoint of currently observed
   // ContextualPanelTabHelper has been shown.
   bool WasLargeEntrypointShownForCurrentTab();

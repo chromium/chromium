@@ -21,6 +21,10 @@
 @end
 
 @implementation ContextualPanelEntrypointMediator {
+  // Current cached opened state of the Contextual Panel. When opened, the
+  // entrypoint's UI is slightly different (muted colors).
+  BOOL _contextualPanelCurrentlyOpened;
+
   // ContextualPanelBrowserAgent to retrieve entrypoint configurations.
   raw_ptr<ContextualPanelBrowserAgent> _contextualPanelBrowserAgent;
 
@@ -48,6 +52,17 @@
 #pragma mark - ContextualPanelEntrypointMutator
 
 - (void)entrypointTapped {
+  // Cancel any pending transition timers since user interacted with entrypoint.
+  _transitionToLargeEntrypointTimer = nullptr;
+  _transitionToSmallEntrypointTimer = nullptr;
+  [self.delegate enableFullscreen];
+
+  _contextualPanelCurrentlyOpened = !_contextualPanelCurrentlyOpened;
+
+  [self.consumer
+      transitionToContextualPanelOpenedState:_contextualPanelCurrentlyOpened];
+  _contextualPanelBrowserAgent->SetContextualPanelOpenedForCurrentTab(
+      _contextualPanelCurrentlyOpened);
   [self.contextualSheetHandler showContextualSheet];
 }
 
@@ -76,6 +91,11 @@
   [self.consumer setEntrypointConfig:config];
   [self.consumer transitionToSmallEntrypoint];
   [self.consumer showEntrypoint];
+
+  _contextualPanelCurrentlyOpened =
+      _contextualPanelBrowserAgent->IsContextualPanelOpenedForCurrentTab();
+  [self.consumer
+      transitionToContextualPanelOpenedState:_contextualPanelCurrentlyOpened];
 
   if (![self canShowLargeEntrypointWithConfig:config]) {
     return;
@@ -120,7 +140,8 @@
 
 - (BOOL)canShowLargeEntrypointWithConfig:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config {
-  return !_contextualPanelBrowserAgent
+  return !_contextualPanelCurrentlyOpened &&
+         !_contextualPanelBrowserAgent
               ->WasLargeEntrypointShownForCurrentTab() &&
          !config->entrypoint_message.empty() &&
          config->relevance >= config->high_relevance &&

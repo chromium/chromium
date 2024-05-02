@@ -16,6 +16,7 @@ source_set("sample") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url",
   ]
 }
 
@@ -28,6 +29,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//url",
   ]
 }

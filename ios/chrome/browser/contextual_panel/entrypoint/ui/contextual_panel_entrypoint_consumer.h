@@ -30,6 +30,11 @@ struct ContextualPanelItemConfiguration;
 // Notify the consumer to transition back to the small entrypoint.
 - (void)transitionToSmallEntrypoint;
 
+// Notify the consumer to update the state of the entrypoint. When `opened` is
+// passed as YES, the entrypoint gets muted colors and becomes small, otherwise,
+// it returns to its default style.
+- (void)transitionToContextualPanelOpenedState:(BOOL)opened;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_UI_CONTEXTUAL_PANEL_ENTRYPOINT_CONSUMER_H_

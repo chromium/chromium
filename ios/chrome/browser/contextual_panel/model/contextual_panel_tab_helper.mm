@@ -45,6 +45,14 @@ ContextualPanelTabHelper::GetFirstCachedConfig() {
   return HasCachedConfigsAvailable() ? sorted_weak_configurations_[0] : nullptr;
 }
 
+bool ContextualPanelTabHelper::IsContextualPanelCurrentlyOpened() {
+  return is_contextual_panel_currently_opened_;
+}
+
+void ContextualPanelTabHelper::SetContextualPanelCurrentlyOpened(bool opened) {
+  is_contextual_panel_currently_opened_ = opened;
+}
+
 bool ContextualPanelTabHelper::WasLargeEntrypointShown() {
   return large_entrypoint_shown_for_curent_page_navigation_;
 }
@@ -65,6 +73,7 @@ void ContextualPanelTabHelper::DidStartNavigation(
     return;
   }
 
+  is_contextual_panel_currently_opened_ = false;
   large_entrypoint_shown_for_curent_page_navigation_ = false;
 
   // Clear the configs and notify the observers.

@@ -7,7 +7,9 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/sample/sample_panel_item_configuration.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 // Unittests related to the SamplePanelModel.
 class SamplePanelModelTest : public PlatformTest {
@@ -33,11 +35,13 @@ class SamplePanelModelTest : public PlatformTest {
 // Tests that fetching the configuration for the sample panel model returns.
 TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
   base::RunLoop run_loop;
+  web::FakeWebState web_state;
 
   sample_panel_model_->FetchConfigurationForWebState(
-      nullptr, base::BindOnce(&SamplePanelModelTest::FetchConfigurationCallback,
-                              base::Unretained(this))
-                   .Then(run_loop.QuitClosure()));
+      &web_state,
+      base::BindOnce(&SamplePanelModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_TRUE(returned_configuration_);
@@ -51,4 +55,24 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
             config->relevance);
   EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
             config->image_type);
+}
+
+// Tests that fetching the configuration for the sample panel model on the NTP
+// returns nothing.
+TEST_F(SamplePanelModelTest, TestFetchConfigurationEmptyForNTP) {
+  base::RunLoop run_loop;
+  web::FakeWebState web_state;
+  web_state.SetVisibleURL(GURL("chrome://newtab/"));
+
+  sample_panel_model_->FetchConfigurationForWebState(
+      &web_state,
+      base::BindOnce(&SamplePanelModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_FALSE(returned_configuration_);
+  SamplePanelItemConfiguration* config =
+      static_cast<SamplePanelItemConfiguration*>(returned_configuration_.get());
+  EXPECT_EQ(nullptr, config);
 }

@@ -56,6 +56,25 @@ ContextualPanelBrowserAgent::GetEntrypointConfigurationForCurrentTab() {
       ->GetFirstCachedConfig();
 }
 
+bool ContextualPanelBrowserAgent::IsContextualPanelOpenedForCurrentTab() {
+  if (!contextual_panel_tab_helper_observation_.IsObserving()) {
+    return false;
+  }
+
+  return contextual_panel_tab_helper_observation_.GetSource()
+      ->IsContextualPanelCurrentlyOpened();
+}
+
+void ContextualPanelBrowserAgent::SetContextualPanelOpenedForCurrentTab(
+    bool opened) {
+  if (!contextual_panel_tab_helper_observation_.IsObserving()) {
+    return;
+  }
+
+  contextual_panel_tab_helper_observation_.GetSource()
+      ->SetContextualPanelCurrentlyOpened(opened);
+}
+
 bool ContextualPanelBrowserAgent::WasLargeEntrypointShownForCurrentTab() {
   if (!contextual_panel_tab_helper_observation_.IsObserving()) {
     return true;
