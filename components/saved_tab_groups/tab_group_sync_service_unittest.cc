@@ -38,8 +38,8 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MOCK_METHOD(void, OnInitialized, ());
   MOCK_METHOD(void, OnTabGroupAdded, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
-  MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&));
-  MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&));
+  MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
+  MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
 };
 
 class MockTabGroupStore : public TabGroupStore {
@@ -492,7 +492,7 @@ TEST_F(TabGroupSyncServiceTest, MappingsAreNotFixedIfSetupNotComplete) {
   EXPECT_FALSE(group->local_group_id());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupAdded) {
+TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromRemoteSource) {
   SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
   EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
                                           Eq(TriggerSource::REMOTE)))
@@ -500,12 +500,28 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAdded) {
   model_->AddedFromSync(group_4);
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdated) {
+TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedFromLocalSource) {
+  SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
+  EXPECT_CALL(*observer_, OnTabGroupAdded(UuidEq(group_4.saved_guid()),
+                                          Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  model_->Add(group_4);
+}
+
+TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromRemoteSource) {
   TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->UpdatedVisualDataFromSync(group_1_.saved_guid(), &visual_data);
+}
+
+TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
+  TabGroupVisualData visual_data = test::CreateTabGroupVisualData();
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  model_->UpdateVisualData(group_1_.saved_guid(), &visual_data);
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
@@ -548,28 +564,40 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupAddedNoTabs) {
   model_->UpdatedVisualDataFromSync(group_id, &visual_data);
 }
 
-TEST_F(TabGroupSyncServiceTest, OnTabGroupRemoved) {
+TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromRemoteSource) {
   // Removig group having local ID.
   EXPECT_CALL(*observer_,
               OnTabGroupRemoved(
-                  testing::TypedEq<const LocalTabGroupID&>(local_group_id_1_)))
+                  testing::TypedEq<const LocalTabGroupID&>(local_group_id_1_),
+                  Eq(TriggerSource::REMOTE)))
       .Times(1);
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
-                              group_1_.saved_guid())))
+                                                group_1_.saved_guid()),
+                                            Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->RemovedFromSync(group_1_.saved_guid());
 
   // Remove a group with no local ID.
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
-                              group_2_.saved_guid())))
+                                                group_2_.saved_guid()),
+                                            Eq(TriggerSource::REMOTE)))
       .Times(1);
   model_->RemovedFromSync(group_2_.saved_guid());
 
   // Try removing a group that doesn't exist.
   EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
-                              group_1_.saved_guid())))
+                                                group_1_.saved_guid()),
+                                            Eq(TriggerSource::REMOTE)))
       .Times(0);
   model_->RemovedFromSync(group_1_.saved_guid());
+}
+
+TEST_F(TabGroupSyncServiceTest, OnTabGroupRemovedFromLocalSource) {
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                                                group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  model_->Remove(group_1_.local_group_id().value());
 }
 
 }  // namespace tab_groups

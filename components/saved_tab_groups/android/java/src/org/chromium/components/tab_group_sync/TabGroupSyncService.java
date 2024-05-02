@@ -33,24 +33,27 @@ public interface TabGroupSyncService {
          * be created.
          *
          * @param group The {@link SavedTabGroup} that was added from sync.
+         * @param source The source of the event which can be local or remote.
          */
-        void onTabGroupAdded(SavedTabGroup group);
+        void onTabGroupAdded(SavedTabGroup group, @TriggerSource int source);
 
         /**
          * Called when a tab group is updated from sync. The corresponding local tab group should be
          * updated to match the sync representation.
          *
          * @param group The {@link SavedTabGroup} that was updated from sync.
+         * @param source The source of the event which can be local or remote.
          */
-        void onTabGroupUpdated(SavedTabGroup group);
+        void onTabGroupUpdated(SavedTabGroup group, @TriggerSource int source);
 
         /**
          * Called when a tab group is deleted from sync. The local tab group should be deleted in
          * response and all the corresponding tabs should be closed.
          *
          * @param localTabGroupId The local ID corresponding to the tab group that was removed.
+         * @param source The source of the event which can be local or remote.
          */
-        void onTabGroupRemoved(LocalTabGroupId localTabGroupId);
+        void onTabGroupRemoved(LocalTabGroupId localTabGroupId, @TriggerSource int source);
 
         /**
          * Called when a tab group is deleted from sync. This signal is used by revisit surface that
@@ -58,8 +61,9 @@ public interface TabGroupSyncService {
          * ID variant of this signal.
          *
          * @param syncTabGroupId The sync ID corresponding to the tab group that was removed.
+         * @param source The source of the event which can be local or remote.
          */
-        void onTabGroupRemoved(String syncTabGroupId);
+        void onTabGroupRemoved(String syncTabGroupId, @TriggerSource int source);
     }
 
     /**

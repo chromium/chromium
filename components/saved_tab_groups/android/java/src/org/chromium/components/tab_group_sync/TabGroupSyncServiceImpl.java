@@ -178,30 +178,31 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     }
 
     @CalledByNative
-    private void onTabGroupAdded(SavedTabGroup group) {
+    private void onTabGroupAdded(SavedTabGroup group, @TriggerSource int triggerSource) {
         for (Observer observer : mObservers) {
-            observer.onTabGroupAdded(group);
+            observer.onTabGroupAdded(group, triggerSource);
         }
     }
 
     @CalledByNative
-    private void onTabGroupUpdated(SavedTabGroup group) {
+    private void onTabGroupUpdated(SavedTabGroup group, @TriggerSource int triggerSource) {
         for (Observer observer : mObservers) {
-            observer.onTabGroupUpdated(group);
+            observer.onTabGroupUpdated(group, triggerSource);
         }
     }
 
     @CalledByNative
-    private void onTabGroupRemovedWithLocalId(LocalTabGroupId localId) {
+    private void onTabGroupRemovedWithLocalId(
+            LocalTabGroupId localId, @TriggerSource int triggerSource) {
         for (Observer observer : mObservers) {
-            observer.onTabGroupRemoved(localId);
+            observer.onTabGroupRemoved(localId, triggerSource);
         }
     }
 
     @CalledByNative
-    private void onTabGroupRemovedWithSyncId(String syncId) {
+    private void onTabGroupRemovedWithSyncId(String syncId, @TriggerSource int triggerSource) {
         for (Observer observer : mObservers) {
-            observer.onTabGroupRemoved(syncId);
+            observer.onTabGroupRemoved(syncId, triggerSource);
         }
     }
 

@@ -12,6 +12,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
 
 /**
  * Observes {@link TabGroupSyncService} for any incoming tab group updates from sync for the current
@@ -68,7 +69,9 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     }
 
     @Override
-    public void onTabGroupAdded(SavedTabGroup tabGroup) {
+    public void onTabGroupAdded(SavedTabGroup tabGroup, @TriggerSource int source) {
+        if (source != TriggerSource.REMOTE) return;
+
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
         assert tabGroup.localId == null;
         if (!mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)) return;
@@ -79,7 +82,9 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     }
 
     @Override
-    public void onTabGroupUpdated(SavedTabGroup tabGroup) {
+    public void onTabGroupUpdated(SavedTabGroup tabGroup, @TriggerSource int source) {
+        if (source != TriggerSource.REMOTE) return;
+
         LogUtils.log(TAG, "onTabGroupUpdated, tabGroup = " + tabGroup);
         if (tabGroup.localId == null) {
             // This is the case where the tab model doesn't have the group open, but the backend was
@@ -100,7 +105,9 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     }
 
     @Override
-    public void onTabGroupRemoved(LocalTabGroupId localId) {
+    public void onTabGroupRemoved(LocalTabGroupId localId, @TriggerSource int source) {
+        if (source != TriggerSource.REMOTE) return;
+
         LogUtils.log(TAG, "onTabGroupRemoved, localId = " + localId);
         assert localId != null;
         if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, localId)) return;
@@ -111,7 +118,7 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     }
 
     @Override
-    public void onTabGroupRemoved(String syncId) {}
+    public void onTabGroupRemoved(String syncId, @TriggerSource int source) {}
 
     private TabModel getTabModel() {
         return mTabGroupModelFilter.getTabModel();

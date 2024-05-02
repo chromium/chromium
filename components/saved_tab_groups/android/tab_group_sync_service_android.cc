@@ -74,29 +74,34 @@ void TabGroupSyncServiceAndroid::OnTabGroupAdded(const SavedTabGroup& group,
                                                  TriggerSource source) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group);
-  Java_TabGroupSyncServiceImpl_onTabGroupAdded(env, java_obj_, j_group);
+  Java_TabGroupSyncServiceImpl_onTabGroupAdded(env, java_obj_, j_group,
+                                               static_cast<jint>(source));
 }
 
 void TabGroupSyncServiceAndroid::OnTabGroupUpdated(const SavedTabGroup& group,
                                                    TriggerSource source) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group);
-  Java_TabGroupSyncServiceImpl_onTabGroupUpdated(env, java_obj_, j_group);
+  Java_TabGroupSyncServiceImpl_onTabGroupUpdated(env, java_obj_, j_group,
+                                                 static_cast<jint>(source));
 }
 
 void TabGroupSyncServiceAndroid::OnTabGroupRemoved(
-    const LocalTabGroupID& local_id) {
+    const LocalTabGroupID& local_id,
+    TriggerSource source) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_group_id =
       TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id);
-  Java_TabGroupSyncServiceImpl_onTabGroupRemovedWithLocalId(env, java_obj_,
-                                                            j_group_id);
+  Java_TabGroupSyncServiceImpl_onTabGroupRemovedWithLocalId(
+      env, java_obj_, j_group_id, static_cast<jint>(source));
 }
 
-void TabGroupSyncServiceAndroid::OnTabGroupRemoved(const base::Uuid& sync_id) {
+void TabGroupSyncServiceAndroid::OnTabGroupRemoved(const base::Uuid& sync_id,
+                                                   TriggerSource source) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_TabGroupSyncServiceImpl_onTabGroupRemovedWithSyncId(
-      env, java_obj_, UuidToJavaString(env, sync_id));
+      env, java_obj_, UuidToJavaString(env, sync_id),
+      static_cast<jint>(source));
 }
 
 ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(

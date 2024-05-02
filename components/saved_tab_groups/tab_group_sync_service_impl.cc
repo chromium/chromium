@@ -282,6 +282,38 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
 
 void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
     const base::Uuid& guid) {
+  HandleTabGroupAdded(guid, TriggerSource::REMOTE);
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupAddedLocally(
+    const base::Uuid& guid) {
+  HandleTabGroupAdded(guid, TriggerSource::LOCAL);
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
+    const base::Uuid& group_guid,
+    const std::optional<base::Uuid>& tab_guid) {
+  HandleTabGroupUpdated(group_guid, tab_guid, TriggerSource::REMOTE);
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupUpdatedLocally(
+    const base::Uuid& group_guid,
+    const std::optional<base::Uuid>& tab_guid) {
+  HandleTabGroupUpdated(group_guid, tab_guid, TriggerSource::LOCAL);
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
+    const SavedTabGroup* removed_group) {
+  HandleTabGroupRemoved(removed_group, TriggerSource::REMOTE);
+}
+
+void TabGroupSyncServiceImpl::SavedTabGroupRemovedLocally(
+    const SavedTabGroup* removed_group) {
+  HandleTabGroupRemoved(removed_group, TriggerSource::LOCAL);
+}
+
+void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
+                                                  TriggerSource source) {
   VLOG(2) << __func__;
   const SavedTabGroup* saved_tab_group = model_->Get(guid);
   CHECK(saved_tab_group);
@@ -292,13 +324,14 @@ void TabGroupSyncServiceImpl::SavedTabGroupAddedFromSync(
   }
 
   for (auto& observer : observers_) {
-    observer.OnTabGroupAdded(*saved_tab_group, TriggerSource::REMOTE);
+    observer.OnTabGroupAdded(*saved_tab_group, source);
   }
 }
 
-void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
+void TabGroupSyncServiceImpl::HandleTabGroupUpdated(
     const base::Uuid& group_guid,
-    const std::optional<base::Uuid>& tab_guid) {
+    const std::optional<base::Uuid>& tab_guid,
+    TriggerSource source) {
   VLOG(2) << __func__;
   const SavedTabGroup* saved_tab_group = model_->Get(group_guid);
   CHECK(saved_tab_group);
@@ -309,20 +342,21 @@ void TabGroupSyncServiceImpl::SavedTabGroupUpdatedFromSync(
 
   if (base::Contains(empty_groups_, group_guid)) {
     empty_groups_.erase(group_guid);
-    SavedTabGroupAddedFromSync(group_guid);
+    HandleTabGroupAdded(group_guid, source);
     return;
   }
 
   for (auto& observer : observers_) {
-    observer.OnTabGroupUpdated(*saved_tab_group, TriggerSource::REMOTE);
+    observer.OnTabGroupUpdated(*saved_tab_group, source);
   }
 }
 
-void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup* removed_group) {
+void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
+    const SavedTabGroup* removed_group,
+    TriggerSource source) {
   VLOG(2) << __func__;
   for (auto& observer : observers_) {
-    observer.OnTabGroupRemoved(removed_group->saved_guid());
+    observer.OnTabGroupRemoved(removed_group->saved_guid(), source);
   }
 
   auto local_id = removed_group->local_group_id();
@@ -331,7 +365,7 @@ void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
   }
 
   for (auto& observer : observers_) {
-    observer.OnTabGroupRemoved(local_id.value());
+    observer.OnTabGroupRemoved(local_id.value(), source);
   }
 }
 

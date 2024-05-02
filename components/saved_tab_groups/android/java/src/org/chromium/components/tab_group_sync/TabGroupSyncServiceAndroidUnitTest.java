@@ -94,7 +94,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testOnTabGroupAdded() {
-        verify(mObserver).onTabGroupAdded(mTabGroupCaptor.capture());
+        verify(mObserver).onTabGroupAdded(mTabGroupCaptor.capture(), eq(TriggerSource.REMOTE));
         SavedTabGroup group = mTabGroupCaptor.getValue();
         Assert.assertEquals(new String(TEST_GROUP_TITLE), group.title);
         Assert.assertEquals(TabGroupColorId.BLUE, group.color);
@@ -102,7 +102,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testOnTabGroupUpdated() {
-        verify(mObserver).onTabGroupUpdated(mTabGroupCaptor.capture());
+        verify(mObserver).onTabGroupUpdated(mTabGroupCaptor.capture(), eq(TriggerSource.REMOTE));
         SavedTabGroup group = mTabGroupCaptor.getValue();
         Assert.assertEquals(new String(TEST_GROUP_TITLE), group.title);
         Assert.assertEquals(TabGroupColorId.BLUE, group.color);
@@ -110,8 +110,8 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testOnTabGroupRemoved() {
-        verify(mObserver).onTabGroupRemoved(eq(LOCAL_TAB_GROUP_ID_1));
-        verify(mObserver).onTabGroupRemoved(anyString());
+        verify(mObserver).onTabGroupRemoved(eq(LOCAL_TAB_GROUP_ID_1), eq(TriggerSource.REMOTE));
+        verify(mObserver).onTabGroupRemoved(anyString(), eq(TriggerSource.REMOTE));
     }
 
     @CalledByNative

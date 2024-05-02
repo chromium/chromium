@@ -97,14 +97,31 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
  private:
   // SavedTabGroupModelObserver implementation.
   void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
+  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupUpdatedFromSync(
+      const base::Uuid& group_guid,
+      const std::optional<base::Uuid>& tab_guid) override;
+  void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
       const std::optional<base::Uuid>& tab_guid) override;
   void SavedTabGroupRemovedFromSync(
       const SavedTabGroup* removed_group) override;
+  void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
   void SavedTabGroupModelLoaded() override;
 
+  // Called on reading ID mapping from tab group store.
   void OnReadTabGroupStore();
+
+  // Consolidation methods for adapting to observer signals from either
+  // direction (local -> remote or remote -> local).
+  // TODO(shaktisahu): Make SavedTabGroupModelObserver consolidate these signals
+  // directly at some point.
+  void HandleTabGroupAdded(const base::Uuid& guid, TriggerSource source);
+  void HandleTabGroupUpdated(const base::Uuid& group_guid,
+                             const std::optional<base::Uuid>& tab_guid,
+                             TriggerSource source);
+  void HandleTabGroupRemoved(const SavedTabGroup* removed_group,
+                             TriggerSource source);
 
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;

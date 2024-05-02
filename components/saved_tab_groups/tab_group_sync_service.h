@@ -60,12 +60,14 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                                    TriggerSource source) = 0;
 
     // The local tab group corresponding to the |local_id| was removed.
-    virtual void OnTabGroupRemoved(const LocalTabGroupID& local_id) = 0;
+    virtual void OnTabGroupRemoved(const LocalTabGroupID& local_id,
+                                   TriggerSource source) = 0;
 
     // Tab group corresponding to the |sync_id| was removed. Only used by the
     // revisit surface that needs to show both open and closed tab groups.
     // All other consumers should use the local ID variant of this method.
-    virtual void OnTabGroupRemoved(const base::Uuid& sync_id) = 0;
+    virtual void OnTabGroupRemoved(const base::Uuid& sync_id,
+                                   TriggerSource source) = 0;
   };
 
 #if BUILDFLAG(IS_ANDROID)

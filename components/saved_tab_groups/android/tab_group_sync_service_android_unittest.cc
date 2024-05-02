@@ -199,8 +199,8 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupUpdated) {
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupRemoved) {
   auto* env = AttachCurrentThread();
   base::Uuid group_id = base::Uuid::GenerateRandomV4();
-  bridge_->OnTabGroupRemoved(test_tab_group_id_);
-  bridge_->OnTabGroupRemoved(group_id);
+  bridge_->OnTabGroupRemoved(test_tab_group_id_, TriggerSource::REMOTE);
+  bridge_->OnTabGroupRemoved(group_id, TriggerSource::REMOTE);
   Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupRemoved(env, j_test_);
 }
 

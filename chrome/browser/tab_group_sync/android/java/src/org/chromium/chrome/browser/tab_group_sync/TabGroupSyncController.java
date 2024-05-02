@@ -131,7 +131,9 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
         SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncId);
         if (savedTabGroup == null || savedTabGroup.localId != null) return;
 
-        mRemoteObserver.onTabGroupAdded(savedTabGroup);
+        mLocalObserver.enableObservers(false);
+        mLocalMutationHelper.createNewTabGroup(savedTabGroup);
+        mLocalObserver.enableObservers(true);
     }
 
     private void onSyncBackendInitialized() {

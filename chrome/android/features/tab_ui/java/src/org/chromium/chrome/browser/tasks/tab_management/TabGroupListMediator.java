@@ -36,6 +36,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -92,22 +93,22 @@ public class TabGroupListMediator {
                 }
 
                 @Override
-                public void onTabGroupAdded(SavedTabGroup group) {
+                public void onTabGroupAdded(SavedTabGroup group, @TriggerSource int source) {
                     mPendingRefresh.post();
                 }
 
                 @Override
-                public void onTabGroupUpdated(SavedTabGroup group) {
+                public void onTabGroupUpdated(SavedTabGroup group, @TriggerSource int source) {
                     mPendingRefresh.post();
                 }
 
                 @Override
-                public void onTabGroupRemoved(LocalTabGroupId localId) {
+                public void onTabGroupRemoved(LocalTabGroupId localId, @TriggerSource int source) {
                     mPendingRefresh.post();
                 }
 
                 @Override
-                public void onTabGroupRemoved(String syncId) {
+                public void onTabGroupRemoved(String syncId, @TriggerSource int source) {
                     mPendingRefresh.post();
                 }
             };

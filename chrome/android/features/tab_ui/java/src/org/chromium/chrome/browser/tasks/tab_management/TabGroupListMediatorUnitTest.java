@@ -56,6 +56,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -207,7 +208,7 @@ public class TabGroupListMediatorUnitTest {
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         verify(mTabGroupSyncService).addObserver(mSyncObserverCaptor.capture());
-        mSyncObserverCaptor.getValue().onTabGroupRemoved(SYNC_GROUP_ID1);
+        mSyncObserverCaptor.getValue().onTabGroupRemoved(SYNC_GROUP_ID1, TriggerSource.LOCAL);
         ShadowLooper.idleMainLooper();
 
         assertEquals(0, mModelList.size());

@@ -37,6 +37,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
     @Test
     public void testTabGroupAdded() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
-        mRemoteObserver.onTabGroupAdded(savedTabGroup);
+        mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
         verify(mLocalMutationHelper).createNewTabGroup(any());
     }
 
@@ -116,7 +117,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
         when(mPrefService.getBoolean(eq(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS))).thenReturn(false);
 
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
-        mRemoteObserver.onTabGroupAdded(savedTabGroup);
+        mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
         verify(mLocalMutationHelper, never()).createNewTabGroup(any());
     }
 
@@ -125,7 +126,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
         addOneTab();
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         savedTabGroup.localId = LOCAL_TAB_GROUP_ID_1;
-        mRemoteObserver.onTabGroupUpdated(savedTabGroup);
+        mRemoteObserver.onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
         verify(mLocalMutationHelper).updateTabGroup(any());
     }
 
@@ -134,21 +135,32 @@ public class TabGroupSyncRemoteObserverUnitTest {
         addOneTab();
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         savedTabGroup.localId = LOCAL_TAB_GROUP_ID_2;
-        mRemoteObserver.onTabGroupUpdated(savedTabGroup);
+        mRemoteObserver.onTabGroupUpdated(savedTabGroup, TriggerSource.REMOTE);
         verify(mLocalMutationHelper, never()).updateTabGroup(any());
     }
 
     @Test
     public void testTabGroupRemoved() {
         addOneTab();
-        mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_1);
+        mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_1, TriggerSource.REMOTE);
         verify(mLocalMutationHelper).closeTabGroup(any());
     }
 
     @Test
     public void testTabGroupRemovedForDifferentWindow() {
         addOneTab();
-        mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_2);
+        mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_2, TriggerSource.REMOTE);
+        verify(mLocalMutationHelper, never()).closeTabGroup(any());
+    }
+
+    @Test
+    public void testFilterOutUpdatesForLocal() {
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.LOCAL);
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any());
+        mRemoteObserver.onTabGroupUpdated(savedTabGroup, TriggerSource.LOCAL);
+        verify(mLocalMutationHelper, never()).updateTabGroup(any());
+        mRemoteObserver.onTabGroupRemoved(LOCAL_TAB_GROUP_ID_1, TriggerSource.LOCAL);
         verify(mLocalMutationHelper, never()).closeTabGroup(any());
     }
 
