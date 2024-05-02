@@ -948,15 +948,15 @@ class BrowserView : public BrowserWindow,
   // notification that it succeeded this method is invoked.
   // If |url| is not empty, it is the URL of the page that requested fullscreen
   // (via the fullscreen JS API).
-  // |bubble_type| determines what should be shown in the fullscreen exit
-  // bubble.
   // If the Window Placement experiment is enabled, fullscreen may be requested
   // on a particular display. In that case, |display_id| is the display's id;
   // otherwise, display::kInvalidDisplayId indicates no display is specified.
   void ProcessFullscreen(bool fullscreen,
                          const GURL& url,
-                         ExclusiveAccessBubbleType bubble_type,
                          int64_t display_id);
+
+  // Request the underlying platform to make the window fullscreen.
+  void RequestFullscreen(bool fullscreen, int64_t display_id);
 
   void SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
   void NotifyWidgetSizeConstraintsChanged();

@@ -1941,7 +1941,7 @@ void BrowserView::EnterFullscreen(const GURL& url,
     // Nothing to do.
     return;
   }
-  ProcessFullscreen(true, url, bubble_type, display_id);
+  ProcessFullscreen(true, url, display_id);
 }
 
 void BrowserView::ExitFullscreen() {
@@ -1951,8 +1951,7 @@ void BrowserView::ExitFullscreen() {
   if (IsForceFullscreen())
     return;
 
-  ProcessFullscreen(false, GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-                    display::kInvalidDisplayId);
+  ProcessFullscreen(false, GURL(), display::kInvalidDisplayId);
 }
 
 void BrowserView::UpdateExclusiveAccessBubble(
@@ -2060,13 +2059,7 @@ void BrowserView::FullscreenStateChanging() {
     return;
   }
 
-  bool fullscreen = IsFullscreen();
-  ProcessFullscreen(
-      fullscreen, GURL(),
-      fullscreen
-          ? GetExclusiveAccessManager()->GetExclusiveAccessExitBubbleType()
-          : EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-      display::kInvalidDisplayId);
+  ProcessFullscreen(IsFullscreen(), GURL(), display::kInvalidDisplayId);
 }
 
 void BrowserView::FullscreenStateChanged() {
@@ -4758,7 +4751,6 @@ void BrowserView::UpdateUIForContents(WebContents* contents) {
 
 void BrowserView::ProcessFullscreen(bool fullscreen,
                                     const GURL& url,
-                                    ExclusiveAccessBubbleType bubble_type,
                                     const int64_t display_id) {
   if (in_process_fullscreen_)
     return;
@@ -4793,6 +4785,42 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     }
   }
 
+  // TODO(b/40276379): Move this out from ProcessFullscreen.
+  RequestFullscreen(fullscreen, display_id);
+
+  // Enable immersive before the browser refreshes its list of enabled commands.
+  const bool should_stay_in_immersive =
+      !fullscreen &&
+      immersive_mode_controller_->ShouldStayImmersiveAfterExitingFullscreen();
+  // Never use immersive in locked fullscreen as it allows the user to exit the
+  // locked mode.
+  if (platform_util::IsBrowserLockedFullscreen(browser_.get())) {
+    immersive_mode_controller_->SetEnabled(false);
+  } else if (ShouldUseImmersiveFullscreenForUrl(url) &&
+             !should_stay_in_immersive) {
+    immersive_mode_controller_->SetEnabled(fullscreen);
+  }
+
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Mac platforms, FullscreenStateChanged() is invoked from
+  // BrowserFrameMac::OnWindowFullscreenTransitionComplete when the asynchronous
+  // fullscreen transition is complete.
+  // On Lacros, FullscreenStateChanged() is invoked from
+  // BrowserDesktopWindowTreeHostLacros::OnFullscreenModeChanged when the
+  // fullscreen state is updated on Ash side and Lacros is notified of the
+  // updates through wayland messages.
+  // On other platforms, there is no asynchronous transition so we synchronously
+  // invoke the function.
+  FullscreenStateChanged();
+#endif
+
+  // Undo our anti-jankiness hacks and force a re-layout.
+  in_process_fullscreen_ = false;
+  ToolbarSizeChanged(false);
+  frame_->GetFrameView()->OnFullscreenStateChanged();
+}
+
+void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // Request target display fullscreen from lower layers on supported platforms.
   frame_->SetFullscreen(fullscreen, display_id);
@@ -4852,37 +4880,6 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   if (!fullscreen && restore_pre_fullscreen_bounds_callback_)
     std::move(restore_pre_fullscreen_bounds_callback_).Run();
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-
-  // Enable immersive before the browser refreshes its list of enabled commands.
-  const bool should_stay_in_immersive =
-      !fullscreen &&
-      immersive_mode_controller_->ShouldStayImmersiveAfterExitingFullscreen();
-  // Never use immersive in locked fullscreen as it allows the user to exit the
-  // locked mode.
-  if (platform_util::IsBrowserLockedFullscreen(browser_.get())) {
-    immersive_mode_controller_->SetEnabled(false);
-  } else if (ShouldUseImmersiveFullscreenForUrl(url) &&
-             !should_stay_in_immersive) {
-    immersive_mode_controller_->SetEnabled(fullscreen);
-  }
-
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Mac platforms, FullscreenStateChanged() is invoked from
-  // BrowserFrameMac::OnWindowFullscreenTransitionComplete when the asynchronous
-  // fullscreen transition is complete.
-  // On Lacros, FullscreenStateChanged() is invoked from
-  // BrowserDesktopWindowTreeHostLacros::OnFullscreenModeChanged when the
-  // fullscreen state is updated on Ash side and Lacros is notified of the
-  // updates through wayland messages.
-  // On other platforms, there is no asynchronous transition so we synchronously
-  // invoke the function.
-  FullscreenStateChanged();
-#endif
-
-  // Undo our anti-jankiness hacks and force a re-layout.
-  in_process_fullscreen_ = false;
-  ToolbarSizeChanged(false);
-  frame_->GetFrameView()->OnFullscreenStateChanged();
 }
 
 bool BrowserView::ShouldUseImmersiveFullscreenForUrl(const GURL& url) const {
