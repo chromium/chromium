@@ -9,9 +9,15 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
+#include "base/barrier_callback.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/utils/haptics_util.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -24,9 +30,12 @@ VcTileUiController::VcTileUiController(const VcHostedEffect* effect)
     : effect_(effect) {
   effect_id_ = effect->id();
   effect_state_ = effect->GetState(/*index=*/0);
+  DlcserviceClient::Get()->AddObserver(this);
 }
 
-VcTileUiController::~VcTileUiController() = default;
+VcTileUiController::~VcTileUiController() {
+  DlcserviceClient::Get()->RemoveObserver(this);
+}
 
 std::unique_ptr<FeatureTile> VcTileUiController::CreateTile() {
   auto tile = std::make_unique<FeatureTile>(
@@ -50,7 +59,23 @@ std::unique_ptr<FeatureTile> VcTileUiController::CreateTile() {
   tile->SetToggled(current_state.value() != 0);
   UpdateTooltip();
 
+  // Set the initial download state of the tile. Future changes to the tile's
+  // download state will occur if/when the tile's associated DLCs update.
+  dlc_ids_ = VideoConferenceTrayController::Get()
+                 ->GetEffectsManager()
+                 .GetDlcIdsForEffectId(effect_id_);
+  UpdateDlcDownloadUi();
+
   return tile;
+}
+
+void VcTileUiController::OnDlcStateChanged(
+    const dlcservice::DlcState& dlc_state) {
+  if (!base::Contains(dlc_ids_, dlc_state.id())) {
+    return;
+  }
+
+  UpdateDlcDownloadUi();
 }
 
 void VcTileUiController::OnPressed(const ui::Event& event) {
@@ -87,6 +112,107 @@ void VcTileUiController::TrackToggleUMA(bool target_toggle_state) {
 void VcTileUiController::PlayToggleHaptic(bool target_toggle_state) {
   chromeos::haptics_util::PlayHapticToggleEffect(
       target_toggle_state, ui::HapticTouchpadEffectStrength::kMedium);
+}
+
+VcTileUiController::DlcDownloadStateRequest::DlcDownloadStateRequest(
+    const base::flat_set<std::string>& dlc_ids,
+    base::OnceCallback<void(FeatureTile::DownloadState download_state,
+                            int progress)> set_progress_callback)
+    : set_progress_callback_(std::move(set_progress_callback)) {
+  if (dlc_ids.empty()) {
+    std::move(set_progress_callback_)
+        .Run(FeatureTile::DownloadState::kNone, /*progress=*/0);
+    return;
+  }
+
+  // Multiple DLCs can be managed by one tile, and their states will be
+  // delivered individually.
+  const auto merge_callback = base::BarrierCallback<DlcDownloadState>(
+      dlc_ids.size(),
+      base::BindOnce(
+          &VcTileUiController::DlcDownloadStateRequest::OnAllDlcStatesRetrieved,
+          weak_ptr_factory_.GetWeakPtr()));
+  for (const std::string& dlc_id : dlc_ids) {
+    DlcserviceClient::Get()->GetDlcState(
+        dlc_id,
+        base::BindOnce(&DlcDownloadStateRequest::OnDlcStateRetrieved,
+                       weak_ptr_factory_.GetWeakPtr(), dlc_id, merge_callback));
+  }
+}
+
+VcTileUiController::DlcDownloadStateRequest::~DlcDownloadStateRequest() {}
+
+void VcTileUiController::DlcDownloadStateRequest::OnDlcStateRetrieved(
+    std::string dlc_id,
+    base::OnceCallback<void(DlcDownloadState)> merge_callback,
+    std::string_view error,
+    const dlcservice::DlcState& dlc_state) {
+  std::move(merge_callback)
+      .Run({std::move(dlc_id), std::string(error), dlc_state});
+}
+
+void VcTileUiController::DlcDownloadStateRequest::OnAllDlcStatesRetrieved(
+    std::vector<DlcDownloadState> dlc_download_states) {
+  // Check for errors.
+  for (const DlcDownloadState& dlc_download_state : dlc_download_states) {
+    if (dlc_download_state.error_code != dlcservice::kErrorNone) {
+      std::move(set_progress_callback_)
+          .Run(FeatureTile::DownloadState::kError, /*progress=*/0);
+      return;
+    }
+  }
+
+  // Check for in progress downloads.
+  bool fully_installed = true;
+  for (const DlcDownloadState& dlc_download_state : dlc_download_states) {
+    if (dlc_download_state.dlc_state.state() !=
+        dlcservice::DlcState::State::DlcState_State_INSTALLED) {
+      fully_installed = false;
+      break;
+    }
+  }
+  if (fully_installed) {
+    std::move(set_progress_callback_)
+        .Run(FeatureTile::DownloadState::kDownloaded, /*progress=*/0);
+    return;
+  }
+
+  // One or more DLCs is still downloading. Calculate the overall download
+  // progress as the average of each DLC's download progress, weighted evenly.
+  double progress = 0;
+  for (const DlcDownloadState& dlc_download_state : dlc_download_states) {
+    progress += dlc_download_state.dlc_state.progress();
+  }
+  progress /= dlc_download_states.size();
+  std::move(set_progress_callback_)
+      .Run(FeatureTile::DownloadState::kDownloading,
+           /*progress=*/static_cast<int>(base::ClampFloor(progress * 100)));
+}
+
+void VcTileUiController::UpdateDlcDownloadUi() {
+  if (!tile_) {
+    return;
+  }
+
+  dlc_download_state_request_ = std::make_unique<DlcDownloadStateRequest>(
+      dlc_ids_,
+      // `base::Unretained` is safe because `DlcDownloadStateRequest` is
+      // outlived by this, and `DlcDownloadStateRequest` maintains ownership of
+      // the callback.
+      base::BindOnce(&VcTileUiController::OnDlcDownloadStateFetched,
+                     base::Unretained(this)));
+}
+
+void VcTileUiController::OnDlcDownloadStateFetched(
+    FeatureTile::DownloadState download_state,
+    int progress) {
+  dlc_download_state_request_.reset();
+
+  if (!tile_) {
+    return;
+  }
+
+  tile_->SetDownloadState(download_state, progress);
 }
 
 void VcTileUiController::UpdateTooltip() {

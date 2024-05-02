@@ -20,20 +20,10 @@ FakeVideoConferenceTrayEffectsManager::FakeVideoConferenceTrayEffectsManager() =
 FakeVideoConferenceTrayEffectsManager::
     ~FakeVideoConferenceTrayEffectsManager() = default;
 
-void FakeVideoConferenceTrayEffectsManager::UnregisterDelegate(
-    VcEffectsDelegate* delegate) {
-  VideoConferenceTrayEffectsManager::UnregisterDelegate(delegate);
-
-  // Delete any tile UI controllers associated with any of `delegate`'s effects.
-  for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
-    const VcEffectId id = effect->id();
-    std::erase_if(
-        tile_ui_controllers_,
-        [&, id](const std::unique_ptr<video_conference::VcTileUiController>&
-                    controller) {
-          return controller->effect_id_for_testing() == id;
-        });
-  }
+void FakeVideoConferenceTrayEffectsManager::SetDlcIdsForEffectId(
+    VcEffectId effect_id,
+    std::vector<std::string> dlc_ids) {
+  dlc_ids_for_effect_id_[effect_id] = std::move(dlc_ids);
 }
 
 video_conference::VcTileUiController*
@@ -56,6 +46,31 @@ FakeVideoConferenceTrayEffectsManager::GetUiControllerForEffectId(
   tile_ui_controllers_.push_back(
       std::make_unique<video_conference::VcTileUiController>(effect));
   return tile_ui_controllers_.back().get();
+}
+
+std::vector<std::string>
+FakeVideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(
+    VcEffectId effect_id) {
+  if (base::Contains(dlc_ids_for_effect_id_, effect_id)) {
+    return dlc_ids_for_effect_id_[effect_id];
+  }
+  return VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(effect_id);
+}
+
+void FakeVideoConferenceTrayEffectsManager::UnregisterDelegate(
+    VcEffectsDelegate* delegate) {
+  VideoConferenceTrayEffectsManager::UnregisterDelegate(delegate);
+
+  // Delete any tile UI controllers associated with any of `delegate`'s effects.
+  for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
+    const VcEffectId id = effect->id();
+    std::erase_if(
+        tile_ui_controllers_,
+        [&, id](const std::unique_ptr<video_conference::VcTileUiController>&
+                    controller) {
+          return controller->effect_id_for_testing() == id;
+        });
+  }
 }
 
 }  // namespace ash

@@ -229,12 +229,17 @@ TEST_F(LanguagePackManagerTest, InstallCallbackTest) {
 }
 
 TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
-  dlcservice_client_.set_get_dlc_state_error(dlcservice::kErrorNone);
+  dlcservice_client_.set_get_dlc_state_error(
+      GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value(),
+      dlcservice::kErrorNone);
+
   dlcservice::DlcState dlc_state;
   dlc_state.set_state(dlcservice::DlcState_State_INSTALLED);
   dlc_state.set_is_verified(true);
   dlc_state.set_root_path("/path");
-  dlcservice_client_.set_dlc_state(dlc_state);
+  dlcservice_client_.set_dlc_state(
+      GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value(),
+      dlc_state);
 
   // Test UMA metrics: pre-condition.
   base::HistogramTester histogram_tester;
@@ -260,14 +265,15 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
 }
 
 TEST_F(LanguagePackManagerTest, GetPackStateSuccessNotInstalledButVerified) {
-  dlcservice_client_.set_get_dlc_state_error(dlcservice::kErrorNone);
+  std::string dlc_id =
+      GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value();
+  dlcservice_client_.set_get_dlc_state_error(dlc_id, dlcservice::kErrorNone);
   dlcservice::DlcState dlc_state;
-  dlc_state.set_id(
-      *GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale));
+  dlc_state.set_id(dlc_id);
   dlc_state.set_state(dlcservice::DlcState_State_NOT_INSTALLED);
   dlc_state.set_is_verified(true);
   dlcservice_client_.set_install_root_path("/path");
-  dlcservice_client_.set_dlc_state(dlc_state);
+  dlcservice_client_.set_dlc_state(dlc_id, dlc_state);
 
   LanguagePackManager::GetPackState(
       kHandwritingFeatureId, kSupportedLocale,
@@ -292,7 +298,9 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessNotInstalledButVerified) {
 }
 
 TEST_F(LanguagePackManagerTest, GetPackStateFailureTest) {
-  dlcservice_client_.set_get_dlc_state_error(dlcservice::kErrorInternal);
+  dlcservice_client_.set_get_dlc_state_error(
+      GetDlcIdForLanguagePack(kHandwritingFeatureId, kSupportedLocale).value(),
+      dlcservice::kErrorInternal);
 
   // Test UMA metrics: pre-condition.
   base::HistogramTester histogram_tester;
@@ -330,7 +338,8 @@ TEST_F(LanguagePackManagerTest, GetPackStateWrongIdTest) {
 
 // Check that the callback is actually called.
 TEST_F(LanguagePackManagerTest, GetPackStateCallbackTest) {
-  dlcservice_client_.set_get_dlc_state_error(dlcservice::kErrorNone);
+  dlcservice_client_.set_get_dlc_state_error(kFakeDlcId,
+                                             dlcservice::kErrorNone);
 
   testing::StrictMock<CallbackForTesting> callback;
   EXPECT_CALL(callback, Callback(_));

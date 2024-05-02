@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -82,6 +83,7 @@ class VideoConferenceTrayEffectsManagerTest
       // VC tray controller being available).
       tray_controller_ = std::make_unique<FakeVideoConferenceTrayController>();
       effect_delegate_ = std::make_unique<TestEffectDelegate>();
+      DlcserviceClient::InitializeFake();
     }
     AshTestBase::SetUp();
   }
@@ -89,6 +91,7 @@ class VideoConferenceTrayEffectsManagerTest
   void TearDown() override {
     AshTestBase::TearDown();
     if (IsVcDlcUiEnabled()) {
+      DlcserviceClient::Shutdown();
       effect_delegate_.reset();
       tray_controller_.reset();
     }

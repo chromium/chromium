@@ -32,6 +32,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -196,6 +197,14 @@ FeatureTile::~FeatureTile() {
   // called before views::View teardown.
   views::InkDrop::Remove(this);
   title_container_->RemoveObserver(this);
+}
+
+void FeatureTile::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FeatureTile::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void FeatureTile::CreateChildViews() {
@@ -618,6 +627,10 @@ void FeatureTile::SetDownloadState(DownloadState state, int progress) {
   download_state_ = state;
   UpdateColors();
   UpdateLabelForDownloadState();
+
+  // Once the tile's UI has been updated, notify any observers of the download
+  // state change.
+  NotifyDownloadStateChanged();
 }
 
 void FeatureTile::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -742,6 +755,13 @@ void FeatureTile::UpdateLabelForDownloadState() {
           IDS_ASH_FEATURE_TILE_DOWNLOAD_IN_PROGRESS_TITLE,
           base::NumberToString16(download_progress_percent_)));
       break;
+  }
+}
+
+void FeatureTile::NotifyDownloadStateChanged() {
+  for (Observer& observer : observers_) {
+    observer.OnDownloadStateChanged(download_state_,
+                                    download_progress_percent_);
   }
 }
 

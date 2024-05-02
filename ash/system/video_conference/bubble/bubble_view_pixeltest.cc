@@ -25,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
@@ -78,6 +79,10 @@ class BubbleViewPixelTest
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
+    if (IsVcDlcUiEnabled()) {
+      DlcserviceClient::InitializeFake();
+    }
+
     office_bunny_ =
         std::make_unique<fake_video_conference::OfficeBunnyEffect>();
     cat_ears_ = std::make_unique<fake_video_conference::CatEarsEffect>();
@@ -117,6 +122,9 @@ class BubbleViewPixelTest
     long_text_effect_.reset();
     cat_ears_.reset();
     office_bunny_.reset();
+    if (IsVcDlcUiEnabled()) {
+      DlcserviceClient::Shutdown();
+    }
   }
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()

@@ -9,6 +9,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
@@ -103,6 +105,22 @@ class ASH_EXPORT FeatureTile : public views::Button {
   FeatureTile(const FeatureTile&) = delete;
   FeatureTile& operator=(const FeatureTile&) = delete;
   ~FeatureTile() override;
+
+  // Implement this class to get notified of certain state changes to this tile.
+  // Currently this only exists for testing purposes.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when this tile's download state changes. `download_state` is the
+    // new download state, and `progress` is the new download progress
+    // (currently only meaningful when the download state is
+    // `DownloadState::kDownloading`).
+    virtual void OnDownloadStateChanged(DownloadState download_state,
+                                        int progress) = 0;
+  };
+
+  // Adds/removes an observer of this tile.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Sets whether the icon on the left is clickable, separate from clicking on
   // the tile itself. Use SetIconClickCallback() to set the callback. This
@@ -205,6 +223,11 @@ class ASH_EXPORT FeatureTile : public views::Button {
   views::ImageView* drill_in_arrow() { return drill_in_arrow_; }
   int corner_radius() const { return corner_radius_; }
 
+  DownloadState download_state_for_testing() const { return download_state_; }
+  int download_progress_for_testing() const {
+    return download_progress_percent_;
+  }
+
  private:
   friend class BluetoothFeaturePodControllerTest;
   friend class HotspotFeaturePodControllerTest;
@@ -268,6 +291,13 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // `download_progress_percent_`) is current, so it is up to the client to
   // perform any download-related state changes prior to calling this.
   void UpdateLabelForDownloadState();
+
+  // Notifies all observers of this tile's current download state. Should only
+  // be called when the download state actually changes.
+  void NotifyDownloadStateChanged();
+
+  // A list of this tile's observers.
+  base::ObserverList<Observer> observers_;
 
   // Ensures the ink drop is painted above the button's background.
   raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;

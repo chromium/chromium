@@ -8,12 +8,18 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
+#include "ash/system/video_conference/video_conference_utils.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/observer_list.h"
+#include "base/strings/string_util.h"
+#include "components/live_caption/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 
 namespace ash {
 
@@ -155,6 +161,28 @@ VideoConferenceTrayEffectsManager::GetUiControllerForEffectId(
     }
   }
   return controller_for_effect_id_[effect_id].get();
+}
+
+std::vector<std::string>
+VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
+  switch (effect_id) {
+    case VcEffectId::kLiveCaption: {
+      PrefService* pref_service =
+          Shell::Get()->session_controller()->GetActivePrefService();
+      std::string locale = pref_service
+                               ? prefs::GetLiveCaptionLanguageCode(pref_service)
+                               : speech::kUsEnglishLocale;
+      // "Live caption" requires both a binary ("libsoda") as well as a specific
+      // language model (e.g. "libsoda-model-en-us") to operate.
+      return {"libsoda", base::ToLowerASCII("libsoda-model-" + locale)};
+    }
+    case VcEffectId::kTestEffect:
+    case VcEffectId::kBackgroundBlur:
+    case VcEffectId::kPortraitRelighting:
+    case VcEffectId::kNoiseCancellation:
+    case VcEffectId::kCameraFraming:
+      return {};
+  }
 }
 
 VideoConferenceTrayEffectsManager::EffectDataVector
