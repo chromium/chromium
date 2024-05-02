@@ -10,7 +10,9 @@
 #include <string_view>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/json/json_value_converter.h"
 #include "base/time/time.h"
 #include "device/fido/enclave/verify/hash.h"
 
@@ -21,21 +23,36 @@ namespace device::enclave {
 // currently don't verify the inclusion proof in the client, it is omitted from
 // this struct.
 struct LogEntryVerification {
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<LogEntryVerification>* converter);
+
   // Base64-encoded signature over the body, integrated_time, log_id, and
   // log_index of the Rekor LogEntry.
-  std::string_view signed_entry_timestamp;
+  std::string signed_entry_timestamp;
 };
 
 // Struct representing a Rekor LogEntry.
 // Based on
 // <https://github.com/sigstore/rekor/blob/2978cdc26fdf8f5bfede8459afd9735f0f231a2a/pkg/generated/models/log_entry.go#L89.>
-struct LogEntry {
-  std::string_view body;
+struct COMPONENT_EXPORT(DEVICE_FIDO) LogEntry {
+  LogEntry(std::string body,
+           base::Time integrated_time,
+           std::string log_id,
+           uint64_t log_index,
+           std::optional<LogEntryVerification> verification);
+  LogEntry(LogEntry& log_entry);
+  LogEntry();
+  ~LogEntry();
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<LogEntry>* converter);
+
+  std::string body;
   base::Time integrated_time;
   // This is the SHA256 hash of the DER-encoded public key for the log at the
   // time the entry was included in the log
   // Pattern: ^[0-9a-fA-F]{64}$
-  std::string_view log_id;
+  std::string log_id;
   uint64_t log_index;
   // Includes a signature over the body, integrated_time, log_id, and log_index.
   std::optional<LogEntryVerification> verification;
@@ -111,6 +128,9 @@ struct RekorSignatureBundle {
 bool VerifyRekorLogEntry(base::span<const uint8_t> log_entry,
                          base::span<const uint8_t> rekor_public_key,
                          base::span<const uint8_t> endorsement);
+
+std::optional<LogEntry> COMPONENT_EXPORT(DEVICE_FIDO)
+    GetRekorLogEntry(base::span<const uint8_t> log_entry);
 
 // Parses the given bytes into a Rekor `LogEntry` object, and returns its
 // `body` parsed into an instance of `Body`.

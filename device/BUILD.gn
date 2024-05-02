@@ -179,6 +179,7 @@ test("device_unittests") {
       "fido/enclave/enclave_protocol_utils_unittest.cc",
       "fido/enclave/verify/claim_unittest.cc",
       "fido/enclave/verify/endorsement_unittest.cc",
+      "fido/enclave/verify/rekor_unittest.cc",
       "fido/enclave/verify/utils_unittest.cc",
       "fido/fake_fido_discovery_unittest.cc",
       "fido/fido_device_authenticator_unittest.cc",
@@ -206,6 +207,11 @@ test("device_unittests") {
       "//components/sync/protocol:protocol",
       "//device/fido:mocks",
       "//services/data_decoder/public/cpp:test_support",
+    ]
+
+    data = [
+      "fido/enclave/verify/testdata/logentry.json",
+      "fido/enclave/verify/testdata/logentry_noverification.json",
     ]
 
     if (is_chromeos_lacros) {

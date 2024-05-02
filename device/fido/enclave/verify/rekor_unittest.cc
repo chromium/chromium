@@ -1,0 +1,81 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "device/fido/enclave/verify/rekor.h"
+
+#include <cstdint>
+
+#include "base/base_paths.h"
+#include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/path_service.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace device::enclave {
+
+constexpr char kBody[] =
+    "eyJhcGlWZXJzaW9uIjoiMC4wLjEiLCJraW5kIjoicmVrb3JkIiwic3BlYyI6eyJkYXRhIjp7"
+    "Imhhc2giOnsiYWxnb3JpdGhtIjoic2hhMjU2IiwidmFsdWUiOiI5NjFmNjBhY2I5ZTU3MjNi"
+    "N2IzMDE4NjA0ODE1MjliYzNmMTY2MWU1MDg2YzI5Y2Q1NjI0MmUzMjFiYTdmOTU5In19LCJz"
+    "aWduYXR1cmUiOnsiY29udGVudCI6Ik1FWUNJUUN5RUhmUVp4VnphOG9TZzZHclBwOW5aM0VU"
+    "cytOV0g2blhUN3VIUDJ6L0hnSWhBSkpHTjU2K3BPU1BGNGdtL0o1QXMyMzA2d09RRDJLeEla"
+    "bWk5R2p5aDZSOSIsImZvcm1hdCI6Ing1MDkiLCJwdWJsaWNLZXkiOnsiY29udGVudCI6IkxT"
+    "MHRMUzFDUlVkSlRpQlFWVUpNU1VNZ1MwVlpMUzB0TFMwS1RVWnJkMFYzV1VoTGIxcEplbW93"
+    "UTBGUldVbExiMXBKZW1vd1JFRlJZMFJSWjBGRlluZFNZMUZaTWxsMlZXaHdPRkZ3YWtKRWFr"
+    "UlpkR2R5YWtGWFNncGhMMlYzVlV0MU4xVlNTMVpOWW5wcFRqaEpaSHAxTjI1bFMyTjJaakpS"
+    "UzFCcldWaFNaWEJzZVRabVQzVm1aRmhhU2l0VFVGWnhXRUpuUFQwS0xTMHRMUzFGVGtRZ1VG"
+    "VkNURWxESUV0RldTMHRMUzB0Q2c9PSJ9fX19";
+
+constexpr char kLogID[] =
+    "c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d";
+
+constexpr char kSignedEntryTimestamp[] =
+    "MEYCIQCd0RrIJrMSCBhTAwl+HOMU/9w81hs7xCXZRElft/"
+    "jcCAIhAN07e5BrXL4xn8ZeZTAnfsCwyjO9e3NaTNt4zAFj96mV";
+
+constexpr uint64_t kLogIndex = 74497915;
+
+constexpr base::Time kIntegratedTime = base::Time::FromTimeT(1709113639);
+
+std::string GetJsonFromFile(std::string_view file_name) {
+  std::string json;
+  base::FilePath file_path;
+  base::PathService::Get(base::BasePathKey::DIR_SRC_TEST_DATA_ROOT, &file_path);
+  file_path = file_path.AppendASCII("device/fido/enclave/verify/testdata");
+  file_path = file_path.AppendASCII(file_name);
+  file_path = file_path.AddExtensionASCII(".json");
+  EXPECT_TRUE(base::ReadFileToString(file_path, &json));
+  return json;
+}
+
+TEST(RekorTest, GetRekorLogEntry) {
+  std::string json = GetJsonFromFile("logentry");
+  base::span<const uint8_t> span = base::make_span(
+      static_cast<uint8_t*>((uint8_t*)json.data()), json.size());
+  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  EXPECT_TRUE(log_entry.has_value());
+  EXPECT_EQ(log_entry->body, kBody);
+  EXPECT_EQ(log_entry->integrated_time, kIntegratedTime);
+  EXPECT_EQ(log_entry->log_id, kLogID);
+  EXPECT_EQ(log_entry->log_index, kLogIndex);
+  EXPECT_TRUE(log_entry->verification.has_value());
+  EXPECT_EQ(log_entry->verification->signed_entry_timestamp,
+            kSignedEntryTimestamp);
+}
+
+TEST(RekorTest, GetRekorLogEntryNoVerification) {
+  std::string json = GetJsonFromFile("logentry_noverification");
+  base::span<const uint8_t> span = base::make_span(
+      static_cast<uint8_t*>((uint8_t*)json.data()), json.size());
+  std::optional<LogEntry> log_entry = GetRekorLogEntry(span);
+  EXPECT_TRUE(log_entry.has_value());
+  EXPECT_EQ(log_entry->body, kBody);
+  EXPECT_EQ(log_entry->integrated_time, kIntegratedTime);
+  EXPECT_EQ(log_entry->log_id, kLogID);
+  EXPECT_EQ(log_entry->log_index, kLogIndex);
+  EXPECT_FALSE(log_entry->verification.has_value());
+}
+
+}  // namespace device::enclave
