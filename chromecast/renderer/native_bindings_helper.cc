@@ -71,10 +71,11 @@ void CastBinding::TryInstall() {
   if (!isolate)
     return;
 
+  // The HandleScope must be created before MainWorldScriptContext is called.
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
   v8::MicrotasksScope microtasks(context,
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::HandleScope handle_scope(isolate);
   if (context.IsEmpty())
     return;
 
