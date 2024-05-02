@@ -139,6 +139,8 @@ id<GREYMatcher> mostlyNotVisible() {
   // suggestion.
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
   [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
+  // Disable search suggestions so that the omnibox popup does not appear.
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSearchSuggestEnabled];
 
   [self closeAllTabs];
 }
@@ -536,13 +538,6 @@ id<GREYMatcher> mostlyNotVisible() {
 // Tests that the tap gesture recognizer that dismisses the keyboard and
 // defocuses the omnibox works.
 - (void)testDefocusOmniboxTapWorks {
-  // TODO(crbug.com/40248742): Test fails on iPhone devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhone device.");
-  }
-#endif
-
   [self focusFakebox];
   // Tap on a space in the collectionView that is not a Feed card.
   [[EarlGrey
@@ -798,17 +793,9 @@ id<GREYMatcher> mostlyNotVisible() {
       @"The collection is not scrolled back to its previous position");
 }
 
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testTapFakeOmniboxAndScrollDefocuses \
-  FLAKY_testTapFakeOmniboxAndScrollDefocuses
-#else
-#define MAYBE_testTapFakeOmniboxAndScrollDefocuses \
-  testTapFakeOmniboxAndScrollDefocuses
-#endif
-// TODO(crbug.com/331647110): Re-enable on device when fixed.
 // Tests that tapping the fake omnibox and then scrolling defocuses the the
 // omnibox.
-- (void)MAYBE_testTapFakeOmniboxAndScrollDefocuses {
+- (void)testTapFakeOmniboxAndScrollDefocuses {
   // Clear pasteboard so that omnibox doesn't cover the NTP on focus.
   [ChromeEarlGrey clearPasteboard];
   // Get the collection and its layout.
