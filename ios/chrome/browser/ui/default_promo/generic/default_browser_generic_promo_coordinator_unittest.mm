@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_coordinator.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_view_controller.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest_mac.h"
@@ -32,8 +32,8 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 
 #pragma mark - Fixture.
 
-// Fixture to test VideoDefaultBrowserPromoCoordinator.
-class VideoDefaultBrowserPromoCoordinatorTest : public PlatformTest {
+// Fixture to test DefaultBrowserGenericPromoCoordinator.
+class DefaultBrowserGenericPromoCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -52,7 +52,7 @@ class VideoDefaultBrowserPromoCoordinatorTest : public PlatformTest {
         feature_engagement::TrackerFactory::GetForBrowserState(
             browser_state_.get()));
 
-    coordinator_ = [[VideoDefaultBrowserPromoCoordinator alloc]
+    coordinator_ = [[DefaultBrowserGenericPromoCoordinator alloc]
         initWithBaseViewController:view_controller_
                            browser:browser_.get()];
   }
@@ -66,7 +66,7 @@ class VideoDefaultBrowserPromoCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  VideoDefaultBrowserPromoCoordinator* coordinator_;
+   DefaultBrowserGenericPromoCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
@@ -76,25 +76,25 @@ class VideoDefaultBrowserPromoCoordinatorTest : public PlatformTest {
 
 // Tests that the proper metrics and FET events are fired when tapping Remind Me
 // Later.
-TEST_F(VideoDefaultBrowserPromoCoordinatorTest, TestRemindMeLater) {
+TEST_F(DefaultBrowserGenericPromoCoordinatorTest, TestRemindMeLater) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
   EXPECT_NSEQ(nil, view_controller_.presentedViewController);
 
-  coordinator_.showRemindMeLater = YES;
+  coordinator_.hasRemindMeLater = YES;
   [coordinator_ start];
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserVideoPromo.Appear"));
 
   // This should present a VideoDefaultBrowserPromoViewController.
   ASSERT_TRUE([view_controller_.presentedViewController
-      isKindOfClass:[VideoDefaultBrowserPromoViewController class]]);
-  VideoDefaultBrowserPromoViewController* video_promo_view_controller =
-      base::apple::ObjCCastStrict<VideoDefaultBrowserPromoViewController>(
+      isKindOfClass:[DefaultBrowserGenericPromoViewController class]]);
+   DefaultBrowserGenericPromoViewController* generic_promo_view_controller =
+      base::apple::ObjCCastStrict<DefaultBrowserGenericPromoViewController>(
           view_controller_.presentedViewController);
 
-  EXPECT_EQ(YES, video_promo_view_controller.showRemindMeLater);
+  EXPECT_EQ(YES, generic_promo_view_controller.hasRemindMeLater);
 
   // Prepare to tap tertiary action.
   EXPECT_CALL(
@@ -102,7 +102,7 @@ TEST_F(VideoDefaultBrowserPromoCoordinatorTest, TestRemindMeLater) {
       NotifyEvent(
           feature_engagement::events::kDefaultBrowserPromoRemindMeLater));
 
-  [video_promo_view_controller.actionHandler confirmationAlertTertiaryAction];
+  [generic_promo_view_controller.actionHandler confirmationAlertTertiaryAction];
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "IOS.DefaultBrowserVideoPromo.Fullscreen.RemindMeLater"));

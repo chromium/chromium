@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_mediator.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_mediator.h"
 
-#import "base/metrics/histogram_functions.h"
-#import "base/metrics/user_metrics.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util.h"
-
-@implementation VideoDefaultBrowserPromoMediator
+@implementation DefaultBrowserGenericPromoMediator
 
 #pragma mark - Public
 

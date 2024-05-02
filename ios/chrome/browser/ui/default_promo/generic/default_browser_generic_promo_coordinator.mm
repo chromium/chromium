@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_coordinator.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -10,44 +10,43 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
-#import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_mediator.h"
-#import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_view_controller.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_commands.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_mediator.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
 
-@interface VideoDefaultBrowserPromoCoordinator () <
+@interface DefaultBrowserGenericPromoCoordinator () <
     UIAdaptivePresentationControllerDelegate,
     ConfirmationAlertActionHandler>
 
-// The mediator for the video default browser promo.
-@property(nonatomic, strong) VideoDefaultBrowserPromoMediator* mediator;
+// The mediator for the generic default browser promo.
+@property(nonatomic, strong) DefaultBrowserGenericPromoMediator* mediator;
 // The view controller.
 @property(nonatomic, strong)
-    VideoDefaultBrowserPromoViewController* viewController;
+    DefaultBrowserGenericPromoViewController* viewController;
 // Default browser promo command handler.
-@property(nonatomic, readonly) id<DefaultBrowserPromoCommands>
+@property(nonatomic, readonly) id<DefaultBrowserGenericPromoCommands>
     defaultBrowserPromoHandler;
 
 @end
 
-@implementation VideoDefaultBrowserPromoCoordinator
+@implementation DefaultBrowserGenericPromoCoordinator
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
   [self recordVideoDefaultBrowserPromoShown];
-  self.mediator = [[VideoDefaultBrowserPromoMediator alloc] init];
+  self.mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
 
-  [self showFullscreenVideoPromo];
+  [self showPromo];
 
   [super start];
 }
@@ -122,20 +121,20 @@ using base::UserMetricsAction;
 
 #pragma mark - private
 
-- (id<DefaultBrowserPromoCommands>)defaultBrowserPromoHandler {
-  id<DefaultBrowserPromoCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), DefaultBrowserPromoCommands);
+- (id<DefaultBrowserGenericPromoCommands>)defaultBrowserPromoHandler {
+  id<DefaultBrowserGenericPromoCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), DefaultBrowserGenericPromoCommands);
 
   return handler;
 }
 
-- (void)showFullscreenVideoPromo {
+- (void)showPromo {
   DCHECK(!self.viewController);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
-  self.viewController = [[VideoDefaultBrowserPromoViewController alloc] init];
+  self.viewController = [[DefaultBrowserGenericPromoViewController alloc] init];
   self.viewController.actionHandler = self;
-  self.viewController.showRemindMeLater = self.showRemindMeLater;
+  self.viewController.hasRemindMeLater = self.hasRemindMeLater;
   self.viewController.presentationController.delegate = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES

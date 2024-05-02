@@ -349,6 +349,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/context_menu:unit_tests",
     "//ios/chrome/browser/ui/credential_provider_promo:unit_tests",
     "//ios/chrome/browser/ui/default_promo:unit_tests",
+    "//ios/chrome/browser/ui/default_promo/generic:unit_tests",
     "//ios/chrome/browser/ui/default_promo/promo_handler:unit_tests",
     "//ios/chrome/browser/ui/dialogs:unit_tests",
     "//ios/chrome/browser/ui/dialogs:unit_tests_internal",

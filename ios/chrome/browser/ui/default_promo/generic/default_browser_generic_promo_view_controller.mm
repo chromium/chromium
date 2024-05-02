@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_view_controller.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_view_controller.h"
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_instructions_view.h"
 
-@implementation VideoDefaultBrowserPromoViewController
+@implementation DefaultBrowserGenericPromoViewController
 
 
 #pragma mark - UIViewController
@@ -15,7 +15,7 @@
   [super viewDidLoad];
   self.view = [[DefaultBrowserInstructionsView alloc]
       initWithDismissButton:YES
-           hasRemindMeLater:self.showRemindMeLater
+           hasRemindMeLater:self.hasRemindMeLater
                    hasSteps:NO
               actionHandler:self.actionHandler];
 }

@@ -155,10 +155,10 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
+#import "ios/chrome/browser/ui/default_promo/generic/default_browser_generic_promo_commands.h"
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_manager.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
@@ -277,7 +277,7 @@ enum class ToolbarKind {
     BrowserViewVisibilityConsumer,
     BubblePresenterDelegate,
     ContextualSheetCommands,
-    DefaultBrowserPromoCommands,
+    DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
     EnterprisePromptCoordinatorDelegate,
     FormInputAccessoryCoordinatorNavigator,
@@ -578,8 +578,9 @@ enum class ToolbarKind {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (self.started)
+  if (self.started) {
     return;
+  }
 
   DCHECK(!self.viewController);
 
@@ -622,8 +623,9 @@ enum class ToolbarKind {
 }
 
 - (void)stop {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
 
   self.started = NO;
   [super stop];
@@ -894,7 +896,7 @@ enum class ToolbarKind {
     @protocol(SaveToPhotosCommands),
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
-    @protocol(DefaultBrowserPromoCommands),
+    @protocol(DefaultBrowserGenericPromoCommands),
     @protocol(MiniMapCommands),
     @protocol(ParcelTrackingOptInCommands),
     @protocol(UnitConversionCommands),
@@ -1814,8 +1816,9 @@ enum class ToolbarKind {
 
 - (void)showDownloadsFolder {
   NSURL* URL = GetFilesAppUrl();
-  if (!URL)
+  if (!URL) {
     return;
+  }
 
   [[UIApplication sharedApplication] openURL:URL
                                      options:@{}
@@ -1924,8 +1927,9 @@ enum class ToolbarKind {
   WebStateList* webStateList = self.browser->GetWebStateList();
 
   int active_index = webStateList->active_index();
-  if (active_index == WebStateList::kInvalidIndex)
+  if (active_index == WebStateList::kInvalidIndex) {
     return;
+  }
 
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.viewController);
 
@@ -2146,8 +2150,9 @@ enum class ToolbarKind {
   auto* helper = GetConcreteFindTabHelperFromWebState(activeWebState);
   helper->StartFinding([self.findBarCoordinator.findBarController searchTerm]);
 
-  if (!self.browser->GetBrowserState()->IsOffTheRecord())
+  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     helper->PersistSearchTerm();
+  }
 }
 
 - (void)findNextStringInPage {
