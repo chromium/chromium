@@ -40,6 +40,10 @@ export class LensOverlayAppElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
+      isImageRendered: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -47,13 +51,14 @@ export class LensOverlayAppElement extends PolymerElement {
   private screenshotDataUri: string;
   // Whether the close button should be hidden.
   private closeButtonHidden: boolean = false;
+  // Whether the image has finished rendering.
+  private isImageRendered: boolean = false;
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
 
   override connectedCallback() {
     super.connectedCallback();
-
 
     const callbackRouter = this.browserProxy.callbackRouter;
     this.listenerIds = [
@@ -106,6 +111,10 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private closeInitialToast() {
     this.$.initialToast.triggerHideAnimation();
+  }
+
+  private onScreenshotRendered() {
+    this.isImageRendered = true;
   }
 }
 

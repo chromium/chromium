@@ -22,9 +22,11 @@ build_webui("build_overlay") {
     "initial_toast.ts",
     "lens_overlay_app.ts",
     "object_layer.ts",
+    "overlay_shimmer.ts",
     "post_selection_renderer.ts",
     "region_selection.ts",
     "selection_overlay.ts",
+    "shimmer_circle.ts",
     "side_panel/side_panel_app.ts",
     "text_layer.ts",
   ]
@@ -35,7 +37,9 @@ build_webui("build_overlay") {
     "hit.ts",
     "post_selection_paint_worklet.ts",
     "selection_utils.ts",
+    "shimmer_circle_paint_worklet.ts",
     "side_panel/side_panel_browser_proxy.ts",
+    "wiggle.ts",
   ]
 
   ts_deps = [

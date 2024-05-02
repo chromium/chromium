@@ -6,8 +6,11 @@ import './object_layer.js';
 import './text_layer.js';
 import './region_selection.js';
 import './post_selection_renderer.js';
+import './overlay_shimmer.js';
+import './strings.m.js';
 
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -56,20 +59,28 @@ export class SelectionOverlayElement extends PolymerElement {
     return {
       isResized: {
         type: Boolean,
-        value: false,
         reflectToAttribute: true,
       },
       screenshotDataUri: String,
       cursorImgUri: String,
       isPointerInside: Boolean,
       currentGesture: emptyGestureEvent(),
+      enableShimmer: Boolean,
     };
   }
 
-  private eventTracker_: EventTracker = new EventTracker();
+  // Whether the selection overlay is its initial size, or has changed size.
+  private isResized: boolean = false;
+  // The data URI of the current overlay screenshot.
+  private screenshotDataUri: string;
+  private cursorImgUri: string = 'lens.svg';
+  private isPointerInside = false;
   // The current gesture event. The coordinate values are only accurate if a
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
+  private enableShimmer: boolean = loadTimeData.getBoolean('enableShimmer');
+
+  private eventTracker_: EventTracker = new EventTracker();
   // The feature currently being dragged. Once a feature responds to a drag
   // event, no other feature will receive gesture events.
   private draggingRespondent = DragFeature.NONE;
@@ -85,16 +96,8 @@ export class SelectionOverlayElement extends PolymerElement {
       });
   private initialWidth: number = 0;
   private initialHeight: number = 0;
-  // Whether the selection overlay is its initial size, or has changed size.
-  private isResized: boolean;
-  // The data URI of the current overlay screenshot.
-  private screenshotDataUri: string;
-  private cursorImgUri: string = 'lens.svg';
   private cursorOffsetX: number = 3;
   private cursorOffsetY: number = 6;
-  private isPointerInside = false;
-  // Whether or not we have set the background blur yet.
-  private didBlurBackground: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -200,11 +203,18 @@ export class SelectionOverlayElement extends PolymerElement {
 
   private onImageLoad() {
     // The image is loaded, but not necessarily rendered to the user. To avoid
-    // adding the background blur too early and it being noticeable to the user,
-    // we wait a bit before blurring the background.
-    setTimeout(() => {
-      BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
-    }, 300);
+    // adding the background scrim too early and it being noticeable to the
+    // user, we wait for two animation frames before notifying that the image is
+    // visible.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
+        }, 300);
+        this.dispatchEvent(new CustomEvent(
+            'screenshot-rendered', {bubbles: true, composed: true}));
+      });
+    });
   }
 
   private onPointerDown(event: PointerEvent) {

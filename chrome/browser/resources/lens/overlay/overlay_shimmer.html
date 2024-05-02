@@ -1,0 +1,11 @@
+<style>
+  :host {
+    height: 100%;
+    width: 100%;
+  }
+</style>
+<template is="dom-repeat" items="[[circles]]" as="circle">
+  <shimmer-circle color-hex="[[circle.colorHex]]"
+      steady-state-center-x="[[circle.steadyStateCenterX]]"
+      steady-state-center-y="[[circle.steadyStateCenterY]]"></shimmer-circle>
+</template>

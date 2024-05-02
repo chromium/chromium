@@ -39,6 +39,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   // Add finch flags
   html_source->AddBoolean("enableDebuggingMode",
                           lens::features::IsLensOverlayDebuggingEnabled());
+  html_source->AddBoolean("enableShimmer",
+                          lens::features::IsLensOverlayShimmerEnabled());
   html_source->AddInteger("verticalTextMarginPx",
                           lens::features::GetLensOverlayVerticalTextMargin());
   html_source->AddInteger("horizontalTextMarginPx",

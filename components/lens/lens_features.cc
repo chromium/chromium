@@ -69,6 +69,8 @@ const base::FeatureParam<int> kLensOverlayHorizontalTextMargin{
     &kLensOverlay, "text-horizontal-margin", 4};
 const base::FeatureParam<bool> kLensOverlaySearchBubble{&kLensOverlay,
                                                         "search-bubble", false};
+const base::FeatureParam<bool> kLensOverlayEnableShimmer{
+    &kLensOverlay, "enable-shimmer", false};
 
 constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
     &kLensOverlay, "endpoint-url",
@@ -258,6 +260,10 @@ int GetLensOverlayHorizontalTextMargin() {
 
 bool IsLensOverlaySearchBubbleEnabled() {
   return kLensOverlaySearchBubble.Get();
+}
+
+bool IsLensOverlayShimmerEnabled() {
+  return kLensOverlayEnableShimmer.Get();
 }
 
 }  // namespace lens::features

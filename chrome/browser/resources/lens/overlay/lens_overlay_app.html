@@ -2,6 +2,9 @@
   .app-container {
     width: 100%;
     height: 100%;
+  }
+
+  :host([is-image-rendered]) .app-container {
     /* Background color #151C26 with 30% transparency */
     background-color: #151C264D;
   }
@@ -25,11 +28,12 @@
     pointer-events: none;
   }
 </style>
-<div class="app-container" on-selection-overlay-clicked="closeInitialToast">
+<div class="app-container" on-selection-overlay-clicked="closeInitialToast"
+    on-screenshot-rendered="onScreenshotRendered">
   <!-- Do not render selection overlay if data URI is empty. -->
   <template is="dom-if" if="[[screenshotDataUri.length]]">
     <lens-selection-overlay
-      screenshot-data-uri="[[screenshotDataUri]]"></lens-selection-overlay>
+        screenshot-data-uri="[[screenshotDataUri]]"></lens-selection-overlay>
   </template>
   <initial-toast id="initialToast"></initial-toast>
   <cr-icon-button id="closeButton" class="action-button"

@@ -253,6 +253,10 @@ extern int GetLensOverlayHorizontalTextMargin();
 // Returns whether to show the lens overlay search bubble.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlaySearchBubbleEnabled();
+
+// Returns whether to render the Lens overlay shimmer.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayShimmerEnabled();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

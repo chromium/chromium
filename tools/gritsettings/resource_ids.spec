@@ -704,7 +704,7 @@
     "includes": [5320],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/overlay/resources.grd": {
-    "META": {"sizes": {"includes": [35]}},
+    "META": {"sizes": {"includes": [50]}},
     "includes": [5340],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/overlay/search_bubble/resources.grd": {
@@ -1147,23 +1147,23 @@
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/shimless_rma/resources/resources.grd": {
     "META": {"sizes": {"includes": [100],}},
-    "includes": [7520],
+    "includes": [7500],
   },
   "ash/keyboard/ui/keyboard_resources.grd": {
-    "includes": [7540],
+    "includes": [7520],
   },
   "ash/login/resources/login_resources.grd": {
-    "structures": [7560],
+    "structures": [7540],
   },
   "ash/public/cpp/resources/ash_public_unscaled_resources.grd": {
-    "includes": [7580],
-    "structures": [7600],
+    "includes": [7560],
+    "structures": [7580],
   },
   "ash/system/mahi/resources/mahi_resources.grd": {
-    "structures":[7620],
+    "structures":[7600],
   },
   "ash/system/video_conference/resources/vc_resources.grd": {
-    "structures":[7630],
+    "structures":[7620],
   },
   "base/tracing/protos/resources.grd": {
     "includes": [7640],

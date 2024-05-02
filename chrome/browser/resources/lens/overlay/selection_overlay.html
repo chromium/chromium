@@ -36,7 +36,7 @@
     max-height: 100vh;
   }
 
-  :host([is-resized]) #backgroundImage{
+  :host([is-resized]) #backgroundImage {
     max-width: calc(100vw - 24px);
     max-height: calc(100vh - 24px);
   }
@@ -76,16 +76,20 @@
     visibility: hidden;
   }
 </style>
-<div id="selectionOverlay"
-    on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
+<div id="selectionOverlay" on-pointerenter="handlePointerEnter"
+    on-pointerleave="handlePointerLeave">
   <img id="backgroundImage" on-load="onImageLoad" draggable="false"
-    src="[[screenshotDataUri]]">
-  <!-- Wrapper div is needed to stack the seleciton elements on top of
+      src="[[screenshotDataUri]]">
+  <div id="scrim"></div>
+  <!-- Wrapper div is needed to stack the selection elements on top of
   background image. -->
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
-    <post-selection-renderer
-        id="postSelectionRenderer" screenshot-data-uri="[[screenshotDataUri]]">
+    <template is="dom-if" if="[[enableShimmer]]">
+      <overlay-shimmer></overlay-shimmer>
+    </template>
+    <post-selection-renderer id="postSelectionRenderer"
+        screenshot-data-uri="[[screenshotDataUri]]">
     </post-selection-renderer>
     <lens-object-layer id="objectSelectionLayer"
         screenshot-data-uri="[[screenshotDataUri]]"></lens-object-layer>
