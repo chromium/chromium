@@ -21,7 +21,7 @@ namespace policy {
 // TODO(b/331285209): Rename this method to GetEnrollmentToken as part of the
 // effort to dissociate "Flex" with enrollment tokens.
 std::optional<std::string> GetFlexEnrollmentToken(
-    ash::OobeConfiguration* oobe_config);
+    const ash::OobeConfiguration* oobe_config);
 
 }  // namespace policy
 

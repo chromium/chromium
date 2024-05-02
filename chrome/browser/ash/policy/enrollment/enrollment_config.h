@@ -143,7 +143,7 @@ struct EnrollmentConfig {
       PrefService* local_state,
       const ash::InstallAttributes& install_attributes,
       ash::system::StatisticsProvider* statistics_provider,
-      ash::OobeConfiguration* oobe_configuration);
+      const ash::OobeConfiguration* oobe_configuration);
 
   // Returns the respective manual fallback enrollment mode when given an
   // attestation mode.
@@ -240,6 +240,10 @@ struct EnrollmentConfig {
   // Indicates the enrollment flow variant to trigger during OOBE.
   Mode mode = MODE_NONE;
 
+  // The authentication mechanism to use.
+  // TODO(drcrash): Change to best available once ZTE is everywhere.
+  AuthMechanism auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
+
   // The domain to enroll the device to, if applicable. If this is not set, the
   // device may be enrolled to any domain. Note that for the case where the
   // device is not already locked to a certain domain, this value is used for
@@ -261,16 +265,20 @@ struct EnrollmentConfig {
   AssignedUpgradeType assigned_upgrade_type =
       AssignedUpgradeType::kAssignedUpgradeTypeChromeEnterprise;
 
-  // The authentication mechanism to use.
-  // TODO(drcrash): Change to best available once ZTE is everywhere.
-  AuthMechanism auth_mechanism = AUTH_MECHANISM_INTERACTIVE;
-
   // User's email which can be passed from the Gaia screen in the enrollment
   // nudge flow.
   std::string enrollment_nudge_email;
 
   // Enrollment token to use for authentication (for Flex Auto Enrollment).
   std::string enrollment_token;
+
+ private:
+  // Hold fields to be filled corresponding to ones in `EnrollmentConfig`.
+  struct PrescribedConfig;
+  struct PrescribedLicense;
+
+  EnrollmentConfig(PrescribedConfig prescribed_config,
+                   PrescribedLicense prescribed_license);
 };
 
 std::ostream& operator<<(std::ostream& os, const EnrollmentConfig::Mode& mode);

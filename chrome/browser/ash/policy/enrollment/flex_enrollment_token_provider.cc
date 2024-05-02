@@ -13,7 +13,7 @@
 namespace policy {
 
 std::optional<std::string> GetFlexEnrollmentToken(
-    ash::OobeConfiguration* oobe_config) {
+    const ash::OobeConfiguration* oobe_config) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!ash::switches::IsRevenBranding()) {
     return std::nullopt;
