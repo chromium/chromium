@@ -677,6 +677,10 @@ void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
   }
 }
 
+// This function will be called when a user clicks on the ESB
+// (Enhanced Safe Browsing) download row promo. It will notify
+// the feature engagement backend to record the event that the
+// promo was clicked.
 void DownloadsDOMHandler::OpenEsbSettings() {
   Browser* browser = chrome::FindBrowserWithTab(GetWebUIWebContents());
   if (!browser) {
@@ -685,6 +689,11 @@ void DownloadsDOMHandler::OpenEsbSettings() {
   chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
       browser,
       safe_browsing::SafeBrowsingSettingReferralMethod::kDownloadPageRowPromo);
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          browser->profile());
+  tracker->NotifyEvent("esb_download_promo_row_clicked");
 }
 
 void DownloadsDOMHandler::IsEligibleForEsbPromo(
