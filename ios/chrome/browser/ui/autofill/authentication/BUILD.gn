@@ -36,6 +36,7 @@ source_set("otp_input_dialog_ui") {
     "otp_input_dialog_view_controller.mm",
   ]
   deps = [
+    ":otp_input_dialog_ui_constants",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/list_model",
@@ -46,6 +47,14 @@ source_set("otp_input_dialog_ui") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("otp_input_dialog_ui_constants") {
+  sources = [
+    "otp_input_dialog_view_constants.h",
+    "otp_input_dialog_view_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 group("unit_tests") {
@@ -189,8 +198,13 @@ source_set("card_unmask_authentication_selection_mutator_bridge_target") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "card_unmask_authentication_egtest.mm" ]
+  sources = [
+    "card_unmask_authentication_egtest.mm",
+    "otp_input_dialog_egtest.mm",
+  ]
   deps = [
+    ":egtest_util",
+    ":otp_input_dialog_ui_constants",
     "//components/autofill/core/browser:test_support",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
@@ -200,4 +214,13 @@ source_set("eg2_tests") {
     "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("egtest_util") {
+  testonly = true
+  sources = [
+    "authentication_egtest_util.h",
+    "authentication_egtest_util.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }

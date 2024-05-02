@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_content.h"
 #import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_mutator.h"
+#import "ios/chrome/browser/ui/autofill/authentication/otp_input_dialog_view_constants.h"
 #import "ios/chrome/browser/ui/autofill/cells/card_unmask_header_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -115,6 +116,8 @@ constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
       [errorMessage setSubtitle:_errorTitle
                       withColor:[UIColor colorNamed:kRedColor]];
       [errorMessage setForceIndents:YES];
+      errorMessage.accessibilityIdentifier =
+          kOtpInputErrorMessageAccessibilityIdentifier;
       return errorMessage;
     }
     case SectionIdentifierNewCodeLink: {
@@ -154,6 +157,8 @@ constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
   UIBarButtonItem* pendingButton =
       [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
+  pendingButton.accessibilityIdentifier =
+      kOtpInputNavigationBarPendingButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = pendingButton;
   [activityIndicator startAnimating];
   [self.tableView setUserInteractionEnabled:NO];
@@ -220,6 +225,8 @@ constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
     cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
   cell.textField.placeholder = _content.textFieldPlaceholder;
+  cell.textField.accessibilityIdentifier =
+      kOtpInputTextfieldAccessibilityIdentifier;
   [cell.textField addTarget:self
                      action:@selector(textFieldDidChange:)
            forControlEvents:UIControlEventEditingChanged];
@@ -264,6 +271,8 @@ constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
                                       action:@selector(didTapConfirmButton)];
   // Enable the confirm button only after a valid OTP has been entered.
   confirmButton.enabled = NO;
+  confirmButton.accessibilityIdentifier =
+      kOtpInputNavigationBarConfirmButtonAccessibilityIdentifier;
   return confirmButton;
 }
 
@@ -277,6 +286,7 @@ constexpr base::TimeDelta kNewCodeLinkCooldownTime = base::Seconds(5);
   // The link target is ignored and taps on it are handled by `didTapLinkURL`.
   newCodeLink.urls = @[ [[CrURL alloc] initWithGURL:GURL(kDummyLinkTarget)] ];
   newCodeLink.delegate = self;
+  newCodeLink.accessibilityIdentifier = kOtpInputFooterAccessibilityIdentifier;
   [newCodeLink
             setText:l10n_util::GetNSString(
                         IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_FOOTER_LINK)
