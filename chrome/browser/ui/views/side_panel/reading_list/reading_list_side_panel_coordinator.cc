@@ -30,9 +30,7 @@ void ReadingListSidePanelCoordinator::CreateAndRegisterEntry(
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadingList,
       l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE),
-      ui::ImageModel::FromVectorIcon(
-          features::IsChromeRefresh2023() ? kReadingListIcon : kReadLaterIcon,
-          ui::kColorIcon),
+      ui::ImageModel::FromVectorIcon(kReadingListIcon, ui::kColorIcon),
       base::BindRepeating(
           &ReadingListSidePanelCoordinator::CreateReadingListWebView,
           base::Unretained(this))));

@@ -148,13 +148,9 @@ ui::ImageModel BackForwardMenuModel::GetIconAt(size_t index) const {
 
   // Return icon of "Show Full History" for the last item of the menu.
   if (ShouldShowFullHistoryBeVisible() && index == GetItemCount() - 1) {
-    return features::IsChromeRefresh2023()
-               ? ui::ImageModel::FromVectorIcon(
-                     kHistoryIcon, ui::kColorMenuIcon,
-                     ui::SimpleMenuModel::kDefaultIconSize)
-               : ui::ImageModel::FromImage(
-                     ui::ResourceBundle::GetSharedInstance()
-                         .GetNativeImageNamed(IDR_HISTORY_FAVICON));
+    return ui::ImageModel::FromVectorIcon(
+        kHistoryIcon, ui::kColorMenuIcon,
+        ui::SimpleMenuModel::kDefaultIconSize);
   }
   NavigationEntry* entry = GetNavigationEntry(index);
   content::FaviconStatus fav_icon = entry->GetFavicon();
