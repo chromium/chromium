@@ -7,8 +7,10 @@
 #include <memory>
 #include <optional>
 
+#include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -126,6 +128,7 @@ TEST_F(ExtendedUpdatesNotificationTest, ClickNoButton) {
 }
 
 TEST_F(ExtendedUpdatesNotificationTest, ShowExtendedUpdatesDialog) {
+  base::HistogramTester histogram_tester;
   auto note = CreateTestNotification(&profile_);
   EXPECT_CALL(*note, ShowExtendedUpdatesDialog()).Times(1);
 
@@ -133,9 +136,15 @@ TEST_F(ExtendedUpdatesNotificationTest, ShowExtendedUpdatesDialog) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(note);
   ExpectNotificationShown();
+  histogram_tester.ExpectBucketCount(
+      kExtendedUpdatesEntryPointEventMetric,
+      ExtendedUpdatesEntryPointEvent::kNoArcNotificationShown, 1);
 
   note->Click(static_cast<int>(IndexedButton::kSetUp), std::nullopt);
   EXPECT_TRUE(note);
+  histogram_tester.ExpectBucketCount(
+      kExtendedUpdatesEntryPointEventMetric,
+      ExtendedUpdatesEntryPointEvent::kNoArcNotificationClicked, 1);
 
   note->Close(/*by_user=*/true);
   EXPECT_FALSE(note);

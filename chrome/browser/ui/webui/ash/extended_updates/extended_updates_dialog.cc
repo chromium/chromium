@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
@@ -29,6 +30,7 @@ void ExtendedUpdatesDialog::Show() {
   }
   dialog = new ExtendedUpdatesDialog();
   dialog->ShowSystemDialog();
+  RecordExtendedUpdatesDialogEvent(ExtendedUpdatesDialogEvent::kDialogShown);
 }
 
 ExtendedUpdatesDialog* ExtendedUpdatesDialog::Get() {

@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -42,9 +45,22 @@ class ExtendedUpdatesBrowserTest : public WebUIMochaBrowserTest {
     run_loop.Run();
   }
 
-  void RunTestFile(const std::string& test_file) {
+  std::string GetTrigger(const std::string& suite = "",
+                         const std::string& test = "") {
+    if (suite.empty()) {
+      return "mocha.run()";
+    }
+    if (test.empty()) {
+      return base::StrCat({"runMochaSuite('", suite, "')"});
+    }
+    return base::StrCat({"runMochaTest('", suite, "', '", test, "')"});
+  }
+
+  void RunTestFile(const std::string& test_file,
+                   const std::string& suite = "",
+                   const std::string& test = "") {
     RunTest(base::StrCat({"chromeos/extended_updates/", test_file}),
-            "mocha.run()");
+            GetTrigger(suite, test));
   }
 
  private:
@@ -53,5 +69,19 @@ class ExtendedUpdatesBrowserTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtendedUpdatesBrowserTest, AppTest) {
-  RunTestFile("extended_updates_app_test.js");
+  RunTestFile("extended_updates_app_test.js", "<extended-updates> <app-test>");
+}
+
+IN_PROC_BROWSER_TEST_F(ExtendedUpdatesBrowserTest, DialogMetricsTest) {
+  base::HistogramTester histogram_tester;
+  ash::extended_updates::ExtendedUpdatesDialog::Show();
+  histogram_tester.ExpectBucketCount(
+      ash::kExtendedUpdatesDialogEventMetric,
+      ash::ExtendedUpdatesDialogEvent::kDialogShown, 1);
+
+  RunTestFile("extended_updates_app_test.js", "<extended-updates> <util>",
+              "perform opt in");
+  histogram_tester.ExpectBucketCount(
+      ash::kExtendedUpdatesDialogEventMetric,
+      ash::ExtendedUpdatesDialogEvent::kOptInConfirmed, 1);
 }

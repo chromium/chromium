@@ -1154,6 +1154,28 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="3" label="Collapse Group"/>
 </enum>
 
+<!-- LINT.IfChange(ExtendedUpdatesDialogEventEnum) -->
+
+<enum name="ExtendedUpdatesDialogEventEnum">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="Opt in confirmed"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/system/extended_updates/extended_updates_metrics.h:ExtendedUpdatesDialogEvent) -->
+
+<!-- LINT.IfChange(ExtendedUpdatesEntryPointEventEnum) -->
+
+<enum name="ExtendedUpdatesEntryPointEventEnum">
+  <int value="0" label="Settings page set up button shown"/>
+  <int value="1" label="Settings page set up button clicked"/>
+  <int value="2" label="Quick settings banner shown"/>
+  <int value="3" label="Quick settings banner clicked"/>
+  <int value="4" label="No ARC notification shown"/>
+  <int value="5" label="No ARC notification clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/system/extended_updates/extended_updates_metrics.h:ExtendedUpdatesEntryPointEvent) -->
+
 <enum name="FloatingWorkspaceV1RestoredSessionType">
   <int value="0" label="Unknown browser session type"/>
   <int value="1" label="Local browser session"/>

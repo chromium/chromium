@@ -1625,6 +1625,8 @@ component("ash") {
     "system/eche/eche_tray.cc",
     "system/eche/eche_tray.h",
     "system/enterprise/enterprise_domain_observer.h",
+    "system/extended_updates/extended_updates_metrics.cc",
+    "system/extended_updates/extended_updates_metrics.h",
     "system/federated/federated_client_manager.cc",
     "system/federated/federated_client_manager.h",
     "system/federated/federated_service_controller.h",

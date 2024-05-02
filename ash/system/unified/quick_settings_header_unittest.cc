@@ -10,6 +10,7 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -19,6 +20,7 @@
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/channel.h"
 #include "ui/events/test/event_generator.h"
@@ -184,9 +186,14 @@ TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeVisible) {
   Shell::Get()->system_tray_model()->SetShowExtendedUpdatesNotice(true);
   SimulateUserLogin("user@gmail.com");
 
+  base::HistogramTester histogram_tester;
   CreateQuickSettingsHeader();
+
   // Header is shown.
   EXPECT_TRUE(header_->GetVisible());
+  histogram_tester.ExpectBucketCount(
+      kExtendedUpdatesEntryPointEventMetric,
+      ExtendedUpdatesEntryPointEvent::kQuickSettingsBannerShown, 1);
 
   // Extended Updates notice is visible.
   auto* extended_updates_notice_view = header_->GetExtendedUpdatesViewForTest();
@@ -196,6 +203,9 @@ TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeVisible) {
   EXPECT_EQ(0, GetSystemTrayClient()->show_about_chromeos_count());
   LeftClickOn(extended_updates_notice_view);
   EXPECT_EQ(1, GetSystemTrayClient()->show_about_chromeos_count());
+  histogram_tester.ExpectBucketCount(
+      kExtendedUpdatesEntryPointEventMetric,
+      ExtendedUpdatesEntryPointEvent::kQuickSettingsBannerClicked, 1);
 }
 
 TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeNotVisibleBeforeLogin) {
@@ -220,7 +230,9 @@ TEST_F(QuickSettingsHeaderTest,
 
   Shell::Get()->system_tray_model()->SetShowExtendedUpdatesNotice(true);
 
+  base::HistogramTester histogram_tester;
   CreateQuickSettingsHeader();
+
   // Header is shown.
   EXPECT_TRUE(header_->GetVisible());
 
@@ -230,6 +242,9 @@ TEST_F(QuickSettingsHeaderTest,
   // Extended Updates notice is visible.
   ASSERT_TRUE(header_->GetExtendedUpdatesViewForTest());
   EXPECT_TRUE(header_->GetExtendedUpdatesViewForTest()->GetVisible());
+  histogram_tester.ExpectBucketCount(
+      kExtendedUpdatesEntryPointEventMetric,
+      ExtendedUpdatesEntryPointEvent::kQuickSettingsBannerShown, 1);
 }
 
 TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeNotShownWithEolNotice) {
@@ -238,7 +253,9 @@ TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeNotShownWithEolNotice) {
   Shell::Get()->system_tray_model()->SetShowEolNotice(true);
   Shell::Get()->system_tray_model()->SetShowExtendedUpdatesNotice(true);
 
+  base::HistogramTester histogram_tester;
   CreateQuickSettingsHeader();
+
   // Header is shown.
   EXPECT_TRUE(header_->GetVisible());
 
@@ -251,6 +268,9 @@ TEST_F(QuickSettingsHeaderTest, ExtendedUpdatesNoticeNotShownWithEolNotice) {
 
   // Extended Updates notice is not visible.
   EXPECT_FALSE(header_->GetExtendedUpdatesViewForTest());
+  histogram_tester.ExpectBucketCount(
+      kExtendedUpdatesEntryPointEventMetric,
+      ExtendedUpdatesEntryPointEvent::kQuickSettingsBannerShown, 0);
 }
 
 TEST_F(QuickSettingsHeaderTest, EnterpriseManagedDeviceVisible) {

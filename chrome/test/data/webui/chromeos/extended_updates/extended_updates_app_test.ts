@@ -15,17 +15,13 @@ import {TestExtendedUpdatesBrowserProxy} from './test_extended_updates_browser_p
 
 suite('<extended-updates>', () => {
   let app: ExtendedUpdatesAppElement;
-  let browserProxy: TestExtendedUpdatesBrowserProxy;
 
-  setup(async () => {
-    browserProxy = new TestExtendedUpdatesBrowserProxy();
-    ExtendedUpdatesBrowserProxy.setInstance(browserProxy);
-
+  async function setupAppElement() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = new ExtendedUpdatesAppElement();
     document.body.appendChild(app);
     await flushTasks();
-  });
+  }
 
   function getEnableButton(): HTMLElement|null {
     return app.shadowRoot!.querySelector<HTMLElement>('#enableButton');
@@ -57,50 +53,79 @@ suite('<extended-updates>', () => {
     assertEquals(expectedVisibility, isVisible(cancelButton));
   }
 
-  test('opt in successfully', async () => {
-    assertPopupVisibility(false);
+  suite('<app-test>', () => {
+    let browserProxy: TestExtendedUpdatesBrowserProxy;
 
-    const enableButton = getEnableButton();
-    assertTrue(!!enableButton);
-    assertTrue(isVisible(enableButton));
-    enableButton.click();
-    await flushTasks();
+    setup(async () => {
+      browserProxy = new TestExtendedUpdatesBrowserProxy();
+      ExtendedUpdatesBrowserProxy.setInstance(browserProxy);
 
-    assertPopupVisibility(true);
-    const popupConfirmButton = getPopupConfirmButton();
-    assertTrue(!!popupConfirmButton);
-    assertTrue(isVisible(popupConfirmButton));
-    popupConfirmButton.click();
-    await browserProxy.whenCalled('optInToExtendedUpdates');
-    await browserProxy.whenCalled('closeDialog');
+      await setupAppElement();
+    });
+
+    test('opt in successfully', async () => {
+      assertPopupVisibility(false);
+
+      const enableButton = getEnableButton();
+      assertTrue(!!enableButton);
+      assertTrue(isVisible(enableButton));
+      enableButton.click();
+      await flushTasks();
+
+      assertPopupVisibility(true);
+      const popupConfirmButton = getPopupConfirmButton();
+      assertTrue(!!popupConfirmButton);
+      assertTrue(isVisible(popupConfirmButton));
+      popupConfirmButton.click();
+      await browserProxy.whenCalled('optInToExtendedUpdates');
+      await browserProxy.whenCalled('closeDialog');
+    });
+
+    test('popup cancel button closes popup', async () => {
+      assertPopupVisibility(false);
+
+      const enableButton = getEnableButton();
+      assertTrue(!!enableButton);
+      assertTrue(isVisible(enableButton));
+      enableButton.click();
+      await flushTasks();
+
+      assertPopupVisibility(true);
+      const popupCancelButton = getPopupCancelButton();
+      assertTrue(!!popupCancelButton);
+      assertTrue(isVisible(popupCancelButton));
+      popupCancelButton.click();
+      await flushTasks();
+
+      assertPopupVisibility(false);
+      assertTrue(!!enableButton);
+      assertTrue(isVisible(enableButton));
+    });
+
+    test('dialog cancel button closes dialog', async () => {
+      const cancelButton = getCancelButton();
+      assertTrue(!!cancelButton);
+      assertTrue(isVisible(cancelButton));
+      cancelButton.click();
+      await browserProxy.whenCalled('closeDialog');
+    });
   });
 
-  test('popup cancel button closes popup', async () => {
-    assertPopupVisibility(false);
+  suite('<util>', () => {
+    setup(async () => {
+      await setupAppElement();
+    });
 
-    const enableButton = getEnableButton();
-    assertTrue(!!enableButton);
-    assertTrue(isVisible(enableButton));
-    enableButton.click();
-    await flushTasks();
+    test('perform opt in', async () => {
+      const enableButton = getEnableButton();
+      assertTrue(!!enableButton);
+      enableButton.click();
+      await flushTasks();
 
-    assertPopupVisibility(true);
-    const popupCancelButton = getPopupCancelButton();
-    assertTrue(!!popupCancelButton);
-    assertTrue(isVisible(popupCancelButton));
-    popupCancelButton.click();
-    await flushTasks();
-
-    assertPopupVisibility(false);
-    assertTrue(!!enableButton);
-    assertTrue(isVisible(enableButton));
-  });
-
-  test('dialog cancel button closes dialog', async () => {
-    const cancelButton = getCancelButton();
-    assertTrue(!!cancelButton);
-    assertTrue(isVisible(cancelButton));
-    cancelButton.click();
-    await browserProxy.whenCalled('closeDialog');
+      const popupConfirmButton = getPopupConfirmButton();
+      assertTrue(!!popupConfirmButton);
+      popupConfirmButton.click();
+      await flushTasks();
+    });
   });
 });

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
@@ -37,6 +38,8 @@ void ExtendedUpdatesPageHandler::OptInToExtendedUpdates(
   auto* profile = Profile::FromWebUI(web_ui_);
   auto* controller = ash::ExtendedUpdatesController::Get();
   if (controller->IsOptInEligible(profile)) {
+    RecordExtendedUpdatesDialogEvent(
+        ExtendedUpdatesDialogEvent::kOptInConfirmed);
     std::move(callback).Run(controller->OptIn(profile));
     return;
   }

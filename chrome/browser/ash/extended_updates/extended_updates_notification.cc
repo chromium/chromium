@@ -10,6 +10,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
+#include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -76,6 +77,8 @@ void ExtendedUpdatesNotification::Show() {
   NotificationDisplayService::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT,
       builder.Build(/*keep_timestamp=*/false), /*metadata=*/nullptr);
+  RecordExtendedUpdatesEntryPointEvent(
+      ExtendedUpdatesEntryPointEvent::kNoArcNotificationShown);
 }
 
 void ExtendedUpdatesNotification::Close(bool by_user) {
@@ -91,6 +94,8 @@ void ExtendedUpdatesNotification::Click(
 
   switch (IndexedButton{*button_index}) {
     case IndexedButton::kSetUp:
+      RecordExtendedUpdatesEntryPointEvent(
+          ExtendedUpdatesEntryPointEvent::kNoArcNotificationClicked);
       ShowExtendedUpdatesDialog();
       break;
     case IndexedButton::kLearnMore:

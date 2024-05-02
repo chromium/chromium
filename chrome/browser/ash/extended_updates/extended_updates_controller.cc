@@ -134,7 +134,6 @@ bool ExtendedUpdatesController::OptIn(content::BrowserContext* context) {
     return false;
   }
 
-  // TODO(b/329513970): Add metrics.
   return owner_settings->SetBoolean(kDeviceExtendedAutoUpdateEnabled, true);
 }
 

@@ -3503,6 +3503,34 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.ExtendedUpdates.DialogEvent"
+    enum="ExtendedUpdatesDialogEventEnum" expires_after="2025-05-01">
+  <owner>aluh@chromium.org</owner>
+  <owner>artyomchen@google.com</owner>
+  <owner>janetmac@google.com</owner>
+  <owner>chromeos-consumer-extended-updates-team@google.com</owner>
+  <summary>
+    The number of times an event on the Extended Updates opt-in dialog happened.
+    Note that a user may open and close the dialog multiple times before finally
+    opting in, so it's more useful to filter on unique clients.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ExtendedUpdates.EntryPointEvent"
+    enum="ExtendedUpdatesEntryPointEventEnum" expires_after="2025-05-01">
+  <owner>aluh@chromium.org</owner>
+  <owner>artyomchen@google.com</owner>
+  <owner>janetmac@google.com</owner>
+  <owner>chromeos-consumer-extended-updates-team@google.com</owner>
+  <summary>
+    The number of times an event related to the various entry points into the
+    Extended Updates opt-in flow happened. These numbers only include owner
+    users on unmanaged and opt-in required devices. Note that these events can
+    happen multiple times for the same user, so it's more useful to filter on
+    unique clients.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Float.FloatWindowCountsPerSession" units="windows"
     expires_after="2024-09-29">
   <owner>nupurjain@google.com</owner>

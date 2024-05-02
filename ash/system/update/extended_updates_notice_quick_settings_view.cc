@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,10 +24,12 @@ ExtendedUpdatesNoticeQuickSettingsView::ExtendedUpdatesNoticeQuickSettingsView()
           IDS_ASH_QUICK_SETTINGS_BUBBLE_EXTENDED_UPDATES_NOTICE,
           kUnifiedMenuInfoIcon,
           base::BindRepeating([](const ui::Event& event) {
-            // TODO(b/329513970): Record notice clicked.
+            RecordExtendedUpdatesEntryPointEvent(
+                ExtendedUpdatesEntryPointEvent::kQuickSettingsBannerClicked);
             Shell::Get()->system_tray_model()->client()->ShowAboutChromeOS();
           })) {
-  // TODO(b/329513970): Record notice shown.
+  RecordExtendedUpdatesEntryPointEvent(
+      ExtendedUpdatesEntryPointEvent::kQuickSettingsBannerShown);
 }
 
 ExtendedUpdatesNoticeQuickSettingsView::
