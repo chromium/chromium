@@ -222,8 +222,6 @@ std::vector<uint8_t> ConvertPdfDocumentToNupPdf(
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // Converts an inaccessible PDF to a searchable PDF.
 // `pdf_buffer` is the buffer of the inaccessible PDF.
-// `searchified_callback` is the callback that is called with the searchified
-//     PDF when the conversion is done.
 // `perform_ocr_callback` is the callback that takes an image and outputs
 //     the OCR result. It may be called multiple times.
 //

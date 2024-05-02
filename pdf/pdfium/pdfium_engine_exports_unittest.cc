@@ -234,6 +234,25 @@ TEST_F(PDFiumEngineExportsTest, Searchify) {
                 testing::HasSubstr(kExpectedText));
   }
 }
+
+TEST_F(PDFiumEngineExportsTest, SearchifyBroken) {
+  base::FilePath pdf_path =
+      pdf_data_dir().Append(FILE_PATH_LITERAL("image_alt_text.pdf"));
+  std::optional<std::vector<uint8_t>> pdf_buffer =
+      base::ReadFileToBytes(pdf_path);
+  ASSERT_TRUE(pdf_buffer.has_value());
+
+  auto broken_perform_ocr_callback =
+      base::BindRepeating([](const SkBitmap& bitmap) {
+        auto annotation = screen_ai::mojom::VisualAnnotationPtr();
+        // Simulate the scenarios that fail to set the value of `annotation`.
+        CHECK(!annotation);
+        return annotation;
+      });
+  std::vector<uint8_t> output_pdf_buffer =
+      Searchify(*pdf_buffer, std::move(broken_perform_ocr_callback));
+  EXPECT_TRUE(output_pdf_buffer.empty());
+}
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf

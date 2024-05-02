@@ -238,14 +238,14 @@ std::vector<uint8_t> PDFiumSearchify(
       auto annotation = perform_ocr_callback.Run(bitmap);
       if (!annotation) {
         DLOG(ERROR) << "Failed to get OCR annotation on the image";
-        continue;
+        return {};
       }
       AddTextOnImage(document.get(), page.get(), font.get(), image,
                      std::move(annotation));
     }
     if (!FPDFPage_GenerateContent(page.get())) {
       DLOG(ERROR) << "Failed to generate content";
-      continue;
+      return {};
     }
   }
   PDFiumMemBufferFileWrite output_file_write;
