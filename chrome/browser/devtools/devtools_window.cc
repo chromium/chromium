@@ -1365,6 +1365,11 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
   if (browser_connection)
     url += "&browserConnection=true";
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUnsafelyDisableDevToolsSelfXssWarnings)) {
+    url += "&disableSelfXssWarnings=true";
+  }
+
 #if BUILDFLAG(CHROME_FOR_TESTING)
   url += "&isChromeForTesting=true";
 #endif

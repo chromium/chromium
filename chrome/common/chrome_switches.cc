@@ -626,6 +626,11 @@ const char kTrustedDownloadSources[] = "trusted-download-sources";
 // apps/origins.  This should be used only for testing purpose.
 const char kUnlimitedStorage[] = "unlimited-storage";
 
+// Disables warnings about self-XSS attacks when pasting into the DevTools
+// console.
+const char kUnsafelyDisableDevToolsSelfXssWarnings[] =
+    "unsafely-disable-devtools-self-xss-warnings";
+
 // Specifies the user data directory, which is where the browser will look for
 // all of its state.
 const char kUserDataDir[] = "user-data-dir";

@@ -4107,3 +4107,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsBlockedByRolloutTest,
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
   CloseDevToolsWindow();
 }
+
+class DevToolsSelfXssTest : public DevToolsTest {
+ public:
+  DevToolsSelfXssTest() = default;
+
+  ~DevToolsSelfXssTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kUnsafelyDisableDevToolsSelfXssWarnings);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsSelfXssTest, FooFoo) {
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  EXPECT_TRUE(hasQueryParam(wc, "&disableSelfXssWarnings=true"));
+  CloseDevToolsWindow();
+}

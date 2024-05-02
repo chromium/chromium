@@ -420,6 +420,10 @@ std::string SanitizeFrontendQueryParam(
     return value;
   }
 
+  if (key == "disableSelfXssWarnings" && value == "true") {
+    return value;
+  }
+
   return std::string();
 }
 

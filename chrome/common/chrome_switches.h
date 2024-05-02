@@ -191,6 +191,7 @@ extern const char kTestMemoryLogDelayInMinutes[];
 extern const char kTestName[];
 extern const char kTrustedDownloadSources[];
 extern const char kUnlimitedStorage[];
+extern const char kUnsafelyDisableDevToolsSelfXssWarnings[];
 extern const char kUserDataDir[];
 extern const char kUseSystemProxyResolver[];
 extern const char kValidateCrx[];
