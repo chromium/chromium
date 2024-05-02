@@ -11,6 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -74,10 +77,9 @@ public class TabGroupListCoordinator {
         mRecyclerView.setAdapter(mSimpleRecyclerViewAdapter);
         mRecyclerView.setItemAnimator(null);
 
-        Resources resources = context.getResources();
         Profile profile = profileProvider.getOriginalProfile();
         BiConsumer<GURL, Callback<Drawable>> faviconResolver =
-                buildFaviconResolver(resources, profile);
+                buildFaviconResolver(context, profile);
         TabGroupSyncService syncService = TabGroupSyncServiceFactory.getForProfile(profile);
         mTabGroupListMediator =
                 new TabGroupListMediator(
@@ -89,23 +91,45 @@ public class TabGroupListCoordinator {
                         tabGroupUiActionHandler);
     }
 
-    private BiConsumer<GURL, Callback<Drawable>> buildFaviconResolver(
-            Resources resources, Profile profile) {
-        int faviconSizePixels = resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
-        int cornerRadiusPixels =
-                resources.getDimensionPixelSize(R.dimen.default_favicon_corner_radius);
-        FaviconHelper faviconHelper = new FaviconHelper();
+    @VisibleForTesting
+    static BiConsumer<GURL, Callback<Drawable>> buildFaviconResolver(
+            Context context, Profile profile) {
         return (GURL url, Callback<Drawable> callback) -> {
-            FaviconImageCallback faviconImageCallback =
-                    (Bitmap bitmap, GURL ignored) -> {
-                        Drawable drawable =
-                                ViewUtils.createRoundedBitmapDrawable(
-                                        resources, bitmap, cornerRadiusPixels);
-                        callback.onResult(drawable);
-                    };
-            faviconHelper.getForeignFaviconImageForURL(
-                    profile, url, faviconSizePixels, faviconImageCallback);
+            if (UrlUtilities.isInternalScheme(url)) {
+                // Do not bother resizing, the view will use a fixed size. No resizing should allow
+                // caching/sharing of this drawable.
+                callback.onResult(AppCompatResources.getDrawable(context, R.drawable.chromelogo16));
+            } else {
+                resolveForeignFavicon(context, profile, url, callback);
+            }
         };
+    }
+
+    private static void resolveForeignFavicon(
+            Context context, Profile profile, GURL url, Callback<Drawable> callback) {
+        Resources resources = context.getResources();
+        int faviconSizePixels = resources.getDimensionPixelSize(R.dimen.tab_grid_favicon_size);
+        FaviconImageCallback faviconImageCallback =
+                (Bitmap bitmap, GURL ignored) -> onForeignFavicon(context, callback, bitmap);
+        new FaviconHelper()
+                .getForeignFaviconImageForURL(
+                        profile, url, faviconSizePixels, faviconImageCallback);
+    }
+
+    private static void onForeignFavicon(
+            Context context, Callback<Drawable> callback, Bitmap bitmap) {
+        Resources resources = context.getResources();
+        final Drawable drawable;
+        if (bitmap == null) {
+            // Do not bother resizing, the view will use a fixed size. No resizing should allow
+            // caching/sharing of this drawable.
+            drawable = AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
+        } else {
+            int cornerRadiusPixels =
+                    resources.getDimensionPixelSize(R.dimen.default_favicon_corner_radius);
+            drawable = ViewUtils.createRoundedBitmapDrawable(resources, bitmap, cornerRadiusPixels);
+        }
+        callback.onResult(drawable);
     }
 
     /** Returns the root view of this component, allowing the parent to anchor in the hierarchy. */
