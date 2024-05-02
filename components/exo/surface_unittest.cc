@@ -183,6 +183,100 @@ INSTANTIATE_TEST_SUITE_P(
                                      test::FrameSubmissionType::kReactive),
                      testing::Values(1.0f, 1.25f, 2.0f)));
 
+TEST_P(SurfaceTest, AttachOffset) {
+  gfx::Size buffer_size(256, 256);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  surface->Attach(buffer.get(), gfx::Vector2d(0, 0));
+  surface->Commit();
+  EXPECT_EQ(surface->GetBufferOffset(), gfx::Vector2d(0, 0));
+
+  surface->Attach(buffer.get(), gfx::Vector2d(1, 2));
+  surface->Commit();
+  EXPECT_EQ(surface->GetBufferOffset(), gfx::Vector2d(1, 2));
+
+  surface->Attach(buffer.get(), gfx::Vector2d(1, 2));
+  surface->Commit();
+  EXPECT_EQ(surface->GetBufferOffset(), gfx::Vector2d(2, 4));
+
+  surface->Attach(buffer.get(), gfx::Vector2d(-2, -4));
+  surface->Commit();
+  EXPECT_EQ(surface->GetBufferOffset(), gfx::Vector2d(0, 0));
+
+  // Pending updates for the offset should not be accumulated.
+  surface->Attach(buffer.get(), gfx::Vector2d(1, 2));
+  surface->Attach(buffer.get(), gfx::Vector2d(3, 4));
+  surface->Attach(buffer.get(), gfx::Vector2d(5, 6));
+  surface->Commit();
+  EXPECT_EQ(surface->GetBufferOffset(), gfx::Vector2d(5, 6));
+}
+
+TEST_P(SurfaceTest, AttachOffsetSynchronizedSubsurface) {
+  gfx::Size buffer_size(256, 256);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  gfx::Size child_buffer_size(128, 128);
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(child_buffer_size);
+  auto child_surface = std::make_unique<Surface>();
+  auto sub = std::make_unique<SubSurface>(child_surface.get(), surface.get());
+  sub->surface()->Attach(child_buffer.get(), gfx::Vector2d(0, 0));
+  sub->SetCommitBehavior(/*synchronized=*/true);
+  EXPECT_EQ(sub->surface()->GetBufferOffset(), gfx::Vector2d(0, 0));
+
+  sub->surface()->Attach(child_buffer.get(), gfx::Vector2d(1, 2));
+  sub->surface()->Commit();
+  sub->surface()->Attach(child_buffer.get(), gfx::Vector2d(1, 2));
+  sub->surface()->Commit();
+
+  // The offset should not be updated by subsurface commits since this
+  // subsurface is in the synchronized mode.
+  EXPECT_EQ(sub->surface()->GetBufferOffset(), gfx::Vector2d(0, 0));
+
+  // Once parent surface is committed, the offset should be updated. The cached
+  // offset should be accumulated.
+  surface->Commit();
+  EXPECT_EQ(sub->surface()->GetBufferOffset(), gfx::Vector2d(2, 4));
+
+  // Try again.
+  sub->surface()->Attach(child_buffer.get(), gfx::Vector2d(1, 2));
+  sub->surface()->Commit();
+  surface->Commit();
+  EXPECT_EQ(sub->surface()->GetBufferOffset(), gfx::Vector2d(3, 6));
+}
+
+TEST_P(SurfaceTest, AttachOffsetDesynchronizedSubsurface) {
+  gfx::Size buffer_size(256, 256);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  gfx::Size child_buffer_size(128, 128);
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(child_buffer_size);
+  auto child_surface = std::make_unique<Surface>();
+  auto sub = std::make_unique<SubSurface>(child_surface.get(), surface.get());
+  sub->surface()->Attach(child_buffer.get(), gfx::Vector2d(0, 0));
+  sub->SetCommitBehavior(/*synchronized=*/false);
+  EXPECT_EQ(sub->surface()->GetBufferOffset(), gfx::Vector2d(0, 0));
+
+  sub->surface()->Attach(child_buffer.get(), gfx::Vector2d(1, 2));
+
+  // Parent's commit does not take affect for the subsurface.
+  surface->Commit();
+  EXPECT_EQ(sub->surface()->GetBufferOffset(), gfx::Vector2d(0, 0));
+
+  // This should replace the pending offset because the previous one is not
+  // committed.
+  sub->surface()->Attach(child_buffer.get(), gfx::Vector2d(10, 20));
+
+  // The offset should be updated by subsurface commit.
+  sub->surface()->Commit();
+  EXPECT_EQ(sub->surface()->GetBufferOffset(), gfx::Vector2d(10, 20));
+}
+
 TEST_P(SurfaceTest, Damage) {
   gfx::Size buffer_size(256, 256);
   auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
