@@ -442,9 +442,6 @@ void ChromeBrowserCloudManagementController::
         << "No DM token returned from browser registration.";
     RecordEnrollmentResult(
         ChromeBrowserCloudManagementEnrollmentResult::kFailedToFetch);
-    base::UmaHistogramTimes(
-        "Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestFailureTime",
-        enrollment_time);
     MachineLevelUserCloudPolicyManager* policy_manager =
         delegate_->GetMachineLevelUserCloudPolicyManager();
 
