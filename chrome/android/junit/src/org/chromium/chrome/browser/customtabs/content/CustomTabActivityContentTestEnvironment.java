@@ -187,8 +187,12 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public CustomTabActivityNavigationController createNavigationController(
             CustomTabActivityTabController tabController) {
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProvider);
+
         CustomTabActivityNavigationController controller =
                 new CustomTabActivityNavigationController(
+                        profileProviderSupplier,
                         tabController,
                         tabProvider,
                         intentDataProvider,

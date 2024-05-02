@@ -24,6 +24,7 @@ import dagger.Lazy;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -40,7 +41,8 @@ import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -103,6 +105,7 @@ public class CustomTabActivityNavigationController
         String getDefaultBrowser();
     }
 
+    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -151,6 +154,7 @@ public class CustomTabActivityNavigationController
 
     @Inject
     public CustomTabActivityNavigationController(
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
             CustomTabActivityTabController tabController,
             CustomTabActivityTabProvider tabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
@@ -161,6 +165,7 @@ public class CustomTabActivityNavigationController
             Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             DefaultBrowserProvider customTabsDefaultBrowserProvider) {
+        mProfileProviderSupplier = profileProviderSupplier;
         mTabController = tabController;
         mTabProvider = tabProvider;
         mIntentDataProvider = intentDataProvider;
@@ -374,6 +379,8 @@ public class CustomTabActivityNavigationController
         mFinishReason = reason;
 
         if (reason != REPARENTING) {
+            assert mProfileProviderSupplier.hasValue();
+            Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
             // Closing the activity destroys the renderer as well. Re-create a spare renderer some
             // time after, so that we have one ready for the next tab open. This does not increase
             // memory consumption, as the current renderer goes away. We create a renderer as a lot
@@ -381,10 +388,7 @@ public class CustomTabActivityNavigationController
             // transition animation when closing the tab.
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
-                    () -> {
-                        CustomTabsConnection.createSpareWebContents(
-                                ProfileManager.getLastUsedRegularProfile());
-                    },
+                    () -> CustomTabsConnection.createSpareWebContents(profile),
                     500);
         }
 
