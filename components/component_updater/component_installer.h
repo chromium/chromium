@@ -128,6 +128,10 @@ class ComponentInstallerPolicy {
   // network type changes from unmetered to metered during a download, there is
   // no guarantee that the transfer will be suspended or cancelled.
   virtual bool AllowUpdatesOnMeteredConnections() const;
+
+  // Returns true if the component is allowed to update.
+  // Defaults to |true|.
+  virtual bool AllowUpdates() const;
 };
 
 // Defines the installer for Chrome components. The behavior of this class is

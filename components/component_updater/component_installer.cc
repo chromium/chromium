@@ -61,6 +61,10 @@ bool ComponentInstallerPolicy::AllowUpdatesOnMeteredConnections() const {
   return true;
 }
 
+bool ComponentInstallerPolicy::AllowUpdates() const {
+  return true;
+}
+
 ComponentInstaller::RegistrationInfo::RegistrationInfo()
     : version(kNullVersion) {}
 
@@ -546,7 +550,8 @@ void ComponentInstaller::FinishRegistration(
                this, installer_policy_->RequiresNetworkEncryption(),
                installer_policy_->SupportsGroupPolicyEnabledComponentUpdates(),
                installer_policy_->AllowCachedCopies(),
-               installer_policy_->AllowUpdatesOnMeteredConnections()))) {
+               installer_policy_->AllowUpdatesOnMeteredConnections(),
+               installer_policy_->AllowUpdates()))) {
     VLOG(0) << "Component registration failed for "
             << installer_policy_->GetName();
     if (!callback.is_null()) {

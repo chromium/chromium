@@ -187,7 +187,8 @@ ComponentUpdaterPolicyTest::MakeComponentRegistration(
       /*requires_network_encryption=*/true,
       supports_group_policy_enable_component_updates,
       /*allow_cached_copies=*/true,
-      /*allow_updates_on_metered_connection=*/true);
+      /*allow_updates_on_metered_connection=*/true,
+      /*allow_updates=*/true);
 }
 
 void ComponentUpdaterPolicyTest::UpdateComponent(

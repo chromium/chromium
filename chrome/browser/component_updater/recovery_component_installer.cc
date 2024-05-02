@@ -292,7 +292,8 @@ void RecoveryRegisterHelper(ComponentUpdateService* cus, PrefService* prefs) {
           /*requires_network_encryption=*/false,
           /*supports_group_policy_enable_component_updates=*/true,
           /*allow_cached_copies=*/true,
-          /*allow_updates_on_metered_connection=*/true))) {
+          /*allow_updates_on_metered_connection=*/true,
+          /*allow_updates=*/true))) {
     NOTREACHED() << "Recovery component registration failed.";
   }
 }
