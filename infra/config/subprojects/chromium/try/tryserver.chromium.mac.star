@@ -635,7 +635,6 @@ ios_builder(
         is_compile_only = True,
     ),
     gn_args = "try/ios-simulator",
-    builderless = True,
     cpu = cpu.ARM64,
     contact_team_email = "chrome-build-team@google.com",
     coverage_exclude_sources = "ios_test_files_and_test_utils",
