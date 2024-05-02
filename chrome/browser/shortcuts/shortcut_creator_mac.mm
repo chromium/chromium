@@ -13,7 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/concurrent_closures.h"
+#include "base/functional/concurrent_callbacks.h"
 #include "base/functional/function_ref.h"
 #include "base/mac/mac_util.h"
 #include "base/path_service.h"
@@ -31,9 +31,11 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
                                  gfx::ImageFamily icon_images,
                                  const base::FilePath& profile_path,
                                  ShortcutCreatorCallback complete) {
+  using Result = ShortcutCreatorResult;
+
   base::FilePath desktop_path;
   if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
-    std::move(complete).Run(ShortcutCreatorResult::kError);
+    std::move(complete).Run(Result::kError);
     return;
   }
 
@@ -48,7 +50,7 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
       desktop_path.Append(*base_name)
           .AddExtensionASCII(ChromeWeblocFile::kFileExtension));
   if (target_path.empty()) {
-    std::move(complete).Run(ShortcutCreatorResult::kError);
+    std::move(complete).Run(Result::kError);
     return;
   }
 
@@ -56,7 +58,7 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
   if (!profile_path_name.has_value() ||
       !ChromeWeblocFile(shortcut_url, *profile_path_name)
            .SaveToFile(target_path)) {
-    std::move(complete).Run(ShortcutCreatorResult::kError);
+    std::move(complete).Run(Result::kError);
     return;
   }
 
@@ -64,7 +66,7 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
   // creation is still considered a success if any of these fail as the
   // created shortcut should work just fine even without any of this in the
   // vast majority of cases.
-  base::ConcurrentClosures concurrent;
+  base::ConcurrentCallbacks<bool> concurrent;
 
   SetDefaultApplicationToOpenFile(
       base::apple::FilePathToNSURL(target_path), base::apple::MainBundleURL(),
@@ -72,7 +74,8 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
         if (error) {
           LOG(ERROR) << "Failed to set default application for shortcut.";
         }
-      }).Then(concurrent.CreateClosure()));
+        return !error;
+      }).Then(concurrent.CreateCallback()));
 
   NSImage* icon_image = [[NSImage alloc] init];
   for (const gfx::Image& image : icon_images) {
@@ -85,19 +88,25 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
                    if (!success) {
                      LOG(ERROR) << "Failed to set icon for shortcut.";
                    }
-                 }).Then(concurrent.CreateClosure()));
+                   return success;
+                 }).Then(concurrent.CreateCallback()));
 
   std::move(concurrent)
-      .Done(base::BindOnce(&base::mac::RemoveQuarantineAttribute, target_path)
-                .Then(base::BindOnce([](bool success) {
-                        if (!success) {
-                          LOG(ERROR) << "Failed to remove quarantine attribute "
-                                        "from shortcut.";
-                        }
-                      })
-                          .Then(base::BindOnce(
-                              std::move(complete),
-                              ShortcutCreatorResult::kSuccess))));
+      .Done(
+          base::BindOnce(
+              [](const base::FilePath& path, std::vector<bool> step_successes) {
+                bool success = base::mac::RemoveQuarantineAttribute(path);
+                step_successes.push_back(success);
+                if (!success) {
+                  LOG(ERROR) << "Failed to remove quarantine attribute "
+                                "from shortcut.";
+                }
+                return base::Contains(step_successes, false)
+                           ? Result::kSuccessWithErrors
+                           : Result::kSuccess;
+              },
+              target_path)
+              .Then(std::move(complete)));
 }
 
 }  // namespace shortcuts
