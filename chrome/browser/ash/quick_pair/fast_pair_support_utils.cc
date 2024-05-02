@@ -14,6 +14,11 @@ namespace ash {
 namespace quick_pair {
 
 bool IsFastPairSupported(scoped_refptr<device::BluetoothAdapter> adapter) {
+  if (features::IsFastPairSoftwareScanningSupportEnabled()) {
+    return google_apis::HasAPIKeyConfigured() &&
+           google_apis::IsGoogleChromeAPIKeyUsed();
+  }
+
   return HasHardwareSupport(adapter) && google_apis::HasAPIKeyConfigured() &&
          google_apis::IsGoogleChromeAPIKeyUsed();
 }
