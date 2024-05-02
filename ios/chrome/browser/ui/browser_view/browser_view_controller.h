@@ -26,6 +26,7 @@
 @protocol ApplicationCommands;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
+@protocol BrowserViewVisibilityConsumer;
 @class BubblePresenter;
 @protocol DefaultPromoNonModalPresentationDelegate;
 @protocol FindInPageCommands;
@@ -109,6 +110,10 @@ typedef struct {
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+
+// Consumer that gets notified of the visibility of the browser view.
+@property(nonatomic, weak) id<BrowserViewVisibilityConsumer>
+    browserViewVisibilityConsumer;
 
 // Handler for reauth commands.
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;

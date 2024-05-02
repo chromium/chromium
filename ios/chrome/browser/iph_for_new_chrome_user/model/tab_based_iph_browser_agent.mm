@@ -35,6 +35,14 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
 
 TabBasedIPHBrowserAgent::~TabBasedIPHBrowserAgent() = default;
 
+void TabBasedIPHBrowserAgent::RootViewForInProductHelpDidAppear() {
+  // TODO(crbug.com/40276959): Show toolbar swipe IPH.
+}
+
+void TabBasedIPHBrowserAgent::RootViewForInProductHelpWillDisappear() {
+  ResetFeatureStatesAndRemoveIPHViews();
+}
+
 void TabBasedIPHBrowserAgent::NotifyMultiGestureRefreshEvent() {
   engagement_tracker_->NotifyEvent(
       feature_engagement::events::kIOSMultiGestureRefreshUsed);

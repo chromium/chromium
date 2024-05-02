@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -145,6 +146,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_visibility_consumer.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
@@ -272,6 +274,7 @@ enum class ToolbarKind {
     AppLauncherTabHelperBrowserPresentationProvider,
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
+    BrowserViewVisibilityConsumer,
     BubblePresenterDelegate,
     ContextualSheetCommands,
     DefaultBrowserPromoCommands,
@@ -825,6 +828,7 @@ enum class ToolbarKind {
                                                  .viewController
                          keyCommandsProvider:_keyCommandsProvider
                                 dependencies:_viewControllerDependencies];
+  _viewController.browserViewVisibilityConsumer = self;
   self.tabLifecycleMediator.baseViewController = self.viewController;
   self.tabLifecycleMediator.passwordControllerDelegate = self;
 
@@ -842,6 +846,12 @@ enum class ToolbarKind {
 
   [self.contextMenuProvider stop];
   self.contextMenuProvider = nil;
+
+  raw_ptr<TabBasedIPHBrowserAgent> tabBasedIPHBrowserAgent =
+      TabBasedIPHBrowserAgent::FromBrowser(self.browser);
+  if (tabBasedIPHBrowserAgent) {
+    tabBasedIPHBrowserAgent->RootViewForInProductHelpWillDisappear();
+  }
 
   // TODO(crbug.com/40256480): Remove when BVC will no longer handle commands.
   [self.dispatcher stopDispatchingToTarget:self.viewController];
@@ -2013,6 +2023,21 @@ enum class ToolbarKind {
 - (void)dismissOmniboxPositionChoice {
   [_omniboxPositionChoiceCoordinator stop];
   _omniboxPositionChoiceCoordinator = nil;
+}
+
+#pragma mark - BrowserViewVisibilityConsumer
+
+- (void)browserViewDidChangeVisibility {
+  raw_ptr<TabBasedIPHBrowserAgent> tabBasedIPHBrowserAgent =
+      TabBasedIPHBrowserAgent::FromBrowser(self.browser);
+  if (!tabBasedIPHBrowserAgent) {
+    return;
+  }
+  if (self.viewController.viewVisible) {
+    tabBasedIPHBrowserAgent->RootViewForInProductHelpDidAppear();
+  } else {
+    tabBasedIPHBrowserAgent->RootViewForInProductHelpWillDisappear();
+  }
 }
 
 #pragma mark - ContextualSheetCommands

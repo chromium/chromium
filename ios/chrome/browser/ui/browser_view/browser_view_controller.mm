@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_visibility_consumer.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -451,6 +452,7 @@ enum HeaderBehaviour {
     return;
   _viewVisible = viewVisible;
   self.visible = viewVisible;
+  [self.browserViewVisibilityConsumer browserViewDidChangeVisibility];
   [self updateBroadcastState];
 }
 
