@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] averagePool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DirectML: Dilations are not supported for average pooling operator."
+[FAIL] l2Pool2d float32 4D tensor options.dilations
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 194.45481872558594 should be close enough to expected 189.47933959960938 by the acceptable 11 ULP distance, but they have 326073 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.roundingType=ceil
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 90.6768569946289 should be close enough to expected 8222.29296875 by the acceptable 11 ULP distance, but they have 55254687 ULP distance expected true got false
+[FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 90.6768569946289 should be close enough to expected 8222.29296875 by the acceptable 11 ULP distance, but they have 55254687 ULP distance expected true got false
+Harness: the test ran to completion.
+

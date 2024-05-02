@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] add float32 large inputs
+  promise_test: Unhandled rejection with value: object "RangeError: Invalid string length"
+Harness: the test ran to completion.
+

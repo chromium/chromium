@@ -1,0 +1,73 @@
+This is a testharness.js-based test.
+[FAIL] cast float32 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported output datatype."
+[FAIL] cast float32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported output datatype."
+[FAIL] cast float32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast float32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast float16 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported output datatype."
+[FAIL] cast float16 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported output datatype."
+[FAIL] cast float16 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast float16 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported output datatype."
+[FAIL] cast int32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint32 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint32 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint32 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint32 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint32 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint32 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int64 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int64 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int64 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int64 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int64 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int64 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int8 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int8 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int8 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int8 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int8 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast int8 4D tensor to uint8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint8 4D tensor to float32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint8 4D tensor to float16
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint8 4D tensor to int32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint8 4D tensor to uint32
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint8 4D tensor to int64
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+[FAIL] cast uint8 4D tensor to int8
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported datatype at model boundary."
+Harness: the test ran to completion.
+

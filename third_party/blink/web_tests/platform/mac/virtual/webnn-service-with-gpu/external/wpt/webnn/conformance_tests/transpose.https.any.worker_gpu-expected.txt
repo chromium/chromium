@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] transpose float32 1D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test transpose float32 actual -45.65625 should be close enough to expected -45.67443084716797 by the acceptable 0 ULP distance, but they have 4766 ULP distance expected true got false
+[FAIL] transpose float32 1D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test transpose float32 actual -45.65625 should be close enough to expected -45.67443084716797 by the acceptable 0 ULP distance, but they have 4766 ULP distance expected true got false
+[FAIL] transpose float32 2D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test transpose float32 actual -45.65625 should be close enough to expected -45.67443084716797 by the acceptable 0 ULP distance, but they have 4766 ULP distance expected true got false
+[FAIL] transpose float32 3D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test transpose float32 actual -45.65625 should be close enough to expected -45.67443084716797 by the acceptable 0 ULP distance, but they have 4766 ULP distance expected true got false
+[FAIL] transpose float32 1D tensor options.permutation
+  assert_true: assert_array_approx_equals_ulp: test transpose float32 actual -45.65625 should be close enough to expected -45.67443084716797 by the acceptable 0 ULP distance, but they have 4766 ULP distance expected true got false
+[FAIL] transpose float32 2D tensor options.permutation
+  assert_true: assert_array_approx_equals_ulp: test transpose float32 actual -45.65625 should be close enough to expected -45.67443084716797 by the acceptable 0 ULP distance, but they have 4766 ULP distance expected true got false
+[FAIL] transpose float32 3D tensor options.permutation
+  assert_true: assert_array_approx_equals_ulp: test transpose float32 actual -45.65625 should be close enough to expected -45.67443084716797 by the acceptable 0 ULP distance, but they have 4766 ULP distance expected true got false
+Harness: the test ran to completion.
+

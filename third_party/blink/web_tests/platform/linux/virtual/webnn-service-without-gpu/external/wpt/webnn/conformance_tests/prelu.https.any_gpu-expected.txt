@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] prelu float32 broadcast 4D x 1D slope of shape [1]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The input and slope should have the same last dimension."
+[FAIL] prelu float32 broadcast 4D x 4D slope
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The input and slope should have the same last dimension."
+Harness: the test ran to completion.
+

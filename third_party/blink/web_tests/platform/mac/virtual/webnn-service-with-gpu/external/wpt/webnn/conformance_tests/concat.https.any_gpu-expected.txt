@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] concat two float32 1D constant tensors of same shape along axis 0
+  assert_true: assert_array_approx_equals_ulp: test concat float32 actual -0.394287109375 should be close enough to expected -0.3944413363933563 by the acceptable 0 ULP distance, but they have 5175 ULP distance expected true got false
+[FAIL] concat three float32 4D tensors of same shape along axis 1
+  assert_true: assert_array_approx_equals_ulp: test concat float32 actual -0.394287109375 should be close enough to expected -0.3944413363933563 by the acceptable 0 ULP distance, but they have 5175 ULP distance expected true got false
+[FAIL] concat three float32 5D tensors of same others dimensions except different 3rd dimension along axis 2
+  assert_true: assert_array_approx_equals_ulp: test concat float32 actual -0.394287109375 should be close enough to expected -0.3944413363933563 by the acceptable 0 ULP distance, but they have 5175 ULP distance expected true got false
+Harness: the test ran to completion.
+

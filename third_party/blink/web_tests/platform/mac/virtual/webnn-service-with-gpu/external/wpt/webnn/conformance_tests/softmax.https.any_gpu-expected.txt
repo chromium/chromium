@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] softmax float32 2D constant tensor all positive
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
+[FAIL] softmax float32 2D tensor all positive
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
+[FAIL] softmax float32 2D tensor all negative
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
+Harness: the test ran to completion.
+
