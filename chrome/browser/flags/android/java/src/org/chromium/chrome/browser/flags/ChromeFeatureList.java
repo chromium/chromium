@@ -355,6 +355,7 @@ public abstract class ChromeFeatureList {
     public static final String PRERENDER2 = "Prerender2";
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";
+    public static final String PRICE_INSIGHTS = "PriceInsights";
     public static final String PRIVACY_GUIDE_ANDROID_3 = "PrivacyGuideAndroid3";
     public static final String PRIVACY_GUIDE_PRELOAD_ANDROID = "PrivacyGuidePreloadAndroid";
     public static final String PRIVACY_SANDBOX_ADS_NOTICE_CCT = "PrivacySandboxAdsNoticeCCT";
@@ -582,6 +583,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
             newCachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, false);
+    public static final CachedFlag sPriceInsights =
+            newCachedFlag(PRICE_INSIGHTS, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
             newCachedFlag(PRIVACY_GUIDE_ANDROID_3, false);
     public static final CachedFlag sPrivacyGuidePreloadAndroid =
@@ -699,6 +702,7 @@ public abstract class ChromeFeatureList {
                     sNavBarColorMatchesTabBackground,
                     sNewTabSearchEngineUrlAndroid,
                     sPriceChangeModule,
+                    sPriceInsights,
                     sPrivacyGuideAndroid3,
                     sPrivacyGuidePreloadAndroid,
                     sOptimizationGuidePushNotifications,
