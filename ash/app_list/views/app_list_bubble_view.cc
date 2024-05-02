@@ -216,10 +216,11 @@ AppListBubbleView::AppListBubbleView(
   DCHECK(drag_and_drop_host);
   SetProperty(views::kElementIdentifierKey, kAppListBubbleViewElementId);
 
+  const float corner_radius = GetBubbleCornerRadius();
   // Set up rounded corners and background blur, similar to TrayBubbleView.
   // Layer background is set in OnThemeChanged().
   SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -231,10 +232,10 @@ AppListBubbleView::AppListBubbleView(
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
           : kColorAshShieldAndBase80;
   SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         kBubbleCornerRadius));
+                                                         corner_radius));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kBubbleCornerRadius,
+      corner_radius,
       is_jelly_enabled ? views::HighlightBorder::Type::kHighlightBorderOnShadow
                        : views::HighlightBorder::Type::kHighlightBorder1,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
@@ -876,7 +877,7 @@ void AppListBubbleView::OnShowAnimationEnded(const gfx::Rect& layer_bounds) {
   // get updated.
   if (!chromeos::features::IsJellyEnabled()) {
     view_shadow_ = std::make_unique<views::ViewShadow>(this, kShadowElevation);
-    view_shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
+    view_shadow_->SetRoundedCornerRadius(GetBubbleCornerRadius());
   }
 }
 

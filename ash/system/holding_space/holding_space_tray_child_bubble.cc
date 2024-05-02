@@ -198,12 +198,12 @@ void HoldingSpaceTrayChildBubble::Init() {
   // Child bubbles should mask child layers to bounds so as not to paint over
   // other child bubbles in the event of overflow.
   layer()->SetMasksToBounds(true);
-
+  const float corner_radius = GetBubbleCornerRadius();
   if (!features::IsHoldingSpaceRefreshEnabled()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     layer()->SetIsFastRoundedCorner(true);
-    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
   }
 
   // Placeholder.
@@ -229,7 +229,7 @@ void HoldingSpaceTrayChildBubble::Init() {
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
           : kColorAshShieldAndBase80));
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kBubbleCornerRadius,
+      corner_radius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorder1));

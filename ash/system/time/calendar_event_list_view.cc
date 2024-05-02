@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/system/time/calendar_event_list_view.h"
+
 #include <memory>
 
 #include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
@@ -49,8 +51,14 @@ constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 60);
 // Border thickness for `CalendarEmptyEventListView`.
 constexpr int kOpenGoogleCalendarBorderThickness = 1;
 
+constexpr auto kDeprecatedEventListViewCornerRadius =
+    gfx::RoundedCornersF(24,
+                         24,
+                         kDeprecatedBubbleCornerRadius,
+                         kDeprecatedBubbleCornerRadius);
+
 constexpr auto kEventListViewCornerRadius =
-    gfx::RoundedCornersF(24, 24, kBubbleCornerRadius, kBubbleCornerRadius);
+    gfx::RoundedCornersF(kUpdatedBubbleCornerRadius);
 
 constexpr int kScrollViewGradientSize = 16;
 
@@ -134,7 +142,9 @@ CalendarEventListView::CalendarEventListView(
   layer()->SetFillsBoundsOpaquely(false);
   // Set the bottom corners to be rounded so that `CalendarEventListView` is
   // contained in `CalendarView`.
-  layer()->SetRoundedCornerRadius(kEventListViewCornerRadius);
+  layer()->SetRoundedCornerRadius(features::IsBubbleCornerRadiusUpdateEnabled()
+                                      ? kEventListViewCornerRadius
+                                      : kDeprecatedEventListViewCornerRadius);
 
   views::BoxLayout* button_layout = close_button_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(

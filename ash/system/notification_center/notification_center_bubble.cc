@@ -31,7 +31,9 @@ NotificationCenterBubble::NotificationCenterBubble(
 
   // Create and customize bubble view.
   init_params.set_can_activate_on_click_or_tap = true;
-  init_params.corner_radius = kNotificationCenterBubbleCornerRadius;
+  if (!features::IsBubbleCornerRadiusUpdateEnabled()) {
+    init_params.corner_radius = kNotificationCenterBubbleCornerRadius;
+  }
   bubble_view_ = std::make_unique<TrayBubbleView>(init_params);
   bubble_view_->SetMaxHeight(CalculateMaxTrayBubbleHeight(
       notification_center_tray_->GetBubbleWindowContainer()));
