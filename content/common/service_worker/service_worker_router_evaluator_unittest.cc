@@ -1278,6 +1278,47 @@ TEST(ServiceWorkerRouterEvaluator, NotConditionMatchNested) {
   }
 }
 
+blink::ServiceWorkerRouterCondition generateNestedNotCondition(int depth) {
+  if (depth <= 0) {
+    return blink::ServiceWorkerRouterCondition::WithUrlPattern(
+        DefaultURLPattern());
+  }
+  blink::ServiceWorkerRouterNotCondition not_condition;
+  not_condition.condition =
+      std::make_unique<blink::ServiceWorkerRouterCondition>();
+  *not_condition.condition = generateNestedNotCondition(depth - 1);
+  return blink::ServiceWorkerRouterCondition::WithNotCondition(not_condition);
+}
+
+TEST(ServiceWorkerRouterEvaluator, NotConditionShouldNotExceedMaxDepth) {
+  auto notTest = [](int depth, bool expect_valid) {
+    blink::ServiceWorkerRouterRules rules;
+    {
+      blink::ServiceWorkerRouterRule rule;
+      { rule.condition = generateNestedNotCondition(depth); }
+      {
+        blink::ServiceWorkerRouterSource source;
+        source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+        source.network_source.emplace();
+        rule.sources.push_back(source);
+      }
+      rules.rules.push_back(rule);
+    }
+    ASSERT_EQ(1U, rules.rules.size());
+
+    ServiceWorkerRouterEvaluator evaluator(rules);
+    ASSERT_EQ(1U, evaluator.rules().rules.size());
+    if (expect_valid) {
+      EXPECT_TRUE(evaluator.IsValid());
+    } else {
+      EXPECT_FALSE(evaluator.IsValid());
+    }
+  };
+
+  notTest(1, true);
+  notTest(blink::kServiceWorkerRouterConditionMaxRecursionDepth + 1, false);
+}
+
 TEST(ServiceWorkerRouterEvaluator, ToValueEmptyRule) {
   blink::ServiceWorkerRouterRules rules;
   ServiceWorkerRouterEvaluator evaluator(rules);

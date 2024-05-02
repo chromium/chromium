@@ -292,11 +292,19 @@ bool IsValidSources(
   const auto& or_condition =
       std::get<const std::optional<blink::ServiceWorkerRouterOrCondition>&>(
           condition.get());
-  if (!or_condition) {
-    return false;
+  if (or_condition) {
+    for (const auto& c : or_condition->conditions) {
+      if (ExceedsMaxConditionDepth(c, depth + 1)) {
+        return true;
+      }
+    }
   }
-  for (const auto& c : or_condition->conditions) {
-    if (ExceedsMaxConditionDepth(c, depth + 1)) {
+  const auto& not_condition =
+      std::get<const std::optional<blink::ServiceWorkerRouterNotCondition>&>(
+          condition.get());
+  if (not_condition) {
+    CHECK(not_condition->condition);
+    if (ExceedsMaxConditionDepth(*not_condition->condition, depth + 1)) {
       return true;
     }
   }
@@ -323,6 +331,7 @@ void UpdateMaxConditionDepthAndWidth(
       std::get<const std::optional<blink::ServiceWorkerRouterNotCondition>&>(
           condition.get());
   if (not_condition) {
+    CHECK(not_condition->condition);
     UpdateMaxConditionDepthAndWidth(*not_condition->condition, max_depth,
                                     max_width, depth + 1);
     // Not and other conditions are mutual exclusive.
