@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics_utils.h"
@@ -23,6 +24,61 @@
 namespace autofill::autofill_metrics {
 
 namespace {
+
+void LogFieldFillingStatsAndScoreMetrics(const FormStructure& form) {
+  // Tracks how many fields are filled, unfilled or corrected.
+  autofill_metrics::FormGroupFillingStats address_field_stats;
+  autofill_metrics::FormGroupFillingStats cc_field_stats;
+  autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
+  // Same as above, but keyed by `FillingMethod`.
+  base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
+      address_field_stats_by_filling_method;
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    // For any field that belongs to either an address or a credit card form,
+    // collect the type-unspecific field filling statistics.
+    // Those are only emitted when autofill was used on at least one field of
+    // the form.
+    const FormType form_type_of_field =
+        FieldTypeGroupToFormType(field->Type().group());
+    const bool is_address_form_field =
+        form_type_of_field == FormType::kAddressForm;
+    const bool credit_card_form_field =
+        form_type_of_field == FormType::kCreditCardForm;
+    if (!is_address_form_field && !credit_card_form_field) {
+      continue;
+    }
+    // Address and credit cards fields are mutually exclusive.
+    autofill_metrics::FormGroupFillingStats& group_stats =
+        is_address_form_field ? address_field_stats : cc_field_stats;
+    // Get the filling status of this field and add it to the form group
+    // counter.
+    group_stats.AddFieldFillingStatus(
+        autofill_metrics::GetFieldFillingStatus(*field));
+    if (is_address_form_field &&
+        field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+      ac_unrecognized_address_field_stats.AddFieldFillingStatus(
+          autofill_metrics::GetFieldFillingStatus(*field));
+    }
+    // For address forms we want to emit filling stats metrics per
+    // `FillingMethod`. Therefore, the stats generated are added to
+    // a map keyed by `FillingMethod`, so that later, metrics can
+    // emitted for each method used.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillGranularFillingAvailable) &
+        is_address_form_field) {
+      AddFillingStatsForFillingMethod(*field,
+                                      address_field_stats_by_filling_method);
+    }
+  }
+  // Log the field filling statistics if autofill was used.
+  // The metrics are only emitted if there was at least one field in the
+  // corresponding form group that is or was filled by autofill.
+  // TODO(crbug.com/40274514): Remove this metric on cleanup.
+  autofill_metrics::LogFieldFillingStatsAndScore(
+      address_field_stats, cc_field_stats, ac_unrecognized_address_field_stats);
+  LogAddressFieldFillingStatsAndScoreByFillingMethod(
+      address_field_stats_by_filling_method);
+}
 
 // Logs metrics related to how long it took the user from load/interaction time
 // till form submission.
@@ -114,6 +170,7 @@ void LogQualityMetrics(
   if (observed_submission) {
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);
+    LogFieldFillingStatsAndScoreMetrics(form_structure);
   }
 
   // Determine the type of the form.
@@ -122,14 +179,6 @@ void LogQualityMetrics(
   bool address_form = base::Contains(form_types, FormType::kAddressForm);
 
   FieldTypeSet autofilled_field_types;
-
-  // Tracks how many fields are filled, unfilled or corrected.
-  autofill_metrics::FormGroupFillingStats address_field_stats;
-  autofill_metrics::FormGroupFillingStats cc_field_stats;
-  autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
-  // Same as above, but keyed by `FillingMethod`.
-  base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
-      address_field_stats_by_filling_method;
 
   bool form_has_autofilled_fields = base::ranges::any_of(
       form_structure, [](const auto& field) { return field->is_autofilled(); });
@@ -176,28 +225,6 @@ void LogQualityMetrics(
       const bool credit_card_form_field =
           form_type_of_field == FormType::kCreditCardForm;
       if (is_address_form_field || credit_card_form_field) {
-        // Address and credit cards fields are mutually exclusive.
-        autofill_metrics::FormGroupFillingStats& group_stats =
-            is_address_form_field ? address_field_stats : cc_field_stats;
-        // Get the filling status of this field and add it to the form group
-        // counter.
-        group_stats.AddFieldFillingStatus(
-            autofill_metrics::GetFieldFillingStatus(*field));
-        if (is_address_form_field &&
-            field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-          ac_unrecognized_address_field_stats.AddFieldFillingStatus(
-              autofill_metrics::GetFieldFillingStatus(*field));
-        }
-        // For address forms we want to emit filling stats metrics per
-        // `FillingMethod`. Therefore, the stats generated are added to
-        // a map keyed by `FillingMethod`, so that later, metrics can
-        // emitted for each method used.
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillGranularFillingAvailable) &
-            is_address_form_field) {
-          AddFillingStatsForFillingMethod(
-              *field, address_field_stats_by_filling_method);
-        }
         const std::string_view form_type_name =
             FormTypeToStringView(form_type_of_field);
         LogPreFilledFieldStatus(form_type_name, field->initial_value_changed(),
@@ -275,17 +302,6 @@ void LogQualityMetrics(
                                                    perfect_filling);
       }
     }
-
-    // Log the field filling statistics if autofill was used.
-    // The metrics are only emitted if there was at least one field in the
-    // corresponding form group that is or was filled by autofill.
-    // TODO(crbug.com/40274514): Remove this metric on cleanup.
-    autofill_metrics::LogFieldFillingStatsAndScore(
-        address_field_stats, cc_field_stats,
-        ac_unrecognized_address_field_stats);
-    LogAddressFieldFillingStatsAndScoreByFillingMethod(
-        address_field_stats_by_filling_method);
-
     if (card_form) {
       AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
           autofilled_field_types);
