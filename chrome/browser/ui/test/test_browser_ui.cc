@@ -152,13 +152,7 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   compositor->ScheduleFullRedraw();
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
-  views::ViewSkiaGoldPixelDiff pixel_diff(
-      // For the CR2023 screenshots add a "CR2023" prefix so that they are
-      // compared exclusively with previous CR2023 screenshots. We would like
-      // Skia Gold to catch regressions in both CR2023 and non-CR2023.
-      // TODO(crbug.com/40267716): remove this after CR2023 launch.
-      features::IsChromeRefresh2023() ? "CR2023_" + screenshot_prefix
-                                      : screenshot_prefix);
+  views::ViewSkiaGoldPixelDiff pixel_diff(screenshot_prefix);
   bool success = pixel_diff.CompareViewScreenshot(screenshot_name, view,
                                                   GetPixelMatchAlgorithm());
   return success ? ui::test::ActionResult::kSucceeded
