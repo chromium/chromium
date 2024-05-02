@@ -31,6 +31,9 @@ import {navigateTo} from './test_util.js';
         enableHistoryClusters: 'Enable',
         isHistoryClustersEnabled,
         isHistoryClustersVisible: true,
+        /* For this test suite we want to keep testing the old cr-tabs which
+           is the default Stable configuration. */
+        enableHistoryEmbeddings: false,
       });
     });
 
