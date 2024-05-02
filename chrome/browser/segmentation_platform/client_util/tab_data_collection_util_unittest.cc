@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/segmentation_platform/client_util/tab_data_collection_util.h"
+
 #include <memory>
 
 #include "base/metrics/user_metrics.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #include "components/segmentation_platform/embedder/tab_fetcher.h"
@@ -45,43 +47,6 @@ class MockRankDispatcher : public TabRankDispatcher {
                const TabFilter& tab_filter,
                RankedTabsCallback callback),
               (override));
-};
-
-class TestTabModel : public TabModel {
- public:
-  explicit TestTabModel(Profile* profile)
-      : TabModel(profile, chrome::android::ActivityType::kTabbed) {}
-
-  int GetTabCount() const override { return 0; }
-  int GetActiveIndex() const override { return 0; }
-  content::WebContents* GetWebContentsAt(int index) const override {
-    return nullptr;
-  }
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override {
-    return nullptr;
-  }
-
-  void CreateTab(TabAndroid* parent,
-                 content::WebContents* web_contents) override {}
-  void HandlePopupNavigation(TabAndroid* parent,
-                             NavigateParams* params) override {}
-  content::WebContents* CreateNewTabForDevTools(const GURL& url) override {
-    return nullptr;
-  }
-  bool IsSessionRestoreInProgress() const override { return false; }
-  bool IsActiveModel() const override { return false; }
-  TabAndroid* GetTabAt(int index) const override { return nullptr; }
-  void SetActiveIndex(int index) override {}
-  void CloseTabAt(int index) override {}
-  void AddObserver(TabModelObserver* observer) override {
-    observer_ = observer;
-  }
-  void RemoveObserver(TabModelObserver* observer) override {
-    ASSERT_EQ(observer, observer_);
-    observer_ = nullptr;
-  }
-
-  raw_ptr<TabModelObserver> observer_;
 };
 
 class MockSessionSyncService : public sync_sessions::SessionSyncService {
@@ -154,30 +119,30 @@ class TabDataCollectionUtilTest : public testing::Test {
 };
 
 TEST_F(TabDataCollectionUtilTest, AddRemoveTabModel) {
-  ASSERT_FALSE(tab_model_->observer_);
+  ASSERT_FALSE(tab_model_->GetObserver());
   TabModelList::AddTabModel(tab_model_.get());
-  ASSERT_TRUE(tab_model_->observer_);
+  ASSERT_TRUE(tab_model_->GetObserver());
   TabModelList::RemoveTabModel(tab_model_.get());
-  ASSERT_FALSE(tab_model_->observer_);
+  ASSERT_FALSE(tab_model_->GetObserver());
 
   auto other_tab_model = std::make_unique<TestTabModel>(&profile_);
   TabModelList::AddTabModel(other_tab_model.get());
-  ASSERT_FALSE(tab_model_->observer_);
-  ASSERT_TRUE(other_tab_model->observer_);
+  ASSERT_FALSE(tab_model_->GetObserver());
+  ASSERT_TRUE(other_tab_model->GetObserver());
 
   TabModelList::AddTabModel(tab_model_.get());
-  ASSERT_TRUE(tab_model_->observer_);
-  ASSERT_TRUE(other_tab_model->observer_);
+  ASSERT_TRUE(tab_model_->GetObserver());
+  ASSERT_TRUE(other_tab_model->GetObserver());
 
   TabModelList::RemoveTabModel(tab_model_.get());
   TabModelList::RemoveTabModel(other_tab_model.get());
-  ASSERT_FALSE(tab_model_->observer_);
-  ASSERT_FALSE(other_tab_model->observer_);
+  ASSERT_FALSE(tab_model_->GetObserver());
+  ASSERT_FALSE(other_tab_model->GetObserver());
 }
 
 TEST_F(TabDataCollectionUtilTest, RecordTrainingData) {
   TabModelList::AddTabModel(tab_model_.get());
-  ASSERT_TRUE(tab_model_->observer_);
+  ASSERT_TRUE(tab_model_->GetObserver());
 
   TabAndroid* fake_tab_ptr = reinterpret_cast<TabAndroid*>(1);
   EXPECT_CALL(*tab_fetcher_, FindLocalTab(_))
@@ -202,7 +167,7 @@ TEST_F(TabDataCollectionUtilTest, RecordTrainingData) {
         wait_for_collection.QuitClosure().Run();
       });
   base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
-  tab_model_->observer_->TabPendingClosure(fake_tab_ptr);
+  tab_model_->GetObserver()->TabPendingClosure(fake_tab_ptr);
   wait_for_collection.Run();
 
   TabModelList::RemoveTabModel(tab_model_.get());
