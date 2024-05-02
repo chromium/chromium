@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +19,7 @@
 #include "chrome/grit/intro_resources_map.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,6 +50,12 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       break;
     }
   }
+
+  int backupCardDescription =
+      base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
+          ? IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION
+          : IDS_FRE_BACKUP_CARD_DESCRIPTION;
+
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   int title_id = IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE;
 #endif
@@ -67,7 +75,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       {"securityCardTitle", IDS_FRE_SECURITY_CARD_TITLE},
       {"securityCardDescription", IDS_FRE_SECURITY_CARD_DESCRIPTION},
       {"backupCardTitle", IDS_FRE_BACKUP_CARD_TITLE},
-      {"backupCardDescription", IDS_FRE_BACKUP_CARD_DESCRIPTION},
+      {"backupCardDescription", backupCardDescription},
       {"declineSignInButtonTitle", IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE},
       {"acceptSignInButtonTitle", IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE},
       {"productLogoAltText", IDS_SHORT_PRODUCT_LOGO_ALT_TEXT},

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
@@ -107,7 +108,17 @@ int GetMainViewTitleId() {
 }
 
 void AddStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  int profile_type_choice_subtitle =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS;
+#else
+  int profile_type_choice_subtitle =
+      base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
+          ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO
+          : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE;
+#endif
+
+  static webui::LocalizedString kLocalizedStrings[] = {
       {"mainViewSubtitle",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
        IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_LACROS
@@ -148,13 +159,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"backButtonAriaLabel", IDS_PROFILE_PICKER_BACK_BUTTON_ARIA_LABEL},
       {"profileTypeChoiceTitle",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE},
-      {"profileTypeChoiceSubtitle",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS
-#else
-       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE
-#endif
-      },
+      {"profileTypeChoiceSubtitle", profile_type_choice_subtitle},
       {"notNowButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_NOT_NOW_BUTTON_LABEL},
       {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
