@@ -13,6 +13,10 @@
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
+#include "chrome/browser/ui/webui/local_state/local_state_ui.h"
+#include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
+#include "chrome/browser/ui/webui/memory_internals_ui.h"
+#include "chrome/browser/ui/webui/metrics_internals/metrics_internals_ui.h"
 #include "content/public/browser/webui_config_map.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -64,6 +68,10 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ComponentsUIConfig>());
   map.AddWebUIConfig(std::make_unique<DataSharingUIConfig>());
   map.AddWebUIConfig(std::make_unique<FlagsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<LocalStateUIConfig>());
+  map.AddWebUIConfig(std::make_unique<LocationInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<MemoryInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<MetricsInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<PasswordManagerInternalsUIConfig>());
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -43,13 +43,9 @@
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
 #include "chrome/browser/ui/webui/interstitials/interstitial_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
-#include "chrome/browser/ui/webui/local_state/local_state_ui.h"
-#include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
-#include "chrome/browser/ui/webui/memory_internals_ui.h"
-#include "chrome/browser/ui/webui/metrics_internals/metrics_internals_ui.h"
 #include "chrome/browser/ui/webui/net_export_ui.h"
 #include "chrome/browser/ui/webui/net_internals/net_internals_ui.h"
 #include "chrome/browser/ui/webui/ntp_tiles_internals_ui.h"
@@ -443,15 +439,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       security_interstitials::kChromeUIConnectionMonitoringDetectedHost) {
     return &NewWebUI<security_interstitials::KnownInterceptionDisclosureUI>;
   }
-  if (url.host_piece() == chrome::kChromeUILocalStateHost)
-    return &NewWebUI<LocalStateUI>;
-  if (url.host_piece() == chrome::kChromeUILocationInternalsHost) {
-    return &NewWebUI<LocationInternalsUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIMemoryInternalsHost)
-    return &NewWebUI<MemoryInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUIMetricsInternalsHost)
-    return &NewWebUI<MetricsInternalsUI>;
   if (url.host_piece() == chrome::kChromeUINetExportHost)
     return &NewWebUI<NetExportUI>;
   if (url.host_piece() == chrome::kChromeUINetInternalsHost)
