@@ -120,6 +120,15 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   // Sets which types of licenses are possible to use for enrollment.
   void SetAvailableLicenses(bool has_enterpise_license, bool has_kiosk_license);
 
+  // Sets market segment for the device, this information is provided via policy
+  // metadata.
+  void SetMarketSegment(
+      enterprise_management::PolicyData::MarketSegment segment);
+  // Sets metric segment for the user, this information is provided via policy
+  // metadata.
+  void SetMetricsLogSegment(
+      enterprise_management::PolicyData::MetricsLogSegment segment);
+
   // Configures server to expect these PSM (private set membership) execution
   // values (i.e. `psm_execution_result` and `psm_determination_timestamp`) as
   // part of DeviceRegisterRequest. Note: `device_brand_code` and

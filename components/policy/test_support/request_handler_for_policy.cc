@@ -207,6 +207,10 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
         policy_data.add_user_affiliation_ids(user_affiliation_id);
       }
     }
+    if (policy_storage()->metrics_log_segment()) {
+      policy_data.set_metrics_log_segment(
+          policy_storage()->metrics_log_segment().value());
+    }
   } else if (policy_type == dm_protocol::kChromeDevicePolicyType) {
     std::vector<std::string> device_affiliation_ids =
         policy_storage()->device_affiliation_ids();
@@ -214,6 +218,10 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
       for (const std::string& device_affiliation_id : device_affiliation_ids) {
         policy_data.add_device_affiliation_ids(device_affiliation_id);
       }
+    }
+    if (policy_storage()->market_segment()) {
+      policy_data.set_market_segment(
+          policy_storage()->market_segment().value());
     }
   }
 

@@ -199,6 +199,16 @@ void EmbeddedPolicyTestServerMixin::SetAvailableLicenses(
       has_kiosk_license);
 }
 
+void EmbeddedPolicyTestServerMixin::SetMarketSegment(
+    enterprise_management::PolicyData::MarketSegment segment) {
+  policy_test_server_->policy_storage()->set_market_segment(segment);
+}
+
+void EmbeddedPolicyTestServerMixin::SetMetricsLogSegment(
+    enterprise_management::PolicyData::MetricsLogSegment segment) {
+  policy_test_server_->policy_storage()->set_metrics_log_segment(segment);
+}
+
 void EmbeddedPolicyTestServerMixin::SetExpectedPsmParamsInDeviceRegisterRequest(
     const std::string& device_brand_code,
     const std::string& device_serial_number,
