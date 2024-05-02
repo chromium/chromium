@@ -152,7 +152,8 @@ namespace {
 // triggered. This makes sure that for example forms that only contain a single
 // email field do not prompt a survey. Such survey answer would likely taint
 // our analysis.
-constexpr size_t kMinFormSizeToTriggerUserPerceptionSurvey = 4;
+constexpr size_t kMinNumberAddressFieldsToTriggerAddressUserPerceptionSurvey =
+    4;
 
 // Checks if the user triggered address Autofill through the
 // Chrome context menu on a field not classified as address.
@@ -187,7 +188,7 @@ bool IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
 // is the "stats category" and the value is the number of fields that match
 // such category. This is used to show users a survey that will measure the
 // perception of Autofill.
-std::map<std::string, std::string> AddressFormFillingStatsToSurveyStringData(
+std::map<std::string, std::string> FormFillingStatsToSurveyStringData(
     autofill_metrics::FormGroupFillingStats& filling_stats) {
   return {
       {"Accepted fields", base::NumberToString(filling_stats.num_accepted)},
@@ -1990,23 +1991,43 @@ void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
     base::TimeTicks submission_time,
     bool observed_submission,
     ukm::SourceId source_id) {
-  size_t address_fields_count = base::ranges::count_if(
-      submitted_form->fields(),
-      [](const std::unique_ptr<AutofillField>& field) {
-        return FieldTypeGroupToFormType(field->Type().group()) ==
-               FormType::kAddressForm;
-      });
+  auto count_types = [&submitted_form](FormType type) {
+    return base::ranges::count_if(
+        submitted_form->fields(),
+        [=](const std::unique_ptr<AutofillField>& field) {
+          return FieldTypeGroupToFormType(field->Type().group()) == type;
+        });
+  };
 
-  if (address_fields_count >= kMinFormSizeToTriggerUserPerceptionSurvey &&
+  size_t address_fields_count = count_types(FormType::kAddressForm);
+  autofill_metrics::FormGroupFillingStats address_filling_stats =
+      autofill_metrics::GetFormFillingStatsForFormType(FormType::kAddressForm,
+                                                       *submitted_form);
+  const bool can_trigger_address_survey =
+      address_fields_count >=
+          kMinNumberAddressFieldsToTriggerAddressUserPerceptionSurvey &&
+      address_filling_stats.TotalFilled() > 0 &&
       base::FeatureList::IsEnabled(
-          features::kAutofillAddressUserPerceptionSurvey)) {
-    autofill_metrics::FormGroupFillingStats filling_stats =
-        autofill_metrics::GetAddressFormFillingStats(*submitted_form);
-    if (filling_stats.TotalFilled() > 0) {
-      client().TriggerUserPerceptionOfAutofillSurvey(
-          FillingProduct::kAddress,
-          AddressFormFillingStatsToSurveyStringData(filling_stats));
-    }
+          features::kAutofillAddressUserPerceptionSurvey);
+
+  size_t credit_card_fields_count = count_types(FormType::kCreditCardForm);
+  autofill_metrics::FormGroupFillingStats credit_card_filling_stats =
+      autofill_metrics::GetFormFillingStatsForFormType(
+          FormType::kCreditCardForm, *submitted_form);
+  const bool can_trigger_credit_card_survey =
+      credit_card_fields_count > 0 &&
+      credit_card_filling_stats.TotalFilled() > 0;
+
+  if (can_trigger_address_survey) {
+    client().TriggerUserPerceptionOfAutofillSurvey(
+        FillingProduct::kAddress,
+        FormFillingStatsToSurveyStringData(address_filling_stats));
+  } else if (can_trigger_credit_card_survey &&
+             base::FeatureList::IsEnabled(
+                 features::kAutofillCreditCardUserPerceptionSurvey)) {
+    client().TriggerUserPerceptionOfAutofillSurvey(
+        FillingProduct::kCreditCard,
+        FormFillingStatsToSurveyStringData(credit_card_filling_stats));
   }
   UploadVotesAndLogQuality(std::move(submitted_form), interaction_time,
                            submission_time, observed_submission, source_id);

@@ -3577,10 +3577,10 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
       filled_profile));
 }
 
-// Test that the user perception of autofill survey is triggered after a form
-// submission.
+// Test that the user perception of autofill for address filling survey is
+// triggered after a form submission.
 TEST_F(BrowserAutofillManagerTest,
-       UserPerceptionOfAutofillSurvey_MinFormSizeReached_TriggerSurvey) {
+       UserPerceptionOfAddressAutofillSurvey_MinFormSizeReached_TriggerSurvey) {
   base::test::ScopedFeatureList enabled_features(
       features::kAutofillAddressUserPerceptionSurvey);
   TestAutofillClock clock(AutofillClock::Now());
@@ -3616,6 +3616,9 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(autofill_client_,
               TriggerUserPerceptionOfAutofillSurvey(
                   FillingProduct::kAddress, expected_field_filling_stats_data));
+  EXPECT_CALL(autofill_client_, TriggerUserPerceptionOfAutofillSurvey(
+                                    FillingProduct::kCreditCard, _))
+      .Times(0);
 
   // Simulate form submission.
   FormSubmitted(response_data);
@@ -3641,6 +3644,60 @@ TEST_F(
   // Simulate form submission.
   FormSubmitted(response_data);
 }
+
+// Test that the user perception of autofill for credit card filling survey is
+// triggered after a form submission.
+TEST_F(BrowserAutofillManagerTest,
+       UserPerceptionOfCreditCardAutofillSurvey_TriggerSurvey) {
+  base::test::ScopedFeatureList enabled_features(
+      features::kAutofillCreditCardUserPerceptionSurvey);
+  TestAutofillClock clock(AutofillClock::Now());
+  const size_t n_fields = 3;
+  // Set up a CC form.
+  FormData form;
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Card Number", "cardnumber", "",
+                                     FormControlType::kInputText),
+                 CreateTestFormField("Expiration date", "exp_date", "",
+                                     FormControlType::kInputText)};
+
+  // Notify BrowserAutofillManager of the form.
+  FormsSeen({form});
+
+  // Fill the form.
+  FormData response_data = FillAutofillFormDataAndGetResults(
+      form, *form.fields.begin(), MakeGuid(4));
+
+  const std::map<std::string, std::string> expected_field_filling_stats_data = {
+      {"Accepted fields", base::NumberToString(n_fields)},
+      {"Corrected to same type", "0"},
+      {"Corrected to a different type", "0"},
+      {"Corrected to an unknown type", "0"},
+      {"Corrected to empty", "0"},
+      {"Manually filled to same type", "0"},
+      {"Manually filled to a different type", "0"},
+      {"Manually filled to an unknown type", "0"},
+      {"Total corrected", "0"},
+      {"Total filled", base::NumberToString(n_fields)},
+      {"Total unfilled", "0"},
+      {"Total manually filled", "0"},
+      {"Total number of fields", base::NumberToString(n_fields)}};
+
+  EXPECT_CALL(autofill_client_, TriggerUserPerceptionOfAutofillSurvey(
+                                    FillingProduct::kCreditCard,
+                                    expected_field_filling_stats_data));
+  EXPECT_CALL(autofill_client_,
+              TriggerUserPerceptionOfAutofillSurvey(
+                  FillingProduct::kAddress, expected_field_filling_stats_data))
+      .Times(0);
+
+  // Simulate form submission.
+  FormSubmitted(response_data);
+}
+
 // Test the field log events at the form submission.
 // TODO(crbug.com/40100455): Move those tests out of this file.
 class BrowserAutofillManagerWithLogEventsTest

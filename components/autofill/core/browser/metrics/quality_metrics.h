@@ -38,10 +38,11 @@ void LogQualityMetricsBasedOnAutocomplete(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
 
 // Returns the `FormGroupFillingStats` corresponding to the fields in
-// `form_structure`. This method does not log to UMA but only returns the
-// statistics of a submitted form. `FormGroupFillingStats` is UMA logged in
-// `LogQualityMetrics()`.
-autofill_metrics::FormGroupFillingStats GetAddressFormFillingStats(
+// `form_structure` that match `form_type`. This method does not log to UMA but
+// only returns the statistics of a submitted form. `FormGroupFillingStats` is
+// UMA logged in `LogQualityMetrics()`.
+autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
+    FormType form_type,
     const FormStructure& form_structure);
 
 }  // namespace autofill::autofill_metrics

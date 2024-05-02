@@ -296,6 +296,24 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillAddressSurvey) {
 }
 
 TEST_F(ChromeAutofillClientTest,
+       TriggerUserPerceptionOfAutofillCreditCardSurvey) {
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
+      .WillRepeatedly(Return(true));
+
+  const SurveyStringData field_filling_stats_data;
+  EXPECT_CALL(*mock_hats_service,
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerAutofillCreditCardUserPerception, _, _, _,
+                  Ref(field_filling_stats_data), _, _, _, _, _));
+
+  client()->TriggerUserPerceptionOfAutofillSurvey(FillingProduct::kCreditCard,
+                                                  field_filling_stats_data);
+}
+
+TEST_F(ChromeAutofillClientTest,
        CreditCardUploadCompleted_ShowConfirmationBubbleView_CardSaved) {
   EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView(true));
   client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(true);

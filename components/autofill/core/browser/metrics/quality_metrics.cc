@@ -327,19 +327,19 @@ void LogQualityMetricsBasedOnAutocomplete(
   }
 }
 
-autofill_metrics::FormGroupFillingStats GetAddressFormFillingStats(
+autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
+    FormType form_type,
     const FormStructure& form_structure) {
-  autofill_metrics::FormGroupFillingStats address_field_stats;
+  autofill_metrics::FormGroupFillingStats filling_stats_for_form_type;
 
   for (auto& field : form_structure) {
-    if (FieldTypeGroupToFormType(field->Type().group()) !=
-        FormType::kAddressForm) {
+    if (FieldTypeGroupToFormType(field->Type().group()) != form_type) {
       continue;
     }
-    address_field_stats.AddFieldFillingStatus(
+    filling_stats_for_form_type.AddFieldFillingStatus(
         autofill_metrics::GetFieldFillingStatus(*field));
   }
-  return address_field_stats;
+  return filling_stats_for_form_type;
 }
 
 }  // namespace autofill::autofill_metrics
