@@ -26,9 +26,9 @@ const base::FilePath::CharType kRemotePublicCredentialDatabaseName[] =
 const base::FilePath::CharType kPrivateCredentialDatabaseName[] =
     FILE_PATH_LITERAL("NearbyPresencePrivateCredentialDatabase");
 
-// Return an empty set, so that no entries are removed.
-std::unique_ptr<std::vector<std::string>> GenerateKeysForEntriesToRemove() {
-  return std::make_unique<std::vector<std::string>>();
+bool ShouldDeleteEntry(base::flat_set<std::string> keys_to_not_delete,
+                       const std::string& key) {
+  return !keys_to_not_delete.contains(key);
 }
 
 }  // namespace
@@ -115,13 +115,16 @@ void NearbyPresenceCredentialStorage::SaveCredentials(
 
   auto credential_pairs_to_save = std::make_unique<std::vector<
       std::pair<std::string, ::nearby::internal::SharedCredential>>>();
+  base::flat_set<std::string> keys_to_not_delete;
   for (const auto& shared_credential : shared_credentials) {
     auto shared_credential_proto =
         proto::SharedCredentialFromMojom(shared_credential.get());
 
+    std::string id = base::NumberToString(shared_credential_proto.id());
     credential_pairs_to_save->emplace_back(
-        std::make_pair(base::NumberToString(shared_credential_proto.id()),
-                       shared_credential_proto));
+        std::make_pair(id, shared_credential_proto));
+
+    keys_to_not_delete.insert(id);
   }
 
   switch (public_credential_type) {
@@ -130,21 +133,23 @@ void NearbyPresenceCredentialStorage::SaveCredentials(
       // If successful, then attempt to save private credentials in a
       // follow-up callback. Iff both operations are successful,
       // 'on_credentials_fully_saved_callback' will return kOk.
-      local_public_db_->UpdateEntries(
+      local_public_db_->UpdateEntriesWithRemoveFilter(
           /*entries_to_save=*/std::move(credential_pairs_to_save),
-          /*entries_to_remove=*/GenerateKeysForEntriesToRemove(),
+          /*delete_key_filter=*/
+          base::BindRepeating(&ShouldDeleteEntry, keys_to_not_delete),
           base::BindOnce(
               &NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved,
               weak_ptr_factory_.GetWeakPtr(), std::move(local_credentials),
               std::move(on_credentials_fully_saved_callback)));
       break;
     case (mojom::PublicCredentialType::kRemotePublicCredential):
-      // When remote public credentials are updated, the private credentials
-      // provided are empty. To preserve the existing private credentials, do
-      // not update the private credential database.
-      remote_public_db_->UpdateEntries(
+      // The only remote credentials we can receive are public credentials
+      // (we can't see other devices' private credentials). Thus, in the
+      // remote case, only public credentials need to be saved.
+      remote_public_db_->UpdateEntriesWithRemoveFilter(
           /*entries_to_save=*/std::move(credential_pairs_to_save),
-          /*entries_to_remove=*/GenerateKeysForEntriesToRemove(),
+          /*delete_key_filter=*/
+          base::BindRepeating(&ShouldDeleteEntry, keys_to_not_delete),
           base::BindOnce(
               &NearbyPresenceCredentialStorage::OnRemotePublicCredentialsSaved,
               weak_ptr_factory_.GetWeakPtr(),
@@ -340,14 +345,17 @@ void NearbyPresenceCredentialStorage::OnLocalPublicCredentialsSaved(
 
   auto credential_pairs_to_save = std::make_unique<std::vector<
       std::pair<std::string, ::nearby::internal::LocalCredential>>>();
+  base::flat_set<std::string> keys_to_not_delete;
   for (const auto& local_credential : proto_local_credentials) {
     credential_pairs_to_save->emplace_back(
         std::make_pair(local_credential.secret_id(), local_credential));
+    keys_to_not_delete.insert(local_credential.secret_id());
   }
 
-  private_db_->UpdateEntries(
+  private_db_->UpdateEntriesWithRemoveFilter(
       /*entries_to_save=*/std::move(credential_pairs_to_save),
-      /*entries_to_remove=*/GenerateKeysForEntriesToRemove(),
+      /*delete_key_filter=*/
+      base::BindRepeating(&ShouldDeleteEntry, keys_to_not_delete),
       base::BindOnce(
           &NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved,
           weak_ptr_factory_.GetWeakPtr(),
