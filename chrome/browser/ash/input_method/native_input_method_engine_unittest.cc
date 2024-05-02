@@ -145,6 +145,11 @@ class MockInputMethod : public ime::mojom::InputMethod {
   mojo::AssociatedReceiver<ime::mojom::InputMethod> receiver_{this};
 };
 
+void SetEmptyPrefs(Profile& profile) {
+  profile.GetPrefs()->SetDict(::prefs::kLanguageInputMethodSpecificSettings,
+                              base::Value::Dict());
+}
+
 void SetInputMethodOptions(Profile& profile,
                            bool autocorrect_enabled,
                            bool predictive_writing_enabled) {
@@ -330,6 +335,7 @@ TEST_F(NativeInputMethodEngineTest,
 
 TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
 
@@ -350,6 +356,7 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
 TEST_F(NativeInputMethodEngineTest,
        PredictiveWritingDoesNotLaunchImeServiceWithMultiWordFlagDisabled) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
                         /*predictive_writing_enabled=*/true);
 
@@ -370,6 +377,7 @@ TEST_F(NativeInputMethodEngineTest,
 TEST_F(NativeInputMethodEngineTest,
        PredictiveWritingDoesNotLaunchImeServiceWithNonEnUsEngineId) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   EnableDefaultFeatureListWithMultiWord();
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
                         /*predictive_writing_enabled=*/true);
@@ -391,6 +399,7 @@ TEST_F(NativeInputMethodEngineTest,
 TEST_F(NativeInputMethodEngineTest,
        PredictiveWritingLaunchesImeServiceWithEnglishEngineId) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   EnableDefaultFeatureListWithMultiWord();
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
                         /*predictive_writing_enabled=*/true);
@@ -411,6 +420,7 @@ TEST_F(NativeInputMethodEngineTest,
 
 TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   testing::StrictMock<MockInputMethod> mock_input_method;
   InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
@@ -435,6 +445,7 @@ TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
 
 TEST_F(NativeInputMethodEngineTest, EnableInitializesConnection) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
 
@@ -500,6 +511,7 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
 TEST_F(NativeInputMethodEngineTest,
        DisablesAutocorrectAndLearningAndIMEAtLockScreen) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
 
@@ -570,6 +582,7 @@ TEST_F(NativeInputMethodEngineTest, FocusUpdatesXkbLayout) {
 TEST_F(NativeInputMethodEngineTest,
        FocusCallsPassPredictiveWritingPrefWhenEnabled) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/true);
   EnableDefaultFeatureListWithMultiWord();
@@ -617,6 +630,7 @@ TEST_F(
     NativeInputMethodEngineTest,
     FocusCallsPassPredictiveWritingDisabledWhenMultiDisabledInBrowserContext) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/true);
   EnableDefaultFeatureListWithMultiWord();
@@ -792,6 +806,7 @@ TEST_P(AutocorrectByDefaultDisabledByInputMethodMetadata,
 
 TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
 
@@ -828,6 +843,7 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
 TEST_F(NativeInputMethodEngineTest,
        SurroundingTextChangeConvertsToUtf8Correctly) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
 
@@ -872,6 +888,7 @@ TEST_F(NativeInputMethodEngineTest,
 
 TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
 
@@ -933,6 +950,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
 
 TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
 
@@ -995,6 +1013,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
 
 TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   TestingProfile testing_profile;
+  SetEmptyPrefs(testing_profile);
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
 
