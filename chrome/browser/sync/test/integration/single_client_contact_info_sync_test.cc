@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Account storage is not enabled when the user is in auth error.
+// Account storage is still enabled when the user is in auth error.
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
                        AuthErrorState) {
   // Setup transport mode.
@@ -325,28 +325,31 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
                                        /*expect_active=*/false)
                   .Wait());
 
-  EXPECT_FALSE(GetPersonalDataManager()
-                   ->address_data_manager()
-                   .IsEligibleForAddressAccountStorage());
-  EXPECT_FALSE(GetPersonalDataManager()
-                   ->address_data_manager()
-                   .IsAutofillSyncToggleAvailable());
-  GetPersonalDataManager()->address_data_manager().AddProfile(kProfile);
-
-  // Fix the authentication error, sync is available again.
-  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager,
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      GoogleServiceAuthError::AuthErrorNone());
-  EXPECT_TRUE(ContactInfoActiveChecker(GetSyncService(0),
-                                       /*expect_active=*/true)
-                  .Wait());
+  // Save a profile, it is not uploaded.
   EXPECT_TRUE(GetPersonalDataManager()
                   ->address_data_manager()
                   .IsEligibleForAddressAccountStorage());
   EXPECT_TRUE(GetPersonalDataManager()
                   ->address_data_manager()
                   .IsAutofillSyncToggleAvailable());
+  GetPersonalDataManager()->address_data_manager().AddProfile(kProfile);
+  EXPECT_TRUE(AddressDataManagerProfileChecker(
+                  &GetPersonalDataManager()->address_data_manager(),
+                  UnorderedElementsAre(kProfile))
+                  .Wait());
+  EXPECT_TRUE(GetFakeServer()
+                  ->GetSyncEntitiesByModelType(syncer::CONTACT_INFO)
+                  .empty());
+
+  // Fix the authentication error, data is uploaded.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError::AuthErrorNone());
+  EXPECT_TRUE(FakeServerSpecificsChecker(
+                  UnorderedElementsAre(
+                      AsContactInfoSpecifics(kProfile).SerializeAsString()))
+                  .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,

@@ -1346,6 +1346,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, Migration) {
       prefs::kExplicitBrowserSignin));
   // Account storage was not enabled yet.
   AccountStorageStatus account_storage_status = GetAccountStorageStatus();
+  EXPECT_FALSE(account_storage_status.autofill_sync_toggle_available);
   EXPECT_FALSE(account_storage_status.user_selectable_type_set.HasAny(
       {syncer::UserSelectableType::kAutofill,
        syncer::UserSelectableType::kPasswords}));
@@ -1357,6 +1358,7 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, Migration) {
 
   // Account storage is now enabled.
   account_storage_status = GetAccountStorageStatus();
+  EXPECT_TRUE(account_storage_status.autofill_sync_toggle_available);
   EXPECT_TRUE(account_storage_status.user_selectable_type_set.HasAll(
       {syncer::UserSelectableType::kAutofill,
        syncer::UserSelectableType::kPasswords}));

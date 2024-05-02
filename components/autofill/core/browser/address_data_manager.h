@@ -42,6 +42,7 @@ namespace autofill {
 
 class AddressDataCleaner;
 class AlternativeStateNameMapUpdater;
+class ContactInfoPreconditionChecker;
 
 // Contains all address-related logic of the `PersonalDataManager`. See comment
 // above the `PersonalDataManager` first. In the `AddressDataManager` (ADM),
@@ -403,6 +404,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Logs metrics around the number of stored profiles after the initial load
   // has finished.
   void LogStoredDataMetrics() const;
+
+  std::unique_ptr<ContactInfoPreconditionChecker>
+      contact_info_precondition_checker_;
 
   // A copy of the profiles stored in `AddressAutofillTable`. They come from
   // two sources:
