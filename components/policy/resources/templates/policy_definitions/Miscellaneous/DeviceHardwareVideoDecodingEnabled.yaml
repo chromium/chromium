@@ -36,5 +36,3 @@ default: true
 example_value: false
 
 tags: []
-
-generate_device_proto: true

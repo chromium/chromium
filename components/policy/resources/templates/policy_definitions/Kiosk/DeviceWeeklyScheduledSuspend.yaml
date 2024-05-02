@@ -32,4 +32,3 @@ supported_on:
 - chrome_os:125-
 tags: []
 type: dict
-generate_device_proto: true

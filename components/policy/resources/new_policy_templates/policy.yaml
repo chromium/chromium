@@ -392,5 +392,5 @@ tags: []
 # Only applies to device policies, for user policies this is always true.
 # Currently only generates an entry in device_policy_proto_map. More code
 # generation is planned in the future.
-# Default setting is false and will change to true in the future.
+# Default setting is true.
 generate_device_proto: true

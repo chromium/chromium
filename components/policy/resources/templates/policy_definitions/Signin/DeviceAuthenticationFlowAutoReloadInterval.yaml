@@ -36,5 +36,3 @@ schema:
 tags: []
 
 type: int
-
-generate_device_proto: true

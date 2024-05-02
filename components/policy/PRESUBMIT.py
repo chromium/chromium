@@ -798,7 +798,7 @@ def CheckDevicePolicies(input_api, output_api):
       continue
 
     policy_name = policy['name']
-    if policy.get('generate_device_proto', False):
+    if policy.get('generate_device_proto', True):
       if policy_name in proto_map or policy_name in legacy_proto_map:
         results.append(output_api.PresubmitError(
           f"'{policy_name}' generates the path to the proto. "
@@ -807,7 +807,8 @@ def CheckDevicePolicies(input_api, output_api):
       if (policy_name not in proto_map and
           policy_name not in legacy_proto_map):
         results.append(output_api.PresubmitError(
-            f"Please add generate_device_proto: true to '{policy_name}.yaml'"))
+            f"Please set generate_device_proto to true in '{policy_name}.yaml "
+            "or add a mapping in manual_device_policy_proto_map.yaml '"))
 
   # Check that the proto field is equal to the policy name for new policies
   for policy_change in policy_changelist:

@@ -197,7 +197,7 @@ def _BuildPolicyTemplate(data):
     if not policy.get('device_only', False):
       continue
 
-    if not policy.get('generate_device_proto', False):
+    if not policy.get('generate_device_proto', True):
       continue
 
     device_policy_proto_map[policy['name']] = policy['name'] + '.value'
