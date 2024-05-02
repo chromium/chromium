@@ -555,7 +555,7 @@ class PixelTestPages():
         PixelTestPage(
             'pixel_render_passes.html',
             base_name + '_RenderPasses',
-            test_rect=[0, 80, 485, 245],
+            test_rect=[3, 90, 485, 245],
             grace_period_end=date(2024, 5, 1),
             requires_fullscreen_os_screenshot_func=\
             RequiresFullScreenOSScreenshot
