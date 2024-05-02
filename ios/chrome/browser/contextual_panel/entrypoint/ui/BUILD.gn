@@ -10,6 +10,7 @@ source_set("ui") {
     "contextual_panel_entrypoint_view_controller.mm",
   ]
   deps = [
+    "resources:contextual_panel_entrypoint_background_color",
     "//base",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/shared/ui/symbols",
