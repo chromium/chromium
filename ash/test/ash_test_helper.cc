@@ -29,8 +29,8 @@
 #include "ash/shell_init_params.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
-#include "ash/system/notification_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/notification_center/session_state_notification_blocker.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/test/ash_test_views_delegate.h"
 #include "ash/test/pixel/ash_pixel_test_helper.h"
@@ -48,6 +48,7 @@
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
+#include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
@@ -178,6 +179,7 @@ void AshTestHelper::SetUp() {
 }
 
 void AshTestHelper::TearDown() {
+  fwupd_download_client_.reset();
   saved_desk_test_helper_.reset();
 
   ambient_ash_test_helper_.reset();
@@ -460,6 +462,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   }
 
   saved_desk_test_helper_ = std::make_unique<SavedDeskTestHelper>();
+  fwupd_download_client_ = std::make_unique<FakeFwupdDownloadClient>();
 }
 
 display::Display AshTestHelper::GetSecondaryDisplay() const {

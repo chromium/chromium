@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/ash/components/dbus/fwupd",
   "+chromeos/ash/components/network",
   "+dbus",
+  "+third_party/zlib/google",
 ]
 
 specific_include_rules = {

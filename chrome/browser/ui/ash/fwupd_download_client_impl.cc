@@ -19,7 +19,10 @@ FwupdDownloadClientImpl::GetURLLoaderFactory() {
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
-  DCHECK(profile);
+  // Profile might not be initialized in some tests
+  if (!profile) {
+    return nullptr;
+  }
 
   return profile->GetURLLoaderFactory();
 }
