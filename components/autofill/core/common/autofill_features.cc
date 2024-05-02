@@ -231,7 +231,7 @@ BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,
 // TODO(crbug.com/40285735): Remove when/if launched.
 BASE_FEATURE(kAutofillEnableEmailHeuristicOnlyAddressForms,
              "AutofillEnableEmailHeuristicOnlyAddressForms",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if Chrome support filling and importing apartment numbers.
 // TODO(crbug.com/40734406): Remove once launched.

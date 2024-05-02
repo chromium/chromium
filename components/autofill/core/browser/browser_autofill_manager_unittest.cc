@@ -2172,6 +2172,9 @@ TEST_F(BrowserAutofillManagerTest,
 // shown. Simulates Autocomplete suggestions that do not contain email strings.
 TEST_F(BrowserAutofillManagerTest,
        AutocompleteSuppressionWithoutEmailSuggestions) {
+  // Required to enable heuristics for small forms.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
   autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
       "plus@plus.plus", signin::ConsentLevel::kSignin);
   // Clear profiles to avoid that Autofill takes precedence.
@@ -2223,6 +2226,9 @@ TEST_F(BrowserAutofillManagerTest,
 // users and in incognito mode.
 TEST_F(BrowserAutofillManagerTest,
        AutocompleteSuppressionWithEmailSuggestions) {
+  // Required to enable heuristics for small forms.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
   // Clear profiles to avoid that Autofill takes precedence.
   personal_data().ClearProfiles();
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
@@ -2278,6 +2284,9 @@ TEST_F(BrowserAutofillManagerTest,
 // focused field disappears while Autocomplete is retrieving suggestions.
 // Regression test for (b/327866993).
 TEST_F(BrowserAutofillManagerTest, AutocompleteSuppressionFieldDisappears) {
+  // Required to enable heuristics for small forms.
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableEmailHeuristicOnlyAddressForms};
   // Clear profiles to avoid that Autofill takes precedence.
   personal_data().ClearProfiles();
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
