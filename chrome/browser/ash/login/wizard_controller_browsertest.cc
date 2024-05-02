@@ -3112,6 +3112,56 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
   EXPECT_FALSE(configuration.empty());
 }
 
+// Verifies that incomplete token-based enrollment flows (e.g. device is
+// rebooted after enrollment fails) resume enrollment without issue. See
+// b/336337134 for more details.
+class WizardControllerEnrollmentTokenRebootTest
+    : public WizardControllerTest,
+      public LocalStateMixin::Delegate {
+ public:
+  WizardControllerEnrollmentTokenRebootTest(
+      const WizardControllerEnrollmentTokenRebootTest&) = delete;
+  WizardControllerEnrollmentTokenRebootTest operator=(
+      const WizardControllerEnrollmentTokenRebootTest&) = delete;
+
+ protected:
+  WizardControllerEnrollmentTokenRebootTest() = default;
+  // WizardControllerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitch(ash::switches::kRevenBranding);
+    base::FilePath configuration_file;
+    ASSERT_TRUE(chromeos::test_utils::GetTestDataPath(
+        "oobe_configuration", "flex_enrollment_configuration.json",
+        &configuration_file));
+    command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
+                                   configuration_file);
+  }
+
+  void SetUpLocalState() override {
+    // Simulate device having previously gone through state determination.
+    base::Value::Dict device_state;
+    device_state.Set(
+        policy::kDeviceStateMode,
+        base::Value(policy::kDeviceStateInitialModeTokenEnrollment));
+    g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
+                                              std::move(device_state));
+  }
+
+ private:
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerEnrollmentTokenRebootTest,
+                       ConfigurationIsLoaded) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  WelcomeScreen* screen =
+      WizardController::default_controller()->GetScreen<WelcomeScreen>();
+  const base::Value::Dict& configuration = screen->GetConfigurationForTesting();
+  EXPECT_FALSE(configuration.empty());
+}
+
 class WizardControllerRemoteActivityNotificationTest
     : public WizardControllerTest,
       public LocalStateMixin::Delegate {

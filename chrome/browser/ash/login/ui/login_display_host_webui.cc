@@ -1188,6 +1188,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   CHECK(first_screen != AppLaunchSplashScreenView::kScreenId);
 
   // Check whether we need to execute OOBE flow.
+  // TODO(b/338302062): Determine whether we should wait on OOBE config
+  // retrieval before calling GetPrescribedEnrollmentConfig here.
   const policy::EnrollmentConfig enrollment_config =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   if (enrollment_config.should_enroll() &&

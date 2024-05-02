@@ -67,15 +67,16 @@ class EnrollmentConfigTest : public testing::Test {
   ash::FakeLoginDisplayHost fake_login_display_host_;
 };
 
-TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenFailsDCheck) {
+TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenYieldsModeNone) {
   enrollment_test_helper_.SetUpFlexDevice();
   auto state_dict = base::Value::Dict().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
 
-  EXPECT_CHECK_DEATH(EnrollmentConfig::GetPrescribedEnrollmentConfig(
-      &local_state_, install_attributes_, &statistics_provider_,
-      enrollment_test_helper_.oobe_configuration()));
+  const auto config = GetPrescribedConfig();
+
+  EXPECT_EQ(config.mode, EnrollmentConfig::MODE_NONE);
+  EXPECT_FALSE(config.should_enroll());
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

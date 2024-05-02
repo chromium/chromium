@@ -264,14 +264,17 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
   if (device_state_mode == kDeviceStateInitialModeTokenEnrollment) {
     std::optional<std::string> flex_enrollment_token =
         GetFlexEnrollmentToken(oobe_configuration);
-    // TODO(b/329271128): Consider failing gracefully instead of CHECKing,
-    // either ignore and emit an UMA, or fall back to manual enrollment
-    // immediately.
-    CHECK(flex_enrollment_token.has_value());
-    return {
-        .mode = EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED,
-        .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED,
-        .enrollment_token = std::move(flex_enrollment_token.value())};
+    // TODO(b/329271128): CHECK to ensure flex_token always has value after this
+    // bug is fixed.
+    if (flex_enrollment_token.has_value()) {
+      return {
+          .mode = EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED,
+          .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED,
+          .enrollment_token = std::move(flex_enrollment_token.value())};
+    } else {
+      return {.mode = EnrollmentConfig::MODE_NONE,
+              .auth_mechanism = GetPrescribedAuthMechanism(local_state)};
+    }
   }
 
   const bool pref_enrollment_auto_start_present =
