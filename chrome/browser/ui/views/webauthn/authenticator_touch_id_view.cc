@@ -8,14 +8,18 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/mac_authentication_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "crypto/scoped_lacontext.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/mac/util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -46,15 +50,16 @@ AuthenticatorTouchIdView::BuildStepSpecificContent() {
       dialog_model->request_type == device::FidoRequestType::kGetAssertion;
   container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   container->SetBetweenChildSpacing(kVerticalPadding);
-  container->AddChildView(std::make_unique<PasskeyDetailView>(
-      is_get_assertion ? dialog_model->preselected_cred->user
-                       : dialog_model->user_entity));
+  container->AddChildView(CreatePasskeyWithUsernameLabel(base::UTF8ToUTF16(
+      (is_get_assertion ? dialog_model->preselected_cred->user.name
+                        : dialog_model->user_entity.name)
+          .value_or(""))));
   if (device::fido::mac::DeviceHasBiometricsAvailable()) {
     container->AddChildView(std::make_unique<MacAuthenticationView>(
         base::BindOnce(&AuthenticatorTouchIdView::OnTouchIDComplete,
                        base::Unretained(this))));
-    container->AddChildView(
-        std::make_unique<views::Label>(u"Touch ID to continue (UT)"));
+    container->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_TOUCH_ID_CONTINUE)));
   } else {
     container->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(

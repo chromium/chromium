@@ -104,7 +104,12 @@ bool AuthenticatorSheetModelBase::IsOtherMechanismButtonVisible() const {
 
 std::u16string AuthenticatorSheetModelBase::GetOtherMechanismButtonLabel()
     const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_PASSKEY);
+  switch (dialog_model()->request_type) {
+    case device::FidoRequestType::kMakeCredential:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_SAVE_ANOTHER_WAY);
+    case device::FidoRequestType::kGetAssertion:
+      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_PASSKEY);
+  }
 }
 
 std::u16string AuthenticatorSheetModelBase::GetCancelButtonLabel() const {
@@ -564,19 +569,29 @@ AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
                                   OtherMechanismButtonVisibility::kVisible) {}
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
+  const std::u16string rp_id = GetRelyingPartyIdString(dialog_model());
   switch (dialog_model()->request_type) {
-    case device::FidoRequestType::kGetAssertion:
-      return u"Use your passkey to sign in to " +
-             base::UTF8ToUTF16(dialog_model()->relying_party_id) + u"? (UT)";
     case device::FidoRequestType::kMakeCredential:
-      return u"Create a passkey for " +
-             base::UTF8ToUTF16(dialog_model()->relying_party_id) + u"? (UT)";
+      return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE,
+                                        rp_id);
+    case device::FidoRequestType::kGetAssertion:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE, rp_id);
   }
 }
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepDescription() const {
-  return u"You can use saved passkeys on any device. It will be saved to "
-         u"Google Password Manager for your Google account (UT)";
+  switch (dialog_model()->request_type) {
+    case device::FidoRequestType::kMakeCredential:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_GPM_CREATE_PASSKEY_DESC,
+          base::UTF8ToUTF16(dialog_model()->account_name));
+
+    case device::FidoRequestType::kGetAssertion:
+      return l10n_util::GetStringFUTF16(
+          IDS_WEBAUTHN_TOUCH_ID_ASSERTION_DESC,
+          GetRelyingPartyIdString(dialog_model()));
+  }
 }
 
 bool AuthenticatorTouchIdSheetModel::IsAcceptButtonVisible() const {
@@ -2005,11 +2020,6 @@ bool AuthenticatorCreateGpmPasskeySheetModel::IsCancelButtonVisible() const {
 std::u16string AuthenticatorCreateGpmPasskeySheetModel::GetCancelButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_CANCEL);
-}
-
-std::u16string
-AuthenticatorCreateGpmPasskeySheetModel::GetOtherMechanismButtonLabel() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_SAVE_ANOTHER_WAY);
 }
 
 void AuthenticatorCreateGpmPasskeySheetModel::OnCancel() {

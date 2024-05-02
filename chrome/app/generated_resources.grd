@@ -15995,7 +15995,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
       <!-- Multi source passkey picker -->
       <message name="IDS_WEBAUTHN_CHOOSE_PASSKEY_FOR_RP_TITLE" desc="The title of a dialog prompting the user to choose a passkey from a list to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Choose a passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+        Use a saved passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
       <message name="IDS_WEBAUTHN_THIS_DEVICE_LABEL" desc="The label for a list of passkeys the user can choose from the device they are using.">
         On this device
@@ -16079,6 +16079,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE" desc="Text link that appears on a button that allows the user to sign in using a different device.">
         Use a different device
+      </message>
+      <message name="IDS_WEBAUTHN_TOUCH_ID_ASSERTION_DESC" desc="Text that appears on a dialog requesting that the user present their biometrics in order to sign into a site. When the user does so, they'll be signed into the named site using the identity that is also displayed in the dialog.">
+        <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it’s you
+      </message>
+      <message name="IDS_WEBAUTHN_TOUCH_ID_CONTINUE" desc="A label that appears under a fingerprint symbol. Chrome is waiting for the user to use their fingerprint sensor in order to sign into a website. When they do so, the process will continue automatically. 'Touch ID' is an Apple-specific term for their fingerprint sensors. You might want to play with the language in the following URL to see how Apple translate this term: https://support.apple.com/en-us/102528">
+        Touch ID to continue
       </message>
 
       <!-- Side Search -->

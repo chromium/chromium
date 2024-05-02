@@ -225,11 +225,12 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
 
     case device::UserVerificationRequirement::kPreferred:
     case device::UserVerificationRequirement::kRequired:
+      if (have_added_device) {
+        return EnclaveUserVerificationMethod::kImplicit;
+      }
       switch (uv_key_state) {
         case EnclaveManager::UvKeyState::kNone:
-          if (have_added_device) {
-            return EnclaveUserVerificationMethod::kImplicit;
-          } else if (has_pin) {
+          if (has_pin) {
             return EnclaveUserVerificationMethod::kPIN;
           } else if (uv == device::UserVerificationRequirement::kPreferred) {
             return EnclaveUserVerificationMethod::kNone;
