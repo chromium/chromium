@@ -428,93 +428,6 @@ source_set("unit_tests") {
   }
 }
 
-source_set("browser_tests") {
-  testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = []
-  deps = []
-
-  if (is_chromeos) {
-    sources += [ "metrics/website_metrics_browsertest.cc" ]
-
-    deps += [
-      ":app_service",
-      ":test_support",
-      "//base",
-      "//build:chromeos_buildflags",
-      "//chrome/browser/apps/app_service/webapk:browser_tests",
-      "//chrome/browser/profiles",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-      "//chrome/browser/web_applications",
-      "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/common:non_code_constants",
-      "//chrome/test:test_support",
-      "//components/app_constants",
-      "//components/history/core/browser",
-      "//components/ukm:test_support",
-      "//components/webapps/browser",
-      "//components/webapps/common",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//ui/wm",
-      "//url",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "media_access_browsertest.cc",
-      "metrics/app_platform_metrics_browsertest.cc",
-      "notifications_browsertest.cc",
-      "publishers/extension_apps_chromeos_browsertest.cc",
-      "publishers/web_apps_crosapi_browsertest.cc",
-    ]
-
-    deps += [
-      ":app_registry_cache_waiter",
-      ":test_support",
-      "//ash/components/arc:arc_test_support",
-      "//ash/components/arc:notification_test_support",
-      "//base/test:test_support",
-      "//chrome/browser/ash/crosapi:test_support",
-      "//chrome/browser/ui/ash/system_web_apps",
-      "//components/services/app_service",
-      "//components/services/app_service/public/cpp:test_support",
-      "//storage/browser:test_support",
-    ]
-  }
-}
-
-source_set("lacros_browser_tests") {
-  testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  if (is_chromeos_lacros) {
-    sources = [ "lacros_browser_shelf_lacros_browsertest.cc" ]
-
-    deps = [
-      "//base",
-      "//chrome/browser/profiles",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-      "//chrome/test:lacros_test_support_ui",
-      "//chrome/test:test_support",
-      "//chromeos/lacros",
-      "//components/app_constants",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//ui/base",
-      "//ui/views",
-    ]
-  }
-}
-
 source_set("test_support") {
   testonly = true
 
@@ -526,29 +439,11 @@ source_set("test_support") {
   public_deps = [ ":app_service" ]
 
   deps = [
-    "//base",
-    "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//chrome/browser/profiles",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/services/app_service",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//ui/base",
-    "//ui/gfx",
-    "//url",
+    "//skia",
   ]
-
-  if (is_chromeos) {
-    sources += [
-      "metrics/website_metrics_browser_test_mixin.cc",
-      "metrics/website_metrics_browser_test_mixin.h",
-    ]
-
-    deps += [ "//ui/wm" ]
-  }
 
   if (is_chromeos_ash) {
     sources += [

@@ -758,6 +758,8 @@ static_library("test_support") {
   if (is_chromeos) {
     sources += [
       "../browser/app_mode/test/accelerator_helpers.cc",
+      "../browser/apps/app_service/metrics/website_metrics_browser_test_mixin.cc",
+      "../browser/apps/app_service/metrics/website_metrics_browser_test_mixin.h",
       "../browser/certificate_provider/test_certificate_provider_extension.cc",
       "../browser/certificate_provider/test_certificate_provider_extension.h",
       "../browser/extensions/policy_test_utils.cc",
@@ -3393,10 +3395,6 @@ if (!is_android) {
       data_deps += [ "//chrome:packed_resources" ]
     }
 
-    if (!is_android) {
-      deps += [ "//chrome/browser/apps/app_service:browser_tests" ]
-    }
-
     if (enable_soda_integration_tests) {
       assert(enable_speech_service)
       sources +=
@@ -3448,6 +3446,8 @@ if (!is_android) {
       ]
 
       sources += [
+        "../browser/apps/app_service/metrics/website_metrics_browsertest.cc",
+        "../browser/apps/app_service/webapk/webapk_utils_lacros_browsertest.cc",
         "../browser/certificate_manager_model_lacros_browsertest.cc",
         "../browser/lacros/app_mode/kiosk_accelerator_browsertest.cc",
         "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
@@ -4415,6 +4415,13 @@ if (!is_android) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
     if (is_chromeos_ash) {
       sources += [
+        "../browser/apps/app_service/media_access_browsertest.cc",
+        "../browser/apps/app_service/metrics/app_platform_metrics_browsertest.cc",
+        "../browser/apps/app_service/metrics/website_metrics_browsertest.cc",
+        "../browser/apps/app_service/notifications_browsertest.cc",
+        "../browser/apps/app_service/publishers/extension_apps_chromeos_browsertest.cc",
+        "../browser/apps/app_service/publishers/web_apps_crosapi_browsertest.cc",
+        "../browser/apps/app_service/webapk/webapk_policy_browsertest.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
         "../browser/ash/accessibility/accessibility_common_browsertest.cc",
@@ -5595,6 +5602,7 @@ if (is_chromeos_lacros) {
 
     sources = [
       "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
+      "../browser/apps/app_service/lacros_browser_shelf_lacros_browsertest.cc",
       "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
       "../browser/chromeos/extensions/info_private_lacros_apitest.cc",
@@ -5730,8 +5738,6 @@ if (is_chromeos_lacros) {
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
-      "//chrome/browser/apps/app_service:lacros_browser_tests",
-      "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_install:browser_tests",
       "//chrome/browser/apps/browser_instance",
