@@ -66,4 +66,22 @@ TEST(ShortcutsPlatformUtilMacTest, SetDefaultApplicationToOpenFile) {
   EXPECT_NSEQ(app_url, got_app_url);
 }
 
+TEST(ShortcutsPlatformUtilMacTest, SanitizeTitleForFileName) {
+  auto sanitize_to_string = [](const std::string& title) {
+    std::optional<base::SafeBaseName> name = SanitizeTitleForFileName(title);
+    EXPECT_TRUE(name.has_value());
+    return name.has_value() ? name->path().value() : "";
+  };
+  EXPECT_EQ("strip.initial.dots....",
+            sanitize_to_string("...strip.initial.dots...."));
+  EXPECT_EQ("http:::example.com:foo",
+            sanitize_to_string("http://example.com/foo"));
+  EXPECT_EQ("Whitespace is allowed!",
+            sanitize_to_string("Whitespace is allowed!"));
+  EXPECT_EQ(" ... dots ...", sanitize_to_string("... ... dots ..."));
+  EXPECT_EQ(std::nullopt, SanitizeTitleForFileName("... ..."));
+  EXPECT_EQ(std::nullopt, SanitizeTitleForFileName(""));
+  EXPECT_EQ(std::nullopt, SanitizeTitleForFileName("...."));
+}
+
 }  // namespace shortcuts

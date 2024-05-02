@@ -271,10 +271,6 @@ void RecordCreateShortcut(CreateShortcutResult result) {
   UMA_HISTOGRAM_ENUMERATION(kCreateShortcutResult, result);
 }
 
-// The maximum number to append to to an app name before giving up and using the
-// extension id.
-constexpr int kMaxConflictNumber = 999;
-
 // Remove the leading . from the entries of |extensions|. Any items that do not
 // have a leading . are removed.
 std::set<std::string> GetFileHandlerExtensionsWithoutDot(
@@ -1232,14 +1228,10 @@ base::FilePath WebAppShortcutCreator::GetApplicationsShortcutPath(
     return applications_dir.Append(GetShortcutBasename());
   }
 
-  // Attempt to use the application's title for the file name. Resolve conflicts
-  // by appending 1 through kMaxConflictNumber, before giving up and using the
-  // concatenated profile and extension for a name name.
-  for (int i = 1; i <= kMaxConflictNumber; ++i) {
-    base::FilePath path = applications_dir.Append(GetShortcutBasename(i));
-    if (base::DirectoryExists(path)) {
-      continue;
-    }
+  // Attempt to use the application's title for the file name.
+  base::FilePath path = base::GetUniquePathWithSuffixFormat(
+      applications_dir.Append(GetShortcutBasename()), " %d");
+  if (!path.empty()) {
     return path;
   }
 
@@ -1248,31 +1240,20 @@ base::FilePath WebAppShortcutCreator::GetApplicationsShortcutPath(
   return applications_dir.Append(GetFallbackBasename());
 }
 
-base::FilePath WebAppShortcutCreator::GetShortcutBasename(
-    int copy_number) const {
+base::FilePath WebAppShortcutCreator::GetShortcutBasename() const {
   // For profile-less shortcuts, use the fallback naming scheme to avoid change.
   if (info_->profile_name.empty()) {
     return GetFallbackBasename();
   }
 
-  // Strip all preceding '.'s from the path.
   std::u16string title = info_->title;
-  size_t first_non_dot = 0;
-  while (first_non_dot < title.size() && title[first_non_dot] == '.')
-    first_non_dot += 1;
-  title = title.substr(first_non_dot);
-  if (title.empty()) {
+  std::optional<base::SafeBaseName> base_name =
+      shortcuts::SanitizeTitleForFileName(base::UTF16ToUTF8(info_->title));
+  if (!base_name.has_value()) {
     return GetFallbackBasename();
   }
 
-  // Finder will display ':' as '/', so replace all '/' instances with ':'.
-  std::replace(title.begin(), title.end(), '/', ':');
-
-  // Append the copy number.
-  std::string title_utf8 = base::UTF16ToUTF8(title);
-  if (copy_number != 1)
-    title_utf8 += base::StringPrintf(" %d", copy_number);
-  return base::FilePath(title_utf8 + ".app");
+  return base_name->path().AddExtension(".app");
 }
 
 base::FilePath WebAppShortcutCreator::GetFallbackBasename() const {

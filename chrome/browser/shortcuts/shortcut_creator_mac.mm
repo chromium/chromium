@@ -26,30 +26,6 @@
 
 namespace shortcuts {
 
-namespace {
-
-// Return a version of `title` that is safe to use as a filename on macOS.
-// TODO(mek): Dedeuplicate this with the app shim code in
-// chrome/browser/web_applications/os_integration/web_app_shortcut_mac.mm.
-base::FilePath::StringType SanitizeTitle(std::string title) {
-  // Strip all preceding '.'s from the path.
-  size_t first_non_dot = 0;
-  while (first_non_dot < title.size() && title[first_non_dot] == '.') {
-    first_non_dot += 1;
-  }
-  title = title.substr(first_non_dot);
-  if (title.empty()) {
-    return {};
-  }
-
-  // Finder will display ':' as '/', so replace all '/' instances with ':'.
-  std::replace(title.begin(), title.end(), '/', ':');
-
-  return title;
-}
-
-}  // namespace
-
 void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
                                  const GURL& shortcut_url,
                                  gfx::ImageFamily icon_images,
@@ -61,14 +37,16 @@ void CreateShortcutOnUserDesktop(const std::string& shortcut_name,
     return;
   }
 
-  base::FilePath::StringType base_name = SanitizeTitle(shortcut_name);
-  if (base_name.empty()) {
-    base_name = SanitizeTitle(shortcut_url.spec());
+  std::optional<base::SafeBaseName> base_name =
+      SanitizeTitleForFileName(shortcut_name);
+  if (!base_name.has_value()) {
+    base_name = SanitizeTitleForFileName(shortcut_url.spec());
   }
+  CHECK(base_name.has_value());
 
-  base::FilePath target_path =
-      base::GetUniquePath(desktop_path.Append(base_name).AddExtensionASCII(
-          ChromeWeblocFile::kFileExtension));
+  base::FilePath target_path = base::GetUniquePath(
+      desktop_path.Append(*base_name)
+          .AddExtensionASCII(ChromeWeblocFile::kFileExtension));
   if (target_path.empty()) {
     std::move(complete).Run(ShortcutCreatorResult::kError);
     return;

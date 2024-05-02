@@ -225,9 +225,8 @@ class WebAppShortcutCreator {
   static void ResetHaveLocalizedAppDirNameForTesting();
 
   // Returns the base name for the shortcut. This will be a sanitized version
-  // of the application title. If |copy_number| is not 1, then append it before
-  // the .app part of the extension.
-  virtual base::FilePath GetShortcutBasename(int copy_number = 1) const;
+  // of the application title.
+  virtual base::FilePath GetShortcutBasename() const;
 
   // Returns the fallback name for the shortcut. This name will be a combination
   // of the profile name and extension id. This is used if the app title is

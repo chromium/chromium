@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SHORTCUTS_PLATFORM_UTIL_MAC_H_
 #define CHROME_BROWSER_SHORTCUTS_PLATFORM_UTIL_MAC_H_
 
+#include <optional>
+
+#include "base/files/safe_base_name.h"
 #include "base/functional/callback_forward.h"
 
 @class NSError;
@@ -33,6 +36,10 @@ void SetDefaultApplicationToOpenFile(
     NSURL* file_url,
     NSURL* application_url,
     base::OnceCallback<void(NSError*)> callback);
+
+// Return a version of `title` that is safe to use as a filename on macOS.
+std::optional<base::SafeBaseName> SanitizeTitleForFileName(
+    const std::string& title);
 
 }  // namespace shortcuts
 

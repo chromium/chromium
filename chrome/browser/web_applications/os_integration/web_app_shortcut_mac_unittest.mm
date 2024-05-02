@@ -493,15 +493,15 @@ TEST_F(WebAppShortcutCreatorTest, CreateShortcutsConflict) {
   base::CreateDirectory(shim_path_);
   EXPECT_TRUE(base::PathExists(shim_path_));
 
-  // Ensure that the " (2).app" path does not yet exist.
-  base::FilePath conflict_base_name(base::UTF16ToUTF8(info_->title) + " 2.app");
+  // Ensure that the " 1.app" path does not yet exist.
+  base::FilePath conflict_base_name(base::UTF16ToUTF8(info_->title) + " 1.app");
   base::FilePath conflict_path = destination_dir_.Append(conflict_base_name);
   EXPECT_FALSE(base::PathExists(conflict_path));
 
   EXPECT_TRUE(shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED,
                                                ShortcutLocations()));
 
-  // We should have created the " 2.app" path.
+  // We should have created the " 1.app" path.
   EXPECT_TRUE(base::PathExists(conflict_path));
   EXPECT_TRUE(base::PathExists(destination_dir_));
 }

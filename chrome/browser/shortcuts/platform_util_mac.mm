@@ -8,8 +8,10 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
@@ -61,6 +63,21 @@ void SetDefaultApplicationToOpenFile(
                          error:&error];
     base::BindPostTaskToCurrentDefault(std::move(callback)).Run(error);
   }
+}
+
+std::optional<base::SafeBaseName> SanitizeTitleForFileName(
+    const std::string& title) {
+  // Strip all preceding '.'s from the path.
+  std::string::size_type first_non_dot = title.find_first_not_of(".");
+  if (first_non_dot == std::string::npos) {
+    return std::nullopt;
+  }
+  std::string name = title.substr(first_non_dot);
+
+  // Finder will display ':' as '/', so replace all '/' instances with ':'.
+  base::ranges::replace(name, '/', ':');
+
+  return base::SafeBaseName::Create(name);
 }
 
 }  // namespace shortcuts
