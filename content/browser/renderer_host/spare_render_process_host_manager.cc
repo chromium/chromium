@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"

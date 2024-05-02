@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -67,7 +68,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "device/fido/features.h"
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/webauthn_api.h"
 #endif

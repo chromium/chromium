@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_metrics_utils.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
