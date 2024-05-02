@@ -80,17 +80,13 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
       : backend_client_(history_client_.CreateBackendClient()),
         expirer_(this,
                  backend_client_.get(),
-                 task_environment_.GetMainThreadTaskRunner()),
-        now_(PretendNow()) {}
+                 task_environment_.GetMainThreadTaskRunner()) {}
 
  protected:
   // Called by individual tests when they want data populated.
   void AddExampleData(URLID url_ids[3],
                       base::Time visit_times[4],
                       bool set_app_id = false);
-
-  // Add visits with source information.
-  void AddExampleSourceData(const GURL& url, URLID* id);
 
   // Returns true if the given favicon has an entry in the DB.
   bool HasFavicon(favicon_base::FaviconID favicon_id);
@@ -122,8 +118,6 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
   void StarURL(const GURL& url) { history_client_.AddBookmark(url); }
 
-  static bool IsStringInFile(const base::FilePath& filename, const char* str);
-
   // Returns the path the db files are created in.
   const base::FilePath& path() const { return tmp_dir_.GetPath(); }
 
@@ -141,9 +135,6 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   std::unique_ptr<HistoryDatabase> main_db_;
   std::unique_ptr<favicon::FaviconDatabase> thumb_db_;
   scoped_refptr<TopSitesImpl> top_sites_;
-
-  // base::Time at the beginning of the test, so everybody agrees what "now" is.
-  const base::Time now_;
 
   typedef std::vector<std::pair<bool, URLRows>> URLsModifiedNotificationList;
   URLsModifiedNotificationList urls_modified_notifications_;
@@ -413,14 +404,6 @@ TEST_F(ExpireHistoryTest, DeleteFaviconsIfPossible) {
     EXPECT_TRUE(HasFavicon(icon_id));
     EXPECT_TRUE(effects.deleted_favicons.empty());
   }
-}
-
-// static
-bool ExpireHistoryTest::IsStringInFile(const base::FilePath& filename,
-                                       const char* str) {
-  std::string contents;
-  EXPECT_TRUE(base::ReadFileToString(filename, &contents));
-  return contents.find(str) != std::string::npos;
 }
 
 // Deletes a URL with a favicon that it is the last referencer of, so that it
