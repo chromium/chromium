@@ -8,6 +8,7 @@
     "llvm_force_head_revision": true,
     "target_cpu": "x86",
     "target_os": "android",
-    "use_clang_coverage": true
+    "use_clang_coverage": true,
+    "use_siso": true
   }
 }

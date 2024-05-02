@@ -11,6 +11,7 @@
     "proprietary_codecs": true,
     "symbol_level": 1,
     "target_cpu": "arm64",
-    "target_os": "android"
+    "target_os": "android",
+    "use_siso": true
   }
 }

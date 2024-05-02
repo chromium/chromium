@@ -8,6 +8,7 @@
     "is_debug": false,
     "llvm_force_head_revision": true,
     "symbol_level": 1,
+    "use_siso": true,
     "v8_enable_verify_heap": true
   }
 }
