@@ -778,8 +778,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Tests that scrolling with the keyboard will bubble unused scroll to the
 // OOPIF's parent.
+// Disabled on Android due to flakes; see b/338341090.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_KeyboardScrollBubblingFromOOPIF \
+  DISABLED_KeyboardScrollBubblingFromOOPIF
+#else
+#define MAYBE_KeyboardScrollBubblingFromOOPIF KeyboardScrollBubblingFromOOPIF
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       KeyboardScrollBubblingFromOOPIF) {
+                       MAYBE_KeyboardScrollBubblingFromOOPIF) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_iframe_in_scrollable_div.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
