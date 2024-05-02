@@ -115,6 +115,9 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
 
     private final long mNetworkHandle;
 
+    private int mNonfinalUserCallbackExceptionCount;
+    private boolean mFinalUserCallbackThrew;
+
     // Executor that runs one task at a time on an underlying Executor.
     // NOTE: Do not use to wrap user supplied Executor as lock is held while underlying execute()
     // is called.
@@ -438,6 +441,18 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
 
     /** Ends the request with an error, caused by an exception thrown from user code. */
     private void enterUserErrorState(final Throwable error) {
+        // We schedule this on the internal executor, which is serialized, to ensure we don't race
+        // against the read code path (which can be scheduled on the internal executor at any time,
+        // e.g. through onCanceled).
+        //
+        // It's still possible that a non-final user callback may throw an exception after the
+        // terminal callback returned and we already logged this metric, in which case we will miss
+        // the exception. Arguably this is too unlikely for us to care.
+        mExecutor.execute(
+                () -> {
+                    mNonfinalUserCallbackExceptionCount++;
+                });
+
         enterErrorState(
                 new CallbackExceptionImpl("Exception received from UrlRequest.Callback", error));
     }
@@ -894,10 +909,11 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
         }
 
         /**
-         * Builds the {@link CronetTrafficInfo} associated to this request internal state.
-         * This helper methods makes strong assumptions about the state of the request. For this
-         * reason it should only be called within {@link JavaUrlRequest#maybeReportMetrics} where
-         * these assumptions are guaranteed to be true.
+         * Builds the {@link CronetTrafficInfo} associated to this request internal state. This
+         * helper methods makes strong assumptions about the state of the request. For this reason
+         * it should only be called within {@link JavaUrlRequest#maybeReportMetrics} where these
+         * assumptions are guaranteed to be true.
+         *
          * @return the {@link CronetTrafficInfo} associated to this request internal state
          */
         @RequiresApi(Build.VERSION_CODES.O)
@@ -987,7 +1003,9 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     false, // wasConnectionMigrationAttempted
                     false, // didConnectionMigrationSucceed
                     requestTerminalState,
-                    /* isBidiStream= */ false);
+                    mNonfinalUserCallbackExceptionCount,
+                    /* isBidiStream= */ false,
+                    mFinalUserCallbackThrew);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and
@@ -1017,7 +1035,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                         try {
                             mCallback.onCanceled(JavaUrlRequest.this, info);
                         } catch (Exception exception) {
-                            Log.e(TAG, "Exception in onCanceled method", exception);
+                            onFinalCallbackException("onCanceled", exception);
                         }
                         maybeReportMetrics();
                         mEngine.decrementActiveRequestCount();
@@ -1030,7 +1048,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                         try {
                             mCallback.onSucceeded(JavaUrlRequest.this, info);
                         } catch (Exception exception) {
-                            Log.e(TAG, "Exception in onSucceeded method", exception);
+                            onFinalCallbackException("onSucceded", exception);
                         }
                         maybeReportMetrics();
                         mEngine.decrementActiveRequestCount();
@@ -1044,7 +1062,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                         try {
                             mCallback.onFailed(JavaUrlRequest.this, urlResponseInfo, e);
                         } catch (Exception exception) {
-                            Log.e(TAG, "Exception in onFailed method", exception);
+                            onFinalCallbackException("onFailed", exception);
                         }
                         maybeReportMetrics();
                         mEngine.decrementActiveRequestCount();
@@ -1084,5 +1102,10 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
         }
 
         return null;
+    }
+
+    private void onFinalCallbackException(String method, Exception e) {
+        Log.e(TAG, "Exception in " + method + " method", e);
+        mFinalUserCallbackThrew = true;
     }
 }

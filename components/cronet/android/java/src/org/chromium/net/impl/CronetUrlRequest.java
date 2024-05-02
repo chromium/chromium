@@ -112,6 +112,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     private CronetMetrics mMetrics;
     private boolean mQuicConnectionMigrationAttempted;
     private boolean mQuicConnectionMigrationSuccessful;
+    private int mNonfinalUserCallbackExceptionCount;
+    private boolean mFinalUserCallbackThrew;
 
     /*
      * Listener callback is repeatedly invoked when each read is completed, so it
@@ -142,7 +144,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 }
                 mCallback.onReadCompleted(CronetUrlRequest.this, mResponseInfo, buffer);
             } catch (Exception e) {
-                onCallbackException(e);
+                onNonfinalCallbackException(e);
             }
         }
     }
@@ -506,15 +508,20 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     }
 
     /**
-     * If callback method throws an exception, request gets canceled
-     * and exception is reported via onFailed listener callback.
-     * Only called on the Executor.
+     * If a non-final callback method throws an exception, request gets canceled and exception is
+     * reported via onFailed listener callback. Only called on the Executor.
      */
-    private void onCallbackException(Exception e) {
+    private void onNonfinalCallbackException(Exception e) {
+        mNonfinalUserCallbackExceptionCount++;
         CallbackException requestError =
                 new CallbackExceptionImpl("Exception received from UrlRequest.Callback", e);
         Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in CalledByNative method", e);
         failWithException(requestError);
+    }
+
+    private void onFinalCallbackException(String method, Exception e) {
+        mFinalUserCallbackThrew = true;
+        Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in " + method + " method", e);
     }
 
     /** Called when UploadDataProvider encounters an error. */
@@ -594,7 +601,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                             mCallback.onRedirectReceived(
                                     CronetUrlRequest.this, responseInfo, newLocation);
                         } catch (Exception e) {
-                            onCallbackException(e);
+                            onNonfinalCallbackException(e);
                         }
                     }
                 };
@@ -639,7 +646,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                         try {
                             mCallback.onResponseStarted(CronetUrlRequest.this, mResponseInfo);
                         } catch (Exception e) {
-                            onCallbackException(e);
+                            onNonfinalCallbackException(e);
                         }
                     }
                 };
@@ -711,10 +718,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                         try {
                             mCallback.onSucceeded(CronetUrlRequest.this, mResponseInfo);
                         } catch (Exception e) {
-                            Log.e(
-                                    CronetUrlRequestContext.LOG_TAG,
-                                    "Exception in onSucceeded method",
-                                    e);
+                            onFinalCallbackException("onSucceeded", e);
                         }
                         maybeReportMetrics();
                     }
@@ -772,10 +776,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                         try {
                             mCallback.onCanceled(CronetUrlRequest.this, mResponseInfo);
                         } catch (Exception e) {
-                            Log.e(
-                                    CronetUrlRequestContext.LOG_TAG,
-                                    "Exception in onCanceled method",
-                                    e);
+                            onFinalCallbackException("onCanceled", e);
                         }
                         maybeReportMetrics();
                     }
@@ -874,10 +875,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                         try {
                             mCallback.onFailed(CronetUrlRequest.this, mResponseInfo, mException);
                         } catch (Exception e) {
-                            Log.e(
-                                    CronetUrlRequestContext.LOG_TAG,
-                                    "Exception in onFailed method",
-                                    e);
+                            onFinalCallbackException("onFailed", e);
                         }
                         maybeReportMetrics();
                     }
@@ -1023,7 +1021,9 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 mQuicConnectionMigrationSuccessful,
                 CronetRequestCommon.finishedReasonToCronetTrafficInfoRequestTerminalState(
                         mFinishedReason),
-                /* isBidiStream= */ false);
+                mNonfinalUserCallbackExceptionCount,
+                /* isBidiStream= */ false,
+                mFinalUserCallbackThrew);
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

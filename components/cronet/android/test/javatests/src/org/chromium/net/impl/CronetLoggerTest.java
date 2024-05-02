@@ -671,7 +671,9 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
         assertThat(trafficInfo.getTerminalState())
                 .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
+        assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
+        assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -707,10 +709,56 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
         assertThat(trafficInfo.getTerminalState())
                 .isEqualTo(CronetTrafficInfo.RequestTerminalState.ERROR);
+        assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
+        assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
+    }
+
+    @Test
+    @SmallTest
+    public void testNonfinalUserCallbackExceptionNative() throws Exception {
+        var callback = new TestUrlRequestCallback();
+        callback.setFailure(
+                TestUrlRequestCallback.FailureType.THROW_SYNC,
+                TestUrlRequestCallback.ResponseStep.ON_RESPONSE_STARTED);
+        mTestRule
+                .getTestFramework()
+                .startEngine()
+                .newUrlRequestBuilder(
+                        NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
+                .build()
+                .start();
+        callback.blockForDone();
+        mTestLogger.waitForLogCronetTrafficInfo();
+
+        final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
+        assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(1);
+        assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
+    }
+
+    @Test
+    @SmallTest
+    public void testFinalUserCallbackExceptionNative() throws Exception {
+        var callback = new TestUrlRequestCallback();
+        callback.setFailure(
+                TestUrlRequestCallback.FailureType.THROW_SYNC,
+                TestUrlRequestCallback.ResponseStep.ON_SUCCEEDED);
+        mTestRule
+                .getTestFramework()
+                .startEngine()
+                .newUrlRequestBuilder(
+                        NativeTestServer.getEchoMethodURL(), callback, callback.getExecutor())
+                .build()
+                .start();
+        callback.blockForDone();
+        mTestLogger.waitForLogCronetTrafficInfo();
+
+        final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
+        assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
+        assertThat(trafficInfo.getFinalUserCallbackThrew()).isTrue();
     }
 
     @Test
@@ -745,7 +793,9 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
         assertThat(trafficInfo.getTerminalState())
                 .isEqualTo(CronetTrafficInfo.RequestTerminalState.CANCELLED);
+        assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
+        assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -787,7 +837,9 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
             assertThat(trafficInfo.getTerminalState())
                     .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
+            assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
             assertThat(trafficInfo.getIsBidiStream()).isTrue();
+            assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
             assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
             assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
