@@ -25,16 +25,3 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
-
-  add-label-to-wpt-bump:
-    name: Add label to release
-    runs-on: ubuntu-latest
-    if: ${{ contains(github.head_ref, 'dependabot') && contains(github.head_ref, 'wpt') }}
-    permissions:
-      pull-requests: write
-    steps:
-      - run: gh pr edit "$NUMBER" --add-label "update-expectations"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.pull_request.number }}
