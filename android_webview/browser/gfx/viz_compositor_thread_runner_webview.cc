@@ -73,7 +73,7 @@ void VizCompositorThreadRunnerWebView::InitFrameSinkManagerOnViz() {
   auto init_params = viz::FrameSinkManagerImpl::InitParams(
       server_shared_bitmap_manager_.get());
 
-  if (base::FeatureList::IsEnabled(features::kWebViewNewInvalidateHeuristic)) {
+  if (features::UseWebViewNewInvalidateHeuristic()) {
     // HWUI has 2 frames pipelineing and we need another one because we force
     // client to be frame behind.
     init_params.max_uncommitted_frames = 3;

@@ -447,11 +447,18 @@ bool ShouldUsePlatformDelegatedInk() {
   return base::FeatureList::IsEnabled(kUsePlatformDelegatedInk);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool UseWebViewNewInvalidateHeuristic() {
+  return base::FeatureList::IsEnabled(kWebViewNewInvalidateHeuristic);
+}
+#endif
+
 bool UseSurfaceLayerForVideo() {
 #if BUILDFLAG(IS_ANDROID)
   // SurfaceLayer video should work fine with new heuristic.
-  if (base::FeatureList::IsEnabled(kWebViewNewInvalidateHeuristic))
+  if (UseWebViewNewInvalidateHeuristic()) {
     return true;
+  }
 
   // Allow enabling UseSurfaceLayerForVideo if webview is using surface control.
   if (::features::IsAndroidSurfaceControlEnabled()) {

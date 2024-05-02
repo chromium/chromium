@@ -74,8 +74,8 @@ DisplayWebView::DisplayWebView(
       overlay_processor_webview_(overlay_processor_webview),
       frame_sink_manager_(frame_sink_manager),
       root_frame_sink_(root_frame_sink),
-      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
-          features::kWebViewNewInvalidateHeuristic)) {
+      use_new_invalidate_heuristic_(
+          features::UseWebViewNewInvalidateHeuristic()) {
   if (overlay_processor_webview_) {
     frame_sink_manager_observation_.Observe(frame_sink_manager);
   }

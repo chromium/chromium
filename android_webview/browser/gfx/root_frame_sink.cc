@@ -99,8 +99,8 @@ class RootFrameSink::ChildCompositorFrameSink
 RootFrameSink::RootFrameSink(RootFrameSinkClient* client)
     : root_frame_sink_id_(AllocateParentSinkId()),
       client_(client),
-      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
-          features::kWebViewNewInvalidateHeuristic)) {
+      use_new_invalidate_heuristic_(
+          features::UseWebViewNewInvalidateHeuristic()) {
   constexpr bool is_root = true;
   GetFrameSinkManager()->RegisterFrameSinkId(root_frame_sink_id_,
                                              false /* report_activationa */);

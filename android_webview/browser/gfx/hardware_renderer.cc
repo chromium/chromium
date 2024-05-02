@@ -239,8 +239,8 @@ HardwareRenderer::OnViz::OnViz(
     : without_gpu_(root_frame_sink),
       frame_sink_id_(without_gpu_->root_frame_sink_id()),
       viz_frame_submission_(::features::IsUsingVizFrameSubmissionForWebView()),
-      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
-          ::features::kWebViewNewInvalidateHeuristic)) {
+      use_new_invalidate_heuristic_(
+          ::features::UseWebViewNewInvalidateHeuristic()) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
 
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>

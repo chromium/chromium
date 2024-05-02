@@ -16,8 +16,8 @@ DisplaySchedulerWebView::DisplaySchedulerWebView(
     OverlaysInfoProvider* overlays_info_provider)
     : root_frame_sink_(root_frame_sink),
       overlays_info_provider_(overlays_info_provider),
-      use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
-          features::kWebViewNewInvalidateHeuristic)) {
+      use_new_invalidate_heuristic_(
+          features::UseWebViewNewInvalidateHeuristic()) {
   auto* frame_sink_manager =
       VizCompositorThreadRunnerWebView::GetInstance()->GetFrameSinkManager();
 
