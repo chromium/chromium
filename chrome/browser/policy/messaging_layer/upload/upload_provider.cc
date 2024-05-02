@@ -84,10 +84,11 @@ class EncryptedReportingUploadProvider::UploadHelper
   // Uploads encrypted records on sequenced task runner (and thus capable of
   // detecting whether upload client is ready or not). If not ready,
   // it will wait and then upload.
-  void EnqueueUploadInternal(bool need_encryption_key,
-                             std::vector<EncryptedRecord> records,
-                             ScopedReservation scoped_reservation,
-                             UploadEnqueuedCallback enqueued_cb);
+  static void EnqueueUploadInternal(base::WeakPtr<UploadHelper> self,
+                                    bool need_encryption_key,
+                                    std::vector<EncryptedRecord> records,
+                                    ScopedReservation scoped_reservation,
+                                    UploadEnqueuedCallback enqueued_cb);
 
   // Sequence task runner and checker used during
   // `PostNewUploadClientRequest` processing.
@@ -300,14 +301,22 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUpload(
                      std::move(enqueued_cb)));
 }
 
+// static
 void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
+    base::WeakPtr<UploadHelper> self,
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     UploadEnqueuedCallback enqueued_cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
-  if (upload_client_ == nullptr) {
-    stored_need_encryption_key_ |= need_encryption_key;
+  if (!self) {
+    std::move(enqueued_cb)
+        .Run(base::unexpected(
+            Status(error::UNAVAILABLE, "UploadHelper has been destructed")));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequenced_task_checker_);
+  if (self->upload_client_ == nullptr) {
+    self->stored_need_encryption_key_ |= need_encryption_key;
     int64_t generation_id = 0;
     if (!records.empty() && records.begin()->has_sequence_information() &&
         records.begin()->sequence_information().has_generation_id()) {
@@ -318,8 +327,8 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
       cached_records_seq_ids.push_back(
           record.sequence_information().sequencing_id());
     }
-    stored_records_.emplace(generation_id, std::move(records));
-    stored_reservations_.emplace(
+    self->stored_records_.emplace(generation_id, std::move(records));
+    self->stored_reservations_.emplace(
         generation_id,
         std::make_unique<ScopedReservation>(std::move(scoped_reservation)));
     // Report success even though the upload has not been executed.
@@ -330,11 +339,11 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
     std::move(enqueued_cb).Run(std::move(cached_records_seq_ids));
     return;
   }
-  upload_client_->EnqueueUpload(
-      need_encryption_key, stored_config_file_version_, std::move(records),
-      std::move(scoped_reservation), std::move(enqueued_cb),
-      report_successful_upload_cb_, encryption_key_attached_cb_,
-      config_file_attached_cb_);
+  self->upload_client_->EnqueueUpload(
+      need_encryption_key, self->stored_config_file_version_,
+      std::move(records), std::move(scoped_reservation), std::move(enqueued_cb),
+      self->report_successful_upload_cb_, self->encryption_key_attached_cb_,
+      self->config_file_attached_cb_);
 }
 
 // EncryptedReportingUploadProvider implementation.
