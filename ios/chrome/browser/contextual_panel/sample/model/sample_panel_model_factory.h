@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_MODEL_FACTORY_H_
-#define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_MODEL_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_FACTORY_H_
+#define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
@@ -34,4 +34,4 @@ class SamplePanelModelFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_MODEL_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_FACTORY_H_

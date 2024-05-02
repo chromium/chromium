@@ -211,7 +211,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/commerce/model/push_notification:unit_tests",
     "//ios/chrome/browser/complex_tasks/model:unit_tests",
     "//ios/chrome/browser/contextual_panel/model:unit_tests",
-    "//ios/chrome/browser/contextual_panel/model/sample:unit_tests",
+    "//ios/chrome/browser/contextual_panel/sample/model:unit_tests",
     "//ios/chrome/browser/crash_report/model:unit_tests",
     "//ios/chrome/browser/crash_report/model/breadcrumbs:unit_tests",
     "//ios/chrome/browser/data_sharing/model:unit_tests",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_ITEM_CONFIGURATION_H_
-#define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_ITEM_CONFIGURATION_H_
+#ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_ITEM_CONFIGURATION_H_
+#define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_ITEM_CONFIGURATION_H_
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 
@@ -13,4 +13,4 @@ struct SamplePanelItemConfiguration : public ContextualPanelItemConfiguration {
   std::string sample_name;
 };
 
-#endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_ITEM_CONFIGURATION_H_
+#endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_ITEM_CONFIGURATION_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_MODEL_H_
-#define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_MODEL_H_
+#ifndef IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_H_
+#define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_H_
 
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
@@ -24,4 +24,4 @@ class SamplePanelModel : public ContextualPanelModel, public KeyedService {
       FetchConfigurationForWebStateCallback callback) override;
 };
 
-#endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_SAMPLE_SAMPLE_PANEL_MODEL_H_
+#endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_H_

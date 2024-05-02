@@ -18,7 +18,7 @@ source_set("model") {
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser/contextual_panel/model/sample",
+    "//ios/chrome/browser/contextual_panel/sample/model",
     "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/price_insights/model:feature",
     "//ios/chrome/browser/shared/model/browser",
@@ -52,7 +52,7 @@ source_set("unit_tests") {
     ":public",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/browser/contextual_panel/model/sample",
+    "//ios/chrome/browser/contextual_panel/sample/model",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
