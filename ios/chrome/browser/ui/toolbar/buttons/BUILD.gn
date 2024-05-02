@@ -20,9 +20,6 @@ source_set("buttons") {
     "toolbar_tab_grid_button.mm",
   ]
   deps = [
-    "resources:omnibox_incognito_background_color",
-    "resources:tab_toolbar_button_color_highlighted",
-    "resources:tab_toolbar_button_color_highlighted_incognito",
     "//base",
     "//components/feature_engagement/public",
     "//components/strings",
@@ -39,6 +36,7 @@ source_set("buttons") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/toolbar/buttons/resources",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/web/model",

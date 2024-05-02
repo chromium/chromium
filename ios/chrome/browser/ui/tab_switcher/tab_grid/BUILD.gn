@@ -137,7 +137,7 @@ source_set("tab_grid_ui_constants") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/resources:grid_background_color",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/resources",
   ]
 }
 

@@ -25,9 +25,6 @@ source_set("tabs") {
   public_deps = [ "//ios/chrome/browser/tabs/model" ]
   deps = [
     ":constants",
-    "resources:open_new_tab_background",
-    "resources:tabstrip_background_tab",
-    "resources:tabstrip_foreground_tab",
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
@@ -58,6 +55,7 @@ source_set("tabs") {
     "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/browser/ui/tabs/requirements",
+    "//ios/chrome/browser/ui/tabs/resources",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/web_state_list/model",
     "//ios/chrome/common",

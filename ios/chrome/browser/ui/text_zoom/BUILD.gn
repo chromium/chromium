@@ -32,12 +32,11 @@ source_set("text_zoom_ui") {
   ]
   deps = [
     ":constants",
-    "resources:text_zoom_zoom_in",
-    "resources:text_zoom_zoom_out",
     "//components/strings:components_strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/text_zoom/resources",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
