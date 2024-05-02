@@ -384,71 +384,8 @@ void GetIconFromType(ContentSettingsType type,
                      bool blocked,
                      raw_ptr<const gfx::VectorIcon>* icon,
                      raw_ptr<const gfx::VectorIcon>* badge) {
-  if (features::IsChromeRefresh2023()) {
-    *badge = &gfx::kNoneIcon;
-    GetIconChromeRefresh(type, blocked, icon);
-    return;
-  }
-
-  *badge = (blocked ? &vector_icons::kBlockedBadgeIcon : &gfx::kNoneIcon);
-  switch (type) {
-    case ContentSettingsType::COOKIES:
-      *icon = &vector_icons::kDatabaseIcon;
-      return;
-    case ContentSettingsType::IMAGES:
-      *icon = &vector_icons::kPhotoIcon;
-      return;
-    case ContentSettingsType::JAVASCRIPT:
-      *icon = &vector_icons::kCodeIcon;
-      return;
-    case ContentSettingsType::MIXEDSCRIPT:
-      *icon = &kMixedContentIcon;
-      return;
-    case ContentSettingsType::SOUND: {
-      bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-      *icon = (touch_ui ? &kTabAudioRoundedIcon : &kTabAudioIcon);
-      return;
-    }
-    case ContentSettingsType::ADS:
-      *icon = &vector_icons::kAdsIcon;
-      return;
-    case ContentSettingsType::GEOLOCATION:
-      *icon = &vector_icons::kLocationOnIcon;
-      return;
-    case ContentSettingsType::PROTOCOL_HANDLERS:
-      *icon = &vector_icons::kProtocolHandlerIcon;
-      return;
-    case ContentSettingsType::MIDI_SYSEX:
-      *icon = &vector_icons::kMidiIcon;
-      return;
-    case ContentSettingsType::AUTOMATIC_DOWNLOADS:
-      *icon = &vector_icons::kFileDownloadIcon;
-      return;
-    case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      *icon = &vector_icons::kContentPasteIcon;
-      return;
-    case ContentSettingsType::MEDIASTREAM_MIC:
-      *icon = &vector_icons::kMicIcon;
-      return;
-    case ContentSettingsType::MEDIASTREAM_CAMERA:
-      *icon = &vector_icons::kVideocamIcon;
-      return;
-    case ContentSettingsType::NOTIFICATIONS:
-      *icon = &vector_icons::kNotificationsOffIcon;
-      return;
-    case ContentSettingsType::SENSORS:
-      *icon = &vector_icons::kSensorsIcon;
-      return;
-    case ContentSettingsType::STORAGE_ACCESS:
-      *icon = &vector_icons::kStorageAccessIcon;
-      return;
-    case ContentSettingsType::POPUPS:
-      *icon = &kWebIcon;
-      return;
-    default:
-      NOTREACHED();
-      return;
-  }
+  *badge = &gfx::kNoneIcon;
+  GetIconChromeRefresh(type, blocked, icon);
 }
 
 }  // namespace
@@ -627,13 +564,8 @@ void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
 }
 
 void ContentSettingImageModel::SetFramebustBlockedIcon() {
-  if (features::IsChromeRefresh2023()) {
-    icon_ = &kOpenInNewOffChromeRefreshIcon;
-    icon_badge_ = &gfx::kNoneIcon;
-  } else {
-    icon_ = &kBlockedRedirectIcon;
-    icon_badge_ = &vector_icons::kBlockedBadgeIcon;
-  }
+  icon_ = &kOpenInNewOffChromeRefreshIcon;
+  icon_badge_ = &gfx::kNoneIcon;
 }
 
 // Generic blocked content settings --------------------------------------------
