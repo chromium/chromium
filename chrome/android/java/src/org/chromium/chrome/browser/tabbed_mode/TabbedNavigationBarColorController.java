@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
@@ -44,11 +45,15 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
 @RequiresApi(Build.VERSION_CODES.O_MR1)
 class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Observer {
+    /** The amount of time transitioning from one color to another should take in ms. */
+    public static final long NAVBAR_COLOR_TRANSITION_DURATION_MS = 250;
+
     private static final String TAG = "NavBarColorCntrller";
     private final Window mWindow;
     private final ViewGroup mRootView;
@@ -79,6 +84,8 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
     private @Nullable Tab mActiveTab;
     private TabObserver mTabObserver;
     @Nullable private @ColorInt Integer mBottomAttachedUiColor;
+
+    private ValueAnimator mNavbarColorTransitionAnimation;
 
     /**
      * Creates a new {@link TabbedNavigationBarColorController} instance.
@@ -227,6 +234,9 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
             mBottomAttachedUiObserver.removeObserver(this);
             mBottomAttachedUiObserver.destroy();
         }
+        if (mNavbarColorTransitionAnimation != null) {
+            mNavbarColorTransitionAnimation.cancel();
+        }
     }
 
     @Override
@@ -292,25 +302,53 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
         forceDarkNavigation |= mIsInFullscreen;
 
         mForceDarkNavigationBarColor = forceDarkNavigation;
-        final @ColorInt int navigationBarColor =
+        final @ColorInt int newNavigationBarColor =
                 toEdge ? Color.TRANSPARENT : getNavigationBarColor(mForceDarkNavigationBarColor);
 
-        if (navigationBarColor == mNavigationBarColor) return;
+        if (mNavigationBarColor == newNavigationBarColor) return;
 
-        mNavigationBarColor = navigationBarColor;
+        @ColorInt int currentNavigationBarColor = mNavigationBarColor;
+        mNavigationBarColor = newNavigationBarColor;
 
-        mWindow.setNavigationBarColor(mNavigationBarColor);
-        if (toEdge) return;
-        setNavigationBarDividerColor();
-
-        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
-            UiUtils.setNavigationBarIconColor(
-                    mRootView,
-                    ColorUtils.isHighLuminance(ColorUtils.calculateLuminance(mNavigationBarColor)));
+        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled() && !toEdge) {
+            animateNavigationBarColor(currentNavigationBarColor, newNavigationBarColor);
         } else {
+            mWindow.setNavigationBarColor(mNavigationBarColor);
+
+            if (toEdge) return;
+
+            setNavigationBarDividerColor(
+                    getNavigationBarDividerColor(mForceDarkNavigationBarColor));
             UiUtils.setNavigationBarIconColor(
                     mRootView, !mForceDarkNavigationBarColor && mLightNavigationBar);
         }
+    }
+
+    private void animateNavigationBarColor(
+            @ColorInt int currentNavigationBarColor, @ColorInt int newNavigationBarColor) {
+        if (mNavbarColorTransitionAnimation != null
+                && mNavbarColorTransitionAnimation.isRunning()) {
+            mNavbarColorTransitionAnimation.end();
+        }
+        mNavbarColorTransitionAnimation =
+                ValueAnimator.ofFloat(0, 1).setDuration(NAVBAR_COLOR_TRANSITION_DURATION_MS);
+        mNavbarColorTransitionAnimation.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+
+        mNavbarColorTransitionAnimation.addUpdateListener(
+                (ValueAnimator animation) -> {
+                    float fraction = animation.getAnimatedFraction();
+                    int blendedColor =
+                            ColorUtils.blendColorsMultiply(
+                                    currentNavigationBarColor, newNavigationBarColor, fraction);
+                    mWindow.setNavigationBarColor(blendedColor);
+
+                    setNavigationBarDividerColor(blendedColor);
+                    UiUtils.setNavigationBarIconColor(
+                            mRootView,
+                            ColorUtils.isHighLuminance(
+                                    ColorUtils.calculateLuminance(blendedColor)));
+                });
+        mNavbarColorTransitionAnimation.start();
     }
 
     @SuppressLint("NewApi")
@@ -319,10 +357,9 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
     }
 
     @SuppressLint("NewApi")
-    private void setNavigationBarDividerColor() {
+    private void setNavigationBarDividerColor(int navigationBarDividerColor) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mWindow.setNavigationBarDividerColor(
-                    getNavigationBarDividerColor(mForceDarkNavigationBarColor));
+            mWindow.setNavigationBarDividerColor(navigationBarDividerColor);
         }
     }
 
