@@ -28,14 +28,28 @@ const int kDataFetcherTimeoutInMilliseconds = 12000;
 
 }  // namespace
 
+WebApkRestoreData::WebApkRestoreData(
+    webapps::AppId id,
+    std::unique_ptr<webapps::ShortcutInfo> info,
+    base::Time time)
+    : app_id(id), shortcut_info(std::move(info)), last_used_time(time) {}
+WebApkRestoreData::~WebApkRestoreData() = default;
+
+WebApkRestoreData::WebApkRestoreData(WebApkRestoreData&& other)
+    : app_id(other.app_id),
+      shortcut_info(std::move(other.shortcut_info)),
+      last_used_time(other.last_used_time) {}
+
 WebApkRestoreTask::WebApkRestoreTask(
     base::PassKey<WebApkRestoreManager> pass_key,
     Profile* profile,
     WebApkRestoreWebContentsManager* web_contents_manager,
-    std::unique_ptr<webapps::ShortcutInfo> shortcut_info)
-    : fallback_info_(std::move(shortcut_info)),
-      profile_(profile),
-      web_contents_manager_(web_contents_manager->GetWeakPtr()) {}
+    std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
+    base::Time last_used_time)
+    : profile_(profile),
+      web_contents_manager_(web_contents_manager->GetWeakPtr()),
+      fallback_info_(std::move(shortcut_info)),
+      last_used_time_(last_used_time) {}
 
 WebApkRestoreTask::~WebApkRestoreTask() = default;
 
@@ -143,7 +157,11 @@ void WebApkRestoreTask::OnFinishedInstall(
                                 fallback_info_->manifest_id, result));
 }
 
-std::u16string WebApkRestoreTask::AppName() {
+GURL WebApkRestoreTask::manifest_id() const {
+  return fallback_info_->manifest_id;
+}
+
+std::u16string WebApkRestoreTask::app_name() const {
   return fallback_info_->name;
 }
 

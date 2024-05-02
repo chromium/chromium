@@ -26,7 +26,9 @@ public class PwaRestoreBottomSheetCoordinator {
     /** Constructs the PwaRestoreBottomSheetCoordinator. */
     @MainThread
     public PwaRestoreBottomSheetCoordinator(
-            @NonNull String[][] appList,
+            @NonNull String[] appIds,
+            @NonNull String[] appNames,
+            @NonNull int[] lastUsedInDays,
             Activity activity,
             BottomSheetController bottomSheetController,
             int backArrowId) {
@@ -34,8 +36,12 @@ public class PwaRestoreBottomSheetCoordinator {
 
         ArrayList<PwaRestoreProperties.AppInfo> recentApps = new ArrayList();
         ArrayList<PwaRestoreProperties.AppInfo> olderApps = new ArrayList();
-        for (String[] app : appList) {
-            recentApps.add(new PwaRestoreProperties.AppInfo(app[0], app[1], 0));
+
+        assert appIds.length == appNames.length;
+        assert appIds.length == lastUsedInDays.length;
+        for (int i = 0; i < appIds.length; i++) {
+            recentApps.add(
+                    new PwaRestoreProperties.AppInfo(appIds[i], appNames[i], lastUsedInDays[i]));
         }
 
         mView = new PwaRestoreBottomSheetView(activity);

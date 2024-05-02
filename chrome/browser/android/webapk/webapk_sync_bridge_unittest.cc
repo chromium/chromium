@@ -16,6 +16,7 @@
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
+#include "chrome/browser/android/webapk/webapk_restore_task.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_data.h"
@@ -1216,14 +1217,14 @@ TEST_F(WebApkSyncBridgeTest, GetRestorableAppsInfo) {
 
   auto result = sync_bridge().GetRestorableAppsShortcutInfo();
   EXPECT_EQ(result.size(), 2u);
-  EXPECT_EQ(result[ManifestIdStrToAppId(manifest_id_2.spec())]->manifest_id,
-            manifest_id_2);
-  EXPECT_EQ(result[ManifestIdStrToAppId(manifest_id_2.spec())]->name,
-            u"registry_app_2");
-  EXPECT_EQ(result[ManifestIdStrToAppId(manifest_id_3.spec())]->manifest_id,
-            manifest_id_3);
-  EXPECT_EQ(result[ManifestIdStrToAppId(manifest_id_3.spec())]->name,
-            u"registry_app_3");
+
+  EXPECT_EQ(result[0].app_id, ManifestIdStrToAppId(manifest_id_2.spec()));
+  EXPECT_EQ(result[0].shortcut_info->manifest_id, manifest_id_2);
+  EXPECT_EQ(result[0].shortcut_info->name, u"registry_app_2");
+
+  EXPECT_EQ(result[1].app_id, ManifestIdStrToAppId(manifest_id_3.spec()));
+  EXPECT_EQ(result[1].shortcut_info->manifest_id, manifest_id_3);
+  EXPECT_EQ(result[1].shortcut_info->name, u"registry_app_3");
 }
 
 }  // namespace webapk

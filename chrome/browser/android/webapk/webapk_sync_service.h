@@ -44,8 +44,7 @@ class WebApkSyncService : public KeyedService {
   void RemoveOldWebAPKsFromSync(int64_t current_time_ms_since_unix_epoch);
 
   void PrepareRestorableAppsInfo(
-      base::OnceCallback<void(std::vector<std::vector<std::string>>)>
-          result_callback) const;
+      WebApkRestoreManager::RestorableAppsCallback result_callback) const;
   WebApkRestoreManager* GetWebApkRestoreManager() const;
 
  private:

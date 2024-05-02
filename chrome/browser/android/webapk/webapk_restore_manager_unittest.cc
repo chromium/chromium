@@ -22,6 +22,18 @@
 
 namespace webapk {
 
+std::vector<WebApkRestoreData> CreateRestoreAppsList(
+    const std::vector<GURL>& manifest_ids) {
+  std::vector<WebApkRestoreData> apps;
+  for (const auto& manifest_id : manifest_ids) {
+    auto shortcut_info = std::make_unique<webapps::ShortcutInfo>(manifest_id);
+    apps.emplace_back(
+        WebApkRestoreData(GenerateAppIdFromManifestId(manifest_id),
+                          std::move(shortcut_info), base::Time()));
+  }
+  return apps;
+}
+
 // A mock WebApkRestoreTask that does nothing but run the complete callback when
 // starts.
 class MockWebApkRestoreTask : public WebApkRestoreTask {
@@ -31,11 +43,13 @@ class MockWebApkRestoreTask : public WebApkRestoreTask {
       Profile* profile,
       WebApkRestoreWebContentsManager* web_contents_manager,
       std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
+      base::Time last_used_time,
       std::vector<std::pair<GURL, std::string>>* task_log)
       : WebApkRestoreTask(pass_key,
                           profile,
                           web_contents_manager,
-                          std::move(shortcut_info)),
+                          std::move(shortcut_info),
+                          last_used_time),
         task_log_(task_log) {}
   ~MockWebApkRestoreTask() override = default;
 
@@ -44,11 +58,10 @@ class MockWebApkRestoreTask : public WebApkRestoreTask {
   }
 
   void Start(CompleteCallback complete_callback) override {
-    task_log_->emplace_back(fallback_info_->manifest_id, "Start");
+    task_log_->emplace_back(manifest_id(), "Start");
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(complete_callback),
-                                  fallback_info_->manifest_id,
+        FROM_HERE, base::BindOnce(std::move(complete_callback), manifest_id(),
                                   webapps::WebApkInstallResult::SUCCESS));
   }
 
@@ -95,11 +108,13 @@ class TestWebApkRestoreManager : public WebApkRestoreManager {
  private:
   // Mock CreateNewTask to create the Mock task instead.
   std::unique_ptr<WebApkRestoreTask> CreateNewTask(
-      std::unique_ptr<webapps::ShortcutInfo> shortcut_info) override {
+      std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
+      base::Time last_used_time) override {
     task_log_.emplace_back(shortcut_info->manifest_id, "Create");
     return std::make_unique<MockWebApkRestoreTask>(
         WebApkRestoreManager::PassKeyForTesting(), profile(),
-        web_contents_manager(), std::move(shortcut_info), &task_log_);
+        web_contents_manager(), std::move(shortcut_info), last_used_time,
+        &task_log_);
   }
 
   base::OnceClosure on_task_finish_;
@@ -138,38 +153,38 @@ TEST_F(WebApkRestoreManagerTest, GetAppResults) {
   std::unique_ptr<TestWebApkRestoreManager> manager =
       std::make_unique<TestWebApkRestoreManager>(profile());
 
-  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps;
+  std::vector<WebApkRestoreData> apps;
   auto shortcut_info_1 = std::make_unique<webapps::ShortcutInfo>(kManifestId1);
   shortcut_info_1->name = u"app1";
   auto shortcut_info_2 = std::make_unique<webapps::ShortcutInfo>(kManifestId2);
   shortcut_info_2->name = u"app2";
-  apps.emplace(kAppId1, std::move(shortcut_info_1));
-  apps.emplace(kAppId2, std::move(shortcut_info_2));
+  apps.emplace_back(
+      WebApkRestoreData(kAppId1, std::move(shortcut_info_1), base::Time()));
+  apps.emplace_back(
+      WebApkRestoreData(kAppId2, std::move(shortcut_info_2), base::Time()));
 
-  std::vector<std::vector<std::string>> app_list;
   base::RunLoop run_loop;
   manager->PrepareRestorableApps(
-      std::move(apps), base::BindLambdaForTesting(
-                           [&](std::vector<std::vector<std::string>> results) {
-                             app_list = results;
-                             run_loop.Quit();
-                           }));
+      std::move(apps),
+      base::BindLambdaForTesting(
+          [&](const std::vector<std::string>& ids,
+              const std::vector<std::u16string>& names,
+              const std::vector<int>& last_used_in_days) {
+            EXPECT_THAT(ids, testing::ElementsAre(
+                                 GenerateAppIdFromManifestId(kManifestId1),
+                                 GenerateAppIdFromManifestId(kManifestId2)));
+            EXPECT_THAT(names, testing::ElementsAre(u"app1", u"app2"));
+            run_loop.Quit();
+          }));
   run_loop.Run();
 
-  EXPECT_THAT(app_list,
-              testing::ElementsAre(
-                  std::vector<std::string>{
-                      GenerateAppIdFromManifestId(kManifestId1), "app1"},
-                  std::vector<std::string>{
-                      GenerateAppIdFromManifestId(kManifestId2), "app2"}));
 }
 
 TEST_F(WebApkRestoreManagerTest, RunOneTasks) {
   std::unique_ptr<TestWebApkRestoreManager> manager =
       std::make_unique<TestWebApkRestoreManager>(profile());
 
-  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps;
-  apps.emplace(kAppId1, std::make_unique<webapps::ShortcutInfo>(kManifestId1));
+  auto apps = CreateRestoreAppsList({kManifestId1});
   manager->PrepareRestorableApps(std::move(apps), base::DoNothing());
 
   base::RunLoop run_loop;
@@ -188,10 +203,7 @@ TEST_F(WebApkRestoreManagerTest, ScheduleMultipleTasks) {
   std::unique_ptr<TestWebApkRestoreManager> manager =
       std::make_unique<TestWebApkRestoreManager>(profile());
 
-  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps;
-  apps.emplace(kAppId1, std::make_unique<webapps::ShortcutInfo>(kManifestId1));
-  apps.emplace(kAppId2, std::make_unique<webapps::ShortcutInfo>(kManifestId2));
-  apps.emplace(kAppId3, std::make_unique<webapps::ShortcutInfo>(kManifestId3));
+  auto apps = CreateRestoreAppsList({kManifestId1, kManifestId2, kManifestId3});
   manager->PrepareRestorableApps(std::move(apps), base::DoNothing());
 
   base::RunLoop run_loop;

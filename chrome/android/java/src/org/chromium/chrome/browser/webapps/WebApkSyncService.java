@@ -28,7 +28,11 @@ public class WebApkSyncService {
     /** Called with update result. */
     public static interface PwaRestorableListCallback {
         @CalledByNative("PwaRestorableListCallback")
-        public void onResultFromNative(boolean success, @NonNull String[][] appList);
+        public void onResultFromNative(
+                boolean success,
+                @NonNull String[] appIds,
+                @NonNull String[] appNames,
+                @NonNull int[] lastUsedInDays);
     }
 
     static void onWebApkUsed(

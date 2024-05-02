@@ -69,7 +69,8 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, CreateAndRunTasks) {
 
   WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
                          web_contents_manager.get(),
-                         std::make_unique<webapps::ShortcutInfo>(test_url));
+                         std::make_unique<webapps::ShortcutInfo>(test_url),
+                         base::Time());
   task.Start(base::BindOnce(&WebApkRestoreTaskBrowserTest::OnTaskCompleted,
                             base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
@@ -88,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIcon) {
 
   WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
                          web_contents_manager.get(),
-                         std::move(test_shortcut_info));
+                         std::move(test_shortcut_info), base::Time());
 
   base::RunLoop run_loop;
   task.DownloadIcon(run_loop.QuitClosure());
@@ -107,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIconNoIconUrl) {
 
   WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
                          web_contents_manager.get(),
-                         std::move(test_shortcut_info));
+                         std::move(test_shortcut_info), base::Time());
 
   base::RunLoop run_loop;
   task.DownloadIcon(run_loop.QuitClosure());
@@ -126,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIconBadIcon) {
 
   WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
                          web_contents_manager.get(),
-                         std::move(test_shortcut_info));
+                         std::move(test_shortcut_info), base::Time());
 
   base::RunLoop run_loop;
   task.DownloadIcon(run_loop.QuitClosure());

@@ -19,6 +19,7 @@
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
+#include "chrome/browser/android/webapk/webapk_restore_task.h"
 #include "chrome/browser/android/webapk/webapk_specifics_fetcher.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/model_type.h"
@@ -295,6 +296,7 @@ void WebApkSyncBridge::MergeSyncDataForTesting(
   for (auto const& app : app_vector) {
     std::unique_ptr<sync_pb::WebApkSpecifics> specifics =
         std::make_unique<sync_pb::WebApkSpecifics>();
+    specifics->set_start_url(app[0]);
     specifics->set_manifest_id(app[0]);
     specifics->set_name(app[1]);
     base::Time time = base::Time::Now() - base::Days(last_used_days_vector[i]);
@@ -398,14 +400,16 @@ void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
-std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>>
-WebApkSyncBridge::GetRestorableAppsShortcutInfo() const {
-  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> results;
+std::vector<WebApkRestoreData> WebApkSyncBridge::GetRestorableAppsShortcutInfo()
+    const {
+  std::vector<WebApkRestoreData> results;
   for (auto const& [appId, proto] : registry_) {
     if (!proto->is_locally_installed() &&
         AppWasUsedRecently(&proto->sync_data())) {
-      results.emplace(appId,
-                      CreateShortcutInfoFromSpecifics(proto->sync_data()));
+      results.emplace_back(WebApkRestoreData(
+          appId, CreateShortcutInfoFromSpecifics(proto->sync_data()),
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+              proto->sync_data().last_used_time_windows_epoch_micros()))));
     }
   }
   return results;

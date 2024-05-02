@@ -95,15 +95,17 @@ public class PwaRestoreBottomSheetViewRenderTest {
     private final boolean mNightModeEnabled;
 
     private void initializeBottomSheet() {
-        String[][] appList =
-                new String[][] {
-                    {"foo", "Bar"},
-                    {"bar", "Foo"},
-                    {"foobar", "Barfoo"},
-                };
+        String[] appIds = new String[] {"foo", "bar", "foobar"};
+        String[] appNames = new String[] {"Foo", "Bar", "Barfoo"};
+        int[] lastUsedList = new int[] {1, 2, 3};
         mCoordinator =
                 new PwaRestoreBottomSheetCoordinator(
-                        appList, sActivity, null, R.drawable.ic_arrow_back_24dp);
+                        appIds,
+                        appNames,
+                        lastUsedList,
+                        sActivity,
+                        null,
+                        R.drawable.ic_arrow_back_24dp);
         PropertyModel model = mCoordinator.getModelForTesting();
         model.set(PwaRestoreProperties.VIEW_STATE, PwaRestoreProperties.ViewState.PREVIEW);
 

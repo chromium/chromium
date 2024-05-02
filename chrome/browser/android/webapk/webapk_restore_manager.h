@@ -32,17 +32,18 @@ class WebApkRestoreManager {
   using PassKey = base::PassKey<WebApkRestoreManager>;
   static PassKey PassKeyForTesting();
 
-  explicit WebApkRestoreManager(Profile* profile);
+  explicit WebApkRestoreManager(Profile* proqfile);
   WebApkRestoreManager(const WebApkRestoreManager&) = delete;
   WebApkRestoreManager& operator=(const WebApkRestoreManager&) = delete;
   virtual ~WebApkRestoreManager();
 
   using RestorableAppsCallback =
-      base::OnceCallback<void(std::vector<std::vector<std::string>>)>;
+      base::OnceCallback<void(const std::vector<std::string>& app_ids,
+                              const std::vector<std::u16string>& names,
+                              const std::vector<int>& last_used_in_days)>;
 
-  void PrepareRestorableApps(
-      std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps,
-      RestorableAppsCallback result_callback);
+  void PrepareRestorableApps(std::vector<WebApkRestoreData>&& apps,
+                             RestorableAppsCallback result_callback);
   void ScheduleRestoreTasks(
       const std::vector<webapps::AppId>& app_ids_to_restore);
 
@@ -55,7 +56,8 @@ class WebApkRestoreManager {
 
  protected:
   virtual std::unique_ptr<WebApkRestoreTask> CreateNewTask(
-      std::unique_ptr<webapps::ShortcutInfo> shortcut_info);
+      std::unique_ptr<webapps::ShortcutInfo> restore_info,
+      base::Time last_used_time);
   virtual void OnTaskFinished(const GURL& manifest_id,
                               webapps::WebApkInstallResult result);
 

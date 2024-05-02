@@ -49,12 +49,9 @@ public class PwaRestoreBottomSheetCoordinatorTest {
 
     // Each entry in this list should have a corresponding entry in
     // mLastUsedList below.
-    private final String[][] mDefaultAppList =
-            new String[][] {
-                {"appId1", "App 1"},
-                {"appId2", "App 2"},
-                {"appId3", "App 3"},
-            };
+    private final String[] mDefaultAppIds = new String[] {"appId1", "appId2", "appId3"};
+    private final String[] mDefaultAppNames = new String[] {"App 1", "App 2", "App 3"};
+    private final int[] mLastUsedList = new int[] {1, 1, 35};
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
     @Mock private PwaRestoreBottomSheetMediator.Natives mNativeMediatorMock;
@@ -77,7 +74,9 @@ public class PwaRestoreBottomSheetCoordinatorTest {
     public void testViewInitialization() {
         PwaRestoreBottomSheetCoordinator coordinator =
                 new PwaRestoreBottomSheetCoordinator(
-                        mDefaultAppList,
+                        mDefaultAppIds,
+                        mDefaultAppNames,
+                        mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);
@@ -125,7 +124,9 @@ public class PwaRestoreBottomSheetCoordinatorTest {
     public void testShowAndExpand() {
         PwaRestoreBottomSheetCoordinator coordinator =
                 new PwaRestoreBottomSheetCoordinator(
-                        mDefaultAppList,
+                        mDefaultAppIds,
+                        mDefaultAppNames,
+                        mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);

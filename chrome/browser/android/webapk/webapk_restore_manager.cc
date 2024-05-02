@@ -30,15 +30,18 @@ WebApkRestoreManager::PassKey WebApkRestoreManager::PassKeyForTesting() {
 }
 
 void WebApkRestoreManager::PrepareRestorableApps(
-    std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps,
+    std::vector<WebApkRestoreData>&& restore_apps_list,
     RestorableAppsCallback apps_info_callback) {
-  if (apps.empty()) {
+  if (restore_apps_list.empty()) {
     OnAllIconsDownloaded(std::move(apps_info_callback));
     return;
   }
 
-  for (auto&& [app_id, shortcut_info] : apps) {
-    restorable_tasks_.emplace(app_id, CreateNewTask(std::move(shortcut_info)));
+  for (auto&& restore_data : restore_apps_list) {
+    restorable_tasks_.emplace(
+        restore_data.app_id,
+        CreateNewTask(std::move(restore_data.shortcut_info),
+                      restore_data.last_used_time));
   }
 
   // Prepare a web_contents and load |kAboutBlankURL| in the web contents to
@@ -67,26 +70,35 @@ void WebApkRestoreManager::DownloadIcon(
 
 void WebApkRestoreManager::OnAllIconsDownloaded(
     RestorableAppsCallback apps_info_callback) {
-  std::vector<std::vector<std::string>> results;
+  std::vector<std::string> app_ids;
+  std::vector<std::u16string> names;
+  std::vector<int> last_used_in_days;
+
   for (auto&& [app_id, task] : restorable_tasks_) {
-    results.push_back({app_id, base::UTF16ToUTF8(task->AppName())});
+    app_ids.emplace_back(app_id);
+    names.emplace_back(task->app_name());
+    last_used_in_days.emplace_back(
+        (base::Time::Now() - task->last_used_time()).InDays());
+    CHECK(!task->app_icon().drawsNothing());
   }
-  std::move(apps_info_callback).Run(results);
+  std::move(apps_info_callback).Run(app_ids, names, last_used_in_days);
 }
 
 void WebApkRestoreManager::ScheduleRestoreTasks(
     const std::vector<webapps::AppId>& app_ids_to_restore) {
-  for (auto appId : app_ids_to_restore) {
-    tasks_.push_back(appId);
+  for (auto app_id : app_ids_to_restore) {
+    tasks_.push_back(app_id);
   }
 
   MaybeStartNextTask();
 }
 
 std::unique_ptr<WebApkRestoreTask> WebApkRestoreManager::CreateNewTask(
-    std::unique_ptr<webapps::ShortcutInfo> shortcut_info) {
+    std::unique_ptr<webapps::ShortcutInfo> restore_info,
+    base::Time last_used_time) {
   return std::make_unique<WebApkRestoreTask>(
-      PassKey(), profile_, web_contents_manager(), std::move(shortcut_info));
+      PassKey(), profile_, web_contents_manager(), std::move(restore_info),
+      last_used_time);
 }
 
 void WebApkRestoreManager::MaybeStartNextTask() {

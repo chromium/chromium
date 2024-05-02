@@ -10,6 +10,7 @@
 #include "base/types/pass_key.h"
 #include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;
@@ -25,6 +26,24 @@ namespace webapk {
 class WebApkRestoreManager;
 class WebApkRestoreWebContentsManager;
 
+struct WebApkRestoreData {
+  WebApkRestoreData() = delete;
+  explicit WebApkRestoreData(
+      webapps::AppId app_id,
+      std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
+      base::Time);
+  ~WebApkRestoreData();
+  WebApkRestoreData(WebApkRestoreData&& other);
+  WebApkRestoreData(const WebApkRestoreData&) = delete;
+  WebApkRestoreData& operator=(const WebApkRestoreData&) = delete;
+
+  webapps::AppId app_id;
+  // Fallback shortcut info
+  std::unique_ptr<webapps::ShortcutInfo> shortcut_info;
+  // Time when this WebApk was last used or installed
+  base::Time last_used_time;
+};
+
 // Task for installing previously synced WebAPK on new devices. Each instance
 // represents a WebAPK to be install.
 class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
@@ -33,7 +52,8 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
       base::PassKey<WebApkRestoreManager>,
       Profile* profile,
       WebApkRestoreWebContentsManager* web_contents_manager,
-      std::unique_ptr<webapps::ShortcutInfo> shortcut_info);
+      std::unique_ptr<webapps::ShortcutInfo> fallback_info,
+      base::Time last_used_time);
 
   WebApkRestoreTask(const WebApkRestoreTask&) = delete;
   WebApkRestoreTask& operator=(const WebApkRestoreTask&) = delete;
@@ -46,11 +66,10 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
 
   void DownloadIcon(base::OnceClosure fetch_icon_callback);
 
-  std::u16string AppName();
+  GURL manifest_id() const;
+  std::u16string app_name() const;
   const SkBitmap& app_icon() const { return app_icon_; }
-
- protected:
-  std::unique_ptr<webapps::ShortcutInfo> fallback_info_;
+  base::Time last_used_time() const { return last_used_time_; }
 
  private:
   void OnIconDownloaded(base::OnceClosure fetch_icon_callback,
@@ -80,7 +99,9 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
 
   CompleteCallback complete_callback_;
 
+  std::unique_ptr<webapps::ShortcutInfo> fallback_info_;
   SkBitmap app_icon_;
+  base::Time last_used_time_;
 
   std::unique_ptr<webapps::AddToHomescreenDataFetcher> data_fetcher_;
 

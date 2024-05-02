@@ -16,14 +16,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/sync/base/features.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/android/chrome_jni_headers/WebApkSyncService_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace webapk {
 
@@ -31,11 +32,15 @@ namespace {
 
 // Called after getting restorable app info.
 void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
-                   std::vector<std::vector<std::string>> results) {
+                   const std::vector<std::string>& app_ids,
+                   const std::vector<std::u16string>& names,
+                   const std::vector<int>& last_used_in_days) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PwaRestorableListCallback_onResultFromNative(
       env, java_callback, true,
-      base::android::ToJavaArrayOfStringArray(env, results));
+      base::android::ToJavaArrayOfStrings(env, app_ids),
+      base::android::ToJavaArrayOfStrings(env, names),
+      base::android::ToJavaIntArray(env, last_used_in_days));
 }
 
 }  // anonymous namespace

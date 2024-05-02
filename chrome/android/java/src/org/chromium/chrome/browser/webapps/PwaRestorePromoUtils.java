@@ -147,16 +147,22 @@ public class PwaRestorePromoUtils {
     private static void launchPromo(Profile profile, WindowAndroid windowAndroid) {
         WebApkSyncService.fetchRestorableApps(
                 profile,
-                (success, appList) -> {
+                (success, appIds, names, lastUsedInDays) -> {
                     onRestorableAppsAvailable(
-                            success, appList, windowAndroid, R.drawable.ic_arrow_back_24dp);
+                            success,
+                            appIds,
+                            names,
+                            lastUsedInDays,
+                            windowAndroid,
+                            R.drawable.ic_arrow_back_24dp);
                 });
-        // Flow continues in onRestorableAppsAvailable.
     }
 
     private static void onRestorableAppsAvailable(
             boolean success,
-            @NonNull String[][] appList,
+            @NonNull String[] appIds,
+            @NonNull String[] appNames,
+            @NonNull int[] lastUsedInDays,
             WindowAndroid windowAndroid,
             int arrowResourceId) {
         BottomSheetController controller = BottomSheetControllerProvider.from(windowAndroid);
@@ -166,7 +172,12 @@ public class PwaRestorePromoUtils {
             Activity activity = windowAndroid.getActivity().get();
             PwaRestoreBottomSheetCoordinator pwaRestoreBottomSheetCoordinator =
                     new PwaRestoreBottomSheetCoordinator(
-                            appList, activity, controller, arrowResourceId);
+                            appIds,
+                            appNames,
+                            lastUsedInDays,
+                            activity,
+                            controller,
+                            arrowResourceId);
             if (pwaRestoreBottomSheetCoordinator == null
                     || !pwaRestoreBottomSheetCoordinator.show()) {
                 success = false;
