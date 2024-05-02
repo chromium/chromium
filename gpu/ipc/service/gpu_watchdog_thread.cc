@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/native_library.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/power_monitor.h"

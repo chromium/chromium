@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"

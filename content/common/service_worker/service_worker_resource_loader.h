@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"

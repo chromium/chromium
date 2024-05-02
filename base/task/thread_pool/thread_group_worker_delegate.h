@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/thread_group.h"
 #include "base/task/thread_pool/worker_thread.h"

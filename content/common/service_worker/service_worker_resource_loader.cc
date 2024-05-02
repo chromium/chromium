@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"

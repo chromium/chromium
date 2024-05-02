@@ -5,7 +5,8 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_IMPL_UTILS_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_RECORDER_IMPL_UTILS_H_
 
-#include "base/metrics/histogram_macros.h"
+#include <stdint.h>
+
 #include "services/metrics/public/cpp/metrics_export.h"
 
 namespace ukm {

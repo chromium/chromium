@@ -24,7 +24,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"

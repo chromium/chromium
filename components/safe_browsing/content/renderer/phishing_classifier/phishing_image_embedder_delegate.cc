@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_image_embedder.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"

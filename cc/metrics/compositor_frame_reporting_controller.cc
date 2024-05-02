@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/compositor_frame_reporter.h"

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 
+#include "base/metrics/histogram_macros.h"
+
 namespace blink {
 
 namespace {

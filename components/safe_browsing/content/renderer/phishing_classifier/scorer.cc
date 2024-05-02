@@ -14,6 +14,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
