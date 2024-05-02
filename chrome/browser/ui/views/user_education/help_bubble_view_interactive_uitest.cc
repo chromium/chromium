@@ -178,9 +178,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 namespace {
 
 constexpr char kLinuxWaylandErrorMessage[] =
-    "This test does work on Linux, however, because of the way events are "
-    "routed on Wayland specifically (and on Linux in general) the test itself "
-    "isn't reliable on Linux. It has been manually tested, and based on the "
+    "Because of the way events are routed and bounds are reported on Wayland "
+    "this test isn't reliable. It has been manually tested, and based on the "
     "way the annotation event routing works, if it did not work (a) it would "
     "not work on any platform, and (b) it would not be possible to close a "
     "menu by clicking away from it and into e.g. the omnibox.";
@@ -188,7 +187,7 @@ constexpr char kLinuxWaylandErrorMessage[] =
 // Determines whether the current system is Linux + Wayland and the current test
 // should be skipped for reasons described in the error message above.
 bool SkipIfLinuxWayland() {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return views::test::InteractionTestUtilSimulatorViews::IsWayland();
 #else
   return false;
