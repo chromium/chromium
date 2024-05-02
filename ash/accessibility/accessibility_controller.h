@@ -59,7 +59,6 @@ class DictationBubbleController;
 enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
 enum class DictationNotificationType;
-class DictationNudgeController;
 class FloatingAccessibilityController;
 class PointScanController;
 class ScopedBacklightsForcedOff;
@@ -619,9 +618,6 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool enable_chromevox_volume_slide_gesture() {
     return enable_chromevox_volume_slide_gesture_;
   }
-  DictationNudgeController* GetDictationNudgeControllerForTest() {
-    return dictation_nudge_controller_.get();
-  }
 
   int dictation_soda_download_progress() {
     return dictation_soda_download_progress_;
@@ -760,11 +756,6 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   // Used to force the backlights off to darken the screen.
   std::unique_ptr<ScopedBacklightsForcedOff> scoped_backlights_forced_off_;
-
-  // Used to show the offline dictation language upgrade nudge. This is created
-  // with ShowDictationLanguageUpgradedNudge() and reset at Shutdown() or when
-  // the Dictation feature is disabled.
-  std::unique_ptr<DictationNudgeController> dictation_nudge_controller_;
 
   // Used to control the Dictation bubble UI.
   std::unique_ptr<DictationBubbleController> dictation_bubble_controller_;

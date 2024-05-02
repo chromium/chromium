@@ -21,6 +21,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,6 +41,13 @@
 using message_center::MessageCenter;
 
 namespace ash {
+
+namespace {
+
+constexpr char kDictationLanguageUpgradedNudgeId[] =
+    "dictation_language_upgraded.nudge_id";
+
+}  // namespace
 
 class TestAccessibilityObserver : public AccessibilityObserver {
  public:
@@ -762,6 +770,32 @@ TEST_F(AccessibilityControllerTest, DictationTrayMenuVisibility) {
       prefs->IsManagedPreference(prefs::kAccessibilityDictationEnabled));
   EXPECT_FALSE(controller->dictation().enabled());
   EXPECT_FALSE(controller->IsDictationSettingVisibleInTray());
+}
+
+TEST_F(AccessibilityControllerTest, DictationLanguageUpgradedNudge) {
+  struct {
+    std::string locale;
+    std::string application_locale;
+    std::string label;
+  } kTestCases[] = {
+      {"en-US", "en-US", "English"},
+      {"es-ES", "en-US", "Spanish"},
+      {"en-US", "es-ES", "inglés"},
+      {"es-ES", "es-ES", "español"},
+  };
+
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  auto* nudge_manager = Shell::Get()->anchored_nudge_manager();
+  for (const auto& testcase : kTestCases) {
+    accessibility_controller->ShowDictationLanguageUpgradedNudge(
+        testcase.locale, testcase.application_locale);
+    ASSERT_TRUE(nudge_manager->IsNudgeShown(kDictationLanguageUpgradedNudgeId));
+
+    const std::string body_text =
+        base::UTF16ToUTF8(nudge_manager->GetNudgeBodyTextForTest(
+            kDictationLanguageUpgradedNudgeId));
+    EXPECT_THAT(body_text, testing::HasSubstr(testcase.label));
+  }
 }
 
 TEST_F(AccessibilityControllerTest, CursorHighlightTrayMenuVisibility) {

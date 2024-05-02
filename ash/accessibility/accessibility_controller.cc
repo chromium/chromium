@@ -15,7 +15,6 @@
 #include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
-#include "ash/accessibility/dictation_nudge_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
@@ -1449,7 +1448,6 @@ void AccessibilityController::Shutdown() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 
   // Clean up any child windows and widgets that might be animating out.
-  dictation_nudge_controller_.reset();
   dictation_bubble_controller_.reset();
 
   for (auto& observer : observers_) {
@@ -2102,24 +2100,14 @@ void AccessibilityController::OnDictationKeyboardDialogDismissed() {
 void AccessibilityController::ShowDictationLanguageUpgradedNudge(
     const std::string& dictation_locale,
     const std::string& application_locale) {
-  if (features::IsSystemNudgeMigrationEnabled()) {
-    const std::u16string language_name = l10n_util::GetDisplayNameForLocale(
-        dictation_locale, application_locale, /*is_for_ui=*/true);
-    const std::u16string body_text = l10n_util::GetStringFUTF16(
-        IDS_ASH_DICTATION_LANGUAGE_SUPPORTED_OFFLINE_NUDGE, language_name);
+  const std::u16string language_name = l10n_util::GetDisplayNameForLocale(
+      dictation_locale, application_locale, /*is_for_ui=*/true);
+  const std::u16string body_text = l10n_util::GetStringFUTF16(
+      IDS_ASH_DICTATION_LANGUAGE_SUPPORTED_OFFLINE_NUDGE, language_name);
 
-    AnchoredNudgeData nudge_data(kDictationLanguageUpgradedNudgeId,
-                                 NudgeCatalogName::kDictation, body_text);
-
-    AnchoredNudgeManager::Get()->Show(nudge_data);
-    return;
-  }
-
-  // TODO(b:259352600): Move dictation_nudge_controller_ into
-  // accessibility_notification_controller.
-  dictation_nudge_controller_ = std::make_unique<DictationNudgeController>(
-      dictation_locale, application_locale);
-  dictation_nudge_controller_->ShowNudge();
+  AnchoredNudgeData nudge_data(kDictationLanguageUpgradedNudgeId,
+                               NudgeCatalogName::kDictation, body_text);
+  AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
 void AccessibilityController::SilenceSpokenFeedback() {
@@ -3111,7 +3099,6 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
               std::make_unique<DictationBubbleController>();
         }
       } else {
-        dictation_nudge_controller_.reset();
         dictation_bubble_controller_.reset();
       }
       break;
