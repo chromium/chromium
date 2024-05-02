@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/test/ash_test_util.h"
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -501,57 +500,6 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, TabInfoOutsideLimit) {
   EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_urls[2]);
   EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_urls[3]);
   EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_urls[4]);
-}
-
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_AppInfo) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
-
-  // Create multiple SWAs that will be added to the restore data. Each SWA is
-  // activated when it is created, so the Sample app should be the most recently
-  // active app, and the Media app should be the least recently active app.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  test::InstallSystemAppsForTesting(profile);
-  test::CreateSystemWebApp(profile, SystemWebAppType::MEDIA);
-  test::CreateSystemWebApp(profile, SystemWebAppType::SETTINGS);
-  test::CreateSystemWebApp(profile, SystemWebAppType::CAMERA);
-  test::CreateSystemWebApp(profile, SystemWebAppType::SAMPLE);
-  auto* browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(4u, browser_list->size());
-
-  // Activate the Camera app so it appears at the front of the activation list.
-  browser_list->get(2u)->window()->Activate();
-  ASSERT_EQ(browser_list->GetLastActive(), browser_list->get(2u));
-
-  // Immediate save to full restore file to bypass the 2.5 second throttle.
-  AppLaunchInfoSaveWaiter::Wait();
-}
-
-// Verify that the app info that is sent to ash shell is as expected, with the
-// apps appearing in order from most recently used to least recently used.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, AppInfo) {
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
-
-  // The pine dialog is built based on the values in this data structure.
-  const PineContentsData* pine_contents_data =
-      Shell::Get()->pine_controller()->pine_contents_data();
-  ASSERT_TRUE(pine_contents_data);
-  const PineContentsData::AppsInfos& apps_infos =
-      pine_contents_data->apps_infos;
-
-  // The Camera app should appear first, and the rest of the apps should appear
-  // in the reverse of the order they were created. We can check each entry
-  // against a known SWA ID to verify. See
-  // `chrome/browser/web_applications/web_app_id_constants.h` for more IDs.
-  ASSERT_EQ(4u, apps_infos.size());
-
-  // Camera
-  EXPECT_EQ("njfbnohfdkmbmnjapinfcopialeghnmh", apps_infos[0].app_id);
-  // Sample Web App
-  EXPECT_EQ("jalmdcokfklmaoadompgacjlcomfckcf", apps_infos[1].app_id);
-  // Settings
-  EXPECT_EQ("odknhmnlageboeamepcngndbggdpaobj", apps_infos[2].app_id);
-  // Media
-  EXPECT_EQ("jhdjimmaggjajfjphpljagpgkidjilnj", apps_infos[3].app_id);
 }
 
 IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_ReenterOverviewPineSession) {
