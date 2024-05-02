@@ -1597,6 +1597,16 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetActivationChanged(this, active);
 
+  if (active) {
+    base::AutoReset<bool> is_traversing_widget_tree(&is_traversing_widget_tree_,
+                                                    true);
+    for (Widget* widget = this; widget; widget = widget->parent()) {
+      for (WidgetObserver& observer : widget->observers_) {
+        observer.OnWidgetTreeActivated(widget, this);
+      }
+    }
+  }
+
   const bool was_paint_as_active = ShouldPaintAsActive();
 
   // Widgets in a widget tree should share the same ShouldPaintAsActive().
@@ -2225,6 +2235,7 @@ void Widget::SetParent(Widget* parent) {
     return;
 
   Widget* old_parent = parent_.get();
+  CHECK(!is_traversing_widget_tree_);
   parent_ = parent ? parent->GetWeakPtr() : nullptr;
 
   // Release the paint-as-active lock on the old parent.

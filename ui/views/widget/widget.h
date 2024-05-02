@@ -1347,6 +1347,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // during shutdown.
   base::WeakPtr<Widget> parent_ = nullptr;
 
+  // This boolean is true when the widget tree is being traversed for
+  // WidgetObserver event broadcasting. It is used to CHECK that the widget tree
+  // is not modified during the traversal.
+  bool is_traversing_widget_tree_ = false;
+
   // The root of the View hierarchy attached to this window.
   // WARNING: see warning in tooltip_manager_ for ordering dependencies with
   // this and tooltip_manager_.

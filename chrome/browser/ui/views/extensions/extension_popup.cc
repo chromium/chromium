@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -27,7 +28,6 @@
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #include "ui/wm/core/window_animations.h"
-#include "ui/wm/public/activation_client.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -70,32 +70,6 @@ class ExtensionPopup::ScopedDevToolsAgentHostObservation {
   raw_ptr<content::DevToolsAgentHostObserver> observer_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// Observes the browser window and forwards OnWidgetActivationChanged()
-// to ExtensionPopup.
-class ExtensionPopup::ScopedBrowserActivationObservation
-    : public views::WidgetObserver {
- public:
-  explicit ScopedBrowserActivationObservation(ExtensionPopup* owner)
-      : owner_(owner) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(owner->host()->GetBrowser());
-    observation_.Observe(browser_view->GetWidget());
-  }
-  ~ScopedBrowserActivationObservation() override = default;
-
-  // views::WidgetObserer:
-  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
-    owner_->OnWidgetActivationChanged(widget, active);
-  }
-
- private:
-  raw_ptr<ExtensionPopup> owner_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
-      this};
-};
-#endif
-
 // static
 ExtensionPopup* ExtensionPopup::last_popup_for_testing() {
   return g_last_popup_for_testing;
@@ -122,12 +96,6 @@ void ExtensionPopup::ShowPopup(
   wm::SetWindowVisibilityAnimationType(
       native_view, wm::WINDOW_VISIBILITY_ANIMATION_TYPE_VERTICAL);
   wm::SetWindowVisibilityAnimationVerticalPosition(native_view, -3.0f);
-
-  // This is removed in ExtensionPopup::OnWidgetDestroying(), which is
-  // guaranteed to be called before the Widget goes away.  It's not safe to use
-  // a base::ScopedObservation for this, since the activation client may be
-  // deleted without a call back to this class.
-  wm::GetActivationClient(native_view->GetRootWindow())->AddObserver(popup);
 #endif
 }
 
@@ -159,61 +127,30 @@ void ExtensionPopup::AddedToWidget() {
       gfx::Insets::VH(contents_has_rounded_corners ? 0 : radius, 0)));
 }
 
-void ExtensionPopup::OnWidgetActivationChanged(views::Widget* widget,
-                                               bool active) {
-  BubbleDialogDelegateView::OnWidgetActivationChanged(widget, active);
-
-  // The widget is shown asynchronously and may take a long time to appear, so
-  // only close if it's actually been shown.
-  if (GetWidget()->IsVisible()) {
-    // Extension popups need to open child windows sometimes (e.g. for JS
-    // alerts), which take activation; so ExtensionPopup can't close on
-    // deactivation.  Instead, close when the parent widget is activated; this
-    // leaves the popup open when e.g. a non-Chrome window is activated, which
-    // doesn't feel very menu-like, but is better than any alternative.  See
-    // https://crbug.com/941994 for more discussion.
-    if (widget == anchor_widget() && active)
-      CloseUnlessUnderInspection();
-#if BUILDFLAG(IS_MAC)
-    // In macOS fullscreen, the extension popup is anchored to the overlay
-    // widget that never gets activated, therefore we observe the activation of
-    // the browser window.
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(host_->GetBrowser());
-    if (browser_view->IsImmersiveModeEnabled() && browser_view->IsActive()) {
-      CloseUnlessUnderInspection();
-    }
-#endif
-  }
-}
-
-#if defined(USE_AURA)
 void ExtensionPopup::OnWidgetDestroying(views::Widget* widget) {
   BubbleDialogDelegateView::OnWidgetDestroying(widget);
+  anchor_widget_observation_.Reset();
+}
 
-  if (widget == GetWidget()) {
-    auto* activation_client =
-        wm::GetActivationClient(widget->GetNativeWindow()->GetRootWindow());
-    // If the popup was being inspected with devtools and the browser window
-    // was closed, then the root window and activation client are already
-    // destroyed.
-    if (activation_client)
-      activation_client->RemoveObserver(this);
+void ExtensionPopup::OnWidgetTreeActivated(views::Widget* root_widget,
+                                           views::Widget* active_widget) {
+  // The widget is shown asynchronously and may take a long time to appear, so
+  // only close if it's actually been shown.
+  if (!GetWidget()->IsVisible()) {
+    return;
+  }
+
+  // Close the popup on the activation of any widget in the anchor widget tree,
+  // unless if the extension is blocked by DevTools inspection or JS dialogs.
+  // We cannot close the popup on deactivation because the user may want to
+  // leave the popup open to look at the info there while working on other
+  // apps or browser windows.
+  // TODO(crbug.com/326681253): don't show the popup if it might cover
+  // security-sensitive UIs.
+  if (active_widget != GetWidget()) {
+    CloseUnlessBlockedByInspectionOrJSDialog();
   }
 }
-
-void ExtensionPopup::OnWindowActivated(
-    wm::ActivationChangeObserver::ActivationReason reason,
-    aura::Window* gained_active,
-    aura::Window* lost_active) {
-  // Close on anchor window activation (i.e. user clicked the browser window).
-  // DesktopNativeWidgetAura does not trigger the expected browser widget
-  // [de]activation events when activating widgets in its own root window.
-  // This additional check handles those cases. See https://crbug.com/320889 .
-  if (anchor_widget() && gained_active == anchor_widget()->GetNativeWindow())
-    CloseUnlessUnderInspection();
-}
-#endif  // defined(USE_AURA)
 
 void ExtensionPopup::OnExtensionSizeChanged(ExtensionViewViews* view) {
   if (GetWidget())
@@ -337,10 +274,8 @@ ExtensionPopup::ExtensionPopup(
       std::make_unique<ScopedDevToolsAgentHostObservation>(this);
   host_->GetBrowser()->tab_strip_model()->AddObserver(this);
 
-#if BUILDFLAG(IS_MAC)
-  scoped_browser_activation_obvervation_ =
-      std::make_unique<ScopedBrowserActivationObservation>(this);
-#endif
+  CHECK(anchor_widget());
+  anchor_widget_observation_.Observe(anchor_widget()->GetPrimaryWindowWidget());
 
   // Handle the containing view calling window.close();
   // The base::Unretained() below is safe because this object owns `host_`, so
@@ -377,9 +312,21 @@ void ExtensionPopup::ShowBubble() {
     std::move(shown_callback_).Run(host_.get());
 }
 
-void ExtensionPopup::CloseUnlessUnderInspection() {
-  if (show_action_ != PopupShowAction::kShowAndInspect)
-    CloseDeferredIfNecessary(views::Widget::ClosedReason::kLostFocus);
+void ExtensionPopup::CloseUnlessBlockedByInspectionOrJSDialog() {
+  // Don't close if the extension page is under inspection.
+  if (show_action_ == PopupShowAction::kShowAndInspect) {
+    return;
+  }
+
+  // Don't close if an app modal dialog is showing.
+  javascript_dialogs::AppModalDialogQueue* app_modal_queue =
+      javascript_dialogs::AppModalDialogQueue::GetInstance();
+  CHECK(app_modal_queue);
+  if (app_modal_queue->HasActiveDialog()) {
+    return;
+  }
+
+  CloseDeferredIfNecessary(views::Widget::ClosedReason::kLostFocus);
 }
 
 void ExtensionPopup::CloseDeferredIfNecessary(

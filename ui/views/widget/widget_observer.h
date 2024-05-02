@@ -50,6 +50,12 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
 
   virtual void OnWidgetActivationChanged(Widget* widget, bool active) {}
 
+  // Invoked when any widget within the tree, rooted at `root_widget`, becomes
+  // active. A widget tree is considered active if any widget in the tree is
+  // active. `active_widget` is the widget that has just become active.
+  virtual void OnWidgetTreeActivated(Widget* root_widget,
+                                     Widget* active_widget) {}
+
   virtual void OnWidgetBoundsChanged(Widget* widget,
                                      const gfx::Rect& new_bounds) {}
 
