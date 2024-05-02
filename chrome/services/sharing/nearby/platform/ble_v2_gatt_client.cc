@@ -16,7 +16,7 @@
 namespace {
 
 void CancelPendingTasks(
-    base::flat_set<raw_ptr<base::WaitableEvent>> events_to_cancel) {
+    base::flat_set<raw_ptr<base::WaitableEvent>>& events_to_cancel) {
   if (!events_to_cancel.empty()) {
     VLOG(1) << __func__ << ": Canceling " << events_to_cancel.size()
             << " pending calls.";
@@ -25,8 +25,6 @@ void CancelPendingTasks(
   for (base::WaitableEvent* event : std::move(events_to_cancel)) {
     event->Signal();
   }
-
-  events_to_cancel.clear();
 }
 
 bool WereAllExpectedCharacteristicsFound(
@@ -200,6 +198,12 @@ void BleV2GattClient::OnGetGattServices(
     base::WaitableEvent* discover_services_waitable_event,
     std::vector<bluetooth::mojom::ServiceInfoPtr> services) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!pending_discover_services_waitable_events_.contains(
+          discover_services_waitable_event)) {
+    // The event has already been signaled.
+    return;
+  }
+
   VLOG(1) << __func__ << ": retrieved " << services.size()
           << ": GATT services from the remote device";
 
@@ -242,6 +246,11 @@ void BleV2GattClient::OnGetCharacteristics(
     std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>
         characteristics) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!pending_get_characteristics_waitable_events_.contains(
+          get_characteristics_waitable_event)) {
+    // The event has already been signaled.
+    return;
+  }
 
   if (characteristics.has_value()) {
     VLOG(1) << __func__ << ": got " << characteristics.value().size()
