@@ -28,7 +28,23 @@ class ContentScriptsManifestTest : public ChromeManifestTest {
 TEST_F(ContentScriptsManifestTest, MatchPattern) {
   Testcase testcases[] = {
       // chrome:// urls are not allowed.
-      Testcase("content_script_chrome_url_invalid.json",
+      Testcase("content_script_invalid_match_chrome_url.json",
+               ErrorUtils::FormatErrorMessage(
+                   errors::kInvalidMatch, base::NumberToString(0),
+                   base::NumberToString(0),
+                   URLPattern::GetParseResultString(
+                       URLPattern::ParseResult::kInvalidScheme))),
+
+      // chrome-extension:// urls are not allowed.
+      Testcase("content_script_invalid_match_chrome_extension_url.json",
+               ErrorUtils::FormatErrorMessage(
+                   errors::kInvalidMatch, base::NumberToString(0),
+                   base::NumberToString(0),
+                   URLPattern::GetParseResultString(
+                       URLPattern::ParseResult::kInvalidScheme))),
+
+      // isolated-app:// urls are not allowed.
+      Testcase("content_script_invalid_match_isolated_app_url.json",
                ErrorUtils::FormatErrorMessage(
                    errors::kInvalidMatch, base::NumberToString(0),
                    base::NumberToString(0),
@@ -49,7 +65,7 @@ TEST_F(ContentScriptsManifestTest, OnChromeUrlsWithFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kExtensionsOnChromeURLs);
   scoped_refptr<Extension> extension =
-    LoadAndExpectSuccess("content_script_chrome_url_invalid.json");
+      LoadAndExpectSuccess("content_script_invalid_match_chrome_url.json");
   const GURL newtab_url(chrome::kChromeUINewTabURL);
   EXPECT_TRUE(
       ContentScriptsInfo::ExtensionHasScriptAtURL(extension.get(), newtab_url));

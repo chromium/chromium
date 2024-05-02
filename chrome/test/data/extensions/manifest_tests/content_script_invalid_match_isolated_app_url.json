@@ -1,0 +1,11 @@
+{
+  "name": "test",
+  "manifest_version": 2,
+  "version": "1",
+  "content_scripts": [
+    {
+      "matches": ["isolated-app://aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/"],
+      "js": ["javascript.js"]
+    }
+  ]
+}

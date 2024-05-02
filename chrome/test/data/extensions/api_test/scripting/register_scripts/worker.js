@@ -195,6 +195,63 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Test that an error is returned if a content script specifies a disallowed
+  // scheme (chrome:// URL).
+  async function disallowedMatchPatternSchemeChromeUrl() {
+    await chrome.scripting.unregisterContentScripts();
+    const scriptId = 'disallowedMatchPatternSchemeChromeUrl';
+    const scripts = [{
+      id: scriptId,
+      matches: ['chrome://newtab/'],
+      js: ['dynamic_1.js']
+    }];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.registerContentScripts(scripts),
+        `Error: Script with ID '${scriptId}' has invalid value for `+
+            `matches[0]: Invalid scheme.`);
+
+    chrome.test.succeed();
+  },
+
+  // Test that an error is returned if a content script specifies a disallowed
+  // scheme (chrome-extension:// URL).
+  async function disallowedMatchPatternSchemeChromeExtensionUrl() {
+    await chrome.scripting.unregisterContentScripts();
+    const scriptId = 'disallowedMatchPatternSchemeChromeExtensionUrl';
+    const scripts = [{
+      id: scriptId,
+      matches: ['chrome-extension://abcdefghijklmnopabcdefghijklmnop/'],
+      js: ['dynamic_1.js']
+    }];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.registerContentScripts(scripts),
+        `Error: Script with ID '${scriptId}' has invalid value for `+
+            `matches[0]: Invalid scheme.`);
+
+    chrome.test.succeed();
+  },
+
+  // Test that an error is returned if a content script specifies a disallowed
+  // scheme (isolated-app:// URL).
+  async function disallowedMatchPatternSchemeIsolatedAppUrl() {
+    await chrome.scripting.unregisterContentScripts();
+    const scriptId = 'disallowedMatchPatternSchemeIsolatedAppUrl';
+    const scripts = [{
+      id: scriptId,
+      matches: ['isolated-app://aaaaaaacaibaaaaaaaaaaaaaaiaaeaaaaaaaaaaaaabaeaqaaaaaaaic/'],
+      js: ['dynamic_1.js']
+    }];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.scripting.registerContentScripts(scripts),
+        `Error: Script with ID '${scriptId}' has invalid value for `+
+            `matches[0]: Invalid scheme.`);
+
+    chrome.test.succeed();
+  },
+
   // Test that if `match_origin_as_fallback` is true, any path specified for the
   // script must be wildcarded, otherwise an error is returned.
   async function matchOriginAsFallbackWithPath() {
