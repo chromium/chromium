@@ -149,6 +149,9 @@ static const char kAllTracingCategories[] = "*";
   [_headerContentView addSubview:_menuButton];
   [_headerContentView addSubview:_field];
 
+  self.view.accessibilityElements = @[ _headerBackgroundView, _contentView ];
+  self.view.isAccessibilityElement = NO;
+
   _headerBackgroundView.backgroundColor =
       [ContentShellWindowDelegate backgroundColorDefault];
 

@@ -6,6 +6,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/input/web_input_event_builders_ios.h"
 
 static void* kObservingContext = &kObservingContext;
@@ -814,6 +815,22 @@ static void* kObservingContext = &kObservingContext;
 
 - (nullable UITextRange*)characterRangeAtPoint:(CGPoint)point {
   return nil;
+}
+
+- (NSArray*)accessibilityElements {
+  content::BrowserAccessibilityManager* manager =
+      _view->host()->GetRootBrowserAccessibilityManager();
+  if (manager) {
+    id root = manager->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+    if (root) {
+      return @[ root ];
+    }
+  }
+  return nil;
+}
+
+- (BOOL)isAccessibilityElement {
+  return NO;
 }
 
 @end

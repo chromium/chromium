@@ -30,7 +30,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
   return AXInspectFactory::CreateRecorder(DefaultPlatformRecorderType());
 }
 
-#if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
+// TODO(crbug.com/336611337): Add iOS-specific AXInspectorFactory logic.
+#if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT) || BUILDFLAG(IS_IOS)
 
 // static
 ui::AXApiType::Type AXInspectFactory::DefaultPlatformFormatterType() {

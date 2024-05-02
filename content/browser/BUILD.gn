@@ -2638,6 +2638,10 @@ source_set("browser") {
     ]
   } else if (is_ios) {
     sources += [
+      "accessibility/browser_accessibility_ios.h",
+      "accessibility/browser_accessibility_ios.mm",
+      "accessibility/browser_accessibility_manager_ios.h",
+      "accessibility/browser_accessibility_manager_ios.mm",
       "child_process_launcher_helper_ios.mm",
       "date_time_chooser/ios/date_time_chooser_coordinator.h",
       "date_time_chooser/ios/date_time_chooser_coordinator.mm",

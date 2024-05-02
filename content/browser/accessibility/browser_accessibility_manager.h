@@ -53,6 +53,8 @@ class BrowserAccessibilityManagerWin;
 class BrowserAccessibilityManagerAuraLinux;
 #elif BUILDFLAG(IS_MAC)
 class BrowserAccessibilityManagerMac;
+#elif BUILDFLAG(IS_IOS)
+class BrowserAccessibilityManagerIOS;
 #endif
 
 // To be called when a BrowserAccessibilityManager fires a generated event.
@@ -295,6 +297,10 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
 #if BUILDFLAG(IS_MAC)
   BrowserAccessibilityManagerMac* ToBrowserAccessibilityManagerMac();
+#endif
+
+#if BUILDFLAG(IS_IOS)
+  BrowserAccessibilityManagerIOS* ToBrowserAccessibilityManagerIOS();
 #endif
 
   // Returns the object that has focus, starting at the top of the frame tree,

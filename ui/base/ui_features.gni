@@ -15,7 +15,8 @@ declare_args() {
   # Whether the platform provides a native accessibility toolkit, in other words
   # the platform has a C/C++ interface for accessibility that Chrome
   # implements/subclasses in some way - win, mac, linux.
-  has_native_accessibility = use_atk || is_win || is_mac
+  has_native_accessibility =
+      use_atk || is_win || is_mac || (is_ios && use_blink)
 
   # Whether the platform provide platform-specific accessibility implementation,
   # i.e. there an accessibility API of some kind on this platform that's

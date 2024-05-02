@@ -163,8 +163,14 @@ void RenderWidgetHostViewIOS::SetBounds(const gfx::Rect& rect) {}
 gfx::NativeView RenderWidgetHostViewIOS::GetNativeView() {
   return gfx::NativeView(ui_view_->view_);
 }
+
 gfx::NativeViewAccessible RenderWidgetHostViewIOS::GetNativeViewAccessible() {
-  return {};
+  return ui_view_->view_;
+}
+
+gfx::NativeViewAccessible
+RenderWidgetHostViewIOS::AccessibilityGetNativeViewAccessible() {
+  return ui_view_->view_;
 }
 
 void RenderWidgetHostViewIOS::Focus() {

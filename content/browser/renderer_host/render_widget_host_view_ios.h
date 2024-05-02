@@ -69,6 +69,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void SetBounds(const gfx::Rect& rect) override;
   gfx::NativeView GetNativeView() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
+  gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   void Focus() override;
   bool HasFocus() override;
   void Hide() override;
