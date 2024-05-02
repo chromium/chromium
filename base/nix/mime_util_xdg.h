@@ -26,7 +26,7 @@ struct WeightedMime {
 };
 
 // Map of file extension to weighted mime type.
-using MimeTypeMap = std::map<std::string, WeightedMime>;
+using MimeTypeMap = std::map<std::string, WeightedMime, std::less<>>;
 
 // Parses a file at `file_path` which should be in the same format as the
 // /usr/share/mime/mime.cache file on Linux.
