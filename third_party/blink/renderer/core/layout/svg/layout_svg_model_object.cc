@@ -154,7 +154,6 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
   LayoutObject::StyleDidChange(diff, old_style);
 
   if (diff.NeedsFullLayout()) {
-    SetNeedsBoundariesUpdate();
     if (diff.TransformChanged())
       SetNeedsTransformUpdate();
   }

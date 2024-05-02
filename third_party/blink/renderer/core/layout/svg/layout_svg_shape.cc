@@ -80,6 +80,10 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
   NOT_DESTROYED();
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
 
+  if (diff.NeedsFullLayout()) {
+    SetNeedsBoundariesUpdate();
+  }
+
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
       TransformHelper::UpdateReferenceBoxDependency(*this);
