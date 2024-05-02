@@ -174,7 +174,7 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV7) {
         "2|http://b/|b|0|bucket_b|111|13250042735631065|13260999511438890|"
         "0|1000|0|0,"
         "3|chrome-extension://abc/||2|_default|321|13261163582572088|"
-        "13261079941303629|0|10000|0|1",
+        "13261079941303629|0|10000|0|0",
         sql::test::ExecuteWithResults(
             &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
 
@@ -254,7 +254,7 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV8) {
         "0|1000|0|0,"
         "3|chrome-extension://abc/|chrome-extension://abc/"
         "|2|_default|321|13261163582572088|"
-        "13261079941303629|0|10000|0|1",
+        "13261079941303629|0|10000|0|0",
         sql::test::ExecuteWithResults(
             &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
 

@@ -4990,11 +4990,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "indexed-db-default-durability-relaxed",
-    "owners": [ "estade@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "indexed-db-shard-backing-stores",
     "owners": [ "estade@chromium.org", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 128

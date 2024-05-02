@@ -296,13 +296,8 @@ bool QuotaDatabaseMigrations::MigrateFromVersion8ToVersion9(
     insert_statement.BindTime(8, base::Time());
     insert_statement.BindInt(9, select_statement.ColumnInt(9));
     insert_statement.BindBool(10, false);
-    // The default durability depends on whether the bucket is default. As of
-    // the time of this migration, non-default buckets are not supported without
-    // a flag, but check the name anyway for correctness.
     insert_statement.BindInt(
-        11, static_cast<int>(bucket_name == kDefaultNamePreV10
-                                 ? blink::mojom::BucketDurability::kStrict
-                                 : blink::mojom::BucketDurability::kRelaxed));
+        11, static_cast<int>(blink::mojom::BucketDurability::kRelaxed));
 
     if (!insert_statement.Run())
       return false;

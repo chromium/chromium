@@ -136,12 +136,18 @@ QuotaErrorOr<BucketInfo> BucketInfoFromSqlStatement(sql::Statement& statement) {
     return base::unexpected(QuotaError::kStorageKeyError);
   }
 
-  return BucketInfo(
+  BucketInfo bucket_info(
       BucketId(statement.ColumnInt64(0)), storage_key.value(),
       static_cast<StorageType>(statement.ColumnInt(2)),
       statement.ColumnString(3), statement.ColumnTime(4),
       statement.ColumnInt64(5), statement.ColumnBool(6),
       static_cast<blink::mojom::BucketDurability>(statement.ColumnInt(7)));
+  // Ignore the durability saved in the database for default buckets, which
+  // changed from strict by default to relaxed by default in M124.
+  if (bucket_info.is_default()) {
+    bucket_info.durability = blink::mojom::BucketDurability::kRelaxed;
+  }
+  return bucket_info;
 }
 
 std::set<BucketInfo> BucketInfosFromSqlStatement(sql::Statement& statement) {

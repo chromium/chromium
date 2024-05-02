@@ -10481,11 +10481,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIndexedDBCompressValuesWithSnappyDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kIndexedDBCompressValuesWithSnappy)},
 
-    {"indexed-db-default-durability-relaxed",
-     flag_descriptions::kIndexedDBDefaultDurabilityRelaxed,
-     flag_descriptions::kIndexedDBDefaultDurabilityRelaxed, kOsAll,
-     FEATURE_VALUE_TYPE(storage::kDefaultBucketUsesRelaxedDurability)},
-
     {"indexed-db-shard-backing-stores",
      flag_descriptions::kIndexedDBShardBackingStores,
      flag_descriptions::kIndexedDBShardBackingStores, kOsAll,
