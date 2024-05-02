@@ -1492,13 +1492,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public boolean isInteractiveOmniboxAllowed() {
         if (!ChromeFeatureList.sSearchInCCT.isEnabled()) return false;
 
-        // Local builds only: permit test APK.
-        if (VersionInfo.isLocalBuild()) {
-            if (TextUtils.equals(getClientPackageName(), "org.chromium.customtabsclient")) {
-                return true;
-            }
-        }
-
         return isPackageNameInList(
                 getClientPackageName(), OMNIBOX_ALLOWED_PACKAGE_NAMES.getValue());
     }
