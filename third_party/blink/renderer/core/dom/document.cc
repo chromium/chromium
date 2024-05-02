@@ -4554,6 +4554,11 @@ void Document::DidLoadAllScriptBlockingResources() {
       WTF::BindOnce(&Document::ExecuteScriptsWaitingForResources,
                     WrapWeakPersistent(this)));
 
+  record_replay_execute_scripts_waiting_for_resources_node_id_ =
+    recordreplay::NewDependencyGraphNode(
+      "{\"kind\":\"documentScheduleExecuteScriptsWaitingForResources\"}"
+    );
+
   if (IsA<HTMLDocument>(this) && body()) {
     // For HTML if we have no more stylesheets to load and we're past the body
     // tag, we should have something to paint so resume.
@@ -4565,6 +4570,21 @@ void Document::DidLoadAllScriptBlockingResources() {
 }
 
 void Document::ExecuteScriptsWaitingForResources() {
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "documentExecuteScriptsWaitingForResources");
+    info.Set("url", Url().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_execute_scripts_waiting_for_resources_node_id_, node_id,
+      "{\"kind\":\"scheduler\"}"
+    );
+    execute.emplace(node_id);
+  }
+
   if (!IsScriptExecutionReady())
     return;
   if (ScriptableDocumentParser* parser = GetScriptableDocumentParser())

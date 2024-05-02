@@ -343,8 +343,19 @@ void OnNetworkFinishLoading(uint64_t inspector_id,
     return;
   }
 
+  std::string requestId = RecordReplayNetworkRequestId(inspector_id);
+
+  if (recordreplay::IsReplaying()) {
+    base::Value::Dict info;
+    info.Set("kind", "networkFinishLoading");
+    info.Set("requestId", requestId);
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    recordreplay::NewDependencyGraphNode(json.c_str());
+  }
+
   base::DictionaryValue dict;
-  dict.SetString("requestId", RecordReplayNetworkRequestId(inspector_id));
+  dict.SetString("requestId", requestId);
   dict.SetDoubleKey("encodedBodySize", (double) encoded_body_length);
   dict.SetDoubleKey("decodedBodySize", (double) decoded_body_length);
   BrowserEvent("Network.DidFinishLoading", dict);
@@ -355,9 +366,20 @@ void OnNetworkFail(uint64_t inspector_id, const blink::WebURLError& error) {
     return;
   }
 
+  std::string requestId = RecordReplayNetworkRequestId(inspector_id);
+
+  if (recordreplay::IsReplaying()) {
+    base::Value::Dict info;
+    info.Set("kind", "networkFail");
+    info.Set("requestId", requestId);
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    recordreplay::NewDependencyGraphNode(json.c_str());
+  }
+
   std::string reason = net::ErrorToShortString(error.reason());
   base::DictionaryValue dict;
-  dict.SetString("requestId", RecordReplayNetworkRequestId(inspector_id));
+  dict.SetString("requestId", requestId);
   dict.SetString("requestFailedReason", std::move(reason));
   BrowserEvent("Network.DidFailLoading", dict);
 }

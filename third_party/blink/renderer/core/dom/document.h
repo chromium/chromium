@@ -2223,6 +2223,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool compatibility_mode_locked_;
 
   TaskHandle execute_scripts_waiting_for_resources_task_handle_;
+  int record_replay_execute_scripts_waiting_for_resources_node_id_ = 0;
+
   TaskHandle javascript_url_task_handle_;
   struct PendingJavascriptUrl {
    public:
