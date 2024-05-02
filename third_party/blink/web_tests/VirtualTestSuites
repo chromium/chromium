@@ -866,27 +866,6 @@
     "expires": "Aug 1, 2024"
   },
   {
-    "prefix": "css-text-spacing-trim",
-    "owners": [
-      "kojii@chromium.org",
-      "lingqi@chromium.org"
-    ],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/css/css-text/parsing/text-spacing-computed.html",
-      "external/wpt/css/css-text/parsing/text-spacing-invalid.html",
-      "external/wpt/css/css-text/parsing/text-spacing-valid.html",
-      "external/wpt/css/css-text/parsing/text-spacing-trim-computed.html",
-      "external/wpt/css/css-text/parsing/text-spacing-trim-invalid.html",
-      "external/wpt/css/css-text/parsing/text-spacing-trim-valid.html",
-      "external/wpt/css/css-text/text-spacing-trim/"
-    ],
-    "args": [
-      "--enable-blink-features=CSSTextAutoSpace,CSSTextSpacingTrim,CSSTextSpacing",
-      "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Apr 1, 2024"
-  },
-  {
     "prefix": "import-maps-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/import-maps/not-as-classic-script.html"],
