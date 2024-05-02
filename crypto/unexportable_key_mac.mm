@@ -220,6 +220,10 @@ UnexportableKeyProviderMac::GenerateSigningKeySlowly(
     case UnexportableKeyProvider::Config::AccessControl::kUserPresence:
       control_flags |= kSecAccessControlUserPresence;
       break;
+    case UnexportableKeyProvider::Config::AccessControl::kUserPresenceOrWatch:
+      control_flags |= kSecAccessControlOr | kSecAccessControlBiometryAny |
+                       kSecAccessControlDevicePasscode | kSecAccessControlWatch;
+      break;
     case UnexportableKeyProvider::Config::AccessControl::kNone:
       // No additional flag.
       break;
@@ -229,6 +233,7 @@ UnexportableKeyProviderMac::GenerateSigningKeySlowly(
           kCFAllocatorDefault, kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
           control_flags,
           /*error=*/nil));
+  CHECK(access);
 
   NSMutableDictionary* key_attributes =
       [NSMutableDictionary dictionaryWithDictionary:@{

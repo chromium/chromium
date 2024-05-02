@@ -209,8 +209,8 @@ class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
   UnexportableKeyProvider::Config MakeUnexportableKeyConfig() {
     return {
         .keychain_access_group = config_.keychain_access_group,
-        .access_control =
-            UnexportableKeyProvider::Config::AccessControl::kUserPresence,
+        .access_control = UnexportableKeyProvider::Config::AccessControl::
+            kUserPresenceOrWatch,
     };
   }
   LAContext* __strong lacontext_;
