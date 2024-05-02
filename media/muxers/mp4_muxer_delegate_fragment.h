@@ -69,10 +69,9 @@ class Mp4MuxerDelegateFragment {
   void SetBaseDecodeTime(base::TimeTicks start_audio_time,
                          base::TimeTicks start_video_time);
 
+  const raw_ref<Mp4MuxerContext> context_;
   mp4::writable_boxes::MovieFragment moof_;
   mp4::writable_boxes::MediaData mdat_;
-
-  const raw_ref<Mp4MuxerContext> context_;
 };
 
 }  // namespace media

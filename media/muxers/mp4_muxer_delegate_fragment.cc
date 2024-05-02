@@ -28,12 +28,10 @@ Mp4MuxerDelegateFragment::Mp4MuxerDelegateFragment(Mp4MuxerContext& context,
                                                    int video_track_id,
                                                    int audio_track_id,
                                                    uint32_t sequence_number)
-    : context_(context) {
+    : context_(context), moof_(sequence_number) {
   // We preallocate space for two tracks and initialize the track id.
   moof_.track_fragments.emplace_back(mp4::writable_boxes::TrackFragment());
   moof_.track_fragments.emplace_back(mp4::writable_boxes::TrackFragment());
-
-  moof_.header.sequence_number = sequence_number;
 
   // The `mdat` box is a container for media data and it will be
   // created for each track.
@@ -174,7 +172,7 @@ void Mp4MuxerDelegateFragment::Finalize(base::TimeTicks start_audio_time,
 void Mp4MuxerDelegateFragment::AddNewTrack(uint32_t track_index) {
   bool audio = (track_index == kDefaultAudioIndex);
 
-  mp4::writable_boxes::TrackFragment track_fragment = {};
+  mp4::writable_boxes::TrackFragment track_fragment;
 
   // `default-sample-flags`.
   std::vector<mp4::writable_boxes::FragmentSampleFlags> sample_flags;
