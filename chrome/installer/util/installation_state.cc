@@ -5,15 +5,20 @@
 #include "chrome/installer/util/installation_state.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/check.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "build/build_config.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/app_commands.h"
 #include "chrome/installer/util/google_update_constants.h"
+#include "chrome/installer/util/helper.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 
@@ -81,6 +86,11 @@ bool ProductState::Initialize(bool system_install) {
         old_version_.reset();
     }
 
+    if (key.ReadValue(google_update::kRegChannelField, &channel_) !=
+        ERROR_SUCCESS) {
+      channel_.clear();
+    }
+
     if (!InitializeCommands(key, &commands_))
       commands_.Clear();
   }
@@ -114,6 +124,19 @@ bool ProductState::Initialize(bool system_install) {
     msi_ = (key.ReadValueDW(google_update::kRegMSIField, &dw_value) ==
             ERROR_SUCCESS) &&
            (dw_value != 0);
+
+    constexpr base::wcstring_view kEnterpriseProductPrefix(
+        L"EnterpriseProduct");
+    for (base::win::RegistryValueIterator iter(root_key, state_key.c_str(),
+                                               KEY_WOW64_32KEY);
+         iter.Valid(); ++iter) {
+      std::wstring_view value_name(iter.Name());
+      if (base::StartsWith(value_name, kEnterpriseProductPrefix,
+                           base::CompareCase::INSENSITIVE_ASCII)) {
+        product_guid_ = value_name.substr(kEnterpriseProductPrefix.size());
+        break;
+      }
+    }
   }
 
   // Read from the ClientStateMedium key.  Values here override those in
@@ -136,6 +159,56 @@ bool ProductState::Initialize(bool system_install) {
     }
   }
 
+  if (version_.get() && uninstall_command_.GetProgram().empty()) {
+    // The product has a "pv" in its Clients key, but is missing the
+    // "UninstallString" value expected in its ClientState key. Manufacture the
+    // expected uninstall command on the basis of what appears to be present on
+    // the machine.
+
+    // FindInstallPath returns the path to a version directory if one exists in
+    // any of the standard install locations.
+    if (const auto version_dir = FindInstallPath(system_install, *version_);
+        !version_dir.empty()) {
+      uninstall_command_ = base::CommandLine(
+          version_dir.Append(kInstallerDir).Append(kSetupExe));
+      uninstall_command_.AppendSwitch(switches::kUninstall);
+      InstallUtil::AppendModeAndChannelSwitches(&uninstall_command_);
+
+      // Note that `AppendModeAndChannelSwitches` will use the current process's
+      // channel. When called from within a browser process, this will be
+      // correct. When called from within the installer, it will not be. To
+      // ensure that the browser's notion of the channel is always used, strip
+      // off a value added above and explicitly add the value from the Clients
+      // key.
+      uninstall_command_.RemoveSwitch(switches::kChannel);
+      if (!channel_.empty()) {
+        uninstall_command_.AppendSwitchNative(switches::kChannel, channel_);
+      }
+
+      if (system_install) {
+        uninstall_command_.AppendSwitch(switches::kSystemLevel);
+      }
+      uninstall_command_.AppendSwitch(switches::kVerboseLogging);
+    }
+  }
+
+  if (version_.get() && system_install && (!msi_ || product_guid_.empty())) {
+    // A system-level install may be missing the "msi" and/or
+    // "EnterpriseProduct" values in ClientState. To repair from this, search
+    // for an ARP entry under a product guid with a display name matching this
+    // product.
+    if (auto product_guid =
+            FindProductGuid(InstallUtil::GetDisplayName(), product_guid_);
+        !product_guid.empty()) {
+      msi_ = true;
+      product_guid_ = std::move(product_guid);
+      // Add `--msi` to the uninstall args if it is missing.
+      if (!uninstall_command_.HasSwitch(switches::kMsi)) {
+        uninstall_command_.AppendSwitch(switches::kMsi);
+      }
+    }
+  }
+
   return version_.get() != nullptr;
 }
 
@@ -154,8 +227,10 @@ ProductState& ProductState::CopyFrom(const ProductState& other) {
   old_version_.reset(other.old_version_.get()
                          ? new base::Version(*other.old_version_)
                          : nullptr);
+  channel_ = other.channel_;
   brand_ = other.brand_;
   uninstall_command_ = other.uninstall_command_;
+  product_guid_ = other.product_guid_;
   oem_install_ = other.oem_install_;
   commands_.CopyFrom(other.commands_);
   eula_accepted_ = other.eula_accepted_;
@@ -171,9 +246,11 @@ ProductState& ProductState::CopyFrom(const ProductState& other) {
 void ProductState::Clear() {
   version_.reset();
   old_version_.reset();
+  channel_.clear();
   brand_.clear();
   oem_install_.clear();
   uninstall_command_ = base::CommandLine(base::CommandLine::NO_PROGRAM);
+  product_guid_.clear();
   commands_.Clear();
   eula_accepted_ = 0;
   usagestats_ = 0;
@@ -205,6 +282,63 @@ bool ProductState::GetUsageStats(DWORD* usagestats) const {
     return false;
   *usagestats = usagestats_;
   return true;
+}
+
+// static
+std::wstring ProductState::FindProductGuid(std::wstring_view display_name,
+                                           std::wstring_view hint) {
+  constexpr base::wcstring_view kUninstallRootKey(
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\");
+  constexpr size_t kGuidLength = 36;  // Does not include braces.
+  constexpr REGSAM kViews[] = {
+      0,  // The default view for this bitness.
+#if defined(ARCH_CPU_64_BITS)
+      KEY_WOW64_32KEY,  // 32-bit view.
+#else
+      KEY_WOW64_64KEY,  // 64-bit view.
+#endif
+  };
+  // Returns true if the DisplayName value for the uninstall entry for `name` in
+  // `view` of HKLM equals `display_name`.
+  auto display_name_is = [&kUninstallRootKey, storage = std::wstring()](
+                             REGSAM view, std::wstring_view name,
+                             std::wstring_view display_name) mutable {
+    return base::win::RegKey(HKEY_LOCAL_MACHINE,
+                             base::StrCat({kUninstallRootKey, name}).c_str(),
+                             KEY_QUERY_VALUE | view)
+                   .ReadValue(kUninstallDisplayNameField, &storage) ==
+               ERROR_SUCCESS &&
+           storage == display_name;
+  };
+
+  // If the caller provided a hint, look first for an entry for it.
+  if (!hint.empty()) {
+    const std::wstring name = base::StrCat({L"{", hint, L"}"});
+    for (const REGSAM view : kViews) {
+      if (display_name_is(view, name, display_name)) {
+        return std::wstring(hint);
+      }
+    }
+  }
+
+  // Otherwise, search through all subkeys named with GUIDs looking for a hit.
+  for (const REGSAM view : kViews) {
+    for (base::win::RegistryKeyIterator iter(HKEY_LOCAL_MACHINE,
+                                             kUninstallRootKey.c_str(), view);
+         iter.Valid(); ++iter) {
+      const std::wstring_view key_name(iter.Name());
+      // Skip this key if it doesn't plausibly look like a product guid.
+      if (key_name.size() != kGuidLength + 2 || key_name.front() != L'{' ||
+          key_name.back() != L'}') {
+        continue;
+      }
+      if (display_name_is(view, key_name, display_name)) {
+        return std::wstring(key_name.substr(1, kGuidLength));
+      }
+    }
+  }
+
+  return {};
 }
 
 InstallationState::InstallationState() {}

@@ -126,7 +126,6 @@ namespace {
 
 const wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
 const wchar_t kDisplayVersion[] = L"DisplayVersion";
-const wchar_t kMsiProductIdPrefix[] = L"EnterpriseProduct";
 
 // Overwrite an existing DisplayVersion as written by the MSI installer
 // with the real version number of Chrome.
@@ -334,30 +333,6 @@ LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
   }
 
   return result;
-}
-
-// Returns the MSI product ID from the ClientState key that is populated for MSI
-// installs.  This property is encoded in a value name whose format is
-// "EnterpriseProduct<GUID>" where <GUID> is the MSI product id.  <GUID> is in
-// the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.  The id will be returned if
-// found otherwise this method will return an empty string.
-//
-// This format is strange and its provenance is shrouded in mystery but it has
-// the data we need, so use it.
-std::wstring FindMsiProductId(const InstallerState& installer_state) {
-  HKEY reg_root = installer_state.root_key();
-
-  base::win::RegistryValueIterator value_iter(
-      reg_root, install_static::GetClientStateKeyPath().c_str(),
-      KEY_WOW64_32KEY);
-  for (; value_iter.Valid(); ++value_iter) {
-    std::wstring value_name(value_iter.Name());
-    if (base::StartsWith(value_name, kMsiProductIdPrefix,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      return value_name.substr(std::size(kMsiProductIdPrefix) - 1);
-    }
-  }
-  return std::wstring();
 }
 
 // Repetitively attempts to delete all files that belong to old versions of
@@ -1301,13 +1276,15 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
               .Append(kSetupExe);
       DelayedOverwriteDisplayVersions(new_setup, install_id, *installer_version,
                                       installer_state.verbose_logging());
-    } else {
+    } else if (const auto* product_state =
+                   original_state.GetProductState(system_install);
+               product_state) {
       // Only when called by the MSI installer do we need to delay setting
       // the DisplayVersion.  In other runs, such as those done by the auto-
       // update action, we set the value immediately.
       // Get the app's MSI Product-ID from an entry in ClientState.
-      std::wstring app_guid = FindMsiProductId(installer_state);
-      if (!app_guid.empty()) {
+      if (const std::wstring& app_guid = product_state->product_guid();
+          !app_guid.empty()) {
         OverwriteDisplayVersions(
             app_guid, base::UTF8ToWide(installer_version->GetString()));
       }

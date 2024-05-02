@@ -10,13 +10,16 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/win/registry.h"
+#include "base/version.h"
+#include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
-#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/util_constants.h"
 
 namespace {
@@ -35,6 +38,7 @@ base::FilePath GetPathWithEnvironmentFallback(int key) {
       base::MakeFixedFlatMap<int, std::wstring_view>(
           {{base::DIR_PROGRAM_FILES, L"PROGRAMFILES"},
            {base::DIR_PROGRAM_FILESX86, L"PROGRAMFILES(X86)"},
+           {base::DIR_PROGRAM_FILES6432, L"ProgramW6432"},
            {base::DIR_LOCAL_APP_DATA, L"LOCALAPPDATA"}});
   if (auto it = kKeyToVariable.find(key); it != kKeyToVariable.end()) {
     std::array<wchar_t, MAX_PATH> value;
@@ -103,38 +107,59 @@ base::FilePath GetDefaultChromeInstallPathChecked(bool system_install) {
 // browser is installed and its `UninstallString` points into a valid install
 // directory.
 base::FilePath GetCurrentInstallPathFromRegistry(bool system_install) {
-  base::FilePath install_path;
-
-  if (!InstallUtil::GetChromeVersion(system_install).IsValid()) {
-    return install_path;
+  installer::ProductState product_state;
+  if (!product_state.Initialize(system_install)) {
+    return {};
   }
 
-  std::wstring uninstall_string;
-  const HKEY root = system_install ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  base::win::RegKey(root, install_static::GetClientStateKeyPath().c_str(),
-                    KEY_QUERY_VALUE | KEY_WOW64_32KEY)
-      .ReadValue(installer::kUninstallStringField, &uninstall_string);
-  if (uninstall_string.empty()) {
-    return install_path;
+  const base::FilePath setup_path =
+      product_state.uninstall_command().GetProgram();
+  if (setup_path.empty() || !setup_path.IsAbsolute() ||
+      setup_path.ReferencesParent()) {
+    return {};
   }
 
-  base::FilePath setup_path(std::move(uninstall_string));
-  if (!setup_path.IsAbsolute() || setup_path.ReferencesParent()) {
-    return install_path;
-  }
-
-  // The UninstallString has the format
+  // The path to setup.exe has the format
   // [InstallPath]/[version]/Installer/setup.exe. In order to get the
   // [InstallPath], the full path must be pruned of the last 3 components.
-  install_path = setup_path.DirName().DirName().DirName();
+  const base::FilePath install_path = setup_path.DirName().DirName().DirName();
 
   // The install path must not be at the root of the volume and must exist.
   if (install_path == install_path.DirName() ||
       !base::DirectoryExists(install_path)) {
-    install_path = base::FilePath();
+    return {};
   }
 
   return install_path;
+}
+
+// Returns path keys for the standard installation locations for either
+// per-user or per-machine installs. In cases where more than one location is
+// possible, the default is always first.
+base::span<const int> GetInstallationPathKeys(bool system_install) {
+  if (!system_install) {
+    // %LOCALAPPDATA% is the only location for per-user installs.
+    static constexpr int kPerUserKeys[] = {base::DIR_LOCAL_APP_DATA};
+    return base::make_span(kPerUserKeys);
+  }
+  if (base::win::OSInfo::GetArchitecture() ==
+      base::win::OSInfo::X86_ARCHITECTURE) {
+    // %PROGRAMFILES% is the only location for 32-bit Windows.
+    static constexpr int kPerMachineKeys[] = {base::DIR_PROGRAM_FILES};
+    return base::make_span(kPerMachineKeys);
+  }
+  // %PROGRAMFILES%, which matches the current binary's bitness, is the default
+  // for 64-bit Windows (x64 and arm64). The "opposite" location is the
+  // secondary.
+  static constexpr int kx64PerMachineKeys[] = {
+      base::DIR_PROGRAM_FILES,  // Native folder for this bitness.
+#if defined(ARCH_CPU_64_BITS)
+      base::DIR_PROGRAM_FILESX86,  // Folder for 32-bit apps.
+#else
+      base::DIR_PROGRAM_FILES6432,  // Folder for 64-bit apps.
+#endif
+  };
+  return base::make_span(kx64PerMachineKeys);
 }
 
 }  // namespace
@@ -160,6 +185,25 @@ base::FilePath GetChromeInstallPathWithPrefs(bool system_install,
   if (install_path.empty())
     install_path = GetDefaultChromeInstallPathChecked(system_install);
   return install_path;
+}
+
+base::FilePath FindInstallPath(bool system_install,
+                               const base::Version& version) {
+  CHECK(version.IsValid());
+
+  // Is there an installation in one of the standard locations with a matching
+  // version directory?
+  for (int path_key : GetInstallationPathKeys(system_install)) {
+    if (auto path = GetPathWithEnvironmentFallback(path_key); !path.empty()) {
+      path = path.Append(install_static::GetChromeInstallSubDirectory())
+                 .Append(kInstallBinaryDir)
+                 .AppendASCII(version.GetString());
+      if (base::DirectoryExists(path)) {
+        return path;
+      }
+    }
+  }
+  return {};
 }
 
 }  // namespace installer.

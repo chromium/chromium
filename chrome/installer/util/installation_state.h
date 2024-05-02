@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -50,6 +51,11 @@ class ProductState {
   // caller.
   const base::Version* old_version() const { return old_version_.get(); }
 
+  // Returns the product's channel name if the current install mode supports
+  // floating channels. Note that this value will be ignored by the browser if
+  // it is not a valid channel name.
+  const std::wstring& channel() const { return channel_; }
+
   // Returns the brand code the product is currently installed with.
   const std::wstring& brand() const { return brand_; }
 
@@ -73,6 +79,10 @@ class ProductState {
   // True if the "msi" value in the ClientState key is present and non-zero.
   bool is_msi() const { return msi_; }
 
+  // Returns the GUID with which the product is registered with Windows
+  // Installer, or an empty string if not managed by Windows Installer.
+  const std::wstring& product_guid() const { return product_guid_; }
+
   // The command to uninstall the product; may be empty.
   const base::CommandLine& uninstall_command() const {
     return uninstall_command_;
@@ -87,12 +97,20 @@ class ProductState {
   // Clears the state of this object.
   void Clear();
 
+  // Returns the product GUID for the Windows Installer-managed program with
+  // a DisplayName of `display_name`. `hint` is an optional GUID that may reduce
+  // overhead.
+  static std::wstring FindProductGuid(std::wstring_view display_name,
+                                      std::wstring_view hint);
+
  protected:
   std::unique_ptr<base::Version> version_;
   std::unique_ptr<base::Version> old_version_;
+  std::wstring channel_;
   std::wstring brand_;
   std::wstring oem_install_;
   base::CommandLine uninstall_command_;
+  std::wstring product_guid_;
   AppCommands commands_;
   DWORD eula_accepted_;
   DWORD usagestats_;
