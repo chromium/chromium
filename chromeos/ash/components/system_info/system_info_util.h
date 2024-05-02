@@ -31,6 +31,15 @@ enum class BatteryDataError {
   kMaxValue = kExpectationNotMet,
 };
 
+// Copies the hour and minute components of `time` to `hours` and `minutes`.
+// The minute component is rounded rather than truncated: a `time` value
+// corresponding to 92 seconds will produce a `minutes` value of 2, for
+// example.
+void COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO)
+    SplitTimeIntoHoursAndMinutes(const base::TimeDelta& time,
+                                 int* hours,
+                                 int* minutes);
+
 void COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO)
     EmitBatteryDataError(BatteryDataError error,
                          const std::string& histogram_prefix);

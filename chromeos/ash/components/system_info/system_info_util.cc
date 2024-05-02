@@ -9,7 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "ash/public/cpp/power_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -67,6 +66,16 @@ bool CheckResponse(const TResult& result,
 }
 
 }  // namespace
+
+void SplitTimeIntoHoursAndMinutes(const base::TimeDelta& time,
+                                  int* hours,
+                                  int* minutes) {
+  DCHECK(hours);
+  DCHECK(minutes);
+  *minutes = base::ClampRound(time / base::Minutes(1));
+  *hours = *minutes / 60;
+  *minutes %= 60;
+}
 
 void EmitBatteryDataError(BatteryDataError error,
                           const std::string& histogram_prefix) {
@@ -212,7 +221,7 @@ void PopulateBatteryHealth(const healthd::BatteryInfo& battery_info,
 std::u16string GetBatteryTimeText(base::TimeDelta time_left) {
   int hour = 0;
   int min = 0;
-  ash::power_utils::SplitTimeIntoHoursAndMinutes(time_left, &hour, &min);
+  SplitTimeIntoHoursAndMinutes(time_left, &hour, &min);
 
   std::u16string time_text;
   if (hour == 0 || min == 0) {

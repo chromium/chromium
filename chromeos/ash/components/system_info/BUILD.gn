@@ -12,6 +12,7 @@ component("system_info") {
     "cpu_data.h",
     "cpu_usage_data.cc",
     "cpu_usage_data.h",
+    "memory_data.h",
     "system_info_util.cc",
     "system_info_util.h",
   ]
@@ -19,7 +20,6 @@ component("system_info") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SYSTEM_INFO_IMPL" ]
 
   deps = [
-    "//ash/public/cpp:cpp",
     "//ash/strings:strings",
     "//base",
     "//chromeos/ash/services/cros_healthd/public/mojom:mojom",
