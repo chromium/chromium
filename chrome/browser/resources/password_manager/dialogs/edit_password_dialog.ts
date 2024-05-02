@@ -216,7 +216,7 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
   }
 
   private isNoteInputInvalid_(): boolean {
-    return this.note_.length >= PASSWORD_NOTE_MAX_CHARACTER_COUNT;
+    return this.note_.length > PASSWORD_NOTE_MAX_CHARACTER_COUNT;
   }
 
   private getFirstNoteFooter_(): string {

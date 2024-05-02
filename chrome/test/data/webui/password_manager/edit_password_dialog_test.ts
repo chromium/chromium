@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {Page, PASSWORD_NOTE_MAX_CHARACTER_COUNT, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -214,21 +214,31 @@ suite('EditPasswordDialogTest', function() {
     await flushTasks();
     assertFalse(dialog.$.passwordNote.invalid);
     assertEquals(
-        dialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        dialog.i18n(
+            'passwordNoteCharacterCountWarning',
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT),
         dialog.$.passwordNote.firstFooter);
     assertEquals(
-        dialog.i18n('passwordNoteCharacterCount', 900, 1000),
+        dialog.i18n(
+            'passwordNoteCharacterCount', 900,
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT),
         dialog.$.passwordNote.secondFooter);
 
-    // After 1000 characters note is no longer valid.
-    dialog.$.passwordNote.value = '.'.repeat(1000);
+    // After PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1 characters note is no longer
+    // valid.
+    dialog.$.passwordNote.value =
+        '.'.repeat(PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1);
     await flushTasks();
     assertTrue(dialog.$.passwordNote.invalid);
     assertEquals(
-        dialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        dialog.i18n(
+            'passwordNoteCharacterCountWarning',
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT),
         dialog.$.passwordNote.firstFooter);
     assertEquals(
-        dialog.i18n('passwordNoteCharacterCount', 1000, 1000),
+        dialog.i18n(
+            'passwordNoteCharacterCount', PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1,
+            1000),
         dialog.$.passwordNote.secondFooter);
   });
 

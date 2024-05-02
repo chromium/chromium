@@ -16,7 +16,7 @@ export {CredentialFieldElement} from './credential_details/credential_field.js';
 export {CredentialNoteElement} from './credential_details/credential_note.js';
 export {PasskeyDetailsCardElement} from './credential_details/passkey_details_card.js';
 export {PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, PasswordDetailsCardElement} from './credential_details/password_details_card.js';
-export {AddPasswordDialogElement} from './dialogs/add_password_dialog.js';
+export {AddPasswordDialogElement, PASSWORD_NOTE_MAX_CHARACTER_COUNT} from './dialogs/add_password_dialog.js';
 export {AuthTimedOutDialogElement} from './dialogs/auth_timed_out_dialog.js';
 export {DeletePasskeyDialogElement} from './dialogs/delete_passkey_dialog.js';
 export {EditPasskeyDialogElement} from './dialogs/edit_passkey_dialog.js';

@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordManagerImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {Page, PASSWORD_NOTE_MAX_CHARACTER_COUNT, PasswordManagerImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -166,21 +166,31 @@ suite('AddPasswordDialogTest', function() {
     await flushTasks();
     assertFalse(dialog.$.noteInput.invalid);
     assertEquals(
-        dialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        dialog.i18n(
+            'passwordNoteCharacterCountWarning',
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT),
         dialog.$.noteInput.firstFooter);
     assertEquals(
-        dialog.i18n('passwordNoteCharacterCount', 900, 1000),
+        dialog.i18n(
+            'passwordNoteCharacterCount', 900,
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT),
         dialog.$.noteInput.secondFooter);
 
-    // After 1000 characters note is no longer valid.
-    dialog.$.noteInput.value = '.'.repeat(1000);
+    // After PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1 characters note is no longer
+    // valid.
+    dialog.$.noteInput.value =
+        '.'.repeat(PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1);
     await flushTasks();
     assertTrue(dialog.$.noteInput.invalid);
     assertEquals(
-        dialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        dialog.i18n(
+            'passwordNoteCharacterCountWarning',
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT),
         dialog.$.noteInput.firstFooter);
     assertEquals(
-        dialog.i18n('passwordNoteCharacterCount', 1000, 1000),
+        dialog.i18n(
+            'passwordNoteCharacterCount', PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1,
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT),
         dialog.$.noteInput.secondFooter);
     assertTrue(dialog.$.addButton.disabled);
   });
