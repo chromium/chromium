@@ -385,6 +385,7 @@ if (enable_pdf) {
       "//pdf/loader",
       "//pdf/loader:unit_tests",
       "//printing",
+      "//services/screen_ai/buildflags",
       "//skia",
       "//testing/gmock",
       "//testing/gtest",
