@@ -154,8 +154,9 @@ void FCMInvalidationService::OnActiveAccountLogout() {
   }
 }
 
-void FCMInvalidationService::OnInvalidate(const Invalidation& invalidation) {
-  invalidator_registrar_.DispatchInvalidationToHandlers(invalidation);
+std::optional<Invalidation> FCMInvalidationService::OnInvalidate(
+    const Invalidation& invalidation) {
+  return invalidator_registrar_.DispatchInvalidationToHandlers(invalidation);
 }
 
 void FCMInvalidationService::OnInvalidatorStateChange(InvalidatorState state) {

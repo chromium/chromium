@@ -4,6 +4,8 @@
 
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,14 +23,17 @@ namespace {
 // Otherwise, the existing invalidation for the topic will be replaced by `inv`
 // if and only if `inv` has a higher version than `map.at(inv.topic())`.
 void Upsert(std::map<Topic, Invalidation>& map,
-            const Invalidation& invalidation) {
-  auto it = map.find(invalidation.topic());
-  if (it == map.end()) {
-    map.emplace(invalidation.topic(), invalidation);
+            const std::optional<Invalidation>& invalidation) {
+  if (!invalidation) {
     return;
   }
-  if (it->second.version() < invalidation.version()) {
-    it->second = invalidation;
+  auto it = map.find(invalidation->topic());
+  if (it == map.end()) {
+    map.emplace(invalidation->topic(), *invalidation);
+    return;
+  }
+  if (it->second.version() < invalidation->version()) {
+    it->second = *invalidation;
     return;
   }
 }
@@ -104,8 +109,6 @@ void FCMInvalidationListener::InvalidationReceived(
     return;
   }
   Invalidation inv = Invalidation(*expected_public_topic, version, payload);
-  inv.SetAckHandler(weak_factory_.GetWeakPtr(),
-                    base::SingleThreadTaskRunner::GetCurrentDefault());
   DVLOG(1) << "Received invalidation with version " << inv.version() << " for "
            << *expected_public_topic;
 
@@ -114,18 +117,16 @@ void FCMInvalidationListener::InvalidationReceived(
 
 void FCMInvalidationListener::DispatchInvalidation(
     const Invalidation& invalidation) {
-  // Cache invalidation
-  Upsert(unacked_invalidations_map_, invalidation);
-
-  // Emit invalidation to registered handlers (if any).
-  if (interested_topics_.contains(invalidation.topic())) {
-    EmitSavedInvalidation(invalidation);
-  }
+  const auto uninteresting_invalidation = EmitInvalidation(invalidation);
+  Upsert(undispatched_invalidations_, uninteresting_invalidation);
 }
 
-void FCMInvalidationListener::EmitSavedInvalidation(
+std::optional<Invalidation> FCMInvalidationListener::EmitInvalidation(
     const Invalidation& invalidation) {
-  delegate_->OnInvalidate(invalidation);
+  if (!interested_topics_.contains(invalidation.topic())) {
+    return invalidation;
+  }
+  return delegate_->OnInvalidate(invalidation);
 }
 
 void FCMInvalidationListener::TokenReceived(
@@ -140,20 +141,6 @@ void FCMInvalidationListener::TokenReceived(
   }
 }
 
-void FCMInvalidationListener::Acknowledge(const Topic& topic,
-                                          const AckHandle& handle) {
-  auto lookup = unacked_invalidations_map_.find(topic);
-  if (lookup == unacked_invalidations_map_.end()) {
-    DLOG(WARNING) << "Received acknowledgement for untracked topic";
-    return;
-  }
-  if (lookup->second.ack_handle().Equals(handle)) {
-    unacked_invalidations_map_.erase(topic);
-    return;
-  }
-  DLOG(WARNING) << "Unrecognized to ack for topic " << topic;
-}
-
 void FCMInvalidationListener::DoSubscriptionUpdate() {
   if (!per_user_topic_subscription_manager_ || instance_id_token_.empty() ||
       !topics_update_requested_) {
@@ -162,21 +149,14 @@ void FCMInvalidationListener::DoSubscriptionUpdate() {
   per_user_topic_subscription_manager_->UpdateSubscribedTopics(
       interested_topics_, instance_id_token_);
 
-  // Go over all stored unacked invalidations and dispatch them if their topics
-  // have become interesting.
-  // Note: We might dispatch invalidations for a second time here, if they were
-  // already dispatched but not acknowledged yet.
-  // TODO(melandory): remove unacked invalidations for unregistered topics.
-  for (const auto& [topic, invalidation] : unacked_invalidations_map_) {
-    if (!interested_topics_.contains(topic)) {
-      continue;
-    }
-
-    // There's no need to run these through DispatchInvalidations(); they've
-    // already been saved to storage (that's where we found them) so all we need
-    // to do now is emit them.
-    EmitSavedInvalidation(invalidation);
+  // Emit all cached invalidations, as some might be interesting now.
+  // The non-dispatched invalidations form the new cache.
+  std::map<Topic, Invalidation> new_cache;
+  for (const auto& [topic, invalidation] : undispatched_invalidations_) {
+    const auto uninteresting_invalidation = EmitInvalidation(invalidation);
+    Upsert(new_cache, uninteresting_invalidation);
   }
+  swap(new_cache, undispatched_invalidations_);
 }
 
 void FCMInvalidationListener::Stop() {

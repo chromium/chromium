@@ -22,6 +22,8 @@ class FCMSyncNetworkChannel {
  public:
   class Observer {
    public:
+    virtual ~Observer() = default;
+
     virtual void OnFCMChannelStateChanged(
         FcmChannelState invalidator_state) = 0;
   };

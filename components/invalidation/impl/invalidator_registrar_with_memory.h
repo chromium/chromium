@@ -6,6 +6,7 @@
 #define COMPONENTS_INVALIDATION_IMPL_INVALIDATOR_REGISTRAR_WITH_MEMORY_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -86,8 +87,9 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
 
   // Dispatches incoming invalidation to the corresponding handler based on its
   // topic.
-  // Invalidations for topics with no corresponding handler are dropped.
-  void DispatchInvalidationToHandlers(const Invalidation& invalidation);
+  // Invalidations for topics with no corresponding handler are returned.
+  std::optional<Invalidation> DispatchInvalidationToHandlers(
+      const Invalidation& invalidation);
 
   // Dispatches a notification that the client has successfully subscribed to
   // `topic` to handlers.

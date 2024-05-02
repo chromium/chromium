@@ -42,6 +42,8 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   using RequestType = PerUserTopicSubscriptionRequest::RequestType;
   class Observer {
    public:
+    virtual ~Observer() = default;
+
     virtual void OnSubscriptionChannelStateChanged(
         SubscriptionChannelState state) = 0;
     virtual void OnSubscriptionRequestFinished(Topic topic,

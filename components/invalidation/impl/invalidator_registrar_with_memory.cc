@@ -235,14 +235,10 @@ TopicMap InvalidatorRegistrarWithMemory::GetAllSubscribedTopics() const {
   return subscribed_topics;
 }
 
-void InvalidatorRegistrarWithMemory::DispatchInvalidationToHandlers(
+std::optional<Invalidation>
+InvalidatorRegistrarWithMemory::DispatchInvalidationToHandlers(
     const Invalidation& invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // If we have no handlers, there's nothing to do.
-  if (handlers_.empty()) {
-    return;
-  }
-
   // Each handler has a set of registered topics. In order to send the incoming
   // invalidation to the correct handlers we are going through each handler and
   // each of their sets of topics.
@@ -255,8 +251,10 @@ void InvalidatorRegistrarWithMemory::DispatchInvalidationToHandlers(
         continue;
       }
       handler->OnIncomingInvalidation(invalidation);
+      return std::nullopt;
     }
   }
+  return invalidation;
 }
 
 void InvalidatorRegistrarWithMemory::DispatchSuccessfullySubscribedToHandlers(

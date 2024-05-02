@@ -49,8 +49,7 @@ class TestFCMSyncNetworkChannel : public FCMSyncNetworkChannel {
 // and state.
 class FakeDelegate : public FCMInvalidationListener::Delegate {
  public:
-  explicit FakeDelegate(FCMInvalidationListener* listener)
-      : state_(InvalidatorState::kDisabled) {}
+  explicit FakeDelegate(FCMInvalidationListener* listener) {}
   ~FakeDelegate() override = default;
 
   size_t GetInvalidationCount(const Topic& topic) const {
@@ -89,8 +88,13 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
   }
 
   // FCMInvalidationListener::Delegate implementation.
-  void OnInvalidate(const Invalidation& invalidation) override {
+  std::optional<Invalidation> OnInvalidate(
+      const Invalidation& invalidation) override {
     invalidations_[invalidation.topic()].push_back(invalidation);
+    if (shall_dispatch_) {
+      return std::nullopt;
+    }
+    return invalidation;
   }
 
   void OnInvalidatorStateChange(InvalidatorState state) override {
@@ -101,13 +105,15 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
     successfully_subscribed_topics_.insert(topic);
   }
 
+  bool shall_dispatch_ = true;
+
  private:
   typedef std::vector<Invalidation> List;
   typedef std::map<Topic, List> Map;
   typedef std::map<Topic, Invalidation> DropMap;
 
   Map invalidations_;
-  InvalidatorState state_;
+  InvalidatorState state_ = InvalidatorState::kDisabled;
   DropMap dropped_invalidations_map_;
   std::set<Topic> successfully_subscribed_topics_;
 };
@@ -227,7 +233,6 @@ class FCMInvalidationListenerTest : public testing::Test {
   // Tests need to access these directly.
   FCMInvalidationListener listener_;
 
- private:
   FakeDelegate fake_delegate_;
 };
 
@@ -303,6 +308,37 @@ TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Simple) {
   ASSERT_EQ(1U, GetInvalidationCount(topic));
   EXPECT_EQ(kVersion1, GetVersion(topic));
   EXPECT_EQ(kPayload1, GetPayload(topic));
+}
+
+// Upon registration, cached invalidations are emitted.
+// Successfully dispatched invalidations are removed from the cache.
+TEST_F(FCMInvalidationListenerTest, RegisterTwice_DispatchFromCacheOnce) {
+  EnableNotifications();
+
+  const Topic kTopic = "my_topic";
+  TopicMap topics{{kTopic, TopicMetadata{false}}};
+
+  // An invalidation from an unregistered topic does not get emitted.
+  EXPECT_EQ(0U, GetInvalidationCount(kTopic));
+  FireInvalidate(kTopic, kVersion1, kPayload1);
+  ASSERT_EQ(0U, GetInvalidationCount(kTopic));
+
+  // Once we register, the cache invalidation gets emitted.
+  // It will remain cached if the dispatch fails. Subsequent updates of
+  // interested topics will cause the invalidation to be emitted again.
+  fake_delegate_.shall_dispatch_ = false;
+  listener_.UpdateInterestedTopics(topics);
+  ASSERT_EQ(1U, GetInvalidationCount(kTopic));
+  listener_.UpdateInterestedTopics(topics);
+  ASSERT_EQ(2U, GetInvalidationCount(kTopic));
+
+  // However, once the dispatch succeeds, the emitted invalidation is removed
+  // from the cache and will not be emitted again.
+  fake_delegate_.shall_dispatch_ = true;
+  listener_.UpdateInterestedTopics(topics);
+  ASSERT_EQ(3U, GetInvalidationCount(kTopic));
+  listener_.UpdateInterestedTopics(topics);
+  ASSERT_EQ(3U, GetInvalidationCount(kTopic));
 }
 
 // Fire a couple of invalidations before any topic registers. For each topic,

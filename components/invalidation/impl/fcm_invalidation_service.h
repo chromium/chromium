@@ -6,6 +6,7 @@
 #define COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -84,7 +85,8 @@ class FCMInvalidationService : public InvalidationService,
   void OnActiveAccountLogout() override;
 
   // FCMInvalidationListener::Delegate implementation.
-  void OnInvalidate(const Invalidation& invalidation) override;
+  std::optional<Invalidation> OnInvalidate(
+      const Invalidation& invalidation) override;
   void OnInvalidatorStateChange(InvalidatorState state) override;
   void OnSuccessfullySubscribed(const Topic& topic) override;
 
