@@ -21,11 +21,9 @@ Wayland should be used when implementing features that primarily deal with
 display and input. Wayland should be engaged when dealing with
 
 * Window management
-* Surface position, window state (fullscreen, minimized etc)
-* Display management
-* Scaling, display layout
-* Input Handling
-* Keyboard, Mouse, IME
+* Surface position, window state (fullscreen, minimized, etc)
+* Display management (scaling, display layout, etc)
+* Input Handling (keyboard, mouse, IME, etc)
 * Compositing
 * Handling of graphics primitives
 
