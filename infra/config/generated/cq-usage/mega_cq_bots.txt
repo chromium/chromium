@@ -70,6 +70,7 @@ chromium/try/ios-asan
 chromium/try/ios-catalyst
 chromium/try/ios-device
 chromium/try/ios-simulator
+chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
 chromium/try/lacros-amd64-generic-rel-gtest

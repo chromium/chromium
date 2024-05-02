@@ -21,6 +21,7 @@ build/win-build-perf-siso
 ci/Deterministic Linux
 ci/Deterministic Linux (dbg)
 ci/linux-win-cross-rel
+try/ios-simulator-exp
 try/linux-full-remote-rel
 try/linux-full-remote-rel-compilator
 try/linux-win-cross-rel

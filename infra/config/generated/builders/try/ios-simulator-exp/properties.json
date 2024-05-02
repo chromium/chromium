@@ -2,7 +2,7 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/ios-simulator/gn-args.json"
+        "infra/config/generated/builders/try/ios-simulator-exp/gn-args.json"
       ],
       "builder_db": {
         "entries": [
@@ -43,21 +43,23 @@
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "ios-simulator",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "ios-simulator-exp",
-          "group": "tryserver.chromium.mac"
-        }
-      ]
+      "is_compile_only": true
     }
   },
+  "$build/code_coverage": {
+    "coverage_exclude_sources": "ios_test_files_and_test_utils",
+    "coverage_test_types": [
+      "overall",
+      "unit"
+    ],
+    "use_clang_coverage": true
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -68,8 +70,7 @@
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -78,11 +79,8 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.mac",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium",
-    "ios"
-  ],
+  "builder_group": "tryserver.chromium.mac",
+  "cq": "required",
+  "recipe": "chromium_trybot",
   "xcode_build_version": "15e204a"
 }

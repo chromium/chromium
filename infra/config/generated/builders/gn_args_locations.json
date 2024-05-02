@@ -844,6 +844,7 @@
     "ios-m1-simulator": "try/ios-m1-simulator/gn-args.json",
     "ios-simulator": "try/ios-simulator/gn-args.json",
     "ios-simulator-code-coverage": "try/ios-simulator-code-coverage/gn-args.json",
+    "ios-simulator-exp": "try/ios-simulator-exp/gn-args.json",
     "ios-simulator-full-configs": "try/ios-simulator-full-configs/gn-args.json",
     "ios-simulator-multi-window": "try/ios-simulator-multi-window/gn-args.json",
     "ios-simulator-noncq": "try/ios-simulator-noncq/gn-args.json",

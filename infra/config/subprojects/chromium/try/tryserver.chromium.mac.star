@@ -5,6 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -624,6 +625,33 @@ try_.compilator_builder(
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
+)
+
+ios_builder(
+    name = "ios-simulator-exp",
+    description_html = "Experimental " + linkify_builder("try", "ios-simulator", "chromium") + " builder to test new features and changes.",
+    mirrors = builder_config.copy_from("try/ios-simulator"),
+    builder_config_settings = builder_config.try_settings(
+        is_compile_only = True,
+    ),
+    gn_args = "try/ios-simulator",
+    builderless = True,
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-build-team@google.com",
+    coverage_exclude_sources = "ios_test_files_and_test_utils",
+    coverage_test_types = ["overall", "unit"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+        # crbug/940930
+        "chromium.enable_cleandead": 100,
+    },
+    main_list_view = "try",
+    # TODO: crbug.com/336382863 - Comment out 'tryjob' to not keep this bot running.
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+    use_clang_coverage = True,
 )
 
 ios_builder(
