@@ -20,6 +20,7 @@ import {getTemplate} from './lens_overlay_app.html.js';
 export interface LensOverlayAppElement {
   $: {
     closeButton: CrIconButtonElement,
+    feedbackButton: CrIconButtonElement,
     initialToast: InitialToastElement,
   };
 }
@@ -78,6 +79,10 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private onCloseButtonClick() {
     this.browserProxy.handler.closeRequestedByOverlay();
+  }
+
+  private onFeedbackButtonClick() {
+    this.browserProxy.handler.feedbackRequestedByOverlay();
   }
 
   private onNotifyResultsPanelOpened() {

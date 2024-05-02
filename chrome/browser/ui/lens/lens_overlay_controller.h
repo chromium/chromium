@@ -342,6 +342,7 @@ class LensOverlayController : public LensSearchboxClient,
   // lens::mojom::LensPageHandler overrides.
   void AddBackgroundBlur() override;
   void CloseRequestedByOverlay() override;
+  void FeedbackRequestedByOverlay() override;
 
   // Closes search bubble.
   void CloseSearchBubble() override;

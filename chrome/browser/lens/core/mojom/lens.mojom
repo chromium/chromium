@@ -33,6 +33,10 @@ interface LensPageHandler {
   // tab contents.
   AddBackgroundBlur();
 
+  // When this method is called, the C++ coordinator will show the feedback
+  // dialog.
+  FeedbackRequestedByOverlay();
+
   // When this method is called, the C++ coordinator sends a Lens request with
   // the given bounding region to the Lens servers and display results in the
   // Chrome side panel. The region should be normalized between 0 and 1.

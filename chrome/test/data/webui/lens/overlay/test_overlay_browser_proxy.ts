@@ -19,6 +19,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'closeRequestedByOverlay',
       'addBackgroundBlur',
       'closeSearchBubble',
+      'feedbackRequestedByOverlay',
       'issueLensRequest',
       'issueTextSelectionRequest',
     ]);
@@ -34,6 +35,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   closeSearchBubble() {
     this.methodCalled('closeSearchBubble');
+  }
+
+  feedbackRequestedByOverlay() {
+    this.methodCalled('feedbackRequestedByOverlay');
   }
 
   issueLensRequest(rect: CenterRotatedBox) {

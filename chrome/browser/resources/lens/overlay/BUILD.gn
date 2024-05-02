@@ -10,6 +10,7 @@ build_webui("build_overlay") {
   grd_prefix = "lens_untrusted"
 
   static_files = [
+    "feedback.svg",
     "icon_clear.svg",
     "lens_overlay.html",
     "lens.svg",

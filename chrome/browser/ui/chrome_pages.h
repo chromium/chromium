@@ -124,6 +124,7 @@ enum FeedbackSource {
   kFeedbackSourcePriceInsights,
   kFeedbackSourceCookieControls,
   kFeedbackSourceGameDashboard,
+  kFeedbackSourceLensOverlay,
   kFeedbackSourceLogin,
   kFeedbackSourceAI,
   kFeedbackSourceFocusMode,

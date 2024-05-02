@@ -13,6 +13,7 @@
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -31,6 +33,7 @@
 #include "content/public/browser/web_ui.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
@@ -779,6 +782,20 @@ void LensOverlayController::AddBackgroundBlur() {
 
 void LensOverlayController::CloseRequestedByOverlay() {
   CloseUIAsync();
+}
+
+void LensOverlayController::FeedbackRequestedByOverlay() {
+  Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
+  if (!tab_browser) {
+    return;
+  }
+  chrome::ShowFeedbackPage(
+      tab_browser, chrome::kFeedbackSourceLensOverlay,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/"lens_overlay",
+      /*extra_diagnostics=*/std::string());
 }
 
 void LensOverlayController::CloseSearchBubble() {

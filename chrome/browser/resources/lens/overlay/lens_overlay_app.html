@@ -9,19 +9,31 @@
     background-color: #151C264D;
   }
 
-  #closeButton {
-    position: absolute;
+  #buttonContainer {
+    display: flex;
+    gap: 12px;
     inset-block-start: 33px;
     inset-inline-end: 30px;
-    --cr-icon-image: url("icon_clear.svg");
+    position: absolute;
+  }
+
+  #closeButton,
+  #feedbackButton {
     --cr-icon-button-icon-size: 24px;
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: white;
   }
 
+  #closeButton {
+    --cr-icon-image: url("icon_clear.svg");
+  }
 
   :host([close-button-hidden]) #closeButton {
     display: none;
+  }
+
+  #feedbackButton {
+    --cr-icon-image: url("feedback.svg");
   }
 
   initial-toast {
@@ -36,7 +48,12 @@
         screenshot-data-uri="[[screenshotDataUri]]"></lens-selection-overlay>
   </template>
   <initial-toast id="initialToast"></initial-toast>
-  <cr-icon-button id="closeButton" class="action-button"
-    on-click="onCloseButtonClick" aria-label="$i18n{close}"
-    title="$i18n{close}"></cr-icon-button>
+  <div id="buttonContainer">
+    <cr-icon-button id="feedbackButton" class="action-button"
+      on-click="onFeedbackButtonClick" aria-label="$i18n{sendFeedback}"
+      title="$i18n{sendFeedback}"></cr-icon-button>
+    <cr-icon-button id="closeButton" class="action-button"
+      on-click="onCloseButtonClick" aria-label="$i18n{close}"
+      title="$i18n{close}"></cr-icon-button>
+  </div>
 </div>
