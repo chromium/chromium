@@ -15,3 +15,4 @@ Local Modifications:
 - Exclude test/ and example/ subdirs.
 - Patch httplib.h to use #include "third_party/zlib/zlib_crashpad.h" instead of
   <zlib.h>.
+- Make `this` capture explicit to avoid errors in C++20.

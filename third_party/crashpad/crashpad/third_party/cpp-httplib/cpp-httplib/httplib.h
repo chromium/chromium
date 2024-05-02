@@ -1684,18 +1684,18 @@ inline bool Server::listen_internal()
         }
 
         // TODO: Use thread pool...
-        std::thread([=]() {
-            {
-                std::lock_guard<std::mutex> guard(running_threads_mutex_);
-                running_threads_++;
-            }
+        std::thread([=, this]() {
+          {
+            std::lock_guard<std::mutex> guard(running_threads_mutex_);
+            running_threads_++;
+          }
 
-            read_and_close_socket(sock);
+          read_and_close_socket(sock);
 
-            {
-                std::lock_guard<std::mutex> guard(running_threads_mutex_);
-                running_threads_--;
-            }
+          {
+            std::lock_guard<std::mutex> guard(running_threads_mutex_);
+            running_threads_--;
+          }
         }).detach();
     }
 
@@ -1860,22 +1860,22 @@ inline bool Client::is_valid() const
 
 inline socket_t Client::create_client_socket() const
 {
-    return detail::create_socket(host_.c_str(), port_,
-        [=](socket_t sock, struct addrinfo& ai) -> bool {
-            detail::set_nonblocking(sock, true);
+  return detail::create_socket(
+      host_.c_str(), port_, [this](socket_t sock, struct addrinfo& ai) -> bool {
+        detail::set_nonblocking(sock, true);
 
-            auto ret = connect(sock, ai.ai_addr, ai.ai_addrlen);
-            if (ret < 0) {
-                if (detail::is_connection_error() ||
-                    !detail::wait_until_socket_is_ready(sock, timeout_sec_, 0)) {
-                    detail::close_socket(sock);
-                    return false;
-                }
-            }
+        auto ret = connect(sock, ai.ai_addr, ai.ai_addrlen);
+        if (ret < 0) {
+          if (detail::is_connection_error() ||
+              !detail::wait_until_socket_is_ready(sock, timeout_sec_, 0)) {
+            detail::close_socket(sock);
+            return false;
+          }
+        }
 
-            detail::set_nonblocking(sock, false);
-            return true;
-        });
+        detail::set_nonblocking(sock, false);
+        return true;
+      });
 }
 
 inline bool Client::read_response_line(Stream& strm, Response& res)

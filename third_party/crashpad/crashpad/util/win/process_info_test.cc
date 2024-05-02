@@ -20,6 +20,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -507,26 +508,23 @@ TEST(ProcessInfo, ReadableRanges) {
 
   // Also make sure what we think we can read corresponds with what we can
   // actually read.
-  std::unique_ptr<unsigned char[]> into(new unsigned char[kBlockSize * 6]);
+  auto into = base::HeapArray<unsigned char>::Uninit(kBlockSize * 6);
   SIZE_T bytes_read;
 
   EXPECT_TRUE(ReadProcessMemory(
-      current_process, readable1, into.get(), kBlockSize, &bytes_read));
+      current_process, readable1, into.data(), kBlockSize, &bytes_read));
   EXPECT_EQ(bytes_read, kBlockSize);
 
   EXPECT_TRUE(ReadProcessMemory(
-      current_process, readable2, into.get(), kBlockSize * 2, &bytes_read));
+      current_process, readable2, into.data(), kBlockSize * 2, &bytes_read));
   EXPECT_EQ(bytes_read, kBlockSize * 2);
 
   EXPECT_FALSE(ReadProcessMemory(
-      current_process, no_access, into.get(), kBlockSize, &bytes_read));
+      current_process, no_access, into.data(), kBlockSize, &bytes_read));
   EXPECT_FALSE(ReadProcessMemory(
-      current_process, reserve_region, into.get(), kBlockSize, &bytes_read));
-  EXPECT_FALSE(ReadProcessMemory(current_process,
-                                 reserve_region,
-                                 into.get(),
-                                 kBlockSize * 6,
-                                 &bytes_read));
+      current_process, reserve_region, into.data(), kBlockSize, &bytes_read));
+  EXPECT_FALSE(ReadProcessMemory(
+      current_process, reserve_region, into.data(), into.size(), &bytes_read));
 }
 
 TEST(ProcessInfo, Handles) {
@@ -633,15 +631,15 @@ TEST(ProcessInfo, Handles) {
 }
 
 TEST(ProcessInfo, OutOfRangeCheck) {
-  constexpr size_t kAllocationSize = 12345;
-  std::unique_ptr<char[]> safe_memory(new char[kAllocationSize]);
+  auto safe_memory = base::HeapArray<char>::Uninit(12345);
 
   ProcessInfo info;
   info.Initialize(GetCurrentProcess());
 
   EXPECT_TRUE(
       info.LoggingRangeIsFullyReadable(CheckedRange<WinVMAddress, WinVMSize>(
-          FromPointerCast<WinVMAddress>(safe_memory.get()), kAllocationSize)));
+          FromPointerCast<WinVMAddress>(safe_memory.data()),
+          safe_memory.size())));
   EXPECT_FALSE(info.LoggingRangeIsFullyReadable(
       CheckedRange<WinVMAddress, WinVMSize>(0, 1024)));
 }
