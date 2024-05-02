@@ -15,6 +15,7 @@
 #include "ash/picker/views/picker_page_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
+#include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
@@ -228,15 +229,34 @@ void PickerView::NotifyPseudoFocusChanged(views::View* view) {
   search_field_view_->SetTextfieldActiveDescendant(view);
 }
 
+void PickerView::SelectSearchResult(const PickerSearchResult& result) {
+  if (const PickerSearchResult::CategoryData* category_data =
+          std::get_if<PickerSearchResult::CategoryData>(&result.data())) {
+    SelectCategory(category_data->category);
+  } else if (const PickerSearchResult::SearchRequestData* search_request_data =
+                 std::get_if<PickerSearchResult::SearchRequestData>(
+                     &result.data())) {
+    search_field_view_->SetQueryText(search_request_data->text);
+    StartSearch(search_request_data->text);
+  } else if (const PickerSearchResult::EditorData* editor_data =
+                 std::get_if<PickerSearchResult::EditorData>(&result.data())) {
+    delegate_->ShowEditor(editor_data->preset_query_id,
+                          editor_data->freeform_text);
+  } else {
+    delegate_->InsertResultOnNextFocus(result);
+    GetWidget()->Close();
+  }
+}
+
+void PickerView::SelectMoreResults(PickerSectionType type) {
+  SelectCategoryWithQuery(GetCategoryForMoreResults(type),
+                          search_field_view_->GetQueryText());
+}
+
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                       PickerLayoutType layout_type) {
   return GetPickerViewBounds(anchor_bounds, layout_type, size(),
                              search_field_view_->bounds().CenterPoint().y());
-}
-
-void PickerView::OnSelectMoreResults(PickerSectionType type) {
-  SelectCategoryWithQuery(GetCategoryForMoreResults(type),
-                          search_field_view_->GetQueryText());
 }
 
 void PickerView::StartSearch(const std::u16string& query) {
@@ -275,25 +295,6 @@ void PickerView::PublishSearchResults(
     search_results_view_->AppendSearchResults(std::move(result));
   }
   performance_metrics_.MarkSearchResultsUpdated();
-}
-
-void PickerView::SelectSearchResult(const PickerSearchResult& result) {
-  if (const PickerSearchResult::CategoryData* category_data =
-          std::get_if<PickerSearchResult::CategoryData>(&result.data())) {
-    SelectCategory(category_data->category);
-  } else if (const PickerSearchResult::SearchRequestData* search_request_data =
-                 std::get_if<PickerSearchResult::SearchRequestData>(
-                     &result.data())) {
-    search_field_view_->SetQueryText(search_request_data->text);
-    StartSearch(search_request_data->text);
-  } else if (const PickerSearchResult::EditorData* editor_data =
-                 std::get_if<PickerSearchResult::EditorData>(&result.data())) {
-    delegate_->ShowEditor(editor_data->preset_query_id,
-                          editor_data->freeform_text);
-  } else {
-    delegate_->InsertResultOnNextFocus(result);
-    GetWidget()->Close();
-  }
 }
 
 void PickerView::SelectCategory(PickerCategory category) {
@@ -387,20 +388,11 @@ void PickerView::AddContentsView(PickerLayoutType layout_type) {
           this, delegate_->GetAvailableCategories(),
           delegate_->ShouldShowSuggestedResults(), kPickerSize.width()));
 
-  // `base::Unretained` is safe here because this class owns
-  // `zero_state_view_`, `category_view_` and `search_results_view`_.
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
-      kPickerSize.width(),
-      base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this)),
-      delegate_->GetAssetFetcher()));
+      this, kPickerSize.width(), delegate_->GetAssetFetcher()));
   search_results_view_ =
       contents_view_->AddPage(std::make_unique<PickerSearchResultsView>(
-          kPickerSize.width(),
-          base::BindOnce(&PickerView::SelectSearchResult,
-                         base::Unretained(this)),
-          base::BindRepeating(&PickerView::OnSelectMoreResults,
-                              base::Unretained(this)),
-          delegate_->GetAssetFetcher()));
+          this, kPickerSize.width(), delegate_->GetAssetFetcher()));
   SetActivePage(zero_state_view_);
 }
 

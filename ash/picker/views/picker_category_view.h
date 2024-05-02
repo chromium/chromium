@@ -14,6 +14,7 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerSearchResultsSection;
+class PickerSearchResultsViewDelegate;
 class PickerSkeletonLoaderView;
 
 // View to show Picker results for a specific category.
@@ -21,11 +22,9 @@ class ASH_EXPORT PickerCategoryView : public PickerPageView {
   METADATA_HEADER(PickerCategoryView, PickerPageView)
 
  public:
-  explicit PickerCategoryView(
-      int picker_view_width,
-      PickerSearchResultsView::SelectSearchResultCallback
-          select_search_result_callback,
-      PickerAssetFetcher* asset_fetcher);
+  explicit PickerCategoryView(PickerSearchResultsViewDelegate* delegate,
+                              int picker_view_width,
+                              PickerAssetFetcher* asset_fetcher);
   PickerCategoryView(const PickerCategoryView&) = delete;
   PickerCategoryView& operator=(const PickerCategoryView&) = delete;
   ~PickerCategoryView() override;

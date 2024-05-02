@@ -22,6 +22,7 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerSearchResult;
+class PickerSearchResultsViewDelegate;
 class PickerSectionListView;
 class PickerSectionView;
 
@@ -29,19 +30,10 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   METADATA_HEADER(PickerSearchResultsView, PickerPageView)
 
  public:
-  // Indicates the user has selected a result.
-  using SelectSearchResultCallback =
-      base::OnceCallback<void(const PickerSearchResult& result)>;
-  // Indicates the user has selected "see more" on a section.
-  using SelectMoreResultsCallback =
-      base::RepeatingCallback<void(PickerSectionType type)>;
-
   // `asset_fetcher` must remain valid for the lifetime of this class.
-  explicit PickerSearchResultsView(
-      int picker_view_width,
-      SelectSearchResultCallback select_search_result_callback,
-      SelectMoreResultsCallback select_more_results_callback,
-      PickerAssetFetcher* asset_fetcher);
+  explicit PickerSearchResultsView(PickerSearchResultsViewDelegate* delegate,
+                                   int picker_view_width,
+                                   PickerAssetFetcher* asset_fetcher);
   PickerSearchResultsView(const PickerSearchResultsView&) = delete;
   PickerSearchResultsView& operator=(const PickerSearchResultsView&) = delete;
   ~PickerSearchResultsView() override;
@@ -91,8 +83,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void OnTrailingLinkClicked(PickerSectionType section_type,
                              const ui::Event& event);
 
-  SelectSearchResultCallback select_search_result_callback_;
-  SelectMoreResultsCallback select_more_results_callback_;
+  raw_ptr<PickerSearchResultsViewDelegate> delegate_;
 
   // `asset_fetcher` outlives `this`.
   raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;

@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_category_view.h"
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
+#include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_skeleton_loader_view.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -29,17 +30,28 @@ class PickerCategoryViewTest : public views::ViewsTestBase {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
+class MockSearchResultsViewDelegate : public PickerSearchResultsViewDelegate {
+ public:
+  MOCK_METHOD(void, SelectMoreResults, (PickerSectionType), (override));
+  MOCK_METHOD(void,
+              SelectSearchResult,
+              (const PickerSearchResult&),
+              (override));
+};
+
 TEST_F(PickerCategoryViewTest, InitialStateIsEmptyResults) {
+  MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
-  PickerCategoryView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerCategoryView view(&mock_delegate, kPickerWidth, &asset_fetcher);
 
   EXPECT_TRUE(view.search_results_view_for_testing().GetVisible());
   EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
 }
 
 TEST_F(PickerCategoryViewTest, ShowLoadingShowsLoaderView) {
+  MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
-  PickerCategoryView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerCategoryView view(&mock_delegate, kPickerWidth, &asset_fetcher);
 
   view.ShowLoadingAnimation();
 
@@ -52,8 +64,9 @@ TEST_F(PickerCategoryViewTest, ShowLoadingShowsLoaderView) {
 }
 
 TEST_F(PickerCategoryViewTest, ShowLoadingAnimatesAfterDelay) {
+  MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
-  PickerCategoryView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerCategoryView view(&mock_delegate, kPickerWidth, &asset_fetcher);
 
   view.ShowLoadingAnimation();
 
@@ -67,8 +80,9 @@ TEST_F(PickerCategoryViewTest, ShowLoadingAnimatesAfterDelay) {
 }
 
 TEST_F(PickerCategoryViewTest, SetResultsShowsResults) {
+  MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
-  PickerCategoryView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerCategoryView view(&mock_delegate, kPickerWidth, &asset_fetcher);
 
   view.SetResults({PickerSearchResultsSection(PickerSectionType::kLinks,
                                               {PickerSearchResult::Text(u"1")},
@@ -84,9 +98,9 @@ TEST_F(PickerCategoryViewTest, SetResultsShowsResults) {
 TEST_F(PickerCategoryViewTest, SetResultsDuringLoadingStopsAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
-  PickerCategoryView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
-  view.ShowLoadingAnimation();
+  PickerCategoryView view(&mock_delegate, kPickerWidth, &asset_fetcher);
   task_environment()->FastForwardBy(PickerCategoryView::kLoadingAnimationDelay);
 
   view.SetResults({PickerSearchResultsSection(PickerSectionType::kLinks,
@@ -101,8 +115,9 @@ TEST_F(PickerCategoryViewTest, SetResultsDuringLoadingStopsAnimation) {
 }
 
 TEST_F(PickerCategoryViewTest, SetResultsDuringLoadingSetsResults) {
+  MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
-  PickerCategoryView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerCategoryView view(&mock_delegate, kPickerWidth, &asset_fetcher);
   view.ShowLoadingAnimation();
 
   view.SetResults({PickerSearchResultsSection(PickerSectionType::kLinks,
@@ -117,8 +132,9 @@ TEST_F(PickerCategoryViewTest, SetResultsDuringLoadingSetsResults) {
 }
 
 TEST_F(PickerCategoryViewTest, ShowsNoResultsFoundWhenResultsAreEmpty) {
+  MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
-  PickerCategoryView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+  PickerCategoryView view(&mock_delegate, kPickerWidth, &asset_fetcher);
 
   view.SetResults({});
 

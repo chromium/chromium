@@ -19,16 +19,14 @@
 namespace ash {
 
 PickerCategoryView::PickerCategoryView(
+    PickerSearchResultsViewDelegate* delegate,
     int picker_view_width,
-    PickerSearchResultsView::SelectSearchResultCallback
-        select_search_result_callback,
     PickerAssetFetcher* asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   search_results_view_ = AddChildView(std::make_unique<PickerSearchResultsView>(
-      picker_view_width, std::move(select_search_result_callback),
-      base::DoNothing(), asset_fetcher));
+      delegate, picker_view_width, asset_fetcher));
 
   skeleton_loader_view_ = AddChildView(
       views::Builder<PickerSkeletonLoaderView>().SetVisible(false).Build());

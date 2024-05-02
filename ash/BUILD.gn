@@ -1061,6 +1061,7 @@ component("ash") {
     "picker/views/picker_search_field_view.h",
     "picker/views/picker_search_results_view.cc",
     "picker/views/picker_search_results_view.h",
+    "picker/views/picker_search_results_view_delegate.h",
     "picker/views/picker_section_list_view.cc",
     "picker/views/picker_section_list_view.h",
     "picker/views/picker_section_view.cc",

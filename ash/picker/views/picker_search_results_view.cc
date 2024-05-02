@@ -21,6 +21,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
+#include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_strings.h"
@@ -68,13 +69,10 @@ PickerCategory GetCategoryForEditorData(
 }  // namespace
 
 PickerSearchResultsView::PickerSearchResultsView(
+    PickerSearchResultsViewDelegate* delegate,
     int picker_view_width,
-    SelectSearchResultCallback select_search_result_callback,
-    SelectMoreResultsCallback select_more_results_callback,
     PickerAssetFetcher* asset_fetcher)
-    : select_search_result_callback_(std::move(select_search_result_callback)),
-      select_more_results_callback_(std::move(select_more_results_callback)),
-      asset_fetcher_(asset_fetcher) {
+    : delegate_(delegate), asset_fetcher_(asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
@@ -243,9 +241,7 @@ void PickerSearchResultsView::ShowNoResultsFound() {
 
 void PickerSearchResultsView::SelectSearchResult(
     const PickerSearchResult& result) {
-  if (!select_search_result_callback_.is_null()) {
-    std::move(select_search_result_callback_).Run(result);
-  }
+  delegate_->SelectSearchResult(result);
 }
 
 void PickerSearchResultsView::AddResultToSection(
@@ -395,7 +391,7 @@ void PickerSearchResultsView::SetPseudoFocusedView(views::View* view) {
 void PickerSearchResultsView::OnTrailingLinkClicked(
     PickerSectionType section_type,
     const ui::Event& event) {
-  select_more_results_callback_.Run(section_type);
+  delegate_->SelectMoreResults(section_type);
 }
 
 void PickerSearchResultsView::ScrollPseudoFocusedViewToVisible() {

@@ -12,6 +12,7 @@
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -41,7 +42,8 @@ class SystemShadow;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView,
-                              public PickerZeroStateViewDelegate {
+                              public PickerZeroStateViewDelegate,
+                              public PickerSearchResultsViewDelegate {
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
  public:
@@ -73,6 +75,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
       SuggestedEditorResultsCallback callback) override;
   void NotifyPseudoFocusChanged(views::View* view) override;
 
+  // PickerSearchResultsViewDelegate:
+  void SelectSearchResult(const PickerSearchResult& result) override;
+  void SelectMoreResults(PickerSectionType type) override;
+
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`
   // and returned bounds should be in screen coordinates.
@@ -92,8 +98,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   }
 
  private:
-  void OnSelectMoreResults(PickerSectionType type);
-
   // Starts a search with `query`, with search results being returned to
   // `PublishSearchResults`.
   void StartSearch(const std::u16string& query);
@@ -103,9 +107,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // results found" view is shown instead of a blank view.
   void PublishSearchResults(bool show_no_results_found,
                             std::vector<PickerSearchResultsSection> results);
-
-  // Selects a search result.
-  void SelectSearchResult(const PickerSearchResult& result);
 
   // Selects a category. This shows the category view and fetches zero-state
   // results for the category, which are returned to `PublishCategoryResults`.
