@@ -2,404 +2,90 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-group("resources") {
-  deps = [
-    ":background_color",
-    ":background_shadow_color",
-    ":blue_300_color",
-    ":blue_400_color",
-    ":blue_500_color",
-    ":blue_600_color",
-    ":blue_700_color",
-    ":blue_color",
-    ":blue_halo_color",
-    ":close_button_color",
-    ":cyan_600_color",
-    ":darker_scrim_background_color",
-    ":disabled_tint_color",
-    ":favicon_background_color",
-    ":green_100_color",
-    ":green_300_color",
-    ":green_400_color",
-    ":green_500_color",
-    ":green_50_color",
-    ":green_600_color",
-    ":green_700_color",
-    ":green_800_color",
-    ":green_color",
-    ":grey_100_color",
-    ":grey_200_color",
-    ":grey_300_color",
-    ":grey_400_color",
-    ":grey_500_color",
-    ":grey_50_color",
-    ":grey_600_color",
-    ":grey_700_color",
-    ":grey_800_color",
-    ":grey_900_color",
-    ":grouped_primary_background_color",
-    ":grouped_secondary_background_color",
-    ":light_only_grey_200_color",
-    ":mdc_ink_color",
-    ":mdc_secondary_ink_color",
-    ":omnibox_keyboard_button_color",
-    ":orange_500_color",
-    ":orange_600_color",
-    ":pink_400_color",
-    ":pink_500_color",
-    ":pink_600_color",
-    ":placeholder_image_tint_color",
-    ":primary_background_color",
-    ":purple_500_color",
-    ":purple_600_color",
-    ":red_100_color",
-    ":red_300_color",
-    ":red_400_color",
-    ":red_500_color",
-    ":red_50_color",
-    ":red_600_color",
-    ":scrim_background_color",
-    ":secondary_background_color",
-    ":separator_color",
-    ":solid_black_color",
-    ":solid_button_text_color",
-    ":solid_white_color",
-    ":static_blue_400_color",
-    ":static_grey_300_color",
-    ":static_grey_900_color",
-    ":tab_group_favicons_background_color",
-    ":table_view_row_highlight_color",
-    ":tertiary_background_color",
-    ":text_primary_color",
-    ":text_quaternary_color",
-    ":text_secondary_color",
-    ":text_tertiary_color",
-    ":textfield_background_color",
-    ":textfield_focused_background_color",
-    ":textfield_highlight_background_color",
-    ":textfield_placeholder_color",
-    ":toolbar_button_color",
-    ":toolbar_shadow_color",
-    ":updated_tertiary_background_color",
-    ":yellow_500_color",
-    ":yellow_600_color",
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/background_color.colorset/Contents.json",
+    "Assets.xcassets/background_shadow_color.colorset/Contents.json",
+    "Assets.xcassets/blue_300_color.colorset/Contents.json",
+    "Assets.xcassets/blue_400_color.colorset/Contents.json",
+    "Assets.xcassets/blue_500_color.colorset/Contents.json",
+    "Assets.xcassets/blue_600_color.colorset/Contents.json",
+    "Assets.xcassets/blue_700_color.colorset/Contents.json",
+    "Assets.xcassets/blue_color.colorset/Contents.json",
+    "Assets.xcassets/blue_halo_color.colorset/Contents.json",
+    "Assets.xcassets/close_button_color.colorset/Contents.json",
+    "Assets.xcassets/cyan_600_color.colorset/Contents.json",
+    "Assets.xcassets/darker_scrim_background_color.colorset/Contents.json",
+    "Assets.xcassets/disabled_tint_color.colorset/Contents.json",
+    "Assets.xcassets/favicon_background_color.colorset/Contents.json",
+    "Assets.xcassets/green_100_color.colorset/Contents.json",
+    "Assets.xcassets/green_300_color.colorset/Contents.json",
+    "Assets.xcassets/green_400_color.colorset/Contents.json",
+    "Assets.xcassets/green_500_color.colorset/Contents.json",
+    "Assets.xcassets/green_50_color.colorset/Contents.json",
+    "Assets.xcassets/green_600_color.colorset/Contents.json",
+    "Assets.xcassets/green_700_color.colorset/Contents.json",
+    "Assets.xcassets/green_800_color.colorset/Contents.json",
+    "Assets.xcassets/green_color.colorset/Contents.json",
+    "Assets.xcassets/grey_100_color.colorset/Contents.json",
+    "Assets.xcassets/grey_200_color.colorset/Contents.json",
+    "Assets.xcassets/grey_300_color.colorset/Contents.json",
+    "Assets.xcassets/grey_400_color.colorset/Contents.json",
+    "Assets.xcassets/grey_500_color.colorset/Contents.json",
+    "Assets.xcassets/grey_50_color.colorset/Contents.json",
+    "Assets.xcassets/grey_600_color.colorset/Contents.json",
+    "Assets.xcassets/grey_700_color.colorset/Contents.json",
+    "Assets.xcassets/grey_800_color.colorset/Contents.json",
+    "Assets.xcassets/grey_900_color.colorset/Contents.json",
+    "Assets.xcassets/grouped_primary_background_color.colorset/Contents.json",
+    "Assets.xcassets/grouped_secondary_background_color.colorset/Contents.json",
+    "Assets.xcassets/light_only_grey_200_color.colorset/Contents.json",
+    "Assets.xcassets/mdc_ink_color.colorset/Contents.json",
+    "Assets.xcassets/mdc_secondary_ink_color.colorset/Contents.json",
+    "Assets.xcassets/omnibox_keyboard_button_color.colorset/Contents.json",
+    "Assets.xcassets/orange_500_color.colorset/Contents.json",
+    "Assets.xcassets/orange_600_color.colorset/Contents.json",
+    "Assets.xcassets/pink_400_color.colorset/Contents.json",
+    "Assets.xcassets/pink_500_color.colorset/Contents.json",
+    "Assets.xcassets/pink_600_color.colorset/Contents.json",
+    "Assets.xcassets/placeholder_image_tint_color.colorset/Contents.json",
+    "Assets.xcassets/primary_background_color.colorset/Contents.json",
+    "Assets.xcassets/purple_500_color.colorset/Contents.json",
+    "Assets.xcassets/purple_600_color.colorset/Contents.json",
+    "Assets.xcassets/red_100_color.colorset/Contents.json",
+    "Assets.xcassets/red_300_color.colorset/Contents.json",
+    "Assets.xcassets/red_400_color.colorset/Contents.json",
+    "Assets.xcassets/red_500_color.colorset/Contents.json",
+    "Assets.xcassets/red_50_color.colorset/Contents.json",
+    "Assets.xcassets/red_600_color.colorset/Contents.json",
+    "Assets.xcassets/scrim_background_color.colorset/Contents.json",
+    "Assets.xcassets/secondary_background_color.colorset/Contents.json",
+    "Assets.xcassets/separator_color.colorset/Contents.json",
+    "Assets.xcassets/solid_black_color.colorset/Contents.json",
+    "Assets.xcassets/solid_button_text_color.colorset/Contents.json",
+    "Assets.xcassets/solid_white_color.colorset/Contents.json",
+    "Assets.xcassets/static_blue_400_color.colorset/Contents.json",
+    "Assets.xcassets/static_grey_300_color.colorset/Contents.json",
+    "Assets.xcassets/static_grey_900_color.colorset/Contents.json",
+    "Assets.xcassets/tab_group_favicons_background_color.colorset/Contents.json",
+    "Assets.xcassets/table_view_row_highlight_color.colorset/Contents.json",
+    "Assets.xcassets/tertiary_background_color.colorset/Contents.json",
+    "Assets.xcassets/text_primary_color.colorset/Contents.json",
+    "Assets.xcassets/text_quaternary_color.colorset/Contents.json",
+    "Assets.xcassets/text_secondary_color.colorset/Contents.json",
+    "Assets.xcassets/text_tertiary_color.colorset/Contents.json",
+    "Assets.xcassets/textfield_background_color.colorset/Contents.json",
+    "Assets.xcassets/textfield_focused_background_color.colorset/Contents.json",
+    "Assets.xcassets/textfield_highlight_background_color.colorset/Contents.json",
+    "Assets.xcassets/textfield_placeholder_color.colorset/Contents.json",
+    "Assets.xcassets/toolbar_button_color.colorset/Contents.json",
+    "Assets.xcassets/toolbar_shadow_color.colorset/Contents.json",
+    "Assets.xcassets/updated_tertiary_background_color.colorset/Contents.json",
+    "Assets.xcassets/yellow_500_color.colorset/Contents.json",
+    "Assets.xcassets/yellow_600_color.colorset/Contents.json",
   ]
-}
-
-colorset("background_color") {
-  sources = [ "background_color.colorset/Contents.json" ]
-}
-
-colorset("background_shadow_color") {
-  sources = [ "background_shadow_color.colorset/Contents.json" ]
-}
-
-colorset("blue_color") {
-  sources = [ "blue_color.colorset/Contents.json" ]
-}
-
-colorset("blue_halo_color") {
-  sources = [ "blue_halo_color.colorset/Contents.json" ]
-}
-
-colorset("blue_300_color") {
-  sources = [ "blue_300_color.colorset/Contents.json" ]
-}
-
-colorset("blue_400_color") {
-  sources = [ "blue_400_color.colorset/Contents.json" ]
-}
-
-colorset("blue_500_color") {
-  sources = [ "blue_500_color.colorset/Contents.json" ]
-}
-
-colorset("blue_600_color") {
-  sources = [ "blue_600_color.colorset/Contents.json" ]
-}
-
-colorset("blue_700_color") {
-  sources = [ "blue_700_color.colorset/Contents.json" ]
-}
-
-colorset("static_blue_400_color") {
-  sources = [ "static_blue_400_color.colorset/Contents.json" ]
-}
-
-colorset("close_button_color") {
-  sources = [ "close_button_color.colorset/Contents.json" ]
-}
-
-colorset("disabled_tint_color") {
-  sources = [ "disabled_tint_color.colorset/Contents.json" ]
-}
-
-colorset("favicon_background_color") {
-  sources = [ "favicon_background_color.colorset/Contents.json" ]
-}
-
-colorset("green_color") {
-  sources = [ "green_color.colorset/Contents.json" ]
-}
-
-colorset("green_50_color") {
-  sources = [ "green_50_color.colorset/Contents.json" ]
-}
-
-colorset("green_100_color") {
-  sources = [ "green_100_color.colorset/Contents.json" ]
-}
-
-colorset("green_300_color") {
-  sources = [ "green_300_color.colorset/Contents.json" ]
-}
-
-colorset("green_400_color") {
-  sources = [ "green_400_color.colorset/Contents.json" ]
-}
-
-colorset("green_500_color") {
-  sources = [ "green_500_color.colorset/Contents.json" ]
-}
-
-colorset("green_600_color") {
-  sources = [ "green_600_color.colorset/Contents.json" ]
-}
-
-colorset("green_700_color") {
-  sources = [ "green_700_color.colorset/Contents.json" ]
-}
-
-colorset("green_800_color") {
-  sources = [ "green_800_color.colorset/Contents.json" ]
-}
-
-colorset("grey_50_color") {
-  sources = [ "grey_50_color.colorset/Contents.json" ]
-}
-
-colorset("grey_100_color") {
-  sources = [ "grey_100_color.colorset/Contents.json" ]
-}
-
-colorset("grey_200_color") {
-  sources = [ "grey_200_color.colorset/Contents.json" ]
-}
-
-colorset("grey_300_color") {
-  sources = [ "grey_300_color.colorset/Contents.json" ]
-}
-
-colorset("grey_400_color") {
-  sources = [ "grey_400_color.colorset/Contents.json" ]
-}
-
-colorset("grey_500_color") {
-  sources = [ "grey_500_color.colorset/Contents.json" ]
-}
-
-colorset("grey_600_color") {
-  sources = [ "grey_600_color.colorset/Contents.json" ]
-}
-
-colorset("grey_700_color") {
-  sources = [ "grey_700_color.colorset/Contents.json" ]
-}
-
-colorset("grey_800_color") {
-  sources = [ "grey_800_color.colorset/Contents.json" ]
-}
-
-colorset("grey_900_color") {
-  sources = [ "grey_900_color.colorset/Contents.json" ]
-}
-
-colorset("static_grey_300_color") {
-  sources = [ "static_grey_300_color.colorset/Contents.json" ]
-}
-
-colorset("static_grey_900_color") {
-  sources = [ "static_grey_900_color.colorset/Contents.json" ]
-}
-
-colorset("red_50_color") {
-  sources = [ "red_50_color.colorset/Contents.json" ]
-}
-
-colorset("red_100_color") {
-  sources = [ "red_100_color.colorset/Contents.json" ]
-}
-
-colorset("red_300_color") {
-  sources = [ "red_300_color.colorset/Contents.json" ]
-}
-
-colorset("red_400_color") {
-  sources = [ "red_400_color.colorset/Contents.json" ]
-}
-
-colorset("red_500_color") {
-  sources = [ "red_500_color.colorset/Contents.json" ]
-}
-
-colorset("red_600_color") {
-  sources = [ "red_600_color.colorset/Contents.json" ]
-}
-
-colorset("purple_500_color") {
-  sources = [ "purple_500_color.colorset/Contents.json" ]
-}
-
-colorset("purple_600_color") {
-  sources = [ "purple_600_color.colorset/Contents.json" ]
-}
-
-colorset("yellow_500_color") {
-  sources = [ "yellow_500_color.colorset/Contents.json" ]
-}
-
-colorset("yellow_600_color") {
-  sources = [ "yellow_600_color.colorset/Contents.json" ]
-}
-
-colorset("orange_500_color") {
-  sources = [ "orange_500_color.colorset/Contents.json" ]
-}
-
-colorset("orange_600_color") {
-  sources = [ "orange_600_color.colorset/Contents.json" ]
-}
-
-colorset("cyan_600_color") {
-  sources = [ "cyan_600_color.colorset/Contents.json" ]
-}
-
-colorset("light_only_grey_200_color") {
-  sources = [ "light_only_grey_200_color.colorset/Contents.json" ]
-}
-
-colorset("mdc_ink_color") {
-  sources = [ "mdc_ink_color.colorset/Contents.json" ]
-}
-
-colorset("mdc_secondary_ink_color") {
-  sources = [ "mdc_secondary_ink_color.colorset/Contents.json" ]
-}
-
-colorset("placeholder_image_tint_color") {
-  sources = [ "placeholder_image_tint_color.colorset/Contents.json" ]
-}
-
-colorset("scrim_background_color") {
-  sources = [ "scrim_background_color.colorset/Contents.json" ]
-}
-
-colorset("darker_scrim_background_color") {
-  sources = [ "darker_scrim_background_color.colorset/Contents.json" ]
-}
-
-colorset("separator_color") {
-  sources = [ "separator_color.colorset/Contents.json" ]
-}
-
-colorset("solid_button_text_color") {
-  sources = [ "solid_button_text_color.colorset/Contents.json" ]
-}
-
-colorset("solid_black_color") {
-  sources = [ "solid_black_color.colorset/Contents.json" ]
-}
-
-colorset("solid_white_color") {
-  sources = [ "solid_white_color.colorset/Contents.json" ]
-}
-
-colorset("table_view_row_highlight_color") {
-  sources = [ "table_view_row_highlight_color.colorset/Contents.json" ]
-}
-
-colorset("pink_400_color") {
-  sources = [ "pink_400_color.colorset/Contents.json" ]
-}
-
-colorset("pink_500_color") {
-  sources = [ "pink_500_color.colorset/Contents.json" ]
-}
-
-colorset("pink_600_color") {
-  sources = [ "pink_600_color.colorset/Contents.json" ]
-}
-
-colorset("tertiary_background_color") {
-  sources = [ "tertiary_background_color.colorset/Contents.json" ]
-}
-
-colorset("updated_tertiary_background_color") {
-  sources = [ "updated_tertiary_background_color.colorset/Contents.json" ]
-}
-
-colorset("text_tertiary_color") {
-  sources = [ "text_tertiary_color.colorset/Contents.json" ]
-}
-
-colorset("text_primary_color") {
-  sources = [ "text_primary_color.colorset/Contents.json" ]
-}
-
-colorset("text_quaternary_color") {
-  sources = [ "text_quaternary_color.colorset/Contents.json" ]
-}
-
-colorset("text_secondary_color") {
-  sources = [ "text_secondary_color.colorset/Contents.json" ]
-}
-
-colorset("textfield_placeholder_color") {
-  sources = [ "textfield_placeholder_color.colorset/Contents.json" ]
-}
-
-colorset("textfield_highlight_background_color") {
-  sources = [ "textfield_highlight_background_color.colorset/Contents.json" ]
-}
-
-colorset("textfield_background_color") {
-  sources = [ "textfield_background_color.colorset/Contents.json" ]
-}
-
-colorset("textfield_focused_background_color") {
-  sources = [ "textfield_focused_background_color.colorset/Contents.json" ]
-}
-
-colorset("toolbar_button_color") {
-  sources = [ "toolbar_button_color.colorset/Contents.json" ]
-}
-
-colorset("toolbar_shadow_color") {
-  sources = [ "toolbar_shadow_color.colorset/Contents.json" ]
-}
-
-colorset("secondary_background_color") {
-  sources = [ "secondary_background_color.colorset/Contents.json" ]
-}
-
-colorset("primary_background_color") {
-  sources = [ "primary_background_color.colorset/Contents.json" ]
-}
-
-colorset("grouped_secondary_background_color") {
-  sources = [ "grouped_secondary_background_color.colorset/Contents.json" ]
-}
-
-colorset("grouped_primary_background_color") {
-  sources = [ "grouped_primary_background_color.colorset/Contents.json" ]
-}
-
-colorset("omnibox_keyboard_button_color") {
-  sources = [ "omnibox_keyboard_button_color.colorset/Contents.json" ]
-}
-
-colorset("tab_group_favicons_background_color") {
-  sources = [ "tab_group_favicons_background_color.colorset/Contents.json" ]
 }
