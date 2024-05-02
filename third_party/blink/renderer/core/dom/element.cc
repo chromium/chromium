@@ -9623,13 +9623,12 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
 
 WTF::AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
     const AtomicString& name) const {
+  if (LIKELY(name.IsLowerASCII())) {
+    return WTF::AtomicStringTable::WeakResult(name);
+  }
   if (LIKELY(IsHTMLElement() && IsA<HTMLDocument>(GetDocument()))) {
-    if (name.empty() || name.IsLowerASCII()) {
-      return WTF::AtomicStringTable::WeakResult(name);
-    }
     return WTF::AtomicStringTable::Instance().WeakFindLowercase(name);
   }
-
   return WTF::AtomicStringTable::WeakResult(name);
 }
 
