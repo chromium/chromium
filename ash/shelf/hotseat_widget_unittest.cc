@@ -13,7 +13,6 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
@@ -227,11 +226,8 @@ class HotseatWidgetTest
 
 class HotseatWidgetForestTest : public HotseatWidgetTest {
  public:
-  HotseatWidgetForestTest() { switches::SetIgnoreForestSecretKeyForTest(true); }
-
-  ~HotseatWidgetForestTest() {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-  }
+  HotseatWidgetForestTest() = default;
+  ~HotseatWidgetForestTest() = default;
 
   // HotseatWidgetTest:
   void SetupFeatureLists() override {

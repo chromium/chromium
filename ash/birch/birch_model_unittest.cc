@@ -11,7 +11,6 @@
 #include "ash/birch/birch_item_remover.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -164,7 +163,6 @@ class BirchModelTest : public AshTestBase {
   }
 
   void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
     AshTestBase::SetUp();
     // Inject no-op, stub weather provider to prevent real implementation from
     // returning empty weather info.
@@ -186,7 +184,6 @@ class BirchModelTest : public AshTestBase {
   void TearDown() override {
     Shell::Get()->birch_model()->SetClientAndInit(nullptr);
     AshTestBase::TearDown();
-    switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
   void RecordProviderHiddenHistograms() {
@@ -207,7 +204,6 @@ class BirchModelWithoutWeatherTest : public AshTestBase {
                                    {features::kBirchWeather});
   }
   void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
     AshTestBase::SetUp();
     Shell::Get()->birch_model()->SetClientAndInit(&stub_birch_client_);
     base::RunLoop run_loop;
@@ -221,7 +217,6 @@ class BirchModelWithoutWeatherTest : public AshTestBase {
   void TearDown() override {
     Shell::Get()->birch_model()->SetClientAndInit(nullptr);
     AshTestBase::TearDown();
-    switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
  protected:

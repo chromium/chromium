@@ -5,7 +5,6 @@
 #include "ash/wm/window_restore/pine_test_base.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -19,13 +18,9 @@ constexpr char kTestUserEmail[] = "testuser@pine";
 
 }  // namespace
 
-PineTestBase::PineTestBase() {
-  switches::SetIgnoreForestSecretKeyForTest(true);
-}
+PineTestBase::PineTestBase() = default;
 
-PineTestBase::~PineTestBase() {
-  switches::SetIgnoreForestSecretKeyForTest(false);
-}
+PineTestBase::~PineTestBase() = default;
 
 PrefService* PineTestBase::GetTestPrefService() {
   return GetSessionControllerClient()->GetUserPrefService(

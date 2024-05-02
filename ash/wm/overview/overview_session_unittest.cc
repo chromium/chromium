@@ -20,7 +20,6 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -10856,11 +10855,10 @@ class OakTest : public OverviewTestBase {
                               features::kFasterSplitScreenSetup,
                               features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
-    switches::SetIgnoreForestSecretKeyForTest(true);
   }
   OakTest(const OakTest&) = delete;
   OakTest& operator=(const OakTest&) = delete;
-  ~OakTest() override { switches::SetIgnoreForestSecretKeyForTest(false); }
+  ~OakTest() override = default;
 
   void SnapOneTestWindow(aura::Window* window,
                          WindowStateType state_type,

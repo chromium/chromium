@@ -11,7 +11,6 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -58,13 +57,10 @@ class StubBirchClient : public BirchClient {
 class BirchWeatherProviderTest : public AshTestBase {
  public:
   BirchWeatherProviderTest() {
-    switches::SetIgnoreForestSecretKeyForTest(true);
     feature_list_.InitWithFeatures(
         {features::kForestFeature, features::kBirchWeather}, {});
   }
-  ~BirchWeatherProviderTest() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-  }
+  ~BirchWeatherProviderTest() override = default;
 
   // AshTestBase:
   void SetUp() override {

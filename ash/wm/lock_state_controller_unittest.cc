@@ -1040,15 +1040,11 @@ TEST_F(LockStateControllerMockTimeTest, LockWithoutAnimation) {
 
 class LockStateControllerPineTest : public LockStateControllerTest {
  public:
-  LockStateControllerPineTest() {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-  }
+  LockStateControllerPineTest() = default;
   LockStateControllerPineTest(const LockStateControllerPineTest&) = delete;
   LockStateControllerPineTest& operator=(const LockStateControllerPineTest&) =
       delete;
-  ~LockStateControllerPineTest() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-  }
+  ~LockStateControllerPineTest() override = default;
 
   // LockStateControllerTest:
   void SetUp() override {

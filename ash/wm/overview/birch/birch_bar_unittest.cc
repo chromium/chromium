@@ -9,7 +9,6 @@
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -227,7 +226,6 @@ class BirchBarTest : public AshTestBase {
   ~BirchBarTest() override = default;
 
   void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
     AshTestBase::SetUp();
 
     // Set prefs of all suggestion types and show suggestions enabled.
@@ -265,7 +263,6 @@ class BirchBarTest : public AshTestBase {
     weather_provider_ = nullptr;
     birch_client_.reset();
     AshTestBase::TearDown();
-    switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
  protected:
