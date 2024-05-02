@@ -51,16 +51,9 @@ class LocalDataSourcePeer : public LocalDataSource {
   LocalDataSourcePeer(base::TimeDelta poll_rate,
                       bool data_needs_redacting,
                       bool is_incremental)
-      : LocalDataSource(poll_rate, data_needs_redacting, is_incremental),
-        fake_data_index_(0) {
-    // Arbitrary data. Each call to FillDataBufferForTesting() will load the
-    // internal buffer with the next value (per the overridden GetNextData()
-    // call) and increment the index for the next invocation. This replaces
-    // the usual procedure of calling FillDataBuffer() via a timer, and it
-    // allows testers to manually control the data flow. Testers can then
-    // use Fetch() to verify that the correct data is returned. Note that
-    // this data should first be initialized via SetFakeData() in all tests.
-    fake_data_ = {};
+      : LocalDataSource(poll_rate, data_needs_redacting, is_incremental) {
+    // The data that will be returned on the next call to GetNextData().
+    next_data_ = "";
 
     // Note that we are explicitly omitting the call to StartPollTimer()
     // here to keep things simple. FillDataBuffer() will be called manually
@@ -70,13 +63,24 @@ class LocalDataSourcePeer : public LocalDataSource {
   LocalDataSourcePeer(const LocalDataSourcePeer&) = delete;
   LocalDataSourcePeer& operator=(const LocalDataSourcePeer&) = delete;
 
-  // Give public access to FillDataBuffer method. Note that FillDataBuffer()
-  // will call GetNextData() internally, which has been overridden below.
-  void FillDataBufferForTesting() { FillDataBuffer(); }
+  // Give public access to FillDataBuffer method. Testers should call
+  // FillDataBufferForTesting(<next_data>) to simulate data collection
+  // into the internal buffer. Internally, FillDataBuffer() will call
+  // GetNextData(), overridden below, which will append the provided
+  // <next_data> to the buffer.
+  void FillDataBufferForTesting(const std::string& new_data) {
+    next_data_ = new_data;
+    FillDataBuffer();
+  }
 
-  // Provide a means for tests to initialize the return data
-  void SetFakeData(const std::vector<std::string>& new_data) {
-    fake_data_ = new_data;
+  // Convenience overload that accepts multiple pieces of data.
+  // NOTE: to avoid an ambiguous call with the function above,
+  // this function must either be called with 3 or more pieces
+  // of data, or with an explicitly initialized std::vector().
+  void FillDataBufferForTesting(const std::vector<std::string>& new_data) {
+    for (const auto& data : new_data) {
+      FillDataBufferForTesting(data);
+    }
   }
 
   // Add a wrapper around Fetch invocations for convenience. Use the callback
@@ -100,23 +104,10 @@ class LocalDataSourcePeer : public LocalDataSource {
 
  protected:
   const std::string& GetDisplayName() override { return kDataSourceName; }
-
-  std::vector<std::string> GetNextData() override {
-    size_t tmp_index = fake_data_index_;
-
-    fake_data_index_++;
-    if (fake_data_index_ >= fake_data_.size()) {
-      fake_data_index_ = 0;
-    }
-
-    // Return next piece of data in data buffer, looping to the
-    // beginning when you reach the end of the fake data
-    return {fake_data_[tmp_index]};
-  }
+  std::vector<std::string> GetNextData() override { return {next_data_}; }
 
  private:
-  std::vector<std::string> fake_data_;
-  unsigned int fake_data_index_;
+  std::string next_data_;
 };
 
 // Define tests
@@ -124,15 +115,10 @@ TEST(HotlogLocalDataSourceTest, TestFetchWithBasicUsage) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
-  source.SetFakeData({"a", "b", "c", "d", "e", "f"});
-
   // No data in buffer yet, so expecting empty data
   source.RunFetchWithExpectedData({});
 
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-
+  source.FillDataBufferForTesting({"a", "b", "c"});
   source.RunFetchWithExpectedData({"a", "b", "c"});
 }
 
@@ -140,15 +126,7 @@ TEST(HotlogLocalDataSourceTest, TestNonIncrementalSource) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsNotIncremental);
 
-  source.SetFakeData({"aa", "aa", "b", "b", "bb", "aa"});
-
-  // Consume everything
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
+  source.FillDataBufferForTesting({"aa", "aa", "b", "b", "bb", "aa"});
 
   // Verify we only get the unique data, and that it has a timestamp
   const std::string ts_regex = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:\\.]+Z ";
@@ -166,54 +144,47 @@ TEST(HotlogLocalDataSourceTest, TestFlushWithVariousFetches) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
-  source.SetFakeData({"a", "b", "c", "d", "e", "f"});
-
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
+  source.FillDataBufferForTesting({"a", "b", "c"});
 
   // First fetch will contain the data
-  source.RunFetchWithExpectedData({"a", "b"});
+  source.RunFetchWithExpectedData({"a", "b", "c"});
 
   // Second fetch should contain the same data (no flush)
-  source.RunFetchWithExpectedData({"a", "b"});
+  source.RunFetchWithExpectedData({"a", "b", "c"});
 
   // Third fetch should contain nothing (after flush)
   source.Flush();
   source.RunFetchWithExpectedData({});
 
   // Fill more data
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.RunFetchWithExpectedData({"c", "d", "e"});
+  source.FillDataBufferForTesting({"d", "e", "f"});
+  source.RunFetchWithExpectedData({"d", "e", "f"});
 
   // Filling data buffer should have no bearing on what
   // Fetch returns if we haven't Flush'ed yet
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.RunFetchWithExpectedData({"c", "d", "e"});
+  source.FillDataBufferForTesting({"a", "b", "c"});
+  source.RunFetchWithExpectedData({"d", "e", "f"});
 
   // Next Fetch() after Flushing() should yield the data
   // that built up in the previous block.
   source.Flush();
-  source.RunFetchWithExpectedData({"f", "a"});
+  source.RunFetchWithExpectedData({"a", "b", "c"});
 }
 
 TEST(HotlogLocalDataSourceTest, TestBufferSizeIsCapped) {
   auto source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
-  source.SetFakeData({"a", "b", "c", "d", "e", "f"});
+  std::vector<std::string> fake_data = {"a", "b", "c", "d", "e", "f"};
 
   // Fill buffer to the max limit
   for (int i = 0; i < kMaxInternalBufferSize; i++) {
-    source.FillDataBufferForTesting();
+    int index = i % fake_data.size();
+    source.FillDataBufferForTesting(fake_data[index]);
   }
 
   // Now fill beyond that limit
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
+  source.FillDataBufferForTesting({"a", "b", "c"});
 
   // Verify that returned data is capped at the limit. Also verify that
   // the beginning of the Fetch buffer is as expected, ie with older
@@ -230,19 +201,17 @@ TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
   auto source = LocalDataSourcePeer(kPollFrequency, kRedactData,
                                     kIsIncremental);
 
-  source.SetFakeData({"192.168.0.1", "fake@email.com"});
-  source.FillDataBufferForTesting();
-  source.FillDataBufferForTesting();
+  std::vector<std::string> fake_data = {"192.168.0.1", "fake@email.com"};
+
+  source.FillDataBufferForTesting(fake_data);
   source.RunFetchWithExpectedData({"(192.168.0.0/16: 1)", "(email: 1)"});
 
   // Make a new source with redaction disabled
   auto new_source =
       LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
-  new_source.SetFakeData({"192.168.0.1", "fake@email.com"});
-  new_source.FillDataBufferForTesting();
-  new_source.FillDataBufferForTesting();
-  new_source.RunFetchWithExpectedData({"192.168.0.1", "fake@email.com"});
+  new_source.FillDataBufferForTesting(fake_data);
+  new_source.RunFetchWithExpectedData(fake_data);
 }
 
 TEST(HotlogWatchdogTest, TestVariousInvalidWatchdogs) {
