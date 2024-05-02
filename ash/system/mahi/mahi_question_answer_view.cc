@@ -137,6 +137,7 @@ views::Builder<views::FlexLayoutView> CreateTextBubbleBuilder(
               // Since every text bubble label has this ID, the view lookup will
               // only be performed from one parent above.
               .SetID(mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel)
+              .SetSelectable(true)
               .SetMultiLine(true)
               .CustomConfigure(base::BindOnce([](views::Label* label) {
                 label->SetProperty(views::kFlexBehaviorKey,

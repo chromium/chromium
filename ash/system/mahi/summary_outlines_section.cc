@@ -89,6 +89,7 @@ SummaryOutlinesSection::SummaryOutlinesSection(MahiUiController* ui_controller)
           .CopyAddressTo(&summary_label_)
           .SetVisible(false)
           .SetID(mahi_constants::ViewId::kSummaryLabel)
+          .SetSelectable(true)
           .SetMultiLine(true)
           // TODO(crbug.com/40233803): Multiline label right now doesn't
           // work well with `FlexLayout`. The size constraint is not
@@ -179,6 +180,7 @@ void SummaryOutlinesSection::HandleOutlinesLoaded(
     outlines_container_->AddChildView(
         views::Builder<views::Label>()
             .SetText(outline.outline_content)
+            .SetSelectable(true)
             .SetMultiLine(true)
             .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
