@@ -3065,9 +3065,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
 #if !BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
-      std::make_unique<SimplePolicyHandler>(key::kChromeDataRegionSetting,
-                                            prefs::kChromeDataRegionSetting,
-                                            base::Value::Type::INTEGER)));
+      std::make_unique<IntRangePolicyHandler>(key::kChromeDataRegionSetting,
+                                              prefs::kChromeDataRegionSetting,
+                                              /*min=*/0,
+                                              /*max=*/2,
+                                              /*clamp=*/false)));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   return handlers;

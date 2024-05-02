@@ -52,6 +52,38 @@
             "default_value": 0
           }
         }
+      },
+      {
+        "policies": {
+          "ChromeDataRegionSetting": -1
+        },
+        "policies_settings": {
+          "ChromeDataRegionSetting": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "chrome_data_region_setting": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromeDataRegionSetting": 3
+        },
+        "policies_settings": {
+          "ChromeDataRegionSetting": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "chrome_data_region_setting": {
+            "default_value": 0
+          }
+        }
       }
     ]
   }
