@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
 namespace {
@@ -65,7 +66,7 @@ SyncWebSocket::StatusCode LogReplaySocket::ReceiveNextMessage(
   if (next->event_type == LogEntry::kResponse) {
     // We have to build the messages back up to what they would have been
     // in the actual WebSocket.
-    *message = "{\"id\":" + std::to_string(next->id) +
+    *message = "{\"id\":" + base::NumberToString(next->id) +
                SessionIdJson(next->session_id) +
                ",\"result\":" + next->payload + "}";
     return SyncWebSocket::StatusCode::kOk;
