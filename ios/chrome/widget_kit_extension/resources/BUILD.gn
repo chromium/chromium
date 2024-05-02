@@ -2,126 +2,60 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-imageset("lockscreen_chrome_logo") {
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
   sources = [
-    "lockscreen_chrome_logo.imageset/Contents.json",
-    "lockscreen_chrome_logo.imageset/lockscreen_chrome_logo.png",
-    "lockscreen_chrome_logo.imageset/lockscreen_chrome_logo@2x.png",
-    "lockscreen_chrome_logo.imageset/lockscreen_chrome_logo@3x.png",
-  ]
-}
-
-imageset("lockscreen_game_logo") {
-  sources = [
-    "lockscreen_game_logo.imageset/Contents.json",
-    "lockscreen_game_logo.imageset/lockscreen_game_logo.png",
-    "lockscreen_game_logo.imageset/lockscreen_game_logo@2x.png",
-    "lockscreen_game_logo.imageset/lockscreen_game_logo@3x.png",
-  ]
-}
-
-imageset("lockscreen_incognito_logo") {
-  sources = [
-    "lockscreen_incognito_logo.imageset/Contents.json",
-    "lockscreen_incognito_logo.imageset/lockscreen_incognito_logo.png",
-    "lockscreen_incognito_logo.imageset/lockscreen_incognito_logo@2x.png",
-    "lockscreen_incognito_logo.imageset/lockscreen_incognito_logo@3x.png",
-  ]
-}
-
-imageset("lockscreen_voicesearch_logo") {
-  sources = [
-    "lockscreen_voicesearch_logo.imageset/Contents.json",
-    "lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo.png",
-    "lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo@2x.png",
-    "lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo@3x.png",
-  ]
-}
-
-imageset("widget_chrome_logo") {
-  sources = [
-    "widget_chrome_logo.imageset/Contents.json",
-    "widget_chrome_logo.imageset/widget_chrome_logo.png",
-    "widget_chrome_logo.imageset/widget_chrome_logo@2x.png",
-    "widget_chrome_logo.imageset/widget_chrome_logo@3x.png",
-  ]
-}
-
-imageset("widget_dino_background_placeholder") {
-  sources = [
-    "widget_dino_background_placeholder.imageset/Contents.json",
-    "widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_dark.png",
-    "widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_dark@2x.png",
-    "widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_dark@3x.png",
-    "widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_light.png",
-    "widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_light@2x.png",
-    "widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_light@3x.png",
-  ]
-}
-
-imageset("widget_dino_background") {
-  sources = [
-    "widget_dino_background.imageset/Contents.json",
-    "widget_dino_background.imageset/widget_dino_background_dark.png",
-    "widget_dino_background.imageset/widget_dino_background_dark@2x.png",
-    "widget_dino_background.imageset/widget_dino_background_dark@3x.png",
-    "widget_dino_background.imageset/widget_dino_background_light.png",
-    "widget_dino_background.imageset/widget_dino_background_light@2x.png",
-    "widget_dino_background.imageset/widget_dino_background_light@3x.png",
-  ]
-}
-
-imageset("widget_password_manager_logo") {
-  sources = [
-    "widget_password_manager_logo.imageset/Contents.json",
-    "widget_password_manager_logo.imageset/widget_password_manager_logo@2x.png",
-    "widget_password_manager_logo.imageset/widget_password_manager_logo@3x.png",
-  ]
-}
-
-symbolset("widget_incognito_icon") {
-  sources = [
-    "widget_incognito_icon.symbolset/Contents.json",
-    "widget_incognito_icon.symbolset/incognito.cr.svg",
-  ]
-}
-
-symbolset("widget_lens_icon") {
-  sources = [
-    "widget_lens_icon.symbolset/Contents.json",
-    "widget_lens_icon.symbolset/lens.cr.svg",
-  ]
-}
-
-colorset("widget_actions_row_background_color") {
-  sources = [ "widget_actions_row_background_color.colorset/Contents.json" ]
-}
-
-colorset("widget_actions_icon_color") {
-  sources = [ "widget_actions_icon_color.colorset/Contents.json" ]
-}
-
-colorset("widget_search_bar_color") {
-  sources = [ "widget_search_bar_color.colorset/Contents.json" ]
-}
-
-colorset("widget_separator_color") {
-  sources = [ "widget_separator_color.colorset/Contents.json" ]
-}
-
-colorset("widget_text_color") {
-  sources = [ "widget_text_color.colorset/Contents.json" ]
-}
-
-colorset("widget_background_color") {
-  sources = [ "widget_background_color.colorset/Contents.json" ]
-}
-
-symbolset("widget_voice_icon") {
-  sources = [
-    "widget_voice_icon.symbolset/Contents.json",
-    "widget_voice_icon.symbolset/voice.cr.svg",
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/lockscreen_chrome_logo.imageset/Contents.json",
+    "Assets.xcassets/lockscreen_chrome_logo.imageset/lockscreen_chrome_logo.png",
+    "Assets.xcassets/lockscreen_chrome_logo.imageset/lockscreen_chrome_logo@2x.png",
+    "Assets.xcassets/lockscreen_chrome_logo.imageset/lockscreen_chrome_logo@3x.png",
+    "Assets.xcassets/lockscreen_game_logo.imageset/Contents.json",
+    "Assets.xcassets/lockscreen_game_logo.imageset/lockscreen_game_logo.png",
+    "Assets.xcassets/lockscreen_game_logo.imageset/lockscreen_game_logo@2x.png",
+    "Assets.xcassets/lockscreen_game_logo.imageset/lockscreen_game_logo@3x.png",
+    "Assets.xcassets/lockscreen_incognito_logo.imageset/Contents.json",
+    "Assets.xcassets/lockscreen_incognito_logo.imageset/lockscreen_incognito_logo.png",
+    "Assets.xcassets/lockscreen_incognito_logo.imageset/lockscreen_incognito_logo@2x.png",
+    "Assets.xcassets/lockscreen_incognito_logo.imageset/lockscreen_incognito_logo@3x.png",
+    "Assets.xcassets/lockscreen_voicesearch_logo.imageset/Contents.json",
+    "Assets.xcassets/lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo.png",
+    "Assets.xcassets/lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo@2x.png",
+    "Assets.xcassets/lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo@3x.png",
+    "Assets.xcassets/widget_actions_icon_color.colorset/Contents.json",
+    "Assets.xcassets/widget_actions_row_background_color.colorset/Contents.json",
+    "Assets.xcassets/widget_background_color.colorset/Contents.json",
+    "Assets.xcassets/widget_chrome_logo.imageset/Contents.json",
+    "Assets.xcassets/widget_chrome_logo.imageset/widget_chrome_logo.png",
+    "Assets.xcassets/widget_chrome_logo.imageset/widget_chrome_logo@2x.png",
+    "Assets.xcassets/widget_chrome_logo.imageset/widget_chrome_logo@3x.png",
+    "Assets.xcassets/widget_dino_background.imageset/Contents.json",
+    "Assets.xcassets/widget_dino_background.imageset/widget_dino_background_dark.png",
+    "Assets.xcassets/widget_dino_background.imageset/widget_dino_background_dark@2x.png",
+    "Assets.xcassets/widget_dino_background.imageset/widget_dino_background_dark@3x.png",
+    "Assets.xcassets/widget_dino_background.imageset/widget_dino_background_light.png",
+    "Assets.xcassets/widget_dino_background.imageset/widget_dino_background_light@2x.png",
+    "Assets.xcassets/widget_dino_background.imageset/widget_dino_background_light@3x.png",
+    "Assets.xcassets/widget_dino_background_placeholder.imageset/Contents.json",
+    "Assets.xcassets/widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_dark.png",
+    "Assets.xcassets/widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_dark@2x.png",
+    "Assets.xcassets/widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_dark@3x.png",
+    "Assets.xcassets/widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_light.png",
+    "Assets.xcassets/widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_light@2x.png",
+    "Assets.xcassets/widget_dino_background_placeholder.imageset/widget_dino_background_placeholder_light@3x.png",
+    "Assets.xcassets/widget_incognito_icon.symbolset/Contents.json",
+    "Assets.xcassets/widget_incognito_icon.symbolset/incognito.cr.svg",
+    "Assets.xcassets/widget_lens_icon.symbolset/Contents.json",
+    "Assets.xcassets/widget_lens_icon.symbolset/lens.cr.svg",
+    "Assets.xcassets/widget_password_manager_logo.imageset/Contents.json",
+    "Assets.xcassets/widget_password_manager_logo.imageset/widget_password_manager_logo@2x.png",
+    "Assets.xcassets/widget_password_manager_logo.imageset/widget_password_manager_logo@3x.png",
+    "Assets.xcassets/widget_search_bar_color.colorset/Contents.json",
+    "Assets.xcassets/widget_separator_color.colorset/Contents.json",
+    "Assets.xcassets/widget_text_color.colorset/Contents.json",
+    "Assets.xcassets/widget_voice_icon.symbolset/Contents.json",
+    "Assets.xcassets/widget_voice_icon.symbolset/voice.cr.svg",
   ]
 }
