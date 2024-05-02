@@ -839,6 +839,9 @@ public final class ProductionSupportedFlagList {
                 "Controls whether the priority of renderers is controlled by the performance "
                         + "manager."),
         Flag.baseFeature(
+                "RunPerformanceManagerOnMainThreadSync",
+                "Controls whether the performance manager runs on the main thread."),
+        Flag.baseFeature(
                 BlinkFeatures.BACKGROUND_RESOURCE_FETCH,
                 "Process resource requests in a background thread inside Blink."),
         Flag.baseFeature(
