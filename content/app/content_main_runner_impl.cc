@@ -930,12 +930,6 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   if (enable_startup_tracing)
     tracing::EnableStartupTracingIfNeeded();
 
-#if BUILDFLAG(IS_WIN)
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  base::trace_event::TraceEventETWExport::EnableETWExport();
-#endif
-#endif  // BUILDFLAG(IS_WIN)
-
   // Android tracing started at the beginning of the method.
   // Other OSes have to wait till we get here in order for all the memory
   // management setup to be completed.
