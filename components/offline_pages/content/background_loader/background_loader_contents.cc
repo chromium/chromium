@@ -54,7 +54,7 @@ bool BackgroundLoaderContents::IsNeverComposited(
 
 void BackgroundLoaderContents::CloseContents(content::WebContents* source) {
   // Do nothing. Other pages should not be able to close a background page.
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool BackgroundLoaderContents::ShouldSuppressDialogs(
