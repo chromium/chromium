@@ -61,7 +61,14 @@ class COMPONENT_EXPORT(URL) GURL {
   GURL(const GURL& other);
   GURL(GURL&& other) noexcept;
 
-  // The strings to this constructor should be UTF-8 / UTF-16.
+  // The strings to this constructor should be UTF-8 / UTF-16. They will be
+  // parsed and canonicalized. For example, the host is lower cased.
+  //
+  // URL canonicalization is subtle: url_canon.h and its unit tests are not
+  // short. For example, GURL("http://example.com/aβc%2Etxt") produces a GURL
+  // object whose path() is "/a%CE%B2c.txt", where the "β" was percent-encoded
+  // as "%CE%B2" and the "%2E" was percent-unencoded as ".". Subtly, converting
+  // "%2E" to "." applies to a URL's path component but not to its query.
   explicit GURL(std::string_view url_string);
   explicit GURL(std::u16string_view url_string);
 
