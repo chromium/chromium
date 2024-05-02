@@ -74,6 +74,8 @@ std::string_view IOSSecurityInterstitialPage::GetInterstitialType() const {
   return "";
 }
 
+void IOSSecurityInterstitialPage::ShowInfobar() {}
+
 std::u16string IOSSecurityInterstitialPage::GetFormattedHostName() const {
   return security_interstitials::common_string_util::GetFormattedHostName(
       request_url_);

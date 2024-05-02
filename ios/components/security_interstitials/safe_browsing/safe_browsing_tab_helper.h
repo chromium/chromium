@@ -41,6 +41,8 @@ class SafeBrowsingTabHelper
   void RemoveDelegate();
   // Tells delegate to open safe browsing settings.
   void OpenSafeBrowsingSettings();
+  // Tells delegate to show enhanced safe browsing promo.
+  void ShowEnhancedSafeBrowsingInfobar();
 
  private:
   friend class web::WebStateUserData<SafeBrowsingTabHelper>;

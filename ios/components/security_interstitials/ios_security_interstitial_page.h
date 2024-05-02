@@ -46,6 +46,9 @@ class IOSSecurityInterstitialPage {
   // cast to a sub-class.
   virtual std::string_view GetInterstitialType() const;
 
+  // Displays the infobar promo attached to the interstitial page.
+  virtual void ShowInfobar();
+
  protected:
   // Returns true if the interstitial should create a new navigation item.
   virtual bool ShouldCreateNewNavigation() const = 0;

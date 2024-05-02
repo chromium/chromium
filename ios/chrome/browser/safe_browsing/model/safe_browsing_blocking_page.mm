@@ -8,6 +8,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/features.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 #import "ios/web/public/web_state.h"
@@ -142,6 +144,15 @@ void SafeBrowsingBlockingPage::PopulateInterstitialStrings(
   error_ui_->PopulateStringsForHtml(load_time_data);
 }
 
+void SafeBrowsingBlockingPage::ShowInfobar() {
+  if (!base::FeatureList::IsEnabled(
+          security_interstitials::features::kEnhancedSafeBrowsingPromo)) {
+    return;
+  }
+
+  client_->ShowEnhancedSafeBrowsingInfobar();
+}
+
 #pragma mark - SafeBrowsingBlockingPage::SafeBrowsingControllerClient
 
 SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
@@ -197,5 +208,13 @@ void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
   if (web_state()) {
     SafeBrowsingTabHelper::FromWebState(web_state())
         ->OpenSafeBrowsingSettings();
+  }
+}
+
+void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
+    ShowEnhancedSafeBrowsingInfobar() {
+  if (web_state()) {
+    SafeBrowsingTabHelper::FromWebState(web_state())
+        ->ShowEnhancedSafeBrowsingInfobar();
   }
 }

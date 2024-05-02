@@ -135,6 +135,12 @@ void SafeBrowsingTabHelper::OpenSafeBrowsingSettings() {
   }
 }
 
+void SafeBrowsingTabHelper::ShowEnhancedSafeBrowsingInfobar() {
+  if (delegate_) {
+    [delegate_ showEnhancedSafeBrowsingInfobar];
+  }
+}
+
 #pragma mark - SafeBrowsingTabHelper::PolicyDecider
 
 SafeBrowsingTabHelper::PolicyDecider::PolicyDecider(web::WebState* web_state,

@@ -28,6 +28,9 @@ class SafeBrowsingBlockingPage
       const security_interstitials::UnsafeResource& resource);
   ~SafeBrowsingBlockingPage() override;
 
+  // IOSSecurityInterstitialPage::
+  void ShowInfobar() override;
+
  private:
   // Controller client used for SafeBrowsing blocking page.
   class SafeBrowsingControllerClient
@@ -36,6 +39,9 @@ class SafeBrowsingBlockingPage
     SafeBrowsingControllerClient(
         const security_interstitials::UnsafeResource& resource);
     ~SafeBrowsingControllerClient() override;
+
+    // Displays the enhanced safe browsing infobar promo.
+    void ShowEnhancedSafeBrowsingInfobar();
 
    private:
     // security_interstitials::ControllerClient:
