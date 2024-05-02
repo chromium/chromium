@@ -9,6 +9,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -78,6 +79,16 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
     Profile* profile,
     bool expect_popup_to_be_shown,
     gfx::RectF element_bounds) {
+  ChromeAutofillClient& client =
+      static_cast<ChromeAutofillClient&>(driver.GetAutofillClient());
+  // It can happen that the window is resized immediately after showing the
+  // popup, resulting in the popup to be hidden. If `expect_popup_to_be_shown`
+  // is true, the tests assume that the popup will be shown by the end of this
+  // function. Not keeping the popup open for testing can result in the popup
+  // being randomly hidden and in breaking this assumption. This causes
+  // flakiness.
+  client.SetKeepPopupOpenForTesting(true);
+
   FormData form;
   form.url = GURL("https://foo.com/bar");
   form.fields = {test::CreateTestFormField(
@@ -154,6 +165,9 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
     }
   }
 
+  // Allow the popup to be hidden. Tests sometimes use this function to create a
+  // popup, and then the tests try to hide it.
+  client.SetKeepPopupOpenForTesting(false);
   return testing::AssertionSuccess();
 }
 
