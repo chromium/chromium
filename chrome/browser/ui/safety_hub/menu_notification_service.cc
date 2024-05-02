@@ -264,6 +264,11 @@ void SafetyHubMenuNotificationService::DismissActiveNotification() {
 
 void SafetyHubMenuNotificationService::DismissActiveNotificationOfModule(
     safety_hub::SafetyHubModuleType module) {
+  // Callers of this function do not know if the module is available. Do
+  // nothing, if the module is not available.
+  if (!module_info_map_.contains(module)) {
+    return;
+  }
   SafetyHubMenuNotification* notification =
       module_info_map_.at(module)->notification.get();
   if (notification->IsCurrentlyActive()) {
