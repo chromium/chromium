@@ -123,7 +123,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       textStyleOptions_: Array,
       textStyleToggles_: Array,
       paused: Boolean,
-      hasContent: Boolean,
+      isReadAloudPlayable: Boolean,
       selectedVoice: Object,
       voicePackInstallStatus: Map,
       availableVoices: Array,
@@ -338,10 +338,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // via one way data binding.
   private readonly paused: boolean;
 
-  // If Read Anything has content. If it doesn't, certain toolbar buttons
-  // like the play / pause button should be disabled. This is set from
-  // the parent element via one way data binding.
-  private readonly hasContent: boolean;
+  // If Read Aloud is playable. Certain states, such as when Read Anything does
+  // not have content or when the speech engine is loading should disable
+  // certain toolbar buttons like the play / pause button should be disabled.
+  // This is set from the parent element via one way data binding.
+  private readonly isReadAloudPlayable: boolean;
 
   constructor() {
     super();

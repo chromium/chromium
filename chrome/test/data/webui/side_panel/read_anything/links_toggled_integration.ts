@@ -72,6 +72,8 @@ suite('LinksToggledIntegration', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
+    // @ts-ignore
+    app.firstUtteranceSpoken = true;
     flush();
     linksToggleButton =
         app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(

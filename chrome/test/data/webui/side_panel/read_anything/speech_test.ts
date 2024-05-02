@@ -285,6 +285,21 @@ suite('Speech', () => {
       assertFalse(speechSynthesis.paused);
     });
 
+    suite('isReadAloudPlayable updates', () => {
+      setup(() => {
+        assertTrue(app.isReadAloudPlayable());
+      });
+      test('before utterance.onStarted', () => {
+        app.playSpeech();
+        assertFalse(app.isReadAloudPlayable());
+      });
+      test('after utterance.onStarted', () => {
+        speechSynthesis.triggerUtteranceStartedOnNextSpeak();
+        app.playSpeech();
+        assertTrue(app.isReadAloudPlayable());
+      });
+    });
+
     suite('language change to unavailable language', () => {
       const pageLanguage = 'es';
       setup(() => {

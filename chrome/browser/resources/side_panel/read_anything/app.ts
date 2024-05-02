@@ -267,6 +267,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private isWebUIToolbarVisible_: boolean;
   private isReadAloudEnabled_: boolean;
 
+  // If the speech engine is considered "loaded." If it is, we should display
+  // the play / pause buttons normally. Otherwise, we should disable the
+  // Read Aloud controls until the engine has loaded in order to provide
+  // visual feedback that a voice is about to be spoken.
+  private speechEngineLoaded: boolean = true;
+
+  // After the first utterance has been spoken, we should assume that the
+  // speech engine has loaded, and we shouldn't adjust the play / pause
+  // disabled state based on the message.onStart callback to avoid flickering.
+  private firstUtteranceSpoken = false;
+
   synth = window.speechSynthesis;
 
   private selectedVoice: SpeechSynthesisVoice|undefined;
@@ -1294,6 +1305,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         new SpeechSynthesisUtterance(utteranceText.substring(0, endBoundary));
 
     message.onerror = (error) => {
+      // We can't be sure that the engine has loaded at this point, but
+      // if there's an error, we want to ensure we keep the play buttons
+      // to prevent trapping users in a state where they can no longer play
+      // Read Aloud, as this is preferable to a long delay before speech
+      // with no feedback.
+      this.speechEngineLoaded = true;
+
       // TODO(crbug.com/40927698): Add more sophisticated error handling.
       if (error.error === 'interrupted') {
         // SpeechSynthesis.cancel() was called, therefore, do nothing.
@@ -1368,6 +1386,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       }
     });
 
+    message.onstart = () => {
+      // We've gotten the signal that the speech engine has loaded, therefore
+      // we can enable the Read Aloud buttons.
+      this.speechEngineLoaded = true;
+    };
+
     message.onend = () => {
       if (isTextTooLong) {
         // Since our previous utterance was too long, continue speaking pieces
@@ -1413,6 +1437,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     message.pitch = utteranceSettings.pitch;
     message.rate = utteranceSettings.rate;
 
+
+    if (!this.firstUtteranceSpoken) {
+      this.speechEngineLoaded = false;
+      this.firstUtteranceSpoken = true;
+    }
     this.synth.speak(message);
   }
 
@@ -1960,6 +1989,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.selectPreferredVoice_();
     }
     this.installVoicePackIfPossible(this.speechSynthesisLanguage);
+  }
+
+  // Include parameters in order to force a re-render whenever the values
+  // change.
+  isReadAloudPlayable(
+      hasContent: boolean = this.hasContent_,
+      speechEngineLoaded: boolean = this.speechEngineLoaded) {
+    return hasContent && speechEngineLoaded;
   }
 
   // Kicks off a workflow to install a voice pack.

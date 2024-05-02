@@ -117,7 +117,8 @@
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
     <read-anything-toolbar
       paused="[[speechPlayingState.paused]]"
-      has-content="[[hasContent_]]"
+      is-read-aloud-playable=
+      "[[isReadAloudPlayable(hasContent_, speechEngineLoaded)]]"
       selected-voice="[[selectedVoice]]"
       enabled-languages-in-pref="[[enabledLanguagesInPref]]"
       voice-pack-install-status="[[voicePackInstallStatus]]"

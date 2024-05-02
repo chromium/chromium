@@ -112,7 +112,7 @@
       <cr-icon-button
         class="toolbar-button audio-controls"
         id="play-pause"
-        disabled="[[!hasContent]]"
+        disabled="[[!isReadAloudPlayable]]"
         title$="[[playPauseButtonTitle_(paused)]]"
         aria-label$="[[playPauseButtonAriaLabel_(paused)]]"
         aria-keyshortcuts="k"
@@ -125,6 +125,7 @@
         <cr-icon-button
           id="previousGranularity"
           class="toolbar-button audio-controls"
+          disabled="[[!isReadAloudPlayable]]"
           aria-label="$i18n{previousSentenceLabel}"
           title="$i18n{previousSentenceLabel}"
           iron-icon="cr:chevron-left"
@@ -135,6 +136,7 @@
         id="nextGranularity"
         class="toolbar-button audio-controls"
         aria-label="$i18n{nextSentenceLabel}"
+        disabled="[[!isReadAloudPlayable]]"
         title="$i18n{nextSentenceLabel}"
         iron-icon="cr:chevron-right"
         tabindex="-1"

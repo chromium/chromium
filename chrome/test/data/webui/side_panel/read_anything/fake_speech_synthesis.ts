@@ -9,6 +9,7 @@ export class FakeSpeechSynthesis {
   speaking: boolean = false;
   spokenUtterances: SpeechSynthesisUtterance[];
   errorEvent: SpeechSynthesisErrorCode|undefined;
+  triggerUtteranceStartedEventNext: boolean = false;
 
 
   constructor() {
@@ -54,11 +55,20 @@ export class FakeSpeechSynthesis {
           'type', {utterance: utterance, error: this.errorEvent}));
       this.errorEvent = undefined;
     }
+
+    if (this.triggerUtteranceStartedEventNext && utterance.onstart) {
+      utterance.onstart(new SpeechSynthesisEvent('start', {utterance}));
+      this.triggerUtteranceStartedEventNext = false;
+    }
   }
 
   // On the next #speak, trigger an error of the given error code.
   triggerErrorEventOnNextSpeak(errorCode: SpeechSynthesisErrorCode): void {
     this.errorEvent = errorCode;
+  }
+
+  triggerUtteranceStartedOnNextSpeak() {
+    this.triggerUtteranceStartedEventNext = true;
   }
 
   // These are currently unused in tests but need to be defined in order to be
