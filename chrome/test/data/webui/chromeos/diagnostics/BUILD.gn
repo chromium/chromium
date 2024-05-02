@@ -54,7 +54,7 @@ build_webui_tests("build_webui_tests") {
     "system_page_test.js",
     "test_diagnostics_browser_proxy.ts",
     "text_badge_test.ts",
-    "touchpad_tester_test.js",
+    "touchpad_tester_test.ts",
     "touchscreen_tester_test.js",
     "wifi_info_test.js",
   ]

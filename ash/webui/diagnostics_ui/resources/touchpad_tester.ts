@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import './diagnostics_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
@@ -42,8 +43,8 @@ interface TouchEventObserver {
 
 export class TouchpadTesterElement extends TouchpadTesterElementBase implements
     TouchEventObserver {
-  static get is(): string {
-    return 'touchpad-tester';
+  static get is(): 'touchpad-tester' {
+    return 'touchpad-tester' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -103,11 +104,16 @@ export class TouchpadTesterElement extends TouchpadTesterElementBase implements
     this.drawingProvider.drawTrailMark(
         touchPoint.positionX, touchPoint.positionY);
   }
+
+  getDrawingProviderForTesting(): CanvasDrawingProvider {
+    assert(this.drawingProvider);
+    return this.drawingProvider;
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'touchpad-tester': TouchpadTesterElement;
+    [TouchpadTesterElement.is]: TouchpadTesterElement;
   }
 }
 

@@ -2,43 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import 'chrome://diagnostics/strings.m.js';
+import 'chrome://diagnostics/touchpad_tester.js';
+import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {TouchpadTesterElement} from 'chrome://diagnostics/touchpad_tester.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {MockController} from '../mock_controller.m.js';
-import {isChildVisible, isVisible} from '../test_util.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertElementContainsText} from './diagnostics_test_utils.js';
 
 suite('touchpadTesterTestSuite', function() {
   const titleSlotSelector = '#touchpadTesterDialog div[slot=title]';
 
-  /** @type {?TouchpadTesterElement} */
-  let touchpadTesterElement = null;
+  let touchpadTesterElement: TouchpadTesterElement|null = null;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    touchpadTesterElement.remove();
+    touchpadTesterElement?.remove();
     touchpadTesterElement = null;
   });
 
   /**
    * Adds tester to page DOM.
-   * @return {!Promise}
    */
-  function initializeElement() {
-    touchpadTesterElement = /** @type {!TouchpadTesterElement} */ (
-        document.createElement(TouchpadTesterElement.is));
-    assertTrue(!!touchpadTesterElement);
+  function initializeElement(): Promise<void> {
+    touchpadTesterElement = document.createElement(TouchpadTesterElement.is);
+    assert(touchpadTesterElement);
     document.body.appendChild(touchpadTesterElement);
 
     return flushTasks();
@@ -46,17 +44,18 @@ suite('touchpadTesterTestSuite', function() {
 
   test('VerifyElementInitalizedCorrectly', async () => {
     await initializeElement();
+    assert(touchpadTesterElement);
     assertFalse(isChildVisible(touchpadTesterElement, titleSlotSelector));
   });
 
   test('VerifyShowAndCloseUpdateDialogOpenState', async () => {
     await initializeElement();
-    /**@type {!CrDialogElement}*/
-    const dialog = touchpadTesterElement.$.touchpadTesterDialog;
+    assert(touchpadTesterElement);
     assertFalse(isChildVisible(touchpadTesterElement, titleSlotSelector));
 
     // Display tester dialog.
     const touchpad = fakeTouchDevices[0];
+    assert(touchpad);
     touchpadTesterElement.show(touchpad);
     await flushTasks();
 
@@ -65,11 +64,11 @@ suite('touchpadTesterTestSuite', function() {
     assertFalse(isVisible(touchpadTesterElement));
     assertTrue(isChildVisible(touchpadTesterElement, titleSlotSelector));
     const titleElement =
-        touchpadTesterElement.shadowRoot.querySelector('div[slot=\'title\']');
+        touchpadTesterElement.shadowRoot!.querySelector('div[slot=\'title\']');
     const expectedTitle = 'Test your touchpad';
     assertElementContainsText(titleElement, expectedTitle);
     const bodyElement =
-        touchpadTesterElement.shadowRoot.querySelector('div[slot=\'body\']');
+        touchpadTesterElement.shadowRoot!.querySelector('div[slot=\'body\']');
     assertElementContainsText(bodyElement, touchpad.name);
 
     // Close tester dialog.
@@ -83,9 +82,10 @@ suite('touchpadTesterTestSuite', function() {
   test('VerifyCanvasUpdatedWhenOnTouchEventTriggered', async () => {
     await initializeElement();
     const touchpad = fakeTouchDevices[0];
+    assert(touchpadTesterElement);
+    assert(touchpad);
     touchpadTesterElement.show(touchpad);
-    const canvas = (/** @type {HTMLCanvasElement} */ (
-        touchpadTesterElement.$.testerCanvas));
+    const canvas = touchpadTesterElement.$.testerCanvas;
     assertTrue(!!canvas);
 
     // Setup fake touch event data.
@@ -98,7 +98,7 @@ suite('touchpadTesterTestSuite', function() {
     };
     const mockController = new MockController();
     const mockDrawTrailMark = mockController.createFunctionMock(
-        touchpadTesterElement.drawingProvider, 'drawTrailMark');
+        touchpadTesterElement.getDrawingProviderForTesting(), 'drawTrailMark');
     mockDrawTrailMark.addExpectation(
         fakeTouchPoint.positionX, fakeTouchPoint.positionY);
 
