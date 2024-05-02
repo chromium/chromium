@@ -99,10 +99,13 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     }
 
     // Ensure we've added the available pack manager supported languages to
-    // the language menu first.
-    const langsAndReadableLangs: Array<[string, string]> = Array.from(
-        this.baseLanguages,
-        (key) => [key, this.getDisplayName(localeToDisplayName, key)]);
+    // the language menu first, only on ChromeOS.
+    const langsAndReadableLangs: Array<[string, string]> =
+        chrome.readingMode.isChromeOsAsh ?
+        Array.from(
+            this.baseLanguages,
+            (key) => [key, this.getDisplayName(localeToDisplayName, key)]) :
+        [];
 
     // Next, add any other supported languages to the menu, if they don't
     // already exist.

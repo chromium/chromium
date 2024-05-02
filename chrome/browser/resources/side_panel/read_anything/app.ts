@@ -986,10 +986,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private populateDisplayNamesForLocaleCodes() {
     this.localeToDisplayName = {};
 
-    // Get display names for all the pack manager supported locales.
-    AVAILABLE_GOOGLE_TTS_LOCALES.forEach((lang) => {
-      this.maybeAddDisplayName(lang);
-    });
+    // Get display names for all the pack manager supported locales, only on
+    // ChromeOS.
+    if (chrome.readingMode.isChromeOsAsh) {
+      AVAILABLE_GOOGLE_TTS_LOCALES.forEach((lang) => {
+        this.maybeAddDisplayName(lang);
+      });
+    }
 
     // Get any remaining display names for languages of available voices.
     for (const {lang} of this.availableVoices) {

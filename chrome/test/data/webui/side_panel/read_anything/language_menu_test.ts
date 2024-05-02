@@ -82,10 +82,12 @@ suite('LanguageMenu', () => {
     test('with existing available language no duplicates added', () => {
       availableVoices =
           [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+      const expectedLanguages =
+          chrome.readingMode.isChromeOsAsh ? 34 : availableVoices.length;
       setAvailableVoices();
       languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
-      assertEquals(getLanguageLineItems().length, 34);
+      assertEquals(getLanguageLineItems().length, expectedLanguages);
     });
   });
 
@@ -106,12 +108,13 @@ suite('LanguageMenu', () => {
     });
 
     test('adds language from available voice', () => {
+      const expectedLanguages = chrome.readingMode.isChromeOsAsh ? 1 : 0;
       availableVoices =
           [{name: 'test voice 5', lang: 'en-es'} as SpeechSynthesisVoice];
       setAvailableVoices();
       languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
-      assertEquals(getLanguageLineItems().length, 2);
+      assertEquals(getLanguageLineItems().length, expectedLanguages + 1);
     });
   });
 
