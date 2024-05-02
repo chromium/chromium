@@ -45,6 +45,7 @@ history::mojom::TabPtr SessionTabToMojom(const std::string& session_name) {
   tab_mojom->url = GURL("https://www.google.com");
   tab_mojom->title = "Sample Title";
 
+  tab_mojom->decorator = history::mojom::Decorator(0);
   base::TimeDelta relative_time = base::Minutes(5);
   tab_mojom->relative_time = relative_time;
   if (relative_time.InSeconds() < 60) {

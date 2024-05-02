@@ -15,6 +15,11 @@ enum DeviceType {
   kTablet,
 };
 
+// Reasons for showing tab in Tab Resumption module.
+enum Decorator {
+  kMostRecent,
+};
+
 // Represents a tab generated from synced sessions.
 struct Tab {
   // Type of device for displaying device icon
@@ -29,6 +34,9 @@ struct Tab {
 
   // String to display.
   string title;
+
+  // Info about the reason this tab is being shown.
+  Decorator? decorator;
 
   // Time since tab was last active.
   mojo_base.mojom.TimeDelta relative_time;

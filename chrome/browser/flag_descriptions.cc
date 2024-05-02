@@ -4869,6 +4869,12 @@ const char kNtpMostRelevantTabResumptionModuleName[] =
 const char kNtpMostRelevantTabResumptionModuleDescription[] =
     "Shows the Most Relevant Tab Resumption Module on the New Tab Page.";
 
+const char kNtpMostRelevantTabResumptionModuleDeviceIconName[] =
+    "NTP Most Relevant Tab Resumption Module with Device Icon";
+const char kNtpMostRelevantTabResumptionModuleDeviceIconDescription[] =
+    "Shows the device icon instead of device name on Most Relevant Tab "
+    "Resumption Module on the New Tab Page.";
+
 const char kNtpTabResumptionModuleName[] =
     "NTP Cross Device Tab Resumption Module";
 const char kNtpTabResumptionModuleDescription[] =

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../history_clusters/page_favicon.js';
@@ -11,6 +12,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Tab} from '../../../history_types.mojom-webui.js';
+import {DeviceType} from '../../../history_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import type {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
@@ -40,6 +42,12 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixin
 
   static get properties() {
     return {
+      /** The type of module width (wide, narrow, ...). */
+      format: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
       /** The cluster displayed by this element. */
       tabs: {
         type: Object,
@@ -53,19 +61,23 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixin
       },
 
       /**
-       * Although this is a V2 class, we use this to make it work for V1
-       * modules.
+       * To determine whether to show the module with the device icon.
        */
-      modulesRedesigned_: {
+      shouldShowDeviceIcon_: {
         type: Boolean,
         reflectToAttribute: true,
-        value: () => loadTimeData.getBoolean('modulesRedesignedEnabled'),
+        value: () => loadTimeData.getBoolean(
+            'mostRelevantTabResumptionDeviceIconEnabled'),
       },
     };
   }
 
+format:
+  string;
 tabs:
   Tab[];
+private shouldShowDeviceIcon_:
+  boolean;
 
   private getMenuItemGroups_(): MenuItem[][] {
     return [
@@ -139,6 +151,19 @@ tabs:
     return domain;
   }
 
+  private computeIcon_(tab: Tab): string {
+    switch (tab.deviceType) {
+      case DeviceType.kDesktop:
+        return 'tab_resumption:computer';
+      case DeviceType.kPhone:
+        return 'tab_resumption:phone';
+      case DeviceType.kTablet:
+        return 'tab_resumption:tablet';
+      default:
+        return 'tab_resumption:globe';
+    }
+  }
+
   private computeDeviceName_(tab: Tab): string {
     return loadTimeData.getBoolean('modulesRedesignedEnabled') ?
         tab.sessionName :
@@ -151,6 +176,10 @@ tabs:
 
   private computeFaviconSize_(): number {
     return 18;
+  }
+
+  private shouldShowReason_(): boolean {
+    return this.format === 'wide' || this.shouldShowDeviceIcon_;
   }
 }
 

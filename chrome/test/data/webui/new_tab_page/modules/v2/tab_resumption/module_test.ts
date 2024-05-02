@@ -28,6 +28,7 @@ function createSampleTab(
     ): Tab {
   const tab: Tab = Object.assign(
       {
+        decorator: null,
         deviceType: DeviceType.kDesktop,
         sessionName: 'Test Device',
         url: {url: 'https://www.foo.com'},

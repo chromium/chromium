@@ -72,19 +72,14 @@
   }
 
   .icon {
+    background-color: var(--color-new-tab-page-module-icon-background);
     margin-inline: 10px;
   }
 
   .tab-info {
+    color: var(--color-new-tab-page-secondary-foreground);
     min-width: 0;
     padding-inline-end: 16px;
-  }
-
-  .tab-device,
-  .tab-title,
-  .tab-domain,
-  .dot {
-    color: var(--color-new-tab-page-secondary-foreground);
   }
 
   .tab-title,
@@ -111,8 +106,20 @@
   .tab-description {
     line-height: 20px;
   }
+
+  .tab-reason {
+    white-space: nowrap;
+  }
+
+  :host([should-show-device-icon_]) .tab-device {
+    height: 14px;
+    margin-bottom: auto;
+    margin-inline: 0 4px;
+    margin-top: auto;
+    width: 14px;
+  }
 </style>
-<ntp-module-header-v2 hidden="[[!modulesRedesigned_]]"
+<ntp-module-header-v2
     id="moduleHeaderElementV2"
     header-text="[[i18n('modulesTabResumptionTitle')]]"
     menu-item-groups="[[getMenuItemGroups_()]]"
@@ -134,12 +141,18 @@
       <div class="tab-info">
         <div class="tab-title">[[item.title]]</div>
         <div class="tab-description">
+          <iron-icon class="tab-device" hidden="[[!shouldShowDeviceIcon_]]"
+                     icon="[[computeIcon_(item)]]"></iron-icon>
           <div class="tab-domain">[[computeDomain_(item)]]</div>
-          <span class="dot">
+          <span class="dot" hidden="[[shouldShowDeviceIcon_]]">
             &nbsp&#8226&nbsp</span>
-          <div class="tab-device">
+          <div class="tab-device" hidden="[[shouldShowDeviceIcon_]]">
             [[computeDeviceName_(item)]]
-            </div>
+          </div>
+          <span class="dot" hidden="[[!shouldShowReason_]]">
+            &nbsp&#8226&nbsp</span>
+          <span class="tab-reason" hidden="[[!shouldShowReason_]]">
+            </span>
         </div>
       </div>
     </a>

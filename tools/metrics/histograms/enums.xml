@@ -23816,6 +23816,8 @@ from previous Chrome versions.
   <int value="1135813530" label="FileSystemObserver:enabled"/>
   <int value="1135893278" label="BruschettaAlphaMigrate:enabled"/>
   <int value="1136409654" label="EnableKeyboardRewriterFix:enabled"/>
+  <int value="1138141041"
+      label="NtpMostRelevantTabResumptionModuleDeviceIcon:enabled"/>
   <int value="1138345742" label="PreferConstantFrameRate:disabled"/>
   <int value="1138349838" label="EnableMDRoundedCornersOnDialogs:disabled"/>
   <int value="1138690502" label="PreconnectToSearch:enabled"/>
@@ -25312,6 +25314,8 @@ from previous Chrome versions.
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>
   <int value="1793434695" label="VideoPlayerAppHidden:enabled"/>
+  <int value="1793835436"
+      label="NtpMostRelevantTabResumptionModuleDeviceIcon:disabled"/>
   <int value="1794057460" label="AutofillProfileClientValidation:enabled"/>
   <int value="1794586887"
       label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:enabled"/>
