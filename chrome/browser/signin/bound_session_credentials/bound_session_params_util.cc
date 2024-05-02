@@ -4,9 +4,14 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 
+#include <string>
+#include <string_view>
+
+#include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "components/google/core/common/google_util.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_util.h"
 #include "url/gurl.h"
 
@@ -49,6 +54,16 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
     return false;
   }
 
+  // TODO(b/325441004): require that `refresh_url()` is not empty after
+  // old clients data is migrated.
+  if (bound_session_params.has_refresh_url()) {
+    GURL refresh_url(bound_session_params.refresh_url());
+    if (!refresh_url.is_valid() ||
+        net::SchemefulSite(site) != net::SchemefulSite(refresh_url)) {
+      return false;
+    }
+  }
+
   return base::ranges::all_of(
       bound_session_params.credentials(), [&site](const auto& credential) {
         return IsCookieCredentialValid(credential, site);
@@ -79,6 +94,20 @@ bool IsCookieCredentialValid(const Credential& credential, const GURL& site) {
 bool AreSameSessionParams(const BoundSessionParams& lhs,
                           const BoundSessionParams& rhs) {
   return lhs.site() == rhs.site() && lhs.session_id() == rhs.session_id();
+}
+
+GURL ResolveEndpointPath(const GURL& request_url,
+                         std::string_view endpoint_path) {
+  std::string unescaped = base::UnescapeURLComponent(
+      endpoint_path,
+      base::UnescapeRule::PATH_SEPARATORS |
+          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+  GURL result = request_url.Resolve(unescaped);
+  if (net::SchemefulSite(result) == net::SchemefulSite(request_url)) {
+    return result;
+  }
+
+  return GURL();
 }
 
 }  // namespace bound_session_credentials

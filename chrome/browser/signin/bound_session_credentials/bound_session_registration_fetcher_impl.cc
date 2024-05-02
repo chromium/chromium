@@ -33,6 +33,7 @@
 namespace {
 constexpr char kSessionIdentifier[] = "session_identifier";
 constexpr char kCredentials[] = "credentials";
+constexpr char kRefreshUrl[] = "refresh_url";
 const char kXSSIPrefix[] = ")]}'";
 
 bound_session_credentials::Credential CreateCookieCredential(
@@ -121,7 +122,8 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
   }
 
   RegistrationErrorOr<bound_session_credentials::BoundSessionParams>
-      params_or_error = ParseJsonResponse(std::move(response_body));
+      params_or_error = ParseJsonResponse(url_loader_->GetFinalURL(),
+                                          std::move(response_body));
   if (!params_or_error.has_value()) {
     RunCallbackAndRecordMetrics(params_or_error);
     return;
@@ -266,6 +268,7 @@ void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
 BoundSessionRegistrationFetcherImpl::RegistrationErrorOr<
     bound_session_credentials::BoundSessionParams>
 BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
+    const GURL& request_url,
     std::unique_ptr<std::string> response_body) {
   // JSON responses normally should start with XSSI-protection prefix which
   // should be removed prior to parsing.
@@ -282,6 +285,7 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
 
   std::string* session_id = maybe_root->FindString(kSessionIdentifier);
   base::Value::List* credentials_list = maybe_root->FindList(kCredentials);
+  std::string* refresh_url = maybe_root->FindString(kRefreshUrl);
   if (!session_id || !credentials_list) {
     // Incorrect registration params.
     return base::unexpected(RegistrationError::kRequiredFieldMissing);
@@ -299,6 +303,18 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
   for (auto& credential : credentials_or_error.value()) {
     *params.add_credentials() = std::move(credential);
   }
+
+  // The refresh URL is optional, with fallback to a hardcoded URL. If a value
+  // is provided, it must be a correct, same-site URL.
+  if (refresh_url) {
+    GURL refresh_endpoint = bound_session_credentials::ResolveEndpointPath(
+        request_url, *refresh_url);
+    if (!refresh_endpoint.is_valid()) {
+      return base::unexpected(RegistrationError::kInvalidSessionParams);
+    }
+    params.set_refresh_url(refresh_endpoint.spec());
+  }
+
   return params;
 }
 

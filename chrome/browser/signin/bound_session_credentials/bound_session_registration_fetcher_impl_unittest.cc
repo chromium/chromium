@@ -484,3 +484,55 @@ TEST_F(BoundSessionRegistrationFetcherImplTest,
 
   EXPECT_TRUE(result.has_value());
 }
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, ParseJsonValidRefreshUrl) {
+  SetUpServerResponse(R"(
+    {
+        "session_identifier": "007",
+        "credentials": [{
+                "type": "cookie",
+                "name": "auth_cookie_1P",
+                "scope": {
+                    "domain": ".google.com",
+                    "path": "/"
+                }
+            }],
+        "refresh_url": "/RotateCookies"
+    }
+  )");
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->refresh_url(),
+            GURL("https://www.google.com/RotateCookies"));
+  ExpectRecordedMetrics(RegistrationError::kNone);
+}
+
+TEST_F(BoundSessionRegistrationFetcherImplTest, ParseJsonInvalidRefreshUrl) {
+  SetUpServerResponse(R"(
+    {
+        "session_identifier": "007",
+        "credentials": [{
+                "type": "cookie",
+                "name": "auth_cookie_1P",
+                "scope": {
+                    "domain": ".google.com",
+                    "path": "/"
+                }
+            }],
+        "refresh_url": "not-a-url://"
+    }
+  )");
+  std::unique_ptr<BoundSessionRegistrationFetcher> fetcher = CreateFetcher();
+  RegistrationResultFuture future;
+
+  fetcher->Start(future.GetCallback());
+  RunBackgroundTasks();
+
+  EXPECT_EQ(future.Get<>(), std::nullopt);
+  ExpectRecordedMetrics(RegistrationError::kInvalidSessionParams);
+}

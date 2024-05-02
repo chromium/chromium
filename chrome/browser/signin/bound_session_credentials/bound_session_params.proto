@@ -44,4 +44,6 @@ message BoundSessionParams {
   repeated Credential credentials = 4;
   // Creation time of the session.
   optional Timestamp creation_time = 5;
+  // URL of the refresh endpoint.
+  optional string refresh_url = 6;
 }

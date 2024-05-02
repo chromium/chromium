@@ -10,6 +10,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/structured_headers.h"
 
@@ -33,23 +34,6 @@ std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
 
   return std::nullopt;
 }
-
-// Returns an invalid `GURL` if the resulting registration endpoint cannot be
-// used.
-GURL MaybeCreateRegistrationEndpoint(const GURL& request_url,
-                                     std::string_view registration_value) {
-  std::string unescaped = base::UnescapeURLComponent(
-      registration_value,
-      base::UnescapeRule::PATH_SEPARATORS |
-          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
-  GURL result = request_url.Resolve(unescaped);
-  if (net::SchemefulSite(result) == net::SchemefulSite(request_url)) {
-    return result;
-  }
-
-  return GURL();
-}
-
 }  // namespace
 
 // A temporary feature to gate the new list header support until its format is
@@ -127,8 +111,8 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
     return std::nullopt;
   }
 
-  GURL registration_endpoint =
-      MaybeCreateRegistrationEndpoint(request_url, item.GetString());
+  GURL registration_endpoint = bound_session_credentials::ResolveEndpointPath(
+      request_url, item.GetString());
   if (!registration_endpoint.is_valid()) {
     return std::nullopt;
   }
@@ -207,7 +191,7 @@ BoundSessionRegistrationFetcherParam::MaybeCreateFromLegacyHeader(
   for (const auto& [key, value] : items) {
     if (base::EqualsCaseInsensitiveASCII(key, kRegistrationItemKey)) {
       GURL potential_registration_endpoint =
-          MaybeCreateRegistrationEndpoint(request_url, value);
+          bound_session_credentials::ResolveEndpointPath(request_url, value);
       if (potential_registration_endpoint.is_valid()) {
         registration_endpoint = potential_registration_endpoint;
       }

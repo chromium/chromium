@@ -58,6 +58,20 @@ TEST(BoundSessionParamsUtilTest, ParamsValidYoutube) {
   EXPECT_TRUE(AreParamsValid(params));
 }
 
+TEST(BoundSessionParamsUtilTest, ParamsValidWithRefreshUrl) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_refresh_url("https://google.com/rotate");
+  EXPECT_TRUE(AreParamsValid(params));
+}
+
+TEST(BoundSessionParamsUtilTest, ParamsValidWithRefreshUrlSameSite) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_refresh_url("https://accounts.google.com/rotate");
+  EXPECT_TRUE(AreParamsValid(params));
+}
+
 TEST(BoundSessionParamsUtilTest, ParamsInvalidMissingSessionId) {
   BoundSessionParams params = CreateValidBoundSessionParams();
   params.set_session_id("");
@@ -97,6 +111,20 @@ TEST(BoundSessionParamsUtilTest, ParamsInvalidSiteNotGoogle) {
       CreateValidBoundSessionParams();
   params.set_site("https://example.org");
   UpdateAllCookieCredentialsDomains(params, ".example.org");
+  EXPECT_FALSE(AreParamsValid(params));
+}
+
+TEST(BoundSessionParamsUtilTest, ParamsInvalidRefreshUrlInvalid) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_refresh_url("http//not-a-url.com");
+  EXPECT_FALSE(AreParamsValid(params));
+}
+
+TEST(BoundSessionParamsUtilTest, ParamsInvalidRefreshUrlSiteDoesNotMatch) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_refresh_url("https://example.com/rotate");
   EXPECT_FALSE(AreParamsValid(params));
 }
 
@@ -163,4 +191,59 @@ TEST(BoundSessionParamsUtilTest, CookieCredentialValidCookieDomainEmpty) {
   EXPECT_TRUE(
       IsCookieCredentialValid(credential, GURL("https://accounts.google.com")));
 }
+
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathRelative) {
+  GURL resolved_url =
+      ResolveEndpointPath(GURL("https://google.com/path1"), "/path2");
+  EXPECT_EQ(resolved_url, GURL("https://google.com/path2"));
+}
+
+// This is an edge-case that is not banned by the standard (at least yet).
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathRelativeEmpty) {
+  GURL resolved_url = ResolveEndpointPath(GURL("https://google.com/path1"), "");
+  EXPECT_EQ(resolved_url, GURL("https://google.com/path1"));
+}
+
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathRelativeEmptyPath) {
+  GURL resolved_url =
+      ResolveEndpointPath(GURL("https://google.com/path1"), "/");
+  EXPECT_EQ(resolved_url, GURL("https://google.com/"));
+}
+
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathRelativeEmptyRequestPath) {
+  GURL resolved_url = ResolveEndpointPath(GURL("https://google.com"), "/path1");
+  EXPECT_EQ(resolved_url, GURL("https://google.com/path1"));
+}
+
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathAbsoluteSameDomain) {
+  GURL resolved_url =
+      ResolveEndpointPath(GURL("https://accounts.google.com/path1"),
+                          "https://accounts.google.com/path2");
+  EXPECT_EQ(resolved_url, GURL("https://accounts.google.com/path2"));
+}
+
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathAbsoluteSameSite) {
+  GURL resolved_url = ResolveEndpointPath(GURL("https://mail.google.com/path1"),
+                                          "https://accounts.google.com/path2");
+  EXPECT_EQ(resolved_url, GURL("https://accounts.google.com/path2"));
+}
+
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathAbsoluteOtherSite) {
+  GURL resolved_url = ResolveEndpointPath(GURL("https://mail.google.com/path1"),
+                                          "https://accounts.other.com/path2");
+  EXPECT_FALSE(resolved_url.is_valid());
+}
+
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathAbsoluteOtherScheme) {
+  GURL resolved_url =
+      ResolveEndpointPath(GURL("https://accounts.google.com/path1"),
+                          "http://accounts.google.com/path2");
+  EXPECT_FALSE(resolved_url.is_valid());
+}
+
+TEST(BoundSessionParamsUtilTest, ResolveEndpointPathInvalidRequestUrl) {
+  GURL resolved_url = ResolveEndpointPath(GURL(), "https://google.com/path1");
+  EXPECT_FALSE(resolved_url.is_valid());
+}
+
 }  // namespace bound_session_credentials
