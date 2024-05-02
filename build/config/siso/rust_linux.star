@@ -103,8 +103,16 @@ def __rust_bin_handler(ctx, cmd):
 
     ctx.actions.fix(inputs = cmd.inputs + inputs)
 
+def __rust_build_handler(ctx, cmd):
+    inputs = []
+    for i, arg in enumerate(cmd.args):
+        if arg == "--src-dir":
+            inputs.append(ctx.fs.canonpath(cmd.args[i + 1]))
+    ctx.actions.fix(inputs = cmd.inputs + inputs)
+
 __handlers = {
     "rust_bin_handler": __rust_bin_handler,
+    "rust_build_handler": __rust_build_handler,
 }
 
 def __step_config(ctx, step_config):
@@ -195,12 +203,8 @@ def __step_config(ctx, step_config):
                 "build/gn_helpers.py",
                 "third_party/rust-toolchain:toolchain",
                 "third_party/rust:rustlib",
-                # XXX: -src-dir?
-                "third_party/rust-toolchain/lib/rustlib/src/rust/library/std",
-                "third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.153",
-                "third_party/rust-toolchain/lib/rustlib/src/rust/vendor/memchr-2.5.0",
-                "third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.108",
             ],
+            "handler": "rust_build_handler",
             "remote": config.get(ctx, "cog"),
             "input_root_absolute_path": True,
             "timeout": "2m",
