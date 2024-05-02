@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/screen_ai/optical_character_recognizer.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"

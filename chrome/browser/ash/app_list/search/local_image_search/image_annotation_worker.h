@@ -17,7 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/image_content_annotator.h"
-#include "chrome/browser/screen_ai/optical_character_recognizer.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
 class Profile;
 
