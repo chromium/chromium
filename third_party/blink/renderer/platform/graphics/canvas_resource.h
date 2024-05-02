@@ -247,11 +247,24 @@ class PLATFORM_EXPORT CanvasResource
     NOTREACHED();
     return nullptr;
   }
+
+  // Prepares GPU TransferableResource. Default implementation creates a
+  // TransferableResource that wraps GetOrCreateGpuMailbox(). Subclasses needing
+  // different behavior should override this method.
+  // NOTE: Will be called only if SupportsAcceleratedCompositing() is true.
   virtual bool PrepareAcceleratedTransferableResource(
       viz::TransferableResource* out_resource,
       MailboxSyncMode);
-  bool PrepareUnacceleratedTransferableResource(
-      viz::TransferableResource* out_resource);
+
+  // Prepares software TransferableResource if supported (by default it is not).
+  // Subclasses that return false for SupportsAcceleratedCompositing() must
+  // override this method to implement support.
+  // NOTE: Will be called only if SupportsAcceleratedCompositing() is false.
+  virtual bool PrepareUnacceleratedTransferableResource(
+      viz::TransferableResource* out_resource) {
+    NOTREACHED();
+    return false;
+  }
   const SkColorInfo& GetSkColorInfo() const { return info_; }
   void OnDestroy();
   CanvasResourceProvider* Provider() { return provider_.get(); }
@@ -282,6 +295,8 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool IsAccelerated() const final { return false; }
   bool IsValid() const final;
   bool SupportsAcceleratedCompositing() const final { return false; }
+  bool PrepareUnacceleratedTransferableResource(
+      viz::TransferableResource* out_resource) final;
   bool NeedsReadLockFences() const final { return false; }
   void Abandon() final;
   gfx::Size Size() const final;

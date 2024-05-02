@@ -209,6 +209,10 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
     MailboxSyncMode sync_mode) {
   TRACE_EVENT0("blink",
                "CanvasResource::PrepareAcceleratedTransferableResource");
+  // This method should only be called if this instance actually supports
+  // accelerated compositing.
+  CHECK(SupportsAcceleratedCompositing());
+
   // Gpu compositing is a prerequisite for compositing an accelerated resource
   DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
   if (!ContextProviderWrapper())
@@ -226,27 +230,6 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
     out_resource->synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }
-
-  return true;
-}
-
-bool CanvasResource::PrepareUnacceleratedTransferableResource(
-    viz::TransferableResource* out_resource) {
-  TRACE_EVENT0("blink",
-               "CanvasResource::PrepareUnacceleratedTransferableResource");
-  const gpu::Mailbox& mailbox = GetOrCreateGpuMailbox(kVerifiedSyncToken);
-  if (mailbox.IsZero())
-    return false;
-
-  // For software compositing, the display compositor assumes an N32 format for
-  // the resource type and completely ignores the format set on the
-  // TransferableResource. Clients are expected to render in N32 format but use
-  // RGBA as the tagged format on resources.
-  *out_resource = viz::TransferableResource::MakeSoftware(
-      mailbox, gpu::SyncToken(), Size(), viz::SinglePlaneFormat::kRGBA_8888,
-      viz::TransferableResource::ResourceSource::kCanvas);
-
-  out_resource->color_space = GetColorSpace();
 
   return true;
 }
@@ -349,6 +332,29 @@ void CanvasResourceSharedBitmap::TearDown() {
   if (resource_dispatcher && !shared_bitmap_id_.IsZero())
     resource_dispatcher->DidDeleteSharedBitmap(shared_bitmap_id_);
   shared_mapping_ = {};
+}
+
+bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
+    viz::TransferableResource* out_resource) {
+  TRACE_EVENT0(
+      "blink",
+      "CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource");
+  const gpu::Mailbox& mailbox = GetOrCreateGpuMailbox(kVerifiedSyncToken);
+  if (mailbox.IsZero()) {
+    return false;
+  }
+
+  // For software compositing, the display compositor assumes an N32 format for
+  // the resource type and completely ignores the format set on the
+  // TransferableResource. Clients are expected to render in N32 format but use
+  // RGBA as the tagged format on resources.
+  *out_resource = viz::TransferableResource::MakeSoftware(
+      mailbox, gpu::SyncToken(), Size(), viz::SinglePlaneFormat::kRGBA_8888,
+      viz::TransferableResource::ResourceSource::kCanvas);
+
+  out_resource->color_space = GetColorSpace();
+
+  return true;
 }
 
 void CanvasResourceSharedBitmap::Abandon() {
