@@ -34,16 +34,18 @@ jobs:
 
   build:
     needs: [docker-build-image]
-    runs-on:
-      labels: linux-test-hosted
-      group: cobalt
+    runs-on: [self-hosted, chrobalt-linux-runner]
     container: ${{ needs.docker-build-image.outputs.docker_tag }}
     env:
       DEPOT_TOOLS_UPDATE: 0
       DEPOT_TOOLS_REPORT_BUILD: 0
       DEPOT_TOOLS_COLLECT_METRICS: 0
       DEPOT_TOOLS_METRICS: 0
-      SCCACHE_GCS_KEY: ${{ secrets.SCCACHE_GCS_KEY }}
+      SCCACHE: 1
+      SCCACHE_GCS_BUCKET: cobalt-actions-sccache-linux
+      SCCACHE_GCS_OAUTH_URL: http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token
+      SCCACHE_GCS_RW_MODE: READ_WRITE
+      SCCACHE_IDLE_TIMEOUT: 0 # prevent sccache server from shutting down after long idle.
 
     steps:
       - name: Checkout
@@ -64,10 +66,6 @@ jobs:
         run: df -h
       - name: Du
         run: du -ht 500M
-      - name: Place sccache key
-        run: echo "$SCCACHE_GCS_KEY" | base64 -d > /root/key.json
-      - name: Cat the key
-        run: cat /root/key.json
       - name: sccache check
         run: sccache -s
       - name: gn gen
