@@ -20,11 +20,13 @@ export enum SeaPenActionName {
       'begin_load_selected_recent_sea_pen_image',
   SET_THUMBNAIL_RESPONSE_STATUS_CODE = 'set_thumbnail_response_status_code',
   BEGIN_SELECT_SEA_PEN_THUMBNAIL = 'begin_select_sea_pen_thumbnail',
+  CLEAR_CURRENT_SEA_PEN_QUERY = 'clear_current_sea_pen_query',
   CLEAR_SEA_PEN_THUMBNAILS = 'clear_sea_pen_thumbnails',
   CLEAR_SEA_PEN_THUMBNAILS_LOADING = 'clear_sea_pen_thumbnails_loading',
   END_SELECT_SEA_PEN_THUMBNAIL = 'end_select_sea_pen_thumbnail',
   BEGIN_SELECT_RECENT_SEA_PEN_IMAGE = 'begin_select_recent_sea_pen_image',
   END_SELECT_RECENT_SEA_PEN_IMAGE = 'end_select_recent_sea_pen_image',
+  SET_CURRENT_SEA_PEN_QUERY = 'set_current_sea_pen_query',
   SET_SEA_PEN_THUMBNAILS = 'set_sea_pen_thumbnails',
   SET_RECENT_SEA_PEN_IMAGES = 'set_recent_sea_pen_images',
   SET_RECENT_SEA_PEN_IMAGE_DATA = 'set_recent_sea_pen_image_data',
@@ -37,8 +39,9 @@ export enum SeaPenActionName {
 export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     BeginLoadRecentSeaPenImagesAction|BeginLoadRecentSeaPenImageDataAction|
     BeginLoadSelectedRecentSeaPenImageAction|BeginSelectRecentSeaPenImageAction|
-    ClearSeaPenThumbnailsAction|ClearSeaPenThumbnailsLoadingAction|
-    EndSelectRecentSeaPenImageAction|SetThumbnailResponseStatusCodeAction|
+    ClearCurrentSeaPenQueryAction|ClearSeaPenThumbnailsAction|
+    ClearSeaPenThumbnailsLoadingAction|EndSelectRecentSeaPenImageAction|
+    SetThumbnailResponseStatusCodeAction|SetCurrentSeaPenQueryAction|
     SetSeaPenThumbnailsAction|SetRecentSeaPenImagesAction|
     SetRecentSeaPenImageDataAction|SetSelectedRecentSeaPenImageAction|
     BeginSelectSeaPenThumbnailAction|EndSelectSeaPenThumbnailAction|
@@ -55,6 +58,19 @@ export function beginSearchSeaPenThumbnailsAction(query: SeaPenQuery):
     query: query,
     name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS,
   };
+}
+
+export interface SetCurrentSeaPenQueryAction extends Action {
+  name: SeaPenActionName.SET_CURRENT_SEA_PEN_QUERY;
+  query: SeaPenQuery;
+}
+
+/**
+ * Sets the currently searched Sea Pen query.
+ */
+export function setCurrentSeaPenQueryAction(query: SeaPenQuery):
+    SetCurrentSeaPenQueryAction {
+  return {name: SeaPenActionName.SET_CURRENT_SEA_PEN_QUERY, query};
 }
 
 export interface SetSeaPenThumbnailsAction extends Action {
@@ -242,6 +258,14 @@ export function endSelectSeaPenThumbnailAction(
     thumbnail,
     success,
   };
+}
+
+export interface ClearCurrentSeaPenQueryAction extends Action {
+  name: SeaPenActionName.CLEAR_CURRENT_SEA_PEN_QUERY;
+}
+
+export function clearCurrentSeaPenQueryAction(): ClearCurrentSeaPenQueryAction {
+  return {name: SeaPenActionName.CLEAR_CURRENT_SEA_PEN_QUERY};
 }
 
 export interface ClearSeaPenThumbnailsAction extends Action {

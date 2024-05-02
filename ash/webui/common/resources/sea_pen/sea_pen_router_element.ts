@@ -17,8 +17,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {setThumbnailResponseStatusCodeAction} from './sea_pen_actions.js';
-import {closeSeaPenIntroductionDialog, getShouldShowSeaPenIntroductionDialog} from './sea_pen_controller.js';
+import {cleanUpSwitchingTemplate, closeSeaPenIntroductionDialog, getShouldShowSeaPenIntroductionDialog} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logSeaPenVisited} from './sea_pen_metrics_logger.js';
@@ -94,11 +93,15 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     instance = null;
   }
 
-  selectSeaPenTemplate(templateId: SeaPenTemplateId|Query) {
-    // resets the Sea Pen thumbnail response status code when switching
-    // template; otherwise, error state will remain in sea-pen-images element if
-    // it happens in the last query search.
-    this.dispatch(setThumbnailResponseStatusCodeAction(null));
+  selectSeaPenTemplate(templateId: SeaPenTemplateId|Query|undefined) {
+    if (templateId === undefined) {
+      return;
+    }
+    // Clean up the Sea Pen states such as thumbnail response status code,
+    // thumbnail loading status and Sea Pen query when
+    // switching template; otherwise, states from the last query search will
+    // remain in sea-pen-images element.
+    cleanUpSwitchingTemplate(this.getStore());
     this.goToRoute(
         SeaPenPaths.RESULTS, {seaPenTemplateId: templateId.toString()});
   }

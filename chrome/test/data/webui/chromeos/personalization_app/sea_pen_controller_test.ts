@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, getRecentSeaPenImages, getSeaPenStore, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, searchSeaPenThumbnails, selectRecentSeaPenImage, selectSeaPenWallpaper, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {beginLoadRecentSeaPenImagesAction, beginLoadSelectedImageAction, beginLoadSelectedRecentSeaPenImageAction, beginSearchSeaPenThumbnailsAction, beginSelectRecentSeaPenImageAction, beginSelectSeaPenThumbnailAction, endSelectRecentSeaPenImageAction, endSelectSeaPenThumbnailAction, getRecentSeaPenImages, getSeaPenStore, SeaPenState, SeaPenStoreAdapter, SeaPenStoreInterface, searchSeaPenThumbnails, selectRecentSeaPenImage, selectSeaPenWallpaper, setCurrentSeaPenQueryAction, setRecentSeaPenImagesAction, setSeaPenThumbnailsAction, setSelectedRecentSeaPenImageAction, setThumbnailResponseStatusCodeAction, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -48,6 +48,7 @@ suite('SeaPen reducers', () => {
     assertDeepEquals(
         [
           beginSearchSeaPenThumbnailsAction(query),
+          setCurrentSeaPenQueryAction(query),
           setThumbnailResponseStatusCodeAction(MantaStatusCode.kOk),
           setSeaPenThumbnailsAction(query, seaPenProvider.images),
         ],
@@ -68,6 +69,27 @@ suite('SeaPen reducers', () => {
               recentImages: null,
               thumbnailResponseStatusCode: null,
               thumbnails: null,
+              currentSeaPenQuery: null,
+              pendingSelected: null,
+              currentSelected: null,
+              shouldShowSeaPenIntroductionDialog: false,
+              error: null,
+            }),
+          },
+          {
+            'wallpaper.seaPen': typeCheck<SeaPenState>({
+              loading: {
+                recentImageData: {},
+                recentImages: false,
+                thumbnails: true,
+                currentSelected: false,
+                setImage: 0,
+              },
+              recentImageData: {},
+              recentImages: null,
+              thumbnailResponseStatusCode: null,
+              thumbnails: null,
+              currentSeaPenQuery: query,
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
@@ -87,6 +109,7 @@ suite('SeaPen reducers', () => {
               recentImages: null,
               thumbnailResponseStatusCode: MantaStatusCode.kOk,
               thumbnails: null,
+              currentSeaPenQuery: query,
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,
@@ -106,6 +129,7 @@ suite('SeaPen reducers', () => {
               recentImages: null,
               thumbnailResponseStatusCode: MantaStatusCode.kOk,
               thumbnails: seaPenProvider.images,
+              currentSeaPenQuery: query,
               pendingSelected: null,
               currentSelected: null,
               shouldShowSeaPenIntroductionDialog: false,

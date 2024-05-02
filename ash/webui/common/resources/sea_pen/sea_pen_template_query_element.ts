@@ -29,7 +29,7 @@ import {logGenerateSeaPenWallpaper} from './sea_pen_metrics_logger.js';
 import {SeaPenPaths} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
-import {ChipToken, getDefaultOptions, getTemplateTokens, isNonEmptyArray, TemplateToken} from './sea_pen_utils.js';
+import {ChipToken, getDefaultOptions, getSelectedOptionsFromQuery, getTemplateTokens, isNonEmptyArray, TemplateToken} from './sea_pen_utils.js';
 import {getTransitionEnabled} from './transition.js';
 
 // Two options are the same if they have the same key-value pairs.
@@ -64,10 +64,14 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
       path: String,
 
+      seaPenQuery_: {
+        type: Object,
+        value: null,
+      },
+
       seaPenTemplate_: {
         type: Object,
         computed: 'computeSeaPenTemplate_(templateId)',
-        observer: 'onSeaPenTemplateChanged_',
       },
 
       // A map of chip to its selected option. By default, populated after
@@ -127,6 +131,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   templateId: string|null;
   private inspireMeAnimation_: LottieRenderer|null|undefined;
   private seaPenTemplate_: SeaPenTemplate;
+  private seaPenQuery_: SeaPenQuery|null;
   private selectedOptions_: Map<SeaPenTemplateChip, SeaPenOption>;
   private templateTokens_: TemplateToken[];
   private options_: SeaPenOption[]|null;
@@ -138,7 +143,10 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private isSelectingOptions: boolean;
 
   static get observers() {
-    return ['updateSearchButton_(path, thumbnails_)'];
+    return [
+      'updateSearchButton_(path, thumbnails_)',
+      'onSeaPenTemplateOrQueryChanged_(seaPenTemplate_, seaPenQuery_)',
+    ];
   }
 
   override connectedCallback() {
@@ -148,6 +156,8 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         'thumbnails_', state => state.thumbnails);
     this.watch<SeaPenTemplateQueryElement['thumbnailsLoading_']>(
         'thumbnailsLoading_', state => state.loading.thumbnails);
+    this.watch<SeaPenTemplateQueryElement['seaPenQuery_']>(
+        'seaPenQuery_', state => state.currentSeaPenQuery);
     this.updateFromStore();
 
     beforeNextRender(this, () => {
@@ -242,17 +252,15 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
       }
     }
 
-    this.templateTokens_ =
-        getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
     this.onClickSearchButton_(event);
   }
 
-  private onSeaPenTemplateChanged_(template: SeaPenTemplate) {
-    const selectedOptions = getDefaultOptions(template);
+  private onSeaPenTemplateOrQueryChanged_(
+      template: SeaPenTemplate, seaPenQuery: SeaPenQuery|null) {
     this.clearSelectedChipState_();
-    this.selectedOptions_ = selectedOptions;
-    this.templateTokens_ =
-        getTemplateTokens(this.seaPenTemplate_, this.selectedOptions_);
+    this.selectedOptions_ =
+        getSelectedOptionsFromQuery(seaPenQuery, template) ??
+        getDefaultOptions(template);
   }
 
   private onSelectedOptionsChanged_() {

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {parseTemplateText, SeaPenImageId, SeaPenOption, SeaPenTemplate} from './constants.js';
+import {getSeaPenTemplates, parseTemplateText, SeaPenImageId, SeaPenOption, SeaPenTemplate} from './constants.js';
 import {SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {SeaPenTemplateChip} from './sea_pen_generated.mojom-webui.js';
 
@@ -104,6 +105,63 @@ export function getTemplateTokens(
       return str;
     }
   });
+}
+
+/**
+ * Get the selected template options map from the options information in
+ * SeaPenQuery `query` and SeaPenTemplate `template`.
+ */
+export function getSelectedOptionsFromQuery(
+    query: SeaPenQuery|null,
+    template: SeaPenTemplate): Map<SeaPenTemplateChip, SeaPenOption>|null {
+  if (!query || query.textQuery) {
+    return null;
+  }
+
+  const templateId = query.templateQuery?.id;
+  assert(templateId === template.id, 'template id should match');
+
+  // Update the selected options to match with current Sea Pen query.
+  const options = query.templateQuery?.options;
+  const newSelectedOptions = new Map<SeaPenTemplateChip, SeaPenOption>();
+  for (const [key, value] of Object.entries(options ?? new Map())) {
+    const chip = parseInt(key) as SeaPenTemplateChip;
+    const chipOptions = template.options.get(chip);
+    const selectedChipOption =
+        chipOptions?.find((option) => option.value === value);
+    if (selectedChipOption) {
+      newSelectedOptions.set(chip, selectedChipOption);
+    }
+  }
+  return newSelectedOptions;
+}
+
+/**
+ * Checks whether a Sea Pen query is active. Freeform query is active by
+ * default. Template query should have active template and chip options.
+ */
+export function isActiveSeaPenQuery(query: SeaPenQuery|undefined): boolean {
+  if (!query) {
+    return false;
+  }
+
+  if (query.textQuery) {
+    return true;
+  }
+
+  const template = getSeaPenTemplates().find(
+      (seaPenTemplate) => seaPenTemplate.id === query.templateQuery?.id);
+  const options = query.templateQuery?.options;
+  if (!template || !options) {
+    return false;
+  }
+
+  const isActive = Object.entries(options).every(([key, value]) => {
+    const chip = parseInt(key) as SeaPenTemplateChip;
+    const activeOptions = template.options.get(chip);
+    return !!activeOptions && activeOptions.some(opt => opt.value === value);
+  });
+  return isActive;
 }
 
 /**

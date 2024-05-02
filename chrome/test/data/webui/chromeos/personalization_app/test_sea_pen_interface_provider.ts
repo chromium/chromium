@@ -52,8 +52,8 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
           ],
         ]),
         userVisibleQuery: {
-          text: 'test freeform query',
-          templateTitle: '',
+          text: 'test template query',
+          templateTitle: 'test template title',
         },
       },
     },
@@ -62,7 +62,7 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   recentImageInfo3: RecentSeaPenImageInfo = {
     query: {
-      textQuery: 'test template query',
+      textQuery: 'test freeform query',
     },
     creationTime: stringToMojoString16('Dec 31, 2023'),
   };

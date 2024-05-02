@@ -103,10 +103,6 @@
     margin-inline-end: 16px;
   }
 
-  .more-like-this-option {
-    display: none;
-  }
-
   #wallpaperInfoDialog::part(dialog) {
     border-radius: 20px;
     /* Info dialog should not scroll with the page. This keeps the dialog
@@ -192,17 +188,19 @@
             class="action-menu-container"
             accessibility-label="[[i18n('seaPenRecentImageMenuButton')]]"
             role-description="[[i18n('seaPenMenuRoleDescription')]]">
-          <button data-id$="[[index]]" class="dropdown-item more-like-this-option"
-              on-click="onClickMoreLikeThis_">
-            <iron-icon icon="cr:add"></iron-icon>
-            [[i18n('seaPenCreateMore')]]
-          </button>
+          <template is="dom-if" if="[[shouldShowCreateMoreButton_(image, recentImageData_, recentImageDataLoading_)]]" restamp>
+            <button data-id$="[[index]]" class="dropdown-item create-more-option"
+                on-click="onClickCreateMore_">
+              <iron-icon icon="cr:add"></iron-icon>
+              [[i18n('seaPenCreateMore')]]
+            </button>
+          </template>
           <button class="dropdown-item delete-wallpaper-option"
               on-click="onClickDeleteWallpaper_">
             <iron-icon icon="sea-pen:delete"></iron-icon>
             [[i18n('seaPenDeleteWallpaper')]]
           </button>
-          <template is="dom-if" if="[[shouldShowWallpaperInfoButton_(image, recentImageData_, recentImageDataLoading_)]]">
+          <template is="dom-if" if="[[shouldShowWallpaperInfoButton_(image, recentImageData_, recentImageDataLoading_)]]" restamp>
             <button data-id$="[[index]]" class="dropdown-item wallpaper-info-option"
                 on-click="onClickWallpaperInfo_">
               <iron-icon icon="cr:info-outline"></iron-icon>

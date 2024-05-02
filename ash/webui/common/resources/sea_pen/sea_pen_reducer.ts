@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {SeaPenImageId} from './constants.js';
-import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {SeaPenActionName, SeaPenActions} from './sea_pen_actions.js';
 import {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
 
@@ -186,6 +186,19 @@ function recentImageDataReducer(
   }
 }
 
+function currentSeaPenQueryReducer(
+    state: SeaPenQuery|null, action: SeaPenActions): SeaPenQuery|null {
+  switch (action.name) {
+    case SeaPenActionName.SET_CURRENT_SEA_PEN_QUERY:
+      assert(!!action.query, 'query is empty.');
+      return action.query;
+    case SeaPenActionName.CLEAR_CURRENT_SEA_PEN_QUERY:
+      return null;
+    default:
+      return state;
+  }
+}
+
 function thumbnailsReducer(
     state: SeaPenThumbnail[]|null, action: SeaPenActions): SeaPenThumbnail[]|
     null {
@@ -240,6 +253,8 @@ export function seaPenReducer(
     thumbnailResponseStatusCode: thumbnailResponseStatusCodeReducer(
         state.thumbnailResponseStatusCode, action),
     thumbnails: thumbnailsReducer(state.thumbnails, action),
+    currentSeaPenQuery:
+        currentSeaPenQueryReducer(state.currentSeaPenQuery, action),
     currentSelected: currentSelectedReducer(state.currentSelected, action),
     pendingSelected:
         pendingSelectedReducer(state.pendingSelected, action, state),

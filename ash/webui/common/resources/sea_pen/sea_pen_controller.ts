@@ -48,6 +48,7 @@ export async function searchSeaPenThumbnails(
     query: SeaPenQuery, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
   store.dispatch(seaPenAction.beginSearchSeaPenThumbnailsAction(query));
+  store.dispatch(seaPenAction.setCurrentSeaPenQueryAction(query));
   const {images, statusCode} =
       await withMinimumDelay(provider.searchWallpaper(query));
   if (!isNonEmptyArray(images) || statusCode !== MantaStatusCode.kOk) {
@@ -115,9 +116,12 @@ export async function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
   store.dispatch(seaPenAction.clearSeaPenThumbnailsAction());
 }
 
-export async function clearSeaPenThumbnailsLoading(
-    store: SeaPenStoreInterface) {
+export async function cleanUpSwitchingTemplate(store: SeaPenStoreInterface) {
+  store.beginBatchUpdate();
+  store.dispatch(seaPenAction.setThumbnailResponseStatusCodeAction(null));
+  store.dispatch(seaPenAction.clearCurrentSeaPenQueryAction());
   store.dispatch(seaPenAction.clearSeaPenThumbnailsLoadingAction());
+  store.endBatchUpdate();
 }
 
 export async function deleteRecentSeaPenImage(

@@ -394,7 +394,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
             !!aboutQueryDesc,
             'Wallpaper Info dialog should include visible user query info');
         assertTrue(
-            aboutQueryDesc.innerText.includes('test template query'),
+            aboutQueryDesc.innerText.includes('test freeform query'),
             'user visible query for 3rd image should display');
 
         const creationTimeDesc =
