@@ -247,6 +247,21 @@ class VIEWS_EXPORT WidgetDelegate
   // latter may become a DCHECK in the future.
   void DeleteDelegate();
 
+  // When the ownership of the Widget is CLIENT_OWNS_WIDGET and the client also
+  // owns the delegate, this function will be called when the Widget has
+  // transitioned to a "zombie" state. It is safe to delete the Widget from
+  // within this function.
+  //
+  // The "zombie" state is when the Widget is "alive" but the underlying
+  // NativeWidget has been destroyed. Thus the Widget instance is still valid,
+  // but it is functionally "dead", aka. "undead". The Widget (and underlying
+  // NativeWidget) have can handle being in this state. Most Widget APIs will
+  // not crash while in this state, but they may also do nothing meaningful.
+  // Call Widget::IsClosed() to determine whether the Widget is in a usable
+  // state. Widgets in the "zombie" state cannot be resurrected and must be
+  // deleted or a new instance created.
+  virtual void WidgetIsZombie(Widget* widget) {}
+
   // Called when the user begins/ends to change the bounds of the window.
   virtual void OnWindowBeginUserBoundsChange() {}
   virtual void OnWindowEndUserBoundsChange() {}

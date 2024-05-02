@@ -1688,14 +1688,6 @@ void Widget::OnNativeWidgetDestroyed() {
   // InvalidateLayout().
   widget_closed_ = true;
   HandleWidgetDestroyed();
-
-  // Immediately reset the weak ptr. If NATIVE_WIDGET_OWNS_WIDGET destruction of
-  // the NativeWidget can destroy the Widget. We don't want to touch the
-  // NativeWidget during the destruction of the Widget either since some member
-  // variables on the NativeWidget may already be destroyed. In
-  // WIDGET_OWNS_NATIVE_WIDGET the NativeWidget will be cleaned up through
-  // |owned_native_widget_|
-  native_widget_.reset();
 }
 
 void Widget::OnNativeWidgetParentChanged(gfx::NativeView parent) {
@@ -2342,10 +2334,28 @@ void Widget::HandleWidgetDestroyed() {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetDestroyed(this);
 
+  native_widget_destroyed_ = true;
+  auto weak_ptr = GetWeakPtr();
   if (widget_delegate_) {
     widget_delegate_->DeleteDelegate();
   }
-  native_widget_destroyed_ = true;
+  // When the ownership_ is CLIENT_OWNS_WIDGET, the DeleteDelegate() call above
+  // *might* also cause the Widget to be destroyed. The following statement
+  // checks for this. If this function is called from within the Widget
+  // destructor, the delegate has already been notified (WidgetDestroyed() is
+  // called from the destructor) that the Widget is being destroyed, so the call
+  // to inform the client that the Widget is a "zombie"
+  // (WidgetDelegate::WidgetIsZombie()) isn't performed.
+  if (!weak_ptr) {
+    return;
+  }
+  // Immediately reset the weak ptr. If NATIVE_WIDGET_OWNS_WIDGET destruction of
+  // the NativeWidget can destroy the Widget. We don't want to touch the
+  // NativeWidget during the destruction of the Widget either since some member
+  // variables on the NativeWidget may already be destroyed. In
+  // WIDGET_OWNS_NATIVE_WIDGET the NativeWidget will be cleaned up through
+  // |owned_native_widget_|
+  native_widget_.reset();
 }
 
 BEGIN_METADATA_BASE(Widget)

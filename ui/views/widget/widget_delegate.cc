@@ -292,6 +292,11 @@ void WidgetDelegate::DeleteDelegate() {
   for (auto&& callback : delete_callbacks)
     std::move(callback).Run();
 
+  if (weak_this && !owned_by_widget && widget_ &&
+      widget_->ownership() == Widget::InitParams::CLIENT_OWNS_WIDGET) {
+    WidgetIsZombie(widget_.get());
+  }
+
   // TODO(kylixrd): Eventually the widget will never own the delegate, so much
   // of this code will need to be reworked.
   //
