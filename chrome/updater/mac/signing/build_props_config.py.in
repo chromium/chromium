@@ -38,3 +38,7 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
     @property
     def notary_team_id(self):
         return '@MAC_TEAM_ID@'
+
+    @property
+    def company_name(self):
+        return '@COMPANY_NAME@'

@@ -103,10 +103,12 @@ def _package_and_sign_pkg(paths, config):
                             '{}.pkg'.format(config.packaging_basename))
     commands.run_command([
         'pkgbuild',
-        '--component',
+        '--root',
         os.path.join(paths.work, config.app_dir),
         '--install-location',
-        '/tmp',
+        os.path.join('/Library/Application Support', config.company_name,
+                     config.app_product, 'PkgStaging',
+                     '%s.app' % config.app_product),
         '--scripts',
         os.path.join(paths.input, config.packaging_dir, 'signing', 'pkg'),
         '--sign',
