@@ -12,7 +12,10 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
+#include "components/global_media_controls/public/views/media_item_ui_view.h"
+#include "components/media_message_center/mock_media_notification_item.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/view.h"
@@ -81,6 +84,20 @@ class MediaCastAudioSelectorViewTest : public AshTestBase {
     GetMediaCastListView()->OnDevicesUpdated(std::move(devices));
   }
 
+  void RemoveCastDevices() {
+    GetMediaCastListView()->OnDevicesUpdated(/*devices=*/{});
+  }
+
+  bool GetCastDeviceBit() {
+    return view_->device_type_bits_[static_cast<int>(
+        MediaCastAudioSelectorView::DeviceType::kCastDevice)];
+  }
+
+  bool GetAudioDeviceBit() {
+    return view_->device_type_bits_[static_cast<int>(
+        MediaCastAudioSelectorView::DeviceType::kAudioDevice)];
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<MediaCastAudioSelectorView> view_ = nullptr;
@@ -106,6 +123,22 @@ TEST_F(MediaCastAudioSelectorViewTest, VisibilityChanges) {
   GetSelectorView()->HideDevices();
   EXPECT_FALSE(GetListViewContainer()->GetVisible());
   EXPECT_FALSE(GetSelectorView()->IsDeviceSelectorExpanded());
+}
+
+TEST_F(MediaCastAudioSelectorViewTest, WithTwoDeviceLists) {
+  // Cast devices should not exist and audio devices exist by default.
+  EXPECT_FALSE(GetCastDeviceBit());
+  EXPECT_TRUE(GetAudioDeviceBit());
+
+  // Adding cast devices.
+  AddCastDevices();
+  EXPECT_TRUE(GetCastDeviceBit());
+  EXPECT_TRUE(GetAudioDeviceBit());
+
+  // Remove cast devices.
+  RemoveCastDevices();
+  EXPECT_FALSE(GetCastDeviceBit());
+  EXPECT_TRUE(GetAudioDeviceBit());
 }
 
 }  // namespace ash

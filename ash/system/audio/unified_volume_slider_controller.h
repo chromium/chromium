@@ -7,9 +7,14 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+
+namespace gfx {
+class Insets;
+}
 
 namespace ash {
 class UnifiedVolumeView;
@@ -31,6 +36,7 @@ class ASH_EXPORT UnifiedVolumeSliderController : public UnifiedSliderListener {
   // the Quick Settings main page and Quick Settings toasts. `delegate` is used
   // to construct the callback for `more_button_`.
   explicit UnifiedVolumeSliderController(Delegate* delegate);
+
   // This constructor is for controllers of a single `UnifiedVolumeView`, i.e.
   // volume sliders in `AudioDetailedView`. `delegate_` is set to nullptr.
   UnifiedVolumeSliderController();
@@ -42,7 +48,9 @@ class ASH_EXPORT UnifiedVolumeSliderController : public UnifiedSliderListener {
   ~UnifiedVolumeSliderController() override;
 
   // Creates a slider view for a specific output device in `AudioDetailedView`.
-  std::unique_ptr<UnifiedVolumeView> CreateVolumeSlider(uint64_t device_id);
+  std::unique_ptr<UnifiedVolumeView> CreateVolumeSlider(
+      uint64_t device_id,
+      const gfx::Insets& inside_padding = kRadioSliderViewPadding);
 
   // This callback is used to map the `device_id` to `UnifiedVolumeView` in
   // `UnifiedVolumeViewTest`.

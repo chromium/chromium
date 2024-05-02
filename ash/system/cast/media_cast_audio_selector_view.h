@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_CAST_MEDIA_CAST_AUDIO_SELECTOR_VIEW_H_
 #define ASH_SYSTEM_CAST_MEDIA_CAST_AUDIO_SELECTOR_VIEW_H_
 
+#include <bitset>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -31,7 +32,8 @@ namespace ash {
 
 // View ID's.
 inline constexpr int kListViewContainerId = kMediaCastListViewMaxId + 1;
-inline constexpr int kMediaCastListViewId = kListViewContainerId + 1;
+inline constexpr int kMediaAudioListViewId = kListViewContainerId + 1;
+inline constexpr int kMediaCastListViewId = kMediaAudioListViewId + 1;
 
 // The device selector view on Ash side. It shows an audio list view and a cast
 // list view. This view will show under the global `MediaUIView`.
@@ -64,15 +66,28 @@ class ASH_EXPORT MediaCastAudioSelectorView
   bool IsDeviceSelectorExpanded() override;
 
  private:
+  friend class MediaCastAudioSelectorViewTest;
+
+  // Device types that are in `list_view_container_`.
+  enum class DeviceType {
+    kCastDevice,
+    kAudioDevice,
+    kMax = kAudioDevice + 1,
+  };
+
   // The callback that is passed to the `MediaCastListView` to inform the
   // panel that the devices is updated.
-  void OnDevicesUpdated(bool has_devices);
+  void OnDevicesUpdated(DeviceType device_type, bool has_devices);
 
   // The callback that is passed to the `MediaCastListView` when a cast item
   // entry is pressed.
   void OnCastDeviceSelected(const std::string& device_id);
 
   bool is_expanded_ = false;
+
+  // This bitset carries the flags indicating the presence of cast devices and
+  // audio devices within the device list.
+  std::bitset<static_cast<int>(DeviceType::kMax)> device_type_bits_;
 
   // The container that carries the audio list view and the cast list view.
   raw_ptr<views::View> list_view_container_ = nullptr;

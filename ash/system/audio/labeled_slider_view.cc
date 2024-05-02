@@ -121,6 +121,15 @@ LabeledSliderView::LabeledSliderView(TrayDetailedView* detailed_view,
     : is_wide_slider_(is_wide_slider) {
   SetUseDefaultFillLayout(true);
 
+  // TODO (b/319941708): Remove this work-around after this bug is fixed.
+  // Adding a layer avoids calling `OrphanLayers()` when removing child views.
+  // Note that we set the layer of `unified_slider_view_` beneath the layer of
+  // `device_name_view_`. Meanwhile, `device_name_view_` is removed before
+  // `unified_slider_view_` due to the view order. As a result, the layer of
+  // `unified_slider_view_` will be removed from the parent twice, causing a
+  // CHECK error.
+  SetPaintToLayer();
+
   // Creates and formats the slider view.
   unified_slider_view_ = views::AsViewClass<UnifiedSliderView>(
       AddChildView(std::move(slider_view)));
@@ -146,11 +155,6 @@ LabeledSliderView::~LabeledSliderView() {
   // Remove the focus ring before the slider view that highlight path generator
   // of `device_name_view_` depends on is deleted.
   views::FocusRing::Remove(device_name_view_);
-
-  // Restore the layer order between `device_name_view_` and
-  // `unified_slider_view_` to prevent the layer of `unified_slider_view_-` from
-  // being deleted twice during view destruction.
-  device_name_view_->RemoveLayerFromRegions(unified_slider_view_->layer());
 }
 
 void LabeledSliderView::ConfigureDeviceNameView(const AudioDevice& device) {

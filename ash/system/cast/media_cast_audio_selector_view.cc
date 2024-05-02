@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/system/audio/output_audio_sliders_view.h"
 #include "ash/system/cast/media_cast_list_view.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -56,6 +57,14 @@ MediaCastAudioSelectorView::MediaCastAudioSelectorView(
               .SetVisible(false)
               .AddChildren(
                   views::Builder<views::View>(
+                      std::make_unique<OutputAudioSlidersView>(
+                          base::BindRepeating(
+                              &MediaCastAudioSelectorView::OnDevicesUpdated,
+                              base::Unretained(this),
+                              DeviceType::kAudioDevice)))
+                      .SetID(kMediaAudioListViewId))
+              .AddChildren(
+                  views::Builder<views::View>(
                       std::make_unique<MediaCastListView>(
                           std::move(stop_casting_callback),
                           base::BindRepeating(
@@ -63,7 +72,7 @@ MediaCastAudioSelectorView::MediaCastAudioSelectorView(
                               base::Unretained(this)),
                           base::BindRepeating(
                               &MediaCastAudioSelectorView::OnDevicesUpdated,
-                              base::Unretained(this)),
+                              base::Unretained(this), DeviceType::kCastDevice),
                           std::move(receiver)))
                       .SetID(kMediaCastListViewId)))
       .BuildChildren();
@@ -124,9 +133,12 @@ bool MediaCastAudioSelectorView::IsDeviceSelectorExpanded() {
   return is_expanded_;
 }
 
-void MediaCastAudioSelectorView::OnDevicesUpdated(bool has_devices) {
+void MediaCastAudioSelectorView::OnDevicesUpdated(DeviceType device_type,
+                                                  bool has_devices) {
+  device_type_bits_[static_cast<int>(device_type)] = has_devices;
+
   if (media_item_ui_) {
-    media_item_ui_->OnDeviceSelectorViewDevicesChanged(has_devices);
+    media_item_ui_->OnDeviceSelectorViewDevicesChanged(device_type_bits_.any());
   }
 }
 

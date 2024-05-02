@@ -105,7 +105,8 @@ UnifiedVolumeView::UnifiedVolumeView(
 
 UnifiedVolumeView::UnifiedVolumeView(UnifiedVolumeSliderController* controller,
                                      uint64_t device_id,
-                                     bool is_active_output_node)
+                                     bool is_active_output_node,
+                                     const gfx::Insets& inside_padding)
     : UnifiedSliderView(base::BindRepeating(
                             &UnifiedVolumeSliderController::SliderButtonPressed,
                             base::Unretained(controller)),
@@ -121,7 +122,7 @@ UnifiedVolumeView::UnifiedVolumeView(UnifiedVolumeSliderController* controller,
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kRadioSliderViewPadding,
+      views::BoxLayout::Orientation::kHorizontal, inside_padding,
       kSliderChildrenViewSpacing));
   slider()->SetBorder(views::CreateEmptyBorder(kRadioSliderPadding));
   slider()->SetPreferredSize(kRadioSliderPreferredSize);

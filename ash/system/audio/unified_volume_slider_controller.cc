@@ -44,9 +44,12 @@ UnifiedVolumeSliderController::UnifiedVolumeSliderController()
 UnifiedVolumeSliderController::~UnifiedVolumeSliderController() = default;
 
 std::unique_ptr<UnifiedVolumeView>
-UnifiedVolumeSliderController::CreateVolumeSlider(uint64_t device_id) {
+UnifiedVolumeSliderController::CreateVolumeSlider(
+    uint64_t device_id,
+    const gfx::Insets& inside_padding) {
   auto slider = std::make_unique<UnifiedVolumeView>(
-      this, device_id, /*is_active_output_node=*/false);
+      this, device_id, /*is_active_output_node=*/false,
+      /*inside_padding=*/inside_padding);
 
   if (g_map_slider_device_callback) {
     g_map_slider_device_callback->Run(device_id, slider.get());

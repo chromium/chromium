@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/quick_settings_slider.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "base/memory/raw_ptr.h"
@@ -40,7 +41,8 @@ class ASH_EXPORT UnifiedVolumeView : public UnifiedSliderView,
   // `more_button_`.
   UnifiedVolumeView(UnifiedVolumeSliderController* controller,
                     uint64_t device_id,
-                    bool is_active_output_node);
+                    bool is_active_output_node,
+                    const gfx::Insets& inside_padding);
 
   UnifiedVolumeView(const UnifiedVolumeView&) = delete;
   UnifiedVolumeView& operator=(const UnifiedVolumeView&) = delete;
