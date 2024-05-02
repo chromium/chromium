@@ -15,8 +15,10 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/dawn_ahardwarebuffer_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_vk_android_image_representation.h"
@@ -305,6 +307,199 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
       scoped_hardware_buffer_;
 };
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+// TODO(crbug.com/41488897): Determine what code can be shared between this
+// class and DawnAHardwareBufferImageRepresentation once (a) initial video
+// playback support is in and (b) we have fixed
+// DawnAHardwareBufferImageRepresentation to not always do write accesses. In
+// the limit, it might be feasible for this class to wrap
+// DawnAHardwareBufferImageRepresentation. Otherwise, we can extract a shared
+// inner class out of the implementation here and that in
+// DawnAHBImageRepresentation.
+class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
+    : public SkiaGraphiteImageRepresentation {
+ public:
+  SkiaGraphiteDawnImageRepresentation(
+      SharedImageManager* manager,
+      VideoImageReaderImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state)
+      : SkiaGraphiteImageRepresentation(manager, backing, tracker),
+        context_state_(context_state) {}
+  ~SkiaGraphiteDawnImageRepresentation() override = default;
+
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
+      const SkSurfaceProps& surface_props,
+      const gfx::Rect& update_rect) override {
+    // Writes are not intended to be used with video backed representations.
+    NOTIMPLEMENTED();
+    return {};
+  }
+  std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override {
+    // Writes are not intended to be used with video backed representations.
+    NOTIMPLEMENTED();
+    return {};
+  }
+  void EndWriteAccess() override { NOTIMPLEMENTED(); }
+
+  std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override {
+    DCHECK(!scoped_hardware_buffer_);
+    auto* stream_texture_sii = video_backing()->stream_texture_sii_.get();
+
+    // Obtain the AHB for the current video frame.
+    scoped_hardware_buffer_ = stream_texture_sii->GetAHardwareBuffer();
+    if (!scoped_hardware_buffer_) {
+      LOG(ERROR) << "Failed to get the hardware buffer.";
+      return {};
+    }
+    DCHECK(scoped_hardware_buffer_->buffer());
+
+    // Set the Dawn texture and SharedTextureMemory parameters.
+
+    // TODO(crbug.com/41488897): Need to set the external format.
+    wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
+    if (webgpu_format == wgpu::TextureFormat::Undefined) {
+      LOG(ERROR) << "Unable to find a suitable WebGPU format.";
+    }
+    auto device = context_state_->dawn_context_provider()->GetDevice();
+
+    wgpu::TextureDescriptor texture_descriptor;
+    texture_descriptor.format = webgpu_format;
+    texture_descriptor.usage = wgpu::TextureUsage::TextureBinding;
+    texture_descriptor.dimension = wgpu::TextureDimension::e2D;
+
+    // NOTE: size() is not guaranteed to match the size of the AHB. The size of
+    // the AHB must be used here, as the Dawn texture descriptor's size must
+    // match that of the SharedTextureMemory (which comes from the AHB).
+    AHardwareBuffer_Desc ahb_desc = {};
+    base::AndroidHardwareBufferCompat::GetInstance().Describe(
+        scoped_hardware_buffer_->buffer(), &ahb_desc);
+    texture_descriptor.size = {ahb_desc.width, ahb_desc.height, 1};
+
+    texture_descriptor.mipLevelCount = 1;
+    texture_descriptor.sampleCount = 1;
+
+    wgpu::DawnTextureInternalUsageDescriptor internalDesc;
+    internalDesc.internalUsage = texture_descriptor.usage;
+
+    texture_descriptor.nextInChain = &internalDesc;
+
+    wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
+    CHECK(IsCleared());
+    begin_access_desc.initialized = true;
+
+    wgpu::SharedTextureMemoryVkImageLayoutBeginState begin_layout{};
+
+    // TODO(crbug.com/327111284): Track layouts correctly.
+    begin_layout.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    begin_layout.newLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    begin_access_desc.nextInChain = &begin_layout;
+
+    wgpu::SharedFence shared_fence;
+    // Pass 1 as the signaled value for the binary semaphore
+    // (Dawn's SharedTextureMemoryVk verifies that this is the value passed).
+    const uint64_t signaled_value = 1;
+
+    base::ScopedFD sync_fd = scoped_hardware_buffer_->TakeFence();
+
+    if (sync_fd.is_valid()) {
+      wgpu::SharedFenceVkSemaphoreSyncFDDescriptor sync_fd_desc;
+      // NOTE: There is no ownership transfer here, as Dawn internally dup()s
+      // the passed-in handle.
+      sync_fd_desc.handle = sync_fd.get();
+      wgpu::SharedFenceDescriptor fence_desc;
+      fence_desc.nextInChain = &sync_fd_desc;
+      shared_fence = device.ImportSharedFence(&fence_desc);
+
+      begin_access_desc.fenceCount = 1;
+      begin_access_desc.fences = &shared_fence;
+      begin_access_desc.signaledValues = &signaled_value;
+    }
+
+    // Create the SharedTextureMemory that will wrap this AHB.
+    wgpu::SharedTextureMemoryDescriptor desc = {};
+    wgpu::SharedTextureMemoryAHardwareBufferDescriptor
+        stm_ahardwarebuffer_desc = {};
+    stm_ahardwarebuffer_desc.handle = scoped_hardware_buffer_->buffer();
+    desc.nextInChain = &stm_ahardwarebuffer_desc;
+    shared_texture_memory_ = device.ImportSharedTextureMemory(&desc);
+
+    // Create the Dawn texture and wrap it in a Skia texture.
+    texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
+    if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
+      LOG(ERROR) << "Failed to begin access for texture";
+    }
+    // TODO(crbug.com/41488897): Obtain the needed YCbCr info and pass it in a
+    // DawnTextureInfo when creating the BackendTexture.
+    return {skgpu::graphite::BackendTexture(texture_.Get())};
+  }
+
+  void EndReadAccess() override {
+    DCHECK(scoped_hardware_buffer_);
+
+    wgpu::SharedTextureMemoryEndAccessState end_access_desc = {};
+    wgpu::SharedTextureMemoryVkImageLayoutEndState end_layout{};
+    end_access_desc.nextInChain = &end_layout;
+
+    if (!shared_texture_memory_.EndAccess(texture_, &end_access_desc)) {
+      LOG(ERROR) << "Failed to end access for texture";
+    }
+
+    if (end_access_desc.initialized) {
+      SetCleared();
+    }
+
+    wgpu::SharedFenceExportInfo export_info;
+    wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
+    export_info.nextInChain = &sync_fd_export_info;
+
+    // If Dawn read the texture, ensure that its fence is added to the set of
+    // fences that the ScopedAHB uses to determine when the underlying buffer
+    // can be reused.
+    // If Dawn *didn't* read the texture during the access, it will return 2
+    // fences: the fence that this instance gave it in BeginAccess() (which Dawn
+    // didn't consume), and a fence that Dawn created in EndAccess(). In that
+    // case there is no need to add either fence to the ScopedAHB's set of
+    // fences that determine when the underlying buffer can be reused. Any other
+    // consumer of the underlying buffer will get the buffer in a new ScopedAHB
+    // via StreamTextureSII, and that ScopedAHB would have its own copy of the
+    // fence that determines when the buffer can be read.
+    // TODO(crbug.com/dawn/2454): If we want to preserve this optimization after
+    // Dawn returns a single fence in this case, we could save the initial fence
+    // and do comparison on it here.
+    if (end_access_desc.fenceCount == 1u) {
+      end_access_desc.fences[0].ExportInfo(&export_info);
+
+      // Dawn will close its FD when `end_access_desc` falls out of scope, and
+      // so it is necessary to dup() it to give the scoped AHB an FD that
+      // it can own.
+      auto end_access_sync_fd = base::ScopedFD(dup(sync_fd_export_info.handle));
+
+      // Pass the end read access sync fd to the scoped hardware buffer. This
+      // will make sure that the AImage associated with the hardware buffer will
+      // be deleted only when Dawn has actually finished its work on the buffer.
+      scoped_hardware_buffer_->SetReadFence(std::move(end_access_sync_fd));
+    }
+
+    texture_.Destroy();
+    texture_ = nullptr;
+    shared_texture_memory_ = nullptr;
+    scoped_hardware_buffer_ = nullptr;
+  }
+
+ private:
+  VideoImageReaderImageBacking* video_backing() {
+    return static_cast<VideoImageReaderImageBacking*>(backing());
+  }
+
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+      scoped_hardware_buffer_;
+  scoped_refptr<SharedContextState> context_state_;
+  wgpu::SharedTextureMemory shared_texture_memory_;
+  wgpu::Texture texture_;
+};
+#endif
+
 class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
     : public SkiaVkAndroidImageRepresentation,
       public RefCountedLockHelperDrDc {
@@ -494,6 +689,17 @@ VideoImageReaderImageBacking::ProduceSkiaGanesh(
                                            std::move(context_state), manager,
                                            this, tracker);
 }
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+std::unique_ptr<SkiaGraphiteImageRepresentation>
+VideoImageReaderImageBacking::ProduceSkiaGraphite(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
+      manager, this, tracker, context_state);
+}
+#endif
 
 // Representation of VideoImageReaderImageBacking as an overlay plane.
 class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
