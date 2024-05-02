@@ -9849,6 +9849,21 @@
             ]
         }
     ],
+    "IOSTabGroupSync": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupSync"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTabResumption": [
         {
             "platforms": [

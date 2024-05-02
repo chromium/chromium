@@ -4037,6 +4037,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabSwitcher.Idle.TabGroups" enum="Boolean"
+    expires_after="2025-05-01">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Tracks whether the user closed the tab groups page without doing any
+    meaningful action on any tab grid pages. Meaningful action is opening a tab.
+    Recorded when the user closed the tab groups page or switched to a tab grid
+    page.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
     enum="IOSTabSwitcherPageChangeInteraction" expires_after="2024-09-01">
   <owner>marq@chromium.org</owner>

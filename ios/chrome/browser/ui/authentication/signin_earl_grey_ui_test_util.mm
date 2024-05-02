@@ -266,6 +266,10 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
 }
 
 + (void)tapPrimarySignInButtonInTabSwitcher {
+  GREYAssert(![ChromeEarlGrey isTabGroupSyncEnabled],
+             @"Recent Tabs is not available in Tab Grid when Tab Group Sync is "
+             @"enabled, so there is no way to sign-in from Tab Switcher.");
+
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridOtherDevicesPanelButton()]

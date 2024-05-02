@@ -1228,6 +1228,10 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
 }
 
++ (BOOL)isTabGroupSyncEnabled {
+  return IsTabGroupSyncEnabled();
+}
+
 #pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {

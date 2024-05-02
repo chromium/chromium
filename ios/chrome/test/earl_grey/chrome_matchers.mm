@@ -687,6 +687,14 @@ id<GREYMatcher> TabGridOtherDevicesPanelButton() {
   return [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton];
 }
 
+id<GREYMatcher> TabGridTabGroupsPanelButton() {
+  return [ChromeMatchersAppInterface tabGridTabGroupsPanelButton];
+}
+
+id<GREYMatcher> TabGridThirdPanelButton() {
+  return [ChromeMatchersAppInterface tabGridThirdPanelButton];
+}
+
 id<GREYMatcher> TabGridNormalModePageControl() {
   return [ChromeMatchersAppInterface tabGridNormalModePageControl];
 }

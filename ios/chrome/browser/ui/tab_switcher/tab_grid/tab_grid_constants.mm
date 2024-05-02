@@ -9,10 +9,12 @@
 // Keys of UMA IOS.TabSwitcher.Idle histograms.
 const char kUMATabSwitcherIdleIncognitoTabGridPageHistogram[] =
     "IOS.TabSwitcher.Idle.IncognitoTabGridPage";
-const char kUMATabSwitcherIdleRecentTabsHistogram[] =
-    "IOS.TabSwitcher.Idle.RecentTabs";
 const char kUMATabSwitcherIdleRegularTabGridPageHistogram[] =
     "IOS.TabSwitcher.Idle.RegularTabGridPage";
+const char kUMATabSwitcherIdleRecentTabsHistogram[] =
+    "IOS.TabSwitcher.Idle.RecentTabs";
+const char kUMATabSwitcherIdleTabGroupsHistogram[] =
+    "IOS.TabSwitcher.Idle.TabGroups";
 
 // Accessibility identifiers for automated testing.
 NSString* const kTabGridIncognitoTabsPageButtonIdentifier =

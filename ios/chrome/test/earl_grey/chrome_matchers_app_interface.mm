@@ -1119,14 +1119,24 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kTabGridRemoteTabsPageButtonIdentifier);
 }
 
++ (id<GREYMatcher>)tabGridTabGroupsPanelButton {
+  return grey_accessibilityID(kTabGridTabGroupsPageButtonIdentifier);
+}
+
++ (id<GREYMatcher>)tabGridThirdPanelButton {
+  if (IsTabGroupSyncEnabled()) {
+    return [self tabGridTabGroupsPanelButton];
+  }
+  return [self tabGridOtherDevicesPanelButton];
+}
+
 + (id<GREYMatcher>)tabGridNormalModePageControl {
   return grey_allOf(
       grey_kindOfClassName(@"UIControl"),
       grey_descendant(
           [ChromeMatchersAppInterface tabGridIncognitoTabsPanelButton]),
       grey_descendant([ChromeMatchersAppInterface tabGridOpenTabsPanelButton]),
-      grey_descendant(
-          [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton]),
+      grey_descendant([ChromeMatchersAppInterface tabGridThirdPanelButton]),
       grey_ancestor(grey_kindOfClassName(@"UIToolbar")),
       grey_sufficientlyVisible(), nil);
 }

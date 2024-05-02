@@ -163,9 +163,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Tracks whether the user closed the tab switcher without doing any
   // `TabGridActionType::kInPageAction`s.
   BOOL _idleTabGrid;
-  // Whether the user has done anything meaningful when recent tabs page is
+  // Whether the user has done anything meaningful when the third page is
   // visible.
-  BOOL _idleRecentTabs;
+  BOOL _idleThirdPage;
   // Whether the user has changed pages since entering the tab grid.
   BOOL _pageChangedSinceEntering;
   // Whether the user has put the app to background since entering tab grid.
@@ -617,11 +617,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       break;
     case TabGridPage::TabGridPageRemoteTabs:
       base::UmaHistogramBoolean(kUMATabSwitcherIdleRecentTabsHistogram,
-                                _idleRecentTabs);
+                                _idleThirdPage);
       break;
     case TabGridPage::TabGridPageTabGroups:
-      // TODO(crbug.com/329626033): Handle displaying Tab Groups.
-      NOTIMPLEMENTED();
+      base::UmaHistogramBoolean(kUMATabSwitcherIdleTabGroupsHistogram,
+                                _idleThirdPage);
       break;
   }
 }
@@ -629,9 +629,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Resets idle page status.
 - (void)resetIdlePageStatus {
   _idleTabGrid = YES;
-  // `_idleRecentTabs` is set to 'YES' if the "Done" button has been tapped from
-  // the "TabGridPageRemoteTabs" or if the page has changed.
-  _idleRecentTabs = NO;
+  // `_idleThirdPage` is set to 'YES' if the "Done" button has been tapped from
+  // the third page or if the page has changed.
+  _idleThirdPage = NO;
 }
 
 // Sets the proper insets for the Remote Tabs ViewController to accommodate for
@@ -702,10 +702,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Record the idle metric if the previous page was `TabGridPageRemoteTabs`.
   if (_currentPage != currentPage) {
     [self tabGridDidPerformAction:TabGridActionType::kChangePage];
-    if (_currentPage == TabGridPageRemoteTabs) {
-      _idleRecentTabs = YES;
+    if (_currentPage == TabGridPageRemoteTabs ||
+        _currentPage == TabGridPageTabGroups) {
+      _idleThirdPage = YES;
       [self recordIdlePageStatus];
-      _idleRecentTabs = NO;
+      _idleThirdPage = NO;
     }
   }
 
@@ -1665,12 +1666,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Check that the current page matches the grid view being interacted with.
   BOOL isOnRegularTabsPage = self.currentPage == TabGridPageRegularTabs;
   BOOL isOnIncognitoTabsPage = self.currentPage == TabGridPageIncognitoTabs;
-  BOOL isOnRemoteTabsPage = self.currentPage == TabGridPageRemoteTabs;
+  BOOL isOnThirdPanel = self.currentPage == TabGridPageRemoteTabs ||
+                        self.currentPage == TabGridPageTabGroups;
   BOOL gridIsRegularTabs = gridViewController == self.regularTabsViewController;
   BOOL gridIsIncognitoTabs =
       gridViewController == self.incognitoTabsViewController;
   if ((isOnRegularTabsPage && !gridIsRegularTabs) ||
-      (isOnIncognitoTabsPage && !gridIsIncognitoTabs) || isOnRemoteTabsPage) {
+      (isOnIncognitoTabsPage && !gridIsIncognitoTabs) || isOnThirdPanel) {
     return;
   }
 
@@ -1733,12 +1735,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Check that the current page matches the grid view being interacted with.
   BOOL isOnRegularTabsPage = self.currentPage == TabGridPageRegularTabs;
   BOOL isOnIncognitoTabsPage = self.currentPage == TabGridPageIncognitoTabs;
-  BOOL isOnRemoteTabsPage = self.currentPage == TabGridPageRemoteTabs;
+  BOOL isOnThirdPanel = self.currentPage == TabGridPageRemoteTabs ||
+                        self.currentPage == TabGridPageTabGroups;
   BOOL gridIsRegularTabs = gridViewController == self.regularTabsViewController;
   BOOL gridIsIncognitoTabs =
       gridViewController == self.incognitoTabsViewController;
   if ((isOnRegularTabsPage && !gridIsRegularTabs) ||
-      (isOnIncognitoTabsPage && !gridIsIncognitoTabs) || isOnRemoteTabsPage) {
+      (isOnIncognitoTabsPage && !gridIsIncognitoTabs) || isOnThirdPanel) {
     return;
   }
 
@@ -1874,8 +1877,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)doneButtonTapped:(id)sender {
   TabGridPage newActivePage = self.currentPage;
 
-  if (self.currentPage == TabGridPageRemoteTabs) {
-    _idleRecentTabs = YES;
+  if (self.currentPage == TabGridPageRemoteTabs ||
+      self.currentPage == TabGridPageTabGroups) {
+    _idleThirdPage = YES;
     newActivePage = self.activePage;
   }
 

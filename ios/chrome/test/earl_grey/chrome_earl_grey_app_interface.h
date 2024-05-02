@@ -550,6 +550,9 @@
 // Returns whether the Web Channels feature is enabled.
 + (BOOL)isWebChannelsEnabled;
 
+// Returns whether Tab Group Sync is enabled.
++ (BOOL)isTabGroupSyncEnabled;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

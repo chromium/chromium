@@ -1411,6 +1411,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
 }
 
+- (BOOL)isTabGroupSyncEnabled {
+  return [ChromeEarlGreyAppInterface isTabGroupSyncEnabled];
+}
+
 - (BOOL)isUnfocusedOmniboxAtBottom {
   return !self.isIPadIdiom && self.isSplitToolbarMode &&
          [self userBooleanPref:prefs::kBottomOmnibox];

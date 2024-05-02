@@ -69,6 +69,7 @@ using chrome_test_util::TabGridSearchCancelButton;
 using chrome_test_util::TabGridSearchModeToolbar;
 using chrome_test_util::TabGridSearchTabsButton;
 using chrome_test_util::TabGridSelectTabsMenuButton;
+using chrome_test_util::TabGridThirdPanelButton;
 using chrome_test_util::TapAtOffsetOf;
 using chrome_test_util::WindowWithNumber;
 
@@ -617,13 +618,13 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests simulating a swipe with Voice Over from the Recent Tabs, making sure
+// Tests simulating a swipe with Voice Over from the third panel, making sure
 // that the new tab button is working as expected.
 - (void)testSwipeUsingVoiceOver {
   [ChromeEarlGreyUI openTabGrid];
 
-  // Switch over to Recent Tabs.
-  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+  // Switch over to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridThirdPanelButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
@@ -639,7 +640,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that Clear Browsing Data can be successfully done from tab grid.
 - (void)FLAKY_testClearBrowsingData {
-  // Load history
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
+  // Load history.
   [self loadTestURLs];
 
   [ChromeEarlGreyUI openTabGrid];
@@ -695,6 +704,14 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests reopening a closed tab from an incognito tab.
 - (void)testOpenCloseTabFromIncognito {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is only reachable via the tools menu in Regular mode. So the
+  // test flow is not supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -702,8 +719,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey closeAllNormalTabs];
 
   [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGreyUI openTabGrid];
 
+  [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
 
@@ -722,12 +739,12 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 }
 
-// Tests that done button is disabled if there is no tab in the last active
-// page. This also ensure that the last active page is the correct one
+// Tests that the Done button is disabled if there is no tab in the last active
+// page. This also ensures that the last active page is the correct one
 // (incognito if the last opened tab was incognito and regular if the last
-// active page was a regular.) so the done button open a tab in the correct page
+// active page was regular), so the Done button opens a tab in the correct page.
 // (Do not open a regular tab if the active page is an incognito one).
-- (void)testRecentTabDoneButtonAndLastActivePage {
+- (void)testThirdPanelDoneButtonAndLastActivePage {
   // Load 1 regular tab.
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
@@ -749,9 +766,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
       performAction:grey_tap()];
 
-  // Go to remote grid and tap on Done button.
+  // Go to the third panel and tap the Done button.
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridThirdPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
@@ -768,9 +785,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 0)]
       performAction:grey_tap()];
 
-  // Go to remote grid and tap on Done button.
+  // Go to the third panel and tap the Done button.
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridThirdPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
@@ -781,7 +798,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:IncognitoTabGrid()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Close all incognito tab.
+  // Close the only incognito tab.
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGridEditMenuCloseAllButton()]
@@ -789,10 +806,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey waitForMainTabCount:1];
   [ChromeEarlGrey waitForIncognitoTabCount:0];
 
-  // Go to remote grid.
-  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+  // Go to the third panel.
+  [[EarlGrey selectElementWithMatcher:TabGridThirdPanelButton()]
       performAction:grey_tap()];
-  // Ensures Done button is disabled.
+  // Ensure the Done button is disabled.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
@@ -800,8 +817,16 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 #pragma mark - Recent Tabs Context Menu
 
-// Tests the Copy Link action on a recent tab's context menu.
+// Tests the Copy Link action on a Recent Tabs' context menu.
 - (void)testRecentTabsContextMenuCopyLink {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
   [self longPressTabWithTitle:kTitle1];
 
@@ -811,8 +836,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                                                                 .c_str()]];
 }
 
-// Tests the Open in New Window action on a recent tab's context menu.
+// Tests the Open in New Window action on a Recent Tabs' context menu.
 - (void)testRecentTabsContextMenuOpenInNewWindow {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -823,8 +855,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:kResponse1];
 }
 
-// Tests the Share action on a recent tab's context menu.
+// Tests the Share action on a Recent Tabs' context menu.
 - (void)testRecentTabsContextMenuShare {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
   [self longPressTabWithTitle:kTitle1];
 
@@ -2073,13 +2112,21 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that the search suggested actions section has the right rows in the
-// recent tabs page.
+// Recent Tabs page.
 - (void)testSearchSuggestedActionsSectionContentInRecentTabs {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
-  // Scroll all the way to the top of the recent tabs page because a prior
+  // Scroll all the way to the top of the Recent Tabs page because a prior
   // test may have left it partially scrolled down.
   [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
@@ -2147,8 +2194,16 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests that history row in the search suggested actions section displays the
-// correct number of matches in recent tabs.
+// correct number of matches in Recent Tabs.
 - (void)testRecentTabsSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   [ChromeEarlGrey clearBrowsingHistory];
   [self loadTestURLs];
   [ChromeEarlGreyUI openTabGrid];
@@ -2451,9 +2506,17 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that tapping on search history action in the recent tabs search mode
+// Tests that tapping on search history action in the Recent Tabs search mode
 // opens the history modal and dismissing it returns to the search mode.
 - (void)testHistorySuggestedActionInRecentTabsSearch {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
@@ -2528,11 +2591,19 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that tapping the search on web action in the recent tabs search mode
+// Tests that tapping the search on web action in the Recent Tabs search mode
 // opens a new tab on the default search engine with the search term from tab
 // search. Additionally, checks that tab search mode is exited when the user
 // returns to the tab grid.
 - (void)testSearchOnWebSuggestedActionInRecentTabsSearch {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   // Configure a testing search engine to prevent real external url requests.
   web::test::AddResponseProvider(
       std::make_unique<EchoURLDefaultSearchEngineResponseProvider>());
@@ -2647,8 +2718,16 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that searching in recent tabs will filter the items correctly.
+// Tests that searching in Recent Tabs will filter the items correctly.
 - (void)testSearchRecentlyClosedTabs {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   [self clearAllRecentlyClosedItems];
   [self loadTestURLsAndCloseTabs];
 
@@ -2694,9 +2773,17 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that searching in recent tabs with no matching results hides the
+// Tests that searching in Recent Tabs with no matching results hides the
 // unmatched items and the "Recently Closed" section header.
 - (void)testSearchRecentlyClosedTabsNoResults {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   [self clearAllRecentlyClosedItems];
   [self loadTestURLsAndCloseTabs];
 
@@ -2834,6 +2921,14 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // surface. More specifically: on tap the promo shouldn't offer the sign-in
 // sheet but only the history opt-in.
 - (void)testPromoInTabsFromOtherDevicesListensToSignin {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Other Devices is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Other Devices is not available in Tab Grid when "
+                           @"Tab Group Sync is enabled.");
+  }
+
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI openTabGrid];
@@ -2877,6 +2972,14 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that "undo" is still possible after navigating to the "recently
 // closed tabs" panel.
 - (void)testClosedTabsAddedToRecentlyClosedTabsAfterConfirmation {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   // Clear all recently closed tabs.
   [self clearAllRecentlyClosedItems];
 
@@ -3026,8 +3129,14 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Loads a URL in a new tab and deletes it to populate Recent Tabs. Then,
 // navigates to the Recent tabs via tab grid.
+// This should not be called when Tab Group Sync is enabled, as there is no
+// Recent Tabs in Tab Grid.
 - (void)prepareRecentTabWithURL:(const GURL&)URL
                        response:(const char*)response {
+  GREYAssert(![ChromeEarlGrey isTabGroupSyncEnabled],
+             @"Recent Tabs is not available in Tab Grid when Tab Group Sync is "
+             @"enabled.");
+
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:response];
 
