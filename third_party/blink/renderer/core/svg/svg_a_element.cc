@@ -169,6 +169,27 @@ void SVGAElement::DefaultEventHandler(Event& event) {
   SVGGraphicsElement::DefaultEventHandler(event);
 }
 
+Element* SVGAElement::interestTargetElement() {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+
+  if (!IsInTreeScope()) {
+    return nullptr;
+  }
+
+  return GetElementAttribute(svg_names::kInteresttargetAttr);
+}
+
+AtomicString SVGAElement::interestAction() const {
+  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
+  const AtomicString& attribute_value =
+      FastGetAttribute(svg_names::kInterestactionAttr);
+  if (attribute_value && !attribute_value.IsNull() &&
+      !attribute_value.empty()) {
+    return attribute_value;
+  }
+  return g_empty_atom;
+}
+
 bool SVGAElement::HasActivationBehavior() const {
   return true;
 }

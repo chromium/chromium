@@ -1624,6 +1624,8 @@ svg element a
     property getCTM
     property getScreenCTM
     property href
+    property interestAction
+    property interestTargetElement
     property nearestViewportElement
     property requiredExtensions
     property systemLanguage

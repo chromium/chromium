@@ -8201,8 +8201,12 @@ interface RestrictionTarget
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
+    getter interestAction
+    getter interestTargetElement
     getter target
     method constructor
+    setter interestAction
+    setter interestTargetElement
 interface SVGAngle
     attribute @@toStringTag
     attribute SVG_ANGLETYPE_DEG
