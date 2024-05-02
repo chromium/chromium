@@ -356,6 +356,20 @@ suite('AppReceivesToolbarChanges', () => {
       emitHighlight(true);
       assertNotEquals(highlightColor(), 'transparent');
     });
+
+    suite('after update color theme', () => {
+      test('uses colored highlight with highlights on', () => {
+        emitHighlight(true);
+        emitEvent(app, THEME_EVENT, {detail: {data: '-blue'}});
+        assertNotEquals(highlightColor(), 'transparent');
+      });
+
+      test('uses transparent highlight with highlights off', () => {
+        emitHighlight(false);
+        emitEvent(app, THEME_EVENT, {detail: {data: '-yellow'}});
+        assertEquals(highlightColor(), 'transparent');
+      });
+    });
   });
 
   suite('on granularity change', () => {

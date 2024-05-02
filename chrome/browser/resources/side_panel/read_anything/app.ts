@@ -260,6 +260,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private previousHighlight_: HTMLElement[] = [];
   private currentColorSuffix_: string;
+  private isHighlightOn_: boolean = true;
 
   // If the WebUI toolbar should be shown. This happens when the WebUI feature
   // flag is enabled.
@@ -1829,11 +1830,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private onHighlightToggle_(event: CustomEvent<{highlightOn: boolean}>) {
-    const highlightBackground =
-        this.getCurrentHighlightColorVar(this.currentColorSuffix_);
+    this.isHighlightOn_ = event.detail.highlightOn;
     this.updateStyles({
       '--current-highlight-bg-color':
-          event.detail.highlightOn ? highlightBackground : 'transparent',
+          this.getCurrentHighlightColorVar(this.currentColorSuffix_),
     });
   }
 
@@ -1870,6 +1870,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   getCurrentHighlightColorVar(colorSuffix: string) {
+    if (!this.isHighlightOn_) {
+      return 'transparent';
+    }
     if (colorSuffix === '') {
       return 'var(--color-text-selection-background)';
     }
