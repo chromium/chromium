@@ -2640,7 +2640,7 @@ class AutofillInteractiveTestDynamicForm : public AutofillInteractiveTest {
  public:
   void SetUpOnMainThread() override {
     AutofillInteractiveTest::SetUpOnMainThread();
-    test_api(*GetBrowserAutofillManager())
+    test_api(test_api(*GetBrowserAutofillManager()).form_filler())
         .set_limit_before_refill(base::Hours(1));
   }
 
@@ -2735,7 +2735,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AfterDelay) {
   // Lower the refill limit, so the test doesn't have to wait forever.
   constexpr base::TimeDelta kLimitBeforeRefillForTest = base::Milliseconds(100);
-  test_api(*GetBrowserAutofillManager())
+  test_api(test_api(*GetBrowserAutofillManager()).form_filler())
       .set_limit_before_refill(kLimitBeforeRefillForTest);
 
   CreateTestProfile();

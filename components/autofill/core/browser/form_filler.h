@@ -204,7 +204,7 @@ class FormFiller {
       const AutofillTriggerDetails& trigger_details);
 
  private:
-  friend class BrowserAutofillManagerTestApi;
+  friend class FormFillerTestApi;
 
   // Keeps track of the filling context for a form, used to make refill
   // attempts.

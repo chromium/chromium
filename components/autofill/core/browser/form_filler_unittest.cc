@@ -501,7 +501,7 @@ TEST_F(FormFillerTest, UndoResetsCachedAutofillState) {
   FormFieldData* field_ptr = &form.fields.front();
   AutofillField* autofill_field_ptr = &filled_autofill_field;
   form.fields.front().set_is_autofilled(false);
-  test_api(*browser_autofill_manager_)
+  test_api(test_api(*browser_autofill_manager_).form_filler())
       .AddFormFillEntry(base::make_span(&field_ptr, 1u),
                         base::make_span(&autofill_field_ptr, 1u),
                         FillingProduct::kAddress, /*is_refill=*/false);

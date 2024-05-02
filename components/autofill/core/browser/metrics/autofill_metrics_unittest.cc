@@ -5606,6 +5606,7 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   // Simulate checking whether to fill a dynamic form before the form was filled
   // initially.
   test_api(autofill_manager())
+      .form_filler()
       .ShouldTriggerRefill(FormStructure(form),
                            RefillTriggerReason::kFormChanged);
   histogram_tester.ExpectTotalCount("Autofill.FormEvents.Address", 0);
@@ -5619,6 +5620,7 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   // Simulate checking whether to fill a dynamic form after the form was filled
   // initially.
   test_api(autofill_manager())
+      .form_filler()
       .ShouldTriggerRefill(FormStructure(form),
                            RefillTriggerReason::kFormChanged);
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),

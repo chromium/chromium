@@ -148,7 +148,7 @@ void AutofillUiTest::SetUpOnMainThread() {
   // Refills normally only happen if the form changes within 1 second of the
   // initial fill. On a slow bot, this may lead to flakiness. We hence set a
   // very high limit.
-  test_api(*GetBrowserAutofillManager())
+  test_api(test_api(*GetBrowserAutofillManager()).form_filler())
       .set_limit_before_refill(base::Hours(1));
   autofill_driver_factory_observation_.Observe(
       client->GetAutofillDriverFactory());
@@ -324,7 +324,9 @@ void AutofillUiTest::OnContentAutofillDriverCreated(
   // Refills normally only happen if the form changes within 1 second of the
   // initial fill. On a slow bot, this may lead to flakiness. We hence set a
   // very high limit.
-  test_api(static_cast<BrowserAutofillManager&>(driver.GetAutofillManager()))
+  test_api(test_api(static_cast<BrowserAutofillManager&>(
+                        driver.GetAutofillManager()))
+               .form_filler())
       .set_limit_before_refill(base::Hours(1));
 }
 
