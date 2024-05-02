@@ -11,6 +11,7 @@ import type {ThemeSnapshotElement} from 'chrome://customize-chrome-side-panel.to
 import {CustomizeThemeType} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
@@ -50,16 +51,15 @@ suite('ThemeSnapshotTest', () => {
     // Act.
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
 
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
-    const shownPages =
-        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
-    assertTrue(!!shownPages);
-    assertEquals(shownPages.length, 1);
+    const page =
+        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+    assertTrue(!!page);
     assertEquals(
-        shownPages[0]!.getAttribute('theme-type'),
-        CustomizeThemeType.CUSTOM_THEME);
+        CustomizeThemeType.CUSTOM_THEME, page.getAttribute('theme-type'));
     assertEquals(
         $$<HTMLImageElement>(
             themeSnapshotElement, '.snapshot-container #customThemeImage')!
@@ -87,13 +87,11 @@ suite('ThemeSnapshotTest', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
-    const shownPages =
-        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
-    assertTrue(!!shownPages);
-    assertEquals(shownPages.length, 1);
+    const page =
+        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+    assertTrue(!!page);
     assertEquals(
-        shownPages[0]!.getAttribute('theme-type'),
-        CustomizeThemeType.CLASSIC_CHROME);
+        CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));
     assertEquals(
         $$<HTMLImageElement>(
             themeSnapshotElement,
@@ -119,13 +117,11 @@ suite('ThemeSnapshotTest', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
-    const shownPages =
-        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
-    assertTrue(!!shownPages);
-    assertEquals(shownPages.length, 1);
+    const page =
+        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+    assertTrue(!!page);
     assertEquals(
-        shownPages[0]!.getAttribute('theme-type'),
-        CustomizeThemeType.UPLOADED_IMAGE);
+        CustomizeThemeType.UPLOADED_IMAGE, page.getAttribute('theme-type'));
     assertEquals(
         $$(themeSnapshotElement, '.snapshot-container #uploadedThemeImage')!
             .getAttribute('aria-labelledby'),
@@ -147,13 +143,11 @@ suite('ThemeSnapshotTest', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
-    const shownPages =
-        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
-    assertTrue(!!shownPages);
-    assertEquals(shownPages.length, 1);
+    const page =
+        themeSnapshotElement.shadowRoot!.querySelector('.snapshot-container');
+    assertTrue(!!page);
     assertEquals(
-        shownPages[0]!.getAttribute('theme-type'),
-        CustomizeThemeType.CLASSIC_CHROME);
+        CustomizeThemeType.CLASSIC_CHROME, page.getAttribute('theme-type'));
     assertEquals(
         $$<SVGUseElement>(
             themeSnapshotElement,
@@ -166,6 +160,11 @@ suite('ThemeSnapshotTest', () => {
       async () => {
         // Arrange.
         createThemeSnapshotElement();
+        const theme = createTheme();
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
         let clicked = false;
         themeSnapshotElement.addEventListener(
             'edit-theme-click', () => clicked = true);
@@ -182,6 +181,13 @@ suite('ThemeSnapshotTest', () => {
       async () => {
         // Arrange.
         createThemeSnapshotElement();
+        const theme = createTheme();
+        theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+        theme.backgroundImage.title = 'foo';
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
         let clicked = false;
         themeSnapshotElement.addEventListener(
             'edit-theme-click', () => clicked = true);
@@ -197,6 +203,13 @@ suite('ThemeSnapshotTest', () => {
       'clicking uploaded snapshot creates edit-theme-click event', async () => {
         // Arrange.
         createThemeSnapshotElement();
+        const theme = createTheme();
+        theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+        theme.backgroundImage.isUploadedImage = true;
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
         let clicked = false;
         themeSnapshotElement.addEventListener(
             'edit-theme-click', () => clicked = true);
