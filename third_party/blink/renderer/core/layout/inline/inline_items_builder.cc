@@ -956,15 +956,40 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
   unsigned start = 0;
   InsertBreakOpportunityAfterLeadingPreservedSpaces(transformed, *style,
                                                     layout_object, &start);
-  String string = transformed.View().ToString();
-  for (; start < string.length();) {
-    UChar c = string[start];
-    if (IsControlItemCharacter(c)) {
-      if (c == kNewlineCharacter) {
+  const StringView transformed_view = transformed.View();
+  const wtf_size_t length = transformed_view.length();
+  if (UNLIKELY(start >= length)) {
+    return;
+  }
+  if (layout_object->HasNoControlItems()) {
+    AppendTextItem(transformed.Substring(start), layout_object);
+    return;
+  }
+  wtf_size_t control = transformed_view.Find(IsControlItemCharacter, start);
+  if (control == kNotFound) {
+    layout_object->SetHasNoControlItems();
+    AppendTextItem(transformed.Substring(start), layout_object);
+    return;
+  }
+
+  // Split the transformed string by control items.
+  while (start < length) {
+    if (control != start) {
+      AppendTextItem(transformed.Substring(start, control - start),
+                     layout_object);
+      if (control >= length) {
+        break;
+      }
+      start = control;
+    }
+
+    const UChar c = transformed_view[start];
+    switch (c) {
+      case kNewlineCharacter:
         if (UNLIKELY(is_text_combine_ || ruby_text_nesting_level_ > 0)) {
           start++;
           AppendTextItem(TransformedString(" "), layout_object);
-          continue;
+          break;
         }
         AppendForcedBreak(layout_object);
         start++;
@@ -973,35 +998,44 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
         // breaker. Generate an opportunity to make it easy.
         InsertBreakOpportunityAfterLeadingPreservedSpaces(
             transformed, *style, layout_object, &start);
-        continue;
-      }
-      if (c == kTabulationCharacter) {
-        wtf_size_t end = string.Find(
+        break;
+      case kTabulationCharacter: {
+        wtf_size_t tab_end = transformed_view.Find(
             [](UChar c) { return c != kTabulationCharacter; }, start + 1);
-        if (end == kNotFound)
-          end = string.length();
+        if (tab_end == kNotFound) {
+          tab_end = length;
+        }
         InlineItem& item = AppendTextItem(
-            InlineItem::kControl, transformed.Substring(start, end - start),
+            InlineItem::kControl, transformed.Substring(start, tab_end - start),
             layout_object);
         item.SetTextType(TextItemType::kFlowControl);
-        start = end;
+        start = tab_end;
         is_score_line_break_disabled_ = true;
-        continue;
+        break;
       }
-      // ZWNJ splits item, but it should be text.
-      if (c != kZeroWidthNonJoinerCharacter) {
+      case kZeroWidthNonJoinerCharacter:
+        // ZWNJ splits item, but it should be text.
+        control = transformed_view.Find(IsControlItemCharacter, start + 1);
+        if (control == kNotFound) {
+          control = length;
+        }
+        continue;
+      default: {
+        DCHECK(IsControlItemCharacter(c));
         InlineItem& item = Append(InlineItem::kControl, c, layout_object);
         item.SetTextType(TextItemType::kFlowControl);
         start++;
-        continue;
+        break;
       }
     }
+    if (start >= length) {
+      break;
+    }
 
-    wtf_size_t end = string.Find(IsControlItemCharacter, start + 1);
-    if (end == kNotFound)
-      end = string.length();
-    AppendTextItem(transformed.Substring(start, end - start), layout_object);
-    start = end;
+    control = transformed_view.Find(IsControlItemCharacter, start);
+    if (control == kNotFound) {
+      control = length;
+    }
   }
 }
 

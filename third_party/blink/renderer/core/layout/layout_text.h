@@ -295,6 +295,18 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     valid_ng_items_ = false;
   }
 
+  bool HasNoControlItems() const {
+    NOT_DESTROYED();
+    return has_no_control_items_;
+  }
+  void SetHasNoControlItems() {
+    NOT_DESTROYED();
+    has_no_control_items_ = true;
+  }
+  void ClearHasNoControlItems() {
+    NOT_DESTROYED();
+    has_no_control_items_ = false;
+  }
   bool HasBidiControlInlineItems() const {
     NOT_DESTROYED();
     return has_bidi_control_items_;
@@ -415,6 +427,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // Whether the InlineItems associated with this object are valid. Set after
   // layout and cleared whenever the LayoutText is modified.
   unsigned valid_ng_items_ : 1;
+
+  // Caches if there are no `IsControlItemCharacter()` characters. Set in
+  // `InlineItemsBuilder` only for preserved whitespace.
+  unsigned has_no_control_items_ : 1 = false;
 
   // Whether there is any BidiControl type InlineItem associated with this
   // object. Set after layout when associating items.

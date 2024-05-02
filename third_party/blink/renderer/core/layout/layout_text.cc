@@ -1084,6 +1084,7 @@ void LayoutText::TextDidChangeWithoutInvalidation() {
   }
 
   valid_ng_items_ = false;
+  ClearHasNoControlItems();
   SetNeedsCollectInlines();
 }
 
