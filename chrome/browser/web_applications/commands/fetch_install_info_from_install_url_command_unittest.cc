@@ -33,11 +33,6 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  void TearDown() override {
-    provider().Shutdown();
-    WebAppTest::TearDown();
-  }
-
  protected:
   std::unique_ptr<WebAppInstallInfo> CreateAndRunCommand(
       GURL install_url,

@@ -47,11 +47,6 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
     return *WebAppProvider::GetForWebApps(profile());
   }
 
-  void TearDown() override {
-    provider().Shutdown();
-    WebAppTest::TearDown();
-  }
-
   void SetPolicyInstallUrlAndSynchronize(const GURL& url) {
     base::test::TestFuture<void> future;
     provider()

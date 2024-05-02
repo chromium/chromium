@@ -22,6 +22,14 @@ void WebAppTest::SetUp() {
 }
 
 void WebAppTest::TearDown() {
+  // Manually shut down the provider and subsystems so that async tasks are
+  // stopped. Without this, async tasks may still be holding onto WebContents
+  // instances, which is checked for in
+  // `content::RenderViewHostTestHarness::TearDown()`. Note:
+  // `DeleteAllTestingProfiles` doesn't actually destruct profiles and therefore
+  // doesn't Shutdown keyed services like the provider.
+  fake_provider().Shutdown();
+
   os_integration_test_override_.reset();
   if (testing::Test::HasFailure()) {
     base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;

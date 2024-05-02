@@ -250,15 +250,6 @@ syncer::EntityChangeList ToEntityChageList(
 // in full w/o mocks.
 class WebAppSyncBridgeTest : public WebAppTest {
  public:
-  void SetUp() override {
-    WebAppTest::SetUp();
-  }
-
-  void TearDown() override {
-    fake_provider().Shutdown();
-    WebAppTest::TearDown();
-  }
-
   void StartWebAppProvider() {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -1610,11 +1601,6 @@ class WebAppSyncBridgeTest_UserDisplayModeSplit
   void SetUp() override {
     WebAppTest::SetUp();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
-  void TearDown() override {
-    fake_provider().Shutdown();
-    WebAppTest::TearDown();
   }
 
  private:

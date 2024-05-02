@@ -292,11 +292,6 @@ class ExternallyAppManagerTest : public WebAppTest {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  void TearDown() override {
-    provider().Shutdown();
-    WebAppTest::TearDown();
-  }
-
   std::vector<ExternalInstallOptions> CreateExternalInstallOptionsFromTemplate(
       std::vector<GURL> install_urls,
       ExternalInstallSource source,
