@@ -55,13 +55,10 @@
     width: 360px;
   }
 
-  /* TODO(b/335696653): Update styling of product selector. */
   product-selector {
     --product-selector-width: 220px;
     --product-selector-height: 38px;
-    background-color: var(--color-product-specifications-page-background);
     border-radius: 8px;
-    height: 38px;
     margin-bottom: 90px;
     margin-top: 32px;
   }
@@ -76,7 +73,9 @@
       <img id="emptyImg" src="images/empty_state.svg">
       <div id="emptyTitle">$i18n{emptyStateTitle}</div>
       <div id="emptyDescription">$i18n{emptyStateDescription}</div>
-      <product-selector></product-selector>
+      <product-selector id="productSelector"
+          on-selected-url-change="onUrlAdd_">
+      </product-selector>
   </div>
   <div id="specs" class="summary" hidden$="[[showEmptyState_]]">
     <product-specifications-table

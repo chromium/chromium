@@ -38,11 +38,14 @@ export class ProductSelectorElement extends PolymerElement {
 
   static get properties() {
     return {
-      selectedItem: Object,
+      selectedItem: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
-  selectedItem: UrlListEntry;
+  selectedItem: UrlListEntry|null;
 
   private showMenu_() {
     this.$.productSelectionMenu.showAt(this.$.currentProductContainer);

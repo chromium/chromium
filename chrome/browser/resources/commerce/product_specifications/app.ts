@@ -12,10 +12,12 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductInfo, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
 import type {TableColumn, TableElement, TableRow} from './table.js';
@@ -39,7 +41,10 @@ function aggregateProductDataByClusterId(
 }
 
 export interface ProductSpecificationsElement {
-  $: {summaryTable: TableElement};
+  $: {
+    productSelector: ProductSelectorElement,
+    summaryTable: TableElement,
+  };
 }
 
 export class ProductSpecificationsElement extends PolymerElement {
@@ -61,7 +66,10 @@ export class ProductSpecificationsElement extends PolymerElement {
 
       specsTable_: {
         type: Object,
-        value: {},
+        value: {
+          columns: [],
+          rows: [],
+        },
       },
     };
   }
@@ -138,6 +146,7 @@ export class ProductSpecificationsElement extends PolymerElement {
           }),
       rows,
     };
+    this.showEmptyState_ = this.specsTable_.columns.length === 0;
   }
 
   override disconnectedCallback() {
@@ -154,6 +163,11 @@ export class ProductSpecificationsElement extends PolymerElement {
       }
     }
     return infos;
+  }
+
+  private onUrlAdd_(e: CustomEvent<{url: string}>) {
+    assert(this.specsTable_.columns.length === 0);
+    this.populateTable_([e.detail.url]);
   }
 
   private onUrlChange_(e: CustomEvent<{url: string, index: number}>) {

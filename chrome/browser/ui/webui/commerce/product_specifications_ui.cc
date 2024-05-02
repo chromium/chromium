@@ -52,6 +52,8 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"emptyProductSelector",
+       IDS_PRODUCT_SPECIFICATIONS_EMPTY_PRODUCT_SELECTOR},
       {"emptyStateTitle", IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE},
       {"emptyStateDescription",
        IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION},

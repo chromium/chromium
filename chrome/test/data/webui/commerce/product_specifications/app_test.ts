@@ -9,8 +9,9 @@ import {Router} from 'chrome://compare/router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {$$, assertNotStyle, assertStyle} from './test_support.js';
@@ -85,7 +86,7 @@ suite('AppTest', () => {
   async function createAppElementWithPromiseValues(
       promiseValues: AppPromiseValues =
           createAppPromiseValues()): Promise<ProductSpecificationsElement> {
-    if (promiseValues.urls) {
+    if (promiseValues.urls && promiseValues.urls.length > 0) {
       router.setResultFor(
           'getCurrentQuery', `?urls=${JSON.stringify(promiseValues.urls)}`);
     }
@@ -248,6 +249,41 @@ suite('AppTest', () => {
 
       assertStyle($$(appElement, '#empty')!, 'display', 'none');
       assertNotStyle($$(appElement, '#specs')!, 'display', 'none');
+    });
+
+    test('hides empty state after product selection', async () => {
+      const url = 'https://example.com';
+      const openTabs = [{
+        title: stringToMojoString16('title'),
+        url: stringToMojoUrl(url),
+      }];
+      shoppingServiceApi.setResultFor(
+          'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+      const promiseValues = createAppPromiseValues({
+        urls: [],
+        infos: [createInfo({clusterId: BigInt(123)})],
+      });
+      createAppElementWithPromiseValues(promiseValues);
+
+      assertEquals(0, appElement.$.summaryTable.columns.length);
+
+      // Open the product selection menu and select the first item.
+      const productSelector = appElement.$.productSelector;
+      productSelector.$.currentProductContainer.click();
+      await waitAfterNextRender(appElement);
+      const menu = productSelector.$.productSelectionMenu;
+      const crActionMenu = menu.$.menu.get();
+      assertTrue(crActionMenu.open);
+      const dropdownItem =
+          crActionMenu.querySelector<HTMLElement>('.dropdown-item')!;
+      dropdownItem.click();
+      await waitAfterNextRender(appElement);
+
+      // The table should be updated with the selected URL.
+      assertStyle($$(appElement, '#empty')!, 'display', 'none');
+      assertNotStyle($$(appElement, '#specs')!, 'display', 'none');
+      assertEquals(1, appElement.$.summaryTable.columns.length);
+      assertEquals(url, appElement.$.summaryTable.columns[0]!.selectedItem.url);
     });
   });
 });

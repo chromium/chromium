@@ -507,5 +507,8 @@
   <message name="IDS_TOOLTIP_PRODUCT_SPECIFICATIONS_ENTRY_POINT_CLOSE" translateable="false" desc="The tooltip text for the close button within the Product Specifications entry point button.">
     Dismiss suggestion
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_PRODUCT_SELECTOR" translateable="false" desc="The text displayed in the product selector when there is no currently selected product.">
+    Add a tab
+  </message>
 
 </grit-part>
