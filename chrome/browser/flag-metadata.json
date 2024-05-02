@@ -1549,7 +1549,7 @@
   },
   {
     "name": "create-shortcut-ignores-manifest",
-    "owners": [ "glenrob@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "glenrob@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -2709,42 +2709,42 @@
   },
   {
     "name": "enable-desktop-pwas-additional-windowing-controls",
-    "owners": [ "giovax@google.com", "pwa-commercial@google.com" , "desktop-pwas-team@google.com" ],
+    "owners": [ "giovax@google.com", "pwa-commercial@google.com" , "pwa-team@google.com" ],
     "expiry_milestone": 150
   },
   {
     "name": "enable-desktop-pwas-app-title",
-    "owners": [ "habenfoto@microsoft.com", "desktop-pwas-team@google.com" ],
+    "owners": [ "habenfoto@microsoft.com", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "enable-desktop-pwas-borderless",
-    "owners": [ "giovax@google.com", "pwa-commercial@google.com" , "desktop-pwas-team@google.com" ],
+    "owners": [ "giovax@google.com", "pwa-commercial@google.com" , "pwa-team@google.com" ],
     "expiry_milestone": 150
   },
   {
     "name": "enable-desktop-pwas-elided-extensions-menu",
-    "owners": [ "cmp@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "cmp@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "enable-desktop-pwas-launch-handler",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 116
   },
   {
     "name": "enable-desktop-pwas-scope-extensions",
-    "owners": [ "luhua@microsoft.com", "desktop-pwas-team@google.com" ],
+    "owners": [ "luhua@microsoft.com", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "enable-desktop-pwas-sub-apps",
-    "owners": ["giovax@chromium.org", "desktop-pwas-team@google.com"],
+    "owners": ["giovax@chromium.org", "pwa-team@google.com"],
     "expiry_milestone": 130
   },
   {
     "name": "enable-desktop-pwas-tab-strip",
-    "owners": [ "desktop-pwas-team@google.com" ],
+    "owners": [ "pwa-team@google.com" ],
     "expiry_milestone": 132
   },
   {
@@ -2754,7 +2754,7 @@
   },
   {
     "name": "enable-desktop-pwas-tab-strip-settings",
-    "owners": [ "desktop-pwas-team@google.com" ],
+    "owners": [ "pwa-team@google.com" ],
     "expiry_milestone": 132
   },
   {
@@ -3308,7 +3308,7 @@
   },
   {
     "name": "enable-mac-pwas-notification-attribution",
-    "owners": [ "mek@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "mek@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -3954,7 +3954,7 @@
   },
   {
     "name": "enable-user-link-capturing-pwa",
-    "owners": [ "dibyapal@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "dibyapal@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 129
   },
   {
@@ -7221,7 +7221,7 @@
   },
   {
     "name": "record-web-app-debug-info",
-    "owners": [ "desktop-pwas-team@google.com" ],
+    "owners": [ "pwa-team@google.com" ],
     // This flag is used for in-the-field debugging of preinstalled web apps on
     // Chrome OS.
     "expiry_milestone": -1
@@ -7595,7 +7595,7 @@
   },
   {
     "name": "shortcuts-not-apps",
-    "owners": [ "dmurph@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 132
   },
   {
@@ -8600,7 +8600,7 @@
   },
   {
     "name": "web-app-dedupe-install-urls",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 122
   },
   {
@@ -8610,17 +8610,17 @@
   },
   {
     "name": "web-app-sync-generated-icon-background-fix",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "web-app-sync-generated-icon-retroactive-fix",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
     "name": "web-app-sync-generated-icon-update-fix",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 130
   },
   {
@@ -8630,17 +8630,17 @@
   },
   {
     "name": "web-app-universal-install",
-    "owners": [ "dmurph@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 132
   },
   {
     "name": "web-app-user-display-mode-sync-browser-mitigation",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 132
   },
   {
     "name": "web-app-user-display-mode-sync-standalone-mitigation",
-    "owners": [ "alancutter@chromium.org", "desktop-pwas-team@google.com" ],
+    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
     "expiry_milestone": 132
   },
   {
