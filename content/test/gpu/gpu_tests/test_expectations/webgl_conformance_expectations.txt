@@ -363,9 +363,6 @@ crbug.com/1378476 [ mac mac-arm64 angle-swiftshader ] conformance/rendering/gl-d
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array/array_001_to_006.html [ Skip ]
 
-# Passthrough fails with nexus-5x
-crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
-crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 
 # Skipped due to low capacity of Lacros devices
 crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/ogles/* [ Skip ]
