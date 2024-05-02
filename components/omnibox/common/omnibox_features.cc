@@ -541,6 +541,11 @@ BASE_FEATURE(kOmniboxShortcutsAndroid,
              "OmniboxShortcutsAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable asynchronous Omnibox/Suggest view inflation.
+BASE_FEATURE(kOmniboxAsyncViewInflation,
+             "OmniboxAsyncViewInflation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
@@ -553,6 +558,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
           &kGroupingFrameworkForNonZPS,
           &kOmniboxMatchToolbarAndStatusBarColor,
           &kOmniboxTouchDownTriggerForPrefetch,
+          &kOmniboxAsyncViewInflation,
       }});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());

@@ -59,17 +59,14 @@ public class OmniboxFeatures {
     public static final CachedFlag sQueryTilesInZPSOnNTP =
             newFlag(OmniboxFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, false);
 
+    public static final CachedFlag sAsyncViewInflation =
+            newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, false);
+
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
-            newBooleanParam(
-                    sQueryTilesInZPSOnNTP,
-                    "QueryTilesShowAsCarousel",
-                    false);
+            newBooleanParam(sQueryTilesInZPSOnNTP, "QueryTilesShowAsCarousel", false);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
-            newBooleanParam(
-                    sOmniboxAnswerActions,
-                    "AnswerActionsShowAboveKeyboard",
-                    false);
+            newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowIfUrlsPresent =
             newBooleanParam(sOmniboxAnswerActions, "ShowIfUrlsPresent", false);
