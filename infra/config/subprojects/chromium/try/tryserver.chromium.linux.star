@@ -404,8 +404,6 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "linux-full-remote-rel-compilator",
-    # TODO: compilator_builder doesn't need description_html as it's automatically generated.
-    description_html = "Compilator for linux-full-remote-rel",
     contact_team_email = "chrome-build-team@google.com",
 )
 

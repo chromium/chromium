@@ -803,6 +803,7 @@ exempted_from_description_builders = {
         "linux-exp-msan-fyi-rel",
         "linux-extended-tracing-rel",
         "linux-fieldtrial-rel",
+        "linux-full-remote-rel-compilator",
         "linux-gcc-rel",
         "linux-headless-shell-rel",
         "linux-js-code-coverage",
