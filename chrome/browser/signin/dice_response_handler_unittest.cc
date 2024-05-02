@@ -378,8 +378,24 @@ void DiceResponseHandlerTest::RunSignoutTest(
   }
 }
 
+class SigninDiceResponseHandlerTestPreconnect
+    : public DiceResponseHandlerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SigninDiceResponseHandlerTestPreconnect() {
+    feature_list_.InitWithFeatureState(
+        switches::kPreconnectAccountCapabilitiesPostSignin,
+        PreconnectEnabled());
+  }
+
+  bool PreconnectEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Checks that a SIGNIN action triggers a token exchange request.
-TEST_F(DiceResponseHandlerTest, Signin) {
+TEST_P(SigninDiceResponseHandlerTestPreconnect, Signin) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -413,7 +429,14 @@ TEST_F(DiceResponseHandlerTest, Signin) {
   // Check that the AccessPoint was propagated from the delegate.
   EXPECT_EQ(extended_account_info.access_point,
             signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  EXPECT_EQ(
+      identity_test_env_.GetNumCallsToPrepareForFetchingAccountCapabilities(),
+      PreconnectEnabled() ? 1 : 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(PreconnectEnabled,
+                         SigninDiceResponseHandlerTestPreconnect,
+                         ::testing::Bool());
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // Checks that a SIGNIN action triggers a token exchange request.

@@ -170,6 +170,12 @@ BASE_FEATURE(kRemoveSignedInAccountsDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kPreconnectAccountCapabilitiesPostSignin,
+             "PreconnectAccountCapabilitiesPostSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace switches
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

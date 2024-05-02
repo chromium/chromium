@@ -430,6 +430,17 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          ::switches::kPreconnectAccountCapabilitiesPostSignin)) {
+    // The user is signing in, which means that account fetching will shortly be
+    // triggered.
+    //
+    // Notify identity manager. This will trigger pre-connecting the network
+    // socket to the AccountCapabilities endpoint, in parallel with the LST and
+    // access token requests (instead of waiting for these to complete).
+    identity_manager_->PrepareForAddingNewAccount();
+  }
+
   token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(
       gaia_id, email, authorization_code, signin_client_, account_reconcilor_,
       std::move(delegate), registration_token_helper_factory_, this));
