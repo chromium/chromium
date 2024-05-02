@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -42,6 +44,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -53,10 +56,13 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /** Unit tests for {@link ActionConfirmationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActionConfirmationManagerUnitTest {
+    private static final String TEST_EMAIL = "test@gmail.com";
+
     private static final int TAB1_ID = 1;
     private static final int TAB2_ID = 2;
     private static final int TAB3_ID = 3;
@@ -245,6 +251,63 @@ public class ActionConfirmationManagerUnitTest {
                 mPropertyModelArgumentCaptor.getValue(),
                 DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         verify(mOnResult).onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+    }
+
+    @Test
+    public void testProcessRemoveTabAttempt_NoSignIn() {
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
+
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(
+                        mProfile, mActivity, mTabGroupModelFilter, mModalDialogManager);
+        actionConfirmationManager.processRemoveTabAttempt(Arrays.asList(TAB1_ID), mOnResult);
+        verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
+
+        View customView =
+                mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
+        assertEquals(
+                "This will permanently delete the group from your device",
+                descriptionTextView.getText());
+    }
+
+    @Test
+    public void testProcessRemoveTabAttempt_SignInButNoSync() {
+        when(mCoreAccountInfo.getEmail()).thenReturn(TEST_EMAIL);
+        when(mSyncService.getActiveDataTypes()).thenReturn(Collections.emptySet());
+
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(
+                        mProfile, mActivity, mTabGroupModelFilter, mModalDialogManager);
+        actionConfirmationManager.processRemoveTabAttempt(Arrays.asList(TAB1_ID), mOnResult);
+        verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
+
+        View customView =
+                mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
+        assertEquals(
+                "This will permanently delete the group from your device",
+                descriptionTextView.getText());
+    }
+
+    @Test
+    public void testProcessRemoveTabAttempt_SignInAndSync() {
+        when(mCoreAccountInfo.getEmail()).thenReturn(TEST_EMAIL);
+        when(mSyncService.getActiveDataTypes())
+                .thenReturn(Collections.singleton(ModelType.SAVED_TAB_GROUP));
+
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(
+                        mProfile, mActivity, mTabGroupModelFilter, mModalDialogManager);
+        actionConfirmationManager.processRemoveTabAttempt(Arrays.asList(TAB1_ID), mOnResult);
+        verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
+
+        View customView =
+                mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
+        assertEquals(
+                "This will delete the group from all devices signed into test@gmail.com",
+                descriptionTextView.getText());
     }
 
     @Test

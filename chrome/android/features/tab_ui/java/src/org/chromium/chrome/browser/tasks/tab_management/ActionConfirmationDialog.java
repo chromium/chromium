@@ -13,13 +13,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -54,7 +52,7 @@ public class ActionConfirmationDialog {
 
     public void show(
             @StringRes int titleRes,
-            @StringRes int accountFormatDescriptionRes,
+            Function<Resources, String> descriptionResolver,
             @StringRes int positiveButtonRes,
             @NonNull ConfirmationDialogResult onResult) {
         Resources resources = mContext.getResources();
@@ -63,15 +61,8 @@ public class ActionConfirmationDialog {
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
         CheckBox stopShowingCheckBox = customView.findViewById(R.id.stop_showing_check_box);
 
-        if (accountFormatDescriptionRes != Resources.ID_NULL) {
-            CoreAccountInfo accountInfo =
-                    IdentityServicesProvider.get()
-                            .getIdentityManager(mProfile)
-                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-            String descriptionText =
-                    resources.getString(accountFormatDescriptionRes, accountInfo.getEmail());
-            descriptionTextView.setText(descriptionText);
-        }
+        String descriptionText = descriptionResolver.apply(resources);
+        descriptionTextView.setText(descriptionText);
 
         Callback<Boolean> onDismissWhetherPositive =
                 (isPositive) -> {

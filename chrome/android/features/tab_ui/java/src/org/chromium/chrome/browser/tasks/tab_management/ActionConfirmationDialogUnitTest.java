@@ -7,13 +7,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
+import androidx.core.util.Function;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -28,11 +30,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationDialog.ConfirmationDialogResult;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -44,8 +42,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link ActionConfirmationDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActionConfirmationDialogUnitTest {
-    private static final String TEST_EMAIL = "test@gmail.com";
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -55,9 +51,6 @@ public class ActionConfirmationDialogUnitTest {
     @Mock private Profile mProfile;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private ConfirmationDialogResult mConfirmationDialogResult;
-    @Mock private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock private IdentityManager mIdentityManager;
-    @Mock private CoreAccountInfo mCoreAccountInfo;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelArgumentCaptor;
 
@@ -66,16 +59,19 @@ public class ActionConfirmationDialogUnitTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(mCoreAccountInfo);
-        when(mCoreAccountInfo.getEmail()).thenReturn(TEST_EMAIL);
     }
 
     private void onActivity(TestActivity activity) {
         mActivity = activity;
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+    }
+
+    private Function<Resources, String> noSyncResolver(@StringRes int stringRes) {
+        return (resources) -> resources.getString(stringRes);
+    }
+
+    private Function<Resources, String> syncResolver(@StringRes int stringRes, String account) {
+        return (resources) -> resources.getString(stringRes, account);
     }
 
     @Test
@@ -84,7 +80,7 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
                 R.string.close_from_group_dialog_title,
-                R.string.delete_tab_group_no_sync_description,
+                noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
 
@@ -107,7 +103,7 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
                 R.string.close_from_group_dialog_title,
-                R.string.delete_tab_group_description,
+                syncResolver(R.string.delete_tab_group_description, "test@gmail.com"),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
 
@@ -128,7 +124,7 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
                 R.string.close_from_group_dialog_title,
-                R.string.delete_tab_group_no_sync_description,
+                noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
 
@@ -148,7 +144,7 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
                 R.string.close_from_group_dialog_title,
-                R.string.delete_tab_group_no_sync_description,
+                noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
 
@@ -168,7 +164,7 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
                 R.string.close_from_group_dialog_title,
-                R.string.delete_tab_group_no_sync_description,
+                noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
 
@@ -192,7 +188,7 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
                 R.string.close_from_group_dialog_title,
-                R.string.delete_tab_group_no_sync_description,
+                noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
 

@@ -5,18 +5,25 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationDialog.ConfirmationDialogResult;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -143,11 +150,24 @@ public class ActionConfirmationManager {
             @StringRes int noSyncDescriptionRes,
             @StringRes int actionRes,
             Callback<Integer> onResult) {
+
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        final @StringRes int selectedDescriptionRes =
-                syncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP)
-                        ? withSyncDescriptionRes
-                        : noSyncDescriptionRes;
+        boolean syncingTabGroups =
+                syncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP);
+        IdentityServicesProvider identityServicesProvider = IdentityServicesProvider.get();
+        IdentityManager identityManager = identityServicesProvider.getIdentityManager(mProfile);
+        @Nullable
+        CoreAccountInfo coreAccountInfo =
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        final Function<Resources, String> descriptionResolver;
+        if (syncingTabGroups && coreAccountInfo != null) {
+            descriptionResolver =
+                    (resources ->
+                            resources.getString(
+                                    withSyncDescriptionRes, coreAccountInfo.getEmail()));
+        } else {
+            descriptionResolver = (resources -> resources.getString(noSyncDescriptionRes));
+        }
 
         PrefService prefService = UserPrefs.get(mProfile);
         if (prefService.getBoolean(stopShowingPref)) {
@@ -170,6 +190,6 @@ public class ActionConfirmationManager {
 
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mProfile, mContext, mModalDialogManager);
-        dialog.show(titleRes, selectedDescriptionRes, actionRes, onDialogResult);
+        dialog.show(titleRes, descriptionResolver, actionRes, onDialogResult);
     }
 }
