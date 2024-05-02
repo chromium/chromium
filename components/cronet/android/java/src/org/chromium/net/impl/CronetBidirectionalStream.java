@@ -123,6 +123,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     private RefCountDelegate mInflightDoneCallbackCount;
     private CronetException mException;
     private int mNonfinalUserCallbackExceptionCount;
+    private int mReadCount;
+    private int mFlushCount;
     private boolean mFinalUserCallbackThrew;
 
     /*
@@ -375,6 +377,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mReadState = State.WAITING_FOR_READ;
                 throw new IllegalArgumentException("Unable to call native read");
             }
+            mReadCount++;
         }
     }
 
@@ -433,6 +436,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 return;
             }
             sendFlushDataLocked();
+            mFlushCount++;
         }
     }
 
@@ -942,6 +946,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 CronetRequestCommon.finishedReasonToCronetTrafficInfoRequestTerminalState(
                         finishedReason),
                 mNonfinalUserCallbackExceptionCount,
+                mReadCount,
+                mFlushCount,
                 /* isBidiStream= */ true,
                 mFinalUserCallbackThrew);
     }

@@ -112,6 +112,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     private CronetMetrics mMetrics;
     private boolean mQuicConnectionMigrationAttempted;
     private boolean mQuicConnectionMigrationSuccessful;
+    private int mReadCount;
     private int mNonfinalUserCallbackExceptionCount;
     private boolean mFinalUserCallbackThrew;
 
@@ -335,6 +336,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 mWaitingOnRead = true;
                 throw new IllegalArgumentException("Unable to call native read");
             }
+            mReadCount++;
         }
     }
 
@@ -1022,6 +1024,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 CronetRequestCommon.finishedReasonToCronetTrafficInfoRequestTerminalState(
                         mFinishedReason),
                 mNonfinalUserCallbackExceptionCount,
+                mReadCount,
+                mUploadDataStream == null ? 0 : mUploadDataStream.getReadCount(),
                 /* isBidiStream= */ false,
                 mFinalUserCallbackThrew);
     }

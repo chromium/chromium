@@ -205,6 +205,8 @@ public abstract class CronetLogger {
         private final boolean mDidConnectionMigrationSucceed;
         private final RequestTerminalState mTerminalState;
         private final int mNonfinalUserCallbackExceptionCount;
+        private final int mReadCount;
+        private final int mOnUploadReadCount;
         private final boolean mIsBidiStream;
         private final boolean mFinalUserCallbackThrew;
 
@@ -221,6 +223,8 @@ public abstract class CronetLogger {
                 boolean didConnectionMigrationSucceed,
                 RequestTerminalState terminalState,
                 int nonfinalUserCallbackExceptionCount,
+                int readCount,
+                int uploadReadCount,
                 boolean isBidiStream,
                 boolean finalUserCallbackThrew) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
@@ -235,6 +239,8 @@ public abstract class CronetLogger {
             mDidConnectionMigrationSucceed = didConnectionMigrationSucceed;
             mTerminalState = terminalState;
             mNonfinalUserCallbackExceptionCount = nonfinalUserCallbackExceptionCount;
+            mReadCount = readCount;
+            mOnUploadReadCount = uploadReadCount;
             mIsBidiStream = isBidiStream;
             mFinalUserCallbackThrew = finalUserCallbackThrew;
         }
@@ -307,6 +313,14 @@ public abstract class CronetLogger {
 
         public int getNonfinalUserCallbackExceptionCount() {
             return mNonfinalUserCallbackExceptionCount;
+        }
+
+        public int getReadCount() {
+            return mReadCount;
+        }
+
+        public int getOnUploadReadCount() {
+            return mOnUploadReadCount;
         }
 
         public boolean getIsBidiStream() {

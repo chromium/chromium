@@ -115,6 +115,7 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
 
     private final long mNetworkHandle;
 
+    private int mReadCount;
     private int mNonfinalUserCallbackExceptionCount;
     private boolean mFinalUserCallbackThrew;
 
@@ -690,7 +691,11 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
         Preconditions.checkHasRemaining(buffer);
         CheckedRunnable doRead =
                 () -> {
-                    int read = mResponseChannel == null ? -1 : mResponseChannel.read(buffer);
+                    int read = -1;
+                    if (mResponseChannel != null) {
+                        mReadCount++;
+                        read = mResponseChannel.read(buffer);
+                    }
                     processReadResult(read, buffer);
                 };
         transitionStates(
@@ -1004,6 +1009,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     false, // didConnectionMigrationSucceed
                     requestTerminalState,
                     mNonfinalUserCallbackExceptionCount,
+                    mReadCount,
+                    mOutputStreamDataSink == null ? 0 : mOutputStreamDataSink.getReadCount(),
                     /* isBidiStream= */ false,
                     mFinalUserCallbackThrew);
         }

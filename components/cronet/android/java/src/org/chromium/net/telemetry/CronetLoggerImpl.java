@@ -198,8 +198,8 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.getNonfinalUserCallbackExceptionCount(),
                     /* total_idle_time_millis= */ -1,
                     /* total_user_executor_execute_latency_millis= */ -1,
-                    /* read_count= */ -1,
-                    /* on_upload_read_count= */ -1,
+                    trafficInfo.getReadCount(),
+                    trafficInfo.getOnUploadReadCount(),
                     OptionalBoolean.fromBoolean(trafficInfo.getIsBidiStream()).getValue(),
                     OptionalBoolean.fromBoolean(trafficInfo.getFinalUserCallbackThrew())
                             .getValue());

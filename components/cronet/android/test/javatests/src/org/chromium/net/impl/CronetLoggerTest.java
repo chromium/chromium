@@ -42,6 +42,7 @@ import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.Http2TestServer;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.TestBidirectionalStreamCallback;
+import org.chromium.net.TestUploadDataProvider;
 import org.chromium.net.TestUrlRequestCallback;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.httpflags.FlagValue;
@@ -672,6 +673,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getTerminalState())
                 .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
         assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
+        assertThat(trafficInfo.getReadCount()).isGreaterThan(0);
+        assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
@@ -710,6 +713,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getTerminalState())
                 .isEqualTo(CronetTrafficInfo.RequestTerminalState.ERROR);
         assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
+        assertThat(trafficInfo.getReadCount()).isEqualTo(0);
+        assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
@@ -794,6 +799,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getTerminalState())
                 .isEqualTo(CronetTrafficInfo.RequestTerminalState.CANCELLED);
         assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
+        assertThat(trafficInfo.getReadCount()).isEqualTo(0);
+        assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
@@ -803,20 +810,47 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
+    public void testUploadNative() throws Exception {
+        var callback = new TestUrlRequestCallback();
+        var dataProvider =
+                new TestUploadDataProvider(
+                        TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
+        dataProvider.addRead("test".getBytes());
+        mTestRule
+                .getTestFramework()
+                .startEngine()
+                .newUrlRequestBuilder(
+                        NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor())
+                .setUploadDataProvider(dataProvider, callback.getExecutor())
+                .addHeader("Content-Type", "useless/string")
+                .build()
+                .start();
+        callback.blockForDone();
+
+        mTestLogger.waitForLogCronetTrafficInfo();
+        assertThat(mTestLogger.getLastCronetTrafficInfo().getOnUploadReadCount()).isGreaterThan(0);
+    }
+
+    @Test
+    @SmallTest
     public void testBidirectionalStream() throws Exception {
         assertThat(Http2TestServer.startHttp2TestServer(mTestRule.getTestFramework().getContext()))
                 .isTrue();
         try {
             var callback = new TestBidirectionalStreamCallback();
+            callback.addWriteData(
+                    ("test long write data which has to be long so that the response "
+                                    + "body size is non-zero; see b/328737465")
+                            .getBytes());
             var stream =
                     mTestRule
                             .getTestFramework()
                             .startEngine()
                             .newBidirectionalStreamBuilder(
-                                    Http2TestServer.getEchoMethodUrl(),
+                                    Http2TestServer.getEchoStreamUrl(),
                                     callback,
                                     callback.getExecutor())
-                            .setHttpMethod("GET")
+                            .addHeader("Content-Type", "test/contenttype")
                             .build();
             stream.start();
             callback.blockForDone();
@@ -825,7 +859,7 @@ public final class CronetLoggerTest {
             mTestLogger.waitForLogCronetTrafficInfo();
 
             var trafficInfo = mTestLogger.getLastCronetTrafficInfo();
-            assertThat(trafficInfo.getRequestHeaderSizeInBytes()).isEqualTo(0);
+            assertThat(trafficInfo.getRequestHeaderSizeInBytes()).isNotEqualTo(0);
             assertThat(trafficInfo.getRequestBodySizeInBytes()).isNotEqualTo(0);
             assertThat(trafficInfo.getResponseHeaderSizeInBytes()).isNotEqualTo(0);
             assertThat(trafficInfo.getResponseBodySizeInBytes()).isNotEqualTo(0);
@@ -838,6 +872,8 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getTerminalState())
                     .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
             assertThat(trafficInfo.getNonfinalUserCallbackExceptionCount()).isEqualTo(0);
+            assertThat(trafficInfo.getReadCount()).isGreaterThan(0);
+            assertThat(trafficInfo.getOnUploadReadCount()).isGreaterThan(0);
             assertThat(trafficInfo.getIsBidiStream()).isTrue();
             assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
