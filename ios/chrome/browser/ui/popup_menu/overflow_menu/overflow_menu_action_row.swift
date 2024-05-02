@@ -25,6 +25,18 @@ struct OverflowMenuActionToggleStyle: ToggleStyle {
           .imageScale(.large)
       }
     }
+    .overflowMenuActionToggleCompat()
+  }
+}
+
+extension View {
+  /// For whatever reason, in iOS 15, the button is not toggleable unless this
+  /// `buttonStyle` is set. In iOS 16+, the `buttonStyle` is not necessary.
+  fileprivate func overflowMenuActionToggleCompat() -> some View {
+    if #available(iOS 16.0, *) {
+      return self
+    }
+    return self.buttonStyle(.borderless)
   }
 }
 
