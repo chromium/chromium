@@ -42,7 +42,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -258,14 +257,6 @@ class TestFeedNetwork : public FeedNetwork {
       const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  void SendKidFriendlyApiRequest(
-      const supervised_user::GetDiscoverFeedRequest& request,
-      const AccountInfo& account_info,
-      base::OnceCallback<void(KidFriendlyQueryRequestResult)> callback)
-      override;
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
   void SendDiscoverApiRequest(
       NetworkRequestType request_type,
       base::StringPiece api_path,
@@ -439,11 +430,6 @@ class TestWireResponseTranslator : public WireResponseTranslator {
   ~TestWireResponseTranslator();
   RefreshResponseData TranslateWireResponse(
       feedwire::Response response,
-      StreamModelUpdateRequest::Source source,
-      const AccountInfo& account_info,
-      base::Time current_time) const override;
-  RefreshResponseData TranslateWireResponse(
-      supervised_user::GetDiscoverFeedResponse response,
       StreamModelUpdateRequest::Source source,
       const AccountInfo& account_info,
       base::Time current_time) const override;

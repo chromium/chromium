@@ -26,9 +26,6 @@ class IdentityManager;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
-namespace supervised_user {
-class GetDiscoverFeedRequest;
-}  // namespace supervised_user
 
 namespace feed {
 constexpr base::TimeDelta kAccessTokenFetchTimeout = base::Seconds(10);
@@ -66,12 +63,6 @@ class FeedNetworkImpl : public FeedNetwork {
       const feedwire::Request& request,
       const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
-
-  void SendKidFriendlyApiRequest(
-      const supervised_user::GetDiscoverFeedRequest& request,
-      const AccountInfo& account_info,
-      base::OnceCallback<void(KidFriendlyQueryRequestResult)> callback)
-      override;
 
   void SendDiscoverApiRequest(
       NetworkRequestType request_type,

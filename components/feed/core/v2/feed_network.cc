@@ -15,16 +15,6 @@ FeedNetwork::QueryRequestResult::QueryRequestResult(QueryRequestResult&&) =
 FeedNetwork::QueryRequestResult& FeedNetwork::QueryRequestResult::operator=(
     QueryRequestResult&&) = default;
 
-FeedNetwork::KidFriendlyQueryRequestResult::KidFriendlyQueryRequestResult() =
-    default;
-FeedNetwork::KidFriendlyQueryRequestResult::~KidFriendlyQueryRequestResult() =
-    default;
-FeedNetwork::KidFriendlyQueryRequestResult::KidFriendlyQueryRequestResult(
-    KidFriendlyQueryRequestResult&&) = default;
-FeedNetwork::KidFriendlyQueryRequestResult&
-FeedNetwork::KidFriendlyQueryRequestResult::operator=(
-    KidFriendlyQueryRequestResult&&) = default;
-
 FeedNetwork::~FeedNetwork() = default;
 
 // static

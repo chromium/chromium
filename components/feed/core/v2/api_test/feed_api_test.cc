@@ -46,13 +46,7 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/supervised_user/core/browser/proto/get_discover_feed_response.pb.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/proto/get_discover_feed_request.pb.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace feed {
 namespace test {
@@ -537,7 +531,7 @@ void TestFeedNetwork::SendQueryRequest(
     const feedwire::Request& request,
     const AccountInfo& account_info,
     base::OnceCallback<void(QueryRequestResult)> callback) {
-  sent_request_types_.push_back(NetworkRequestType::kFeedQuery);
+  sent_request_types_.push_back(request_type);
   last_account_info = account_info;
   ++send_query_call_count;
   // Emulate a successful response.
@@ -562,36 +556,6 @@ void TestFeedNetwork::SendQueryRequest(
   }
   Reply(base::BindOnce(std::move(callback), std::move(result)));
 }
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-void TestFeedNetwork::SendKidFriendlyApiRequest(
-    const supervised_user::GetDiscoverFeedRequest& request,
-    const AccountInfo& account_info,
-    base::OnceCallback<void(KidFriendlyQueryRequestResult)> callback) {
-  sent_request_types_.push_back(NetworkRequestType::kSupervisedFeed);
-  last_account_info = account_info;
-  ++send_query_call_count;
-  // Emulate a successful response.
-  // The response body is currently an empty message, because most of the
-  // time we want to inject a translated response for ease of test-writing.
-  query_request_sent = feedwire::Request();
-  KidFriendlyQueryRequestResult result;
-
-  if (error != net::Error::OK) {
-    result.response_info.status_code = error;
-  } else {
-    result.response_info.status_code = http_status_code;
-  }
-
-  result.response_info.response_body_bytes = 100;
-  result.response_info.fetch_duration = base::Milliseconds(42);
-  result.response_info.account_info = account_info;
-  result.response_body =
-      std::make_unique<supervised_user::GetDiscoverFeedResponse>();
-
-  Reply(base::BindOnce(std::move(callback), std::move(result)));
-}
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 template <typename API>
 void DebugLogApiResponse(std::string request_bytes,
@@ -841,18 +805,6 @@ TestWireResponseTranslator::TestWireResponseTranslator() = default;
 TestWireResponseTranslator::~TestWireResponseTranslator() = default;
 RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
     feedwire::Response response,
-    StreamModelUpdateRequest::Source source,
-    const AccountInfo& account_info,
-    base::Time current_time) const {
-  std::optional<RefreshResponseData> result =
-      TranslateStreamSource(source, account_info, current_time);
-  return result ? std::move(result.value())
-                : WireResponseTranslator::TranslateWireResponse(
-                      std::move(response), source, account_info, current_time);
-}
-
-RefreshResponseData TestWireResponseTranslator::TranslateWireResponse(
-    supervised_user::GetDiscoverFeedResponse response,
     StreamModelUpdateRequest::Source source,
     const AccountInfo& account_info,
     base::Time current_time) const {

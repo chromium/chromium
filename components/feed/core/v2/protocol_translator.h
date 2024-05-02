@@ -17,7 +17,6 @@
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/types.h"
-#include "components/supervised_user/core/browser/proto/get_discover_feed_response.pb.h"
 
 namespace feed {
 
@@ -93,12 +92,6 @@ struct RefreshResponseData {
 std::optional<feedstore::DataOperation> TranslateDataOperation(
     base::Time current_time,
     feedwire::DataOperation wire_operation);
-
-RefreshResponseData TranslateWireResponse(
-    supervised_user::GetDiscoverFeedResponse response,
-    StreamModelUpdateRequest::Source source,
-    const AccountInfo& account_info,
-    base::Time current_time);
 
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,

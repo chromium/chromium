@@ -14,7 +14,6 @@ namespace supervised_user {
 
 // Experiment to enable kid-friendly content feed.
 BASE_DECLARE_FEATURE(kKidFriendlyContentFeed);
-extern const base::FeatureParam<std::string> kKidFriendlyContentFeedEndpoint;
 
 BASE_DECLARE_FEATURE(kLocalWebApprovals);
 
