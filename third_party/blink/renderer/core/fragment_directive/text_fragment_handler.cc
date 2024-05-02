@@ -219,8 +219,11 @@ void TextFragmentHandler::Trace(Visitor* visitor) const {
 void TextFragmentHandler::DidDetachDocumentOrFrame() {
   // Clear out any state in the generator and cancel pending tasks so they
   // don't run after frame detachment.
-  if (GetTextFragmentSelectorGenerator())
+  if (GetTextFragmentSelectorGenerator()) {
     GetTextFragmentSelectorGenerator()->Reset();
+    // The generator is preserved since that's used in RequestSelector to
+    // determine whether to respond with kNotGenerated.
+  }
 
   annotation_agents_.clear();
 }
