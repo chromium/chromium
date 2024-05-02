@@ -31,6 +31,7 @@ import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.services.tracing.TracingServiceFeatures;
 import org.chromium.ui.base.UiAndroidFeatures;
+import org.chromium.ui.gfx.GfxSwitches;
 
 /**
  * List of experimental features/flags supported for user devices. Add features/flags to this list
@@ -980,6 +981,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PRELOAD_CLASSES,
                 "Preloads expensive classes during WebView startup."),
+        Flag.baseFeature(
+                GfxSwitches.USE_SMART_REF_FOR_GPU_FENCE_HANDLE,
+                "Avoids cloning of gpu fences when possible"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

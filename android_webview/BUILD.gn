@@ -898,6 +898,7 @@ android_library("common_java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:accessibility_features_java",
     "//ui/android:ui_android_features_java",
+    "//ui/gfx:ui_gfx_java",
   ]
 
   srcjar_deps = [
