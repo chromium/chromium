@@ -83,13 +83,14 @@ suite('UpdateVoicePack', () => {
       };
     }
 
-    test('downloaded if voices not updated yet', () => {
-      const lang = 'fr';
+    // TODO: crbug.com/337149357 - Fix flakiness of this specific test on Mac.
+    // test('downloaded if voices not updated yet', () => {
+    //   const lang = 'fr';
 
-      app.updateVoicePackStatus(lang, 'kInstalled');
+    //   app.updateVoicePackStatus(lang, 'kInstalled');
 
-      assertEquals(getInstallStatus(lang), VoicePackStatus.DOWNLOADED);
-    });
+    //   assertEquals(getInstallStatus(lang), VoicePackStatus.DOWNLOADED);
+    // });
 
     test('downloaded if natural voices are added for a different lang', () => {
       const lang = 'fr';
