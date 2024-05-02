@@ -7,41 +7,45 @@
  * ripple. It can be interacted with like a normal button using click as well as
  * space and enter to effectively click the button and fire a 'click' event.
  *
- * There are two sources to icons, cr-icons and iron-iconset-svg. The cr-icon's
- * are defined as background images with a reference to a resource file
- * associated with a CSS class name. The cr-icon's are defined as inline SVG's
- * under a key that is stored in a global map that is accessible to the
- * cr-icon element.
+ * There are two sources to icons:
+ * Option 1: CSS classes defined in cr_icons.css.
+ * Option 2: SVG icons defined in a cr-iconset or iron-iconset-svg,
+ *     with the name passed to cr-icon-button via the |ironIcon| property.
  *
- * Example of using a cr-icon:
- * <link rel="import" href="chrome://resources/cr_elements/cr_icons.css.html">
- * <dom-module id="module">
- *   <template>
- *     <style includes="cr-icons"></style>
- *     <cr-icon-button class="icon-class-name"></cr-icon-button>
- *   </template>
- * </dom-module>
+ * Example of using CSS classes:
+ * In the .html.ts template file (if using a .html template file instead, the
+ * import should be in the corresponding .ts file):
+ * import 'chrome://resources/cr_elements/cr_icons.css.js';
  *
- * In general when an icon is specified using a class, the expectation is the
+ * export function getHtml() {
+ *   return html`
+ *     <cr-icon-button class="icon-class-name"></cr-icon-button>`;
+ * }
+ *
+ * When an icon is specified using a class, the expectation is the
  * class will set an image to the --cr-icon-image variable.
  *
- * Example of using a cr-icon:
- * In the TS file:
+ * Example of using a cr-iconset to supply an icon via the iron-icon parameter:
+ * In the .html.ts template file (if using a .html template file instead, the
+ * import should be in the corresponding .ts file):
  * import 'chrome://resources/cr_elements/icons_lit.html.js';
  *
- * In the HTML template file:
- * <cr-icon-button iron-icon="cr:icon-key"></cr-icon-button>
+ * export function getHtml() {
+ *   return html`
+ *     <cr-icon-button iron-icon="cr:icon-key"></cr-icon-button>`;
+ * }
  *
  * The color of the icon can be overridden using CSS variables. When using
- * iron-icon both the fill and stroke can be overridden the variables:
- * --cr-icon-button-fill-color
- * --cr-icon-button-stroke-color
+ * the ironIcon property to populate cr-icon-button's internal <cr-icon>, the
+ * following CSS variables for fill and stroke can be overridden for cr-icon:
+ * --iron-icon-button-fill-color
+ * --iron-icon-button-stroke-color
  *
- * When not using cr-icon (ie. specifying --cr-icon-image), the icons support
- * one color and the 'stroke' variables are ignored.
+ * When not using the ironIcon property, cr-icon-button will not create a
+ * <cr-icon>, so the cr-icon related CSS variables above are ignored.
  *
- * When using cr-icon's, more than one icon can be specified by setting
- * the |ironIcon| property to a comma-delimited list of keys.
+ * When using the ironIcon property, more than one icon can be specified by
+ * setting the |ironIcon| property to a comma-delimited list of keys.
  */
 
 import '../cr_icon/cr_icon.js';
