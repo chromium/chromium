@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+Testing.h"
 
 #import "base/check.h"
 #import "base/ios/block_types.h"
-#import "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+Testing.h"
 
 namespace {
 
@@ -282,7 +282,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("InProductHelp.DismissalReason.iOS", reason);
+  base::UmaHistogramEnumeration(kUMAIPHDismissalReason, reason);
 
   [self.bubbleDismissalTimer invalidate];
   self.bubbleDismissalTimer = nil;

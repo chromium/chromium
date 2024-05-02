@@ -23,3 +23,8 @@ NSString* const kBubbleViewArrowViewIdentifier =
     @"kBubbleViewArrowViewIdentifier";
 // How long, in seconds, the bubble is visible on the screen.
 NSTimeInterval const kBubbleVisibilityDuration = 5.0;
+// Metric name for bubble dismissal tracking.
+const char kUMAIPHDismissalReason[] = "InProductHelp.DismissalReason.iOS";
+// Metric name for gestural bubble dismissal tracking.
+const char kUMAGesturalIPHDismissalReason[] =
+    "InProductHelp.Gestural.DismissalReason.iOS";

@@ -592,6 +592,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InProductHelp.Gestural.DismissalReason.iOS"
+    enum="InProductHelpDismissalReason" expires_after="2024-10-06">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>adamta@google.com</owner>
+  <summary>
+    Recorded when a gestural in-product help view is dismissed, with the enum
+    signifying the way the dismissal was triggered.
+  </summary>
+</histogram>
+
 <histogram name="InProductHelp.NotifyEventReadyState.{IPHFeature}"
     enum="BooleanSuccess" expires_after="2024-09-01">
   <owner>nyquist@chromium.org</owner>

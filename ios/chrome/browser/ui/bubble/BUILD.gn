@@ -108,8 +108,10 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "bubble_presenter_egtest.mm" ]
   deps = [
+    ":constants",
     "//base",
     "//components/feature_engagement/public",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/bubble/gesture_iph:test_utils",
     "//ios/chrome/test:eg_test_support+eg2",

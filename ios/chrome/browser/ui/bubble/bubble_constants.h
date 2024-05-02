@@ -22,6 +22,12 @@ extern NSString* const kBubbleViewArrowViewIdentifier;
 // How long, in seconds, the bubble is visible on the screen.
 extern NSTimeInterval const kBubbleVisibilityDuration;
 
+// Metric name for bubble dismissal tracking.
+extern const char kUMAIPHDismissalReason[];
+
+// Metric name for gestural bubble dismissal tracking.
+extern const char kUMAGesturalIPHDismissalReason[];
+
 // Direction for the bubble to point.
 typedef NS_ENUM(NSInteger, BubbleArrowDirection) {
   // Bubble is below the target UI element and the arrow is pointing up.

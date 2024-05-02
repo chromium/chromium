@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view.h"
 
 #import "base/ios/block_types.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -720,6 +721,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
           return;
         }
         [strongSelf removeFromSuperview];
+        base::UmaHistogramEnumeration(kUMAGesturalIPHDismissalReason, reason);
         [strongSelf.delegate gestureInProductHelpView:strongSelf
                                  didDismissWithReason:reason];
         if (completionHandler) {

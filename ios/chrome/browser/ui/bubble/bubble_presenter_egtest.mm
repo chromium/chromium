@@ -7,7 +7,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/gesture_iph/gesture_in_product_help_view_egtest_utils.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -22,6 +24,7 @@
 #import "url/gurl.h"
 
 namespace {
+
 using ::chrome_test_util::BackButton;
 using ::chrome_test_util::ForwardButton;
 
@@ -29,6 +32,22 @@ using ::chrome_test_util::ForwardButton;
 id<GREYMatcher> BottomToolbar() {
   return grey_kindOfClassName(@"SecondaryToolbarView");
 }
+
+// Verify that histogram for IPH dismissal is emitted once with the correct
+// value.
+void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
+  NSString* dismissalHistogramName =
+      base::SysUTF8ToNSString(kUMAGesturalIPHDismissalReason);
+  NSError* error = [MetricsAppInterface expectCount:1
+                                          forBucket:static_cast<int>(reason)
+                                       forHistogram:dismissalHistogramName];
+  if (!error) {
+    error = [MetricsAppInterface expectTotalCount:1
+                                     forHistogram:dismissalHistogramName];
+  }
+  GREYAssertNil(error, error.description);
+}
+
 }  // namespace
 
 @interface BubblePresenterTestCase : ChromeTestCase
@@ -48,6 +67,8 @@ id<GREYMatcher> BottomToolbar() {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
 }
 
 // Open a random url from omnibox. `isAfterNewAppLaunch` is used for deciding
@@ -208,6 +229,8 @@ id<GREYMatcher> BottomToolbar() {
   appearance = HasGestureIPHAppeared();
   GREYAssertFalse(appearance, @"Pull to refresh IPH still visible after going "
                               @"to tab grid and coming back.");
+  ExpectHistogramEmittedForIPHDismissal(
+      IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
 }
 
 // Tests that the pull-to-refresh IPH is NOT attempted when page loading fails.
@@ -263,6 +286,8 @@ id<GREYMatcher> BottomToolbar() {
   GREYAssertFalse(
       appearance,
       @"Swipe back/forward IPH still appeared after user left the page.");
+  ExpectHistogramEmittedForIPHDismissal(
+      IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
 }
 
 // Tests that bi-directional swipe IPH shows when both forward and backward are
@@ -337,6 +362,8 @@ id<GREYMatcher> BottomToolbar() {
   GREYAssertFalse(
       appearance,
       @"Swipe back/forward IPH still appeared after user opens a new tab.");
+  ExpectHistogramEmittedForIPHDismissal(
+      IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
 }
 
 // Tests that the swipe back/forward IPH would NOT show if the page load fails.
@@ -445,7 +472,8 @@ id<GREYMatcher> BottomToolbar() {
   appearance = HasGestureIPHAppeared();
   GREYAssertFalse(appearance, @"Toolbar swipe IPH should be dismissed after "
                               @"swipe in the right direction.");
-  // TODO(crbug.com/40276959): Check dismissal histogram.
+  ExpectHistogramEmittedForIPHDismissal(
+      IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH);
 }
 
 // Tests that the toolbar swipe IPH would be dismissed with the reason
@@ -489,7 +517,8 @@ id<GREYMatcher> BottomToolbar() {
   appearance = HasGestureIPHAppeared();
   GREYAssertFalse(appearance, @"Toolbar swipe IPH should be dismissed after "
                               @"leaving the page.");
-  // TODO(crbug.com/40276959): Check dismissal histogram.
+  ExpectHistogramEmittedForIPHDismissal(
+      IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView);
 }
 
 @end
