@@ -628,7 +628,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     QuickAnswersTextLabel* quick_answers_text_label =
         MaybeASingleQuickAnswersTextLabel(first_answer_row);
     if (quick_answers_text_label) {
-      SetAccessibleDescription(l10n_util::GetStringFUTF16(
+      GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF16(
           IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2,
           title_label->GetText(), quick_answers_text_label->GetText()));
 

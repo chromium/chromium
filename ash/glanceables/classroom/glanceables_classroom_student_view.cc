@@ -170,7 +170,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox));
   combo_box_view_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
-  combo_box_view_->SetAccessibleDescription(u"");
+  combo_box_view_->GetViewAccessibility().SetDescription(u"");
   combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &GlanceablesClassroomStudentView::SelectedAssignmentListChanged,
       base::Unretained(this),
@@ -327,7 +327,7 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
 
   assignments_requested_time_ = base::TimeTicks::Now();
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
-  combo_box_view_->SetAccessibleDescription(u"");
+  combo_box_view_->GetViewAccessibility().SetDescription(u"");
 
   auto callback =
       base::BindOnce(&GlanceablesClassroomStudentView::OnGetAssignments,
@@ -386,8 +386,8 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
 
   list_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME, list_name));
-  list_container_view_->SetAccessibleDescription(
-      list_footer_view_->items_count_label());
+  list_container_view_->GetViewAccessibility().SetDescription(
+      *list_footer_view_->items_count_label());
   list_container_view_->NotifyAccessibilityEvent(
       ax::mojom::Event::kChildrenChanged,
       /*send_native_event=*/true);

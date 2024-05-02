@@ -30,6 +30,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -180,7 +181,7 @@ class RecentlyUsedImageButton : public views::ImageButton {
   void SetAccessibilityLabelFromRecentSeaPenImageInfo(
       personalization_app::mojom::RecentSeaPenImageInfoPtr info) {
     SetAccessibleRole(ax::mojom::Role::kListItem);
-    SetAccessibleDescription(l10n_util::GetStringUTF16(
+    GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_IMAGE_LIST_ITEM_DESCRIPTION));
 
     std::u16string query;

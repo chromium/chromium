@@ -1545,16 +1545,24 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void SetAccessibleRole(const ax::mojom::Role role,
                          const std::u16string& role_description);
 
+  // DEPRECATED: Use ViewAccessibility::SetDescription instead.
+  //
   // Sets/gets the accessible description string.
   void SetAccessibleDescription(const std::u16string& description);
-  const std::u16string& GetAccessibleDescription() const;
 
+  // DEPRECATED: Use ViewAccessibility::GetCachedDescription instead.
+  std::u16string GetAccessibleDescription() const;
+
+  // DEPRECATED: Use ViewAccessibility::SetDescription instead.
+  //
   // Sets the accessible description to the specified string and source type.
   // To remove the description and prevent alternatives (such as tooltip text)
   // from being used, set the type to `kAttributeExplicitlyEmpty`
   void SetAccessibleDescription(const std::u16string& description,
                                 ax::mojom::DescriptionFrom description_from);
 
+  // DEPRECATED: Use ViewAccessibility::SetDescription instead.
+  //
   // Sets the accessible description of this view to the accessible name of
   // `describing_view`. Often `describing_view` is a `views::Label`, but any
   // view with an accessible name will work.
@@ -2485,7 +2493,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // property setters, and used to populate the `AXNodeData` associated with
   // this view and provided by `View::GetAccessibleNodeData`.
   std::u16string accessible_name_;
-  std::u16string accessible_description_;
   ax::mojom::Role accessible_role_ = ax::mojom::Role::kUnknown;
 
   // Observers -----------------------------------------------------------------

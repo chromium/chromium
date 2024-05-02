@@ -2211,59 +2211,22 @@ ax::mojom::Role View::GetAccessibleRole() const {
 }
 
 void View::SetAccessibleDescription(const std::u16string& description) {
-  if (description.empty()) {
-    ax_node_data_->RemoveStringAttribute(
-        ax::mojom::StringAttribute::kDescription);
-    ax_node_data_->RemoveIntAttribute(
-        ax::mojom::IntAttribute::kDescriptionFrom);
-    accessible_description_ = description;
-    return;
-  }
-
-  SetAccessibleDescription(description,
-                           ax::mojom::DescriptionFrom::kAriaDescription);
+  GetViewAccessibility().SetDescription(description);
 }
 
 void View::SetAccessibleDescription(
     const std::u16string& description,
     ax::mojom::DescriptionFrom description_from) {
-  // Ensure we have a current `description_from` value. For instance, the
-  // description might still be an empty string, but a view is now indicating
-  // that this is by design by setting
-  // `DescriptionFrom::kAttributeExplicitlyEmpty`.
-  ax_node_data_->SetDescriptionFrom(description_from);
-
-  if (description == accessible_description_) {
-    return;
-  }
-
-  // `AXNodeData::SetDescription` DCHECKs that the description is not empty
-  // unless it has `DescriptionFrom::kAttributeExplicitlyEmpty`.
-  if (!description.empty() ||
-      ax_node_data_->GetDescriptionFrom() ==
-          ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
-    ax_node_data_->SetDescription(description);
-  }
-
-  accessible_description_ = description;
-  OnPropertyChanged(&accessible_description_, kPropertyEffectsNone);
+  GetViewAccessibility().SetDescription(description, description_from);
 }
 
 void View::SetAccessibleDescription(View* describing_view) {
   DCHECK(describing_view);
-  DCHECK_NE(this, describing_view);
-
-  const std::u16string& name = describing_view->GetAccessibleName();
-  DCHECK(!name.empty());
-
-  SetAccessibleDescription(name, ax::mojom::DescriptionFrom::kRelatedElement);
-  ax_node_data_->AddIntListAttribute(
-      ax::mojom::IntListAttribute::kDescribedbyIds,
-      {describing_view->GetViewAccessibility().GetUniqueId().Get()});
+  GetViewAccessibility().SetDescription(*describing_view);
 }
 
-const std::u16string& View::GetAccessibleDescription() const {
-  return accessible_description_;
+std::u16string View::GetAccessibleDescription() const {
+  return GetViewAccessibility().GetCachedDescription();
 }
 
 bool View::HandleAccessibleAction(const ui::AXActionData& action_data) {
