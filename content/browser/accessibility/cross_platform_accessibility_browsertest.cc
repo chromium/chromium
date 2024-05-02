@@ -972,6 +972,11 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
       ui::AXCoordinateSystem::kScreenPhysicalPixels,
       ui::AXClippingBehavior::kUnclipped);
 
+  // Both options have the same height, width and left edge.
+  EXPECT_EQ(first_list_item_bounds.height(), second_list_item_bounds.height());
+  EXPECT_EQ(first_list_item_bounds.width(), second_list_item_bounds.width());
+  EXPECT_EQ(first_list_item_bounds.x(), second_list_item_bounds.x());
+
   // We are making sure that the difference between the select element and the
   // pop up menu options are (an arbitrary) amount of px away. This is
   // to account for differences between platforms. Because for the test the
@@ -983,6 +988,12 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   EXPECT_LT(first_list_item_bounds.y() - select_bounds.y(), 70);
   EXPECT_LT(second_list_item_bounds.y() - select_bounds.y(), 70);
+
+  // The top of the option #2 is option #1's top + the height, within 2 pixels.
+  EXPECT_LT(
+      std::abs(first_list_item_bounds.y() + first_list_item_bounds.height() -
+               second_list_item_bounds.y()),
+      2);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !(BUILDFLAG(IS_IOS)
         // && BUILDFLAG(USE_BLINK))
@@ -1067,6 +1078,25 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_LT(std::abs(first_list_item_bounds.y() - select_bounds.y()), 100);
   EXPECT_LT(std::abs(second_list_item_bounds.y() - select_bounds.y()), 100);
   EXPECT_LT(std::abs(third_list_item_bounds.y() - select_bounds.y()), 100);
+
+  // All three options have the same height, width and left edge.
+  EXPECT_EQ(first_list_item_bounds.height(), second_list_item_bounds.height());
+  EXPECT_EQ(second_list_item_bounds.height(), third_list_item_bounds.height());
+  EXPECT_EQ(first_list_item_bounds.width(), second_list_item_bounds.width());
+  EXPECT_EQ(second_list_item_bounds.width(), third_list_item_bounds.width());
+  EXPECT_EQ(first_list_item_bounds.x(), second_list_item_bounds.x());
+  EXPECT_EQ(second_list_item_bounds.x(), third_list_item_bounds.x());
+
+  // The top of options #2 and #3 are the previous option's top + the height,
+  // within 2 pixels.
+  EXPECT_LE(
+      std::abs(first_list_item_bounds.y() + first_list_item_bounds.height() -
+               second_list_item_bounds.y()),
+      2);
+  EXPECT_LE(
+      std::abs(second_list_item_bounds.y() + third_list_item_bounds.height() -
+               third_list_item_bounds.y()),
+      2);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !(BUILDFLAG(IS_IOS)
         // && BUILDFLAG(USE_BLINK))
