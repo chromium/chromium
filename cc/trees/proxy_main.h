@@ -50,7 +50,6 @@ class CC_EXPORT ProxyMain : public Proxy {
     COMMIT_PIPELINE_STAGE,
   };
 
-  void DidReceiveCompositorFrameAck();
   void BeginMainFrameNotExpectedSoon();
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time);
   void DidCommitAndDrawFrame(int source_frame_number);

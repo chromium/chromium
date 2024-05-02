@@ -208,8 +208,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   bool inside_draw_;
 
-  bool send_compositor_frame_ack_;
-
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   DelayedUniqueNotifier smoothness_priority_expiration_notifier_;

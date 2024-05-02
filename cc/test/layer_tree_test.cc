@@ -383,12 +383,6 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     test_hooks_->DidRequestImplSideInvalidation(this);
   }
 
-  void DidReceiveCompositorFrameAck() override {
-    test_hooks_->WillReceiveCompositorFrameAckOnThread(this);
-    LayerTreeHostImpl::DidReceiveCompositorFrameAck();
-    test_hooks_->DidReceiveCompositorFrameAckOnThread(this);
-  }
-
   void DidPresentCompositorFrame(
       uint32_t presentation_token,
       const viz::FrameTimingDetails& details) override {
@@ -492,10 +486,6 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
     test_hooks_->DidCommitAndDrawFrame();
   }
 
-  void DidReceiveCompositorFrameAck() override {
-    test_hooks_->DidReceiveCompositorFrameAck();
-  }
-
   void DidRunBeginMainFrame() override { test_hooks_->DidRunBeginMainFrame(); }
 
   void DidSubmitCompositorFrame() override {}
@@ -507,7 +497,9 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
   void DidPresentCompositorFrame(
       uint32_t frame_token,
-      const viz::FrameTimingDetails& frame_timing_details) override {}
+      const viz::FrameTimingDetails& frame_timing_details) override {
+    test_hooks_->DidPresentCompositorFrame(frame_token, frame_timing_details);
+  }
 
  private:
   explicit LayerTreeHostClientForTesting(TestHooks* test_hooks)

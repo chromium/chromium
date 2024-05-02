@@ -105,8 +105,6 @@ void LocalLayerContext::DidCommit(int source_frame_number,
 
 void LocalLayerContext::DidCommitAndDrawFrame(int source_frame_number) {}
 
-void LocalLayerContext::DidReceiveCompositorFrameAck() {}
-
 void LocalLayerContext::DidCompletePageScaleAnimation(int source_frame_number) {
 }
 

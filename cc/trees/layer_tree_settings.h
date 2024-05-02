@@ -167,11 +167,6 @@ class CC_EXPORT LayerTreeSettings {
   // the device scale factor.
   bool use_painted_device_scale_factor = false;
 
-  // When true, LayerTreeHostImplClient will be posting a task to call
-  // DidReceiveCompositorFrameAck, used by the Compositor but not the
-  // LayerTreeView.
-  bool send_compositor_frame_ack = true;
-
   // When false, scroll deltas accumulated on the impl thread are rounded to
   // integer values when sent to Blink on commit. This flag should eventually
   // go away and CC should send Blink fractional values:

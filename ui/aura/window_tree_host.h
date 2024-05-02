@@ -431,7 +431,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
                             const gfx::Point& host_location);
 
   // Overridden from CompositorObserver:
-  void OnCompositingEnded(ui::Compositor* compositor) final;
+  void OnCompositingAckDeprecated(ui::Compositor* compositor) final;
   void OnCompositingChildResizing(ui::Compositor* compositor) final;
   void OnFrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) final;

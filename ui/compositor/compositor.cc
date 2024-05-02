@@ -826,9 +826,9 @@ void Compositor::NotifyThroughputTrackerResults(
     ReportMetricsForTracker(pair.first, std::move(pair.second));
 }
 
-void Compositor::DidReceiveCompositorFrameAck() {
+void Compositor::DidReceiveCompositorFrameAckDeprecatedForCompositor() {
   for (auto& observer : observer_list_)
-    observer.OnCompositingEnded(this);
+    observer.OnCompositingAckDeprecated(this);
 }
 
 void Compositor::DidPresentCompositorFrame(

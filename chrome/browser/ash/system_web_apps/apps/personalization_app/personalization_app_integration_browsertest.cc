@@ -176,7 +176,7 @@ class CompositorAnimationWaiter : public ui::CompositorObserver {
     loop.Run();
   }
 
-  void OnCompositingEnded(ui::Compositor* compositor) override {
+  void OnCompositingAckDeprecated(ui::Compositor* compositor) override {
     if (compositing_ended_callback_) {
       std::move(compositing_ended_callback_).Run();
     }

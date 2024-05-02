@@ -591,8 +591,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_image_animation_resync =
       !cmd.HasSwitch(switches::kDisableImageAnimationResync);
 
-  settings.send_compositor_frame_ack = false;
-
   settings.enable_backface_visibility_interop =
       RuntimeEnabledFeatures::BackfaceVisibilityInteropEnabled();
 

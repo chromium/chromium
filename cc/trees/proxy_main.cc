@@ -78,11 +78,6 @@ void ProxyMain::DestroyProxyImplOnImplThread(
   completion_event->Signal();
 }
 
-void ProxyMain::DidReceiveCompositorFrameAck() {
-  DCHECK(IsMainThread());
-  layer_tree_host_->DidReceiveCompositorFrameAck();
-}
-
 void ProxyMain::BeginMainFrameNotExpectedSoon() {
   TRACE_EVENT0("cc", "ProxyMain::BeginMainFrameNotExpectedSoon");
   DCHECK(IsMainThread());

@@ -113,7 +113,6 @@ ProxyImpl::ProxyImpl(
   DCHECK(IsMainThreadBlocked());
 
   host_impl_ = layer_tree_host->CreateLayerTreeHostImpl(this);
-  send_compositor_frame_ack_ = settings->send_compositor_frame_ack;
 
   SchedulerSettings scheduler_settings(settings->ToSchedulerSettings());
   scheduler_settings.main_frame_before_commit_enabled =
@@ -417,11 +416,6 @@ void ProxyImpl::DidReceiveCompositorFrameAckOnImplThread() {
                "ProxyImpl::DidReceiveCompositorFrameAckOnImplThread");
   DCHECK(IsImplThread());
   scheduler_->DidReceiveCompositorFrameAck();
-  if (send_compositor_frame_ack_) {
-    MainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&ProxyMain::DidReceiveCompositorFrameAck,
-                                  proxy_main_frame_sink_bound_weak_ptr_));
-  }
 }
 
 void ProxyImpl::OnCanDrawStateChanged(bool can_draw) {

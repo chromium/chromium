@@ -740,9 +740,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     DCHECK(IsMainThread());
     client_->DidCommitAndDrawFrame(source_frame_number);
   }
-  void DidReceiveCompositorFrameAck() {
+  void DidReceiveCompositorFrameAckDeprecatedForCompositor() {
     DCHECK(IsMainThread());
-    client_->DidReceiveCompositorFrameAck();
+    client_->DidReceiveCompositorFrameAckDeprecatedForCompositor();
   }
   bool UpdateLayers();
   void DidPresentCompositorFrame(

@@ -36,10 +36,12 @@ void PowerEventObserverTestApi::CompositingStarted(ui::Compositor* compositor) {
       compositor, base::TimeTicks());
 }
 
-void PowerEventObserverTestApi::CompositingEnded(ui::Compositor* compositor) {
+void PowerEventObserverTestApi::CompositingAckDeprecated(
+    ui::Compositor* compositor) {
   if (!power_event_observer_->compositor_watcher_.get())
     return;
-  power_event_observer_->compositor_watcher_->OnCompositingEnded(compositor);
+  power_event_observer_->compositor_watcher_->OnCompositingAckDeprecated(
+      compositor);
 }
 
 void PowerEventObserverTestApi::CompositeFrame(ui::Compositor* compositor) {
@@ -49,7 +51,8 @@ void PowerEventObserverTestApi::CompositeFrame(ui::Compositor* compositor) {
       compositor);
   power_event_observer_->compositor_watcher_->OnCompositingStarted(
       compositor, base::TimeTicks());
-  power_event_observer_->compositor_watcher_->OnCompositingEnded(compositor);
+  power_event_observer_->compositor_watcher_->OnCompositingAckDeprecated(
+      compositor);
 }
 
 bool PowerEventObserverTestApi::SimulateCompositorsReadyForSuspend() {

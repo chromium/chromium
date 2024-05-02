@@ -59,7 +59,6 @@ class CC_EXPORT LocalLayerContext : public LayerContext,
                  base::TimeTicks commit_start_time,
                  base::TimeTicks commit_finish_time) override;
   void DidCommitAndDrawFrame(int source_frame_number) override;
-  void DidReceiveCompositorFrameAck() override;
   void DidCompletePageScaleAnimation(int source_frame_number) override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,

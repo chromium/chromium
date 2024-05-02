@@ -404,7 +404,9 @@ class TestCompositorObserver : public CompositorObserver {
     started_ = true;
   }
 
-  void OnCompositingEnded(Compositor* compositor) override { ended_ = true; }
+  void OnCompositingAckDeprecated(Compositor* compositor) override {
+    ended_ = true;
+  }
 
   bool committed_ = false;
   bool started_ = false;

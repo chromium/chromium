@@ -99,7 +99,7 @@ class CompositorWatcher : public ui::CompositorObserver {
     }
     pending_compositing_[compositor].state = CompositingState::kWaitingForEnded;
   }
-  void OnCompositingEnded(ui::Compositor* compositor) override {
+  void OnCompositingAckDeprecated(ui::Compositor* compositor) override {
     if (!pending_compositing_.count(compositor))
       return;
     CompositorInfo& compositor_info = pending_compositing_[compositor];

@@ -92,10 +92,10 @@ TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
   test_api.CompositingDidCommit(compositor);
   observer_->OnLockAnimationsComplete();
 
-  // Verify that CompositingStarted and CompositingEnded observed before
+  // Verify that CompositingStarted and CompositingAckDeprecated observed before
   // CompositingDidCommit are ignored.
   test_api.CompositingStarted(compositor);
-  test_api.CompositingEnded(compositor);
+  test_api.CompositingAckDeprecated(compositor);
   EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
@@ -109,7 +109,7 @@ TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
   EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
-  test_api.CompositingEnded(compositor);
+  test_api.CompositingAckDeprecated(compositor);
   EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 
@@ -256,7 +256,7 @@ TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
   observer_->OnLockAnimationsComplete();
 
   test_api.CompositingStarted(secondary_compositor);
-  test_api.CompositingEnded(secondary_compositor);
+  test_api.CompositingAckDeprecated(secondary_compositor);
 
   EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
   EXPECT_EQ(2, GetNumVisibleCompositors());

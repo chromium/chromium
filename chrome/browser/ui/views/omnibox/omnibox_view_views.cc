@@ -1881,7 +1881,7 @@ void OmniboxViewViews::OnCompositingStarted(ui::Compositor* compositor,
     latency_histogram_state_ = COMPOSITING_STARTED;
 }
 
-void OmniboxViewViews::OnCompositingEnded(ui::Compositor* compositor) {
+void OmniboxViewViews::OnCompositingAckDeprecated(ui::Compositor* compositor) {
   if (latency_histogram_state_ == COMPOSITING_STARTED) {
     DCHECK(!insert_char_time_.is_null());
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency",

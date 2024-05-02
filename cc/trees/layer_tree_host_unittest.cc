@@ -4342,52 +4342,6 @@ class LayerTreeHostTestUninvertibleTransformDoesNotBlockActivation
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostTestUninvertibleTransformDoesNotBlockActivation);
 
-class LayerTreeHostTestNumFramesPending : public LayerTreeHostTest {
- public:
-  void BeginTest() override {
-    frame_ = 0;
-    PostSetNeedsCommitToMainThread();
-  }
-
-  // Round 1: commit + draw
-  // Round 2: commit only (no draw/swap)
-  // Round 3: draw only (no commit)
-
-  void DidCommit() override {
-    int commit = layer_tree_host()->SourceFrameNumber();
-    switch (commit) {
-      case 2:
-        // Round 2 done.
-        EXPECT_EQ(1, frame_);
-        layer_tree_host()->SetNeedsRedrawRect(
-            layer_tree_host()->device_viewport_rect());
-        break;
-    }
-  }
-
-  void DidReceiveCompositorFrameAck() override {
-    int commit = layer_tree_host()->SourceFrameNumber();
-    ++frame_;
-    switch (frame_) {
-      case 1:
-        // Round 1 done.
-        EXPECT_EQ(1, commit);
-        layer_tree_host()->SetNeedsCommit();
-        break;
-      case 2:
-        // Round 3 done.
-        EXPECT_EQ(2, commit);
-        EndTest();
-        break;
-    }
-  }
-
- protected:
-  int frame_;
-};
-
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestNumFramesPending);
-
 // Test for UI Resource management.
 class LayerTreeHostTestUIResource : public LayerTreeHostTest {
  public:
@@ -8441,85 +8395,6 @@ class LayerTreeHostTestHudLayerWithLayerLists : public LayerTreeHostTest {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestHudLayerWithLayerLists);
 
-// Verifies that LayerTreeHostClient does not receive frame acks from a released
-// LayerTreeFrameSink.
-class LayerTreeHostTestDiscardAckAfterRelease : public LayerTreeHostTest {
- protected:
-  void SetupTree() override {
-    scoped_refptr<Layer> root = Layer::Create();
-    root->SetBounds(gfx::Size(10, 10));
-    layer_tree_host()->SetRootLayer(std::move(root));
-    LayerTreeHostTest::SetupTree();
-  }
-
-  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
-
-  void WillReceiveCompositorFrameAckOnThread(
-      LayerTreeHostImpl* host_impl) override {
-    // This method is called before ack is posted to main thread. This ensures
-    // that WillReceiveCompositorFrameAck which we PostTask below will be called
-    // before DidReceiveCompositorFrameAck.
-    MainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&LayerTreeHostTestDiscardAckAfterRelease::
-                                      WillReceiveCompositorFrameAck,
-                                  base::Unretained(this)));
-  }
-
-  void WillReceiveCompositorFrameAck() {
-    switch (layer_tree_host()->SourceFrameNumber()) {
-      case 1:
-        // For the first commit, don't release the LayerTreeFrameSink. We must
-        // receive the ack later on.
-        break;
-      case 2:
-        // Release the LayerTreeFrameSink for the second commit. We'll later
-        // check that the ack is discarded.
-        layer_tree_host()->SetVisible(false);
-        layer_tree_host()->ReleaseLayerTreeFrameSink();
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  void DidReceiveCompositorFrameAckOnThread(
-      LayerTreeHostImpl* host_impl) override {
-    // Since this method is called after ack is posted to main thread, we can be
-    // sure that if the ack is not discarded, it will be definitely received
-    // before we are in CheckFrameAck.
-    MainThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&LayerTreeHostTestDiscardAckAfterRelease::CheckFrameAck,
-                       base::Unretained(this)));
-  }
-
-  void DidReceiveCompositorFrameAck() override { received_ack_ = true; }
-
-  void CheckFrameAck() {
-    switch (layer_tree_host()->SourceFrameNumber()) {
-      case 1:
-        // LayerTreeFrameSink was not released. We must receive the ack.
-        EXPECT_TRUE(received_ack_);
-        // Cause damage so that we draw and swap.
-        layer_tree_host()->root_layer()->SetBackgroundColor(SkColors::kGreen);
-        break;
-      case 2:
-        // LayerTreeFrameSink was released. The ack must be discarded.
-        EXPECT_FALSE(received_ack_);
-        EndTest();
-        break;
-      default:
-        NOTREACHED();
-    }
-    received_ack_ = false;
-  }
-
- private:
-  bool received_ack_ = false;
-};
-
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDiscardAckAfterRelease);
-
 class LayerTreeHostTestImageAnimation : public LayerTreeHostTest {
  public:
   explicit LayerTreeHostTestImageAnimation(
@@ -8836,8 +8711,9 @@ class LayerTreeHostTestNewLocalSurfaceIdForcesDraw : public LayerTreeHostTest {
     layer_tree_host()->root_layer()->SetBounds(gfx::Size(10, 10));
   }
 
-  void DidReceiveCompositorFrameAck() override {
-    switch (layer_tree_host()->SourceFrameNumber()) {
+  void WillSubmitCompositorFrame(LayerTreeHostImpl* host_impl,
+                                 const viz::CompositorFrame& frame) override {
+    switch (frame.metadata.frame_token) {
       case 1:
         GenerateNewLocalSurfaceId();
         PostSetLocalSurfaceIdToMainThread(GetCurrentLocalSurfaceId());
@@ -8852,39 +8728,6 @@ class LayerTreeHostTestNewLocalSurfaceIdForcesDraw : public LayerTreeHostTest {
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestNewLocalSurfaceIdForcesDraw);
-
-// Verifies that DidReceiveCompositorFrameAck does not get sent with PostTask
-// when not needed.
-class DidReceiveCompositorFrameAckNotSentWhenNotNeeded
-    : public LayerTreeHostTest {
- public:
-  DidReceiveCompositorFrameAckNotSentWhenNotNeeded() {}
-
-  void InitializeSettings(LayerTreeSettings* settings) override {
-    settings->send_compositor_frame_ack = false;
-  }
-
-  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
-
-  void DidReceiveCompositorFrameAck() override { ADD_FAILURE(); }
-
-  // DrawLayersOnThread gets called after the conditional call to
-  // DidReceiveCompositorFrameAck, so we wait for it to end the test.
-  void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
-    if (!received_first_frame_) {
-      received_first_frame_ = true;
-      PostSetNeedsCommitToMainThread();
-    } else {
-      EndTest();
-    }
-  }
-
- private:
-  bool received_first_frame_ = false;
-};
-
-SINGLE_AND_MULTI_THREAD_TEST_F(
-    DidReceiveCompositorFrameAckNotSentWhenNotNeeded);
 
 // Confirms that requests to force send RFM are forwarded once (and exactly
 // once) to the RFM observer. Does this by drawing 3 frames and requesting
@@ -9953,7 +9796,9 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
               viz::CompositorFrameTransitionDirective::Type::kSave);
   }
 
-  void DidReceiveCompositorFrameAck() override {
+  void DidPresentCompositorFrame(
+      uint32_t frame_token,
+      const viz::FrameTimingDetails& frame_timing_details) override {
     layer_tree_host()->NotifyTransitionRequestsFinished(
         submitted_sequence_ids_);
     EndTest();
@@ -10546,21 +10391,21 @@ class LayerTreeHostTestDidCommitAndDrawFrame : public LayerTreeHostTest {
 
   void DidCommitAndDrawFrame() override { EXPECT_EQ(0, num_draws_); }
 
-  void DidReceiveCompositorFrameAck() override {
+  void DidReceivePresentationTimeOnThread(
+      LayerTreeHostImpl* host_impl,
+      uint32_t frame_token,
+      const gfx::PresentationFeedback& feedback) override {
     ++num_draws_;
     if (num_draws_ == 2) {
       EndTest();
+    } else {
+      host_impl->SetViewportDamage(gfx::Rect(1, 1));
+      host_impl->RequestImplSideInvalidationForRerasterTiling();
     }
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
     EXPECT_EQ(0, host_impl->active_tree()->source_frame_number());
-  }
-
-  void DidReceiveCompositorFrameAckOnThread(
-      LayerTreeHostImpl* host_impl) override {
-    host_impl->SetViewportDamage(gfx::Rect(1, 1));
-    host_impl->RequestImplSideInvalidationForRerasterTiling();
   }
 
  protected:
