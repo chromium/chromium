@@ -177,6 +177,7 @@ public final class TabGroupSyncLocalObserver {
                 LocalTabGroupId tabGroupId =
                         TabGroupSyncUtils.getLocalTabGroupId(
                                 mTabGroupModelFilter, prevRoot.getRootId());
+                if (tabGroupId == null) return;
                 mRemoteTabGroupMutationHelper.removeTab(tabGroupId, movedTab.getId());
             }
 
@@ -216,7 +217,6 @@ public final class TabGroupSyncLocalObserver {
                 LocalTabGroupId localTabGroupId = new LocalTabGroupId(oldTabGroupId);
                 if (removalReason == DidRemoveTabGroupReason.MERGE
                         || removalReason == DidRemoveTabGroupReason.UNGROUP) {
-                    mRemoteTabGroupMutationHelper.unmapTabGroupId(localTabGroupId);
                     mRemoteTabGroupMutationHelper.removeGroup(localTabGroupId);
                 }
             }

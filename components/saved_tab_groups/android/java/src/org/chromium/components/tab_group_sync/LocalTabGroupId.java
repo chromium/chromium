@@ -42,4 +42,10 @@ public class LocalTabGroupId {
     public int hashCode() {
         return Objects.hash(tabGroupId);
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return tabGroupId.toString();
+    }
 }

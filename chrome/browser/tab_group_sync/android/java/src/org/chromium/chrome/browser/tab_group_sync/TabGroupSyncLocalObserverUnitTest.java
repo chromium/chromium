@@ -278,7 +278,6 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.CLOSE);
-        verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
         verify(mTabGroupSyncService, never()).removeGroup(LOCAL_TAB_GROUP_ID_1);
     }
 
@@ -287,7 +286,6 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.MERGE);
-        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
         verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
     }
 
@@ -296,7 +294,6 @@ public class TabGroupSyncLocalObserverUnitTest {
         mTabGroupModelFilterObserverCaptor
                 .getValue()
                 .didRemoveTabGroup(ROOT_ID_1, TOKEN_1, DidRemoveTabGroupReason.UNGROUP);
-        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
         verify(mTabGroupSyncService).removeGroup(LOCAL_TAB_GROUP_ID_1);
     }
 }
