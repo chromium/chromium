@@ -12,22 +12,21 @@ import org.chromium.base.test.transit.ConditionWaiter.ConditionWait;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A {@link Transition} into a {@link StationFacility}. */
+/** A {@link Transition} into a {@link Facility}. */
 class FacilityCheckIn extends Transition {
     private static final String TAG = "Transit";
 
-    private StationFacility mFacility;
+    private Facility mFacility;
 
     /**
-     * Constructor. FacilityCheckIn is instantiated to enter a {@link StationFacility}.
+     * Constructor. FacilityCheckIn is instantiated to enter a {@link Facility}.
      *
-     * @param facility the {@link StationFacility} to enter.
+     * @param facility the {@link Facility} to enter.
      * @param options the {@link TransitionOptions}.
      * @param trigger the action that triggers the transition into the facility. e.g. clicking a
      *     View.
      */
-    FacilityCheckIn(
-            StationFacility facility, TransitionOptions options, @Nullable Trigger trigger) {
+    FacilityCheckIn(Facility facility, TransitionOptions options, @Nullable Trigger trigger) {
         super(options, trigger);
         mFacility = facility;
     }

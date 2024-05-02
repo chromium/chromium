@@ -7,11 +7,11 @@ package org.chromium.base.test.transit;
 /**
  * A facility representing an item inside a {@link ScrollableFacility} shown on the screen.
  *
- * @param <HostStationT> the type of TransitStation this is scoped to.
+ * @param <HostStationT> the type of host {@link Station} this is scoped to.
  * @param <SelectReturnT> the return type of the |selectHandler|.
  */
-public class ItemOnScreenFacility<HostStationT extends TransitStation, SelectReturnT>
-        extends StationFacility<HostStationT> {
+public class ItemOnScreenFacility<HostStationT extends Station, SelectReturnT>
+        extends Facility<HostStationT> {
 
     protected final ScrollableFacility<HostStationT>.Item<SelectReturnT> mItem;
 

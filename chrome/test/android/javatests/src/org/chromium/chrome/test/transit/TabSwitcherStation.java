@@ -27,7 +27,7 @@ import androidx.annotation.CallSuper;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
@@ -50,7 +50,7 @@ import org.chromium.chrome.test.util.ToolbarTestUtils;
  *   <li>IncognitoTabSwitcherStation
  * </ul>
  */
-public abstract class TabSwitcherStation extends TransitStation {
+public abstract class TabSwitcherStation extends Station {
     public static final ViewElement TOOLBAR =
             sharedViewElement(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR));
     public static final ViewElement TOOLBAR_NEW_TAB_BUTTON =

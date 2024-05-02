@@ -21,9 +21,9 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 import org.chromium.base.test.transit.Elements;
+import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ScrollableFacility;
-import org.chromium.base.test.transit.StationFacility;
-import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -35,9 +35,9 @@ import java.util.concurrent.Callable;
 /**
  * Base class for app menus shown when pressing ("...").
  *
- * @param <HostStationT> the type of TransitStation where this app menu is opened.
+ * @param <HostStationT> the type of host {@link Station} where this app menu is opened.
  */
-public abstract class AppMenuFacility<HostStationT extends TransitStation>
+public abstract class AppMenuFacility<HostStationT extends Station>
         extends ScrollableFacility<HostStationT> {
 
     /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */
@@ -52,15 +52,14 @@ public abstract class AppMenuFacility<HostStationT extends TransitStation>
     }
 
     /** Create a new app menu item which transitions to a |DestinationStationT| when selected. */
-    public <DestinationStationT extends TransitStation>
-            Item<DestinationStationT> newMenuItemToStation(
-                    @IdRes int id, Callable<DestinationStationT> destinationStationFactory) {
+    public <DestinationStationT extends Station> Item<DestinationStationT> newMenuItemToStation(
+            @IdRes int id, Callable<DestinationStationT> destinationStationFactory) {
         return super.newItemToStation(
                 itemViewMatcher(id), itemDataMatcher(id), destinationStationFactory);
     }
 
     /** Create a new app menu item which enters a |EnteredFacilityT| when selected. */
-    public <EnteredFacilityT extends StationFacility<HostStationT>>
+    public <EnteredFacilityT extends Facility<HostStationT>>
             Item<EnteredFacilityT> newMenuItemToFacility(
                     @IdRes int id, Callable<EnteredFacilityT> destinationFacilityFactory) {
         return super.newItemToFacility(

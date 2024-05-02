@@ -20,7 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -138,7 +138,7 @@ public class HubLayoutPublicTransitTest {
         assertFinalDestination(newTabPage);
     }
 
-    private NewTabPageStation pauseAndResumeActivity(TransitStation currentStation) {
+    private NewTabPageStation pauseAndResumeActivity(Station currentStation) {
         NewTabPageStation destination =
                 NewTabPageStation.newBuilder()
                         .withActivityTestRule(sActivityTestRule)

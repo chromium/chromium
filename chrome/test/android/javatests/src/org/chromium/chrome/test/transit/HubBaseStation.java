@@ -24,7 +24,7 @@ import androidx.test.espresso.NoMatchingViewException;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** The base station for Hub, with several panes and a toolbar. */
-public abstract class HubBaseStation extends TransitStation {
+public abstract class HubBaseStation extends Station {
     public static final ViewElement HUB_TOOLBAR = sharedViewElement(withId(R.id.hub_toolbar));
     public static final ViewElement HUB_PANE_HOST = sharedViewElement(withId(R.id.hub_pane_host));
     public static final ViewElement HUB_MENU_BUTTON =

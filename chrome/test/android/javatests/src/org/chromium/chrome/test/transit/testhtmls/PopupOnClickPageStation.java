@@ -5,7 +5,7 @@
 package org.chromium.chrome.test.transit.testhtmls;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.StationFacility;
+import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -63,6 +63,6 @@ public class PopupOnClickPageStation extends PageStation {
      */
     public PopupBlockedMessageFacility clickLinkAndExpectPopupBlockedMessage() {
         PopupBlockedMessageFacility infoBar = new PopupBlockedMessageFacility(this, 1);
-        return StationFacility.enterSync(infoBar, Transition.retryOption(), mLinkToPopup::click);
+        return Facility.enterSync(infoBar, Transition.retryOption(), mLinkToPopup::click);
     }
 }

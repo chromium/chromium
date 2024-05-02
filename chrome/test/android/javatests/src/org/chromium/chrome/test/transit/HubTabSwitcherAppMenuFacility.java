@@ -102,6 +102,6 @@ public class HubTabSwitcherAppMenuFacility extends AppMenuFacility<HubTabSwitche
     }
 
     private HubTabSwitcherListEditorFacility createListEditorFacility() {
-        return new HubTabSwitcherListEditorFacility(mStation, mChromeTabbedActivityTestRule);
+        return new HubTabSwitcherListEditorFacility(mHostStation, mChromeTabbedActivityTestRule);
     }
 }

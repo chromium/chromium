@@ -21,7 +21,7 @@ import android.view.View;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.StationFacility;
+import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
@@ -92,7 +92,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
 
         HubTabSwitcherAppMenuFacility menu = new HubTabSwitcherAppMenuFacility(this, mIsIncognito);
 
-        return StationFacility.enterSync(menu, () -> HUB_MENU_BUTTON.perform(click()));
+        return Facility.enterSync(menu, () -> HUB_MENU_BUTTON.perform(click()));
     }
 
     /**

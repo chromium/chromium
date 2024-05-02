@@ -25,7 +25,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.StationFacility;
+import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.R;
@@ -44,7 +44,7 @@ import java.util.List;
  *
  * <p>Subclass for specific messages types to specify expected title, button text and behavior.
  */
-public class MessageFacility extends StationFacility<PageStation> {
+public class MessageFacility extends Facility<PageStation> {
     public static final Matcher<View> MESSAGE_TITLE_MATCHER = withId(R.id.message_title);
     public static final Matcher<View> MESSAGE_PRIMARY_BUTTON_MATCHER =
             withId(R.id.message_primary_button);
@@ -78,7 +78,8 @@ public class MessageFacility extends StationFacility<PageStation> {
                                     () -> {
                                         MessageDispatcher messageDispatcher =
                                                 MessageDispatcherProvider.from(
-                                                        mStation.mChromeTabbedActivityTestRule
+                                                        mHostStation
+                                                                .mChromeTabbedActivityTestRule
                                                                 .getActivity()
                                                                 .getWindowAndroid());
                                         assert messageDispatcher != null;

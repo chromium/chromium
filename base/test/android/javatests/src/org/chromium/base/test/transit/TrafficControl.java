@@ -10,21 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Keeps track of all existing TransitStations and which one is active.
+ * Keeps track of all existing {@link Station}s and which one is active.
  *
  * <p>Also keeps track of which test is currently running for batched tests.
  */
 public class TrafficControl {
-    private static final List<TransitStation> sAllStations = new ArrayList<>();
+    private static final List<Station> sAllStations = new ArrayList<>();
     private static String sCurrentTestCase;
 
-    private static TransitStation sActiveStation;
+    private static Station sActiveStation;
 
-    static void notifyCreatedStation(TransitStation station) {
+    static void notifyCreatedStation(Station station) {
         sAllStations.add(station);
     }
 
-    static void notifyActiveStationChanged(TransitStation newActiveStation) {
+    static void notifyActiveStationChanged(Station newActiveStation) {
         assert newActiveStation.getPhase() == Phase.ACTIVE : "New active Station must be ACTIVE";
         if (sActiveStation != null) {
             assert sActiveStation.getPhase() != Phase.ACTIVE
@@ -33,11 +33,11 @@ public class TrafficControl {
         sActiveStation = newActiveStation;
     }
 
-    public static List<TransitStation> getAllStations() {
+    public static List<Station> getAllStations() {
         return sAllStations;
     }
 
-    public static TransitStation getActiveStation() {
+    public static Station getActiveStation() {
         return sActiveStation;
     }
 

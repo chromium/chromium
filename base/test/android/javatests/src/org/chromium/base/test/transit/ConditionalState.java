@@ -34,7 +34,7 @@ import java.util.List;
  *
  * <p>Once FINISHED, the ConditionalState does not change state anymore.
  *
- * <p>This is the base class for {@link TransitStation} and {@link StationFacility}.
+ * <p>This is the base class for {@link Station} and {@link Facility}.
  */
 public abstract class ConditionalState {
     @Phase private int mLifecyclePhase = Phase.NEW;
@@ -60,9 +60,9 @@ public abstract class ConditionalState {
     /**
      * Declare the {@link Elements} that define this ConditionalState, such as Views.
      *
-     * <p>Transit-layer {@link TransitStation}s and {@link StationFacility}s should override this
-     * and use the |elements| param to declare what elements need to be waited for for the state to
-     * be considered active.
+     * <p>Transit-layer {@link Station}s and {@link Facility}s should override this and use the
+     * |elements| param to declare what elements need to be waited for for the state to be
+     * considered active.
      *
      * @param elements use the #declare___() methods to describe the Elements that define the state.
      */

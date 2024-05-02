@@ -32,7 +32,7 @@ public class TravelException extends RuntimeException {
 
     /**
      * Factory method for TravelException for an error during a {@link Trip} between {@link
-     * TransitStation}s.
+     * Station}s.
      *
      * @param fromStation the origin station
      * @param toStation the destination station
@@ -40,7 +40,7 @@ public class TravelException extends RuntimeException {
      * @return a new TravelException instance
      */
     public static TravelException newTripException(
-            @Nullable TransitStation fromStation, TransitStation toStation, Throwable cause) {
+            @Nullable Station fromStation, Station toStation, Throwable cause) {
         return newTravelException(
                 "Did not complete transition from "
                         + (fromStation != null ? fromStation.toString() : "<entry point>")
@@ -51,32 +51,30 @@ public class TravelException extends RuntimeException {
 
     /**
      * Factory method for TravelException for an error during a {@link FacilityCheckIn} into a
-     * {@link StationFacility}.
+     * {@link Facility}.
      *
      * @param facility the facility being entered
      * @param cause the root cause
      * @return a new TravelException instance
      */
-    public static TravelException newEnterFacilityException(
-            StationFacility facility, Throwable cause) {
+    public static TravelException newEnterFacilityException(Facility facility, Throwable cause) {
         return newFacilityTransitionException("Did not enter", facility, cause);
     }
 
     /**
      * Factory method for TravelException for an error during a {@link FacilityCheckOut} out of a
-     * {@link StationFacility}.
+     * {@link Facility}.
      *
      * @param facility the facility being exited
      * @param cause the root cause
      * @return a new TravelException instance
      */
-    public static TravelException newExitFacilityException(
-            StationFacility facility, Throwable cause) {
+    public static TravelException newExitFacilityException(Facility facility, Throwable cause) {
         return newFacilityTransitionException("Did not exit", facility, cause);
     }
 
     private static TravelException newFacilityTransitionException(
-            String message, StationFacility facility, Throwable cause) {
+            String message, Facility facility, Throwable cause) {
         return newTravelException(message + " " + facility, cause);
     }
 }

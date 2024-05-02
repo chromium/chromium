@@ -16,23 +16,23 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A {@link Transition} into a {@link TransitStation}, either from another TransitStation or as an
- * entry point.
+ * A {@link Transition} into a {@link Station}, either from another {@link Station} or as an entry
+ * point.
  */
 public class Trip extends Transition {
     private static final String TAG = "Transit";
     private final int mId;
 
-    @Nullable private final TransitStation mOrigin;
-    private final TransitStation mDestination;
+    @Nullable private final Station mOrigin;
+    private final Station mDestination;
 
     private List<ConditionWait> mWaits;
 
     private static int sLastTripId;
 
     private Trip(
-            @Nullable TransitStation origin,
-            TransitStation destination,
+            @Nullable Station origin,
+            Station destination,
             TransitionOptions options,
             Trigger trigger) {
         super(options, trigger);
@@ -42,31 +42,28 @@ public class Trip extends Transition {
     }
 
     /**
-     * Starts a transition from a TransitStation to another (or from no TransitStation if at an
-     * entry point). Runs the transition |trigger|, and blocks until the destination TransitStation
-     * is considered ACTIVE (enter Conditions are fulfilled), the origin TransitStation is
-     * considered FINISHED (exit Conditions are fulfilled), and the Transition's conditions are
-     * fulfilled.
+     * Starts a transition from a {@link Station} to another (or from no {@link Station} if at an
+     * entry point). Runs the transition |trigger|, and blocks until the destination {@link Station}
+     * is considered ACTIVE (enter Conditions are fulfilled), the origin {@link Station} is
+     * considered FINISHED (exit Conditions are fulfilled), and the {@link Trip}'s transition
+     * conditions are fulfilled.
      *
-     * @param origin the StationFacility to depart from, null if at an entry point.
-     * @param destination the StationFacility to arrive at.
+     * @param origin the {@link Facility} to depart from, null if at an entry point.
+     * @param destination the {@link Facility} to arrive at.
      * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the TransitStation entered.
-     * @param <T> the type of TransitStation entered.
+     * @return the destination {@link Station}, now ACTIVE.
+     * @param <T> the type of the destination {@link Station}.
      */
-    public static <T extends TransitStation> T travelSync(
-            @Nullable TransitStation origin, T destination, Trigger trigger) {
+    public static <T extends Station> T travelSync(
+            @Nullable Station origin, T destination, Trigger trigger) {
         Trip trip = new Trip(origin, destination, TransitionOptions.DEFAULT, trigger);
         trip.travelSyncInternal();
         return destination;
     }
 
     /** Version of #travelSync() with extra TransitionOptions. */
-    public static <T extends TransitStation> T travelSync(
-            @Nullable TransitStation origin,
-            T destination,
-            TransitionOptions options,
-            Trigger trigger) {
+    public static <T extends Station> T travelSync(
+            @Nullable Station origin, T destination, TransitionOptions options, Trigger trigger) {
         Trip trip = new Trip(origin, destination, options, trigger);
         trip.travelSyncInternal();
         return destination;
@@ -143,9 +140,7 @@ public class Trip extends Transition {
     }
 
     private static ArrayList<ConditionWait> calculateConditionWaits(
-            @Nullable TransitStation origin,
-            TransitStation destination,
-            List<Condition> transitionConditions) {
+            @Nullable Station origin, Station destination, List<Condition> transitionConditions) {
         ArrayList<ConditionWait> waits = new ArrayList<>();
 
         Elements originElements =

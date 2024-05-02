@@ -5,7 +5,7 @@
 package org.chromium.chrome.test.transit;
 
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
-import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -47,7 +47,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
         return startBatched(batchedRule, this::startOnBlankPage);
     }
 
-    private <T extends TransitStation> T startBatched(
+    private <T extends Station> T startBatched(
             BatchedPublicTransitRule<T> batchedRule, Callable<T> entryPointCallable) {
         mActivityTestRule.setFinishActivity(false);
         T station = batchedRule.getHomeStation();

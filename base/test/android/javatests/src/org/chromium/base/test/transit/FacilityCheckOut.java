@@ -13,22 +13,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** A {@link Transition} out of a {@link StationFacility}. */
+/** A {@link Transition} out of a {@link Facility}. */
 class FacilityCheckOut extends Transition {
     private static final String TAG = "Transit";
 
-    private StationFacility mFacility;
+    private Facility mFacility;
 
     /**
-     * Constructor. FacilityCheckOut is instantiated to leave a {@link StationFacility}.
+     * Constructor. FacilityCheckOut is instantiated to leave a {@link Facility}.
      *
-     * @param facility the {@link StationFacility} to leave.
+     * @param facility the {@link Facility} to leave.
      * @param options the {@link TransitionOptions}.
      * @param trigger the action that triggers the transition out of the facility. e.g. clicking a
      *     View.
      */
-    FacilityCheckOut(
-            StationFacility facility, TransitionOptions options, @Nullable Trigger trigger) {
+    FacilityCheckOut(Facility facility, TransitionOptions options, @Nullable Trigger trigger) {
         super(options, trigger);
         mFacility = facility;
     }

@@ -13,12 +13,12 @@ import org.junit.runners.model.Statement;
 /**
  * Test rule for batched Public Transit tests.
  *
- * <p>Batched PublicTransit tests need to start and end in the same type of TransitStation, which is
- * called the home station.
+ * <p>Batched PublicTransit tests need to start and end in the same type of {@link Station}, which
+ * is called the home station.
  *
- * @param <T> The Class of the home {@link TransitStation}
+ * @param <T> The Class of the home {@link Station}
  */
-public class BatchedPublicTransitRule<T extends TransitStation> implements TestRule {
+public class BatchedPublicTransitRule<T extends Station> implements TestRule {
     private final Class<T> mHomeStationType;
     private final boolean mExpectResetByTest;
 

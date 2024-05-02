@@ -7,7 +7,7 @@ package org.chromium.chrome.test.transit;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 
 /**
@@ -15,7 +15,7 @@ import org.chromium.base.test.transit.ViewElement;
  *
  * <p>TODO(crbug.com/328277614): This is a stub; add more elements and methods.
  */
-public class SettingsStation extends TransitStation {
+public class SettingsStation extends Station {
     @Override
     public void declareElements(Elements.Builder elements) {
         elements.declareView(ViewElement.sharedViewElement(withText("Search engine")));

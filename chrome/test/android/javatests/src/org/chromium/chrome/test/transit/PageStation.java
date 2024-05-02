@@ -15,8 +15,8 @@ import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.StationFacility;
-import org.chromium.base.test.transit.TransitStation;
+import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
@@ -39,7 +39,7 @@ import java.util.function.Function;
  * <p>Contains extra configurable Conditions such as waiting for a tab to be created, selected, have
  * the expected title, etc.
  */
-public class PageStation extends TransitStation {
+public class PageStation extends Station {
 
     /**
      * Builder for all PageStation subclasses.
@@ -300,7 +300,7 @@ public class PageStation extends TransitStation {
         recheckActiveConditions();
 
         TabSwitcherActionMenuFacility menu = new TabSwitcherActionMenuFacility(this);
-        return StationFacility.enterSync(menu, () -> TAB_SWITCHER_BUTTON.perform(longClick()));
+        return Facility.enterSync(menu, () -> TAB_SWITCHER_BUTTON.perform(longClick()));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
@@ -309,7 +309,7 @@ public class PageStation extends TransitStation {
 
         PageAppMenuFacility menu = new PageAppMenuFacility(this);
 
-        return StationFacility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
+        return Facility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */

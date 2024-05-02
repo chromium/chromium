@@ -40,10 +40,10 @@ public class PopupBlockedMessageFacility extends MessageFacility {
     public PageStation clickAlwaysAllow() {
         PageStation popupPage =
                 PageStation.newPageStationBuilder()
-                        .initFrom(mStation)
+                        .initFrom(mHostStation)
                         .withIsOpeningTab(true)
                         .withIsSelectingTab(true)
                         .build();
-        return Trip.travelSync(mStation, popupPage, () -> ALWAYS_SHOW_BUTTON.perform(click()));
+        return Trip.travelSync(mHostStation, popupPage, () -> ALWAYS_SHOW_BUTTON.perform(click()));
     }
 }

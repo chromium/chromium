@@ -10,12 +10,12 @@ with public transit routes to navigate the app using shared code, as opposed to
 each test driving its private car (writing its own private code) to set up the
 test.
 
-A Public Transit test moves around the app by going from `TransitStation` to
-`TransitStation`, and the stations are connected by routes (transition methods).
-`TransitStations` are marked by `Elements`, which are recognizable features of
-the destination station (features such as Android Views), which the test takes
-as evidence that it has arrived and is ready to perform any test-specific
-operation, checking or further navigation.
+A Public Transit test moves around the app by going from `Station` to `Station`,
+and the stations are connected by routes (transition methods). `Stations` are
+marked by `Elements`, which are recognizable features of the destination station
+(features such as Android Views), which the test takes as evidence that it has
+arrived and is ready to perform any test-specific operation, checking or further
+navigation.
 
 ### Structure and layers
 
@@ -24,7 +24,7 @@ Public Transit is structured as follows:
 |Layer|Contents|File names|Location|Width (how many files)
 |-|-|-|-|-|
 |Test Layer|Instrumentation test classes|`*Test.java`|`//chrome/**/javatests`|wide|
-|Transit Layer|Concrete `TransitStations`, `StationFacilities`|`*Station.java`, `*Condition.java`, etc.|`//chrome/test/android/javatests`|wide|
+|Transit Layer|Concrete `Stations`, `Facilities`|`*Station.java`, `*Condition.java`, etc.|`//chrome/test/android/javatests`|wide|
 |Framework Layer|Public Transit classes|All classes with package `org.chromium.base.test.transit.*`|`//base/test`|narrow|
 
 This directory (//base/test/.../base/test/transit) contains the Framework Layer.
@@ -49,9 +49,9 @@ Public Transit is based on the concepts of `ConditionalStates`, `Conditions` and
 
 A transition is considered done when:
 * All **enter Conditions** of a `ConditionalState` being entered are fulfilled
-  * When moving between `TransitStations` or entering a `StationFacility`
+  * When moving between `Stations` or entering a `Facility`
 * All **exit Conditions** of a `ConditionalState` being exited are fulfilled
-  * When moving between `TransitStations` or leaving a `StationFacility`
+  * When moving between `Stations` or leaving a `Facility`
 * All extra **transition Conditions** specific to the transition are fulfilled
   * Most transitions don't need to add extra special Conditions.
 
@@ -94,27 +94,26 @@ Transit Layer:
 ## Classes and concepts
 
 
-### TransitStations
+### Stations
 
-A **`TransitStation`** represents one of the app's "screens", that is, a full
-(or mostly full) window view. Only one `TransitStation` can be active at any
-time.
+A **`Station`** represents one of the app's "screens", that is, a full (or
+mostly full) window view. Only one `Station` can be active at any time.
 
-For each screen in the app, a concrete implementation of `TransitStation` should
-be created in the Transit Layer, implementing:
+For each screen in the app, a concrete implementation of `Station` should be
+created in the Transit Layer, implementing:
 
 * **`declareElements()`** declaring the `Views` and other enter/exit conditions
-  define this `TransitStation`.
-* **transition methods** to travel to other `TransitStations` or to enter
-  `StationFacilities`. These methods are synchronous and return a handle to the
-  entered `ConditionalState` only after the transition is done and the new
+  define this `Station`.
+* **transition methods** to travel to other `Stations` or to enter `Facilities`.
+  These methods are synchronous and return a handle to the entered
+  `ConditionalState` only after the transition is done and the new
   `ConditionalState` becomes `ACTIVE`.
 
-Example of a concrete `TransitStation`:
+Example of a concrete `Station`:
 
 ```
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
-public class TabSwitcherStation extends TransitStation {
+public class TabSwitcherStation extends Station {
     public static final ViewElement NEW_TAB_BUTTON =
             viewElement(withId(R.id.new_tab_button));
     public static final ViewElement INCOGNITO_TOGGLE_TABS =
@@ -140,30 +139,29 @@ public class TabSwitcherStation extends TransitStation {
 ```
 
 
-### StationsFacilities
+### Facilities
 
-A **`StationFacility`** represents things like pop-up menus, dialogs or messages
-that are scoped to one of the app's "screens".
+A **`Facility`** represents things like pop-up menus, dialogs or messages that
+are scoped to one of the app's "screens".
 
-Multiple `StationFacilities` may be active at one time besides the active
-TransitStation that contains them.
+Multiple `Facilities` may be active at one time besides the active Station that
+contains them.
 
-As with `TransitStations`, concrete, app-specific implementations of
-StationFacility should be created in the Transit Layer overriding
-**`declareElements()`** and **transition methods**.
+As with `Stations`, concrete, app-specific implementations of Facility should be
+created in the Transit Layer overriding **`declareElements()`** and **transition
+methods**.
 
 
 ### ConditionalState
 
-Both `TransitStation` and `StationFacility` are **`ConditionalStates`**, which
-means they declare enter and exit conditions as `Elements` and have a linear
-lifecycle:
+Both `Station` and `Facility` are **`ConditionalStates`**, which means they
+declare enter and exit conditions as `Elements` and have a linear lifecycle:
 
 `NEW` -> `TRANSITIONING_TO` -> `ACTIVE` -> `TRANSITIONING_FROM` -> `FINISHED`
 
 Once `FINISHED`, a `ConditionalState` should not be navigated to anymore. If a
 test comes back to a previous screen, it should be represented by a new
-`TransitStation`.
+`Station`.
 
 
 ### Condition
@@ -247,8 +245,8 @@ class PageInteractableCondition extends UiThreadCondition {
 ### Transitions
 
 From the point of view of the Test Layer, transitions methods are blocking. When
-a `TransitStation` or `StationFacility` is returned by one of those methods, it
-is always `ACTIVE` and can be immediately acted upon without further waiting.
+a `Station` or `Facility` is returned by one of those methods, it is always
+`ACTIVE` and can be immediately acted upon without further waiting.
 
 Code in the Test Layer contains no explicit waits; the waits are in the
 Framework Layer.
@@ -265,12 +263,12 @@ public void testOpenTabSwitcher() {
 }
 ```
 
-Transitions between `TransitStations` are done by calling `Trip.travelSync()`.
+Transitions between `Stations` are done by calling `Trip.travelSync()`.
 
-Transitions into and out of `StationFacilities` are done by calling
-`stationFacility.enterSync()` or `stationFacility.leaveSync()`. If the app moves
-to another `TransitStation`, any active `StationFacilities` have their exit
-conditions added to the transition conditions.
+Transitions into and out of `Facilities` are done by calling
+`Facility.enterSync()` or `Facility.leaveSync()`. If the app moves to another
+`Station`, any active `Facilities` have their exit conditions added to the
+transition conditions.
 
 
 ## Workflow
@@ -285,13 +283,12 @@ navigation graph - need to be reflected in the Transit Layer.
 
 ### The Transit Layer cohesion
 
-The Transit Layer is a directed graph of `TransitStations`. Transit Layer
-EntryPoints classes provide the entry points into the graph.
+The Transit Layer is a directed graph of `Stations`. Transit Layer EntryPoints
+classes provide the entry points into the graph.
 
-There should not be multiple `TransitStations` that represent the same state,
-but different variations of the same screen may be modeled as different
-`TransitStations`. The cohesion of this graph is important to maximize code
-reuse.
+There should not be multiple `Stations` that represent the same state, but
+different variations of the same screen may be modeled as different `Stations`.
+The cohesion of this graph is important to maximize code reuse.
 
 
 ### Partially Public Transit tests
@@ -310,9 +307,9 @@ as possible and continue on foot.
 
 ### Ownership of the Transit Layer
 
-The Chrome-specific `TransitStations`, `StationFacilities` and `Conditions` that
-comprise the Transit Layer should be owned by the same team responsible for the
-related production code.
+The Chrome-specific `Stations`, `Facilities` and `Conditions` that comprise the
+Transit Layer should be owned by the same team responsible for the related
+production code.
 
 The exception is the core of the Transit Layer, for example `PageStation`, which
 is not owned by specific teams, and will be owned by Clank Build/Code Health.
@@ -323,8 +320,8 @@ is not owned by specific teams, and will be owned by Clank Build/Code Health.
 
 ### Batching {#batching}
 
-It is recommended to batch PublicTransit tests to reduce runtime and save
-CQ/CI resources.
+It is recommended to batch PublicTransit tests to reduce runtime and save CQ/CI
+resources.
 
 ##### How to batch a Public Transit test
 
@@ -390,5 +387,5 @@ debugging:
 ### Back Button Behavior {#backbutton}
 
 A transition triggered by the back button is just like any other transition
-method declared in the `TransitStation` or `StationFacility`. Use
-`t -> Espresso.pressBack()` as a trigger.
+method declared in the `Station` or `Facility`. Use `t -> Espresso.pressBack()`
+as a trigger.
