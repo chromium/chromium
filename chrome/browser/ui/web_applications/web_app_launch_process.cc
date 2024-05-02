@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/values_equivalent.h"
@@ -133,9 +135,17 @@ content::WebContents* WebAppLaunchProcess::Run() {
                   << params_->app_id;
   }
 #else
-  // TODO(dmurph): Figure out why this is failing. https://crbug.com/2546057
-  DCHECK(registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id))
-      << launch_url.spec();
+  // TODO(crbug.com/338406726): Figure out why this is failing. If no longer
+  // failing, then we can reject the launch by returning a nullptr.
+  if (!registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id)) {
+    SCOPED_CRASH_KEY_STRING256("crbug338406726", "launch_url",
+                               launch_url.spec());
+    SCOPED_CRASH_KEY_STRING256("crbug338406726", "app_scope",
+                               web_app_->scope().spec());
+    base::debug::DumpWithoutCrashing();
+    DCHECK(false) << "Url " << launch_url.spec() << " not in scope for app "
+                  << params_->app_id;
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
