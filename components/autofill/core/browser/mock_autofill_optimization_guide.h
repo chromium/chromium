@@ -23,6 +23,10 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               OnDidParseForm,
               (const FormStructure&, const PersonalDataManager*),
               (override));
+  MOCK_METHOD(CreditCardCategoryBenefit::BenefitCategory,
+              AttemptToGetEligibleCreditCardBenefitCategory,
+              (std::string_view issuer_id, const url::Origin& origin),
+              (const override));
   MOCK_METHOD(bool,
               ShouldBlockSingleFieldSuggestions,
               (const GURL&, AutofillField*),
@@ -30,10 +34,6 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
   MOCK_METHOD(bool,
               ShouldBlockFormFieldSuggestion,
               (const GURL&, const CreditCard&),
-              (const override));
-  MOCK_METHOD(CreditCardCategoryBenefit::BenefitCategory,
-              AttemptToGetEligibleCreditCardBenefitCategory,
-              (std::string_view issuer_id, const url::Origin& origin),
               (const override));
 };
 
