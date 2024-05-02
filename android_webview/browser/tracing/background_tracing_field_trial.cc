@@ -70,6 +70,8 @@ bool MaybeSetupWebViewOnlyTracingFromFieldTrial() {
     if (!tracing::SetBackgroundTracingOutputPath()) {
       return false;
     }
+  } else if (!tracing::ShouldAnonymizeFieldTracing()) {
+    data_filtering = BackgroundTracingManager::NO_DATA_FILTERING;
   }
 
   auto& manager = BackgroundTracingManager::GetInstance();
