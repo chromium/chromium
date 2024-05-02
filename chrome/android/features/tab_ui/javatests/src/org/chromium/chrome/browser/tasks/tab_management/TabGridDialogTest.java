@@ -127,7 +127,12 @@ import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -138,6 +143,7 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -151,6 +157,7 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /** End-to-end tests for TabGridDialog component. */
@@ -363,6 +370,77 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
+    }
+
+    @Test
+    @MediumTest
+    public void testAddTabHidesDialog() {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        // Open dialog from tab switcher and verify dialog is showing correct content.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+
+        // Add a tab to hide the group. Any foreground launch type will also hide the tab switcher
+        // so use a background one to make testing easier.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab parentTab = cta.getTabModelSelector().getModel(false).getTabAt(0);
+                    cta.getCurrentTabCreator()
+                            .createNewTab(
+                                    new LoadUrlParams("about:blank"),
+                                    "About title",
+                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                                    parentTab,
+                                    TabModel.INVALID_TAB_INDEX);
+                });
+        waitForDialogHidingAnimationInTabSwitcher(cta);
+
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    public void testAddTabSkipsHideDialogForSync() {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        // Open dialog from tab switcher and verify dialog is showing correct content.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+
+        // Add a tab to hide the group.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelSelector selector = cta.getTabModelSelector();
+                    Tab destinationTab = selector.getModel(false).getTabAt(0);
+                    Tab tab =
+                            cta.getCurrentTabCreator()
+                                    .createNewTab(
+                                            new LoadUrlParams("about:blank"),
+                                            "About title",
+                                            TabLaunchType.FROM_SYNC_BACKGROUND,
+                                            null,
+                                            TabModel.INVALID_TAB_INDEX);
+                    ((TabGroupModelFilter)
+                                    selector.getTabModelFilterProvider().getTabModelFilter(false))
+                            .mergeListOfTabsToGroup(
+                                    List.of(tab),
+                                    destinationTab,
+                                    /* isSameGroup= */ false,
+                                    /* notify= */ false);
+                });
+        CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
+        verifyShowingDialog(cta, 3, null);
     }
 
     @Test

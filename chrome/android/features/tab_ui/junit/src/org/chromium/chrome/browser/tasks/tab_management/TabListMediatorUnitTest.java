@@ -1189,6 +1189,53 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void tabMergeIntoGroup_Dialog() {
+        createTabGroup(List.of(mTab1), TAB1_ID, TAB_GROUP_ID);
+
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(Arrays.asList(mTab1)), false);
+
+        assertThat(mModel.size(), equalTo(1));
+        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
+
+        createTabGroup(List.of(mTab1, mTab2), TAB1_ID, TAB_GROUP_ID);
+
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB1_ID)).thenReturn(TAB1_ID);
+        mMediatorTabGroupModelFilterObserver.didMergeTabToGroup(mTab2, TAB1_ID);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
+        assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModel.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+
+        verify(mTabGridDialogHandler).updateDialogContent(TAB1_ID);
+    }
+
+    @Test
+    public void tabMergeIntoGroup_Dialog_NoOp() {
+        createTabGroup(List.of(mTab1), TAB1_ID, TAB_GROUP_ID);
+
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(Arrays.asList(mTab1)), false);
+
+        assertThat(mModel.size(), equalTo(1));
+        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
+
+        createTabGroup(List.of(mTab2), TAB2_ID, new Token(7, 9));
+
+        mMediatorTabGroupModelFilterObserver.didMergeTabToGroup(mTab2, TAB2_ID);
+
+        assertThat(mModel.size(), equalTo(1));
+        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB1_ID));
+        assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
+
+        verify(mTabGridDialogHandler, never()).updateDialogContent(TAB1_ID);
+    }
+
+    @Test
     public void tabMoveOutOfGroup_GTS_Moved_Tab_Selected() {
         // Assume that two tabs are in the same group before ungroup.
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab2));

@@ -584,7 +584,7 @@ class TabListMediator {
                         return;
                     }
 
-                    // For the grid dialog maintain order.
+                    // For the grid dialog or tab strip maintain order.
                     int curPosition = mModel.indexFromId(movedTab.getId());
 
                     if (!isValidMovePosition(curPosition)) return;
@@ -605,6 +605,7 @@ class TabListMediator {
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
                     if (!mVisible) return;
                     assert !(mActionsOnAllRelatedTabs && mTabGridDialogHandler != null);
+
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
                     Tab previousGroupTab = filter.getTabAt(prevFilterIndex);
@@ -655,64 +656,89 @@ class TabListMediator {
 
                 @Override
                 public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
-                    if (!mVisible || !mActionsOnAllRelatedTabs) return;
+                    if (!mVisible) return;
 
-                    // When merging Tab 1 to Tab 2 as a new group, or merging Tab 1 to an
-                    // existing group 1, we can always find the current indexes of 1) Tab 1
-                    // and 2) Tab 2 or group 1 in the model. The method
-                    // getIndexesForMergeToGroup() returns these two ids by using Tab 1's
-                    // related Tabs, which have been updated in
-                    // TabModel.
-                    TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+                    TabGroupModelFilter filter =
+                            (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
                     TabModel tabModel = filter.getTabModel();
-                    List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
-                    Pair<Integer, Integer> positions =
-                            mModel.getIndexesForMergeToGroup(tabModel, relatedTabs);
-                    int srcIndex = positions.second;
-                    int desIndex = positions.first;
+                    if (mActionsOnAllRelatedTabs) {
+                        // When merging Tab 1 to Tab 2 as a new group, or merging Tab 1 to an
+                        // existing group 1, we can always find the current indexes of 1) Tab 1
+                        // and 2) Tab 2 or group 1 in the model. The method
+                        // getIndexesForMergeToGroup() returns these two ids by using Tab 1's
+                        // related Tabs, which have been updated in
+                        // TabModel.
+                        List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
+                        Pair<Integer, Integer> positions =
+                                mModel.getIndexesForMergeToGroup(tabModel, relatedTabs);
+                        int srcIndex = positions.second;
+                        int desIndex = positions.first;
 
-                    // If only the desIndex is valid then the movedTab was already part of
-                    // another group and is not present in the model. This happens only during
-                    // an undo.
-                    // Refresh just the desIndex tab card in the model. The removal of the
-                    // movedTab from its previous group was already handled by
-                    // didMoveTabOutOfGroup.
-                    if (desIndex != TabModel.INVALID_TAB_INDEX
-                            && srcIndex == TabModel.INVALID_TAB_INDEX) {
-                        boolean isSelected = false;
-                        for (Tab tab : relatedTabs) {
-                            isSelected |= tab == TabModelUtils.getCurrentTab(tabModel);
+                        // If only the desIndex is valid then the movedTab was already part of
+                        // another group and is not present in the model. This happens only during
+                        // an undo.
+                        // Refresh just the desIndex tab card in the model. The removal of the
+                        // movedTab from its previous group was already handled by
+                        // didMoveTabOutOfGroup.
+                        if (desIndex != TabModel.INVALID_TAB_INDEX
+                                && srcIndex == TabModel.INVALID_TAB_INDEX) {
+                            boolean isSelected = false;
+                            for (Tab tab : relatedTabs) {
+                                isSelected |= tab == TabModelUtils.getCurrentTab(tabModel);
+                            }
+                            Tab tab =
+                                    TabModelUtils.getTabById(
+                                            tabModel,
+                                            mModel.get(desIndex).model.get(TabProperties.TAB_ID));
+                            updateTab(desIndex, PseudoTab.fromTab(tab), isSelected, false, false);
+                            return;
                         }
-                        Tab tab =
-                                TabModelUtils.getTabById(
-                                        tabModel,
-                                        mModel.get(desIndex).model.get(TabProperties.TAB_ID));
-                        updateTab(desIndex, PseudoTab.fromTab(tab), isSelected, false, false);
-                        return;
-                    }
 
-                    if (!isValidMovePosition(srcIndex) || !isValidMovePosition(desIndex)) return;
+                        if (!isValidMovePosition(srcIndex) || !isValidMovePosition(desIndex)) {
+                            return;
+                        }
 
-                    Tab newSelectedTabInMergedGroup = null;
-                    mModel.removeAt(srcIndex);
-                    if (getRelatedTabsForId(movedTab.getId()).size() == 2) {
-                        // When users use drop-to-merge to create a group.
-                        RecordUserAction.record("TabGroup.Created.DropToMerge");
+                        Tab newSelectedTabInMergedGroup = null;
+                        mModel.removeAt(srcIndex);
+                        if (getRelatedTabsForId(movedTab.getId()).size() == 2) {
+                            // When users use drop-to-merge to create a group.
+                            RecordUserAction.record("TabGroup.Created.DropToMerge");
+                        } else {
+                            RecordUserAction.record("TabGrid.Drag.DropToMerge");
+                        }
+                        desIndex =
+                                srcIndex > desIndex ? desIndex : mModel.getTabIndexBefore(desIndex);
+                        newSelectedTabInMergedGroup =
+                                filter.getTabAt(mModel.getTabCardCountsBefore(desIndex));
+
+                        boolean isSelected =
+                                TabModelUtils.getCurrentTab(tabModel)
+                                        == newSelectedTabInMergedGroup;
+                        updateTab(
+                                desIndex,
+                                PseudoTab.fromTab(newSelectedTabInMergedGroup),
+                                isSelected,
+                                true,
+                                false);
                     } else {
-                        RecordUserAction.record("TabGrid.Drag.DropToMerge");
-                    }
-                    desIndex = srcIndex > desIndex ? desIndex : mModel.getTabIndexBefore(desIndex);
-                    newSelectedTabInMergedGroup =
-                            filter.getTabAt(mModel.getTabCardCountsBefore(desIndex));
+                        // If the model is empty we can't check if the added tab is part of the
+                        // current group. Assume it isn't since a group state with 0 tab should be
+                        // impossible.
+                        if (mModel.size() == 0) return;
 
-                    boolean isSelected =
-                            TabModelUtils.getCurrentTab(tabModel) == newSelectedTabInMergedGroup;
-                    updateTab(
-                            desIndex,
-                            PseudoTab.fromTab(newSelectedTabInMergedGroup),
-                            isSelected,
-                            true,
-                            false);
+                        // If the added tab is part of the group add it and update the dialog.
+                        int firstTabId = mModel.get(0).model.get(TabProperties.TAB_ID);
+                        Tab firstTab = TabModelUtils.getTabById(tabModel, firstTabId);
+                        if (firstTab == null || firstTab.getRootId() != movedTab.getRootId()) {
+                            return;
+                        }
+
+                        onTabAdded(movedTab, /* onlyShowRelatedTabs= */ true);
+                        if (mTabGridDialogHandler != null) {
+                            mTabGridDialogHandler.updateDialogContent(
+                                    filter.getGroupLastShownTabId(firstTab.getRootId()));
+                        }
+                    }
                 }
 
                 @Override

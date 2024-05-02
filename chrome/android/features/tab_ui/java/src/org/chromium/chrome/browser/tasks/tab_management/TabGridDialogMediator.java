@@ -197,6 +197,13 @@ public class TabGridDialogMediator
                         if (filter == null || !filter.isTabModelRestored()) {
                             return;
                         }
+
+                        // For tab group sync a tab can be added without needing to close the tab
+                        // grid dialog. The UI updates are driven from TabListMediator's
+                        // TabGroupModelFilterObserver's didMergeTabToGroup implementation.
+                        if (type == TabLaunchType.FROM_SYNC_BACKGROUND) {
+                            return;
+                        }
                         hideDialog(false);
                     }
 
@@ -386,7 +393,9 @@ public class TabGridDialogMediator
     }
 
     void hideDialog(boolean showAnimation) {
-        if (!mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE)) return;
+        if (!mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE)) {
+            return;
+        }
 
         if (mModel.get(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE)) {
             // TODO(b/333776074): Close the ShareSheet without causing a crash at accessibility
