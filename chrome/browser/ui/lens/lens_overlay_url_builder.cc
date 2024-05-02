@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 
 #include "base/base64url.h"
+#include "chrome/browser/browser_process.h"
 #include "components/lens/lens_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -35,6 +36,9 @@ inline constexpr char kModeParameterKey[] = "udm";
 inline constexpr char kUnimodalModeParameterValue[] = "26";
 inline constexpr char kMultimodalModeParameterValue[] = "24";
 
+// Query parameter for the language code.
+inline constexpr char kLanguageCodeParameterKey[] = "hl";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -55,6 +59,9 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
       new_url, kSearchCompanionParameterKey, kSearchCompanionParameterValue);
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kAmbientParameterKey, kAmbientParameterValue);
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, kLanguageCodeParameterKey,
+      g_browser_process->GetApplicationLocale());
   return new_url;
 }
 
@@ -121,6 +128,8 @@ bool HasCommonSearchQueryParameters(const GURL& url) {
   return net::GetValueForKeyInQuery(url, kSearchCompanionParameterKey,
                                     &temp_output_string) &&
          net::GetValueForKeyInQuery(url, kAmbientParameterKey,
+                                    &temp_output_string) &&
+         net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
                                     &temp_output_string);
 }
 

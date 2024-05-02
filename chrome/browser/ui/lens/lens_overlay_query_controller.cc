@@ -168,6 +168,8 @@ LensOverlayQueryController::CreateClientContext() {
   context.set_platform(lens::WEB);
   context.mutable_rendering_context()->set_rendering_environment(
       lens::RENDERING_ENV_LENS_OVERLAY);
+  context.mutable_locale_context()->set_language(
+      g_browser_process->GetApplicationLocale());
   return context;
 }
 

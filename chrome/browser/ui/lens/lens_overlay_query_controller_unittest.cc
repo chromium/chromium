@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -35,6 +36,9 @@ constexpr char kTestServerSessionId[] = "server_session_id";
 
 // The fake api key to use for fetching requests.
 constexpr char kTestApiKey[] = "test_api_key";
+
+// The language to use.
+constexpr char kLanguage[] = "en-US";
 
 class FakeEndpointFetcher : public EndpointFetcher {
  public:
@@ -137,6 +141,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
   void SetUp() override {
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();
+    g_browser_process->SetApplicationLocale(kLanguage);
   }
 };
 
@@ -215,6 +220,11 @@ TEST_F(LensOverlayQueryControllerTest,
                 .image_metadata()
                 .height(),
             100);
+  ASSERT_EQ(query_controller.sent_objects_request_.request_context()
+                .client_context()
+                .locale_context()
+                .language(),
+            kLanguage);
   ASSERT_TRUE(url_response_future.Get().has_url());
   ASSERT_EQ(interaction_data_response_future.Get().suggest_signals(),
             kTestSuggestSignals);
