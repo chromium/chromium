@@ -135,10 +135,13 @@ if (is_android && enable_java_templates &&
   android_assets("v8_snapshot_assets") {
     if (v8_use_external_startup_data) {
       disable_compression = true
+      sources = []
+      deps = []
       if (use_v8_context_snapshot) {
-        deps = [ "//tools/v8_context_snapshot:v8_context_snapshot" ]
-        sources = [ "$root_build_dir/$v8_context_snapshot_filename" ]
-      } else {
+        deps += [ "//tools/v8_context_snapshot:v8_context_snapshot" ]
+        sources += [ "$root_build_dir/$v8_context_snapshot_filename" ]
+      }
+      if (!use_v8_context_snapshot || include_both_v8_snapshots) {
         if (current_cpu == "arm" || current_cpu == "x86") {
           _arch_suffix = "32"
         } else {
@@ -146,7 +149,7 @@ if (is_android && enable_java_templates &&
         }
         renaming_sources = [ "$root_build_dir/snapshot_blob.bin" ]
         renaming_destinations = [ "snapshot_blob_$_arch_suffix.bin" ]
-        deps = [ "//v8:run_mksnapshot_default" ]
+        deps += [ "//v8:run_mksnapshot_default" ]
       }
     }
   }
@@ -159,18 +162,21 @@ if (is_android && enable_java_templates &&
         assert(android_64bit_target_cpu,
                "32-bit targets shouldn't have secondary abi")
         disable_compression = true
+        sources = []
+        deps = []
         if (use_v8_context_snapshot) {
-          sources = [ "$root_out_dir/v8_context_snapshot_32.bin" ]
-          deps = [
+          sources += [ "$root_out_dir/v8_context_snapshot_32.bin" ]
+          deps += [
             "//tools/v8_context_snapshot($android_secondary_abi_toolchain)",
           ]
-        } else {
+        }
+        if (!use_v8_context_snapshot || include_both_v8_snapshots) {
           _secondary_abi_out_dir =
               get_label_info("//v8($android_secondary_abi_toolchain)",
                              "root_out_dir")
           renaming_sources = [ "$_secondary_abi_out_dir/snapshot_blob.bin" ]
           renaming_destinations = [ "snapshot_blob_32.bin" ]
-          deps = [
+          deps += [
             "//v8:run_mksnapshot_default($android_secondary_abi_toolchain)",
           ]
         }

@@ -56,7 +56,10 @@ if (enable_nacl) {
     ]
 
     # Deps required by the above headers.
-    deps = [ "//media:media_buildflags" ]
+    deps = [
+      "//media:media_buildflags",
+      "//tools/v8_context_snapshot:buildflags",
+    ]
   }
 
   static_library("common") {

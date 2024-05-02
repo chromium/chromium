@@ -14,6 +14,10 @@ const char kV8Snapshot64DataDescriptor[] = "v8_snapshot_64_data";
 
 const char kV8ContextSnapshotDataDescriptor[] = "v8_context_snapshot_data";
 
+const char kV8ContextSnapshot32DataDescriptor[] = "v8_context_snapshot_32_data";
+
+const char kV8ContextSnapshot64DataDescriptor[] = "v8_context_snapshot_64_data";
+
 const char kNetworkContextParentDirsDescriptor[] = "network_parent_dirs_pipe";
 
 }  // namespace content

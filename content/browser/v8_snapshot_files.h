@@ -12,6 +12,10 @@
 #include "base/files/scoped_file.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+namespace base {
+class CommandLine;
+}
+
 namespace content {
 
 // Returns a mapping of V8 snapshot files to be preloaded for child processes
@@ -21,7 +25,7 @@ namespace content {
 // This mapping can be used in `content::ChildProcessLauncherFileData` when
 // constructing a ChildProcessLauncher.
 std::map<std::string, absl::variant<base::FilePath, base::ScopedFD>>
-GetV8SnapshotFilesToPreload();
+GetV8SnapshotFilesToPreload(base::CommandLine& process_command_line);
 
 }  // namespace content
 
