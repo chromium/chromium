@@ -678,7 +678,7 @@ as required builders.
   * Experiment percentage: 1.0
 
 * [win-arm64-compile-dbg](https://ci.chromium.org/p/chromium/builders/try/win-arm64-compile-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-arm64-compile-dbg""))
-  * Experiment percentage: 50.0
+  * Experiment percentage: 100.0
 
 
 ## Mega CQ builders

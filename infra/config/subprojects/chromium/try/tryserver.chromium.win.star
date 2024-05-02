@@ -404,7 +404,7 @@ try_.builder(
         # out builder cache
         cancel_stale = False,
         # TODO(crbug.com/328175907) Enable after resources verified.
-        experiment_percentage = 50,
+        experiment_percentage = 100,
     ),
 )
 
