@@ -2496,12 +2496,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kFilesMaterializedViews);
   }
 
-  if (options.enable_new_directory_tree) {
-    enabled_features.push_back(ash::features::kFilesNewDirectoryTree);
-  } else {
-    disabled_features.push_back(ash::features::kFilesNewDirectoryTree);
-  }
-
   if (options.enable_skyvault) {
     enabled_features.push_back(features::kSkyVault);
   } else {
@@ -3843,11 +3837,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isFilesExperimentalEnabled") {
     *output = options.files_experimental ? "true" : "false";
-    return;
-  }
-
-  if (name == "isNewDirectoryTreeEnabled") {
-    *output = options.enable_new_directory_tree ? "true" : "false";
     return;
   }
 
