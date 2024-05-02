@@ -8,6 +8,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -87,6 +88,13 @@ blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
   }
 
   return key;
+}
+
+net::SiteForCookies site_for_cookies(const blink::StorageKey& key) {
+  // TODO(crbug.com/40737536): Once partitioning is on by default calling
+  // ToNetSiteForCookies will be sufficient.
+  return key.CopyWithForceEnabledThirdPartyStoragePartitioning()
+      .ToNetSiteForCookies();
 }
 
 }  // namespace service_worker_security_utils

@@ -26,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -297,7 +298,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
 
   AllowServiceWorkerResult allow_service_worker =
       GetContentClient()->browser()->AllowServiceWorker(
-          registration->scope(), container_host_->site_for_cookies(),
+          registration->scope(),
+          service_worker_security_utils::site_for_cookies(
+              container_host_->key()),
           container_host_->top_frame_origin(), /*script_url=*/GURL(),
           context_->wrapper()->browser_context());
 

@@ -476,15 +476,17 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_SameOriginRedirect) {
       CreateContainerHost(url1);
   const std::string uuid1 = container_host->client_uuid();
   EXPECT_EQ(url1, container_host->url());
-  EXPECT_TRUE(container_host->site_for_cookies().IsEquivalent(
-      net::SiteForCookies::FromUrl(url1)));
+  EXPECT_TRUE(
+      service_worker_security_utils::site_for_cookies(container_host->key())
+          .IsEquivalent(net::SiteForCookies::FromUrl(url1)));
 
   container_host->UpdateUrls(
       url2, url::Origin::Create(url2),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url2)));
   EXPECT_EQ(url2, container_host->url());
-  EXPECT_TRUE(container_host->site_for_cookies().IsEquivalent(
-      net::SiteForCookies::FromUrl(url2)));
+  EXPECT_TRUE(
+      service_worker_security_utils::site_for_cookies(container_host->key())
+          .IsEquivalent(net::SiteForCookies::FromUrl(url2)));
   EXPECT_EQ(uuid1, container_host->client_uuid());
 
   ASSERT_TRUE(context_);
@@ -500,15 +502,17 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CrossOriginRedirect) {
       CreateContainerHost(url1);
   const std::string uuid1 = container_host->client_uuid();
   EXPECT_EQ(url1, container_host->url());
-  EXPECT_TRUE(container_host->site_for_cookies().IsEquivalent(
-      net::SiteForCookies::FromUrl(url1)));
+  EXPECT_TRUE(
+      service_worker_security_utils::site_for_cookies(container_host->key())
+          .IsEquivalent(net::SiteForCookies::FromUrl(url1)));
 
   container_host->UpdateUrls(
       url2, url::Origin::Create(url2),
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url2)));
   EXPECT_EQ(url2, container_host->url());
-  EXPECT_TRUE(container_host->site_for_cookies().IsEquivalent(
-      net::SiteForCookies::FromUrl(url2)));
+  EXPECT_TRUE(
+      service_worker_security_utils::site_for_cookies(container_host->key())
+          .IsEquivalent(net::SiteForCookies::FromUrl(url2)));
   EXPECT_NE(uuid1, container_host->client_uuid());
 
   ASSERT_TRUE(context_);

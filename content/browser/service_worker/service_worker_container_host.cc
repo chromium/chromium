@@ -1291,8 +1291,8 @@ bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
   }
   AllowServiceWorkerResult allowed =
       GetContentClient()->browser()->AllowServiceWorker(
-          scope, site_for_cookies(), top_frame_origin(), script_url,
-          browser_context);
+          scope, service_worker_security_utils::site_for_cookies(key_),
+          top_frame_origin(), script_url, browser_context);
   if (IsContainerForWindowClient()) {
     auto* rfh = RenderFrameHostImpl::FromID(GetRenderFrameHostId());
     auto* web_contents =

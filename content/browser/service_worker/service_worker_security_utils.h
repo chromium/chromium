@@ -47,6 +47,14 @@ CONTENT_EXPORT blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
     const blink::StorageKey& key,
     const GURL& url);
 
+// This returns the first party for cookies as derived from the storage key.
+// For information on how this may differ from the SiteForCookies in the frame
+// context please see the comments above StorageKey::ToNetSiteForCookies.
+// For service worker execution contexts, site_for_cookies() always
+// corresponds to the service worker script URL.
+CONTENT_EXPORT net::SiteForCookies site_for_cookies(
+    const blink::StorageKey& key);
+
 }  // namespace service_worker_security_utils
 }  // namespace content
 

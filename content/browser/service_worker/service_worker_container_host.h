@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -375,18 +374,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost
   // The URL may also change on redirects during loading. Once
   // is_response_committed() is true, the URL should no longer change.
   const GURL& url() const { return url_; }
-
-  // This returns the first party for cookies as derived from the storage key.
-  // For information on how this may differ from the SiteForCookies in the frame
-  // context please see the comments above StorageKey::ToNetSiteForCookies.
-  // For service worker execution contexts, site_for_cookies() always
-  // corresponds to the service worker script URL.
-  const net::SiteForCookies site_for_cookies() const {
-    // TODO(crbug.com/40737536): Once partitioning is on by default calling
-    // ToNetSiteForCookies will be sufficient.
-    return key_.CopyWithForceEnabledThirdPartyStoragePartitioning()
-        .ToNetSiteForCookies();
-  }
 
   // The URL representing the first-party site for this context.
   // For service worker execution contexts, top_frame_origin() always
