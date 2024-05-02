@@ -174,18 +174,13 @@ struct SESSIONS_EXPORT Window : public Entry {
   // Type of window.
   sessions::SessionWindow::WindowType type;
 
-  // TODO(crbug.com/333425400): `tabs`, `groups`, and `tab_groups` contain
-  // duplicated data. To prevent duplication of data consider changing `tabs`
-  // to std::vector<std::unique_ptr<Entries>> so all data can be stored
-  // together in one object. This should prevent data duplication.
   // The tabs that comprised the window, in order.
   std::vector<std::unique_ptr<Tab>> tabs;
 
-  // Tab groups in this window including their tabs.
-  std::map<tab_groups::TabGroupId, std::unique_ptr<Group>> groups;
-
-  // Tab group data.
-  std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData> tab_groups;
+  // The tab groups in the window. These are only used to query properties about
+  // a group such as visual data, collapsed state, and saved state. As such,
+  // groups in this structure should NOT contain any tabs.
+  std::map<tab_groups::TabGroupId, std::unique_ptr<Group>> tab_groups;
 
   // Index of the selected tab.
   int selected_tab_index = -1;

@@ -1991,7 +1991,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreEntireGroupInWindow) {
 
   // Restore the double entry group.
   const auto& double_entry_group =
-      *window_entry->groups.at(double_entry_group_id).get();
+      *window_entry->tab_groups.at(double_entry_group_id).get();
   service->RestoreEntryById(second_browser->live_tab_context(),
                             double_entry_group.id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
@@ -2001,7 +2001,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreEntireGroupInWindow) {
 
   // Restore one of the tabs in the double entry group.
   const auto& single_entry_group =
-      *window_entry->groups.at(single_entry_group_id).get();
+      *window_entry->tab_groups.at(single_entry_group_id).get();
   service->RestoreEntryById(second_browser->live_tab_context(),
                             single_entry_group.id,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB);

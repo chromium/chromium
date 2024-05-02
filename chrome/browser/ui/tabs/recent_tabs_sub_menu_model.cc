@@ -589,9 +589,9 @@ RecentTabsSubMenuModel::CreateWindowSubMenuModel(
                             *current_group);
       }
 
-      CHECK(window.groups.contains(tab->group.value()));
+      CHECK(window.tab_groups.contains(tab->group.value()));
       seen_groups.emplace(tab->group.value());
-      current_group = window.groups.at(tab->group.value()).get();
+      current_group = window.tab_groups.at(tab->group.value()).get();
       current_group_model = CreateGroupSubMenuModel(*current_group);
     }
 

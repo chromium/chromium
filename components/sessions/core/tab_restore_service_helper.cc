@@ -221,15 +221,15 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
     if (tab->navigations.empty()) {
       continue;
     }
+    tab->browser_id = context->GetSessionID().id();
 
     if (tab->group.has_value() &&
         !window->tab_groups.contains(tab->group.value())) {
       // Add new groups to the mapping if we haven't already.
       window->tab_groups.emplace(tab->group.value(),
-                                 tab->group_visual_data.value());
+                                 Group::FromTab(*tab.get()));
     }
 
-    tab->browser_id = context->GetSessionID().id();
     window->tabs.push_back(std::move(tab));
   }
 
@@ -484,7 +484,6 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTabOrGroupFromWindow(
           });
 
       if (other_tabs_in_group == window.tabs.end()) {
-        window.groups.erase(group_id.value());
         window.tab_groups.erase(group_id.value());
       }
     }
@@ -501,7 +500,7 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTabOrGroupFromWindow(
 
   // Check the groups for the id if we didn't find the tab.
   if (!found_tab_to_delete) {
-    for (auto& group_pair : window.groups) {
+    for (auto& group_pair : window.tab_groups) {
       auto& group = group_pair.second;
       if (group->id != id && group->original_id != id) {
         continue;
@@ -533,9 +532,8 @@ LiveTabContext* TabRestoreServiceHelper::RestoreTabOrGroupFromWindow(
         window.tabs.erase(window.tabs.begin() + tab_i);
       }
 
-      // Clear groups from mappings.
+      // Clear group from mapping.
       window.tab_groups.erase(group_id);
-      window.groups.erase(group_id);
 
       if (!window.tabs.empty()) {
         // Adjust |selected_tab index| to keep the window in a valid state.
@@ -735,25 +733,6 @@ void TabRestoreServiceHelper::AddEntry(std::unique_ptr<Entry> entry,
     return;
   }
 
-  if (entry->type == sessions::tab_restore::WINDOW) {
-    auto& window = static_cast<Window&>(*entry.get());
-    if (window.groups.empty()) {
-      for (auto& tab : window.tabs) {
-        if (tab->group.has_value() &&
-            !window.groups.contains(tab->group.value())) {
-          // Create an empty group that we can use later to find its tabs when
-          // we need to restore an entire group from a window. This is done to
-          // prevent duplicating of tab data.
-          //
-          // Creating the mapping here covers the cases where we close a browser
-          // window and when restoring the last session on browser startup.
-          auto group = Group::FromTab(*tab);
-          window.groups.emplace(group->group_id, std::move(group));
-        }
-      }
-    }
-  }
-
   if (to_front) {
     entries_.push_front(std::move(entry));
   } else {
@@ -802,7 +781,7 @@ TabRestoreServiceHelper::GetEntryIteratorById(SessionID id) {
       }
 
       // Or group in this window.
-      for (const auto& group_pair : window.groups) {
+      for (const auto& group_pair : window.tab_groups) {
         const std::unique_ptr<sessions::tab_restore::Group>& group =
             group_pair.second;
         if (group->id == id || group->original_id == id) {
@@ -1088,7 +1067,7 @@ void TabRestoreServiceHelper::UpdateTabBrowserIDs(SessionID::id_type old_id,
         tab->browser_id = new_id.id();
       }
 
-      for (auto& group_pair : window.groups) {
+      for (auto& group_pair : window.tab_groups) {
         Group& group = *group_pair.second.get();
         group.browser_id = new_id.id();
       }

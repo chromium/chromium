@@ -1301,7 +1301,7 @@ TEST_F(TabRestoreServiceImplTest, TabGroupsRestoredFromSessionData) {
   auto* window = static_cast<sessions::tab_restore::Window*>(entry);
   ASSERT_EQ(1u, window->tabs.size());
   EXPECT_EQ(group, window->tabs[0]->group);
-  EXPECT_EQ(group_visual_data, window->tab_groups[group]);
+  EXPECT_EQ(group_visual_data, window->tab_groups[group]->visual_data);
 }
 
 // Ensures tab extra data is restored from previous session.

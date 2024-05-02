@@ -9,6 +9,8 @@
 #include <string.h>
 
 #include <map>
+#include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -32,6 +34,7 @@
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -1418,13 +1421,22 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
     tab_restore::Window* window) {
   window->type = session_window->type;
 
-  // The group visual datas must be stored in both |window| and each
-  // grouped tab.
-  std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
-      group_visual_datas;
+  // The groups in ` window`. The group visual data must also be explicitly set
+  // on grouped tabs.
+  std::map<tab_groups::TabGroupId, std::unique_ptr<tab_restore::Group>> groups;
   for (auto& tab_group : session_window->tab_groups) {
     auto group_id = tab_group->id;
-    group_visual_datas[group_id] = tab_group->visual_data;
+    auto group = std::make_unique<sessions::tab_restore::Group>();
+
+    group->group_id = tab_group->id;
+    if (tab_group->saved_guid.has_value()) {
+      group->saved_group_id =
+          base::Uuid::ParseLowercase(tab_group->saved_guid.value());
+    }
+    group->visual_data = tab_group->visual_data;
+    group->browser_id = session_window->window_id.id();
+    group->timestamp = base::Time::Now();
+    groups[group_id] = std::move(group);
   }
 
   for (auto& i : session_window->tabs) {
@@ -1437,7 +1449,7 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
     auto group_id = i->group;
     if (group_id.has_value()) {
       tab.group = group_id;
-      tab.group_visual_data = group_visual_datas[group_id.value()];
+      tab.group_visual_data = groups[group_id.value()]->visual_data;
     }
 
     tab.pinned = i->pinned;
@@ -1451,7 +1463,7 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
   if (window->tabs.empty()) {
     return false;
   }
-  window->tab_groups = std::move(group_visual_datas);
+  window->tab_groups = std::move(groups);
   window->selected_tab_index =
       std::min(session_window->selected_tab_index,
                static_cast<int>(window->tabs.size() - 1));

@@ -113,7 +113,7 @@ void AddBulkEventToEntries(
   group_titles.reserve(group_count);
   for (const auto& tab_group : window.tab_groups) {
     group_ids.push_back(tab_group.first.token());
-    group_titles.push_back(&tab_group.second.title());
+    group_titles.push_back(&tab_group.second->visual_data.title());
   }
 
   Java_RecentlyClosedBridge_addBulkEventToEntries(
