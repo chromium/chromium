@@ -13,7 +13,7 @@
 #include "base/version.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/registration_data.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"

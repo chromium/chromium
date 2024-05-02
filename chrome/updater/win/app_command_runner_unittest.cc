@@ -25,9 +25,9 @@
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_localalloc.h"
 #include "build/branding_buildflags.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util_win.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/util/unit_test_util_win.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,17 +58,20 @@ class AppCommandRunnerTestBase : public ::testing::Test {
   ~AppCommandRunnerTestBase() override = default;
 
   void SetUp() override {
-    SetupCmdExe(GetTestScope(), cmd_exe_command_line_, temp_programfiles_dir_);
+    test::SetupCmdExe(GetTestScope(), cmd_exe_command_line_,
+                      temp_programfiles_dir_);
   }
 
-  void TearDown() override { DeleteAppClientKey(GetTestScope(), kAppId1); }
+  void TearDown() override {
+    test::DeleteAppClientKey(GetTestScope(), kAppId1);
+  }
 
   HResultOr<AppCommandRunner> CreateAppCommandRunner(
       const std::wstring& app_id,
       const std::wstring& command_id,
       const std::wstring& command_line_format) {
-    CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
-                             command_line_format);
+    test::CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
+                                   command_line_format);
     return AppCommandRunner::LoadAppCommand(GetTestScope(), app_id, command_id);
   }
 
@@ -79,8 +82,8 @@ class AppCommandRunnerTestBase : public ::testing::Test {
       const std::wstring& command_id,
       const std::wstring& command_line_format) {
     EXPECT_TRUE(IsSystemInstall(GetTestScope()));
-    CreateLaunchCmdElevatedRegistry(app_id, name, pv, command_id,
-                                    command_line_format);
+    test::CreateLaunchCmdElevatedRegistry(app_id, name, pv, command_id,
+                                          command_line_format);
     return AppCommandRunner::LoadAppCommand(GetTestScope(), app_id, command_id);
   }
 
@@ -385,7 +388,8 @@ TEST_F(AppCommandRunnerTest, NoApp) {
 }
 
 TEST_F(AppCommandRunnerTest, NoCmd) {
-  CreateAppCommandRegistry(GetTestScope(), kAppId1, kCmdId1, kCmdLineValid);
+  test::CreateAppCommandRegistry(GetTestScope(), kAppId1, kCmdId1,
+                                 kCmdLineValid);
   HResultOr<AppCommandRunner> app_command_runner =
       AppCommandRunner::LoadAppCommand(GetTestScope(), kAppId1, kCmdId2);
   EXPECT_FALSE(app_command_runner.has_value());
@@ -551,14 +555,14 @@ TEST_P(RunBothFormatsTest, TestCases) {
   ASSERT_EQ(app_command_runner.Run({}, process), E_UNEXPECTED);
 
   if (GetParam().cmd_id_appcommand) {
-    CreateAppCommandRegistry(
+    test::CreateAppCommandRegistry(
         GetTestScope(), kAppId1, GetParam().cmd_id_appcommand,
         base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                       base::JoinString(GetParam().input_appcommand, L" ")}));
   }
 
   if (GetParam().cmd_id_processlauncher) {
-    CreateLaunchCmdElevatedRegistry(
+    test::CreateLaunchCmdElevatedRegistry(
         kAppId1, L"" BROWSER_PRODUCT_NAME_STRING, L"1.0.0.0",
         GetParam().cmd_id_processlauncher,
         base::StrCat(
@@ -577,7 +581,7 @@ TEST_P(RunBothFormatsTest, TestCases) {
                                              &exit_code));
   EXPECT_EQ(exit_code, GetParam().expected_exit_code);
 
-  DeleteAppClientKey(GetTestScope(), kAppId1);
+  test::DeleteAppClientKey(GetTestScope(), kAppId1);
 }
 
 struct EachAppCommand {
@@ -609,7 +613,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(LoadAutoRunOnOsUpgradeAppCommandsTest, TestCases) {
   base::ranges::for_each(GetParam(), [&](const auto& app_command) {
-    CreateAppCommandOSUpgradeRegistry(
+    test::CreateAppCommandOSUpgradeRegistry(
         GetTestScope(), kAppId1, app_command.command_id,
         base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                       base::JoinString(app_command.input, L" ")}));

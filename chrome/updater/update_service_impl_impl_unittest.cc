@@ -21,7 +21,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

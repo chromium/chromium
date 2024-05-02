@@ -47,18 +47,18 @@
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/test/integration_tests_impl.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util_win.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/util/unit_test_util.h"
-#include "chrome/updater/util/unit_test_util_win.h"
 #include "chrome/updater/win/scoped_impersonation.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace updater {
+namespace updater::test {
 
 namespace {
 
@@ -658,4 +658,4 @@ TEST(WinUtil, StringFromGuid) {
   EXPECT_EQ(base::win::WStringFromGUID(guid), StringFromGuid(guid));
 }
 
-}  // namespace updater
+}  // namespace updater::test

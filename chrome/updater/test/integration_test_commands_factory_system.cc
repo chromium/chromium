@@ -5,12 +5,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/test/integration_test_commands.h"
 
-namespace updater {
-namespace test {
+namespace updater::test {
 
 scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommands() {
   return CreateIntegrationTestCommandsSystem();
 }
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test

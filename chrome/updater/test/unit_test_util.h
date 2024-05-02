@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_H_
-#define CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_H_
+#ifndef CHROME_UPDATER_TEST_UNIT_TEST_UTIL_H_
+#define CHROME_UPDATER_TEST_UNIT_TEST_UTIL_H_
 
 #include <optional>
 #include <string>
@@ -141,4 +141,4 @@ void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
 
 }  // namespace updater::test
 
-#endif  // CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_H_
+#endif  // CHROME_UPDATER_TEST_UNIT_TEST_UTIL_H_

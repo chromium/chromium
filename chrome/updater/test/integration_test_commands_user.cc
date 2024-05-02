@@ -16,15 +16,14 @@
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/server.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace updater {
-namespace test {
+namespace updater::test {
 
 class IntegrationTestCommandsUser : public IntegrationTestCommands {
  public:
@@ -456,5 +455,4 @@ scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsUser() {
   return base::MakeRefCounted<IntegrationTestCommandsUser>();
 }
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 
 #include <optional>
 #include <string>
@@ -23,7 +23,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_tests_impl.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
 

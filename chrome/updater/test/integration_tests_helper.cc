@@ -32,8 +32,8 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -42,8 +42,7 @@
 #include "chrome/updater/util/win_util.h"
 #endif
 
-namespace updater {
-namespace test {
+namespace updater::test {
 namespace {
 
 using ::testing::EmptyTestEventListener;
@@ -560,8 +559,7 @@ TEST(TestHelperCommandRunner, Run) {
 }
 
 }  // namespace
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test
 
 // Wraps the execution of one integration test command in a unit test. The test
 // commands contain gtest assertions, therefore the invocation of test commands

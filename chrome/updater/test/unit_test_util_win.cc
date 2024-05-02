@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/util/unit_test_util_win.h"
+#include "chrome/updater/test/unit_test_util_win.h"
 
 #include <windows.h>
 
@@ -19,12 +19,12 @@
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace updater {
+namespace updater::test {
 
 namespace {
 
@@ -171,4 +171,4 @@ test::EventHolder CreateEveryoneWaitableEventForTest() {
           event_name};
 }
 
-}  // namespace updater
+}  // namespace updater::test

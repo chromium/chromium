@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"

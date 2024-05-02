@@ -13,9 +13,9 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/updater/configurator.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

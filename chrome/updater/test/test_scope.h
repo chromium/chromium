@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_TEST_SCOPE_H_
-#define CHROME_UPDATER_TEST_SCOPE_H_
+#ifndef CHROME_UPDATER_TEST_TEST_SCOPE_H_
+#define CHROME_UPDATER_TEST_TEST_SCOPE_H_
 
 namespace updater {
 
@@ -13,4 +13,4 @@ UpdaterScope GetTestScope();
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_TEST_SCOPE_H_
+#endif  // CHROME_UPDATER_TEST_TEST_SCOPE_H_

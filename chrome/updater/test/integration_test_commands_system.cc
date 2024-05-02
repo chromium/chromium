@@ -26,7 +26,7 @@
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
@@ -37,8 +37,7 @@
 #include "base/strings/utf_string_conversions.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-namespace updater {
-namespace test {
+namespace updater::test {
 
 namespace {
 
@@ -587,5 +586,4 @@ scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsSystem() {
   return base::MakeRefCounted<IntegrationTestCommandsSystem>();
 }
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test

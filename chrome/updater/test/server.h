@@ -28,8 +28,7 @@ class HttpResponse;
 }  // namespace test_server
 }  // namespace net
 
-namespace updater {
-namespace test {
+namespace updater::test {
 
 class IntegrationTestCommands;
 
@@ -110,7 +109,6 @@ class ScopedServer {
   base::TimeDelta download_delay_;
 };
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_SERVER_H_

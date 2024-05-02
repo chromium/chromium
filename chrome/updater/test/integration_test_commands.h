@@ -21,8 +21,7 @@ class FilePath;
 class Version;
 }  // namespace base
 
-namespace updater {
-namespace test {
+namespace updater::test {
 
 class ScopedServer;
 
@@ -194,7 +193,6 @@ scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsUser();
 
 scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsSystem();
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TEST_COMMANDS_H_

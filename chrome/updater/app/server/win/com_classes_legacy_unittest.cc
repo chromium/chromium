@@ -24,9 +24,9 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/updater/test/integration_tests_impl.h"
-#include "chrome/updater/test_scope.h"
-#include "chrome/updater/util/unit_test_util.h"
-#include "chrome/updater/util/unit_test_util_win.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util_win.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
@@ -35,7 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace updater {
+namespace updater::test {
 namespace {
 
 constexpr wchar_t kAppId1[] = L"{3B1A3CCA-0525-4418-93E6-A0DB3398EC9B}";
@@ -371,4 +371,4 @@ TEST(LegacyCOMClassesTest, CheckLegacyInterfaceIDs) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-}  // namespace updater
+}  // namespace updater::test

@@ -16,7 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "chrome/updater/certificate_tag_internal.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 

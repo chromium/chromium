@@ -13,9 +13,9 @@
 #include "build/build_config.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

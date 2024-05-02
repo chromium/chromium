@@ -11,7 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"

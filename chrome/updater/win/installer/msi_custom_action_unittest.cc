@@ -12,7 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer_api.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -20,7 +20,7 @@
 #include "chrome/updater/app/server/posix/update_service_stub.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/registration_data.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"

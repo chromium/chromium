@@ -25,8 +25,8 @@
 #include "base/test/task_environment.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
-#include "chrome/updater/test_scope.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/test_scope.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

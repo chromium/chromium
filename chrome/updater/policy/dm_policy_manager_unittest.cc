@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -26,8 +26,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace updater {
-namespace test {
+namespace updater::test {
 namespace {
 
 std::string SerializeRequest(HttpRequest& request) {
@@ -123,5 +122,4 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
   return response;
 }
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test

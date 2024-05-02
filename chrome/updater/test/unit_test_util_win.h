@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_WIN_H_
-#define CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_WIN_H_
+#ifndef CHROME_UPDATER_TEST_UNIT_TEST_UTIL_WIN_H_
+#define CHROME_UPDATER_TEST_UNIT_TEST_UTIL_WIN_H_
 
 #include <string>
 
@@ -12,9 +12,9 @@
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 
-namespace updater {
+namespace updater::test {
 
 // Creates the key `{HKLM\HKCU}\Software\{CompanyName}\Update\Clients\{app_id}`.
 // `{HKLM\HKCU}` is determined by `scope`.
@@ -74,6 +74,6 @@ void SetupCmdExe(UpdaterScope scope,
 // Creates an event accessible to all authenticated users on the machine.
 test::EventHolder CreateEveryoneWaitableEventForTest();
 
-}  // namespace updater
+}  // namespace updater::test
 
-#endif  // CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_WIN_H_
+#endif  // CHROME_UPDATER_TEST_UNIT_TEST_UTIL_WIN_H_

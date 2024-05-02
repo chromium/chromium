@@ -19,7 +19,7 @@
 #include "build/buildflag.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/update_client.h"

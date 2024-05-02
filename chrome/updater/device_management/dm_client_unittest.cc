@@ -26,7 +26,7 @@
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/network.h"
 #include "net/base/url_util.h"

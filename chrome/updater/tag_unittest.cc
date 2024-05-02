@@ -15,7 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chrome/updater/util/unit_test_util.h"
+#include "chrome/updater/test/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
