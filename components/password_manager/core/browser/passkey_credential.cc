@@ -114,9 +114,8 @@ std::u16string PasskeyCredential::GetAuthenticatorLabel() const {
       id = GetAuthenticationLabelForPasskeysFromAndroid();
       break;
     case Source::kGooglePasswordManager:
-      // TODO(crbug.com/40274370): Update this when a proper string is
-      // added.
-      return u"Passkey from Google Password Manager (UNTRANSLATED STRING)";
+      id = IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER;
+      break;
     case Source::kOther:
       id = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
       break;
