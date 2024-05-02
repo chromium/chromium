@@ -1203,10 +1203,12 @@ TEST(TagParserTest, RuntimeModeValidSystem) {
 }
 
 TEST(TagParserTest, RuntimeModeValidUser) {
-  VerifyTagParseSuccess("runtime=true&needsadmin=false", std::nullopt,
-                        TagArgsBuilder()
-                            .WithRuntimeMode(RuntimeModeArgsBuilder().Build())
-                            .Build());
+  VerifyTagParseSuccess(
+      "runtime=true&needsadmin=false", std::nullopt,
+      TagArgsBuilder()
+          .WithRuntimeMode(
+              RuntimeModeArgsBuilder().WithNeedsAdmin(NeedsAdmin::kNo).Build())
+          .Build());
 }
 
 TEST(TagExtractorTest, AdvanceIt) {

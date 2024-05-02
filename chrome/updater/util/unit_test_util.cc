@@ -560,6 +560,12 @@ void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
     EXPECT_EQ(app_actual.install_data_index, app_expected.install_data_index);
     EXPECT_EQ(app_actual.experiment_labels, app_expected.experiment_labels);
   }
+
+  ASSERT_EQ(actual.runtime_mode.has_value(), expected.runtime_mode.has_value());
+  if (actual.runtime_mode.has_value()) {
+    ASSERT_EQ(actual.runtime_mode->needs_admin,
+              expected.runtime_mode->needs_admin);
+  }
 }
 
 }  // namespace updater::test
