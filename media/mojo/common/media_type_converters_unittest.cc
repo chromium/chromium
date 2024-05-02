@@ -68,8 +68,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   const size_t kSecureHandle = 42;
 
   // Original.
-  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
+  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(kData));
   buffer->set_timestamp(base::Milliseconds(123));
   buffer->set_duration(base::Milliseconds(456));
   buffer->set_discard_padding(DecoderBuffer::DiscardPadding(
@@ -117,8 +116,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_KeyFrame) {
   const size_t kDataSize = std::size(kData);
 
   // Original.
-  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
+  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(kData));
   buffer->set_is_key_frame(true);
   EXPECT_TRUE(buffer->is_key_frame());
 
@@ -145,8 +143,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CencEncryptedBuffer) {
   subsamples.push_back(SubsampleEntry(50, 60));
 
   // Original.
-  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
+  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(kData));
   buffer->set_decrypt_config(
       DecryptConfig::CreateCencConfig(kKeyId, kIv, subsamples));
 
@@ -183,8 +180,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_CbcsEncryptedBuffer) {
   EncryptionPattern pattern{1, 2};
 
   // Original.
-  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
+  scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(kData));
   buffer->set_decrypt_config(
       DecryptConfig::CreateCbcsConfig(kKeyId, kIv, subsamples, pattern));
 

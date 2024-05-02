@@ -83,11 +83,9 @@ class MEDIA_EXPORT DecoderBuffer
   DecoderBuffer(const DecoderBuffer&) = delete;
   DecoderBuffer& operator=(const DecoderBuffer&) = delete;
 
-  // Create a DecoderBuffer whose |data_| is copied from |data|. |data| must not
-  // be NULL and |size| >= 0. The buffer's |is_key_frame_| will default to
-  // false.
-  static scoped_refptr<DecoderBuffer> CopyFrom(const uint8_t* data,
-                                               size_t size);
+  // Create a DecoderBuffer whose |data_| is copied from |data|. The buffer's
+  // |is_key_frame_| will default to false.
+  static scoped_refptr<DecoderBuffer> CopyFrom(base::span<const uint8_t> data);
 
   // Create a DecoderBuffer where data() of |size| bytes resides within the heap
   // as byte array. The buffer's |is_key_frame_| will default to false.
@@ -271,10 +269,9 @@ class MEDIA_EXPORT DecoderBuffer
   friend class base::RefCountedThreadSafe<DecoderBuffer>;
   enum class DecoderBufferType { kNormal, kEndOfStream };
 
-  // Allocates a buffer of size |size| >= 0 and copies |data| into it. If |data|
-  // is NULL then |data_| is set to NULL and |buffer_size_| to 0.
-  // |is_key_frame_| will default to false.
-  DecoderBuffer(const uint8_t* data, size_t size);
+  // Allocates a buffer with a copy of |data| in it. |is_key_frame_| will
+  // default to false.
+  explicit DecoderBuffer(base::span<const uint8_t> data);
 
   DecoderBuffer(base::HeapArray<uint8_t> data, size_t size);
 

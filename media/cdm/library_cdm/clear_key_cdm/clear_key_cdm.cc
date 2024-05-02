@@ -10,6 +10,8 @@
 #include <sstream>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -70,7 +72,11 @@ static scoped_refptr<media::DecoderBuffer> CopyDecoderBufferFrom(
 
   // TODO(xhwang): Get rid of this copy.
   scoped_refptr<media::DecoderBuffer> output_buffer =
-      media::DecoderBuffer::CopyFrom(input_buffer.data, input_buffer.data_size);
+      media::DecoderBuffer::CopyFrom(
+          // SAFETY: `data` and `data_size` from `input_buffer` must be
+          // consistent.
+          UNSAFE_BUFFERS(
+              base::span(input_buffer.data, input_buffer.data_size)));
   output_buffer->set_timestamp(base::Microseconds(input_buffer.timestamp));
 
   if (input_buffer.encryption_scheme == cdm::EncryptionScheme::kUnencrypted)

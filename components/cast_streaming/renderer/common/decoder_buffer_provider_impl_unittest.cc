@@ -35,8 +35,7 @@ class MockClient
 class DecoderBufferProviderImplTest : public testing::Test {
  public:
   DecoderBufferProviderImplTest() {
-    populated_buffer_ = media::DecoderBuffer::CopyFrom(kSerializedData.data(),
-                                                       kSerializedData.size());
+    populated_buffer_ = media::DecoderBuffer::CopyFrom(kSerializedData);
   }
 
   ~DecoderBufferProviderImplTest() override = default;

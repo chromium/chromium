@@ -95,7 +95,7 @@ class CencDecryptorTest : public testing::Test {
     EXPECT_FALSE(iv.empty());
 
     scoped_refptr<DecoderBuffer> encrypted_buffer =
-        DecoderBuffer::CopyFrom(data.data(), data.size());
+        DecoderBuffer::CopyFrom(data);
 
     // Key_ID is never used.
     encrypted_buffer->set_decrypt_config(

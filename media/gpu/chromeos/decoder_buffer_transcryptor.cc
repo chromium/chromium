@@ -4,6 +4,8 @@
 
 #include "media/gpu/chromeos/decoder_buffer_transcryptor.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -128,8 +130,11 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
 
     // Put the first frame in place of the |current_transcrypt_task_|'s buffer,
     // then add the rest to the queue.
-    current_transcrypt_task_->buffer = DecoderBuffer::CopyFrom(
-        frames.front().ptr, base::checked_cast<size_t>(frames.front().size));
+    //
+    // TODO(crbug.com/40284755): Use `base::span` in `Vp9Parser::FrameInfo`.
+    current_transcrypt_task_->buffer = DecoderBuffer::CopyFrom(UNSAFE_BUFFERS(
+        base::span(frames.front().ptr,
+                   base::checked_cast<size_t>(frames.front().size))));
     curr_buffer = current_transcrypt_task_->buffer.get();
 
     // We only copy this limited set of fields to match what we do in the
@@ -156,8 +161,10 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
     while (!frames.empty()) {
       // The |frames| are in decode order, so we take from the back of |frames|
       // and append to the front of |transcrypt_task_queue_|.
-      scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(
-          frames.back().ptr, base::checked_cast<size_t>(frames.back().size));
+      scoped_refptr<DecoderBuffer> buffer =
+          DecoderBuffer::CopyFrom(UNSAFE_BUFFERS(
+              base::span(frames.back().ptr,
+                         base::checked_cast<size_t>(frames.back().size))));
       buffer->set_timestamp(superframe->timestamp());
       buffer->set_duration(superframe->duration());
       buffer->set_is_key_frame(superframe->is_key_frame());

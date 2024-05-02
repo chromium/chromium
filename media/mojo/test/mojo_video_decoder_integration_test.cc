@@ -292,8 +292,7 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
     // Use 32 bytes to simulated chunked write (with capacity 10; see below).
     std::vector<uint8_t> data(32, 0);
 
-    scoped_refptr<DecoderBuffer> buffer =
-        DecoderBuffer::CopyFrom(data.data(), data.size());
+    scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(data);
 
     buffer->set_timestamp(base::Milliseconds(timestamp_ms));
     buffer->set_duration(base::Milliseconds(10));
@@ -305,8 +304,7 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
   scoped_refptr<DecoderBuffer> CreateErrorFrame(int64_t timestamp_ms) {
     std::vector<uint8_t> data(kErrorDataSize, 0);
 
-    scoped_refptr<DecoderBuffer> buffer =
-        DecoderBuffer::CopyFrom(data.data(), data.size());
+    scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(data);
 
     buffer->set_timestamp(base::Milliseconds(timestamp_ms));
     buffer->set_duration(base::Milliseconds(10));

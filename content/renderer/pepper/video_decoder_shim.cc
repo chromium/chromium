@@ -12,8 +12,10 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -528,7 +530,10 @@ void VideoDecoderShim::Decode(media::BitstreamBuffer bitstream_buffer) {
       base::BindOnce(
           &VideoDecoderShim::DecoderImpl::Decode,
           base::Unretained(decoder_impl_.get()), bitstream_buffer.id(),
-          media::DecoderBuffer::CopyFrom(buffer, bitstream_buffer.size())));
+          media::DecoderBuffer::CopyFrom(
+              // SAFETY: `buffer` is the address of `bitstream_buffer`'s shared
+              // memory and is assumed to have the same size.
+              UNSAFE_BUFFERS(base::span(buffer, bitstream_buffer.size())))));
   num_pending_decodes_++;
 }
 

@@ -31,7 +31,7 @@ class DecoderBufferReaderTest : public testing::Test {
     // NOTE: This is INTENTIONALLY different from the above, to ensure that the
     // data() field is overwritten.
     uint8_t data[] = {42, 43, 44};
-    populated_buffer_ = media::DecoderBuffer::CopyFrom(data, 3);
+    populated_buffer_ = media::DecoderBuffer::CopyFrom(data);
   }
 
   ~DecoderBufferReaderTest() override = default;

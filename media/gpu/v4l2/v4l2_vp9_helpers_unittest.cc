@@ -56,8 +56,7 @@ TEST(V4L2VP9HelpersTest, CheckSuperFrameIndexSize) {
       *header = 0x8f;
       offset += frame_size;
     }
-    auto decoder_buffer =
-        DecoderBuffer::CopyFrom(tmp_buffer.data(), tmp_buffer.size());
+    auto decoder_buffer = DecoderBuffer::CopyFrom(tmp_buffer);
     AppendSideData(*decoder_buffer, frame_sizes);
 
     AppendVP9SuperFrameIndex(decoder_buffer);
@@ -103,8 +102,7 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
     merged_buffer.resize(offset + buffers[i].size());
     memcpy(merged_buffer.data() + offset, buffers[i].data(), buffers[i].size());
 
-    auto decoder_buffer =
-        DecoderBuffer::CopyFrom(merged_buffer.data(), merged_buffer.size());
+    auto decoder_buffer = DecoderBuffer::CopyFrom(merged_buffer);
     AppendSideData(*decoder_buffer, frame_sizes);
 
     AppendVP9SuperFrameIndex(decoder_buffer);

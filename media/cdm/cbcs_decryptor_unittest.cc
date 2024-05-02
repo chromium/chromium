@@ -112,7 +112,7 @@ class CbcsDecryptorTest : public testing::Test {
     EXPECT_FALSE(data.empty());
     EXPECT_FALSE(iv.empty());
 
-    auto encrypted_buffer = DecoderBuffer::CopyFrom(data.data(), data.size());
+    auto encrypted_buffer = DecoderBuffer::CopyFrom(data);
 
     // Key_ID is never used.
     encrypted_buffer->set_decrypt_config(DecryptConfig::CreateCbcsConfig(

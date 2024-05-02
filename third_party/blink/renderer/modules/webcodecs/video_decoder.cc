@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
@@ -608,7 +609,8 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
           "Unable to convert NALU to byte stream.");
     }
 
-    decoder_buffer = media::DecoderBuffer::CopyFrom(buf.data(), output_size);
+    decoder_buffer =
+        media::DecoderBuffer::CopyFrom(base::span(buf).first(output_size));
     decoder_buffer->set_timestamp(chunk.buffer()->timestamp());
     decoder_buffer->set_duration(chunk.buffer()->duration());
   }

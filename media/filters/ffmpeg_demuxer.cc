@@ -454,14 +454,11 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     // If a packet is returned by FFmpeg's av_parser_parse2() the packet will
     // reference inner memory of FFmpeg.  As such we should transfer the packet
     // into memory we control.
+    buffer =
+        DecoderBuffer::CopyFrom(AVPacketData(*packet).subspan(data_offset));
     if (side_data_size > 0) {
-      buffer = DecoderBuffer::CopyFrom(packet->data + data_offset,
-                                       packet->size - data_offset);
       buffer->WritableSideData().alpha_data.assign(side_data,
                                                    side_data + side_data_size);
-    } else {
-      buffer = DecoderBuffer::CopyFrom(packet->data + data_offset,
-                                       packet->size - data_offset);
     }
 
     size_t skip_samples_size = 0;

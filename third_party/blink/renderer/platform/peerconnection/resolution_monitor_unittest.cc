@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
@@ -28,9 +30,8 @@ class ResolutionMonitorTestWithInvalidFrame
 
 TEST_P(ResolutionMonitorTestWithInvalidFrame, ReturnNullOpt) {
   const media::VideoCodec codec = GetParam();
-  auto invalid_buffer = media::DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(kInvalidData.data()),
-      kInvalidData.size());
+  auto invalid_buffer =
+      media::DecoderBuffer::CopyFrom(base::as_byte_span(kInvalidData));
   invalid_buffer->set_is_key_frame(true);
 
   auto resolution_monitor = ResolutionMonitor::Create(codec);
@@ -119,7 +120,8 @@ std::vector<scoped_refptr<media::DecoderBuffer>> ReadIVF(const std::string& fnam
   const uint8_t* data;
   while (ivf_parser.ParseNextFrame(&ivf_frame_header, &data)) {
     buffers.push_back(media::DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(data), ivf_frame_header.frame_size));
+        // TODO(crbug.com/40284755): Spanify `ParseNextFrame`.
+        UNSAFE_BUFFERS(base::span(data, ivf_frame_header.frame_size))));
   }
   return buffers;
 }

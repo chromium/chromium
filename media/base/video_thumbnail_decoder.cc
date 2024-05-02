@@ -42,8 +42,7 @@ void VideoThumbnailDecoder::OnVideoDecoderInitialized(DecoderStatus status) {
     return;
   }
 
-  auto buffer =
-      DecoderBuffer::CopyFrom(&encoded_data_[0], encoded_data_.size());
+  auto buffer = DecoderBuffer::CopyFrom(encoded_data_);
   encoded_data_.clear();
   decoder_->Decode(buffer,
                    base::BindOnce(&VideoThumbnailDecoder::OnVideoBufferDecoded,

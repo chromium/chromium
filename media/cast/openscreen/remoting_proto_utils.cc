@@ -123,8 +123,7 @@ scoped_refptr<media::DecoderBuffer> ByteArrayToDecoderBuffer(
     // it may be EOS buffer.
     scoped_refptr<media::DecoderBuffer> decoder_buffer =
         ConvertProtoToDecoderBuffer(
-            segment, media::DecoderBuffer::CopyFrom(buffer_span.data(),
-                                                    buffer_span.size()));
+            segment, media::DecoderBuffer::CopyFrom(buffer_span));
     return decoder_buffer;
   }
 

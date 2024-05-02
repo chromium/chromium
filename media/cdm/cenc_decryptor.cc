@@ -11,6 +11,8 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
@@ -31,6 +33,9 @@ enum ClearBytesBufferSel { kSrcContainsClearBytes, kDstContainsClearBytes };
 // kDstContainsClearBytes, then any clear bytes mentioned in |subsamples|
 // will be skipped in |dst|. This is used when copying the decrypted bytes
 // back into the buffer, replacing the encrypted portions.
+//
+// TODO(crbug.com/40284755): This function is not bounds-safe. Make this
+// span-based instead.
 void CopySubsamples(const std::vector<SubsampleEntry>& subsamples,
                     const ClearBytesBufferSel sel,
                     const uint8_t* src,
@@ -62,9 +67,8 @@ void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
 scoped_refptr<DecoderBuffer> DecryptCencBuffer(
     const DecoderBuffer& input,
     const crypto::SymmetricKey& key) {
-  const char* sample = reinterpret_cast<const char*>(input.data());
-  const size_t sample_size = input.size();
-  DCHECK(sample_size) << "No data to decrypt.";
+  base::span<const uint8_t> sample = input;
+  DCHECK(!sample.empty()) << "No data to decrypt.";
 
   const DecryptConfig* decrypt_config = input.decrypt_config();
   DCHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
@@ -87,21 +91,19 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
   if (subsamples.empty()) {
     std::string decrypted_text;
-    std::string_view encrypted_text(sample, sample_size);
+    std::string_view encrypted_text = base::as_string_view(sample);
     if (!encryptor.Decrypt(encrypted_text, &decrypted_text)) {
       DVLOG(1) << "Could not decrypt data.";
       return nullptr;
     }
 
     // TODO(xhwang): Find a way to avoid this data copy.
-    auto output = DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(decrypted_text.data()),
-        decrypted_text.size());
+    auto output = DecoderBuffer::CopyFrom(base::as_byte_span(decrypted_text));
     CopyExtraSettings(input, output.get());
     return output;
   }
 
-  if (!VerifySubsamplesMatchSize(subsamples, sample_size)) {
+  if (!VerifySubsamplesMatchSize(subsamples, sample.size())) {
     DVLOG(1) << "Subsample sizes do not equal input size";
     return nullptr;
   }
@@ -114,7 +116,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
 
   // No need to decrypt if there is no encrypted data.
   if (total_encrypted_size == 0) {
-    auto output = DecoderBuffer::CopyFrom(input.data(), sample_size);
+    auto output = DecoderBuffer::CopyFrom(sample);
     CopyExtraSettings(input, output.get());
     return output;
   }
@@ -125,14 +127,11 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
   // copy all encrypted subsamples to a contiguous buffer, decrypt them, then
   // copy the decrypted bytes over the encrypted bytes in the output.
   // TODO(strobe): attempt to reduce number of memory copies
-  auto encrypted_bytes = std::make_unique<uint8_t[]>(total_encrypted_size);
-  CopySubsamples(subsamples, kSrcContainsClearBytes,
-                 reinterpret_cast<const uint8_t*>(sample),
-                 encrypted_bytes.get());
+  auto encrypted_bytes = base::HeapArray<uint8_t>::Uninit(total_encrypted_size);
+  CopySubsamples(subsamples, kSrcContainsClearBytes, sample.data(),
+                 encrypted_bytes.data());
 
-  std::string_view encrypted_text(
-      reinterpret_cast<const char*>(encrypted_bytes.get()),
-      total_encrypted_size);
+  std::string_view encrypted_text = base::as_string_view(encrypted_bytes);
   std::string decrypted_text;
   if (!encryptor.Decrypt(encrypted_text, &decrypted_text)) {
     DVLOG(1) << "Could not decrypt data.";
@@ -140,8 +139,7 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
   }
   DCHECK_EQ(decrypted_text.size(), encrypted_text.size());
 
-  scoped_refptr<DecoderBuffer> output = DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(sample), sample_size);
+  scoped_refptr<DecoderBuffer> output = DecoderBuffer::CopyFrom(sample);
   CopySubsamples(subsamples, kDstContainsClearBytes,
                  reinterpret_cast<const uint8_t*>(decrypted_text.data()),
                  output->writable_data());

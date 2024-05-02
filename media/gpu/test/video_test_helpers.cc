@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/callback_helpers.h"
@@ -199,8 +200,7 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFragment() {
   // Update next_pos_to_decode_.
   next_pos_to_decode_ = next_nalu_pos;
   return DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&data_[start_pos]),
-      next_nalu_pos - start_pos);
+      base::as_byte_span(data_).subspan(start_pos, next_nalu_pos - start_pos));
 }
 
 size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
@@ -291,8 +291,10 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
 
   // Standard stream case.
   if (ivf_frames.size() == 1) {
-    return DecoderBuffer::CopyFrom(ivf_frames[0].data.get(),
-                                   ivf_frames[0].header.frame_size);
+    return DecoderBuffer::CopyFrom(
+        // TODO(crbug.com/40284755): spanify `IvfFrame`.
+        UNSAFE_BUFFERS(base::span(ivf_frames[0].data.get(),
+                                  ivf_frames[0].header.frame_size)));
   }
 
   if (ivf_frames.size() > 3) {
@@ -310,8 +312,7 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
     frame_sizes.push_back(ivf.header.frame_size);
   }
 
-  auto buffer = DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+  auto buffer = DecoderBuffer::CopyFrom(base::as_byte_span(data));
   buffer->WritableSideData().spatial_layers = frame_sizes;
   return buffer;
 }

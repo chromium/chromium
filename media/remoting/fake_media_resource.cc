@@ -84,8 +84,7 @@ void FakeDemuxerStream::CreateFakeFrame(size_t size,
   base::TimeDelta pts = base::Milliseconds(pts_ms);
 
   // To DecoderBuffer
-  scoped_refptr<DecoderBuffer> input_buffer =
-      DecoderBuffer::CopyFrom(buffer.data(), size);
+  scoped_refptr<DecoderBuffer> input_buffer = DecoderBuffer::CopyFrom(buffer);
   input_buffer->set_timestamp(pts);
   input_buffer->set_is_key_frame(key_frame);
 

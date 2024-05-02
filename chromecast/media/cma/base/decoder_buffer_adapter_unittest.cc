@@ -16,7 +16,7 @@ static const int64_t kBufferTimestampUs = 31;
 
 scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer() {
   scoped_refptr<media::DecoderBuffer> buffer =
-      media::DecoderBuffer::CopyFrom(kBufferData, kBufferDataSize);
+      media::DecoderBuffer::CopyFrom(kBufferData);
   buffer->set_timestamp(base::Microseconds(kBufferTimestampUs));
   return buffer;
 }

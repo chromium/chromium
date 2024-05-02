@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cdm/cenc_decryptor.h"
+
 #include <stdint.h>
 
 #include <array>
@@ -9,11 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/subsample_entry.h"
-#include "media/cdm/cenc_decryptor.h"
 
 const std::array<uint8_t, 16> kKey = {0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
                                       0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -30,17 +33,20 @@ struct Environment {
 
 Environment* env = new Environment();
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
+  // SAFETY: LibFuzzer must pass a valid `data_ptr` and `size`.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
+
   // From the data provided:
   // 1) Use the first byte to determine how much of the buffer is "clear".
   // 2) Rest of the buffer is the input data (which must be at least 1 byte).
   // So the input buffer needs at least 2 bytes.
-  if (size < 2)
+  if (data.size() < 2) {
     return 0;
+  }
 
   const uint8_t clear_bytes = data[0];
-  data += 1;
-  size -= 1;
+  data = data.subspan(1);
 
   static std::unique_ptr<crypto::SymmetricKey> key =
       crypto::SymmetricKey::Import(
@@ -58,11 +64,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         {clear_bytes, static_cast<uint32_t>(size - clear_bytes)});
   }
 
-  auto encrypted_buffer = media::DecoderBuffer::CopyFrom(data, size);
+  auto encrypted_buffer = media::DecoderBuffer::CopyFrom(data);
 
   // Key_ID is never used.
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCencConfig(
-      "key_id", std::string(std::begin(kIv), std::end(kIv)), subsamples));
+      "key_id", std::string(base::as_string_view(kIv)), subsamples));
 
   media::DecryptCencBuffer(*encrypted_buffer, *key);
   return 0;

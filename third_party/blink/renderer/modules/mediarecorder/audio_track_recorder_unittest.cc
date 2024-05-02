@@ -681,19 +681,19 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     DoOnEncodedAudio(params, std::move(encoded_data), timestamp);
   }
 
-  void ValidateOpusData(std::string& encoded_data) {
+  void ValidateOpusData(const std::string& encoded_data) {
     // Decode |encoded_data| and check we get the expected number of frames
     // per buffer.
     ASSERT_GE(static_cast<size_t>(opus_buffer_size_), encoded_data.size());
-    EXPECT_EQ(
-        kDefaultSampleRate * kOpusBufferDurationMs / 1000,
-        opus_decode_float(opus_decoder_,
-                          reinterpret_cast<uint8_t*>(std::data(encoded_data)),
-                          static_cast<wtf_size_t>(encoded_data.size()),
-                          opus_buffer_.get(), opus_buffer_size_, 0));
+    EXPECT_EQ(kDefaultSampleRate * kOpusBufferDurationMs / 1000,
+              opus_decode_float(
+                  opus_decoder_,
+                  reinterpret_cast<const uint8_t*>(std::data(encoded_data)),
+                  static_cast<wtf_size_t>(encoded_data.size()),
+                  opus_buffer_.get(), opus_buffer_size_, 0));
   }
 
-  void ValidatePcmData(std::string& encoded_data) {
+  void ValidatePcmData(const std::string& encoded_data) {
     // Manually confirm that we're getting the same data out as what we
     // generated from the sine wave.
     for (size_t b = 0; b + 3 < encoded_data.size() &&
@@ -709,16 +709,14 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
   test::TaskEnvironment task_environment_;
 
 #if HAS_AAC_DECODER
-  void ValidateAacData(std::string& encoded_data) {
+  void ValidateAacData(const std::string& encoded_data) {
     // `ExpectOutputsAndRunClosure` sets up `EXPECT_CALL`s for `DecodeCB` and
     // `DecodeOutputCb`, so we can be sure that these will run and the decoded
     // output is validated.
     media::AudioDecoder::DecodeCB decode_cb =
         WTF::BindOnce(&AudioTrackRecorderTest::OnDecode, WTF::Unretained(this));
     scoped_refptr<media::DecoderBuffer> decoder_buffer =
-        media::DecoderBuffer::CopyFrom(
-            reinterpret_cast<const uint8_t*>(encoded_data.c_str()),
-            encoded_data.size());
+        media::DecoderBuffer::CopyFrom(base::as_byte_span(encoded_data));
     aac_decoder_->Decode(decoder_buffer, std::move(decode_cb));
   }
 

@@ -7,10 +7,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/media/audio/net/conversions.h"
@@ -149,8 +152,9 @@ void CmaBackendShim::AddData(char* data, int size) {
   if (size == 0) {
     buffer = ::media::DecoderBuffer::CreateEOSBuffer();
   } else {
-    buffer = ::media::DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(data), size);
+    // TODO(crbug.com/40284755): These functions should use span and size_t.
+    buffer = ::media::DecoderBuffer::CopyFrom(base::as_bytes(
+        UNSAFE_BUFFERS(base::span(data, base::checked_cast<size_t>(size)))));
     buffer->set_timestamp(::media::kNoTimestamp);
   }
   POST_MEDIA_TASK(&CmaBackendShim::AddDataOnMediaThread, std::move(buffer));

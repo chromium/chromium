@@ -133,7 +133,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
   void SetUp() override {
     uint8_t data = 0;
-    fake_decoder_buffer_ = DecoderBuffer::CopyFrom(&data, 1);
+    fake_decoder_buffer_ = DecoderBuffer::CopyFrom(base::span_from_ref(data));
     codec_allocator_ = std::make_unique<FakeCodecAllocator>(
         base::SingleThreadTaskRunner::GetCurrentDefault());
     device_info_ = std::make_unique<NiceMock<MockDeviceInfo>>();

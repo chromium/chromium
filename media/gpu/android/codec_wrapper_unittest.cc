@@ -53,7 +53,7 @@ class CodecWrapperTest : public testing::Test {
         .WillByDefault(Return(OkStatus()));
 
     uint8_t data = 0;
-    fake_decoder_buffer_ = DecoderBuffer::CopyFrom(&data, 1);
+    fake_decoder_buffer_ = DecoderBuffer::CopyFrom(base::span_from_ref(data));
 
     // May fail.
     other_thread_.Start();

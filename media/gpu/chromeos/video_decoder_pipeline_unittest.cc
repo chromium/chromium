@@ -297,10 +297,8 @@ class VideoDecoderPipelineTest
     // GetDecryptor() will be called again, so set that expectation.
     EXPECT_CALL(cdm_context_, GetDecryptor())
         .WillRepeatedly(Return(&decryptor_));
-    encrypted_buffer_ =
-        DecoderBuffer::CopyFrom(kEncryptedData, std::size(kEncryptedData));
-    transcrypted_buffer_ = DecoderBuffer::CopyFrom(
-        kTranscryptedData, std::size(kTranscryptedData));
+    encrypted_buffer_ = DecoderBuffer::CopyFrom(kEncryptedData);
+    transcrypted_buffer_ = DecoderBuffer::CopyFrom(kTranscryptedData);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -547,8 +545,8 @@ TEST_F(VideoDecoderPipelineTest, TranscryptThenEos) {
 
 TEST_F(VideoDecoderPipelineTest, TranscryptReset) {
   InitializeForTranscrypt();
-  scoped_refptr<DecoderBuffer> encrypted_buffer2 = DecoderBuffer::CopyFrom(
-      &kEncryptedData[1], std::size(kEncryptedData) - 1);
+  scoped_refptr<DecoderBuffer> encrypted_buffer2 =
+      DecoderBuffer::CopyFrom(base::span(kEncryptedData).subspan(1));
   // Send in a buffer, but don't invoke the Decrypt callback so it stays as
   // pending. Then send in 2 more buffers so they are in the queue.
   {
@@ -995,20 +993,20 @@ TEST_F(VideoDecoderPipelineTest, SplitVp9Superframe) {
       32,
   };
 
-  scoped_refptr<DecoderBuffer> superframe_buffer = DecoderBuffer::CopyFrom(
-      kEncryptedSuperframe, sizeof(kEncryptedSuperframe));
+  scoped_refptr<DecoderBuffer> superframe_buffer =
+      DecoderBuffer::CopyFrom(kEncryptedSuperframe);
   superframe_buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
       "fakekey", std::string(16, '0'),
       {SubsampleEntry(4, 16), SubsampleEntry(6, 16), SubsampleEntry(4, 0)}));
 
   std::string iv(16, '0');
   scoped_refptr<DecoderBuffer> frame0_buffer =
-      DecoderBuffer::CopyFrom(kEncryptedFrame0, sizeof(kEncryptedFrame0));
+      DecoderBuffer::CopyFrom(kEncryptedFrame0);
   frame0_buffer->set_decrypt_config(
       DecryptConfig::CreateCencConfig("fakekey", iv, {SubsampleEntry(4, 16)}));
 
   scoped_refptr<DecoderBuffer> frame1_buffer =
-      DecoderBuffer::CopyFrom(kEncryptedFrame1, sizeof(kEncryptedFrame1));
+      DecoderBuffer::CopyFrom(kEncryptedFrame1);
   // The IV should be incremented by one.
   iv[15]++;
   frame1_buffer->set_decrypt_config(

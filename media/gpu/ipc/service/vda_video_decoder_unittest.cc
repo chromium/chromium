@@ -47,11 +47,9 @@ namespace media {
 namespace {
 
 constexpr uint8_t kData[] = "foo";
-constexpr size_t kDataSize = std::size(kData);
 
 scoped_refptr<DecoderBuffer> CreateDecoderBuffer(base::TimeDelta timestamp) {
-  scoped_refptr<DecoderBuffer> buffer =
-      DecoderBuffer::CopyFrom(kData, kDataSize);
+  scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(kData);
   buffer->set_timestamp(timestamp);
   return buffer;
 }

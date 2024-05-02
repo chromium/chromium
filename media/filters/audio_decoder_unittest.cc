@@ -277,7 +277,7 @@ class AudioDecoderTest
     ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
 
     scoped_refptr<DecoderBuffer> buffer =
-        DecoderBuffer::CopyFrom(packet->data, packet->size);
+        DecoderBuffer::CopyFrom(AVPacketData(*packet));
     buffer->set_timestamp(ConvertFromTimeBase(
         reader_->GetAVStreamForTesting()->time_base, packet->pts));
     buffer->set_duration(ConvertFromTimeBase(

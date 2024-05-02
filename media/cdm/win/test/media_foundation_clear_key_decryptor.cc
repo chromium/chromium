@@ -7,6 +7,8 @@
 #include <mfapi.h>
 #include <mferror.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_propvariant.h"
@@ -661,7 +663,11 @@ HRESULT MediaFoundationClearKeyDecryptor::GenerateDecoderBufferFromSample(
   BYTE* mf_buffer_data = nullptr;
   DWORD current_length = 0;
   RETURN_IF_FAILED(mf_buffer->Lock(&mf_buffer_data, nullptr, &current_length));
-  auto decoder_buffer = DecoderBuffer::CopyFrom(mf_buffer_data, current_length);
+  auto decoder_buffer = DecoderBuffer::CopyFrom(
+      // SAFETY: `IMFMediaBuffer::Lock` returns the length of `mf_buffer_data`
+      // as `current_length`.
+      // https://learn.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfmediabuffer-lock
+      UNSAFE_BUFFERS(base::span(mf_buffer_data, current_length)));
   RETURN_IF_FAILED(mf_buffer->Unlock());
 
   UINT32 clean_point = 0;

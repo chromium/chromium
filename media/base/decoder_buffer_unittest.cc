@@ -43,8 +43,7 @@ TEST(DecoderBufferTest, CopyFrom) {
   const uint8_t kData[] = "hello";
   const size_t kDataSize = std::size(kData);
 
-  scoped_refptr<DecoderBuffer> buffer2(DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(&kData), kDataSize));
+  scoped_refptr<DecoderBuffer> buffer2(DecoderBuffer::CopyFrom(kData));
   ASSERT_TRUE(buffer2.get());
   EXPECT_NE(kData, buffer2->data());
   EXPECT_EQ(buffer2->size(), kDataSize);

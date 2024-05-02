@@ -202,7 +202,7 @@ class RawVideo::VP9Decoder {
     for (size_t i = before_keyframe_index; i < next_keyframe_index; ++i) {
       base::span<const uint8_t> chunk = vp9_data_->chunks[i];
       vpx_decoder_->Decode(
-          DecoderBuffer::CopyFrom(chunk.data(), chunk.size()),
+          DecoderBuffer::CopyFrom(chunk),
           base::BindOnce([](DecoderStatus* out_status,
                             DecoderStatus status) { *out_status = status; },
                          &decode_status));

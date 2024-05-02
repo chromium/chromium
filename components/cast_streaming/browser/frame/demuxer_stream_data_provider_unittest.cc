@@ -52,17 +52,17 @@ class DemuxerStreamDataProviderTest : public testing::Test {
     data_provider_->SetClient(client_.weak_factory_.GetWeakPtr());
 
     std::vector<uint8_t> data = {1, 2, 3};
-    first_buffer_ = media::DecoderBuffer::CopyFrom(data.data(), 3);
+    first_buffer_ = media::DecoderBuffer::CopyFrom(data);
     first_buffer_->set_duration(base::Seconds(1));
     first_buffer_->set_timestamp(base::Seconds(2));
 
     data = {42, 43, 44};
-    second_buffer_ = media::DecoderBuffer::CopyFrom(data.data(), 3);
+    second_buffer_ = media::DecoderBuffer::CopyFrom(data);
     second_buffer_->set_duration(base::Seconds(32));
     second_buffer_->set_timestamp(base::Seconds(42));
 
     data = {7, 8, 9};
-    third_buffer_ = media::DecoderBuffer::CopyFrom(data.data(), 3);
+    third_buffer_ = media::DecoderBuffer::CopyFrom(data);
     third_buffer_->set_duration(base::Seconds(10));
     third_buffer_->set_timestamp(base::Seconds(11));
 

@@ -36,8 +36,7 @@ EncodedVideoChunk* EncodedVideoChunk::Create(ScriptState* script_state,
         std::make_unique<ArrayBufferContentsExternalMemory>(
             std::move(buffer_contents), array_span));
   } else {
-    buffer =
-        media::DecoderBuffer::CopyFrom(array_span.data(), array_span.size());
+    buffer = media::DecoderBuffer::CopyFrom(array_span);
   }
   DCHECK(buffer);
 

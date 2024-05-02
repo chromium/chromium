@@ -44,7 +44,7 @@ class VP9SuperFrameBitstreamFilterTest : public testing::Test {
     auto packet = ScopedAVPacket::Allocate();
     while (av_read_frame(glue_->format_context(), packet.get()) >= 0) {
       if (packet->stream_index == stream_index) {
-        auto buffer = DecoderBuffer::CopyFrom(packet->data, packet->size);
+        auto buffer = DecoderBuffer::CopyFrom(AVPacketData(*packet));
         av_packet_unref(packet.get());
         return buffer;
       }

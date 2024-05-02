@@ -1194,12 +1194,11 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
   std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
       whole_frames;
 
-  auto* buffer_pointer = buffer->data();
-  auto remaining_buffer_size = buffer->size();
+  auto remaining = base::span(*buffer);
 
   do {
     const auto nalu_info =
-        FindH264FrameBoundary(buffer_pointer, remaining_buffer_size);
+        FindH264FrameBoundary(remaining.data(), remaining.size());
     if (!nalu_info.has_value()) {
       LOG(ERROR) << "Failed parsing H.264 DecoderBuffer";
       std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
@@ -1211,30 +1210,28 @@ H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
     if (nalu_info->is_start_of_new_frame && HasFragments()) {
       VLOGF(4) << frame_fragments_.size()
                << " currently stored frame fragment(s) can be reassembled.";
-      whole_frames.emplace_back(std::make_pair(
-          ReassembleFragments(frame_fragments_), base::DoNothing()));
+      whole_frames.emplace_back(ReassembleFragments(frame_fragments_),
+                                base::DoNothing());
     }
 
     if (nalu_info->is_whole_frame) {
       VLOGF(3) << "Found a whole frame, size=" << found_nalu_size << " bytes";
-      whole_frames.emplace_back(std::make_pair(
-          DecoderBuffer::CopyFrom(buffer_pointer, found_nalu_size),
-          base::DoNothing()));
+      whole_frames.emplace_back(
+          DecoderBuffer::CopyFrom(remaining.first(found_nalu_size)),
+          base::DoNothing());
       whole_frames.back().first->set_timestamp(buffer->timestamp());
 
-      buffer_pointer += found_nalu_size;
-      remaining_buffer_size -= found_nalu_size;
+      remaining = remaining.subspan(found_nalu_size);
       continue;
     }
 
     VLOGF(4) << "This was a frame fragment; storing it for later reassembly.";
     frame_fragments_.emplace_back(
-        DecoderBuffer::CopyFrom(buffer_pointer, found_nalu_size));
+        DecoderBuffer::CopyFrom(remaining.first(found_nalu_size)));
     frame_fragments_.back()->set_timestamp(buffer->timestamp());
 
-    buffer_pointer += found_nalu_size;
-    remaining_buffer_size -= found_nalu_size;
-  } while (remaining_buffer_size);
+    remaining = remaining.subspan(found_nalu_size);
+  } while (!remaining.empty());
 
   // |decode_cb| is used to signal to our client that encoded chunks have been
   // "accepted", and that we are ready to receive more. If we have found (some)

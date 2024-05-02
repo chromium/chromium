@@ -5,10 +5,13 @@
 #include "media/cdm/cdm_adapter.h"
 
 #include <stddef.h>
+
 #include <iomanip>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -446,9 +449,10 @@ void CdmAdapter::Decrypt(StreamType stream_type,
     return;
   }
 
-  scoped_refptr<DecoderBuffer> decrypted_buffer(
-      DecoderBuffer::CopyFrom(decrypted_block->DecryptedBuffer()->Data(),
-                              decrypted_block->DecryptedBuffer()->Size()));
+  scoped_refptr<DecoderBuffer> decrypted_buffer(DecoderBuffer::CopyFrom(
+      // SAFETY: `Data()` must return a buffer of `Size()` bytes.
+      UNSAFE_BUFFERS(base::span(decrypted_block->DecryptedBuffer()->Data(),
+                                decrypted_block->DecryptedBuffer()->Size()))));
   decrypted_buffer->set_timestamp(
       base::Microseconds(decrypted_block->Timestamp()));
   std::move(decrypt_cb).Run(Decryptor::kSuccess, std::move(decrypted_buffer));

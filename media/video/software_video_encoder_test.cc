@@ -525,7 +525,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&, this](VideoEncoderOutput output,
                 std::optional<VideoEncoder::CodecDescription> desc) {
-        auto buffer = DecoderBuffer::CopyFrom(output.data.data(), output.size);
+        auto buffer = DecoderBuffer::CopyFrom(output.data.first(output.size));
         buffer->set_timestamp(output.timestamp);
         buffer->set_is_key_frame(output.key_frame);
         decoder_->Decode(std::move(buffer), DecoderStatusCB());
@@ -605,7 +605,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
           return;
         }
 
-        auto buffer = DecoderBuffer::CopyFrom(output.data.data(), output.size);
+        auto buffer = DecoderBuffer::CopyFrom(output.data.first(output.size));
         buffer->set_timestamp(output.timestamp);
         buffer->set_is_key_frame(output.key_frame);
         decoder_->Decode(std::move(buffer), DecoderStatusCB());
@@ -737,7 +737,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
 
     for (auto& chunk : chunks) {
       if (chunk.temporal_id <= max_layer && !chunk.data.empty()) {
-        auto buffer = DecoderBuffer::CopyFrom(chunk.data.data(), chunk.size);
+        auto buffer = DecoderBuffer::CopyFrom(chunk.data.first(chunk.size));
         buffer->set_timestamp(chunk.timestamp);
         buffer->set_is_key_frame(chunk.key_frame);
         DecodeAndWaitForStatus(std::move(buffer));
@@ -857,7 +857,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
     for (auto& chunk : chunks) {
       if (chunk.temporal_id <= max_layer) {
         num_chunks += 1;
-        auto buffer = DecoderBuffer::CopyFrom(chunk.data.data(), chunk.size);
+        auto buffer = DecoderBuffer::CopyFrom(chunk.data.first(chunk.size));
         buffer->set_timestamp(chunk.timestamp);
         buffer->set_is_key_frame(chunk.key_frame);
         DecodeAndWaitForStatus(std::move(buffer));
@@ -1024,7 +1024,7 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
   VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           std::optional<VideoEncoder::CodecDescription> desc) {
-        auto buffer = DecoderBuffer::CopyFrom(output.data.data(), output.size);
+        auto buffer = DecoderBuffer::CopyFrom(output.data.first(output.size));
         buffer->set_timestamp(output.timestamp);
         buffer->set_is_key_frame(output.key_frame);
         decoder_->Decode(std::move(buffer), DecoderStatusCB());
@@ -1246,7 +1246,7 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
                      chunk.desc.value());
     }
     auto& output = chunk.output;
-    auto buffer = DecoderBuffer::CopyFrom(output.data.data(), output.size);
+    auto buffer = DecoderBuffer::CopyFrom(output.data.first(output.size));
     buffer->set_timestamp(output.timestamp);
     buffer->set_is_key_frame(output.key_frame);
     DecodeAndWaitForStatus(std::move(buffer));

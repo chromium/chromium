@@ -525,8 +525,7 @@ void ContentDecryptionModuleAdapter::OnDecrypt(
   }
 
   scoped_refptr<media::DecoderBuffer> decrypted =
-      media::DecoderBuffer::CopyFrom(decrypted_data.data(),
-                                     decrypted_data.size());
+      media::DecoderBuffer::CopyFrom(decrypted_data);
   // Copy the auxiliary fields.
   decrypted->set_timestamp(encrypted->timestamp());
   decrypted->set_duration(encrypted->duration());

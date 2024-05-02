@@ -18,20 +18,14 @@ DecoderBuffer::TimeInfo::TimeInfo(const TimeInfo&) = default;
 DecoderBuffer::TimeInfo& DecoderBuffer::TimeInfo::operator=(const TimeInfo&) =
     default;
 
-DecoderBuffer::DecoderBuffer(size_t size) : size_(size), is_key_frame_(false) {
+DecoderBuffer::DecoderBuffer(size_t size) : size_(size) {
   Initialize();
 }
 
-DecoderBuffer::DecoderBuffer(const uint8_t* data, size_t size)
-    : size_(size), is_key_frame_(false) {
-  if (!data) {
-    CHECK_EQ(size_, 0u);
-    return;
-  }
-
+DecoderBuffer::DecoderBuffer(base::span<const uint8_t> data)
+    : size_(data.size()) {
   Initialize();
-
-  memcpy(data_.data(), data, size_);
+  data_.copy_from(data);
 }
 
 DecoderBuffer::DecoderBuffer(base::HeapArray<uint8_t> data, size_t size)
@@ -60,11 +54,9 @@ void DecoderBuffer::Initialize() {
 }
 
 // static
-scoped_refptr<DecoderBuffer> DecoderBuffer::CopyFrom(const uint8_t* data,
-                                                     size_t data_size) {
-  // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
-  CHECK(data);
-  return base::WrapRefCounted(new DecoderBuffer(data, data_size));
+scoped_refptr<DecoderBuffer> DecoderBuffer::CopyFrom(
+    base::span<const uint8_t> data) {
+  return base::WrapRefCounted(new DecoderBuffer(data));
 }
 
 // static

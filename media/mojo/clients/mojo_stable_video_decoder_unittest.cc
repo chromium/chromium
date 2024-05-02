@@ -570,7 +570,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
   constexpr bool kIsKeyFrame = true;
   constexpr uint64_t kSecureHandle = 42;
   scoped_refptr<DecoderBuffer> decoder_buffer_to_send =
-      DecoderBuffer::CopyFrom(kEncodedData, std::size(kEncodedData));
+      DecoderBuffer::CopyFrom(kEncodedData);
   ASSERT_TRUE(decoder_buffer_to_send);
   decoder_buffer_to_send->set_timestamp(kTimestamp);
   decoder_buffer_to_send->set_duration(kDuration);

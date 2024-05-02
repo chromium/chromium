@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -88,23 +90,22 @@ AudioFrameHeader FindNextMp3Header(const uint8_t* data, size_t data_size) {
 
 }  // namespace
 
-BufferList Mp3SegmenterForTest(const uint8_t* data, size_t data_size) {
-  size_t offset = 0;
+BufferList Mp3SegmenterForTest(const uint8_t* data_ptr, size_t data_size) {
+  // TODO(crbug.com/40284755): These functions should be based on span.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, data_size));
   BufferList audio_frames;
   base::TimeDelta timestamp;
 
   while (true) {
-    AudioFrameHeader header = FindNextMp3Header(&data[offset],
-                                                data_size - offset);
-    if (header.frame_size == 0)
+    AudioFrameHeader header = FindNextMp3Header(data.data(), data.size());
+    if (header.frame_size == 0) {
       break;
+    }
 
-    header.offset += offset;
-    offset = header.offset + header.frame_size;
-
-    scoped_refptr< ::media::DecoderBuffer> buffer(
+    scoped_refptr<::media::DecoderBuffer> buffer(
         ::media::DecoderBuffer::CopyFrom(
-            &data[header.offset], header.frame_size));
+            data.subspan(header.offset, header.frame_size)));
+    data = data.subspan(header.offset + header.frame_size);
     buffer->set_timestamp(timestamp);
     audio_frames.push_back(
         scoped_refptr<DecoderBufferBase>(new DecoderBufferAdapter(buffer)));
@@ -132,7 +133,9 @@ H264AccessUnit::H264AccessUnit()
     poc(0) {
 }
 
-BufferList H264SegmenterForTest(const uint8_t* data, size_t data_size) {
+BufferList H264SegmenterForTest(const uint8_t* data_ptr, size_t data_size) {
+  // TODO(crbug.com/40284755): These functions should be based on span.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, data_size));
   BufferList video_frames;
   std::list<H264AccessUnit> access_unit_list;
   H264AccessUnit access_unit;
@@ -141,7 +144,7 @@ BufferList H264SegmenterForTest(const uint8_t* data, size_t data_size) {
   int pic_order_cnt_msb = 0;
 
   std::unique_ptr<::media::H264Parser> h264_parser(new ::media::H264Parser());
-  h264_parser->SetStream(data, data_size);
+  h264_parser->SetStream(data_ptr, data_size);
 
   while (true) {
     bool is_eos = false;
@@ -161,7 +164,7 @@ BufferList H264SegmenterForTest(const uint8_t* data, size_t data_size) {
 
     // To get the NALU syncword offset, substract 3 or 4
     // which corresponds to the possible syncword lengths.
-    size_t nalu_offset = nalu.data - data;
+    size_t nalu_offset = nalu.data - data_ptr;
     nalu_offset -= 3;
     if (nalu_offset > 0 && data[nalu_offset-1] == 0)
       nalu_offset--;
@@ -256,8 +259,8 @@ BufferList H264SegmenterForTest(const uint8_t* data, size_t data_size) {
   base::TimeDelta poc_duration = base::Milliseconds(20);
   for (std::list<H264AccessUnit>::iterator it = access_unit_list.begin();
        it != access_unit_list.end(); ++it) {
-    scoped_refptr< ::media::DecoderBuffer> buffer(
-        ::media::DecoderBuffer::CopyFrom(&data[it->offset], it->size));
+    scoped_refptr<::media::DecoderBuffer> buffer(
+        ::media::DecoderBuffer::CopyFrom(data.subspan(it->offset, it->size)));
     buffer->set_timestamp(it->poc * poc_duration);
     video_frames.push_back(
         scoped_refptr<DecoderBufferBase>(new DecoderBufferAdapter(buffer)));

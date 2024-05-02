@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -223,8 +225,7 @@ scoped_refptr<DecoderBuffer> AV1DecoderTest::ReadDecoderBuffer(
   std::string bitstream;
 
   EXPECT_TRUE(base::ReadFileToString(input_file, &bitstream));
-  auto buffer = DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(bitstream.data()), bitstream.size());
+  auto buffer = DecoderBuffer::CopyFrom(base::as_byte_span(bitstream));
   EXPECT_TRUE(!!buffer);
   return buffer;
 }
@@ -247,7 +248,8 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadIVF(
   const uint8_t* data;
   while (ivf_parser.ParseNextFrame(&ivf_frame_header, &data)) {
     buffers.push_back(DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(data), ivf_frame_header.frame_size));
+        // TODO(crbug.com/40284755): `ParseNextFrame` should return a span.
+        UNSAFE_BUFFERS(base::span(data, ivf_frame_header.frame_size))));
   }
   return buffers;
 }
@@ -280,7 +282,7 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadWebm(
   auto packet = ScopedAVPacket::Allocate();
   while (av_read_frame(glue.format_context(), packet.get()) >= 0) {
     if (packet->stream_index == stream_index) {
-      buffers.push_back(DecoderBuffer::CopyFrom(packet->data, packet->size));
+      buffers.push_back(DecoderBuffer::CopyFrom(AVPacketData(*packet)));
     }
     av_packet_unref(packet.get());
   }
@@ -289,9 +291,8 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadWebm(
 
 TEST_F(AV1DecoderTest, DecodeInvalidOBU) {
   std::string kInvalidData = "ThisIsInvalidData";
-  auto kInvalidBuffer = DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(kInvalidData.data()),
-      kInvalidData.size());
+  auto kInvalidBuffer =
+      DecoderBuffer::CopyFrom(base::as_byte_span(kInvalidData));
   std::vector<DecodeResult> results = Decode(kInvalidBuffer);
   std::vector<DecodeResult> expected = {DecodeResult::kDecodeError};
   EXPECT_EQ(results, expected);

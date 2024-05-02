@@ -66,7 +66,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
 
   // 1. To DecoderBuffer
   scoped_refptr<media::DecoderBuffer> input_buffer =
-      media::DecoderBuffer::CopyFrom(buffer, std::size(buffer));
+      media::DecoderBuffer::CopyFrom(buffer);
   input_buffer->set_timestamp(pts);
   input_buffer->set_is_key_frame(true);
   input_buffer->WritableSideData().alpha_data.assign(std::begin(side_buffer),
