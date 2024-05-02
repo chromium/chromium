@@ -563,13 +563,8 @@ void ChromeManagementAPIDelegate::EnableExtension(
   // from the extensions management page (see `ManagementSetEnabledFunction`).
   CHECK(extension);
 
-  // We add approval for the extension here under the assumption that prior
-  // to this point, the supervised child user has already been prompted
-  // for, and received parent permission to install the extension.
   extensions::SupervisedUserExtensionsDelegate* extensions_delegate =
       GetSupervisedUserExtensionsDelegateFromContext(context);
-
-  extensions_delegate->AddExtensionApproval(*extension);
   extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
   extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/true);
 

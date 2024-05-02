@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/types/optional_ref.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
@@ -34,6 +35,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -1110,6 +1112,76 @@ class ManagementApiSupervisedUserTest
       nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Tests that locally approved extensions (on the feature release of
+// `kEnableSupervisedUserSkipParentApprovalToInstallExtensions`) can be
+// enabled by the supervised user. The enabling action does not grant parental
+// approval. Prevents regressions to b/336759592.
+TEST_P(ManagementApiSupervisedUserTest,
+       SetEnabled_SetEnabledForLocallyApprovedExtension) {
+  // Preconditions.
+  ASSERT_TRUE(profile()->IsChild());
+  base::HistogramTester histogram_tester;
+
+  // Install an extension.
+  base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
+  base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
+  base::FilePath path = base_path.AppendASCII("v1");
+  const Extension* extension =
+      PackAndInstallCRX(path, pem_path, INSTALL_WITHOUT_LOAD);
+  ASSERT_TRUE(extension);
+  const ExtensionId& extension_id = extension->id();
+
+  bool is_locally_parent_approved = false;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (IsManagedBySwitch(ExtensionManagementSwitch::kManagedByExtensions)) {
+    // Simulate a local approval grant for this extension.
+    base::Value::Dict locally_approved;
+    locally_approved.Set(extension_id, true);
+    profile()->GetPrefs()->SetDict(
+        prefs::kSupervisedUserLocallyParentApprovedExtensions,
+        std::move(locally_approved));
+    is_locally_parent_approved = true;
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+  // Start with an initially disabled extension.
+  ASSERT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+  ASSERT_EQ(supervised_user_delegate_->IsExtensionAllowedByParent(*extension),
+            is_locally_parent_approved);
+
+  // Try to enable it. If the extension is locally approved (Win/Linux/Mac when
+  // managed by "Extensions" switch), the enabling should succeed. Otherwise it
+  // should fail due to missing parent approval.
+  std::string error;
+  bool success = RunSetEnabledFunction(web_contents_.get(), extension_id,
+                                       /*use_user_gesture=*/true,
+                                       /*accept_dialog=*/true, &error);
+  EXPECT_EQ(success, is_locally_parent_approved);
+  EXPECT_EQ(error.empty(), is_locally_parent_approved);
+  EXPECT_EQ(registry()->enabled_extensions().Contains(extension_id),
+            is_locally_parent_approved);
+  EXPECT_EQ(
+      ExtensionPrefs::Get(profile())->HasDisableReason(
+          extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED),
+      !is_locally_parent_approved);
+
+  int expected_enabled_count = is_locally_parent_approved ? 1 : 0;
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::EnablementState::kEnabled,
+      expected_enabled_count);
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserExtensionsMetricsRecorder::kEnablementHistogramName,
+      expected_enabled_count);
+  // The enabling of the extension did not affect its parent approval state on
+  // Preferences level. The extensions should not have parent approval granted,
+  // even if it's locally approved on the present device.
+  EXPECT_FALSE(profile()
+                   ->GetPrefs()
+                   ->GetDict(prefs::kSupervisedUserApprovedExtensions)
+                   .contains(extension_id));
+}
 
 TEST_P(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
   // Preconditions.

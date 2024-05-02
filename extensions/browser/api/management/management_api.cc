@@ -580,6 +580,19 @@ void ManagementSetEnabledFunction::OnExtensionApprovalDone(
   // be ported to //extensions.
   switch (result) {
     case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved: {
+      // Grant parent approval.
+      extensions::SupervisedUserExtensionsDelegate*
+          supervised_user_extensions_delegate =
+              extensions::ManagementAPI::GetFactoryInstance()
+                  ->Get(browser_context())
+                  ->GetSupervisedUserExtensionsDelegate();
+      CHECK(supervised_user_extensions_delegate);
+      auto* registry = ExtensionRegistry::Get(browser_context());
+      const Extension* extension =
+          registry->GetInstalledExtension(extension_id_);
+      CHECK(extension);
+      supervised_user_extensions_delegate->AddExtensionApproval(*extension);
+
       const ManagementAPIDelegate* delegate =
           ManagementAPI::GetFactoryInstance()
               ->Get(browser_context())
