@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+load("//console-header.star", "HEADER")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builders", "cpu", "os", "reclient")
 load("//lib/ci.star", "ci")
@@ -9,7 +10,6 @@ load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
 load("//lib/xcode.star", "xcode")
-load("//console-header.star", "HEADER")
 
 luci.bucket(
     name = "reclient",
@@ -46,7 +46,23 @@ ci.defaults.set(
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
+    shadow_builderless = True,
+    shadow_free_space = None,
+    shadow_pool = "luci.chromium.try",
+    shadow_service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
+)
+
+luci.bucket(
+    name = "reclient.shadow",
+    shadows = "reclient",
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = ["mdb/foundry-x-team", "mdb/chrome-troopers"],
+        ),
+    ],
+    dynamic = True,
 )
 
 consoles.console_view(
