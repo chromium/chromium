@@ -110,8 +110,7 @@ std::unique_ptr<AshTraceDestination> GenerateTraceDestinationMemFD(
   constexpr char kMemFDDebugName[] = "ash-trace-buffer.dat";
   auto [memfd, success] = io->CreateMemFD(kMemFDDebugName, MFD_CLOEXEC);
   if (!success) {
-    LOG(ERROR) << "Failed to create memfd for '" << kMemFDDebugName
-               << "', error:" << base::safe_strerror(errno);
+    PLOG(ERROR) << "Failed to create memfd for '" << kMemFDDebugName << "'";
     return nullptr;
   }
   return std::make_unique<AshTraceDestination>(std::move(io), base::FilePath(),

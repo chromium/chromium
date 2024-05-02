@@ -32,7 +32,7 @@ constexpr char kSocketMsg[] = "socket-handle";
 
 void CloseSocket(int fd) {
   int rv = IGNORE_EINTR(close(fd));
-  DCHECK_EQ(rv, 0) << "Error closing socket: " << base::safe_strerror(errno);
+  DPCHECK(rv == 0) << "Error closing socket";
 }
 
 }  // namespace
