@@ -9,6 +9,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view.h"
@@ -333,6 +335,13 @@ CastWebView::Scoped RuntimeApplicationServiceImpl::CreateCastWebView() {
       GetFlagEntry(feature::kCastCoreIsRemoteControlMode,
                    config_.extra_features(), /*default_value=*/false);
   params->enabled_for_dev = IsEnabledForDev();
+#if BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
+  // cast_receiver::ApplicationControlsImpl constructs an instance of
+  // url_rewrite::UrlRequestRewriteRulesManager. CastWebContentsImpl should NOT
+  // construct its own instance, or UrlRequestRulesReceiver will crash when a
+  // second mojo connection is attempted.
+  params->enable_url_rewrite_rules = false;
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER) && BUILDFLAG(IS_LINUX)
   params->enable_touch_input = IsTouchInputAllowed();
   params->log_js_console_messages =
       GetFlagEntry(feature::kCastCoreLogJsConsoleMessages,
