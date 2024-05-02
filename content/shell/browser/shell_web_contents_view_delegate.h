@@ -20,6 +20,8 @@
 
 namespace content {
 
+class ShellWebContentsUIButtonHolder;
+
 class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
  public:
   explicit ShellWebContentsViewDelegate(WebContents* web_contents);
@@ -45,6 +47,11 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
   raw_ptr<WebContents> web_contents_;
 #if BUILDFLAG(IS_MAC)
   ContextMenuParams params_;
+#endif
+
+#if BUILDFLAG(IS_IOS)
+  // A hidden button used for displaying context menus.
+  std::unique_ptr<ShellWebContentsUIButtonHolder> hidden_button_;
 #endif
 
 #if defined(SHELL_USE_TOOLKIT_VIEWS)
