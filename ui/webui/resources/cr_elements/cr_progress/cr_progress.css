@@ -24,7 +24,7 @@
 #progressContainer,
 /* the stripe for the indeterminate animation*/
 :host([indeterminate]) #primaryProgress::after {
-  height: var(--paper-progress-height, 4px);
+  height: var(--cr-progress-height, 4px);
 }
 
 #primaryProgress,
@@ -38,7 +38,7 @@
 
 #progressContainer,
 :host([indeterminate]) #primaryProgress::after {
-  background: var(--paper-progress-container-color, var(--google-grey-300));
+  background: var(--cr-progress-container-color, var(--google-grey-300));
 }
 
 #primaryProgress {
@@ -48,18 +48,18 @@
 }
 
 #primaryProgress {
-  background: var(--paper-progress-active-color, var(--google-green-500));
+  background: var(--cr-progress-active-color, var(--google-green-500));
 }
 
 :host([disabled]) #primaryProgress {
-  background: var(--paper-progress-disabled-active-color,
+  background: var(--cr-progress-disabled-active-color,
                   var(--google-grey-500));
 }
 
 :host([indeterminate]:not([disabled])) #primaryProgress {
   transform-origin: right center;
   animation: indeterminate-bar
-      var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+      var(--cr-progress-indeterminate-cycle-duration, 2s) linear infinite;
 }
 
 :host([indeterminate]:not([disabled])) #primaryProgress::after {
@@ -67,7 +67,7 @@
   transform-origin: center center;
 
   animation: indeterminate-splitter
-      var(--paper-progress-indeterminate-cycle-duration, 2s) linear infinite;
+      var(--cr-progress-indeterminate-cycle-duration, 2s) linear infinite;
 }
 
 @keyframes indeterminate-bar {
