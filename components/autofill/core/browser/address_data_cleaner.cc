@@ -10,8 +10,10 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/metrics/address_data_cleaner_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -176,6 +178,42 @@ AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
     }
   }
   return min_incompatible_sets;
+}
+
+// static
+bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
+    const AutofillProfile& profile,
+    FieldType type) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillTrackProfileTokenQuality)) {
+    return false;
+  }
+  using ObservationType = ProfileTokenQuality::ObservationType;
+  // A token is considered low quality for deduplication purposes, if the
+  // majority of its observers are "bad", as defined by the switch below.
+  size_t count_good = 0, count_bad = 0;
+  for (ObservationType observation :
+       profile.token_quality().GetObservationTypesForFieldType(type)) {
+    switch (observation) {
+      case ObservationType::kAccepted:
+        count_good++;
+        break;
+      case ObservationType::kEditedToSimilarValue:
+      case ObservationType::kEditedToDifferentTokenOfSameProfile:
+      case ObservationType::kEditedToSameTokenOfOtherProfile:
+      case ObservationType::kEditedToDifferentTokenOfOtherProfile:
+      case ObservationType::kEditedFallback:
+        count_bad++;
+        break;
+      case ObservationType::kUnknown:
+      case ObservationType::kPartiallyAccepted:
+      case ObservationType::kEditedValueCleared:
+        // These observation types are considered neutral. They are irrelevant
+        // for deduplication purposes.
+        break;
+    }
+  }
+  return count_good + count_bad >= 4 && count_bad - count_good >= 2;
 }
 
 void AddressDataCleaner::ApplyDeduplicationRoutine() {

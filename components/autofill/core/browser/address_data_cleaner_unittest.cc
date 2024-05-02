@@ -10,6 +10,8 @@
 #include "components/autofill/core/browser/address_data_cleaner_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -269,6 +271,35 @@ TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
           profile, other_profiles, comparator),
       testing::UnorderedElementsAre(FieldTypeSet{EMAIL_ADDRESS},
                                     FieldTypeSet{PHONE_HOME_WHOLE_NUMBER}));
+}
+
+TEST_F(AddressDataCleanerTest, IsTokenLowQualityForDeduplicationPurposes) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillTrackProfileTokenQuality};
+  using ObservationType = ProfileTokenQuality::ObservationType;
+
+  AutofillProfile profile = test::GetFullProfile();
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FULL, ObservationType::kEditedFallback);
+  // Not enough observation.
+  EXPECT_FALSE(AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
+      profile, NAME_FULL));
+
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FULL, ObservationType::kAccepted);
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FULL, ObservationType::kEditedFallback);
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FULL, ObservationType::kEditedFallback);
+  // Enough observations, and enough of them are "bad".
+  EXPECT_TRUE(AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
+      profile, NAME_FULL));
+
+  test_api(profile.token_quality())
+      .AddObservation(NAME_FULL, ObservationType::kAccepted);
+  // Too many "good" observations for the token to be considered low quality.
+  EXPECT_FALSE(AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
+      profile, NAME_FULL));
 }
 
 }  // namespace autofill
