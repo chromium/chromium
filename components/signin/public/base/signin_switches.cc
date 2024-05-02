@@ -228,12 +228,6 @@ BASE_FEATURE(kStableDeviceId,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Enables the client-side processing of the HTTP response header
-// Google-Accounts-RemoveLocalAccount.
-BASE_FEATURE(kProcessGaiaRemoveLocalAccountHeader,
-             "ProcessGaiaRemoveLocalAccountHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables showing the enterprise dialog after every signin into a managed
 // account.
 BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,

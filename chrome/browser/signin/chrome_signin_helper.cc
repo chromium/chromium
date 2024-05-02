@@ -644,10 +644,7 @@ void ProcessAccountConsistencyResponseHeaders(ResponseAdapter* response,
   ProcessDiceResponseHeaderIfExists(response, is_off_the_record);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  if (base::FeatureList::IsEnabled(kProcessGaiaRemoveLocalAccountHeader)) {
-    ProcessRemoveLocalAccountResponseHeaderIfExists(response,
-                                                    is_off_the_record);
-  }
+  ProcessRemoveLocalAccountResponseHeaderIfExists(response, is_off_the_record);
 }
 
 std::string ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
