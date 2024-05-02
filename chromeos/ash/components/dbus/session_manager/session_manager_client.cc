@@ -136,7 +136,7 @@ base::ScopedFD CreateSharedMemoryRegionFDWithData(const std::string& data) {
   base::WritableSharedMemoryMapping mapping = region.Map();
   if (!mapping.IsValid())
     return base::ScopedFD();
-  memcpy(mapping.memory(), data.data(), data.size());
+  mapping.GetMemoryAsSpan<uint8_t>().copy_from(base::as_byte_span(data));
   return base::WritableSharedMemoryRegion::TakeHandleForSerialization(
              std::move(region))
       .PassPlatformHandle()
