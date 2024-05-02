@@ -29,6 +29,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/base/accelerators/ash/right_alt_event_property.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -268,6 +269,9 @@ using KeyBrowserBack = TestKey<ui::DomCode::BROWSER_BACK,
 using KeyBrowserForward = TestKey<ui::DomCode::BROWSER_FORWARD,
                                   ui::DomKey::BROWSER_FORWARD,
                                   ui::VKEY_BROWSER_FORWARD>;
+using KeyRightAlt = TestKey<ui::DomCode::LAUNCH_ASSISTANT,
+                            ui::DomKey::LAUNCH_ASSISTANT,
+                            ui::VKEY_RIGHT_ALT>;
 
 // Modifier keys.
 using KeyLShift = TestKey<ui::DomCode::SHIFT_LEFT,
@@ -704,10 +708,14 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
     for (const auto& rewritten_event : rewritten_events) {
       if (rewritten_event->IsKeyEvent()) {
         auto* rewritten_key_event = rewritten_event->AsKeyEvent();
-        result.push_back(TestKeyEvent{
-            rewritten_key_event->type(), rewritten_key_event->code(),
-            rewritten_key_event->GetDomKey(), rewritten_key_event->key_code(),
-            rewritten_key_event->flags()});
+        ui::KeyboardCode key_code =
+            ui::HasRightAltProperty(*rewritten_key_event)
+                ? ui::VKEY_RIGHT_ALT
+                : rewritten_key_event->key_code();
+        result.push_back(TestKeyEvent{rewritten_key_event->type(),
+                                      rewritten_key_event->code(),
+                                      rewritten_key_event->GetDomKey(),
+                                      key_code, rewritten_key_event->flags()});
 
         // MouseWheelEvent must be checked before MouseEvent as its a subset of
         // mouse events.
@@ -1100,6 +1108,17 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Inputs.Mouse.InvalidRegistration.NonCombo",
       KeyB::Pressed().keycode, 1);
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest, RightAltRewrite) {
+  mouse_->settings->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::VKEY_RIGHT_ALT, static_cast<int>(ui::DomCode::LAUNCH_ASSISTANT),
+          static_cast<int>(ui::DomKey::LAUNCH_ASSISTANT), ui::EF_NONE,
+          /*key_display=*/""))));
+  EXPECT_EQ(KeyRightAlt::Typed(ui::EF_IS_CUSTOMIZED_FROM_BUTTON),
+            RunRewriter(KeyDigit0::Typed()));
 }
 
 class MouseButtonObserverTest

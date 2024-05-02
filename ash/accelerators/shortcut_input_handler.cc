@@ -9,6 +9,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/accelerators/ash/right_alt_event_property.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -23,6 +24,29 @@ namespace {
 constexpr int kKeyboardModifierFlags = ui::EF_CONTROL_DOWN |
                                        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN |
                                        ui::EF_ALT_DOWN;
+
+ui::KeyboardCode RetrieveKeyCode(const ui::KeyEvent& event) {
+  // Remap positional keys in the current layout to the corresponding US layout
+  // KeyboardCode.
+  ui::KeyboardCode key_code =
+      ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
+          event.code(), event.key_code());
+  if (key_code == ui::VKEY_UNKNOWN) {
+    key_code = event.key_code();
+  }
+  // TODO(b/327436148): Fix display mirror icon
+  if (key_code == ui::VKEY_UNKNOWN &&
+      event.code() == ui::DomCode::SHOW_ALL_WINDOWS) {
+    // Show all windows is through VKEY_MEDIA_LAUNCH_APP1.
+    key_code = ui::VKEY_MEDIA_LAUNCH_APP1;
+  }
+
+  if (ui::HasRightAltProperty(event)) {
+    key_code = ui::VKEY_RIGHT_ALT;
+  }
+
+  return key_code;
+}
 
 }  // namespace
 
@@ -63,15 +87,7 @@ void ShortcutInputHandler::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  // Remap positional keys in the current layout to the corresponding US layout
-  // KeyboardCode.
-  ui::KeyboardCode key_code =
-      ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
-          event->code(), event->key_code());
-  if (key_code == ui::VKEY_UNKNOWN) {
-    key_code = event->key_code();
-  }
-
+  const ui::KeyboardCode key_code = RetrieveKeyCode(*event);
   mojom::KeyEvent key_event(key_code, static_cast<int>(event->code()),
                             static_cast<int>(event->GetDomKey()),
                             event->flags() & kKeyboardModifierFlags,
@@ -97,25 +113,7 @@ void ShortcutInputHandler::OnPrerewriteKeyInputEvent(
     return;
   }
 
-  // Remap positional keys in the current layout to the corresponding US layout
-  // KeyboardCode.
-  ui::KeyboardCode key_code =
-      ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
-          event.code(), event.key_code());
-  if (key_code == ui::VKEY_UNKNOWN) {
-    key_code = event.key_code();
-  }
-
-  // Some key codes have a Dom code but no VKEY value assigned. They're mapped
-  // to VKEY values here.
-  if (key_code == ui::VKEY_UNKNOWN) {
-    if (event.code() == ui::DomCode::SHOW_ALL_WINDOWS) {
-      // Show all windows is through VKEY_MEDIA_LAUNCH_APP1.
-      key_code = ui::VKEY_MEDIA_LAUNCH_APP1;
-    }
-    // TODO(b/327436148): Fix display mirror icon
-  }
-
+  const ui::KeyboardCode key_code = RetrieveKeyCode(event);
   mojom::KeyEvent key_event(key_code, static_cast<int>(event.code()),
                             static_cast<int>(event.GetDomKey()),
                             event.flags() & kKeyboardModifierFlags,

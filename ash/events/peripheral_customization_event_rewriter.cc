@@ -30,6 +30,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "ui/base/accelerators/ash/right_alt_event_property.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -327,12 +328,20 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
     applied_modifier_key_flag = ui::EF_NONE;
   }
 
+  const bool is_rewrite_to_right_alt = key_event.vkey == ui::VKEY_RIGHT_ALT;
+  ui::KeyboardCode key_code = key_event.vkey;
+  if (is_rewrite_to_right_alt) {
+    key_code = ui::VKEY_ASSISTANT;
+  }
   auto rewritten_event = std::make_unique<ui::KeyEvent>(
-      event_type, key_event.vkey, static_cast<ui::DomCode>(key_event.dom_code),
+      event_type, key_code, static_cast<ui::DomCode>(key_event.dom_code),
       applied_modifier_key_flag | other_modifiers_to_apply | event.flags() |
           ui::EF_IS_CUSTOMIZED_FROM_BUTTON,
       static_cast<ui::DomKey>(key_event.dom_key), event.time_stamp());
   rewritten_event->set_source_device_id(event.source_device_id());
+  if (is_rewrite_to_right_alt) {
+    ui::SetRightAltProperty(rewritten_event.get());
+  }
 
   return GenerateFullKeyEventSequence(
       event, other_modifiers_to_apply, event.flags(),
