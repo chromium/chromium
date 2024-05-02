@@ -992,15 +992,21 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
         // Maybe report metrics. This method should only be called on Callback's executor thread and
         // after Callback's onSucceeded, onFailed and onCanceled.
         private void maybeReportMetrics() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                try {
-                    mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
-                } catch (RuntimeException e) {
-                    // Handle any issue gracefully, we should never crash due failures while
-                    // logging.
-                    Log.i(TAG, "Error while trying to log CronetTrafficInfo: ", e);
-                }
-            }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+
+            // Schedule on the internal executor, which is serialized, to ensure we're not reading
+            // data while some code running on the internal executor is still mutating it. See
+            // https://crbug.com/337260115
+            mExecutor.execute(
+                    () -> {
+                        try {
+                            mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
+                        } catch (RuntimeException e) {
+                            // Handle any issue gracefully, we should never crash due failures while
+                            // logging.
+                            Log.i(TAG, "Error while trying to log CronetTrafficInfo: ", e);
+                        }
+                    });
         }
 
         void onCanceled(final UrlResponseInfo info) {
