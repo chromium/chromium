@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
@@ -989,6 +990,22 @@ public class CustomTabIntentDataProviderTest {
         assertFalse(dataProvider.isInteractiveOmniboxAllowed());
 
         when(connection.getClientPackageNameForSession(any())).thenReturn("com.d.e.f");
+        assertFalse(dataProvider.isInteractiveOmniboxAllowed());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SEARCH_IN_CCT})
+    public void searchInCCT_notAllowedInIncognitoMode() {
+        CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES.setForTesting("com.a.b.c");
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        var dataProvider =
+                spy(new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT));
+        when(dataProvider.isIncognito()).thenReturn(true);
+
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.a.b.c");
         assertFalse(dataProvider.isInteractiveOmniboxAllowed());
     }
 
