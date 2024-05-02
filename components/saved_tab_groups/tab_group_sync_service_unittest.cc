@@ -303,6 +303,8 @@ TEST_F(TabGroupSyncServiceTest, RemoveGroupByLocalId) {
 
 TEST_F(TabGroupSyncServiceTest, RemoveGroupBySyncId) {
   // Remove the group and verify.
+  EXPECT_CALL(*tab_group_store_,
+              DeleteTabGroupIDMetadata(Eq(group_1_.saved_guid())));
   tab_group_sync_service_->RemoveGroup(group_1_.saved_guid());
   EXPECT_EQ(tab_group_sync_service_->GetGroup(group_1_.saved_guid()),
             std::nullopt);
@@ -405,6 +407,8 @@ TEST_F(TabGroupSyncServiceTest, RemoveTab) {
   EXPECT_EQ(1u, group->saved_tabs().size());
 
   // Remove the last tab. The group should be removed from the model.
+  EXPECT_CALL(*tab_group_store_,
+              DeleteTabGroupIDMetadata(Eq(group_1_.saved_guid())));
   tab_group_sync_service_->RemoveTab(local_group_id_1_, local_tab_id_1_);
   group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_FALSE(group.has_value());

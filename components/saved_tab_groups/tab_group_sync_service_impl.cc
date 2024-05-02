@@ -105,7 +105,7 @@ void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {
 void TabGroupSyncServiceImpl::RemoveGroup(const base::Uuid& sync_id) {
   VLOG(2) << __func__;
   model_->Remove(sync_id);
-  // TODO(b/336865528): Remove from mapping store.
+  tab_group_store_->DeleteTabGroupIDMetadata(sync_id);
 }
 
 void TabGroupSyncServiceImpl::UpdateVisualData(
@@ -179,9 +179,15 @@ void TabGroupSyncServiceImpl::RemoveTab(const LocalTabGroupID& group_id,
     return;
   }
 
-  // TODO(b/336865528): If it's the last tab, we will remove the group from
-  // model. We should delete from mapping store too.
-  model_->RemoveTabFromGroupLocally(group->saved_guid(), tab->saved_tab_guid());
+  base::Uuid sync_id = group->saved_guid();
+  model_->RemoveTabFromGroupLocally(sync_id, tab->saved_tab_guid());
+
+  // The group might have deleted if this was the last tab, hence we should
+  // delete it from mapping store too.
+  group = model_->Get(group_id);
+  if (!group) {
+    tab_group_store_->DeleteTabGroupIDMetadata(sync_id);
+  }
 }
 
 void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
