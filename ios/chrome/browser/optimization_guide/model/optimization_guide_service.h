@@ -150,7 +150,7 @@ class OptimizationGuideService
   // KeyedService implementation:
   void Shutdown() override;
 
-  // optimization_guide::NewOptimizationGuideDecider implementation:
+  // optimization_guide::OptimizationGuideDecider implementation:
   void CanApplyOptimizationOnDemand(
       const std::vector<GURL>& urls,
       const base::flat_set<optimization_guide::proto::OptimizationType>&
