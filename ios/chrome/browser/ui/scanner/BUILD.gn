@@ -22,14 +22,13 @@ source_set("scanner") {
   ]
   deps = [
     ":camera_state",
-    "resources:scanner_torch_off",
-    "resources:scanner_torch_on",
     "//base",
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/scanner/resources",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",

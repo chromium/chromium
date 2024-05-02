@@ -78,7 +78,6 @@ source_set("recent_tabs_ui") {
   ]
   deps = [
     ":recent_tabs_ui_constants",
-    "resources:recent_tabs_other_devices_empty",
     "//base",
     "//components/prefs",
     "//components/search_engines",
@@ -118,6 +117,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/keyboard",
+    "//ios/chrome/browser/ui/recent_tabs/resources",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/colors",

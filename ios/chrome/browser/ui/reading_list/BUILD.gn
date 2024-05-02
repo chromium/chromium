@@ -137,7 +137,6 @@ source_set("reading_list_ui") {
   ]
   deps = [
     ":reading_list_constants",
-    "resources:reading_list_empty",
     "//base",
     "//base:i18n",
     "//components/prefs",
@@ -161,6 +160,7 @@ source_set("reading_list_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/keyboard",
+    "//ios/chrome/browser/ui/reading_list/resources",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",

@@ -36,7 +36,7 @@ source_set("popup_menu_ui") {
     "//ios/chrome/browser/ui/popup_menu/public/cells",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
-    "//ios/chrome/browser/ui/resources:menu_shadow",
+    "//ios/chrome/browser/ui/resources",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/util",
     "//ui/base",

@@ -10,8 +10,6 @@ source_set("search_engine_choice_learn_more") {
     "search_engine_choice_learn_more_view_controller.mm",
   ]
   deps = [
-    "resources:search_bar_ipad",
-    "resources:search_bar_iphone",
     "//base",
     "//components/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -21,6 +19,7 @@ source_set("search_engine_choice_learn_more") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/search_engine_choice:constants",
+    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/resources",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style:utils",

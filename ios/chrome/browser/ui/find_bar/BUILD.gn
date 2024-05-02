@@ -34,7 +34,7 @@ source_set("find_bar") {
     "//ios/chrome/browser/ui/find_bar/resources",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/presenters",
-    "//ios/chrome/browser/ui/resources:menu_shadow",
+    "//ios/chrome/browser/ui/resources",
     "//ios/chrome/browser/ui/toolbar/accessory",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

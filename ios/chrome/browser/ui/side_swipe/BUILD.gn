@@ -18,7 +18,6 @@ source_set("side_swipe") {
   ]
   public_deps = [ ":gesture_recognizer" ]
   deps = [
-    "resources:side_swipe_navigation_back",
     "//base",
     "//components/feature_engagement/public",
     "//components/reading_list/core",
@@ -36,6 +35,7 @@ source_set("side_swipe") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/side_swipe/resources",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tabs/requirements",
     "//ios/chrome/browser/ui/toolbar/public",
