@@ -78,7 +78,7 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   void OnFontFetched(const KURL& url);
   void OnStartPreload(const KURL& url);
   void OnOutermostMainFrameDocumentLoad();
-  void OnWarnedUnusedPreloads(Vector<KURL> unused_preloads);
+  void OnWarnedUnusedPreloads(const Vector<KURL>& unused_preloads);
 
   using LCPCallback = base::OnceCallback<void(const Element*)>;
   void AddLCPPredictedCallback(LCPCallback callback);

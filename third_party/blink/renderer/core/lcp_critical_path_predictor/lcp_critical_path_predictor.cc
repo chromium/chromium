@@ -355,7 +355,10 @@ void LCPCriticalPathPredictor::OnOutermostMainFrameDocumentLoad() {
 }
 
 void LCPCriticalPathPredictor::OnWarnedUnusedPreloads(
-    Vector<KURL> unused_preloads) {
+    const Vector<KURL>& unused_preloads) {
+  // This should be sent in the outermost main frame. It's fine without checking
+  // |frame_->IsOutermostMainFrame()| here because the caller side
+  // LocalFrame::GetLCPP() has the outermost main frame check.
   if (!base::FeatureList::IsEnabled(features::kLCPPDeferUnusedPreload) ||
       has_sent_unused_preloads_) {
     return;
