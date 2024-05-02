@@ -112,6 +112,12 @@ AddressDataManager::~AddressDataManager() {
   CancelAllPendingQueries();
 }
 
+void AddressDataManager::Shutdown() {
+  // These classes' sync observers needs to be unregistered.
+  address_data_cleaner_.reset();
+  contact_info_precondition_checker_.reset();
+}
+
 void AddressDataManager::AddObserver(AddressDataManager::Observer* obs) {
   observers_.AddObserver(obs);
 }

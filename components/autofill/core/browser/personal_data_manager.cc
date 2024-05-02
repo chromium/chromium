@@ -80,14 +80,8 @@ void PersonalDataManager::Shutdown() {
   if (history_service_)
     history_service_observation_.Reset();
   history_service_ = nullptr;
-
-  address_data_manager_observation_.Reset();
-  payments_data_manager_observation_.Reset();
-
-  // The following members register observers, which needs to be unregistered
-  // before the dependent service's `Shutdown()`.
-  address_data_manager_.reset();
-  payments_data_manager_.reset();
+  address_data_manager_->Shutdown();
+  payments_data_manager_->Shutdown();
 }
 
 void PersonalDataManager::OnAddressDataChanged() {

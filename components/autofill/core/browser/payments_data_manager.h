@@ -85,6 +85,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   PaymentsDataManager& operator=(const PaymentsDataManager&) = delete;
   ~PaymentsDataManager() override;
 
+  // Only intended to be called during shutdown of the parent `KeyedService`.
+  void Shutdown();
+
   void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 

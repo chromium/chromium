@@ -261,6 +261,10 @@ PaymentsDataManager::~PaymentsDataManager() {
   CancelPendingServerQueries();
 }
 
+void PaymentsDataManager::Shutdown() {
+  sync_observer_.Reset();
+}
+
 void PaymentsDataManager::OnAutofillChangedBySync(
     syncer::ModelType model_type) {
   if (model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
