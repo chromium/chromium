@@ -3687,8 +3687,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetLastCommittedSiteInfo(const UrlInfo& url_info);
 
   // Clears any existing policy and constructs a new policy for this frame,
-  // based on its parent frame.
-  void ResetPermissionsPolicy();
+  // based on its parent frame and the parsed `header_policy`.
+  void ResetPermissionsPolicy(
+      const blink::ParsedPermissionsPolicy& header_policy);
 
   // Runs |callback| for all the local roots immediately under this frame, i.e.
   // local roots which are under this frame and their first ancestor which is a

@@ -533,7 +533,7 @@ TEST_F(NavigationRequestTest, SharedStorageWritable) {
       blink::mojom::PermissionsPolicyFeature::kSharedStorage);
   FencedFrameProperties new_props = FencedFrameProperties(new_config);
   fenced_frame_node->set_fenced_frame_properties(new_props);
-  fenced_frame_root->ResetPermissionsPolicy();
+  fenced_frame_root->ResetPermissionsPolicy({});
 
   // Append a child frame to the fenced frame root and set its
   // `shared_storage_writable` attribute to true.

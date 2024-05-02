@@ -1821,7 +1821,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // Verify is_local_root() now indicates whether this frame is a local root or
   // not. It is safe to use this method anywhere beyond this point.
   DCHECK_EQ(setup_local_render_widget_host, is_local_root());
-  ResetPermissionsPolicy();
+  ResetPermissionsPolicy({});
 
   // New RenderFrameHostImpl are put in their own virtual browsing context
   // group. Then, they can inherit from:
@@ -4583,7 +4583,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   // permissions policy's state depends on the origin, so the PermissionsPolicy
   // object could be configured incorrectly if it were initialized before
   // knowing the value of |last_committed_origin_|. More at crbug.com/1112959.
-  ResetPermissionsPolicy();
+  ResetPermissionsPolicy({});
 }
 
 FrameTreeNode* RenderFrameHostImpl::AddChild(
@@ -12202,7 +12202,8 @@ void RenderFrameHostImpl::CreateWebUsbService(
   WebUsbServiceImpl::Create(*this, std::move(receiver));
 }
 
-void RenderFrameHostImpl::ResetPermissionsPolicy() {
+void RenderFrameHostImpl::ResetPermissionsPolicy(
+    const blink::ParsedPermissionsPolicy& header_policy) {
   if (IsFencedFrameRoot()) {
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
         frame_tree_node()->GetFencedFrameProperties();
@@ -12212,7 +12213,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
       // permissions policies, so we create a permissions policy with every
       // permission disabled.
       permissions_policy_ = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          last_committed_origin_, /*header_policy=*/{}, {});
+          last_committed_origin_, header_policy, {});
     } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
       // Fenced frames with flexible permissions are allowed to inherit certain
       // permissions from their parent's permissions policy.
@@ -12222,7 +12223,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
           browsing_context_state_->effective_frame_policy().container_policy;
       permissions_policy_ =
           blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
-              parent_policy, /*header_policy=*/{}, container_policy,
+              parent_policy, header_policy, container_policy,
               last_committed_origin_);
     } else {
       // Fenced frames with fixed permissions have a list of required permission
@@ -12232,7 +12233,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
       // separately in
       // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
       permissions_policy_ = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          last_committed_origin_, /*header_policy=*/{},
+          last_committed_origin_, header_policy,
           fenced_frame_properties->effective_enabled_permissions());
     }
     return;
@@ -12258,8 +12259,7 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
       browsing_context_state_->effective_frame_policy().container_policy;
 
   permissions_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
-      parent_policy, /*header_policy=*/{}, container_policy,
-      last_committed_origin_);
+      parent_policy, header_policy, container_policy, last_committed_origin_);
 }
 
 void RenderFrameHostImpl::CreateAudioInputStreamFactory(
@@ -13984,7 +13984,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
         navigation_request->GetFencedFrameProperties());
   }
 
-  ResetPermissionsPolicy();
+  ResetPermissionsPolicy(params.permissions_policy_header);
 
   permissions_policy_header_ = params.permissions_policy_header;
   auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
@@ -13996,10 +13996,10 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // specifying which permissions policy features should be blocked, aka a
   // blocklist.
   if (isolation_info.is_isolated_application() && IsOutermostMainFrame()) {
+    // If we reach this code then in ResetPermissionsPolicy, we created the
+    // PermissionsPolicy object using the policy from the manifest.
     permissions_policy_->SetHeaderPolicyForIsolatedApp(
         params.permissions_policy_header);
-  } else {
-    permissions_policy_->SetHeaderPolicy(params.permissions_policy_header);
   }
   document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({
       params.document_policy_header,  // document_policy_header
