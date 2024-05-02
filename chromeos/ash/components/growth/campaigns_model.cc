@@ -51,6 +51,7 @@ inline constexpr char kMinMilestone[] = "milestone.min";
 inline constexpr char kMaxMilestone[] = "milestone.max";
 inline constexpr char kFeatureAware[] = "isFeatureAwareDevice";
 inline constexpr char kRegisteredTime[] = "registeredTime";
+inline constexpr char kDeviceAgeInHours[] = "deviceAgeInHours";
 
 // Session Targeting paths.
 inline constexpr char kSessionTargeting[] = "session";
@@ -60,6 +61,7 @@ inline constexpr char kExperimentTargetings[] = "experimentTags";
 
 // User Targeting paths.
 inline constexpr char kMinorUser[] = "isMinorUser";
+inline constexpr char kOwner[] = "isOwner";
 
 // Events Targeting paths.
 inline constexpr char kEventsTargetings[] = "events";
@@ -74,8 +76,12 @@ inline constexpr char kRuntimeTargeting[] = "runtime";
 
 // Scheduling Targeting paths.
 inline constexpr char kSchedulingTargetings[] = "schedulings";
-inline constexpr char kSchedulingStart[] = "start";
-inline constexpr char kSchedulingEnd[] = "end";
+inline constexpr char kTimeWindowStart[] = "start";
+inline constexpr char kTimeWindowEnd[] = "end";
+
+// Number Range Targeting paths.
+inline constexpr char kNumberRangeStart[] = "start";
+inline constexpr char kNumberRangeEnd[] = "end";
 
 // Opened App Targeting paths.
 inline constexpr char kAppsOpenedTargetings[] = "appsOpened";
@@ -286,6 +292,16 @@ std::unique_ptr<TimeWindowTargeting> DeviceTargeting::GetRegisteredTime()
   return std::make_unique<TimeWindowTargeting>(registered_time_dict);
 }
 
+const std::unique_ptr<NumberRangeTargeting> DeviceTargeting::GetDeviceAge()
+    const {
+  auto* number_rage_dict = GetDictCriteria(kDeviceAgeInHours);
+  if (!number_rage_dict) {
+    return nullptr;
+  }
+
+  return std::make_unique<NumberRangeTargeting>(number_rage_dict);
+}
+
 // Apps Targeting.
 AppTargeting::AppTargeting(const base::Value::Dict* app_dict)
     : app_dict_(app_dict) {}
@@ -316,7 +332,7 @@ const base::Value::List* EventsTargeting::GetEventsConditions() const {
   return config_dict_->FindList(kEventsConditions);
 }
 
-// Scheduling Targeting.
+// Time window Targeting.
 TimeWindowTargeting::TimeWindowTargeting(
     const base::Value::Dict* time_window_dict)
     : time_window_dict_(time_window_dict) {}
@@ -324,7 +340,7 @@ TimeWindowTargeting::TimeWindowTargeting(
 TimeWindowTargeting::~TimeWindowTargeting() = default;
 
 const base::Time TimeWindowTargeting::GetStartTime() const {
-  auto start = time_window_dict_->FindDouble(kSchedulingStart);
+  auto start = time_window_dict_->FindDouble(kTimeWindowStart);
   if (start.has_value()) {
     return base::Time::FromSecondsSinceUnixEpoch(start.value());
   }
@@ -333,12 +349,27 @@ const base::Time TimeWindowTargeting::GetStartTime() const {
 }
 
 const base::Time TimeWindowTargeting::GetEndTime() const {
-  auto end = time_window_dict_->FindDouble(kSchedulingEnd);
+  auto end = time_window_dict_->FindDouble(kTimeWindowEnd);
   if (end.has_value()) {
     return base::Time::FromSecondsSinceUnixEpoch(end.value());
   }
 
   return base::Time::Max();
+}
+
+// Number Range Targeting.
+NumberRangeTargeting::NumberRangeTargeting(
+    const base::Value::Dict* number_range_dict)
+    : number_range_dict_(number_range_dict) {}
+
+NumberRangeTargeting::~NumberRangeTargeting() = default;
+
+const std::optional<int> NumberRangeTargeting::GetStart() const {
+  return number_range_dict_->FindInt(kNumberRangeStart);
+}
+
+const std::optional<int> NumberRangeTargeting::GetEnd() const {
+  return number_range_dict_->FindInt(kNumberRangeEnd);
 }
 
 // Session Targeting.
@@ -353,6 +384,10 @@ const base::Value::List* SessionTargeting::GetExperimentTags() const {
 
 std::optional<bool> SessionTargeting::GetMinorUser() const {
   return GetBoolCriteria(kMinorUser);
+}
+
+std::optional<bool> SessionTargeting::GetIsOwner() const {
+  return GetBoolCriteria(kOwner);
 }
 
 // Runtime Targeting.

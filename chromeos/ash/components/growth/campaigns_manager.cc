@@ -207,6 +207,10 @@ void CampaignsManager::SetActiveUrl(const GURL& url) {
   matcher_.SetActiveUrl(url);
 }
 
+void CampaignsManager::SetIsUserOwner(bool is_user_owner) {
+  matcher_.SetIsUserOwner(is_user_owner);
+}
+
 void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
   CHECK(action);
 

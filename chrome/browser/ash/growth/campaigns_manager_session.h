@@ -43,6 +43,7 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   Profile* GetProfile();
   bool IsEligible();
   void SetupWindowObserver();
+  void OnOwnershipDetermined(bool is_user_owner);
   void OnLoadCampaignsCompleted();
 
   base::ScopedObservation<session_manager::SessionManager,

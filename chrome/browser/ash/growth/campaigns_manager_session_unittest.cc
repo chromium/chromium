@@ -10,6 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
@@ -56,6 +59,7 @@ class CampaignsManagerSessionTest : public testing::Test {
     ash::ConciergeClient::Shutdown();
 
     cros_component_manager_ = nullptr;
+    owner_settings_service_ash_ = nullptr;
     browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
     profile_manager_->DeleteAllTestingProfiles();
   }
@@ -85,6 +89,11 @@ class CampaignsManagerSessionTest : public testing::Test {
         std::move(fake_cros_component_manager));
   }
 
+  void FlushActiveProfileCallbacks(bool is_owner) {
+    DCHECK(owner_settings_service_ash_);
+    owner_settings_service_ash_->RunPendingIsOwnerCallbacksForTesting(is_owner);
+  }
+
   // Creates a test user with a testing profile and logs in.
   TestingProfile* LoginUser() {
     const AccountId account_id(
@@ -94,11 +103,19 @@ class CampaignsManagerSessionTest : public testing::Test {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
-    TestingProfile* profile = profile_manager_->CreateTestingProfile(
-        account_id.GetUserEmail(), std::move(prefs), u"Test profile",
-        /*avatar_id=*/1, TestingProfile::TestingFactories());
 
     fake_user_manager_->LoginUser(account_id);
+
+    TestingProfile* profile = profile_manager_->CreateTestingProfile(
+        account_id.GetUserEmail(),
+        {{ash::OwnerSettingsServiceAshFactory::GetInstance(),
+          base::BindRepeating(
+              &CampaignsManagerSessionTest::CreateOwnerSettingsServiceAsh,
+              base::Unretained(this))}});
+
+    owner_settings_service_ash_ =
+        ash::OwnerSettingsServiceAshFactory::GetInstance()
+            ->GetForBrowserContext(profile);
     return profile;
   }
 
@@ -111,7 +128,15 @@ class CampaignsManagerSessionTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
  private:
+  std::unique_ptr<KeyedService> CreateOwnerSettingsServiceAsh(
+      content::BrowserContext* context) {
+    return scoped_cros_settings_test_helper_.CreateOwnerSettingsService(
+        Profile::FromBrowserContext(context));
+  }
+
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
+  ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
+  raw_ptr<ash::OwnerSettingsServiceAsh> owner_settings_service_ash_;
   CampaignsManagerClientImpl client_;
 };
 
@@ -119,6 +144,7 @@ TEST_F(CampaignsManagerSessionTest, LoadCampaignsComponent) {
   LoginUser();
   auto campaigns_manager_session = CampaignsManagerSession();
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
 
   ASSERT_TRUE(
       FinishCampaignsComponentLoad(base::FilePath(kCampaignsMountPoint)));

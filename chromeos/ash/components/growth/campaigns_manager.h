@@ -70,6 +70,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // URL targeting
   void SetActiveUrl(const GURL& url);
 
+  // Set whether the current user is device owner.
+  void SetIsUserOwner(bool is_user_owner);
+
   // Select action performer based on the given `action`. Action includes the
   // action type and action params for performing action.
   void PerformAction(int campaign_id, const Action* action);

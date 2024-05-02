@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -159,12 +161,17 @@ void CampaignsManagerSession::OnSessionStateChanged() {
     return;
   }
 
-  auto* campaigns_manager = growth::CampaignsManager::Get();
-  CHECK(campaigns_manager);
-
-  campaigns_manager->LoadCampaigns(
-      base::BindOnce(&CampaignsManagerSession::OnLoadCampaignsCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ash::OwnerSettingsServiceAsh* service =
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(GetProfile());
+  if (service) {
+    service->IsOwnerAsync(
+        base::BindOnce(&CampaignsManagerSession::OnOwnershipDetermined,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // TODO: b/338085893 - Add metric to track the case that settings service
+    // is not available at this point.
+    LOG(ERROR) << "Owner settings service unavailable for the profile.";
+  }
 }
 
 void CampaignsManagerSession::OnInstanceUpdate(
@@ -251,6 +258,17 @@ void CampaignsManagerSession::SetupWindowObserver() {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   CHECK(proxy);
   scoped_observation_.Observe(&proxy->InstanceRegistry());
+}
+
+void CampaignsManagerSession::OnOwnershipDetermined(bool is_user_owner) {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  campaigns_manager->SetIsUserOwner(is_user_owner);
+
+  campaigns_manager->LoadCampaigns(
+      base::BindOnce(&CampaignsManagerSession::OnLoadCampaignsCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CampaignsManagerSession::OnLoadCampaignsCompleted() {

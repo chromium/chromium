@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
@@ -78,10 +79,16 @@ int GetMilestone() {
   return version_info::GetMajorVersionNumberAsInt();
 }
 
+bool MatchTimeWindow(const base::Time& start_time,
+                     const base::Time& end_time,
+                     const base::Time& targeted_time) {
+  return start_time <= targeted_time && end_time >= targeted_time;
+}
+
 bool MatchTimeWindow(const TimeWindowTargeting& time_window_targeting,
                      const base::Time& targeted_time) {
-  return time_window_targeting.GetStartTime() <= targeted_time &&
-         time_window_targeting.GetEndTime() >= targeted_time;
+  return MatchTimeWindow(time_window_targeting.GetStartTime(),
+                         time_window_targeting.GetEndTime(), targeted_time);
 }
 
 // Matched if any of the given `scheduling_targetings` is matched.
@@ -158,6 +165,10 @@ void CampaignsMatcher::SetActiveUrl(const GURL& url) {
 
 void CampaignsMatcher::SetOobeCompleteTime(base::Time time) {
   oobe_compelete_time_ = time;
+}
+
+void CampaignsMatcher::SetIsUserOwner(bool is_user_owner) {
+  is_user_owner_ = is_user_owner;
 }
 
 void CampaignsMatcher::SetPrefs(PrefService* prefs) {
@@ -324,6 +335,11 @@ bool CampaignsMatcher::MatchDeviceTargeting(
     return false;
   }
 
+  const auto device_age_in_hours = targeting.GetDeviceAge();
+  if (!MatchDeviceAge(device_age_in_hours)) {
+    return false;
+  }
+
   return MatchMilestone(targeting);
 }
 
@@ -338,6 +354,31 @@ bool CampaignsMatcher::MatchRegisteredTime(
   // TODO: b/333458177 - The `oobe_complete_time_` is not available when testing
   // in x11 emulator. Add support make it testable in x11 emulator.
   return MatchTimeWindow(*registered_time_targeting, oobe_compelete_time_);
+}
+
+bool CampaignsMatcher::MatchDeviceAge(
+    const std::unique_ptr<NumberRangeTargeting>& device_age_in_hours) const {
+  if (!device_age_in_hours) {
+    // Match campaign if there is no device age targeting.
+    return true;
+  }
+
+  // TODO: b/333458177 - The `oobe_complete_time_` is not available when testing
+  // in x11 emulator. Add support make it testable in x11 emulator.
+  auto start_time = base::Time::Min();
+  const auto device_age_start = device_age_in_hours->GetStart();
+  if (device_age_start) {
+    start_time = oobe_compelete_time_ + base::Hours(device_age_start.value());
+  }
+
+  auto end_time = base::Time::Max();
+  const auto device_age_end = device_age_in_hours->GetEnd();
+  if (device_age_end) {
+    end_time = oobe_compelete_time_ + base::Hours(device_age_end.value());
+  }
+
+  return MatchTimeWindow(start_time, end_time,
+                         /*target=*/base::Time::Now());
 }
 
 bool CampaignsMatcher::MatchOpenedApp(
@@ -479,6 +520,15 @@ bool CampaignsMatcher::MatchMinorUser(
   return isMinor == minor_user_targeting.value();
 }
 
+bool CampaignsMatcher::MatchOwner(std::optional<bool> is_owner) const {
+  if (!is_owner) {
+    // Campaigns matched if there is no owner targeting.
+    return true;
+  }
+
+  return is_owner.value() == is_user_owner_;
+}
+
 bool CampaignsMatcher::MatchSessionTargeting(
     const SessionTargeting& targeting) const {
   if (!targeting.IsValid()) {
@@ -487,7 +537,8 @@ bool CampaignsMatcher::MatchSessionTargeting(
   }
 
   return MatchExperimentTags(targeting.GetExperimentTags()) &&
-         MatchMinorUser(targeting.GetMinorUser());
+         MatchMinorUser(targeting.GetMinorUser()) &&
+         MatchOwner(targeting.GetIsOwner());
 }
 
 bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,

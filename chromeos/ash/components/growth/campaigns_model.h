@@ -184,6 +184,27 @@ class TimeWindowTargeting {
   raw_ptr<const base::Value::Dict> time_window_dict_;
 };
 
+// Wrapper around number range targeting dictionary.
+//
+// The structure looks like:
+// {
+//   "start": 3,
+//   "end": 5
+// }
+class NumberRangeTargeting {
+ public:
+  explicit NumberRangeTargeting(const base::Value::Dict* number_range_dict);
+  NumberRangeTargeting(const NumberRangeTargeting&) = delete;
+  NumberRangeTargeting& operator=(const NumberRangeTargeting) = delete;
+  ~NumberRangeTargeting();
+
+  const std::optional<int> GetStart() const;
+  const std::optional<int> GetEnd() const;
+
+ private:
+  raw_ptr<const base::Value::Dict> number_range_dict_;
+};
+
 // Wrapper around Device targeting dictionary. The structure looks like:
 // {
 //   "locales": ["en-US", "zh-CN"];
@@ -204,6 +225,7 @@ class DeviceTargeting : public TargetingBase {
   const std::optional<int> GetMaxMilestone() const;
   const std::optional<bool> GetFeatureAwareDevice() const;
   std::unique_ptr<TimeWindowTargeting> GetRegisteredTime() const;
+  const std::unique_ptr<NumberRangeTargeting> GetDeviceAge() const;
 };
 
 // Wrapper around session targeting dictionary.
@@ -224,6 +246,7 @@ class SessionTargeting : public TargetingBase {
   const base::Value::List* GetExperimentTags() const;
 
   std::optional<bool> GetMinorUser() const;
+  std::optional<bool> GetIsOwner() const;
 };
 
 // Wrapper around app targeting dictionary.
