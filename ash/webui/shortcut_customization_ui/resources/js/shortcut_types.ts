@@ -26,6 +26,7 @@ export enum Modifier {
   CONTROL = 1 << 2,
   ALT = 1 << 3,
   COMMAND = 1 << 4,
+  FN_KEY = 1 << 5,
 }
 
 /**
