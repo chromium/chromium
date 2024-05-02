@@ -716,7 +716,6 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
   }
 
   // Run
-  v8::Isolate::SafeForTerminationScope safe_for_termination(v8_isolate);
   v8::MaybeLocal<v8::Value> maybe_result =
       script->Run(context_holder_->context());
   std::string run_error = "";

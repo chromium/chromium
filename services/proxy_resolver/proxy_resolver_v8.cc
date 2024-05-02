@@ -464,7 +464,6 @@ class ProxyResolverV8::Context {
     base::AutoReset<JSBindings*> bindings_reset(&js_bindings_, bindings);
     v8::Locker locked(isolate_);
     v8::Isolate::Scope isolate_scope(isolate_);
-    v8::Isolate::SafeForTerminationScope safe_for_termination(isolate_);
     v8::HandleScope scope(isolate_);
 
     v8::Local<v8::Context> context =

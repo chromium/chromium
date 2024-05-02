@@ -130,13 +130,6 @@ AuctionV8Helper::TimeLimitScope::TimeLimitScope(TimeLimit* script_timeout)
     : script_timeout_(script_timeout) {
   if (script_timeout) {
     resumed_ = script_timeout->Resume();
-    if (!resumed_) {
-      // If we are inside a nested context (e.g. CallFunction -> some binding
-      // -> type conversion), we need to explicitly tell v8 we are
-      // still OK with termination.
-      safe_for_termination_scope_.emplace(
-          script_timeout->v8_helper()->isolate());
-    }
   }
 }
 
@@ -149,8 +142,6 @@ AuctionV8Helper::TimeLimitScope::~TimeLimitScope() {
 // Utility class to timeout running a v8::Script or calling a v8::Function.
 // Instantiate a ScriptTimeoutHelper, and it will terminate script if
 // `script_timeout` passes before it is destroyed.
-//
-// Creates a v8::SafeForTerminationScope(), so the caller doesn't have to.
 class AuctionV8Helper::ScriptTimeoutHelper : public AuctionV8Helper::TimeLimit {
  public:
   ScriptTimeoutHelper(
@@ -158,7 +149,6 @@ class AuctionV8Helper::ScriptTimeoutHelper : public AuctionV8Helper::TimeLimit {
       scoped_refptr<base::SequencedTaskRunner> timer_task_runner,
       base::TimeDelta script_timeout)
       : TimeLimit(v8_helper),
-        termination_scope_(v8_helper->isolate()),
         remaining_delay_(script_timeout),
         running_(false),
         timer_task_runner_(std::move(timer_task_runner)) {
@@ -284,7 +274,6 @@ class AuctionV8Helper::ScriptTimeoutHelper : public AuctionV8Helper::TimeLimit {
     running_ = false;
   }
 
-  v8::Isolate::SafeForTerminationScope termination_scope_;
   base::TimeDelta remaining_delay_;
   base::TimeTicks last_start_;
   bool running_;

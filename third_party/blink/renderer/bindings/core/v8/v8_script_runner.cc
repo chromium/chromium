@@ -487,7 +487,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
       DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
     }
 
-    v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
     v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                          v8::MicrotasksScope::kRunMicrotasks);
     v8::Local<v8::String> script_url;
@@ -784,7 +783,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
   CHECK(constructor->IsFunction());
   v8::Local<v8::Function> function = constructor.As<v8::Function>();
 
-  v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
   v8::MicrotasksScope microtasks_scope(isolate, ToMicrotaskQueue(context),
                                        v8::MicrotasksScope::kRunMicrotasks);
   probe::CallFunction probe(context, isolate->GetCurrentContext(), function,
@@ -840,7 +838,6 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
   DCHECK(!window || !window->GetFrame() ||
          BindingSecurity::ShouldAllowAccessTo(
              ToLocalDOMWindow(function->GetCreationContextChecked()), window));
-  v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
   v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                        v8::MicrotasksScope::kRunMicrotasks);
   if (!depth) {
@@ -944,7 +941,6 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
 
     TRACE_EVENT0("v8,devtools.timeline", "v8.evaluateModule");
     RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
-    v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
 
     // Do not perform a microtask checkpoint here. A checkpoint is performed
     // only after module error handling to ensure proper timing with and

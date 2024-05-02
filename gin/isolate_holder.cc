@@ -180,7 +180,6 @@ IsolateHolder::getDefaultIsolateParams() {
   params->array_buffer_allocator = g_array_buffer_allocator;
   params->allow_atomics_wait = true;
   params->external_references = g_reference_table;
-  params->only_terminate_in_safe_scope = true;
   params->embedder_wrapper_type_index = kWrapperInfoIndex;
   params->embedder_wrapper_object_index = kEncodedValueIndex;
   params->fatal_error_callback = g_fatal_error_callback;

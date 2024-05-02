@@ -167,8 +167,7 @@ class CONTENT_EXPORT AuctionV8Helper
     const raw_ptr<AuctionV8Helper> v8_helper_;
   };
 
-  // Helper that calls Resume()/Pause() if given a non-nullptr TimeLimit,
-  // and lets v8 know that termination handling is expected.
+  // Helper that calls Resume()/Pause() if given a non-nullptr TimeLimit.
   //
   // v8::TryCatch::HasTerminated() can help detect the timeouts.
   //
@@ -183,8 +182,6 @@ class CONTENT_EXPORT AuctionV8Helper
    private:
     raw_ptr<TimeLimit> script_timeout_;
 
-    std::optional<v8::Isolate::SafeForTerminationScope>
-        safe_for_termination_scope_;
     bool resumed_ = false;
   };
 
