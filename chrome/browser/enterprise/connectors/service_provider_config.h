@@ -30,6 +30,7 @@ struct AnalysisConfig {
   const base::span<const SupportedTag> supported_tags;
   const bool user_specific = false;
   const base::span<const char* const> subject_names;
+  const base::span<const char* const> region_urls;
 };
 
 struct ReportingConfig {

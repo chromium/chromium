@@ -42,6 +42,18 @@ TEST(ServiceProviderConfigTest, Google) {
             "dlp");
   ASSERT_EQ(service_provider.analysis->supported_tags[1].max_file_size,
             kMaxFileSize);
+
+  // The Google service provider has three regionalized urls.
+  ASSERT_EQ(service_provider.analysis->region_urls.size(), 3u);
+  ASSERT_EQ("https://safebrowsing.google.com/safebrowsing/uploads/scan",
+            std::string(service_provider.analysis->region_urls[0]));
+  ASSERT_TRUE(GURL(service_provider.analysis->region_urls[0]).is_valid());
+  ASSERT_EQ("https://scan.webprotect-us.goog/uploads",
+            std::string(service_provider.analysis->region_urls[1]));
+  ASSERT_TRUE(GURL(service_provider.analysis->region_urls[1]).is_valid());
+  ASSERT_EQ("https://scan.webprotect-eu.goog/uploads",
+            std::string(service_provider.analysis->region_urls[2]));
+  ASSERT_TRUE(GURL(service_provider.analysis->region_urls[2]).is_valid());
 }
 
 TEST(ServiceProviderConfigTest, LocalTest1) {

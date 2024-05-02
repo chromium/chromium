@@ -27,9 +27,18 @@ constexpr std::array<SupportedTag, 2> kGoogleDlpSupportedTags = {{
     },
 }};
 
+constexpr std::array<const char*, 3> kGoogleDlpRegionalizedUrls = {
+    // LINT.IfChange(DlpRegionEndpoints)
+    {"https://safebrowsing.google.com/safebrowsing/uploads/scan",
+     "https://scan.webprotect-us.goog/uploads",
+     "https://scan.webprotect-eu.goog/uploads"}
+    // LINT.ThenChange(/chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h:DlpRegionEndpoints)
+};
+
 constexpr AnalysisConfig kGoogleAnalysisConfig = {
     .url = "https://safebrowsing.google.com/safebrowsing/uploads/scan",
     .supported_tags = base::span<const SupportedTag>(kGoogleDlpSupportedTags),
+    .region_urls = base::span<const char* const>(kGoogleDlpRegionalizedUrls),
 };
 
 constexpr std::array<SupportedTag, 1> kLocalTestSupportedTags = {{

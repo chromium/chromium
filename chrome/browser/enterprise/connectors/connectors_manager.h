@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -133,6 +134,9 @@ class ConnectorsManager {
   // Read and cache the policy corresponding to |connector|.
   void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const;
   void CacheReportingConnectorPolicy(ReportingConnector connector);
+
+  // Get data location region from policy.
+  safe_browsing::DataRegion GetDataRegion() const;
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Close connection with local agent if all the relevant connectors are turned

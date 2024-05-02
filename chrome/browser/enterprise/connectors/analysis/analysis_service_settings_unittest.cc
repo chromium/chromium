@@ -13,6 +13,8 @@
 #include "base/test/bind.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -35,14 +37,18 @@ namespace {
 struct TestParam {
   TestParam(const char* url,
             const char* settings_value,
-            AnalysisSettings* expected_settings)
+            AnalysisSettings* expected_settings,
+            safe_browsing::DataRegion data_region =
+                safe_browsing::DataRegion::NO_PREFERENCE)
       : url(url),
         settings_value(settings_value),
-        expected_settings(expected_settings) {}
+        expected_settings(expected_settings),
+        data_region(data_region) {}
 
   const char* url;
   const char* settings_value;
   raw_ptr<AnalysisSettings> expected_settings;
+  safe_browsing::DataRegion data_region;
 };
 
 constexpr char kNormalSettings[] = R"({
@@ -210,14 +216,18 @@ struct SourceDestinationTestParam {
   SourceDestinationTestParam(
       std::pair<VolumeInfo, VolumeInfo> source_destination_pair,
       const char* settings_value,
-      AnalysisSettings* expected_settings)
+      AnalysisSettings* expected_settings,
+      safe_browsing::DataRegion data_region =
+          safe_browsing::DataRegion::NO_PREFERENCE)
       : source_destination_pair(source_destination_pair),
         settings_value(settings_value),
-        expected_settings(expected_settings) {}
+        expected_settings(expected_settings),
+        data_region(data_region) {}
 
   std::pair<VolumeInfo, VolumeInfo> source_destination_pair;
   const char* settings_value;
   raw_ptr<AnalysisSettings> expected_settings;
+  safe_browsing::DataRegion data_region;
 };
 
 constexpr char kNormalSourceDestinationSettings[] = R"({
@@ -719,17 +729,16 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
-    if (GetParam().expected_settings != NoSettings() && is_cloud_ &&
-        !GetParam()
-             .expected_settings->cloud_or_local_settings.analysis_url()
-             .is_valid()) {
+    if (GetParam().expected_settings != NoSettings() && is_cloud_) {
+      GURL regionalized_url =
+          GURL(GetServiceProviderConfig()
+                   ->at("google")
+                   .analysis->region_urls[static_cast<int>(data_region())]);
       absl::get<CloudAnalysisSettings>(
           GetParam().expected_settings->cloud_or_local_settings)
-          .analysis_url =
-          GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
+          .analysis_url = regionalized_url;
       CloudAnalysisSettings cloud_settings;
-      cloud_settings.analysis_url =
-          GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
+      cloud_settings.analysis_url = regionalized_url;
       GetParam().expected_settings->cloud_or_local_settings =
           CloudOrLocalAnalysisSettings(std::move(cloud_settings));
     }
@@ -751,6 +760,9 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
 
     return GetParam().expected_settings;
   }
+  safe_browsing::DataRegion data_region() const {
+    return GetParam().data_region;
+  }
 
  protected:
   bool is_cloud_ = true;
@@ -765,7 +777,8 @@ TEST_P(AnalysisServiceSettingsTest, CloudTest) {
   AnalysisServiceSettings service_settings(settings.value(),
                                            *GetServiceProviderConfig());
 
-  auto analysis_settings = service_settings.GetAnalysisSettings(url());
+  auto analysis_settings =
+      service_settings.GetAnalysisSettings(url(), data_region());
   ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
@@ -813,7 +826,8 @@ TEST_P(AnalysisServiceSettingsTest, LocalTest) {
   AnalysisServiceSettings service_settings(settings.value(),
                                            *GetServiceProviderConfig());
 
-  auto analysis_settings = service_settings.GetAnalysisSettings(url());
+  auto analysis_settings =
+      service_settings.GetAnalysisSettings(url(), data_region());
   ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
@@ -920,7 +934,17 @@ INSTANTIATE_TEST_SUITE_P(
                   NormalSettingsWithCustomMessage()),
         TestParam(kScan1DotCom,
                   kNormalSettingsDlpRequiresBypassJustification,
-                  NormalSettingsDlpRequiresBypassJustification())));
+                  NormalSettingsDlpRequiresBypassJustification()),
+
+        // Validate regionalized endpoints.
+        TestParam(kScan1DotCom,
+                  kNormalSettings,
+                  NormalDlpSettings(),
+                  safe_browsing::DataRegion::UNITED_STATES),
+        TestParam(kScan1DotCom,
+                  kNormalSettings,
+                  NormalDlpSettings(),
+                  safe_browsing::DataRegion::EUROPE)));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -956,17 +980,16 @@ class AnalysisServiceSourceDestinationSettingsTest
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
-    if (GetParam().expected_settings != NoSettings() && is_cloud_ &&
-        !GetParam()
-             .expected_settings->cloud_or_local_settings.analysis_url()
-             .is_valid()) {
+    if (GetParam().expected_settings != NoSettings() && is_cloud_) {
+      GURL regionalized_url =
+          GURL(GetServiceProviderConfig()
+                   ->at("google")
+                   .analysis->region_urls[static_cast<int>(data_region())]);
       absl::get<CloudAnalysisSettings>(
           GetParam().expected_settings->cloud_or_local_settings)
-          .analysis_url =
-          GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
+          .analysis_url = regionalized_url;
       CloudAnalysisSettings cloud_settings;
-      cloud_settings.analysis_url =
-          GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan");
+      cloud_settings.analysis_url = regionalized_url;
       GetParam().expected_settings->cloud_or_local_settings =
           CloudOrLocalAnalysisSettings(std::move(cloud_settings));
     }
@@ -985,6 +1008,9 @@ class AnalysisServiceSourceDestinationSettingsTest
     }
 
     return GetParam().expected_settings;
+  }
+  safe_browsing::DataRegion data_region() const {
+    return GetParam().data_region;
   }
 
  protected:
@@ -1005,7 +1031,7 @@ TEST_P(AnalysisServiceSourceDestinationSettingsTest, CloudTest) {
                                            *GetServiceProviderConfig());
 
   auto analysis_settings = service_settings.GetAnalysisSettings(
-      fs_context(), source_url(), destination_url());
+      fs_context(), source_url(), destination_url(), data_region());
   ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
@@ -1053,7 +1079,7 @@ TEST_P(AnalysisServiceSourceDestinationSettingsTest, LocalTest) {
                                            *GetServiceProviderConfig());
 
   auto analysis_settings = service_settings.GetAnalysisSettings(
-      fs_context(), source_url(), destination_url());
+      fs_context(), source_url(), destination_url(), data_region());
   ASSERT_EQ((expected_settings() != nullptr), analysis_settings.has_value());
   if (analysis_settings.has_value()) {
     ASSERT_EQ(analysis_settings.value().block_until_verdict,
@@ -1276,7 +1302,18 @@ INSTANTIATE_TEST_SUITE_P(
         SourceDestinationTestParam(
             kDlpMalwareVolumePair1,
             kNormalSourceDestinationSettingsDlpRequiresBypassJustification,
-            NormalSettingsDlpRequiresBypassJustification())));
+            NormalSettingsDlpRequiresBypassJustification()),
+
+        // Validate regionalized endpoints.
+        SourceDestinationTestParam(kDlpMalwareVolumePair1,
+                                   kNormalSourceDestinationSettings,
+                                   NormalDlpSettings(),
+                                   safe_browsing::DataRegion::UNITED_STATES),
+
+        SourceDestinationTestParam(kDlpMalwareVolumePair1,
+                                   kNormalSourceDestinationSettings,
+                                   NormalDlpSettings(),
+                                   safe_browsing::DataRegion::EUROPE)));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -13,7 +13,10 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -142,7 +145,8 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
-  return analysis_connector_settings_[connector][0].GetAnalysisSettings(url);
+  return analysis_connector_settings_[connector][0].GetAnalysisSettings(
+      url, GetDataRegion());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -165,7 +169,7 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
   return analysis_connector_settings_[connector][0].GetAnalysisSettings(
-      context, source_url, destination_url);
+      context, source_url, destination_url, GetDataRegion());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -215,7 +219,8 @@ ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
-  return analysis_connector_settings_[connector][0].GetAnalysisSettings(url);
+  return analysis_connector_settings_[connector][0].GetAnalysisSettings(
+      url, GetDataRegion());
 }
 
 void ConnectorsManager::CacheAnalysisConnectorPolicy(
@@ -388,6 +393,16 @@ std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
   }
 
   return {};
+}
+
+safe_browsing::DataRegion ConnectorsManager::GetDataRegion() const {
+  bool apply_data_region =
+      prefs()->HasPrefPath(prefs::kChromeDataRegionSetting) &&
+      base::FeatureList::IsEnabled(safe_browsing::kDlpRegionalizedEndpoints);
+  return apply_data_region
+             ? safe_browsing::ChromeDataRegionSettingToEnum(
+                   prefs()->GetInteger(prefs::kChromeDataRegionSetting))
+             : safe_browsing::DataRegion::NO_PREFERENCE;
 }
 
 void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {

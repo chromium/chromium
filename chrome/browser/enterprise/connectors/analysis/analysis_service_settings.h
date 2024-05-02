@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/url_matcher/url_matcher.h"
 
 namespace storage {
@@ -36,13 +37,16 @@ class AnalysisServiceSettings {
 
   // Get the settings to apply to a specific analysis. std::nullopt implies no
   // analysis should take place.
-  std::optional<AnalysisSettings> GetAnalysisSettings(const GURL& url) const;
+  std::optional<AnalysisSettings> GetAnalysisSettings(
+      const GURL& url,
+      safe_browsing::DataRegion data_region) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::optional<AnalysisSettings> GetAnalysisSettings(
       content::BrowserContext* context,
       const storage::FileSystemURL& source_url,
-      const storage::FileSystemURL& destination_url) const;
+      const storage::FileSystemURL& destination_url,
+      safe_browsing::DataRegion data_region) const;
 #endif
 
   // Get the block_until_verdict setting if the settings are valid.
@@ -90,7 +94,8 @@ class AnalysisServiceSettings {
 
   // Returns the analysis settings with the specified tags.
   AnalysisSettings GetAnalysisSettingsWithTags(
-      std::map<std::string, TagSettings> tags) const;
+      std::map<std::string, TagSettings> tags,
+      safe_browsing::DataRegion data_region) const;
 
   // Returns true if the settings were initialized correctly. If this returns
   // false, then GetAnalysisSettings will always return std::nullopt.
