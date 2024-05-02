@@ -10,6 +10,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/common/url_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

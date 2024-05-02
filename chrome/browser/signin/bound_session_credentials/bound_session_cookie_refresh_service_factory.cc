@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+
 #include <memory>
 
 #include "base/feature_list.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"

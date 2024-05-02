@@ -12,7 +12,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 
 namespace {
 

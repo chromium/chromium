@@ -42,7 +42,6 @@
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/themes/theme_service.h"

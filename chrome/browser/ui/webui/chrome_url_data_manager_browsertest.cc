@@ -49,7 +49,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #else
-#include "chrome/browser/signin/signin_features.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 namespace {

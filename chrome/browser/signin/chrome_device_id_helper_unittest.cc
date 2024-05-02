@@ -14,7 +14,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/signin/signin_features.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using testing::Eq;

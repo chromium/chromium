@@ -135,4 +135,74 @@ BASE_DECLARE_FEATURE(kRemoveSignedInAccountsDialog);
 
 }  // namespace switches
 
+// TODO(crbug.com/337879458): Move switches below into the switches namespace.
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kForYouFre);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+enum class WithDefaultBrowserStep {
+  // The default browser step should be shown as appropriate.
+  kYes,
+  // The default browser step should be skipped.
+  kNo,
+  // The default browser step should be shown even if we normally should skip
+  // it, example because of policies or the current default state.
+  kForced,
+};
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<WithDefaultBrowserStep>
+    kForYouFreWithDefaultBrowserStep;
+
+enum class DefaultBrowserVariant {
+  // Use the current strings for the default browser prompt.
+  kCurrent,
+  // Use the new strings for the default browser prompt.
+  kNew,
+};
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<DefaultBrowserVariant>
+    kForYouFreDefaultBrowserVariant;
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kForYouFreSyntheticTrialRegistration);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<std::string> kForYouFreStudyGroup;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) &&
+        // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kStableDeviceId);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kDisallowManagedProfileSignout);
+
+#if BUILDFLAG(ENABLE_MIRROR) && !BUILDFLAG(IS_IOS)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders);
+#endif  // BUILDFLAG(ENABLE_MIRROR) && !BUILDFLAG(IS_IOS)
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kProfilesReordering);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kForceSigninFlowInProfilePicker);
+// Default value is false, and the URL used would be /AccountChooser.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<bool>
+    kForceSigninReauthInProfilePickerUseAddSession;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_

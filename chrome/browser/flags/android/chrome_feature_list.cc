@@ -17,7 +17,6 @@
 #include "chrome/browser/flags/jni_headers/ChromeFeatureMap_jni.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome_feature_list.h"

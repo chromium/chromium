@@ -18,7 +18,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -21,6 +20,7 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

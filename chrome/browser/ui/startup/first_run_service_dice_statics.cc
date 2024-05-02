@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/startup/first_run_service.h"
-
 #include <memory>
 #include <utility>
 
@@ -14,10 +12,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/channel.h"
 
