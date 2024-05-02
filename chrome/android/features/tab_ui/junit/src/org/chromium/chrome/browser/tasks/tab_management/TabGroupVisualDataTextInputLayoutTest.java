@@ -24,13 +24,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.tab_ui.R;
 
-/** Unit tests for {@link TabGroupCreationTextInputLayout}. */
+/** Unit tests for {@link TabGroupVisualDataTextInputLayout}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabGroupCreationTextInputLayoutTest {
+public class TabGroupVisualDataTextInputLayoutTest {
     private Context mContext;
-    private TabGroupCreationTextInputLayout mTabGroupCreationTextInputLayout;
+    private TabGroupVisualDataTextInputLayout mTabGroupVisualDataTextInputLayout;
 
     @Before
     public void setUp() {
@@ -40,24 +40,24 @@ public class TabGroupCreationTextInputLayoutTest {
                         R.style.Theme_BrowserUI_DayNight);
 
         View customView =
-                LayoutInflater.from(mContext).inflate(R.layout.tab_group_creation_dialog, null);
-        mTabGroupCreationTextInputLayout = customView.findViewById(R.id.tab_group_title);
+                LayoutInflater.from(mContext).inflate(R.layout.tab_group_visual_data_dialog, null);
+                mTabGroupVisualDataTextInputLayout = customView.findViewById(R.id.tab_group_title);
     }
 
     @Test
     public void testValidate() {
-        mTabGroupCreationTextInputLayout.getEditText().setText("test");
-        assertTrue(mTabGroupCreationTextInputLayout.validate());
+        mTabGroupVisualDataTextInputLayout.getEditText().setText("test");
+        assertTrue(mTabGroupVisualDataTextInputLayout.validate());
     }
 
     @Test
     public void testValidate_empty() {
-        assertFalse(mTabGroupCreationTextInputLayout.validate());
+        assertFalse(mTabGroupVisualDataTextInputLayout.validate());
     }
 
     @Test
     public void testTrimmedText() {
-        mTabGroupCreationTextInputLayout.getEditText().setText(" test ");
-        assertEquals("test", mTabGroupCreationTextInputLayout.getTrimmedText());
+        mTabGroupVisualDataTextInputLayout.getEditText().setText(" test ");
+        assertEquals("test", mTabGroupVisualDataTextInputLayout.getTrimmedText());
     }
 }

@@ -2135,8 +2135,8 @@ public class TabGridDialogTest {
                 () -> {
                     Criteria.checkThat(mModalDialogManager.isShowing(), Matchers.is(true));
                 });
-        // Verify the creation dialog exists.
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+        // Verify the visual data dialog exists.
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
         // Dismiss the tab group creation dialog.
         dismissAllModalDialogs();

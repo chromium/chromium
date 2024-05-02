@@ -19,16 +19,16 @@ import org.chromium.ui.text.EmptyTextWatcher;
  * Wraps around {@link TextInputLayout} to implement a basic empty field error behavior for the tab
  * group title during tab group creation.
  */
-public class TabGroupCreationTextInputLayout extends TextInputLayout {
+public class TabGroupVisualDataTextInputLayout extends TextInputLayout {
     private String mEmptyErrorMessage;
 
-    public TabGroupCreationTextInputLayout(Context context, AttributeSet attrs) {
+    public TabGroupVisualDataTextInputLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         final TypedArray a =
-                context.obtainStyledAttributes(attrs, R.styleable.TabGroupCreationTextInputLayout);
+                context.obtainStyledAttributes(attrs, R.styleable.TabGroupVisualDataTextInputLayout);
         final int emptyErrorMessageId =
-                a.getResourceId(R.styleable.TabGroupCreationTextInputLayout_emptyErrorMessage, 0);
+                a.getResourceId(R.styleable.TabGroupVisualDataTextInputLayout_emptyErrorMessage, 0);
         if (emptyErrorMessageId != 0) {
             mEmptyErrorMessage = context.getResources().getString(emptyErrorMessageId);
         }

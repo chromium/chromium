@@ -1796,9 +1796,9 @@ public class TabSwitcherLayoutTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Verify the creation dialog exists.
+        // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
 
         // Change the title.
@@ -1843,9 +1843,9 @@ public class TabSwitcherLayoutTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Verify the creation dialog exists.
+        // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
 
         // Close the soft keyboard that appears when the dialog is shown.
@@ -1877,9 +1877,9 @@ public class TabSwitcherLayoutTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Verify the creation dialog exists.
+        // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
 
         // Close the soft keyboard that appears when the dialog is shown.
@@ -1915,9 +1915,9 @@ public class TabSwitcherLayoutTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Verify the creation dialog exists.
+        // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
 
         // Change the title and accept.
@@ -1925,7 +1925,7 @@ public class TabSwitcherLayoutTest {
         onView(withId(R.id.positive_button)).perform(click());
 
         // Verify that the change was rejected and the dialog is still showing.
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
 
         // Exit the dialog.
@@ -1944,9 +1944,9 @@ public class TabSwitcherLayoutTest {
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
-        // Verify the creation dialog exists.
+        // Verify the visual data dialog exists.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
 
         // Change the title.
@@ -2775,8 +2775,8 @@ public class TabSwitcherLayoutTest {
     private void verifyGroupCreationDialogOpenedAndDismiss(ChromeTabbedActivity cta) {
         // Verify that the modal dialog is now showing.
         verifyModalDialogShowingAnimationCompleteInTabSwitcher();
-        // Verify the creation dialog exists.
-        onViewWaiting(withId(R.id.creation_dialog_layout), /* checkRootDialog= */ true)
+        // Verify the visual data dialog exists.
+        onViewWaiting(withId(R.id.visual_data_dialog_layout), /* checkRootDialog= */ true)
                 .check(matches(isDisplayed()));
         // Wait until the keyboard is showing.
         KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();

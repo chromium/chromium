@@ -13,7 +13,7 @@ found in the LICENSE file.
     android:clickable="false">
 
         <LinearLayout
-            android:id="@+id/creation_dialog_layout"
+            android:id="@+id/visual_data_dialog_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -21,23 +21,22 @@ found in the LICENSE file.
             android:paddingRight="18dp" >
 
             <androidx.appcompat.widget.DialogTitle
-                android:id="@+id/creation_dialog_title"
+                android:id="@+id/visual_data_dialog_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
                 android:accessibilityHeading="true"
-                android:text="@string/tab_group_creation_dialog_title"
                 android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-            <org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationTextInputLayout
+            <org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout
                         android:id="@+id/tab_group_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginVertical="16dp"
                         android:hint="@string/title"
-                        app:emptyErrorMessage="@string/tab_group_creation_missing_title">
+                        app:emptyErrorMessage="@string/tab_group_visual_data_missing_title">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/title_input_text"
@@ -46,6 +45,6 @@ found in the LICENSE file.
                             android:imeOptions="flagNoExtractUi"
                             android:inputType="textCapSentences|textAutoCorrect"
                             android:selectAllOnFocus="true" />
-            </org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationTextInputLayout>
+            </org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout>
         </LinearLayout>
 </ScrollView>
