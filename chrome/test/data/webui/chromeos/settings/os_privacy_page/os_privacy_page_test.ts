@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement, createRouterForTesting, CrRadioGroupElement, OsSettingsPrivacyPageElement, OsSettingsRoutes, PageStatus, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
+import {CrDialogElement, createRouterForTesting, CrRadioGroupElement, OsSettingsPrivacyPageElement, PageStatus, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -23,11 +23,6 @@ import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
 const CROS_SETTING_PREF_NAME = 'cros.device.peripheral_data_access_enabled';
 const LOCAL_STATE_PREF_NAME =
     'settings.local_state_device_pci_data_access_enabled';
-
-interface SubpageTriggerData {
-  triggerSelector: string;
-  routeName: keyof OsSettingsRoutes;
-}
 
 suite('with isRevampWayfindingEnabled set to true', () => {
   let privacyPage: OsSettingsPrivacyPageElement;
@@ -347,41 +342,55 @@ suite('<os-settings-privacy-page>', () => {
         'Quick dim should be focused for settingId=1115.');
   });
 
-  const subpageTriggerData: SubpageTriggerData[] = [
-    {
-      triggerSelector: '#manageOtherPeopleRow',
-      routeName: 'ACCOUNTS',
-    },
-    {
-      triggerSelector: '#lockScreenRow',
-      routeName: 'LOCK_SCREEN',
-    },
-  ];
-  subpageTriggerData.forEach(({triggerSelector, routeName}) => {
-    test(
-        `Row for ${routeName} is focused when returning from subpage`,
-        async () => {
-          Router.getInstance().navigateTo(routes.OS_PRIVACY);
+  test(
+      'Manage accounts row is focused when returning from subpage',
+      async () => {
+        Router.getInstance().navigateTo(routes.OS_PRIVACY);
 
-          const subpageTrigger =
-              privacyPage.shadowRoot!.querySelector<HTMLElement>(
-                  triggerSelector);
-          assertTrue(!!subpageTrigger);
+        const triggerSelector = '#manageOtherPeopleRow';
+        const subpageTrigger =
+            privacyPage.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+        assertTrue(!!subpageTrigger);
 
-          // Sub-page trigger navigates to subpage for route
-          subpageTrigger.click();
-          assertEquals(routes[routeName], Router.getInstance().currentRoute);
+        // Sub-page trigger navigates to subpage for route
+        subpageTrigger.click();
+        assertEquals(routes.ACCOUNTS, Router.getInstance().currentRoute);
 
-          // Navigate back
-          const popStateEventPromise = eventToPromise('popstate', window);
-          Router.getInstance().navigateToPreviousRoute();
-          await popStateEventPromise;
-          await waitAfterNextRender(privacyPage);
+        // Navigate back
+        const popStateEventPromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
+        await popStateEventPromise;
+        await waitAfterNextRender(privacyPage);
 
-          assertEquals(
-              subpageTrigger, privacyPage.shadowRoot!.activeElement,
-              `${triggerSelector} should be focused.`);
-        });
+        assertEquals(
+            subpageTrigger, privacyPage.shadowRoot!.activeElement,
+            `${triggerSelector} should be focused.`);
+      });
+
+  test('Lock screen row is focused when returning from subpage', async () => {
+    Router.getInstance().navigateTo(routes.OS_PRIVACY);
+
+    const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
+    privacyPage.set('authTokenInfo_', quickUnlockPrivateApi.getFakeToken());
+
+    const triggerSelector = '#lockScreenRow';
+    const subpageTrigger =
+        privacyPage.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+    assertTrue(!!subpageTrigger);
+
+    // Sub-page trigger navigates to subpage for route
+    subpageTrigger.click();
+    assertEquals(routes.LOCK_SCREEN, Router.getInstance().currentRoute);
+
+    // Navigate back
+    const popStateEventPromise = eventToPromise('popstate', window);
+    Router.getInstance().navigateToPreviousRoute();
+    await popStateEventPromise;
+    await waitAfterNextRender(privacyPage);
+
+    assertEquals(
+        subpageTrigger, privacyPage.shadowRoot!.activeElement,
+        `${triggerSelector} should be focused.`);
   });
 
   test('Fingerprint dialog closes when token expires', async () => {
