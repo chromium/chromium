@@ -3436,8 +3436,8 @@ public class AwAutofillTest extends AwParameterizedTest {
                 waitForCallbackAndVerifyTypes(
                         cnt,
                         new Integer[] {
-                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_EXITED,
+                            AUTOFILL_CANCEL_PRE_P,
                             AUTOFILL_VIEW_ENTERED,
                             AUTOFILL_SESSION_STARTED,
                             AUTOFILL_VALUE_CHANGED

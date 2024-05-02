@@ -259,14 +259,15 @@ public class AutofillProvider {
             float width,
             float height,
             boolean hasServerPrediction) {
+        Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
+        if (mRequest != null) notifyViewExitBeforeDestroyRequest();
+
         // Check focusField inside short value? Autofill Manager might have session that wasn't
         // started by AutofillProvider, we just always cancel existing session here.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             mAutofillManager.cancel();
         }
 
-        Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
-        if (mRequest != null) notifyViewExitBeforeDestroyRequest();
         transformFormFieldToContainViewCoordinates(formData);
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
         mRequest =
