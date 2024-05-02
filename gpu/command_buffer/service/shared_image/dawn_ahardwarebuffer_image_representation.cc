@@ -33,13 +33,6 @@ DawnAHardwareBufferImageRepresentation::
 
 wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage) {
-  // It doesn't make sense to have two overlapping BeginAccess calls on the same
-  // representation.
-  if (texture_) {
-    LOG(ERROR) << "Attempting to begin access before ending previous access.";
-    return nullptr;
-  }
-
   wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = format_;
   texture_descriptor.usage = static_cast<wgpu::TextureUsage>(usage);
@@ -50,6 +43,15 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
   texture_descriptor.sampleCount = 1;
   texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.viewFormats = view_formats_.data();
+
+  // It doesn't make sense to have two overlapping BeginAccess calls on the same
+  // representation.
+  // TODO(blundell): Switch to using the return value of BeginWrite() to detect
+  // errors in BeginAccess/EndAccess flow.
+  if (texture_) {
+    LOG(ERROR) << "Attempting to begin access before ending previous access.";
+    return device_.CreateErrorTexture(&texture_descriptor);
+  }
 
   // We need to have internal usages of CopySrc for copies,
   // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
@@ -108,26 +110,21 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
 
     desc.nextInChain = &stm_ahardwarebuffer_desc;
     shared_texture_memory_ = device_.ImportSharedTextureMemory(&desc);
-    if (!shared_texture_memory_) {
-      LOG(ERROR) << "Failed to create SharedTextureMemory from AHB";
-      android_backing()->EndWrite(base::ScopedFD());
-      return nullptr;
-    }
   }
 
   texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
-  if (!texture_) {
-    LOG(ERROR) << "Failed to create texture from SharedTextureMemory";
-    android_backing()->EndWrite(base::ScopedFD());
-    return nullptr;
-  }
-
   if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
     LOG(ERROR) << "Failed to begin access for texture";
-    android_backing()->EndWrite(base::ScopedFD());
+
+    // End the access on the backing and restore its fence, as Dawn did not
+    // consume it.
+    android_backing()->EndWrite(std::move(begin_access_sync_fd_));
+    auto texture = std::move(texture_);
+    texture_ = nullptr;
+    return texture;
   }
 
-  return texture_.Get();
+  return texture_;
 }
 
 void DawnAHardwareBufferImageRepresentation::EndAccess() {
