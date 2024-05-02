@@ -239,6 +239,40 @@ void LogPredictionMetrics(
   }
 }
 
+void LogFillingMetrics(
+    const FormStructure& form,
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    bool observed_submission) {
+  const AutofillMetrics::QualityMetricType metric_type =
+      observed_submission ? AutofillMetrics::TYPE_SUBMISSION
+                          : AutofillMetrics::TYPE_NO_SUBMISSION;
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    form_interactions_ukm_logger->LogFieldFillStatus(form, *field, metric_type);
+  }
+  if (!observed_submission) {
+    return;
+  }
+  LogPerfectFillingMetric(form);
+  LogPreFillMetrics(form);
+  LogFieldFillingStatsAndScoreMetrics(form);
+
+  FieldTypeSet autofilled_field_types;
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    if (field->is_autofilled() || field->previously_autofilled()) {
+      AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
+          form_interactions_ukm_logger, form, *field);
+    }
+    if (FieldHasMeaningfulPossibleFieldTypes(*field) &&
+        field->is_autofilled()) {
+      autofilled_field_types.insert(field->Type().GetStorableType());
+    }
+  }
+  if (base::Contains(form.GetFormTypes(), FormType::kCreditCardForm)) {
+    AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
+        autofilled_field_types);
+  }
+}
+
 }  // namespace
 
 void LogQualityMetrics(
@@ -253,65 +287,24 @@ void LogQualityMetrics(
 
   LogPredictionMetrics(form_structure, form_interactions_ukm_logger,
                        observed_submission);
+  LogFillingMetrics(form_structure, form_interactions_ukm_logger,
+                    observed_submission);
   if (observed_submission) {
     LogNumericQuantityMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);
-    LogPerfectFillingMetric(form_structure);
-    LogPreFillMetrics(form_structure);
-    LogFieldFillingStatsAndScoreMetrics(form_structure);
   }
-
-  FieldTypeSet autofilled_field_types;
-
-  // Determine the correct suffix for the metric, depending on whether or
-  // not a submission was observed.
-  const AutofillMetrics::QualityMetricType metric_type =
-      observed_submission ? AutofillMetrics::TYPE_SUBMISSION
-                          : AutofillMetrics::TYPE_NO_SUBMISSION;
 
   for (auto& field : form_structure) {
     CHECK(field);
-    form_interactions_ukm_logger->LogFieldFillStatus(form_structure, *field,
-                                                     metric_type);
-    // Field filling statistics that are only emitted if the form was submitted
-    // but independent of the existence of a possible type.
-    if (observed_submission) {
-      // If the field was either autofilled and accepted or corrected, emit the
-      // FieldWiseCorrectness metric.
-      if (field->is_autofilled() || field->previously_autofilled()) {
-        AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
-            form_interactions_ukm_logger, form_structure, *field);
-      }
-    }
-    ///////////////////////////////////////////////////////////////////////////
-    /// WARNING: Everything below this line is conditioned on having a possible
-    /// field type. This means the field must contain a value that can be found
-    /// in one of the stored Autofill profiles.
-    ///////////////////////////////////////////////////////////////////////////
-    const FieldTypeSet& field_types = field->possible_types();
-    CHECK(!field_types.empty());
-    // Skip all remaining metrics if there wasn't a single possible field type
-    // detected.
+    CHECK(!field->possible_types().empty());
     if (!FieldHasMeaningfulPossibleFieldTypes(*field)) {
       continue;
-    }
-    if (field->is_autofilled()) {
-      autofilled_field_types.insert(field->Type().GetStorableType());
     }
     if (observed_submission) {
       base::UmaHistogramEnumeration(
           "Autofill.LabelInference.InferredLabelSource.AtSubmission2",
           field->label_source());
-    }
-  }
-  // We log "submission" and duration metrics if we are here after observing a
-  // submission event.
-  if (observed_submission) {
-    if (base::Contains(form_structure.GetFormTypes(),
-                       FormType::kCreditCardForm)) {
-      AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
-          autofilled_field_types);
     }
   }
 }
