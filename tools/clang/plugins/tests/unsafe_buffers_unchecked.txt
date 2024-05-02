@@ -17,14 +17,14 @@ INSIDE_MACRO_CHECKED(FooChecked, ptr, int*);
 ./unsafe_buffers_not_clean_dir/clean_header.h:33:12: note: expanded from macro 'INSIDE_MACRO_CHECKED'
     return FIELD##s_ + index;                    /
            ^~~~~~~~~
-<scratch space>:10:1: note: expanded from here
+<scratch space>:12:1: note: expanded from here
 ptrs_
 ^~~~~
 ./unsafe_buffers_not_clean_dir/clean_header.h:42:1: note: See //docs/unsafe_buffers.md for help.
 ./unsafe_buffers_not_clean_dir/clean_header.h:33:12: note: expanded from macro 'INSIDE_MACRO_CHECKED'
     return FIELD##s_ + index;                    /
            ^
-<scratch space>:10:1: note: expanded from here
+<scratch space>:12:1: note: expanded from here
 ptrs_
 ^
 4 warnings generated.
