@@ -13,6 +13,7 @@ import org.chromium.base.test.util.SkipCheck;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.test.util.DeviceRestrictionSkipCheck;
+import org.chromium.ui.test.util.GmsCoreVersionRestrictionSkipCheck;
 import org.chromium.ui.test.util.UiDisableIfSkipCheck;
 import org.chromium.ui.test.util.UiRestrictionSkipCheck;
 
@@ -39,7 +40,8 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
                 super.getSkipChecks(),
                 new UiRestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
                 new DeviceRestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
-                new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()));
+                new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()),
+                new GmsCoreVersionRestrictionSkipCheck(getApplication().getApplicationContext()));
     }
 
     /** Change this static function to add default {@code PreTestHook}s. */

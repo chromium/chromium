@@ -63,6 +63,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -521,6 +522,7 @@ public class TabbedAppMenuTest {
 
     @Test
     @LargeTest
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
     @Feature({"Browser", "Main", "RenderTest"})
     public void testSettingsMenuItem_NoBadgeShownForSyncingUsersIfNoError() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());

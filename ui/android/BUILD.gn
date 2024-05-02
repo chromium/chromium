@@ -513,6 +513,8 @@ android_library("ui_java_test_support") {
     "javatests/src/org/chromium/ui/test/util/DeviceRestriction.java",
     "javatests/src/org/chromium/ui/test/util/DeviceRestrictionSkipCheck.java",
     "javatests/src/org/chromium/ui/test/util/DisableAnimationsTestRule.java",
+    "javatests/src/org/chromium/ui/test/util/GmsCoreVersionRestriction.java",
+    "javatests/src/org/chromium/ui/test/util/GmsCoreVersionRestrictionSkipCheck.java",
     "javatests/src/org/chromium/ui/test/util/MockitoHelper.java",
     "javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java",
     "javatests/src/org/chromium/ui/test/util/RenderTestRule.java",
