@@ -88,8 +88,7 @@ bool ShouldShowNewTabButton(const Browser* browser) {
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     : render_tab_search_before_tab_strip_(
-          TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip()),
-      render_new_tab_button_over_tab_strip_(features::IsChromeRefresh2023()) {
+          TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip()) {
   views::SetCascadingColorProviderColor(
       this, views::kCascadingBackgroundColor,
       kColorTabBackgroundInactiveFrameInactive);
@@ -281,9 +280,8 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   };
 
   // Perform checks for buttons that should be rendered above the tabstrip.
-  if (render_new_tab_button_over_tab_strip_ && new_tab_button_ &&
-      new_tab_button_->GetLocalBounds().Intersects(
-          get_target_rect(new_tab_button_))) {
+  if (new_tab_button_ && new_tab_button_->GetLocalBounds().Intersects(
+                             get_target_rect(new_tab_button_))) {
     return !new_tab_button_->HitTestRect(get_target_rect(new_tab_button_));
   }
 
@@ -400,7 +398,7 @@ void TabStripRegionView::Layout(PassKey) {
                          product_specifications_button_width);
   }
 
-  if (render_new_tab_button_over_tab_strip_ && new_tab_button_) {
+  if (new_tab_button_) {
     // The NTB needs to be layered on top of the tabstrip to achieve negative
     // margins.
     gfx::Size new_tab_button_size = new_tab_button_->GetPreferredSize();
@@ -514,10 +512,7 @@ void TabStripRegionView::UpdateButtonBorders() {
   // definitely isn't what we want in the scrolling case, so this naive approach
   // should be improved, likely by taking the scroll state of the tabstrip into
   // account.
-  constexpr int kHorizontalInset = 8;
-  const auto border_insets =
-      gfx::Insets::TLBR(top_inset, 0, bottom_inset,
-                        features::IsChromeRefresh2023() ? 0 : kHorizontalInset);
+  const auto border_insets = gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0);
   if (new_tab_button_) {
     new_tab_button_->SetBorder(views::CreateEmptyBorder(border_insets));
   }
@@ -532,23 +527,22 @@ void TabStripRegionView::UpdateButtonBorders() {
 }
 
 void TabStripRegionView::UpdateTabStripMargin() {
-  //  If the new tab button or tab search button are positioned over the
-  //  tabstrip, then buttons are rendered to a layer, and the margins are set to
-  //  take up the rest of the space under the buttons.
+  // The new tab button overlaps the tabstrip. Render it to a layer and adjust
+  // the tabstrip right margin to reserve space for it.
   std::optional<int> tab_strip_right_margin;
   if (new_tab_button_) {
-    if (render_new_tab_button_over_tab_strip_) {
-      new_tab_button_->SetPaintToLayer();
-      new_tab_button_->layer()->SetFillsBoundsOpaquely(false);
-      // Inset between the tabstrip and new tab button should be reduced to
-      // account for extra spacing.
-      new_tab_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+    new_tab_button_->SetPaintToLayer();
+    new_tab_button_->layer()->SetFillsBoundsOpaquely(false);
+    // Inset between the tabstrip and new tab button should be reduced to
+    // account for extra spacing.
+    new_tab_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-      tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
-                               GetLayoutConstant(TAB_STRIP_PADDING);
-    }
+    tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
+                             GetLayoutConstant(TAB_STRIP_PADDING);
   }
 
+  // If the tab search button is before the tab strip, it also overlaps the
+  // tabstrip, so give it the same treatment.
   std::optional<int> tab_strip_left_margin;
   if (tab_search_container_ && render_tab_search_before_tab_strip_) {
     // The `tab_search_container_` is being laid out manually.
