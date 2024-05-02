@@ -242,10 +242,10 @@
     You can now use addresses from your Google Account
   </message>
   <message name="IDS_AUTOFILL_IPH_MANUAL_FALLBACK" desc="IPH bubble for triggering autofill from the context menu.">
-    Right click to add your saved info to any form
+    Right click to autofill saved info, like your name or address, on any form
   </message>
   <message name="IDS_AUTOFILL_IPH_MANUAL_FALLBACK_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the IPH bubble for triggering autofill from the context menu.">
-    Right click to add your saved info to any form
+    Right click to autofill saved info, like your name or address, on any form
   </message>
 
   <!-- Autofill suggestion label separator -->
