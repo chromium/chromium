@@ -8,8 +8,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/platform/count_down_latch.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "components/cross_device/nearby/nearby_features.h"
@@ -38,6 +41,8 @@ const device::BluetoothUUID kService1BluetoothUuid{
 const device::BluetoothUUID kService2BluetoothUuid{base::span<const uint8_t>(
     reinterpret_cast<const uint8_t*>(kTestServiceUuid2.data().data()),
     kTestServiceUuid2.data().size())};
+const char kServiceId[] = "TestServiceId";
+const char kCharacteristicUuid[] = "1234";
 
 std::vector<uint8_t> GetByteVector(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
@@ -69,6 +74,8 @@ class BleV2MediumTest : public testing::Test {
     ble_v2_medium_ = std::make_unique<BleV2Medium>(remote_adapter_);
   }
 
+  void TearDown() override { ble_v2_medium_.reset(); }
+
   void OnPeripheralDiscovered() {
     if (on_expected_peripherals_discovered_callback_) {
       std::move(on_expected_peripherals_discovered_callback_).Run();
@@ -99,11 +106,47 @@ class BleV2MediumTest : public testing::Test {
     return device_info;
   }
 
+  void SetUpGattServerForAdvertising(bool should_register_succeed) {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync_primitives;
+    fake_adapter_->is_dual_role_supported_ = true;
+    gatt_server_ = ble_v2_medium_->StartGattServer({});
+    EXPECT_TRUE(gatt_server_);
+
+    // Set up a `GattService` that will succeed/fail registration when
+    // `RegisterGattServices()` is called by `BleV2Medium`.
+    auto fake_gatt_service = std::make_unique<bluetooth::FakeGattService>();
+    fake_gatt_service->SetShouldRegisterSucceed(should_register_succeed);
+    fake_gatt_service->SetCreateCharacteristicResult(/*success=*/true);
+    fake_adapter_->SetCreateLocalGattServiceResult(
+        /*gatt_service=*/std::move(fake_gatt_service));
+    auto gatt_characteristic = gatt_server_->CreateCharacteristic(
+        /*service_uuid=*/Uuid(/*data=*/kServiceId),
+        /*characteristic_uuid=*/Uuid(/*data=*/kCharacteristicUuid),
+        /*permission=*/api::ble_v2::GattCharacteristic::Permission::kRead,
+        /*property=*/api::ble_v2::GattCharacteristic::Property::kRead);
+    EXPECT_TRUE(gatt_characteristic);
+  }
+
+  void CallStartAdvertisingForGattService(bool expected_success) {
+    api::ble_v2::BleAdvertisementData advertising_data;
+    advertising_data.is_extended_advertisement = true;
+    advertising_data.service_data.insert(
+        {kFastAdvertisementServiceUuid1, kDeviceServiceData1ByteArray});
+
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync_primitives;
+    EXPECT_EQ(expected_success,
+              ble_v2_medium_->StartAdvertising(
+                  advertising_data,
+                  {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
+                   .is_connectable = true}));
+  }
+
   raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
   std::unique_ptr<BleV2Medium> ble_v2_medium_;
 
  private:
+  std::unique_ptr<api::ble_v2::GattServer> gatt_server_;
   std::unique_ptr<BleV2Medium::ScanningSession> scanning_session_;
   base::OnceClosure on_expected_peripherals_discovered_callback_;
   base::OnceClosure on_discovery_session_destroyed_callback_;
@@ -503,6 +546,32 @@ TEST_F(BleV2MediumTest, StartGattServer_DualRoleNotSupported) {
   fake_adapter_->is_dual_role_supported_ = false;
   auto gatt_server = ble_v2_medium_->StartGattServer({});
   EXPECT_FALSE(gatt_server);
+}
+
+TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Success) {
+  SetUpGattServerForAdvertising(/*should_register_succeed=*/true);
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2MediumTest::CallStartAdvertisingForGattService,
+                         base::Unretained(this), /*expected_result=*/true),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Failure) {
+  SetUpGattServerForAdvertising(/*should_register_succeed=*/false);
+
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2MediumTest::CallStartAdvertisingForGattService,
+                         base::Unretained(this), /*expected_result=*/false),
+          run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace nearby::chrome
