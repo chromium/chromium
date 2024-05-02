@@ -149,24 +149,26 @@ public class TabGroupListMediatorUnitTest {
     @Test
     @SmallTest
     public void testTwoGroups() {
-        SavedTabGroup group1 = new SavedTabGroup();
-        group1.syncId = SYNC_GROUP_ID1;
-        group1.title = "Foo";
-        group1.color = TabGroupColorId.BLUE;
-        group1.savedTabs = Arrays.asList(new SavedTabGroupTab(), new SavedTabGroupTab());
+        SavedTabGroup fooGroup = new SavedTabGroup();
+        fooGroup.syncId = SYNC_GROUP_ID1;
+        fooGroup.title = "Foo";
+        fooGroup.color = TabGroupColorId.BLUE;
+        fooGroup.savedTabs = Arrays.asList(new SavedTabGroupTab(), new SavedTabGroupTab());
+        fooGroup.creationTimeMs = 1;
 
-        SavedTabGroup group2 = new SavedTabGroup();
-        group2.syncId = SYNC_GROUP_ID1;
-        group2.title = "Bar";
-        group2.color = TabGroupColorId.RED;
-        group2.savedTabs =
+        SavedTabGroup barGroup = new SavedTabGroup();
+        barGroup.syncId = SYNC_GROUP_ID1;
+        barGroup.title = "Bar";
+        barGroup.color = TabGroupColorId.RED;
+        barGroup.savedTabs =
                 Arrays.asList(
                         new SavedTabGroupTab(), new SavedTabGroupTab(), new SavedTabGroupTab());
+        barGroup.creationTimeMs = 2;
 
         when(mTabGroupSyncService.getAllGroupIds())
                 .thenReturn(new String[] {SYNC_GROUP_ID1, SYNC_GROUP_ID2});
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group1);
-        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID2)).thenReturn(group2);
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(fooGroup);
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID2)).thenReturn(barGroup);
 
         new TabGroupListMediator(
                 mModelList,
@@ -177,13 +179,13 @@ public class TabGroupListMediatorUnitTest {
                 mTabGroupUiActionHandler);
         assertEquals(2, mModelList.size());
 
-        PropertyModel model1 = mModelList.get(0).model;
-        assertEquals(new Pair<>("Foo", 2), model1.get(TITLE_DATA));
-        assertEquals(TabGroupColorId.BLUE, model1.get(COLOR_INDEX));
+        PropertyModel barModel = mModelList.get(0).model;
+        assertEquals(new Pair<>("Bar", 3), barModel.get(TITLE_DATA));
+        assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
-        PropertyModel model2 = mModelList.get(1).model;
-        assertEquals(new Pair<>("Bar", 3), model2.get(TITLE_DATA));
-        assertEquals(TabGroupColorId.RED, model2.get(COLOR_INDEX));
+        PropertyModel fooModel = mModelList.get(1).model;
+        assertEquals(new Pair<>("Foo", 2), fooModel.get(TITLE_DATA));
+        assertEquals(TabGroupColorId.BLUE, fooModel.get(COLOR_INDEX));
     }
 
     @Test

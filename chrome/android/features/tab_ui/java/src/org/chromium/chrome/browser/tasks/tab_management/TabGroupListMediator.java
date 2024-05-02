@@ -45,6 +45,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -153,14 +154,26 @@ public class TabGroupListMediator {
         return rootId == Tab.INVALID_TAB_ID ? TabGroupState.IN_ANOTHER : TabGroupState.IN_CURRENT;
     }
 
-    private void repopulateModelList() {
-        mModelList.clear();
+    private List<Pair<SavedTabGroup, Integer>> getSortedGroupAndStateList() {
+        List<Pair<SavedTabGroup, Integer>> groupAndStateList = new ArrayList<>();
         for (String syncGroupId : mSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
-
-            // To simplify interactions, filter out any groups currently open in other windows.
             @TabGroupState int state = getState(savedTabGroup);
-            if (state == TabGroupState.IN_ANOTHER) continue;
+            // To simplify interactions, do not include any groups currently open in other windows.
+            if (state != TabGroupState.IN_ANOTHER) {
+                groupAndStateList.add(new Pair<>(savedTabGroup, state));
+            }
+        }
+        groupAndStateList.sort(
+                (a, b) -> Long.compare(b.first.creationTimeMs, a.first.creationTimeMs));
+        return groupAndStateList;
+    }
+
+    private void repopulateModelList() {
+        mModelList.clear();
+        for (Pair<SavedTabGroup, Integer> groupAndState : getSortedGroupAndStateList()) {
+            SavedTabGroup savedTabGroup = groupAndState.first;
+            @TabGroupState int state = groupAndState.second;
 
             PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
             int numberOfTabs = savedTabGroup.savedTabs.size();
