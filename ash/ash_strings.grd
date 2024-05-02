@@ -6820,6 +6820,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISMISS_DIALOG_EXIT" desc="The label for the exit button on the Apps Collections Tutorial View dismiss dialog that shows over the Apps Collections in the Launcher when the user attempts to sort their apps. The dialog serves as confirmation to exit the Apps Collections Tutorial View and pressing the exit buton will close the dialog and exit the Tutorial View">
         Exit
       </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISCOVERY_CHIP_LABEL" desc="The label for the button displayed at the bottom of Apps Collections Tutorial View. When the user clicks the Discovery chip, it will launch a secondary app to showcase more apps.">
+        Explore more apps and games
+      </message>
 
       <!-- Launcher: Continue Section -->
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL" desc="Label for the continue section of the launcher, which shows recent files and apps that the user can continue using. [CHAR_LIMIT=70]">

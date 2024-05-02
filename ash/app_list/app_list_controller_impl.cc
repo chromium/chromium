@@ -1240,6 +1240,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
       case AppListLaunchedFrom::kLaunchedFromContinueTask:
       case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
       case AppListLaunchedFrom::kLaunchedFromAppsCollections:
+      case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
         break;
       case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         NOTREACHED();
@@ -1273,6 +1274,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
     case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
     case AppListLaunchedFrom::kLaunchedFromAppsCollections:
+    case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
       NOTREACHED();
       break;
   }
@@ -1337,8 +1339,10 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
     // Metrics for quick app launch already recorded at RecordApplaunched().
     case AppListLaunchedFrom::kLaunchedFromAppsCollections:
-      // Metrics for apps collections launch recorded by the
-      // AppListViewDelegate.
+    // Metrics for apps collections launch recorded by the
+    // AppListViewDelegate.
+    case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
+      // Metrics for discovery chip already recorded at RecordApplaunched().
       break;
     case AppListLaunchedFrom::kLaunchedFromContinueTask:
     case AppListLaunchedFrom::kLaunchedFromSearchBox:

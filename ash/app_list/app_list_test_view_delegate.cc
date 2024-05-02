@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback.h"
 
 namespace ash {
@@ -65,6 +66,7 @@ void AppListTestViewDelegate::OpenSearchResult(
       case ash::AppListLaunchedFrom::kLaunchedFromShelf:
       case ash::AppListLaunchedFrom::kLaunchedFromContinueTask:
       case ash::AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
+      case ash::AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
         return;
       case ash::AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
         NOTREACHED();

@@ -25,8 +25,13 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/pill_button.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -36,11 +41,15 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 namespace {
+
+// This ID is from //chrome/browser/web_applications/web_app_id_constants.h.
+constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 
 // Insets for the vertical scroll bar. The bottom is pushed up slightly to keep
 // the scroll bar from being clipped by the rounded corners.
@@ -143,6 +152,23 @@ AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
 
   PopulateCollections(model);
 
+  views::BoxLayoutView* discovery_chip_container =
+      scroll_contents->AddChildView(std::make_unique<views::BoxLayoutView>());
+  discovery_chip_container->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  discovery_chip_container->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  // TODO(b/337035530): Set the showoff icon for the discovery chip.
+  discovery_chip_ =
+      discovery_chip_container->AddChildView(std::make_unique<ash::PillButton>(
+          base::BindRepeating(
+              &AppListBubbleAppsCollectionsPage::OnDiscoveryChipPressed,
+              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_LAUNCHER_APPS_COLLECTIONS_DISCOVERY_CHIP_LABEL),
+          ash::PillButton::kDefaultWithIconLeading, &kLaunchIcon));
+
   scroll_view_->SetContents(std::move(scroll_contents));
   toast_container_->CreateTutorialNudgeView();
   toast_container_->UpdateVisibilityState(
@@ -164,6 +190,12 @@ AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
 
 AppListBubbleAppsCollectionsPage::~AppListBubbleAppsCollectionsPage() {
   AppListModelProvider::Get()->RemoveObserver(this);
+}
+
+void AppListBubbleAppsCollectionsPage::OnDiscoveryChipPressed() {
+  view_delegate_->ActivateItem(
+      kHelpAppId,
+      /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromDiscoveryChip);
 }
 
 void AppListBubbleAppsCollectionsPage::AnimateShowPage() {

@@ -51,6 +51,9 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
       const AppListBubbleAppsCollectionsPage&) = delete;
   ~AppListBubbleAppsCollectionsPage() override;
 
+  // Invoked when a user clicks on the `disocovery_chip_`.
+  void OnDiscoveryChipPressed();
+
   // Starts the animation for showing the page, coming from another page.
   void AnimateShowPage();
 
@@ -81,6 +84,8 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
 
   AppsGridContextMenu* context_menu_for_test() { return context_menu_.get(); }
 
+  views::View* discovery_chip_for_test() { return discovery_chip_; }
+
  private:
   friend class AppListTestHelper;
 
@@ -106,6 +111,7 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   raw_ptr<AppListToastContainerView> toast_container_ = nullptr;
   raw_ptr<views::View> sections_container_ = nullptr;
   const raw_ptr<AppListConfig> app_list_config_;
+  raw_ptr<views::View> discovery_chip_ = nullptr;
 
   raw_ptr<SearchResultPageDialogController> dialog_controller_ = nullptr;
 

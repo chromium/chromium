@@ -476,4 +476,35 @@ TEST_F(AppListBubbleAppsCollectionsPageTest,
   EXPECT_EQ(AppListSortOrder::kCustom, helper->model()->requested_sort_order());
 }
 
+// Verifies that the metrics for launching the Showoff app by clicking the
+// Discovery Chip are recorded.
+TEST_F(AppListBubbleAppsCollectionsPageTest, DiscoveryChipLogsMetric) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 50);
+  helper->ShowAppList();
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  base::HistogramTester histograms;
+  views::ScrollView* scroll_view = apps_collections_page->scroll_view();
+
+  histograms.ExpectUniqueSample("Apps.AppListAppLaunchedV2.BubbleAllApps",
+                                AppListLaunchedFrom::kLaunchedFromDiscoveryChip,
+                                0);
+
+  // Scroll the apps page to the end.
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), INT_MAX);
+  GetEventGenerator()->MoveMouseTo(
+      apps_collections_page->discovery_chip_for_test()
+          ->GetBoundsInScreen()
+          .CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  histograms.ExpectUniqueSample("Apps.AppListAppLaunchedV2.BubbleAllApps",
+                                AppListLaunchedFrom::kLaunchedFromDiscoveryChip,
+                                1);
+}
+
 }  // namespace ash
