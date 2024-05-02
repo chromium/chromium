@@ -188,6 +188,21 @@ export const PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES = new Set([
   'sk',    'sv', 'th',  'tr', 'uk', 'vi',    'yue',
 ]);
 
+// These are the locales based on PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, but
+// for the actual Google TTS locales that can be installed on ChromeOS. While
+// we can use the languages in PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES to
+// download a voice pack, the voice pack language code will be returned in
+// the locale format, as in AVAILABLE_GOOGLE_TTS_LOCALES, which means the
+// previously toggled language item won't match the language item associated
+// with the downloaded pack.
+export const AVAILABLE_GOOGLE_TTS_LOCALES = new Set([
+  'bn-bd', 'cs-cz', 'da-dk', 'de-de', 'el-gr',  'en-au',  'en-gb',
+  'en-us', 'es-es', 'es-us', 'fi-fi', 'fil-ph', 'fr-fr',  'hi-in',
+  'hu-hu', 'id-id', 'it-it', 'ja-jp', 'km-kh',  'ko-kr',  'nb-no',
+  'ne-np', 'nl-nl', 'pl-pl', 'pt-br', 'pt-pt',  'si-lk',  'sk-sk',
+  'sv-se', 'th-th', 'tr-tr', 'uk-ua', 'vi-vn',  'yue-hk',
+]);
+
 export function areVoicesEqual(
     voice1: SpeechSynthesisVoice|null,
     voice2: SpeechSynthesisVoice|null): boolean {

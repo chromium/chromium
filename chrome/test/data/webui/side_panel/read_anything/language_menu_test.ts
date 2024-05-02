@@ -8,7 +8,7 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 
@@ -75,7 +75,7 @@ suite('LanguageMenu', () => {
   suite('using pack manager languages', () => {
     setup(() => {
       // @ts-ignore
-      languageMenu.baseLanguages = PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES;
+      languageMenu.baseLanguages = AVAILABLE_GOOGLE_TTS_LOCALES;
       flush();
     });
 

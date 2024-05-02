@@ -23,7 +23,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -975,7 +975,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.localeToDisplayName = {};
 
     // Get display names for all the pack manager supported locales.
-    PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.forEach((lang) => {
+    AVAILABLE_GOOGLE_TTS_LOCALES.forEach((lang) => {
       this.maybeAddDisplayName(lang);
     });
 

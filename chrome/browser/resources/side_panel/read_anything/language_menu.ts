@@ -19,7 +19,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './language_menu.html.js';
-import {convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from './voice_language_util.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, VoicePackStatus} from './voice_language_util.js';
 
 export interface LanguageMenuElement {
   $: {
@@ -67,9 +67,9 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
   private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
   private enabledLanguagesInPref: string[] = [];
 
-  // Use this variable instead of PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES
+  // Use this variable instead of AVAILABLE_GOOGLE_TTS_LOCALES
   // directly to better aid in testing.
-  private baseLanguages = PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES;
+  private baseLanguages = AVAILABLE_GOOGLE_TTS_LOCALES;
 
   private closeLanguageMenu_() {
     this.$.languageMenu.close();
