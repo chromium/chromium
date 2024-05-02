@@ -314,6 +314,14 @@ void RealtimeAudioDestinationHandler::SetDetectSilence(bool detect_silence) {
 
 void RealtimeAudioDestinationHandler::NotifyAudioContext() {
   DCHECK(IsMainThread());
+
+  // When this method gets executed by the task runner, it is possible that
+  // the corresponding GC-managed objects are not valid anymore. Check the
+  // initialization state and stop if the disposition already happened.
+  if (!IsInitialized()) {
+    return;
+  }
+
   Context()->OnRenderError();
 }
 
