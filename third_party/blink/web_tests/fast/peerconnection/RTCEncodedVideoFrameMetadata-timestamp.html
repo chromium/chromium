@@ -13,7 +13,7 @@ const callee = new RTCPeerConnection({ encodedInsertableStreams: true });
 t.add_cleanup(() => callee.close());
 exchangeIceCandidates(caller, callee);
 
-const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+const stream = await getNoiseStream({ video: true });
 const videoTrack = stream.getVideoTracks()[0];
 t.add_cleanup(() => videoTrack.stop());
 
