@@ -228,7 +228,7 @@ public class ReadingListTest {
                 () -> delegate.openFolder(mBookmarkModel.getMobileFolderId()));
         Assert.assertEquals("Mobile bookmarks", toolbar.getTitle());
         Assert.assertEquals(
-                SelectableListToolbar.NavigationButton.SEARCH_BACK,
+                SelectableListToolbar.NavigationButton.NORMAL_VIEW_BACK,
                 toolbar.getNavigationButtonForTests());
         Assert.assertFalse(toolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 

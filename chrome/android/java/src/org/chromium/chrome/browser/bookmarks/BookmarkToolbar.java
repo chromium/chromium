@@ -173,12 +173,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     // SelectableListToolbar implementation.
 
     @Override
-    public void onSearchNavigationBack() {
-        if (isSearching()) {
-            super.onSearchNavigationBack();
-            return;
-        }
-
+    public void onNavigationBack() {
         // The navigation button shouldn't be visible unless the current folder is non-null.
         mNavigateBackRunnable.run();
     }

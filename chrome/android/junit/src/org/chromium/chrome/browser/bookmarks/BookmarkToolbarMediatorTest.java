@@ -255,7 +255,7 @@ public class BookmarkToolbarMediatorTest {
 
         assertTrue(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertTrue(navigationButtonMatchesModel(NavigationButton.SEARCH_BACK));
+        assertTrue(navigationButtonMatchesModel(NavigationButton.NORMAL_VIEW_BACK));
     }
 
     @Test
@@ -266,7 +266,7 @@ public class BookmarkToolbarMediatorTest {
 
         assertTrue(mModel.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
         assertEquals("test folder", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertTrue(navigationButtonMatchesModel(NavigationButton.SEARCH_BACK));
+        assertTrue(navigationButtonMatchesModel(NavigationButton.NORMAL_VIEW_BACK));
     }
 
     @Test
@@ -284,14 +284,6 @@ public class BookmarkToolbarMediatorTest {
                 mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                         .apply(R.id.close_menu_id));
         // Difficult to verify that the activity has been finished, especially in a unit test.
-    }
-
-    @Test
-    public void testOnMenuItemClick_searchMenu() {
-        assertTrue(
-                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                        .apply(R.id.search_menu_id));
-        verify(mBookmarkDelegate).openSearchUi();
     }
 
     @Test
