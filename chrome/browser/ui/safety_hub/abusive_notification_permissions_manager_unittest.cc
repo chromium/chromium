@@ -17,6 +17,10 @@
 
 namespace {
 
+const char url1[] = "https://example1.com";
+const char url2[] = "https://example2.com";
+const char url3[] = "https://example3.com";
+
 const ContentSettingsType notifications_type =
     ContentSettingsType::NOTIFICATIONS;
 const ContentSettingsType revoked_notifications_type =
@@ -89,20 +93,25 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
     return mock_database_manager_.get();
   }
 
-  void AddAbusiveNotification(std::string url,
-                              ContentSetting cs,
-                              bool is_ignored) {
+  void AddAbusiveNotification(std::string url, ContentSetting cs) {
     content_settings::ContentSettingConstraints constraint;
     hcsm()->SetContentSettingDefaultScope(GURL(url), GURL(url),
                                           notifications_type, cs, constraint);
+    mock_database_manager()->SetThreatTypeForUrl(
+        GURL(url), safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  }
+
+  void AddRevokedAbusiveNotification(std::string url,
+                                     ContentSetting cs,
+                                     bool is_ignored) {
+    AddAbusiveNotification(url, cs);
+    content_settings::ContentSettingConstraints constraint;
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url), revoked_notifications_type,
         base::Value(base::Value::Dict().Set(
             safety_hub::kRevokedStatusDictKeyStr,
             is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr)),
         constraint);
-    mock_database_manager()->SetThreatTypeForUrl(
-        GURL(url), safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   }
 
   void AddSafeNotification(std::string url, ContentSetting cs) {
@@ -111,6 +120,90 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
                                           notifications_type, cs, constraint);
     mock_database_manager()->SetThreatTypeForUrl(
         GURL(url), safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
+  }
+
+  bool IsUrlInContentSettings(ContentSettingsForOneType content_settings,
+                              std::string url) {
+    std::string url_pattern =
+        ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
+    for (const auto& setting : content_settings) {
+      if (setting.primary_pattern.ToString() == url_pattern) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  ContentSetting GetNotificationSettingValue(std::string url) {
+    std::string url_pattern =
+        ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
+    auto notification_permission_settings =
+        hcsm()->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
+    for (const auto& setting : notification_permission_settings) {
+      if (setting.primary_pattern.ToString() == url_pattern) {
+        return setting.GetContentSetting();
+      }
+    }
+    return ContentSetting::CONTENT_SETTING_DEFAULT;
+  }
+
+  bool IsRevokedSettingValueRevoked(
+      AbusiveNotificationPermissionsManager* abuse_manager,
+      std::string url) {
+    base::Value stored_value =
+        GetRevokedAbusiveNotificationPermissionsSettingValue(abuse_manager,
+                                                             url);
+    if (stored_value.GetDict()
+            .Find(safety_hub::kRevokedStatusDictKeyStr)
+            ->GetString() == safety_hub::kRevokeStr) {
+      return true;
+    }
+    return false;
+  }
+
+  bool IsRevokedSettingValueIgnore(
+      AbusiveNotificationPermissionsManager* abuse_manager,
+      std::string url) {
+    base::Value stored_value =
+        GetRevokedAbusiveNotificationPermissionsSettingValue(abuse_manager,
+                                                             url);
+    if (stored_value.GetDict()
+            .Find(safety_hub::kRevokedStatusDictKeyStr)
+            ->GetString() == safety_hub::kIgnoreStr) {
+      return true;
+    }
+    return false;
+  }
+
+  bool IsRevokedSettingValueNone(
+      AbusiveNotificationPermissionsManager* abuse_manager,
+      std::string url) {
+    base::Value stored_value =
+        GetRevokedAbusiveNotificationPermissionsSettingValue(abuse_manager,
+                                                             url);
+    return stored_value.is_none();
+  }
+
+  base::Value GetRevokedAbusiveNotificationPermissionsSettingValue(
+      AbusiveNotificationPermissionsManager* abuse_manager,
+      std::string url) {
+    std::string url_pattern =
+        ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
+    auto notification_permission_settings =
+        hcsm()->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
+    for (const auto& setting : notification_permission_settings) {
+      if (setting.primary_pattern.ToString() == url_pattern) {
+        return abuse_manager
+            ->GetRevokedAbusiveNotificationPermissionsSettingValue(setting);
+      }
+    }
+    return base::Value();
+  }
+
+  void RunUntilSafeBrowsingChecksComplete(
+      AbusiveNotificationPermissionsManager* manager) {
+    manager->CheckNotificationPermissionOrigins();
+    base::RunLoop().RunUntilIdle();
   }
 
   void VerifyTimeoutCallbackNotCalled() {
@@ -128,111 +221,256 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        AddAllowedAbusiveNotificationSitesToRevokedOriginSet) {
-  std::string url1 = "https://example1.com";
-  std::string url2 = "https://example2.com";
-  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW,
-                         /*is_ignored=*/false);
-  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW,
-                         /*is_ignored=*/false);
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 0u);
-  manager.CheckNotificationPermissionOrigins();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 2u);
-  EXPECT_TRUE(
-      manager.GetLastAbusiveOrigins().contains("https://example1.com/"));
-  EXPECT_TRUE(
-      manager.GetLastAbusiveOrigins().contains("https://example2.com/"));
+  EXPECT_EQ(manager.GetRevokedPermissions().size(), 0u);
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 2u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
 
   VerifyTimeoutCallbackNotCalled();
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        DoesNotAddSafeAbusiveNotificationSitesToRevokedOriginSet) {
-  std::string url1 = "https://example1.com";
-  std::string url2 = "https://example2.com";
   AddSafeNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
-  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW,
-                         /*is_ignored=*/false);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 0u);
-  manager.CheckNotificationPermissionOrigins();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 1u);
-  EXPECT_TRUE(
-      manager.GetLastAbusiveOrigins().contains("https://example2.com/"));
+  EXPECT_EQ(manager.GetRevokedPermissions().size(), 0u);
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 1u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueNone(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
 
   VerifyTimeoutCallbackNotCalled();
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        DoesNotAddBlockedSettingToRevokedList) {
-  std::string url1 = "https://example1.com";
-  std::string url2 = "https://example2.com";
-  std::string url3 = "https://example3.com";
-  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW,
-                         /*is_ignored=*/false);
-  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_BLOCK,
-                         /*is_ignored=*/false);
-  AddAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_BLOCK,
-                         /*is_ignored=*/true);
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ASK);
+  AddRevokedAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_ASK,
+                                /*is_ignored=*/true);
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 0u);
-  manager.CheckNotificationPermissionOrigins();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 1u);
-  EXPECT_TRUE(
-      manager.GetLastAbusiveOrigins().contains("https://example1.com/"));
+  EXPECT_EQ(manager.GetRevokedPermissions().size(), 0u);
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 1u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url3),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueNone(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueIgnore(&manager, url3));
 
   VerifyTimeoutCallbackNotCalled();
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        DoesNotAddIgnoredSettingToRevokedList) {
-  std::string url1 = "https://example1.com";
-  std::string url2 = "https://example2.com";
-  std::string url3 = "https://example3.com";
-  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW,
-                         /*is_ignored=*/false);
-  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_BLOCK,
-                         /*is_ignored=*/true);
-  AddAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_ALLOW,
-                         /*is_ignored=*/true);
+  AddRevokedAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ASK,
+                                /*is_ignored=*/false);
+  AddRevokedAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW,
+                                /*is_ignored=*/true);
+  AddRevokedAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_ALLOW,
+                                /*is_ignored=*/true);
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 0u);
-  manager.CheckNotificationPermissionOrigins();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 1u);
-  EXPECT_TRUE(
-      manager.GetLastAbusiveOrigins().contains("https://example1.com/"));
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 1u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(GetNotificationSettingValue(url3),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueIgnore(&manager, url2));
+  EXPECT_TRUE(IsRevokedSettingValueIgnore(&manager, url3));
 
   VerifyTimeoutCallbackNotCalled();
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        DoesNotAddAbusiveNotificationSitesOnTimeout) {
-  std::string url1 = "https://example1.com";
-  std::string url2 = "https://example2.com";
-  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW,
-                         /*is_ignored=*/false);
-  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW,
-                         /*is_ignored=*/false);
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
   manager.SetNullSBCheckDelayForTesting();
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 0u);
   EXPECT_FALSE(mock_database_manager()->HasCalledCancelCheck());
-  manager.CheckNotificationPermissionOrigins();
-  base::RunLoop().RunUntilIdle();
+  RunUntilSafeBrowsingChecksComplete(&manager);
   EXPECT_TRUE(mock_database_manager()->HasCalledCancelCheck());
-  EXPECT_EQ(manager.GetLastAbusiveOrigins().size(), 0u);
+  EXPECT_EQ(manager.GetRevokedPermissions().size(), 0u);
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest,
+       RegrantedPermissionShouldNotBeChecked) {
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  auto manager =
+      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 2u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+
+  // Make sure that when we regrant url1, it is not automatically revoked again.
+  manager.RegrantPermissionForOrigin(GURL(url1));
+  content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 1u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueIgnore(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+
+  // Running period checks again should still not include url1.
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 1u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueIgnore(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest, ClearRevokedPermissionsList) {
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  auto manager =
+      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 2u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+
+  manager.ClearRevokedPermissionsList();
+  EXPECT_EQ(manager.GetRevokedPermissions().size(), 0u);
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueNone(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueNone(&manager, url2));
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest,
+       UndoRemoveOriginFromRevokedPermissionsList) {
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  auto manager =
+      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 2u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+
+  manager.ClearRevokedPermissionsList();
+  EXPECT_EQ(manager.GetRevokedPermissions().size(), 0u);
+
+  manager.UndoRemoveOriginFromRevokedPermissionsList(GURL(url1));
+  content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 1u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueNone(&manager, url2));
+
+  manager.UndoRemoveOriginFromRevokedPermissionsList(GURL(url2));
+  content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 2u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+}
+
+TEST_F(AbusiveNotificationPermissionsManagerTest,
+       UndoRegrantPermissionForOrigin) {
+  AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
+  AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  auto manager =
+      AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
+  RunUntilSafeBrowsingChecksComplete(&manager);
+  ContentSettingsForOneType content_settings = manager.GetRevokedPermissions();
+  EXPECT_EQ(content_settings.size(), 2u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+
+  // Make sure that when we regrant url1, it is not automatically revoked again.
+  manager.RegrantPermissionForOrigin(GURL(url1));
+  EXPECT_EQ(manager.GetRevokedPermissions().size(), 1u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueIgnore(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
+
+  manager.UndoRegrantPermissionForOrigin(GURL(url1));
+  EXPECT_EQ(manager.GetRevokedPermissions().size(), 2u);
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url1));
+  EXPECT_TRUE(IsUrlInContentSettings(content_settings, url2));
+  EXPECT_EQ(GetNotificationSettingValue(url1),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_EQ(GetNotificationSettingValue(url2),
+            ContentSetting::CONTENT_SETTING_ASK);
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url1));
+  EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
 }

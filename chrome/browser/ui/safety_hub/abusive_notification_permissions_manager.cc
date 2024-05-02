@@ -9,6 +9,39 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace {
+
+void UpdateNotificationPermission(HostContentSettingsMap* hcsm,
+                                  GURL url,
+                                  ContentSetting setting_value) {
+  hcsm->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+      setting_value);
+}
+
+void UpdateRevokedAbusiveNotificationPermission(HostContentSettingsMap* hcsm,
+                                                GURL url,
+                                                bool is_ignored) {
+  hcsm->SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
+      base::Value(base::Value::Dict().Set(
+          safety_hub::kRevokedStatusDictKeyStr,
+          is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr)));
+}
+
+void RemoveRevokedAbusiveNotificationPermission(
+    HostContentSettingsMap* hcsm,
+    ContentSettingPatternSource revoked_permission) {
+  hcsm->SetWebsiteSettingCustomScope(
+      revoked_permission.primary_pattern, revoked_permission.secondary_pattern,
+      ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, {});
+}
+
+}  // namespace
+
 AbusiveNotificationPermissionsManager::AbusiveNotificationPermissionsManager(
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
     scoped_refptr<HostContentSettingsMap> hcsm)
@@ -21,8 +54,17 @@ AbusiveNotificationPermissionsManager::
 
 ContentSettingsForOneType
 AbusiveNotificationPermissionsManager::GetRevokedPermissions() const {
-  return hcsm_->GetSettingsForOneType(
+  ContentSettingsForOneType result;
+  ContentSettingsForOneType revoked_permissions = hcsm_->GetSettingsForOneType(
       ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS);
+  // Filter out all `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` settings whose
+  // value specifies that we should ignore the origin for automatic revocation.
+  for (const auto& revoked_permission : revoked_permissions) {
+    if (!IsAbusiveNotificationRevocationIgnored(revoked_permission)) {
+      result.emplace_back(revoked_permission);
+    }
+  }
+  return result;
 }
 
 void AbusiveNotificationPermissionsManager::
@@ -48,18 +90,47 @@ void AbusiveNotificationPermissionsManager::
   }
 }
 
+void AbusiveNotificationPermissionsManager::RegrantPermissionForOrigin(
+    const GURL& url) {
+  UpdateNotificationPermission(hcsm_.get(), url,
+                               ContentSetting::CONTENT_SETTING_ALLOW);
+  UpdateRevokedAbusiveNotificationPermission(hcsm_.get(), url,
+                                             /*is_ignored=*/true);
+}
+
+void AbusiveNotificationPermissionsManager::UndoRegrantPermissionForOrigin(
+    const GURL url) {
+  UpdateNotificationPermission(hcsm_.get(), url,
+                               ContentSetting::CONTENT_SETTING_ASK);
+  UpdateRevokedAbusiveNotificationPermission(hcsm_.get(), url,
+                                             /*is_ignored=*/false);
+}
+
+void AbusiveNotificationPermissionsManager::ClearRevokedPermissionsList() {
+  ContentSettingsForOneType revoked_permissions = GetRevokedPermissions();
+  for (const auto& revoked_permission : revoked_permissions) {
+    RemoveRevokedAbusiveNotificationPermission(hcsm_.get(), revoked_permission);
+  }
+}
+
+void AbusiveNotificationPermissionsManager::
+    UndoRemoveOriginFromRevokedPermissionsList(const GURL url) {
+  UpdateRevokedAbusiveNotificationPermission(hcsm_.get(), url,
+                                             /*is_ignored=*/false);
+}
+
 AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     SafeBrowsingCheckClient(
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
-        std::set<std::string>* abusive_origins,
         raw_ptr<std::map<SafeBrowsingCheckClient*,
                          std::unique_ptr<SafeBrowsingCheckClient>>>
             safe_browsing_request_clients,
+        raw_ptr<HostContentSettingsMap> hcsm,
         GURL url,
         int safe_browsing_check_delay)
     : database_manager_(database_manager),
-      abusive_origins_(abusive_origins),
       safe_browsing_request_clients_(safe_browsing_request_clients),
+      hcsm_(hcsm),
       url_(url),
       safe_browsing_check_delay_(safe_browsing_check_delay) {}
 
@@ -112,7 +183,10 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   // we got a blocklist check result in time.
   timer_.Stop();
   if (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
-    abusive_origins_->insert(url.spec());
+    UpdateNotificationPermission(hcsm_.get(), url,
+                                 ContentSetting::CONTENT_SETTING_ASK);
+    UpdateRevokedAbusiveNotificationPermission(hcsm_.get(), url,
+                                               /*is_ignored=*/false);
   }
   safe_browsing_request_clients_->erase(this);
   // The previous line results in deleting this object.
@@ -132,45 +206,73 @@ void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
     GURL url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto new_sb_check = std::make_unique<SafeBrowsingCheckClient>(
-      database_manager_.get(), &abusive_notification_permission_origins_,
-      &safe_browsing_request_clients_, url, safe_browsing_check_delay_);
+      database_manager_.get(), &safe_browsing_request_clients_, hcsm_.get(),
+      url, safe_browsing_check_delay_);
   auto new_sb_check_ptr = new_sb_check.get();
   safe_browsing_request_clients_[new_sb_check_ptr] = std::move(new_sb_check);
   new_sb_check_ptr->CheckSocialEngineeringBlocklist();
 }
 
+base::Value AbusiveNotificationPermissionsManager::
+    GetRevokedAbusiveNotificationPermissionsSettingValue(
+        ContentSettingPatternSource content_setting) const {
+  content_settings::SettingInfo info;
+  // Since we are dealing with permissions for specific origins, and there
+  // are no wildcard values in the pattern, it is safe to convert between
+  // ContentSettingsPattern, string, and URL types.
+  GURL setting_url(content_setting.primary_pattern.ToString());
+  base::Value stored_value(hcsm_->GetWebsiteSetting(
+      setting_url, setting_url,
+      ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, &info));
+  return stored_value;
+}
+
+bool AbusiveNotificationPermissionsManager::
+    IsAbusiveNotificationRevocationIgnored(
+        ContentSettingPatternSource content_setting) const {
+  base::Value stored_value =
+      GetRevokedAbusiveNotificationPermissionsSettingValue(content_setting);
+  // If the REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS dictionary value is not
+  // set, then the user has not chosen to ignore revocations for the origin.
+  DCHECK(stored_value.GetDict().contains(safety_hub::kRevokedStatusDictKeyStr));
+  if (stored_value.GetDict()
+          .Find(safety_hub::kRevokedStatusDictKeyStr)
+          ->GetString() == safety_hub::kIgnoreStr) {
+    return true;
+  }
+  DCHECK(stored_value.GetDict()
+             .Find(safety_hub::kRevokedStatusDictKeyStr)
+             ->GetString() == safety_hub::kRevokeStr);
+  return false;
+}
+
 bool AbusiveNotificationPermissionsManager::ShouldCheckOrigin(
     const ContentSettingPatternSource& setting) const {
   DCHECK(hcsm_);
-  if (setting.setting_value == CONTENT_SETTING_ALLOW &&
-      setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {
-    content_settings::SettingInfo info;
-    // Since we are dealing with permissions for specific origins, and there
-    // are no wildcard values in the pattern, it is safe to convert between
-    // ContentSettingsPattern, string, and URL types.
-    GURL setting_url(setting.primary_pattern.ToString());
-    base::Value stored_value(hcsm_->GetWebsiteSetting(
-        setting_url, setting_url,
-        ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, &info));
-
-    if (!stored_value.is_dict()) {
+  if (setting.setting_value == CONTENT_SETTING_ALLOW) {
+    // Secondary pattern should be wildcard for notification permissions. If
+    // not, the permission should be ignored.
+    if (setting.secondary_pattern != ContentSettingsPattern::Wildcard()) {
       return false;
     }
-
-    if (stored_value.GetDict()
-            .Find(safety_hub::kRevokedStatusDictKeyStr)
-            ->GetString() == safety_hub::kRevokeStr) {
+    // If the url does not have a REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS
+    // setting value, we should check the origin.
+    base::Value stored_value =
+        GetRevokedAbusiveNotificationPermissionsSettingValue(setting);
+    if (stored_value.is_none()) {
       return true;
     }
-    DCHECK(stored_value.GetDict()
-               .Find(safety_hub::kRevokedStatusDictKeyStr)
-               ->GetString() == safety_hub::kIgnoreStr);
+    // If the url has a REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS setting value
+    // and the NOTIFICATIONS permission is set to CONTENT_SETTING_ALLOW, then
+    // the user chose to ignore the origin for future revocations so the setting
+    // value should specify ignore.
+    DCHECK(IsAbusiveNotificationRevocationIgnored(setting));
+    return false;
   }
   return false;
 }
 
 void AbusiveNotificationPermissionsManager::ResetSafeBrowsingCheckHelpers() {
-  abusive_notification_permission_origins_ = {};
   if (!safe_browsing_request_clients_.empty()) {
     safe_browsing_request_clients_.clear();
   }

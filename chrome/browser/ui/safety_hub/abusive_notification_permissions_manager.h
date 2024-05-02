@@ -49,6 +49,26 @@ class AbusiveNotificationPermissionsManager {
   // enabled and haven't been marked as a URL to be ignored.
   void CheckNotificationPermissionOrigins();
 
+  // The user regrants permission for an origin, so we should allow notification
+  // permissions again and add a constraint so that this permission is not
+  // auto-revoked during future Safety Hub checks.
+  void RegrantPermissionForOrigin(const GURL& url);
+
+  // Undo the actions from `RegrantPermissionForOrigin` by changing the
+  // `NOTIFICATIONS` setting back to `CONTENT_SETTING_BLOCK` and the
+  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting back to a dictionary
+  // with `safety_hub::kRevokedStatusDictKeyStr` set to
+  // `safety_hub::kRevokeStr`.
+  void UndoRegrantPermissionForOrigin(const GURL url);
+
+  // Clear the list of abusive notification permissions so they will no longer
+  // be shown to the user. Does not change permissions themselves.
+  void ClearRevokedPermissionsList();
+
+  // Add `origin` back into the list of abusive notification permissions we show
+  // to the user in Safety Hub. Does not change permissions themselves.
+  void UndoRemoveOriginFromRevokedPermissionsList(const GURL url);
+
  private:
   friend class AbusiveNotificationPermissionsManagerTest;
   FRIEND_TEST_ALL_PREFIXES(
@@ -63,9 +83,17 @@ class AbusiveNotificationPermissionsManager {
                            DoesNotAddIgnoredSettingToRevokedList);
   FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
                            DoesNotAddAbusiveNotificationSitesOnTimeout);
+  FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
+                           RegrantedPermissionShouldNotBeChecked);
+  FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
+                           ClearRevokedPermissionsList);
+  FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
+                           UndoRemoveOriginFromRevokedPermissionsList);
+  FRIEND_TEST_ALL_PREFIXES(AbusiveNotificationPermissionsManagerTest,
+                           UndoRegrantPermissionForOrigin);
 
   // On object creation, checks the Safe Browsing blocklist for `url_`
-  // and adds to `abusive_notification_permission_origins_` if blocklisted.
+  // and revokes notification permissions if blocklisted.
   // This subclass is necessary to avoid concurrency issues - each
   // request needs its own Client and the AbusiveNotificationPermissionsManager
   // makes multiple Safe Browsing requests.
@@ -74,10 +102,10 @@ class AbusiveNotificationPermissionsManager {
    public:
     SafeBrowsingCheckClient(
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
-        std::set<std::string>* abusive_origins_ptr,
         raw_ptr<std::map<SafeBrowsingCheckClient*,
                          std::unique_ptr<SafeBrowsingCheckClient>>>
             safe_browsing_request_clients,
+        raw_ptr<HostContentSettingsMap> hcsm,
         GURL url,
         int safe_browsing_check_delay);
 
@@ -101,15 +129,14 @@ class AbusiveNotificationPermissionsManager {
     // `AbusiveNotificationPermissionsManager`.
     raw_ptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
-    // A pointer to the `abusive_notification_permission_origins_`
-    // of the `AbusiveNotificationPermissionsManager`.
-    raw_ptr<std::set<std::string>> abusive_origins_;
-
     // A pointer to the `safe_browsing_request_clients_`
     // of the `AbusiveNotificationPermissionsManager`.
     raw_ptr<std::map<SafeBrowsingCheckClient*,
                      std::unique_ptr<SafeBrowsingCheckClient>>>
         safe_browsing_request_clients_;
+
+    // A pointer to the `hcsm_` of the `AbusiveNotificationPermissionsManager`.
+    raw_ptr<HostContentSettingsMap> hcsm_;
 
     // The URL that is being checked against the Safe Browsing blocklist.
     GURL url_;
@@ -127,14 +154,25 @@ class AbusiveNotificationPermissionsManager {
   };
 
   // Primarily used for tests.
-  const std::set<std::string>& GetLastAbusiveOrigins() {
-    return abusive_notification_permission_origins_;
-  }
   void SetNullSBCheckDelayForTesting() { safe_browsing_check_delay_ = 0; }
 
   // Create a `SafeBrowsingCheckClient` object, triggering a blocklist check,
   // and add it to `safe_browsing_request_clients_`.
   void PerformSafeBrowsingChecks(GURL url);
+
+  // Get the dictionary setting value of the
+  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting. Returns `Type::NONE` if
+  // there is no `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting value.
+  base::Value GetRevokedAbusiveNotificationPermissionsSettingValue(
+      ContentSettingPatternSource content_setting) const;
+
+  // Returns true if there is a `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS`
+  // setting value for the setting URL with the
+  // `safety_hub::kRevokedStatusDictKeyStr` key set to `safety_hub::kIgnoreStr`.
+  // Note that the method expects a non-empty
+  // `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` setting as input.
+  bool IsAbusiveNotificationRevocationIgnored(
+      ContentSettingPatternSource content_setting) const;
 
   // Returns true if the notification permission is allowed and the setting
   // does not indicate "ignore".
@@ -149,10 +187,6 @@ class AbusiveNotificationPermissionsManager {
 
   // Object that allows us to manage site permissions.
   scoped_refptr<HostContentSettingsMap> hcsm_;
-
-  // Set of origins with notification permissions granted that were found to be
-  // on the Safe Browsing blocklist and should be automatically revoked.
-  std::set<std::string> abusive_notification_permission_origins_;
 
   // Safe Browsing blocklist check clients. Each object is responsible for a
   // single Safe Browsing check, given a URL. Stored this way so that the object
