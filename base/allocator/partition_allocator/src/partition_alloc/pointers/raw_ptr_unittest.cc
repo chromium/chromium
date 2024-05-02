@@ -69,8 +69,9 @@ static_assert(sizeof(raw_ptr<std::string>) == sizeof(std::string*),
               "raw_ptr shouldn't add memory overhead");
 #endif
 
-#if !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&                              \
-    !BUILDFLAG(USE_ASAN_UNOWNED_PTR) && !BUILDFLAG(USE_HOOKABLE_RAW_PTR) && \
+#if !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) && \
+    !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&        \
+    !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&   \
     !BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) && !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 // |is_trivially_copyable| assertion means that arrays/vectors of raw_ptr can
 // be copied by memcpy.
@@ -82,13 +83,14 @@ static_assert(std::is_trivially_copyable_v<raw_ptr<std::string>>,
               "raw_ptr should be trivially copyable");
 #endif  // !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
         // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&
-        // !BUILDFLAG(USE_HOOKABLE_RAW_PTR) &&
+        // !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&
         // !BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) &&
         // !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
-#if !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&                              \
-    !BUILDFLAG(USE_ASAN_UNOWNED_PTR) && !BUILDFLAG(USE_HOOKABLE_RAW_PTR) && \
-    !BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&                                \
+#if !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) && \
+    !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&        \
+    !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&   \
+    !BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&   \
     !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 // |is_trivially_default_constructible| assertion helps retain implicit default
 // constructors when raw_ptr is used as a union field.  Example of an error
@@ -110,7 +112,7 @@ static_assert(std::is_trivially_default_constructible_v<raw_ptr<std::string>>,
               "raw_ptr should be trivially default constructible");
 #endif  // !BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
         // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&
-        // !BUILDFLAG(USE_HOOKABLE_RAW_PTR) &&
+        // !BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) &&
         // !BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT) &&
         // !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
@@ -1336,8 +1338,8 @@ TEST_F(RawPtrTest, TrivialRelocability) {
   RawPtrCountingImpl::ClearCounters();
   size_t number_of_cleared_elements = vector.size();
   vector.clear();
-#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                             \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                                  \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) || \
     BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
   EXPECT_EQ((int)number_of_cleared_elements,
             RawPtrCountingImpl::release_wrapped_ptr_cnt);
@@ -2432,7 +2434,7 @@ TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
 #endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-#if BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+#if BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 
 namespace {
 #define FOR_EACH_RAW_PTR_OPERATION(F) \
@@ -2574,7 +2576,7 @@ TEST_F(HookableRawPtrImplTest, CrossKindCopyConstruction) {
   EXPECT_EQ(CountingHooks::Get()->unsafely_unwrap_for_duplication_count, 1u);
 }
 
-#endif  // BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+#endif  // BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 
 TEST(DanglingPtrTest, DetectAndReset) {
   auto instrumentation = test::DanglingPtrInstrumentation::Create();

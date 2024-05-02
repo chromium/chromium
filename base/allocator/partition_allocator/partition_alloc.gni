@@ -180,7 +180,7 @@ declare_args() {
 
 # Use the version of raw_ptr<T> that allows the embedder to implement custom
 # logic.
-use_hookable_raw_ptr = use_asan_backup_ref_ptr
+use_raw_ptr_hookable_impl = use_asan_backup_ref_ptr
 
 declare_args() {
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
@@ -272,7 +272,7 @@ if (!use_partition_alloc) {
   use_raw_ptr_backup_ref_impl = false
   use_asan_backup_ref_ptr = false
   use_asan_unowned_ptr = false
-  use_hookable_raw_ptr = false
+  use_raw_ptr_hookable_impl = false
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
   enable_dangling_raw_ptr_feature_flag = false
@@ -342,14 +342,14 @@ assert(!enable_backup_ref_ptr_support || !use_asan_unowned_ptr,
 # RawPtrHookableImpl and BackupRefPtr are mutually exclusive variants of
 # raw_ptr.
 assert(
-    !use_hookable_raw_ptr || !enable_backup_ref_ptr_support,
+    !use_raw_ptr_hookable_impl || !enable_backup_ref_ptr_support,
     "Both RawPtrHookableImpl and BackupRefPtr can't be enabled at the same " +
         "time")
 
 # RawPtrHookableImpl and AsanUnownedPtr are mutually exclusive variants of
 # raw_ptr.
 assert(
-    !use_hookable_raw_ptr || !use_asan_unowned_ptr,
+    !use_raw_ptr_hookable_impl || !use_asan_unowned_ptr,
     "Both RawPtrHookableImpl and AsanUnownedPtr can't be enabled at the same " +
         "time")
 
@@ -365,7 +365,7 @@ assert(!use_asan_unowned_ptr || is_asan,
 assert(build_with_chromium || !use_asan_backup_ref_ptr,
        "AsanBackupRefPtr is not supported outside Chromium")
 
-assert(!use_asan_backup_ref_ptr || use_hookable_raw_ptr,
+assert(!use_asan_backup_ref_ptr || use_raw_ptr_hookable_impl,
        "AsanBackupRefPtr requires RawPtrHookableImpl")
 
 declare_args() {

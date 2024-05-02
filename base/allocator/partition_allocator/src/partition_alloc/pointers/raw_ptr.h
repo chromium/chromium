@@ -49,7 +49,7 @@
 #include "partition_alloc/pointers/raw_ptr_backup_ref_impl.h"
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 #include "partition_alloc/pointers/raw_ptr_asan_unowned_impl.h"
-#elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+#elif BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 #include "partition_alloc/pointers/raw_ptr_hookable_impl.h"
 #else
 #include "partition_alloc/pointers/raw_ptr_noop_impl.h"
@@ -106,7 +106,8 @@ enum class RawPtrTraits : unsigned {
   // instead.
   kMayDangle = (1 << 0),
 
-  // Disables any hooks, when building with BUILDFLAG(USE_HOOKABLE_RAW_PTR).
+  // Disables any hooks, when building with
+  // BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL).
   //
   // Internal use only.
   kDisableHooks = (1 << 2),
@@ -275,7 +276,7 @@ using UnderlyingImplForTraits = internal::RawPtrAsanUnownedImpl<
                                              RawPtrTraits::kAllowPtrArithmetic),
     partition_alloc::internal::ContainsFlags(Traits, RawPtrTraits::kMayDangle)>;
 
-#elif BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+#elif BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 template <RawPtrTraits Traits>
 using UnderlyingImplForTraits = internal::RawPtrHookableImpl<
     /*EnableHooks=*/!partition_alloc::internal::ContainsFlags(
@@ -362,8 +363,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
 // A non-trivial default ctor is required for complex implementations (e.g.
 // BackupRefPtr), or even for NoOpImpl when zeroing is requested.
-#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                             \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                                  \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) || \
     BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT)
   PA_ALWAYS_INLINE constexpr raw_ptr() noexcept {
     if constexpr (kZeroOnConstruct) {
@@ -376,7 +377,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE constexpr raw_ptr() noexcept = default;
   static_assert(!kZeroOnConstruct);
 #endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) ||
+        // BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) ||
         // BUILDFLAG(RAW_PTR_ZERO_ON_CONSTRUCT)
 
 // A non-trivial copy ctor and assignment operator are required for complex
@@ -384,7 +386,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 // these for NoOpImpl even when zeroing is requested; better to keep them
 // trivial.
 #if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) || \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
   PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr& p) noexcept
       : wrapped_ptr_(Impl::Duplicate(p.wrapped_ptr_)) {
     Impl::Trace(tracer_.owner_id(), p.wrapped_ptr_);
@@ -408,13 +410,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE raw_ptr(const raw_ptr&) noexcept = default;
   PA_ALWAYS_INLINE raw_ptr& operator=(const raw_ptr&) noexcept = default;
 #endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) ||
+        // BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL)
 
 // A non-trivial move ctor and assignment operator are required for complex
 // implementations (e.g. BackupRefPtr), or even for NoOpImpl when zeroing is
 // requested.
-#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                             \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                                  \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) || \
     BUILDFLAG(RAW_PTR_ZERO_ON_MOVE)
   PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr&& p) noexcept {
     wrapped_ptr_ = p.wrapped_ptr_;
@@ -444,13 +447,14 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE raw_ptr& operator=(raw_ptr&&) noexcept = default;
   static_assert(!kZeroOnMove);
 #endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) ||
+        // BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) ||
         // BUILDFLAG(RAW_PTR_ZERO_ON_MOVE)
 
 // A non-trivial default dtor is required for complex implementations (e.g.
 // BackupRefPtr), or even for NoOpImpl when zeroing is requested.
-#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                             \
-    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) || \
+#if BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||                                  \
+    BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) || \
     BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
   PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~raw_ptr() noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
@@ -464,7 +468,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE ~raw_ptr() noexcept = default;
   static_assert(!kZeroOnDestruct);
 #endif  // BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR) ||
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) ||
+        // BUILDFLAG(USE_RAW_PTR_HOOKABLE_IMPL) ||
         // BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 
   // Cross-kind copy constructor.
@@ -481,7 +486,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     // Limit cross-kind conversions only to cases where `kMayDangle` gets added,
     // because that's needed for ExtractAsDangling() and Unretained(Ref)Wrapper.
     // Use a static_assert, instead of disabling via SFINAE, so that the
-    // compiler catches other conversions. Otherwise the implicit
+    // compiler catches other conversions. Otherwise the implicits
     // `raw_ptr<T> -> T* -> raw_ptr<>` route will be taken.
     static_assert(Traits == (raw_ptr<T, PassedTraits>::Traits |
                              RawPtrTraits::kMayDangle));
