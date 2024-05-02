@@ -74,15 +74,11 @@ class SSLClientAuthHandler {
 
  private:
   class ClientCertificateDelegateImpl;
-  class Core;
 
   // Called when |core_| is done retrieving the cert list.
   void DidGetClientCerts(net::ClientCertIdentityList client_certs);
 
-  // A reference-counted core so the ClientCertStore may outlive
-  // SSLClientAuthHandler if the handler is destroyed while an operation on the
-  // ClientCertStore is in progress.
-  scoped_refptr<Core> core_;
+  void DidGetClientCertsOnPostTask(net::ClientCertIdentityList client_certs);
 
   // A callback that may be set by the UI implementation. If set, the callback
   // will cancel the dialog corresponding to this certificate request.
@@ -93,6 +89,9 @@ class SSLClientAuthHandler {
 
   // The certs to choose from.
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
+
+  // The ClientCertStore to retrieve the certs from.
+  std::unique_ptr<net::ClientCertStore> client_cert_store_;
 
   // The delegate to call back with the result.
   raw_ptr<Delegate> delegate_;

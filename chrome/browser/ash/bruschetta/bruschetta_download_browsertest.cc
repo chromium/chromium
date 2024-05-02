@@ -93,8 +93,9 @@ class StubClientCertStore : public net::ClientCertStore {
   ~StubClientCertStore() override = default;
 
   // net::ClientCertStore override.
-  void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
-                      ClientCertListCallback callback) override {
+  void GetClientCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+      ClientCertListCallback callback) override {
     std::move(callback).Run(std::move(list_));
   }
 

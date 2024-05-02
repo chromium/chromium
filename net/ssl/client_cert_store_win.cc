@@ -224,20 +224,26 @@ ClientCertStoreWin::ClientCertStoreWin(
 
 ClientCertStoreWin::~ClientCertStoreWin() = default;
 
-void ClientCertStoreWin::GetClientCerts(const SSLCertRequestInfo& request,
-                                        ClientCertListCallback callback) {
+void ClientCertStoreWin::GetClientCerts(
+    scoped_refptr<const SSLCertRequestInfo> request,
+    ClientCertListCallback callback) {
   GetSSLPlatformKeyTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // Caller is responsible for keeping the |request| alive
-      // until the callback is run, so std::cref is safe.
       base::BindOnce(&ClientCertStoreWin::GetClientCertsWithCertStore,
-                     std::cref(request), cert_store_callback_),
-      std::move(callback));
+                     std::move(request), cert_store_callback_),
+      base::BindOnce(&ClientCertStoreWin::OnClientCertsResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClientCertStoreWin::OnClientCertsResponse(
+    ClientCertListCallback callback,
+    ClientCertIdentityList identities) {
+  std::move(callback).Run(std::move(identities));
 }
 
 // static
 ClientCertIdentityList ClientCertStoreWin::GetClientCertsWithCertStore(
-    const SSLCertRequestInfo& request,
+    scoped_refptr<const SSLCertRequestInfo> request,
     const base::RepeatingCallback<crypto::ScopedHCERTSTORE()>&
         cert_store_callback) {
   ScopedHCERTSTOREWithChecks cert_store;
@@ -256,7 +262,7 @@ ClientCertIdentityList ClientCertStoreWin::GetClientCertsWithCertStore(
     PLOG(ERROR) << "Could not open certificate store: ";
     return ClientCertIdentityList();
   }
-  return GetClientCertsImpl(cert_store.get(), request);
+  return GetClientCertsImpl(cert_store.get(), *request);
 }
 
 bool ClientCertStoreWin::SelectClientCertsForTesting(

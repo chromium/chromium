@@ -299,8 +299,8 @@ void AddIdentity(ScopedCFTypeRef<SecIdentityRef> sec_identity,
 }
 
 ClientCertIdentityList GetClientCertsOnBackgroundThread(
-    const SSLCertRequestInfo& request) {
-  std::string server_domain = request.host_and_port.host();
+    scoped_refptr<const SSLCertRequestInfo> request) {
+  std::string server_domain = request->host_and_port.host();
 
   ScopedCFTypeRef<SecIdentityRef> preferred_sec_identity;
   if (!server_domain.empty()) {
@@ -391,7 +391,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
 
   ClientCertIdentityList selected_identities;
   GetClientCertsImpl(std::move(preferred_identity),
-                     std::move(regular_identities), request, true,
+                     std::move(regular_identities), *request, true,
                      &selected_identities);
   return selected_identities;
 }
@@ -402,14 +402,20 @@ ClientCertStoreMac::ClientCertStoreMac() = default;
 
 ClientCertStoreMac::~ClientCertStoreMac() = default;
 
-void ClientCertStoreMac::GetClientCerts(const SSLCertRequestInfo& request,
-                                        ClientCertListCallback callback) {
+void ClientCertStoreMac::GetClientCerts(
+    scoped_refptr<const SSLCertRequestInfo> request,
+    ClientCertListCallback callback) {
   GetSSLPlatformKeyTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // Caller is responsible for keeping the |request| alive
-      // until the callback is run, so std::cref is safe.
-      base::BindOnce(&GetClientCertsOnBackgroundThread, std::cref(request)),
-      std::move(callback));
+      base::BindOnce(&GetClientCertsOnBackgroundThread, std::move(request)),
+      base::BindOnce(&ClientCertStoreMac::OnClientCertsResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClientCertStoreMac::OnClientCertsResponse(
+    ClientCertListCallback callback,
+    ClientCertIdentityList identities) {
+  std::move(callback).Run(std::move(identities));
 }
 
 bool ClientCertStoreMac::SelectClientCertsForTesting(

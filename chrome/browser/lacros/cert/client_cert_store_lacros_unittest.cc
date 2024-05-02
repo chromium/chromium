@@ -19,13 +19,14 @@
 using base::test::RunOnceCallback;
 using testing::_;
 using testing::Invoke;
+using testing::Pointer;
 
 namespace {
 class MockClientCertStore : public net::ClientCertStore {
  public:
   MOCK_METHOD(void,
               GetClientCerts,
-              (const net::SSLCertRequestInfo& cert_request_info,
+              (scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
                ClientCertListCallback callback));
 };
 
@@ -53,7 +54,7 @@ class ClientCertStoreLacrosTest : public ::testing::Test {
   }
 
   void FakeGetClientCerts(
-      const net::SSLCertRequestInfo& cert_request_info,
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
       ClientCertStoreLacros::ClientCertListCallback callback) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -95,13 +96,6 @@ class GetCertsCallbackObserver {
   base::RunLoop loop_;
 };
 
-// It is reasonable to compare SSLCertRequestInfo by its address because it is a
-// non-copyable RefCounted object. `ClientCertStoreLacros` is expected to
-// forward the same object (with the same address) to its underlying store.
-MATCHER_P(AddressEq, expected_ptr, "") {
-  return (&arg == expected_ptr);
-}
-
 // Test that if CertDbInitializing is not initially ready,
 // ClientCertStoreLacros will wait for it.
 TEST_F(ClientCertStoreLacrosTest, WaitsForInitialization) {
@@ -117,12 +111,12 @@ TEST_F(ClientCertStoreLacrosTest, WaitsForInitialization) {
 
   // Request client certs.
   GetCertsCallbackObserver get_certs_callback_observer;
-  cert_store_lacros->GetClientCerts(*cert_request_,
+  cert_store_lacros->GetClientCerts(cert_request_,
                                     get_certs_callback_observer.GetCallback());
 
   // The request should be forwarded to the underlying store, when executed.
   EXPECT_CALL(*underlying_store,
-              GetClientCerts(AddressEq(cert_request_.get()), /*callback=*/_))
+              GetClientCerts(Pointer(cert_request_.get()), /*callback=*/_))
       .WillOnce(Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));
 
   // Imitate signal from cert_db_initializer_ that the initialization is done.
@@ -149,13 +143,13 @@ TEST_F(ClientCertStoreLacrosTest, RunsImmediatelyIfReady) {
   std::move(db_init_callback_holder.callback).Run();
 
   EXPECT_CALL(*underlying_store,
-              GetClientCerts(AddressEq(cert_request_.get()), /*callback=*/_))
+              GetClientCerts(Pointer(cert_request_.get()), /*callback=*/_))
       .WillOnce(Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));
 
   GetCertsCallbackObserver get_certs_callback_observer;
   // Because the cert db is already initialized, the callback should be called
   // immediately.
-  cert_store_lacros->GetClientCerts(*cert_request_,
+  cert_store_lacros->GetClientCerts(cert_request_,
                                     get_certs_callback_observer.GetCallback());
   get_certs_callback_observer.WaitUntilGotCerts();
 }
@@ -181,23 +175,23 @@ TEST_F(ClientCertStoreLacrosTest, QueueMultupleRequests) {
 
   GetCertsCallbackObserver get_certs_callback_observer_1;
   cert_store_lacros->GetClientCerts(
-      *cert_request_1, get_certs_callback_observer_1.GetCallback());
+      cert_request_1, get_certs_callback_observer_1.GetCallback());
   EXPECT_CALL(*underlying_store,
-              GetClientCerts(AddressEq(cert_request_1.get()), /*callback=*/_))
+              GetClientCerts(Pointer(cert_request_1.get()), /*callback=*/_))
       .WillOnce(Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));
 
   GetCertsCallbackObserver get_certs_callback_observer_2;
   cert_store_lacros->GetClientCerts(
-      *cert_request_2, get_certs_callback_observer_2.GetCallback());
+      cert_request_2, get_certs_callback_observer_2.GetCallback());
   EXPECT_CALL(*underlying_store,
-              GetClientCerts(AddressEq(cert_request_2.get()), /*callback=*/_))
+              GetClientCerts(Pointer(cert_request_2.get()), /*callback=*/_))
       .WillOnce(Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));
 
   GetCertsCallbackObserver get_certs_callback_observer_3;
   cert_store_lacros->GetClientCerts(
-      *cert_request_3, get_certs_callback_observer_3.GetCallback());
+      cert_request_3, get_certs_callback_observer_3.GetCallback());
   EXPECT_CALL(*underlying_store,
-              GetClientCerts(AddressEq(cert_request_3.get()), /*callback=*/_))
+              GetClientCerts(Pointer(cert_request_3.get()), /*callback=*/_))
       .WillOnce(Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));
 
   // Imitate signal from cert_db_initializer_ that the initialization is done.
@@ -224,11 +218,11 @@ TEST_F(ClientCertStoreLacrosTest, DeletedFromLastCallback) {
   // Request client certs a couple of times.
   GetCertsCallbackObserver get_certs_callback_observer_1;
   cert_store_lacros->GetClientCerts(
-      *cert_request_, get_certs_callback_observer_1.GetCallback());
+      cert_request_, get_certs_callback_observer_1.GetCallback());
 
   GetCertsCallbackObserver get_certs_callback_observer_2;
   cert_store_lacros->GetClientCerts(
-      *cert_request_, get_certs_callback_observer_2.GetCallback());
+      cert_request_, get_certs_callback_observer_2.GetCallback());
 
   // Create a callback that will delete `cert_store_lacros` when executed and
   // pass it into the cert store. This code relies on the current implementation
@@ -240,11 +234,11 @@ TEST_F(ClientCertStoreLacrosTest, DeletedFromLastCallback) {
     cert_store_lacros.reset();
   };
   cert_store_lacros->GetClientCerts(
-      *cert_request_, base::BindLambdaForTesting(std::move(deleting_callback)));
+      cert_request_, base::BindLambdaForTesting(std::move(deleting_callback)));
 
   // All 3 requests should be forwarded to the underlying store.
   EXPECT_CALL(*underlying_store,
-              GetClientCerts((AddressEq(cert_request_)), /*callback=*/_))
+              GetClientCerts((Pointer(cert_request_)), /*callback=*/_))
       .Times(3)
       .WillRepeatedly(
           Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));
@@ -281,16 +275,16 @@ TEST_F(ClientCertStoreLacrosTest, HandlesReentrancy) {
   auto reentering_callback = [&](net::ClientCertIdentityList list) {
     get_certs_callback_observer_1.GotClientCerts(std::move(list));
     cert_store_lacros->GetClientCerts(
-        *cert_request_, get_certs_callback_observer_2.GetCallback());
+        cert_request_, get_certs_callback_observer_2.GetCallback());
   };
 
   // Request client certs with the reentering callback.
   cert_store_lacros->GetClientCerts(
-      *cert_request_,
+      cert_request_,
       base::BindLambdaForTesting(std::move(reentering_callback)));
 
   EXPECT_CALL(*underlying_store,
-              GetClientCerts(AddressEq(cert_request_.get()), /*callback=*/_))
+              GetClientCerts(Pointer(cert_request_.get()), /*callback=*/_))
       .Times(2)
       .WillRepeatedly(
           Invoke(this, &ClientCertStoreLacrosTest::FakeGetClientCerts));

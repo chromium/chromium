@@ -11,6 +11,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/check.h"
+#include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -55,11 +56,12 @@ class ClientCertificatesServiceImpl : public ClientCertificatesService {
   ~ClientCertificatesServiceImpl() override;
 
   // net::ClientCertStore:
-  void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
-                      ClientCertListCallback callback) override;
+  void GetClientCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+      ClientCertListCallback callback) override;
 
  private:
-  void OnCertsRetrieved(
+  void FlattenLists(
       ClientCertListCallback callback,
       std::vector<net::ClientCertIdentityList> client_certs_lists);
 
@@ -89,10 +91,10 @@ ClientCertificatesServiceImpl::ClientCertificatesServiceImpl(
 ClientCertificatesServiceImpl::~ClientCertificatesServiceImpl() = default;
 
 void ClientCertificatesServiceImpl::GetClientCerts(
-    const net::SSLCertRequestInfo& cert_request_info,
+    scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
     ClientCertListCallback callback) {
   auto barrier_callback = base::BarrierCallback<net::ClientCertIdentityList>(
-      2U, base::BindOnce(&ClientCertificatesServiceImpl::OnCertsRetrieved,
+      2U, base::BindOnce(&ClientCertificatesServiceImpl::FlattenLists,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 
   platform_certificate_store_->GetClientCerts(cert_request_info,
@@ -102,7 +104,7 @@ void ClientCertificatesServiceImpl::GetClientCerts(
       base::BindOnce(ConvertIdentityToList, barrier_callback));
 }
 
-void ClientCertificatesServiceImpl::OnCertsRetrieved(
+void ClientCertificatesServiceImpl::FlattenLists(
     ClientCertListCallback callback,
     std::vector<net::ClientCertIdentityList> client_certs_lists) {
   // Flatten client_certs_lists.
@@ -113,9 +115,7 @@ void ClientCertificatesServiceImpl::OnCertsRetrieved(
         return acc + sub_list.size();
       }));
   for (net::ClientCertIdentityList& sub_list : client_certs_lists) {
-    single_list.insert(single_list.end(),
-                       std::make_move_iterator(sub_list.begin()),
-                       std::make_move_iterator(sub_list.end()));
+    base::Extend(single_list, std::move(sub_list));
   }
 
   std::move(callback).Run(std::move(single_list));

@@ -152,10 +152,9 @@ void BruschettaNetworkContext::OnCertificateRequested(
                       ->CreateClientCertStore();
   }
   cert_store_->GetClientCerts(
-      *cert_info.get(),
-      base::BindOnce(&BruschettaNetworkContext::OnGotClientCerts,
-                     weak_ptr_factory_.GetWeakPtr(), cert_info,
-                     std::move(cert_responder_remote)));
+      cert_info, base::BindOnce(&BruschettaNetworkContext::OnGotClientCerts,
+                                weak_ptr_factory_.GetWeakPtr(), cert_info,
+                                std::move(cert_responder_remote)));
 }
 
 void BruschettaNetworkContext::OnGotClientCerts(

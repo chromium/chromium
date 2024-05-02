@@ -107,9 +107,8 @@ TEST(ClientCertStoreNSSTest, BuildsCertificateChain) {
     ClientCertIdentityList selected_identities;
     base::RunLoop loop;
     store->GetClientCerts(
-        *request.get(),
-        base::BindOnce(SaveIdentitiesAndQuitCallback, &selected_identities,
-                       loop.QuitClosure()));
+        request, base::BindOnce(SaveIdentitiesAndQuitCallback,
+                                &selected_identities, loop.QuitClosure()));
     loop.Run();
 
     // The result be |client_1| with no intermediates.
@@ -142,9 +141,8 @@ TEST(ClientCertStoreNSSTest, BuildsCertificateChain) {
     ClientCertIdentityList selected_identities;
     base::RunLoop loop;
     store->GetClientCerts(
-        *request.get(),
-        base::BindOnce(SaveIdentitiesAndQuitCallback, &selected_identities,
-                       loop.QuitClosure()));
+        request, base::BindOnce(SaveIdentitiesAndQuitCallback,
+                                &selected_identities, loop.QuitClosure()));
     loop.Run();
 
     // The result be |client_1| with |client_1_ca| as an intermediate.
@@ -221,8 +219,8 @@ TEST(ClientCertStoreNSSTest, SubjectPrintableStringContainingUTF8) {
   ClientCertIdentityList selected_identities;
   base::RunLoop loop;
   store->GetClientCerts(
-      *request.get(), base::BindOnce(SaveIdentitiesAndQuitCallback,
-                                     &selected_identities, loop.QuitClosure()));
+      request, base::BindOnce(SaveIdentitiesAndQuitCallback,
+                              &selected_identities, loop.QuitClosure()));
   loop.Run();
 
   // The result be |cert| with no intermediates.

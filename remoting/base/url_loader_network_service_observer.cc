@@ -102,7 +102,7 @@ void UrlLoaderNetworkServiceObserver::OnCertificateRequested(
   // is the caller's responsibility to keep them alive until the callback has
   // been run by ClientCertStore.
   temp_client_cert_store->GetClientCerts(
-      *cert_info,
+      cert_info,
       base::BindOnce(&UrlLoaderNetworkServiceObserver::OnCertificatesSelected,
                      weak_factory_.GetWeakPtr(),
                      std::move(client_cert_responder),

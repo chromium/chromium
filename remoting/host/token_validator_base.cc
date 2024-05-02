@@ -145,7 +145,7 @@ void TokenValidatorBase::OnCertificateRequested(
   // to stay alive until the callback is called. So we must give it a WeakPtr
   // for |this|, and ownership of the other parameters.
   temp_client_cert_store->GetClientCerts(
-      *cert_request_info,
+      cert_request_info,
       base::BindOnce(&TokenValidatorBase::OnCertificatesSelected,
                      weak_factory_.GetWeakPtr(), std::move(client_cert_store)));
 }

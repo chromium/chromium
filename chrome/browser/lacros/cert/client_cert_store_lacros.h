@@ -35,27 +35,32 @@ class ClientCertStoreLacros final : public net::ClientCertStore {
   ~ClientCertStoreLacros() override;
 
   // net::ClientCertStore
-  void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
-                      ClientCertListCallback callback) override;
+  void GetClientCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+      ClientCertListCallback callback) override;
 
  private:
   using RequestQueue =
       std::vector<std::pair<scoped_refptr<const net::SSLCertRequestInfo>,
                             ClientCertListCallback>>;
 
-  void AppendAdditionalCerts(const net::SSLCertRequestInfo* request,
-                             ClientCertListCallback callback,
-                             net::ClientCertIdentityList client_certs);
+  void AppendAdditionalCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> request,
+      ClientCertListCallback callback,
+      net::ClientCertIdentityList client_certs);
 
-  static void GotAdditionalCerts(const net::SSLCertRequestInfo* request,
-                                 ClientCertListCallback callback,
-                                 net::ClientCertIdentityList client_certs,
-                                 net::ClientCertIdentityList additional_certs);
+  void GotAdditionalCerts(scoped_refptr<const net::SSLCertRequestInfo> request,
+                          ClientCertListCallback callback,
+                          net::ClientCertIdentityList client_certs,
+                          net::ClientCertIdentityList additional_certs);
 
   static net::ClientCertIdentityList FilterAndJoinCertsOnWorkerThread(
-      const net::SSLCertRequestInfo* request,
+      scoped_refptr<const net::SSLCertRequestInfo> request,
       net::ClientCertIdentityList client_certs,
       net::ClientCertIdentityList additional_certs);
+
+  void OnClientCertsResponse(ClientCertListCallback callback,
+                             net::ClientCertIdentityList identities);
 
   void WaitForCertDb();
   void OnCertDbReady();

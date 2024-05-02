@@ -38,7 +38,7 @@ class MockClientCertStore : public net::ClientCertStore {
 
   MOCK_METHOD(void,
               GetClientCerts,
-              (const net::SSLCertRequestInfo&,
+              (scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
                net::ClientCertStore::ClientCertListCallback),
               (override));
 };
@@ -74,7 +74,7 @@ class ClientCertificatesServiceTest : public testing::Test {
 
 // Tests that only the platform identity is returned when there are no managed
 // identity.
-TEST_F(ClientCertificatesServiceTest, GetClientCerts_NoManagedIdentity) {
+TEST_F(ClientCertificatesServiceTest, GetClientCertsNoManagedIdentity) {
   auto platform_cert = LoadTestPlatformCert();
   auto platform_identities =
       net::FakeClientCertIdentityListFromCertificateList({platform_cert});
@@ -89,7 +89,7 @@ TEST_F(ClientCertificatesServiceTest, GetClientCerts_NoManagedIdentity) {
 
   auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
   base::test::TestFuture<net::ClientCertIdentityList> test_future;
-  service->GetClientCerts(*request_info, test_future.GetCallback());
+  service->GetClientCerts(request_info, test_future.GetCallback());
 
   const auto& certs = test_future.Get();
   ASSERT_EQ(certs.size(), 1U);
@@ -117,7 +117,7 @@ TEST_F(ClientCertificatesServiceTest,
 
   auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
   base::test::TestFuture<net::ClientCertIdentityList> test_future;
-  service->GetClientCerts(*request_info, test_future.GetCallback());
+  service->GetClientCerts(request_info, test_future.GetCallback());
 
   const auto& certs = test_future.Get();
   ASSERT_EQ(certs.size(), 1U);
@@ -151,7 +151,7 @@ TEST_F(ClientCertificatesServiceTest, GetClientCerts_WithManagedIdentity) {
 
   auto request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
   base::test::TestFuture<net::ClientCertIdentityList> test_future;
-  service->GetClientCerts(*request_info, test_future.GetCallback());
+  service->GetClientCerts(request_info, test_future.GetCallback());
 
   const auto& certs = test_future.Get();
   ASSERT_EQ(certs.size(), 2U);

@@ -50,8 +50,9 @@ namespace {
 
 class FakeClientCertStore : public net::ClientCertStore {
  public:
-  void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
-                      ClientCertListCallback callback) override {
+  void GetClientCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+      ClientCertListCallback callback) override {
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::unique_ptr<net::FakeClientCertIdentity> identity =
         net::FakeClientCertIdentity::CreateFromCertAndKeyFiles(

@@ -2221,7 +2221,7 @@ void PlatformKeysServiceImpl::SelectClientCertificates(
   // Note DidSelectCertificates() may be called synchronously.
   SelectCertificatesState* state_ptr = state.get();
   state_ptr->cert_store_->GetClientCerts(
-      *state_ptr->cert_request_info_,
+      state_ptr->cert_request_info_,
       base::BindOnce(&DidSelectCertificates, std::move(state)));
 }
 

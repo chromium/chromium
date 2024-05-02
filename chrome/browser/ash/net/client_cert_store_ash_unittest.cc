@@ -94,7 +94,7 @@ TEST_F(ClientCertStoreAshTest, RequestWaitsForNSSInitAndSucceeds) {
   net::ClientCertIdentityList selected_identities;
   base::RunLoop run_loop;
   store.GetClientCerts(
-      *request_all,
+      request_all,
       base::BindOnce(SaveIdentitiesAndQuitCallback, &selected_identities,
                      run_loop.QuitClosure()));
 
@@ -131,7 +131,7 @@ TEST_F(ClientCertStoreAshTest, RequestsAfterNSSInitSucceed) {
   base::RunLoop run_loop;
   net::ClientCertIdentityList selected_identities;
   store.GetClientCerts(
-      *request_all,
+      request_all,
       base::BindOnce(SaveIdentitiesAndQuitCallback, &selected_identities,
                      run_loop.QuitClosure()));
   run_loop.Run();
@@ -205,7 +205,7 @@ TEST_F(ClientCertStoreAshTest, Filter) {
     base::RunLoop run_loop;
     net::ClientCertIdentityList selected_identities;
     store.GetClientCerts(
-        *request_all,
+        request_all,
         base::BindOnce(SaveIdentitiesAndQuitCallback, &selected_identities,
                        run_loop.QuitClosure()));
     run_loop.Run();
@@ -250,8 +250,8 @@ TEST_F(ClientCertStoreAshTest, CertRequestMatching) {
   base::RunLoop run_loop;
   net::ClientCertIdentityList selected_identities;
   store.GetClientCerts(
-      *request, base::BindOnce(SaveIdentitiesAndQuitCallback,
-                               &selected_identities, run_loop.QuitClosure()));
+      request, base::BindOnce(SaveIdentitiesAndQuitCallback,
+                              &selected_identities, run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_EQ(1u, selected_identities.size());

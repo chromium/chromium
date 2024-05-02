@@ -111,8 +111,9 @@ class MockClientCertStore : public net::ClientCertStore {
   explicit MockClientCertStore(net::ClientCertIdentityList certs)
       : certs_(std::move(certs)) {}
 
-  void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
-                      ClientCertListCallback callback) override {
+  void GetClientCerts(
+      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
+      ClientCertListCallback callback) override {
     std::move(callback).Run(std::move(certs_));
   }
 

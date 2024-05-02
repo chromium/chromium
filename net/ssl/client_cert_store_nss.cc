@@ -74,20 +74,26 @@ ClientCertStoreNSS::ClientCertStoreNSS(
 
 ClientCertStoreNSS::~ClientCertStoreNSS() = default;
 
-void ClientCertStoreNSS::GetClientCerts(const SSLCertRequestInfo& request,
-                                        ClientCertListCallback callback) {
+void ClientCertStoreNSS::GetClientCerts(
+    scoped_refptr<const SSLCertRequestInfo> request,
+    ClientCertListCallback callback) {
   scoped_refptr<crypto::CryptoModuleBlockingPasswordDelegate> password_delegate;
-  if (!password_delegate_factory_.is_null())
-    password_delegate = password_delegate_factory_.Run(request.host_and_port);
+  if (!password_delegate_factory_.is_null()) {
+    password_delegate = password_delegate_factory_.Run(request->host_and_port);
+  }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ClientCertStoreNSS::GetAndFilterCertsOnWorkerThread,
-                     // Caller is responsible for keeping the ClientCertStore
-                     // alive until the callback is run.
-                     base::Unretained(this), std::move(password_delegate),
-                     base::Unretained(&request)),
-      std::move(callback));
+                     std::move(password_delegate), std::move(request)),
+      base::BindOnce(&ClientCertStoreNSS::OnClientCertsResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClientCertStoreNSS::OnClientCertsResponse(
+    ClientCertListCallback callback,
+    ClientCertIdentityList identities) {
+  std::move(callback).Run(std::move(identities));
 }
 
 // static
@@ -141,10 +147,11 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
   std::sort(identities->begin(), identities->end(), ClientCertIdentitySorter());
 }
 
+// static
 ClientCertIdentityList ClientCertStoreNSS::GetAndFilterCertsOnWorkerThread(
     scoped_refptr<crypto::CryptoModuleBlockingPasswordDelegate>
         password_delegate,
-    const SSLCertRequestInfo* request) {
+    scoped_refptr<const SSLCertRequestInfo> request) {
   // This method may acquire the NSS lock or reenter this code via extension
   // hooks (such as smart card UI). To ensure threads are not starved or
   // deadlocked, the base::ScopedBlockingCall below increments the thread pool
