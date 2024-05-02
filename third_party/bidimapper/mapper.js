@@ -3096,7 +3096,7 @@ var mapperTab = (function () {
 
 	var UrlPattern = {};
 
-	var M=Object.defineProperty;var Pe=Object.getOwnPropertyDescriptor;var Re=Object.getOwnPropertyNames;var Ee=Object.prototype.hasOwnProperty;var Oe=(e,t)=>{for(var r in t)M(e,r,{get:t[r],enumerable:!0});},ke=(e,t,r,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of Re(t))!Ee.call(e,a)&&a!==r&&M(e,a,{get:()=>t[a],enumerable:!(n=Pe(t,a))||n.enumerable});return e};var Te=e=>ke(M({},"__esModule",{value:!0}),e);var Ne={};Oe(Ne,{URLPattern:()=>Y});var urlpattern=Te(Ne);var R=class{type=3;name="";prefix="";value="";suffix="";modifier=3;constructor(t,r,n,a,c,l){this.type=t,this.name=r,this.prefix=n,this.value=a,this.suffix=c,this.modifier=l;}hasCustomName(){return this.name!==""&&typeof this.name!="number"}},Ae=/[$_\p{ID_Start}]/u,ye=/[$_\u200C\u200D\p{ID_Continue}]/u,v=".*";function we(e,t){return (t?/^[\x00-\xFF]*$/:/^[\x00-\x7F]*$/).test(e)}function D(e,t=!1){let r=[],n=0;for(;n<e.length;){let a=e[n],c=function(l){if(!t)throw new TypeError(l);r.push({type:"INVALID_CHAR",index:n,value:e[n++]});};if(a==="*"){r.push({type:"ASTERISK",index:n,value:e[n++]});continue}if(a==="+"||a==="?"){r.push({type:"OTHER_MODIFIER",index:n,value:e[n++]});continue}if(a==="\\"){r.push({type:"ESCAPED_CHAR",index:n++,value:e[n++]});continue}if(a==="{"){r.push({type:"OPEN",index:n,value:e[n++]});continue}if(a==="}"){r.push({type:"CLOSE",index:n,value:e[n++]});continue}if(a===":"){let l="",s=n+1;for(;s<e.length;){let i=e.substr(s,1);if(s===n+1&&Ae.test(i)||s!==n+1&&ye.test(i)){l+=e[s++];continue}break}if(!l){c(`Missing parameter name at ${n}`);continue}r.push({type:"NAME",index:n,value:l}),n=s;continue}if(a==="("){let l=1,s="",i=n+1,o=!1;if(e[i]==="?"){c(`Pattern cannot start with "?" at ${i}`);continue}for(;i<e.length;){if(!we(e[i],!1)){c(`Invalid character '${e[i]}' at ${i}.`),o=!0;break}if(e[i]==="\\"){s+=e[i++]+e[i++];continue}if(e[i]===")"){if(l--,l===0){i++;break}}else if(e[i]==="("&&(l++,e[i+1]!=="?")){c(`Capturing groups are not allowed at ${i}`),o=!0;break}s+=e[i++];}if(o)continue;if(l){c(`Unbalanced pattern at ${n}`);continue}if(!s){c(`Missing pattern at ${n}`);continue}r.push({type:"REGEX",index:n,value:s}),n=i;continue}r.push({type:"CHAR",index:n,value:e[n++]});}return r.push({type:"END",index:n,value:""}),r}function F(e,t={}){let r=D(e);t.delimiter??="/#?",t.prefixes??="./";let n=`[^${S(t.delimiter)}]+?`,a=[],c=0,l=0,i=new Set,o=h=>{if(l<r.length&&r[l].type===h)return r[l++].value},f=()=>o("OTHER_MODIFIER")??o("ASTERISK"),d=h=>{let u=o(h);if(u!==void 0)return u;let{type:p,index:A}=r[l];throw new TypeError(`Unexpected ${p} at ${A}, expected ${h}`)},T=()=>{let h="",u;for(;u=o("CHAR")??o("ESCAPED_CHAR");)h+=u;return h},xe=h=>h,L=t.encodePart||xe,I="",U=h=>{I+=h;},$=()=>{I.length&&(a.push(new R(3,"","",L(I),"",3)),I="");},X=(h,u,p,A,Z)=>{let g=3;switch(Z){case"?":g=1;break;case"*":g=0;break;case"+":g=2;break}if(!u&&!p&&g===3){U(h);return}if($(),!u&&!p){if(!h)return;a.push(new R(3,"","",L(h),"",g));return}let m;p?p==="*"?m=v:m=p:m=n;let O=2;m===n?(O=1,m=""):m===v&&(O=0,m="");let P;if(u?P=u:p&&(P=c++),i.has(P))throw new TypeError(`Duplicate name '${P}'.`);i.add(P),a.push(new R(O,P,L(h),m,L(A),g));};for(;l<r.length;){let h=o("CHAR"),u=o("NAME"),p=o("REGEX");if(!u&&!p&&(p=o("ASTERISK")),u||p){let g=h??"";t.prefixes.indexOf(g)===-1&&(U(g),g=""),$();let m=f();X(g,u,p,"",m);continue}let A=h??o("ESCAPED_CHAR");if(A){U(A);continue}if(o("OPEN")){let g=T(),m=o("NAME"),O=o("REGEX");!m&&!O&&(O=o("ASTERISK"));let P=T();d("CLOSE");let be=f();X(g,m,O,P,be);continue}$(),d("END");}return a}function S(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function B(e){return e&&e.ignoreCase?"ui":"u"}function q(e,t,r){return W(F(e,r),t,r)}function k(e){switch(e){case 0:return "*";case 1:return "?";case 2:return "+";case 3:return ""}}function W(e,t,r={}){r.delimiter??="/#?",r.prefixes??="./",r.sensitive??=!1,r.strict??=!1,r.end??=!0,r.start??=!0,r.endsWith="";let n=r.start?"^":"";for(let s of e){if(s.type===3){s.modifier===3?n+=S(s.value):n+=`(?:${S(s.value)})${k(s.modifier)}`;continue}t&&t.push(s.name);let i=`[^${S(r.delimiter)}]+?`,o=s.value;if(s.type===1?o=i:s.type===0&&(o=v),!s.prefix.length&&!s.suffix.length){s.modifier===3||s.modifier===1?n+=`(${o})${k(s.modifier)}`:n+=`((?:${o})${k(s.modifier)})`;continue}if(s.modifier===3||s.modifier===1){n+=`(?:${S(s.prefix)}(${o})${S(s.suffix)})`,n+=k(s.modifier);continue}n+=`(?:${S(s.prefix)}`,n+=`((?:${o})(?:`,n+=S(s.suffix),n+=S(s.prefix),n+=`(?:${o}))*)${S(s.suffix)})`,s.modifier===0&&(n+="?");}let a=`[${S(r.endsWith)}]|$`,c=`[${S(r.delimiter)}]`;if(r.end)return r.strict||(n+=`${c}?`),r.endsWith.length?n+=`(?=${a})`:n+="$",new RegExp(n,B(r));r.strict||(n+=`(?:${c}(?=${a}))?`);let l=!1;if(e.length){let s=e[e.length-1];s.type===3&&s.modifier===3&&(l=r.delimiter.indexOf(s)>-1);}return l||(n+=`(?=${c}|${a})`),new RegExp(n,B(r))}var x={delimiter:"",prefixes:"",sensitive:!0,strict:!0},J={delimiter:".",prefixes:"",sensitive:!0,strict:!0},Q={delimiter:"/",prefixes:"/",sensitive:!0,strict:!0};function ee(e,t){return e.length?e[0]==="/"?!0:!t||e.length<2?!1:(e[0]=="\\"||e[0]=="{")&&e[1]=="/":!1}function te(e,t){return e.startsWith(t)?e.substring(t.length,e.length):e}function Ce(e,t){return e.endsWith(t)?e.substr(0,e.length-t.length):e}function _(e){return !e||e.length<2?!1:e[0]==="["||(e[0]==="\\"||e[0]==="{")&&e[1]==="["}var re=["ftp","file","http","https","ws","wss"];function N(e){if(!e)return !0;for(let t of re)if(e.test(t))return !0;return !1}function ne(e,t){if(e=te(e,"#"),t||e==="")return e;let r=new URL("https://example.com");return r.hash=e,r.hash?r.hash.substring(1,r.hash.length):""}function se(e,t){if(e=te(e,"?"),t||e==="")return e;let r=new URL("https://example.com");return r.search=e,r.search?r.search.substring(1,r.search.length):""}function ie(e,t){return t||e===""?e:_(e)?K(e):j(e)}function ae(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.password=e,r.password}function oe(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.username=e,r.username}function ce(e,t,r){if(r||e==="")return e;if(t&&!re.includes(t))return new URL(`${t}:${e}`).pathname;let n=e[0]=="/";return e=new URL(n?e:"/-"+e,"https://example.com").pathname,n||(e=e.substring(2,e.length)),e}function le(e,t,r){return z(t)===e&&(e=""),r||e===""?e:G(e)}function fe(e,t){return e=Ce(e,":"),t||e===""?e:y(e)}function z(e){switch(e){case"ws":case"http":return "80";case"wws":case"https":return "443";case"ftp":return "21";default:return ""}}function y(e){if(e==="")return e;if(/^[-+.A-Za-z0-9]*$/.test(e))return e.toLowerCase();throw new TypeError(`Invalid protocol '${e}'.`)}function he(e){if(e==="")return e;let t=new URL("https://example.com");return t.username=e,t.username}function ue(e){if(e==="")return e;let t=new URL("https://example.com");return t.password=e,t.password}function j(e){if(e==="")return e;if(/[\t\n\r #%/:<>?@[\]^\\|]/g.test(e))throw new TypeError(`Invalid hostname '${e}'`);let t=new URL("https://example.com");return t.hostname=e,t.hostname}function K(e){if(e==="")return e;if(/[^0-9a-fA-F[\]:]/g.test(e))throw new TypeError(`Invalid IPv6 hostname '${e}'`);return e.toLowerCase()}function G(e){if(e===""||/^[0-9]*$/.test(e)&&parseInt(e)<=65535)return e;throw new TypeError(`Invalid port '${e}'.`)}function de(e){if(e==="")return e;let t=new URL("https://example.com");return t.pathname=e[0]!=="/"?"/-"+e:e,e[0]!=="/"?t.pathname.substring(2,t.pathname.length):t.pathname}function pe(e){return e===""?e:new URL(`data:${e}`).pathname}function ge(e){if(e==="")return e;let t=new URL("https://example.com");return t.search=e,t.search.substring(1,t.search.length)}function me(e){if(e==="")return e;let t=new URL("https://example.com");return t.hash=e,t.hash.substring(1,t.hash.length)}var H=class{#i;#n=[];#t={};#e=0;#s=1;#l=0;#o=0;#d=0;#p=0;#g=!1;constructor(t){this.#i=t;}get result(){return this.#t}parse(){for(this.#n=D(this.#i,!0);this.#e<this.#n.length;this.#e+=this.#s){if(this.#s=1,this.#n[this.#e].type==="END"){if(this.#o===0){this.#b(),this.#f()?this.#r(9,1):this.#h()?this.#r(8,1):this.#r(7,0);continue}else if(this.#o===2){this.#u(5);continue}this.#r(10,0);break}if(this.#d>0)if(this.#A())this.#d-=1;else continue;if(this.#T()){this.#d+=1;continue}switch(this.#o){case 0:this.#P()&&this.#u(1);break;case 1:if(this.#P()){this.#C();let t=7,r=1;this.#E()?(t=2,r=3):this.#g&&(t=2),this.#r(t,r);}break;case 2:this.#S()?this.#u(3):(this.#x()||this.#h()||this.#f())&&this.#u(5);break;case 3:this.#O()?this.#r(4,1):this.#S()&&this.#r(5,1);break;case 4:this.#S()&&this.#r(5,1);break;case 5:this.#y()?this.#p+=1:this.#w()&&(this.#p-=1),this.#k()&&!this.#p?this.#r(6,1):this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 6:this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 7:this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 8:this.#f()&&this.#r(9,1);break;}}this.#t.hostname!==void 0&&this.#t.port===void 0&&(this.#t.port="");}#r(t,r){switch(this.#o){case 0:break;case 1:this.#t.protocol=this.#c();break;case 2:break;case 3:this.#t.username=this.#c();break;case 4:this.#t.password=this.#c();break;case 5:this.#t.hostname=this.#c();break;case 6:this.#t.port=this.#c();break;case 7:this.#t.pathname=this.#c();break;case 8:this.#t.search=this.#c();break;case 9:this.#t.hash=this.#c();break;}this.#o!==0&&t!==10&&([1,2,3,4].includes(this.#o)&&[6,7,8,9].includes(t)&&(this.#t.hostname??=""),[1,2,3,4,5,6].includes(this.#o)&&[8,9].includes(t)&&(this.#t.pathname??=this.#g?"/":""),[1,2,3,4,5,6,7].includes(this.#o)&&t===9&&(this.#t.search??="")),this.#R(t,r);}#R(t,r){this.#o=t,this.#l=this.#e+r,this.#e+=r,this.#s=0;}#b(){this.#e=this.#l,this.#s=0;}#u(t){this.#b(),this.#o=t;}#m(t){return t<0&&(t=this.#n.length-t),t<this.#n.length?this.#n[t]:this.#n[this.#n.length-1]}#a(t,r){let n=this.#m(t);return n.value===r&&(n.type==="CHAR"||n.type==="ESCAPED_CHAR"||n.type==="INVALID_CHAR")}#P(){return this.#a(this.#e,":")}#E(){return this.#a(this.#e+1,"/")&&this.#a(this.#e+2,"/")}#S(){return this.#a(this.#e,"@")}#O(){return this.#a(this.#e,":")}#k(){return this.#a(this.#e,":")}#x(){return this.#a(this.#e,"/")}#h(){if(this.#a(this.#e,"?"))return !0;if(this.#n[this.#e].value!=="?")return !1;let t=this.#m(this.#e-1);return t.type!=="NAME"&&t.type!=="REGEX"&&t.type!=="CLOSE"&&t.type!=="ASTERISK"}#f(){return this.#a(this.#e,"#")}#T(){return this.#n[this.#e].type=="OPEN"}#A(){return this.#n[this.#e].type=="CLOSE"}#y(){return this.#a(this.#e,"[")}#w(){return this.#a(this.#e,"]")}#c(){let t=this.#n[this.#e],r=this.#m(this.#l).index;return this.#i.substring(r,t.index)}#C(){let t={};Object.assign(t,x),t.encodePart=y;let r=q(this.#c(),void 0,t);this.#g=N(r);}};var V=["protocol","username","password","hostname","port","pathname","search","hash"],E="*";function Se(e,t){if(typeof e!="string")throw new TypeError("parameter 1 is not of type 'string'.");let r=new URL(e,t);return {protocol:r.protocol.substring(0,r.protocol.length-1),username:r.username,password:r.password,hostname:r.hostname,port:r.port,pathname:r.pathname,search:r.search!==""?r.search.substring(1,r.search.length):void 0,hash:r.hash!==""?r.hash.substring(1,r.hash.length):void 0}}function b(e,t){return t?C(e):e}function w(e,t,r){let n;if(typeof t.baseURL=="string")try{n=new URL(t.baseURL),t.protocol===void 0&&(e.protocol=b(n.protocol.substring(0,n.protocol.length-1),r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&(e.username=b(n.username,r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&t.password===void 0&&(e.password=b(n.password,r)),t.protocol===void 0&&t.hostname===void 0&&(e.hostname=b(n.hostname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&(e.port=b(n.port,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&(e.pathname=b(n.pathname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&(e.search=b(n.search.substring(1,n.search.length),r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&t.hash===void 0&&(e.hash=b(n.hash.substring(1,n.hash.length),r));}catch{throw new TypeError(`invalid baseURL '${t.baseURL}'.`)}if(typeof t.protocol=="string"&&(e.protocol=fe(t.protocol,r)),typeof t.username=="string"&&(e.username=oe(t.username,r)),typeof t.password=="string"&&(e.password=ae(t.password,r)),typeof t.hostname=="string"&&(e.hostname=ie(t.hostname,r)),typeof t.port=="string"&&(e.port=le(t.port,e.protocol,r)),typeof t.pathname=="string"){if(e.pathname=t.pathname,n&&!ee(e.pathname,r)){let a=n.pathname.lastIndexOf("/");a>=0&&(e.pathname=b(n.pathname.substring(0,a+1),r)+e.pathname);}e.pathname=ce(e.pathname,e.protocol,r);}return typeof t.search=="string"&&(e.search=se(t.search,r)),typeof t.hash=="string"&&(e.hash=ne(t.hash,r)),e}function C(e){return e.replace(/([+*?:{}()\\])/g,"\\$1")}function Le(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function Ie(e,t){t.delimiter??="/#?",t.prefixes??="./",t.sensitive??=!1,t.strict??=!1,t.end??=!0,t.start??=!0,t.endsWith="";let r=".*",n=`[^${Le(t.delimiter)}]+?`,a=/[$_\u200C\u200D\p{ID_Continue}]/u,c="";for(let l=0;l<e.length;++l){let s=e[l];if(s.type===3){if(s.modifier===3){c+=C(s.value);continue}c+=`{${C(s.value)}}${k(s.modifier)}`;continue}let i=s.hasCustomName(),o=!!s.suffix.length||!!s.prefix.length&&(s.prefix.length!==1||!t.prefixes.includes(s.prefix)),f=l>0?e[l-1]:null,d=l<e.length-1?e[l+1]:null;if(!o&&i&&s.type===1&&s.modifier===3&&d&&!d.prefix.length&&!d.suffix.length)if(d.type===3){let T=d.value.length>0?d.value[0]:"";o=a.test(T);}else o=!d.hasCustomName();if(!o&&!s.prefix.length&&f&&f.type===3){let T=f.value[f.value.length-1];o=t.prefixes.includes(T);}o&&(c+="{"),c+=C(s.prefix),i&&(c+=`:${s.name}`),s.type===2?c+=`(${s.value})`:s.type===1?i||(c+=`(${n})`):s.type===0&&(!i&&(!f||f.type===3||f.modifier!==3||o||s.prefix!=="")?c+="*":c+=`(${r})`),s.type===1&&i&&s.suffix.length&&a.test(s.suffix[0])&&(c+="\\"),c+=C(s.suffix),o&&(c+="}"),s.modifier!==3&&(c+=k(s.modifier));}return c}var Y=class{#i;#n={};#t={};#e={};#s={};#l=!1;constructor(t={},r,n){try{let a;if(typeof r=="string"?a=r:n=r,typeof t=="string"){let i=new H(t);if(i.parse(),t=i.result,a===void 0&&typeof t.protocol!="string")throw new TypeError("A base URL must be provided for a relative constructor string.");t.baseURL=a;}else {if(!t||typeof t!="object")throw new TypeError("parameter 1 is not of type 'string' and cannot convert to dictionary.");if(a)throw new TypeError("parameter 1 is not of type 'string'.")}typeof n>"u"&&(n={ignoreCase:!1});let c={ignoreCase:n.ignoreCase===!0},l={pathname:E,protocol:E,username:E,password:E,hostname:E,port:E,search:E,hash:E};this.#i=w(l,t,!0),z(this.#i.protocol)===this.#i.port&&(this.#i.port="");let s;for(s of V){if(!(s in this.#i))continue;let i={},o=this.#i[s];switch(this.#t[s]=[],s){case"protocol":Object.assign(i,x),i.encodePart=y;break;case"username":Object.assign(i,x),i.encodePart=he;break;case"password":Object.assign(i,x),i.encodePart=ue;break;case"hostname":Object.assign(i,J),_(o)?i.encodePart=K:i.encodePart=j;break;case"port":Object.assign(i,x),i.encodePart=G;break;case"pathname":N(this.#n.protocol)?(Object.assign(i,Q,c),i.encodePart=de):(Object.assign(i,x,c),i.encodePart=pe);break;case"search":Object.assign(i,x,c),i.encodePart=ge;break;case"hash":Object.assign(i,x,c),i.encodePart=me;break}try{this.#s[s]=F(o,i),this.#n[s]=W(this.#s[s],this.#t[s],i),this.#e[s]=Ie(this.#s[s],i),this.#l=this.#l||this.#s[s].some(f=>f.type===2);}catch{throw new TypeError(`invalid ${s} pattern '${this.#i[s]}'.`)}}}catch(a){throw new TypeError(`Failed to construct 'URLPattern': ${a.message}`)}}test(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return !1;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return !1}let a;for(a of V)if(!this.#n[a].exec(n[a]))return !1;return !0}exec(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return null}let a={};r?a.inputs=[t,r]:a.inputs=[t];let c;for(c of V){let l=this.#n[c].exec(n[c]);if(!l)return null;let s={};for(let[i,o]of this.#t[c].entries())if(typeof o=="string"||typeof o=="number"){let f=l[i+1];s[o]=f;}a[c]={input:n[c]??"",groups:s};}return a}static compareComponent(t,r,n){let a=(i,o)=>{for(let f of ["type","modifier","prefix","value","suffix"]){if(i[f]<o[f])return -1;if(i[f]===o[f])continue;return 1}return 0},c=new R(3,"","","","",3),l=new R(0,"","","","",3),s=(i,o)=>{let f=0;for(;f<Math.min(i.length,o.length);++f){let d=a(i[f],o[f]);if(d)return d}return i.length===o.length?0:a(i[f]??c,o[f]??c)};return !r.#e[t]&&!n.#e[t]?0:r.#e[t]&&!n.#e[t]?s(r.#s[t],[l]):!r.#e[t]&&n.#e[t]?s([l],n.#s[t]):s(r.#s[t],n.#s[t])}get protocol(){return this.#e.protocol}get username(){return this.#e.username}get password(){return this.#e.password}get hostname(){return this.#e.hostname}get port(){return this.#e.port}get pathname(){return this.#e.pathname}get search(){return this.#e.search}get hash(){return this.#e.hash}get hasRegExpGroups(){return this.#l}};
+	var M=Object.defineProperty;var Pe=Object.getOwnPropertyDescriptor;var Re=Object.getOwnPropertyNames;var Ee=Object.prototype.hasOwnProperty;var Oe=(e,t)=>{for(var r in t)M(e,r,{get:t[r],enumerable:!0});},ke=(e,t,r,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of Re(t))!Ee.call(e,a)&&a!==r&&M(e,a,{get:()=>t[a],enumerable:!(n=Pe(t,a))||n.enumerable});return e};var Te=e=>ke(M({},"__esModule",{value:!0}),e);var Ne={};Oe(Ne,{URLPattern:()=>Y});var urlpattern=Te(Ne);var R=class{type=3;name="";prefix="";value="";suffix="";modifier=3;constructor(t,r,n,a,c,l){this.type=t,this.name=r,this.prefix=n,this.value=a,this.suffix=c,this.modifier=l;}hasCustomName(){return this.name!==""&&typeof this.name!="number"}},Ae=/[$_\p{ID_Start}]/u,ye=/[$_\u200C\u200D\p{ID_Continue}]/u,v=".*";function we(e,t){return (/^[\x00-\x7F]*$/).test(e)}function D(e,t=!1){let r=[],n=0;for(;n<e.length;){let a=e[n],c=function(l){if(!t)throw new TypeError(l);r.push({type:"INVALID_CHAR",index:n,value:e[n++]});};if(a==="*"){r.push({type:"ASTERISK",index:n,value:e[n++]});continue}if(a==="+"||a==="?"){r.push({type:"OTHER_MODIFIER",index:n,value:e[n++]});continue}if(a==="\\"){r.push({type:"ESCAPED_CHAR",index:n++,value:e[n++]});continue}if(a==="{"){r.push({type:"OPEN",index:n,value:e[n++]});continue}if(a==="}"){r.push({type:"CLOSE",index:n,value:e[n++]});continue}if(a===":"){let l="",s=n+1;for(;s<e.length;){let i=e.substr(s,1);if(s===n+1&&Ae.test(i)||s!==n+1&&ye.test(i)){l+=e[s++];continue}break}if(!l){c(`Missing parameter name at ${n}`);continue}r.push({type:"NAME",index:n,value:l}),n=s;continue}if(a==="("){let l=1,s="",i=n+1,o=!1;if(e[i]==="?"){c(`Pattern cannot start with "?" at ${i}`);continue}for(;i<e.length;){if(!we(e[i])){c(`Invalid character '${e[i]}' at ${i}.`),o=!0;break}if(e[i]==="\\"){s+=e[i++]+e[i++];continue}if(e[i]===")"){if(l--,l===0){i++;break}}else if(e[i]==="("&&(l++,e[i+1]!=="?")){c(`Capturing groups are not allowed at ${i}`),o=!0;break}s+=e[i++];}if(o)continue;if(l){c(`Unbalanced pattern at ${n}`);continue}if(!s){c(`Missing pattern at ${n}`);continue}r.push({type:"REGEX",index:n,value:s}),n=i;continue}r.push({type:"CHAR",index:n,value:e[n++]});}return r.push({type:"END",index:n,value:""}),r}function F(e,t={}){let r=D(e);t.delimiter??="/#?",t.prefixes??="./";let n=`[^${S(t.delimiter)}]+?`,a=[],c=0,l=0,i=new Set,o=h=>{if(l<r.length&&r[l].type===h)return r[l++].value},f=()=>o("OTHER_MODIFIER")??o("ASTERISK"),d=h=>{let u=o(h);if(u!==void 0)return u;let{type:p,index:A}=r[l];throw new TypeError(`Unexpected ${p} at ${A}, expected ${h}`)},T=()=>{let h="",u;for(;u=o("CHAR")??o("ESCAPED_CHAR");)h+=u;return h},xe=h=>h,L=t.encodePart||xe,I="",U=h=>{I+=h;},$=()=>{I.length&&(a.push(new R(3,"","",L(I),"",3)),I="");},X=(h,u,p,A,Z)=>{let g=3;switch(Z){case"?":g=1;break;case"*":g=0;break;case"+":g=2;break}if(!u&&!p&&g===3){U(h);return}if($(),!u&&!p){if(!h)return;a.push(new R(3,"","",L(h),"",g));return}let m;p?p==="*"?m=v:m=p:m=n;let O=2;m===n?(O=1,m=""):m===v&&(O=0,m="");let P;if(u?P=u:p&&(P=c++),i.has(P))throw new TypeError(`Duplicate name '${P}'.`);i.add(P),a.push(new R(O,P,L(h),m,L(A),g));};for(;l<r.length;){let h=o("CHAR"),u=o("NAME"),p=o("REGEX");if(!u&&!p&&(p=o("ASTERISK")),u||p){let g=h??"";t.prefixes.indexOf(g)===-1&&(U(g),g=""),$();let m=f();X(g,u,p,"",m);continue}let A=h??o("ESCAPED_CHAR");if(A){U(A);continue}if(o("OPEN")){let g=T(),m=o("NAME"),O=o("REGEX");!m&&!O&&(O=o("ASTERISK"));let P=T();d("CLOSE");let be=f();X(g,m,O,P,be);continue}$(),d("END");}return a}function S(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function B(e){return e&&e.ignoreCase?"ui":"u"}function q(e,t,r){return W(F(e,r),t,r)}function k(e){switch(e){case 0:return "*";case 1:return "?";case 2:return "+";case 3:return ""}}function W(e,t,r={}){r.delimiter??="/#?",r.prefixes??="./",r.sensitive??=!1,r.strict??=!1,r.end??=!0,r.start??=!0,r.endsWith="";let n=r.start?"^":"";for(let s of e){if(s.type===3){s.modifier===3?n+=S(s.value):n+=`(?:${S(s.value)})${k(s.modifier)}`;continue}t&&t.push(s.name);let i=`[^${S(r.delimiter)}]+?`,o=s.value;if(s.type===1?o=i:s.type===0&&(o=v),!s.prefix.length&&!s.suffix.length){s.modifier===3||s.modifier===1?n+=`(${o})${k(s.modifier)}`:n+=`((?:${o})${k(s.modifier)})`;continue}if(s.modifier===3||s.modifier===1){n+=`(?:${S(s.prefix)}(${o})${S(s.suffix)})`,n+=k(s.modifier);continue}n+=`(?:${S(s.prefix)}`,n+=`((?:${o})(?:`,n+=S(s.suffix),n+=S(s.prefix),n+=`(?:${o}))*)${S(s.suffix)})`,s.modifier===0&&(n+="?");}let a=`[${S(r.endsWith)}]|$`,c=`[${S(r.delimiter)}]`;if(r.end)return r.strict||(n+=`${c}?`),r.endsWith.length?n+=`(?=${a})`:n+="$",new RegExp(n,B(r));r.strict||(n+=`(?:${c}(?=${a}))?`);let l=!1;if(e.length){let s=e[e.length-1];s.type===3&&s.modifier===3&&(l=r.delimiter.indexOf(s)>-1);}return l||(n+=`(?=${c}|${a})`),new RegExp(n,B(r))}var x={delimiter:"",prefixes:"",sensitive:!0,strict:!0},J={delimiter:".",prefixes:"",sensitive:!0,strict:!0},Q={delimiter:"/",prefixes:"/",sensitive:!0,strict:!0};function ee(e,t){return e.length?e[0]==="/"?!0:!t||e.length<2?!1:(e[0]=="\\"||e[0]=="{")&&e[1]=="/":!1}function te(e,t){return e.startsWith(t)?e.substring(t.length,e.length):e}function Ce(e,t){return e.endsWith(t)?e.substr(0,e.length-t.length):e}function _(e){return !e||e.length<2?!1:e[0]==="["||(e[0]==="\\"||e[0]==="{")&&e[1]==="["}var re=["ftp","file","http","https","ws","wss"];function N(e){if(!e)return !0;for(let t of re)if(e.test(t))return !0;return !1}function ne(e,t){if(e=te(e,"#"),t||e==="")return e;let r=new URL("https://example.com");return r.hash=e,r.hash?r.hash.substring(1,r.hash.length):""}function se(e,t){if(e=te(e,"?"),t||e==="")return e;let r=new URL("https://example.com");return r.search=e,r.search?r.search.substring(1,r.search.length):""}function ie(e,t){return t||e===""?e:_(e)?K(e):j(e)}function ae(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.password=e,r.password}function oe(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.username=e,r.username}function ce(e,t,r){if(r||e==="")return e;if(t&&!re.includes(t))return new URL(`${t}:${e}`).pathname;let n=e[0]=="/";return e=new URL(n?e:"/-"+e,"https://example.com").pathname,n||(e=e.substring(2,e.length)),e}function le(e,t,r){return z(t)===e&&(e=""),r||e===""?e:G(e)}function fe(e,t){return e=Ce(e,":"),t||e===""?e:y(e)}function z(e){switch(e){case"ws":case"http":return "80";case"wws":case"https":return "443";case"ftp":return "21";default:return ""}}function y(e){if(e==="")return e;if(/^[-+.A-Za-z0-9]*$/.test(e))return e.toLowerCase();throw new TypeError(`Invalid protocol '${e}'.`)}function he(e){if(e==="")return e;let t=new URL("https://example.com");return t.username=e,t.username}function ue(e){if(e==="")return e;let t=new URL("https://example.com");return t.password=e,t.password}function j(e){if(e==="")return e;if(/[\t\n\r #%/:<>?@[\]^\\|]/g.test(e))throw new TypeError(`Invalid hostname '${e}'`);let t=new URL("https://example.com");return t.hostname=e,t.hostname}function K(e){if(e==="")return e;if(/[^0-9a-fA-F[\]:]/g.test(e))throw new TypeError(`Invalid IPv6 hostname '${e}'`);return e.toLowerCase()}function G(e){if(e===""||/^[0-9]*$/.test(e)&&parseInt(e)<=65535)return e;throw new TypeError(`Invalid port '${e}'.`)}function de(e){if(e==="")return e;let t=new URL("https://example.com");return t.pathname=e[0]!=="/"?"/-"+e:e,e[0]!=="/"?t.pathname.substring(2,t.pathname.length):t.pathname}function pe(e){return e===""?e:new URL(`data:${e}`).pathname}function ge(e){if(e==="")return e;let t=new URL("https://example.com");return t.search=e,t.search.substring(1,t.search.length)}function me(e){if(e==="")return e;let t=new URL("https://example.com");return t.hash=e,t.hash.substring(1,t.hash.length)}var H=class{#i;#n=[];#t={};#e=0;#s=1;#l=0;#o=0;#d=0;#p=0;#g=!1;constructor(t){this.#i=t;}get result(){return this.#t}parse(){for(this.#n=D(this.#i,!0);this.#e<this.#n.length;this.#e+=this.#s){if(this.#s=1,this.#n[this.#e].type==="END"){if(this.#o===0){this.#b(),this.#f()?this.#r(9,1):this.#h()?this.#r(8,1):this.#r(7,0);continue}else if(this.#o===2){this.#u(5);continue}this.#r(10,0);break}if(this.#d>0)if(this.#A())this.#d-=1;else continue;if(this.#T()){this.#d+=1;continue}switch(this.#o){case 0:this.#P()&&this.#u(1);break;case 1:if(this.#P()){this.#C();let t=7,r=1;this.#E()?(t=2,r=3):this.#g&&(t=2),this.#r(t,r);}break;case 2:this.#S()?this.#u(3):(this.#x()||this.#h()||this.#f())&&this.#u(5);break;case 3:this.#O()?this.#r(4,1):this.#S()&&this.#r(5,1);break;case 4:this.#S()&&this.#r(5,1);break;case 5:this.#y()?this.#p+=1:this.#w()&&(this.#p-=1),this.#k()&&!this.#p?this.#r(6,1):this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 6:this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 7:this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 8:this.#f()&&this.#r(9,1);break;}}this.#t.hostname!==void 0&&this.#t.port===void 0&&(this.#t.port="");}#r(t,r){switch(this.#o){case 0:break;case 1:this.#t.protocol=this.#c();break;case 2:break;case 3:this.#t.username=this.#c();break;case 4:this.#t.password=this.#c();break;case 5:this.#t.hostname=this.#c();break;case 6:this.#t.port=this.#c();break;case 7:this.#t.pathname=this.#c();break;case 8:this.#t.search=this.#c();break;case 9:this.#t.hash=this.#c();break;}this.#o!==0&&t!==10&&([1,2,3,4].includes(this.#o)&&[6,7,8,9].includes(t)&&(this.#t.hostname??=""),[1,2,3,4,5,6].includes(this.#o)&&[8,9].includes(t)&&(this.#t.pathname??=this.#g?"/":""),[1,2,3,4,5,6,7].includes(this.#o)&&t===9&&(this.#t.search??="")),this.#R(t,r);}#R(t,r){this.#o=t,this.#l=this.#e+r,this.#e+=r,this.#s=0;}#b(){this.#e=this.#l,this.#s=0;}#u(t){this.#b(),this.#o=t;}#m(t){return t<0&&(t=this.#n.length-t),t<this.#n.length?this.#n[t]:this.#n[this.#n.length-1]}#a(t,r){let n=this.#m(t);return n.value===r&&(n.type==="CHAR"||n.type==="ESCAPED_CHAR"||n.type==="INVALID_CHAR")}#P(){return this.#a(this.#e,":")}#E(){return this.#a(this.#e+1,"/")&&this.#a(this.#e+2,"/")}#S(){return this.#a(this.#e,"@")}#O(){return this.#a(this.#e,":")}#k(){return this.#a(this.#e,":")}#x(){return this.#a(this.#e,"/")}#h(){if(this.#a(this.#e,"?"))return !0;if(this.#n[this.#e].value!=="?")return !1;let t=this.#m(this.#e-1);return t.type!=="NAME"&&t.type!=="REGEX"&&t.type!=="CLOSE"&&t.type!=="ASTERISK"}#f(){return this.#a(this.#e,"#")}#T(){return this.#n[this.#e].type=="OPEN"}#A(){return this.#n[this.#e].type=="CLOSE"}#y(){return this.#a(this.#e,"[")}#w(){return this.#a(this.#e,"]")}#c(){let t=this.#n[this.#e],r=this.#m(this.#l).index;return this.#i.substring(r,t.index)}#C(){let t={};Object.assign(t,x),t.encodePart=y;let r=q(this.#c(),void 0,t);this.#g=N(r);}};var V=["protocol","username","password","hostname","port","pathname","search","hash"],E="*";function Se(e,t){if(typeof e!="string")throw new TypeError("parameter 1 is not of type 'string'.");let r=new URL(e,t);return {protocol:r.protocol.substring(0,r.protocol.length-1),username:r.username,password:r.password,hostname:r.hostname,port:r.port,pathname:r.pathname,search:r.search!==""?r.search.substring(1,r.search.length):void 0,hash:r.hash!==""?r.hash.substring(1,r.hash.length):void 0}}function b(e,t){return t?C(e):e}function w(e,t,r){let n;if(typeof t.baseURL=="string")try{n=new URL(t.baseURL),t.protocol===void 0&&(e.protocol=b(n.protocol.substring(0,n.protocol.length-1),r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&(e.username=b(n.username,r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&t.password===void 0&&(e.password=b(n.password,r)),t.protocol===void 0&&t.hostname===void 0&&(e.hostname=b(n.hostname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&(e.port=b(n.port,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&(e.pathname=b(n.pathname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&(e.search=b(n.search.substring(1,n.search.length),r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&t.hash===void 0&&(e.hash=b(n.hash.substring(1,n.hash.length),r));}catch{throw new TypeError(`invalid baseURL '${t.baseURL}'.`)}if(typeof t.protocol=="string"&&(e.protocol=fe(t.protocol,r)),typeof t.username=="string"&&(e.username=oe(t.username,r)),typeof t.password=="string"&&(e.password=ae(t.password,r)),typeof t.hostname=="string"&&(e.hostname=ie(t.hostname,r)),typeof t.port=="string"&&(e.port=le(t.port,e.protocol,r)),typeof t.pathname=="string"){if(e.pathname=t.pathname,n&&!ee(e.pathname,r)){let a=n.pathname.lastIndexOf("/");a>=0&&(e.pathname=b(n.pathname.substring(0,a+1),r)+e.pathname);}e.pathname=ce(e.pathname,e.protocol,r);}return typeof t.search=="string"&&(e.search=se(t.search,r)),typeof t.hash=="string"&&(e.hash=ne(t.hash,r)),e}function C(e){return e.replace(/([+*?:{}()\\])/g,"\\$1")}function Le(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function Ie(e,t){t.delimiter??="/#?",t.prefixes??="./",t.sensitive??=!1,t.strict??=!1,t.end??=!0,t.start??=!0,t.endsWith="";let r=".*",n=`[^${Le(t.delimiter)}]+?`,a=/[$_\u200C\u200D\p{ID_Continue}]/u,c="";for(let l=0;l<e.length;++l){let s=e[l];if(s.type===3){if(s.modifier===3){c+=C(s.value);continue}c+=`{${C(s.value)}}${k(s.modifier)}`;continue}let i=s.hasCustomName(),o=!!s.suffix.length||!!s.prefix.length&&(s.prefix.length!==1||!t.prefixes.includes(s.prefix)),f=l>0?e[l-1]:null,d=l<e.length-1?e[l+1]:null;if(!o&&i&&s.type===1&&s.modifier===3&&d&&!d.prefix.length&&!d.suffix.length)if(d.type===3){let T=d.value.length>0?d.value[0]:"";o=a.test(T);}else o=!d.hasCustomName();if(!o&&!s.prefix.length&&f&&f.type===3){let T=f.value[f.value.length-1];o=t.prefixes.includes(T);}o&&(c+="{"),c+=C(s.prefix),i&&(c+=`:${s.name}`),s.type===2?c+=`(${s.value})`:s.type===1?i||(c+=`(${n})`):s.type===0&&(!i&&(!f||f.type===3||f.modifier!==3||o||s.prefix!=="")?c+="*":c+=`(${r})`),s.type===1&&i&&s.suffix.length&&a.test(s.suffix[0])&&(c+="\\"),c+=C(s.suffix),o&&(c+="}"),s.modifier!==3&&(c+=k(s.modifier));}return c}var Y=class{#i;#n={};#t={};#e={};#s={};#l=!1;constructor(t={},r,n){try{let a;if(typeof r=="string"?a=r:n=r,typeof t=="string"){let i=new H(t);if(i.parse(),t=i.result,a===void 0&&typeof t.protocol!="string")throw new TypeError("A base URL must be provided for a relative constructor string.");t.baseURL=a;}else {if(!t||typeof t!="object")throw new TypeError("parameter 1 is not of type 'string' and cannot convert to dictionary.");if(a)throw new TypeError("parameter 1 is not of type 'string'.")}typeof n>"u"&&(n={ignoreCase:!1});let c={ignoreCase:n.ignoreCase===!0},l={pathname:E,protocol:E,username:E,password:E,hostname:E,port:E,search:E,hash:E};this.#i=w(l,t,!0),z(this.#i.protocol)===this.#i.port&&(this.#i.port="");let s;for(s of V){if(!(s in this.#i))continue;let i={},o=this.#i[s];switch(this.#t[s]=[],s){case"protocol":Object.assign(i,x),i.encodePart=y;break;case"username":Object.assign(i,x),i.encodePart=he;break;case"password":Object.assign(i,x),i.encodePart=ue;break;case"hostname":Object.assign(i,J),_(o)?i.encodePart=K:i.encodePart=j;break;case"port":Object.assign(i,x),i.encodePart=G;break;case"pathname":N(this.#n.protocol)?(Object.assign(i,Q,c),i.encodePart=de):(Object.assign(i,x,c),i.encodePart=pe);break;case"search":Object.assign(i,x,c),i.encodePart=ge;break;case"hash":Object.assign(i,x,c),i.encodePart=me;break}try{this.#s[s]=F(o,i),this.#n[s]=W(this.#s[s],this.#t[s],i),this.#e[s]=Ie(this.#s[s],i),this.#l=this.#l||this.#s[s].some(f=>f.type===2);}catch{throw new TypeError(`invalid ${s} pattern '${this.#i[s]}'.`)}}}catch(a){throw new TypeError(`Failed to construct 'URLPattern': ${a.message}`)}}test(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return !1;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return !1}let a;for(a of V)if(!this.#n[a].exec(n[a]))return !1;return !0}exec(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return null}let a={};r?a.inputs=[t,r]:a.inputs=[t];let c;for(c of V){let l=this.#n[c].exec(n[c]);if(!l)return null;let s={};for(let[i,o]of this.#t[c].entries())if(typeof o=="string"||typeof o=="number"){let f=l[i+1];s[o]=f;}a[c]={input:n[c]??"",groups:s};}return a}static compareComponent(t,r,n){let a=(i,o)=>{for(let f of ["type","modifier","prefix","value","suffix"]){if(i[f]<o[f])return -1;if(i[f]===o[f])continue;return 1}return 0},c=new R(3,"","","","",3),l=new R(0,"","","","",3),s=(i,o)=>{let f=0;for(;f<Math.min(i.length,o.length);++f){let d=a(i[f],o[f]);if(d)return d}return i.length===o.length?0:a(i[f]??c,o[f]??c)};return !r.#e[t]&&!n.#e[t]?0:r.#e[t]&&!n.#e[t]?s(r.#s[t],[l]):!r.#e[t]&&n.#e[t]?s([l],n.#s[t]):s(r.#s[t],n.#s[t])}get protocol(){return this.#e.protocol}get username(){return this.#e.username}get password(){return this.#e.password}get hostname(){return this.#e.hostname}get port(){return this.#e.port}get pathname(){return this.#e.pathname}get search(){return this.#e.search}get hash(){return this.#e.hash}get hasRegExpGroups(){return this.#l}};
 
 	const { URLPattern: URLPattern$2 } = urlpattern;
 
@@ -9611,6 +9611,11 @@ var mapperTab = (function () {
 	        processError(this);
 	        return fieldErrors;
 	    }
+	    static assert(value) {
+	        if (!(value instanceof ZodError)) {
+	            throw new Error(`Not a ZodError: ${value}`);
+	        }
+	    }
 	    toString() {
 	        return this.message;
 	    }
@@ -9807,6 +9812,13 @@ var mapperTab = (function () {
 		        ...issueData,
 		        path: fullPath,
 		    };
+		    if (issueData.message !== undefined) {
+		        return {
+		            ...issueData,
+		            path: fullPath,
+		            message: issueData.message,
+		        };
+		    }
 		    let errorMessage = "";
 		    const maps = errorMaps
 		        .filter((m) => !!m)
@@ -9818,12 +9830,13 @@ var mapperTab = (function () {
 		    return {
 		        ...issueData,
 		        path: fullPath,
-		        message: issueData.message || errorMessage,
+		        message: errorMessage,
 		    };
 		};
 		exports.makeIssue = makeIssue;
 		exports.EMPTY_PATH = [];
 		function addIssueToContext(ctx, issueData) {
+		    const overrideMap = (0, errors_1.getErrorMap)();
 		    const issue = (0, exports.makeIssue)({
 		        issueData: issueData,
 		        data: ctx.data,
@@ -9831,8 +9844,8 @@ var mapperTab = (function () {
 		        errorMaps: [
 		            ctx.common.contextualErrorMap,
 		            ctx.schemaErrorMap,
-		            (0, errors_1.getErrorMap)(),
-		            en_1.default, // then global default map
+		            overrideMap,
+		            overrideMap === en_1.default ? undefined : en_1.default, // then global default map
 		        ].filter((x) => !!x),
 		    });
 		    ctx.common.issues.push(issue);
@@ -9864,9 +9877,11 @@ var mapperTab = (function () {
 		    static async mergeObjectAsync(status, pairs) {
 		        const syncPairs = [];
 		        for (const pair of pairs) {
+		            const key = await pair.key;
+		            const value = await pair.value;
 		            syncPairs.push({
-		                key: await pair.key,
-		                value: await pair.value,
+		                key,
+		                value,
 		            });
 		        }
 		        return ParseStatus.mergeObjectSync(status, syncPairs);
@@ -9927,9 +9942,21 @@ var mapperTab = (function () {
 	} (errorUtil));
 
 	(function (exports) {
+		var __classPrivateFieldGet = (commonjsGlobal && commonjsGlobal.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+		    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+		    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+		    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+		};
+		var __classPrivateFieldSet = (commonjsGlobal && commonjsGlobal.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+		    if (kind === "m") throw new TypeError("Private method is not writable");
+		    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+		    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+		    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+		};
+		var _ZodEnum_cache, _ZodNativeEnum_cache;
 		Object.defineProperty(exports, "__esModule", { value: true });
-		exports.date = exports.boolean = exports.bigint = exports.array = exports.any = exports.coerce = exports.ZodFirstPartyTypeKind = exports.late = exports.ZodSchema = exports.Schema = exports.custom = exports.ZodReadonly = exports.ZodPipeline = exports.ZodBranded = exports.BRAND = exports.ZodNaN = exports.ZodCatch = exports.ZodDefault = exports.ZodNullable = exports.ZodOptional = exports.ZodTransformer = exports.ZodEffects = exports.ZodPromise = exports.ZodNativeEnum = exports.ZodEnum = exports.ZodLiteral = exports.ZodLazy = exports.ZodFunction = exports.ZodSet = exports.ZodMap = exports.ZodRecord = exports.ZodTuple = exports.ZodIntersection = exports.ZodDiscriminatedUnion = exports.ZodUnion = exports.ZodObject = exports.ZodArray = exports.ZodVoid = exports.ZodNever = exports.ZodUnknown = exports.ZodAny = exports.ZodNull = exports.ZodUndefined = exports.ZodSymbol = exports.ZodDate = exports.ZodBoolean = exports.ZodBigInt = exports.ZodNumber = exports.ZodString = exports.ZodType = void 0;
-		exports.NEVER = exports.void = exports.unknown = exports.union = exports.undefined = exports.tuple = exports.transformer = exports.symbol = exports.string = exports.strictObject = exports.set = exports.record = exports.promise = exports.preprocess = exports.pipeline = exports.ostring = exports.optional = exports.onumber = exports.oboolean = exports.object = exports.number = exports.nullable = exports.null = exports.never = exports.nativeEnum = exports.nan = exports.map = exports.literal = exports.lazy = exports.intersection = exports.instanceof = exports.function = exports.enum = exports.effect = exports.discriminatedUnion = void 0;
+		exports.boolean = exports.bigint = exports.array = exports.any = exports.coerce = exports.ZodFirstPartyTypeKind = exports.late = exports.ZodSchema = exports.Schema = exports.custom = exports.ZodReadonly = exports.ZodPipeline = exports.ZodBranded = exports.BRAND = exports.ZodNaN = exports.ZodCatch = exports.ZodDefault = exports.ZodNullable = exports.ZodOptional = exports.ZodTransformer = exports.ZodEffects = exports.ZodPromise = exports.ZodNativeEnum = exports.ZodEnum = exports.ZodLiteral = exports.ZodLazy = exports.ZodFunction = exports.ZodSet = exports.ZodMap = exports.ZodRecord = exports.ZodTuple = exports.ZodIntersection = exports.ZodDiscriminatedUnion = exports.ZodUnion = exports.ZodObject = exports.ZodArray = exports.ZodVoid = exports.ZodNever = exports.ZodUnknown = exports.ZodAny = exports.ZodNull = exports.ZodUndefined = exports.ZodSymbol = exports.ZodDate = exports.ZodBoolean = exports.ZodBigInt = exports.ZodNumber = exports.ZodString = exports.datetimeRegex = exports.ZodType = void 0;
+		exports.NEVER = exports.void = exports.unknown = exports.union = exports.undefined = exports.tuple = exports.transformer = exports.symbol = exports.string = exports.strictObject = exports.set = exports.record = exports.promise = exports.preprocess = exports.pipeline = exports.ostring = exports.optional = exports.onumber = exports.oboolean = exports.object = exports.number = exports.nullable = exports.null = exports.never = exports.nativeEnum = exports.nan = exports.map = exports.literal = exports.lazy = exports.intersection = exports.instanceof = exports.function = exports.enum = exports.effect = exports.discriminatedUnion = exports.date = void 0;
 		const errors_1 = errors;
 		const errorUtil_1 = errorUtil;
 		const parseUtil_1 = parseUtil;
@@ -9985,12 +10012,17 @@ var mapperTab = (function () {
 		    if (errorMap)
 		        return { errorMap: errorMap, description };
 		    const customMap = (iss, ctx) => {
+		        var _a, _b;
+		        const { message } = params;
+		        if (iss.code === "invalid_enum_value") {
+		            return { message: message !== null && message !== void 0 ? message : ctx.defaultError };
+		        }
+		        if (typeof ctx.data === "undefined") {
+		            return { message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError };
+		        }
 		        if (iss.code !== "invalid_type")
 		            return { message: ctx.defaultError };
-		        if (typeof ctx.data === "undefined") {
-		            return { message: required_error !== null && required_error !== void 0 ? required_error : ctx.defaultError };
-		        }
-		        return { message: invalid_type_error !== null && invalid_type_error !== void 0 ? invalid_type_error : ctx.defaultError };
+		        return { message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError };
 		    };
 		    return { errorMap: customMap, description };
 		}
@@ -10251,11 +10283,13 @@ var mapperTab = (function () {
 		exports.Schema = ZodType;
 		exports.ZodSchema = ZodType;
 		const cuidRegex = /^c[^\s-]{8,}$/i;
-		const cuid2Regex = /^[a-z][a-z0-9]*$/;
+		const cuid2Regex = /^[0-9a-z]+$/;
 		const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 		// const uuidRegex =
 		//   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
 		const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
+		const nanoidRegex = /^[a-z0-9_-]{21}$/i;
+		const durationRegex = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
 		// from https://stackoverflow.com/a/46181/1550155
 		// old version: too slow, didn't support unicode
 		// const emailRegex = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
@@ -10268,41 +10302,49 @@ var mapperTab = (function () {
 		//   /^[a-zA-Z0-9\.\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 		// const emailRegex =
 		//   /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
-		const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_+-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
+		const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
 		// const emailRegex =
 		//   /^[a-z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9\-]+)*$/i;
 		// from https://thekevinscott.com/emojis-in-javascript/#writing-a-regular-expression
 		const _emojiRegex = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
 		let emojiRegex;
-		const ipv4Regex = /^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$/;
+		// faster, simpler, safer
+		const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
 		const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
-		// Adapted from https://stackoverflow.com/a/3143231
-		const datetimeRegex = (args) => {
+		// https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
+		const base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+		// simple
+		// const dateRegexSource = `\\d{4}-\\d{2}-\\d{2}`;
+		// no leap year validation
+		// const dateRegexSource = `\\d{4}-((0[13578]|10|12)-31|(0[13-9]|1[0-2])-30|(0[1-9]|1[0-2])-(0[1-9]|1\\d|2\\d))`;
+		// with leap year validation
+		const dateRegexSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
+		const dateRegex = new RegExp(`^${dateRegexSource}$`);
+		function timeRegexSource(args) {
+		    // let regex = `\\d{2}:\\d{2}:\\d{2}`;
+		    let regex = `([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d`;
 		    if (args.precision) {
-		        if (args.offset) {
-		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{${args.precision}}(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
-		        }
-		        else {
-		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{${args.precision}}Z$`);
-		        }
+		        regex = `${regex}\\.\\d{${args.precision}}`;
 		    }
-		    else if (args.precision === 0) {
-		        if (args.offset) {
-		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
-		        }
-		        else {
-		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$`);
-		        }
+		    else if (args.precision == null) {
+		        regex = `${regex}(\\.\\d+)?`;
 		    }
-		    else {
-		        if (args.offset) {
-		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
-		        }
-		        else {
-		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$`);
-		        }
-		    }
-		};
+		    return regex;
+		}
+		function timeRegex(args) {
+		    return new RegExp(`^${timeRegexSource(args)}$`);
+		}
+		// Adapted from https://stackoverflow.com/a/3143231
+		function datetimeRegex(args) {
+		    let regex = `${dateRegexSource}T${timeRegexSource(args)}`;
+		    const opts = [];
+		    opts.push(args.local ? `Z?` : `Z`);
+		    if (args.offset)
+		        opts.push(`([+-]\\d{2}:?\\d{2})`);
+		    regex = `${regex}(${opts.join("|")})`;
+		    return new RegExp(`^${regex}$`);
+		}
+		exports.datetimeRegex = datetimeRegex;
 		function isValidIP(ip, version) {
 		    if ((version === "v4" || !version) && ipv4Regex.test(ip)) {
 		        return true;
@@ -10324,9 +10366,7 @@ var mapperTab = (function () {
 		                code: ZodError_1.ZodIssueCode.invalid_type,
 		                expected: util_1.ZodParsedType.string,
 		                received: ctx.parsedType,
-		            }
-		            //
-		            );
+		            });
 		            return parseUtil_1.INVALID;
 		        }
 		        const status = new parseUtil_1.ParseStatus();
@@ -10418,6 +10458,17 @@ var mapperTab = (function () {
 		                    ctx = this._getOrReturnCtx(input, ctx);
 		                    (0, parseUtil_1.addIssueToContext)(ctx, {
 		                        validation: "uuid",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "nanoid") {
+		                if (!nanoidRegex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "nanoid",
 		                        code: ZodError_1.ZodIssueCode.invalid_string,
 		                        message: check.message,
 		                    });
@@ -10538,11 +10589,57 @@ var mapperTab = (function () {
 		                    status.dirty();
 		                }
 		            }
+		            else if (check.kind === "date") {
+		                const regex = dateRegex;
+		                if (!regex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        validation: "date",
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "time") {
+		                const regex = timeRegex(check);
+		                if (!regex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        validation: "time",
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "duration") {
+		                if (!durationRegex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "duration",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
 		            else if (check.kind === "ip") {
 		                if (!isValidIP(input.data, check.version)) {
 		                    ctx = this._getOrReturnCtx(input, ctx);
 		                    (0, parseUtil_1.addIssueToContext)(ctx, {
 		                        validation: "ip",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "base64") {
+		                if (!base64Regex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "base64",
 		                        code: ZodError_1.ZodIssueCode.invalid_string,
 		                        message: check.message,
 		                    });
@@ -10580,6 +10677,9 @@ var mapperTab = (function () {
 		    uuid(message) {
 		        return this._addCheck({ kind: "uuid", ...errorUtil_1.errorUtil.errToObj(message) });
 		    }
+		    nanoid(message) {
+		        return this._addCheck({ kind: "nanoid", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
 		    cuid(message) {
 		        return this._addCheck({ kind: "cuid", ...errorUtil_1.errorUtil.errToObj(message) });
 		    }
@@ -10589,16 +10689,20 @@ var mapperTab = (function () {
 		    ulid(message) {
 		        return this._addCheck({ kind: "ulid", ...errorUtil_1.errorUtil.errToObj(message) });
 		    }
+		    base64(message) {
+		        return this._addCheck({ kind: "base64", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
 		    ip(options) {
 		        return this._addCheck({ kind: "ip", ...errorUtil_1.errorUtil.errToObj(options) });
 		    }
 		    datetime(options) {
-		        var _a;
+		        var _a, _b;
 		        if (typeof options === "string") {
 		            return this._addCheck({
 		                kind: "datetime",
 		                precision: null,
 		                offset: false,
+		                local: false,
 		                message: options,
 		            });
 		        }
@@ -10606,8 +10710,29 @@ var mapperTab = (function () {
 		            kind: "datetime",
 		            precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
 		            offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
+		            local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
 		            ...errorUtil_1.errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
 		        });
+		    }
+		    date(message) {
+		        return this._addCheck({ kind: "date", message });
+		    }
+		    time(options) {
+		        if (typeof options === "string") {
+		            return this._addCheck({
+		                kind: "time",
+		                precision: null,
+		                message: options,
+		            });
+		        }
+		        return this._addCheck({
+		            kind: "time",
+		            precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
+		            ...errorUtil_1.errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+		        });
+		    }
+		    duration(message) {
+		        return this._addCheck({ kind: "duration", ...errorUtil_1.errorUtil.errToObj(message) });
 		    }
 		    regex(regex, message) {
 		        return this._addCheck({
@@ -10687,6 +10812,15 @@ var mapperTab = (function () {
 		    get isDatetime() {
 		        return !!this._def.checks.find((ch) => ch.kind === "datetime");
 		    }
+		    get isDate() {
+		        return !!this._def.checks.find((ch) => ch.kind === "date");
+		    }
+		    get isTime() {
+		        return !!this._def.checks.find((ch) => ch.kind === "time");
+		    }
+		    get isDuration() {
+		        return !!this._def.checks.find((ch) => ch.kind === "duration");
+		    }
 		    get isEmail() {
 		        return !!this._def.checks.find((ch) => ch.kind === "email");
 		    }
@@ -10699,6 +10833,9 @@ var mapperTab = (function () {
 		    get isUUID() {
 		        return !!this._def.checks.find((ch) => ch.kind === "uuid");
 		    }
+		    get isNANOID() {
+		        return !!this._def.checks.find((ch) => ch.kind === "nanoid");
+		    }
 		    get isCUID() {
 		        return !!this._def.checks.find((ch) => ch.kind === "cuid");
 		    }
@@ -10710,6 +10847,9 @@ var mapperTab = (function () {
 		    }
 		    get isIP() {
 		        return !!this._def.checks.find((ch) => ch.kind === "ip");
+		    }
+		    get isBase64() {
+		        return !!this._def.checks.find((ch) => ch.kind === "base64");
 		    }
 		    get minLength() {
 		        let min = null;
@@ -11711,9 +11851,10 @@ var mapperTab = (function () {
 		                const syncPairs = [];
 		                for (const pair of pairs) {
 		                    const key = await pair.key;
+		                    const value = await pair.value;
 		                    syncPairs.push({
 		                        key,
-		                        value: await pair.value,
+		                        value,
 		                        alwaysSet: pair.alwaysSet,
 		                    });
 		                }
@@ -12089,7 +12230,7 @@ var mapperTab = (function () {
 		    }
 		    else if (type instanceof ZodNativeEnum) {
 		        // eslint-disable-next-line ban/ban
-		        return Object.keys(type.enum);
+		        return util_1.util.objectValues(type.enum);
 		    }
 		    else if (type instanceof ZodDefault) {
 		        return getDiscriminator(type._def.innerType);
@@ -12100,8 +12241,23 @@ var mapperTab = (function () {
 		    else if (type instanceof ZodNull) {
 		        return [null];
 		    }
+		    else if (type instanceof ZodOptional) {
+		        return [undefined, ...getDiscriminator(type.unwrap())];
+		    }
+		    else if (type instanceof ZodNullable) {
+		        return [null, ...getDiscriminator(type.unwrap())];
+		    }
+		    else if (type instanceof ZodBranded) {
+		        return getDiscriminator(type.unwrap());
+		    }
+		    else if (type instanceof ZodReadonly) {
+		        return getDiscriminator(type.unwrap());
+		    }
+		    else if (type instanceof ZodCatch) {
+		        return getDiscriminator(type._def.innerType);
+		    }
 		    else {
-		        return null;
+		        return [];
 		    }
 		};
 		class ZodDiscriminatedUnion extends ZodType {
@@ -12164,7 +12320,7 @@ var mapperTab = (function () {
 		        // try {
 		        for (const type of options) {
 		            const discriminatorValues = getDiscriminator(type.shape[discriminator]);
-		            if (!discriminatorValues) {
+		            if (!discriminatorValues.length) {
 		                throw new Error(`A discriminator value for key \`${discriminator}\` could not be extracted from all schema options`);
 		            }
 		            for (const value of discriminatorValues) {
@@ -12380,6 +12536,7 @@ var mapperTab = (function () {
 		            pairs.push({
 		                key: keyType._parse(new ParseInputLazyPath(ctx, key, ctx.path, key)),
 		                value: valueType._parse(new ParseInputLazyPath(ctx, ctx.data[key], ctx.path, key)),
+		                alwaysSet: key in ctx.data,
 		            });
 		        }
 		        if (ctx.common.async) {
@@ -12745,6 +12902,10 @@ var mapperTab = (function () {
 		    });
 		}
 		class ZodEnum extends ZodType {
+		    constructor() {
+		        super(...arguments);
+		        _ZodEnum_cache.set(this, void 0);
+		    }
 		    _parse(input) {
 		        if (typeof input.data !== "string") {
 		            const ctx = this._getOrReturnCtx(input);
@@ -12756,7 +12917,10 @@ var mapperTab = (function () {
 		            });
 		            return parseUtil_1.INVALID;
 		        }
-		        if (this._def.values.indexOf(input.data) === -1) {
+		        if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f")) {
+		            __classPrivateFieldSet(this, _ZodEnum_cache, new Set(this._def.values), "f");
+		        }
+		        if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f").has(input.data)) {
 		            const ctx = this._getOrReturnCtx(input);
 		            const expectedValues = this._def.values;
 		            (0, parseUtil_1.addIssueToContext)(ctx, {
@@ -12792,16 +12956,27 @@ var mapperTab = (function () {
 		        }
 		        return enumValues;
 		    }
-		    extract(values) {
-		        return ZodEnum.create(values);
+		    extract(values, newDef = this._def) {
+		        return ZodEnum.create(values, {
+		            ...this._def,
+		            ...newDef,
+		        });
 		    }
-		    exclude(values) {
-		        return ZodEnum.create(this.options.filter((opt) => !values.includes(opt)));
+		    exclude(values, newDef = this._def) {
+		        return ZodEnum.create(this.options.filter((opt) => !values.includes(opt)), {
+		            ...this._def,
+		            ...newDef,
+		        });
 		    }
 		}
 		exports.ZodEnum = ZodEnum;
+		_ZodEnum_cache = new WeakMap();
 		ZodEnum.create = createZodEnum;
 		class ZodNativeEnum extends ZodType {
+		    constructor() {
+		        super(...arguments);
+		        _ZodNativeEnum_cache.set(this, void 0);
+		    }
 		    _parse(input) {
 		        const nativeEnumValues = util_1.util.getValidEnumValues(this._def.values);
 		        const ctx = this._getOrReturnCtx(input);
@@ -12815,7 +12990,10 @@ var mapperTab = (function () {
 		            });
 		            return parseUtil_1.INVALID;
 		        }
-		        if (nativeEnumValues.indexOf(input.data) === -1) {
+		        if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f")) {
+		            __classPrivateFieldSet(this, _ZodNativeEnum_cache, new Set(util_1.util.getValidEnumValues(this._def.values)), "f");
+		        }
+		        if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f").has(input.data)) {
 		            const expectedValues = util_1.util.objectValues(nativeEnumValues);
 		            (0, parseUtil_1.addIssueToContext)(ctx, {
 		                received: ctx.data,
@@ -12831,6 +13009,7 @@ var mapperTab = (function () {
 		    }
 		}
 		exports.ZodNativeEnum = ZodNativeEnum;
+		_ZodNativeEnum_cache = new WeakMap();
 		ZodNativeEnum.create = (values, params) => {
 		    return new ZodNativeEnum({
 		        values: values,
@@ -12901,33 +13080,43 @@ var mapperTab = (function () {
 		        checkCtx.addIssue = checkCtx.addIssue.bind(checkCtx);
 		        if (effect.type === "preprocess") {
 		            const processed = effect.transform(ctx.data, checkCtx);
-		            if (ctx.common.issues.length) {
-		                return {
-		                    status: "dirty",
-		                    value: ctx.data,
-		                };
-		            }
 		            if (ctx.common.async) {
-		                return Promise.resolve(processed).then((processed) => {
-		                    return this._def.schema._parseAsync({
+		                return Promise.resolve(processed).then(async (processed) => {
+		                    if (status.value === "aborted")
+		                        return parseUtil_1.INVALID;
+		                    const result = await this._def.schema._parseAsync({
 		                        data: processed,
 		                        path: ctx.path,
 		                        parent: ctx,
 		                    });
+		                    if (result.status === "aborted")
+		                        return parseUtil_1.INVALID;
+		                    if (result.status === "dirty")
+		                        return (0, parseUtil_1.DIRTY)(result.value);
+		                    if (status.value === "dirty")
+		                        return (0, parseUtil_1.DIRTY)(result.value);
+		                    return result;
 		                });
 		            }
 		            else {
-		                return this._def.schema._parseSync({
+		                if (status.value === "aborted")
+		                    return parseUtil_1.INVALID;
+		                const result = this._def.schema._parseSync({
 		                    data: processed,
 		                    path: ctx.path,
 		                    parent: ctx,
 		                });
+		                if (result.status === "aborted")
+		                    return parseUtil_1.INVALID;
+		                if (result.status === "dirty")
+		                    return (0, parseUtil_1.DIRTY)(result.value);
+		                if (status.value === "dirty")
+		                    return (0, parseUtil_1.DIRTY)(result.value);
+		                return result;
 		            }
 		        }
 		        if (effect.type === "refinement") {
-		            const executeRefinement = (acc
-		            // effect: RefinementEffect<any>
-		            ) => {
+		            const executeRefinement = (acc) => {
 		                const result = effect.refinement(acc, checkCtx);
 		                if (ctx.common.async) {
 		                    return Promise.resolve(result);
@@ -13244,6 +13433,9 @@ var mapperTab = (function () {
 		        }
 		        return result;
 		    }
+		    unwrap() {
+		        return this._def.innerType;
+		    }
 		}
 		exports.ZodReadonly = ZodReadonly;
 		ZodReadonly.create = (type, params) => {
@@ -13253,7 +13445,7 @@ var mapperTab = (function () {
 		        ...processCreateParams(params),
 		    });
 		};
-		const custom = (check, params = {}, 
+		function custom(check, params = {}, 
 		/**
 		 * @deprecated
 		 *
@@ -13264,7 +13456,7 @@ var mapperTab = (function () {
 		 * ```
 		 *
 		 */
-		fatal) => {
+		fatal) {
 		    if (check)
 		        return ZodAny.create().superRefine((data, ctx) => {
 		            var _a, _b;
@@ -13280,7 +13472,7 @@ var mapperTab = (function () {
 		            }
 		        });
 		    return ZodAny.create();
-		};
+		}
 		exports.custom = custom;
 		exports.late = {
 		    object: ZodObject.lazycreate,
@@ -13328,7 +13520,7 @@ var mapperTab = (function () {
 		// const instanceOfType = <T extends new (...args: any[]) => any>(
 		cls, params = {
 		    message: `Input not instance of ${cls.name}`,
-		}) => (0, exports.custom)((data) => data instanceof cls, params);
+		}) => custom((data) => data instanceof cls, params);
 		exports.instanceof = instanceOfType;
 		const stringType = ZodString.create;
 		exports.string = stringType;
@@ -16158,6 +16350,8 @@ var mapperTab = (function () {
 	        return;
 	    }
 	    globalThis.document.documentElement.innerHTML = mapperPageSource;
+	    // Show a confirmation dialog when the user tries to leave the Mapper tab.
+	    globalThis.window.onbeforeunload = () => 'Closing or reloading this tab will stop the BiDi process. Are you sure you want to leave?';
 	}
 	mapperTabPage.generatePage = generatePage;
 	function stringify(message) {
