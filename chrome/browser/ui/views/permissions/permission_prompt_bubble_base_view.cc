@@ -127,8 +127,13 @@ void PermissionPromptBubbleBaseView::CreatePermissionButtons(
       block_button->SetStyle(ui::ButtonStyle::kTonal);
     }
 
-    buttons_container->AddChildView(std::move(allow_once_button));
-    buttons_container->AddChildView(std::move(allow_always_button));
+    if (permissions::feature_params::kShowAllowAlwaysAsFirstButton.Get()) {
+      buttons_container->AddChildView(std::move(allow_always_button));
+      buttons_container->AddChildView(std::move(allow_once_button));
+    } else {
+      buttons_container->AddChildView(std::move(allow_once_button));
+      buttons_container->AddChildView(std::move(allow_always_button));
+    }
     buttons_container->AddChildView(std::move(block_button));
 
     views::LayoutProvider* const layout_provider = views::LayoutProvider::Get();
