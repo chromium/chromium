@@ -27,9 +27,8 @@ _cros_components_ts_files = [
   "menu/menu_separator.ts",
   "menu/menu_util.ts",
   "menu/sub_menu_item.ts",
-  # TODO(b:332970280): Bring orca-feedback back once we can support safeHTML
-  # properly.
-  # "orca_feedback/orca-feedback.ts",
+  "orca_feedback/maybe_safe_html.ts",
+  "orca_feedback/orca-feedback.ts",
   "radio/radio.ts",
   "sidenav/sidenav.ts",
   "sidenav/sidenav_item.ts",
