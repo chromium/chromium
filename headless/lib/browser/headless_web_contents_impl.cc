@@ -42,6 +42,7 @@
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/protocol/headless_handler.h"
+#include "headless/public/switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -201,6 +202,11 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     DirectoryEnumerator::Start(path, std::move(listener));
   }
 
+  bool IsBackForwardCacheSupported() override {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    return command_line->HasSwitch(switches::kEnableBackForwardCache);
+  }
+
   void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override {
@@ -347,10 +353,10 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
       browser_context->options()->font_render_hinting();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kForceWebRtcIPHandlingPolicy)) {
+  if (command_line->HasSwitch(::switches::kForceWebRtcIPHandlingPolicy)) {
     web_contents_->GetMutableRendererPrefs()->webrtc_ip_handling_policy =
         command_line->GetSwitchValueASCII(
-            switches::kForceWebRtcIPHandlingPolicy);
+            ::switches::kForceWebRtcIPHandlingPolicy);
   }
 
   web_contents_->SetDelegate(web_contents_delegate_.get());

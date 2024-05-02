@@ -23,6 +23,7 @@ HEADLESS_EXPORT extern const char kDisableCookieEncryption[];
 HEADLESS_EXPORT extern const char kDisableCrashReporter[];
 HEADLESS_EXPORT extern const char kDisableLazyLoading[];
 HEADLESS_EXPORT extern const char kDiskCacheDir[];
+HEADLESS_EXPORT extern const char kEnableBackForwardCache[];
 HEADLESS_EXPORT extern const char kEnableBeginFrameControl[];
 HEADLESS_EXPORT extern const char kEnableCrashReporter[];
 HEADLESS_EXPORT extern const char kEnableGPU[];

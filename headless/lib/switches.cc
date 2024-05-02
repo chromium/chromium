@@ -48,6 +48,9 @@ const char kDisableLazyLoading[] = "disable-lazy-loading";
 // UserDatadir.
 const char kDiskCacheDir[] = "disk-cache-dir";
 
+// Enable Back Forward Cache support
+const char kEnableBackForwardCache[] = "enable-bfcache";
+
 // Whether or not begin frames should be issued over DevToolsProtocol
 // (experimental).
 const char kEnableBeginFrameControl[] = "enable-begin-frame-control";
