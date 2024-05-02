@@ -517,4 +517,21 @@ std::string GetExtendedTopLevelDomain(
   return main_domain;
 }
 
+bool IsExtendedPublicSuffixDomainMatch(
+    const GURL& url1,
+    const GURL& url2,
+    const base::flat_set<std::string>& psl_extensions) {
+  if (!url1.is_valid() || !url2.is_valid()) {
+    return false;
+  }
+
+  std::string domain1(GetExtendedTopLevelDomain(url1, psl_extensions));
+  std::string domain2(GetExtendedTopLevelDomain(url2, psl_extensions));
+  if (domain1.empty() || domain2.empty()) {
+    return false;
+  }
+
+  return domain1 == domain2;
+}
+
 }  // namespace affiliations

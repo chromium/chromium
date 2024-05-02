@@ -35,32 +35,6 @@ bool FormSupportsPSL(const PasswordFormDigest& digest) {
          !GetRegistryControlledDomain(GURL(digest.signon_realm)).empty();
 }
 
-bool IsExtendedPublicSuffixDomainMatch(
-    const GURL& url1,
-    const GURL& url2,
-    const base::flat_set<std::string>& psl_extensions) {
-  if (!url1.is_valid() || !url2.is_valid()) {
-    return false;
-  }
-
-  // Always return true if the feature to use extension list is disabled since
-  // the normal PSL check had already passed inside GetMatchResult.
-  if (!base::FeatureList::IsEnabled(
-          features::kUseExtensionListForPSLMatching)) {
-    return true;
-  }
-
-  std::string domain1(
-      affiliations::GetExtendedTopLevelDomain(url1, psl_extensions));
-  std::string domain2(
-      affiliations::GetExtendedTopLevelDomain(url2, psl_extensions));
-  if (domain1.empty() || domain2.empty()) {
-    return false;
-  }
-
-  return domain1 == domain2;
-}
-
 // Do post-processing on forms and mark PSL matches as such.
 LoginsResultOrError ProcessExactAndPSLForms(
     const PasswordFormDigest& digest,
@@ -79,15 +53,23 @@ LoginsResultOrError ProcessExactAndPSLForms(
         form.match_type = PasswordForm::MatchType::kExact;
         break;
       case MatchResult::PSL_MATCH:
-        if (IsExtendedPublicSuffixDomainMatch(GURL(form.signon_realm),
-                                              GURL(digest.signon_realm),
-                                              psl_extensions)) {
+        // Always return true if the feature to use extension list is disabled
+        // since the normal PSL check had already passed inside GetMatchResult.
+        if (!base::FeatureList::IsEnabled(
+                features::kUseExtensionListForPSLMatching) ||
+            affiliations::IsExtendedPublicSuffixDomainMatch(
+                GURL(form.signon_realm), GURL(digest.signon_realm),
+                psl_extensions)) {
           form.match_type = PasswordForm::MatchType::kPSL;
         }
         break;
       case MatchResult::FEDERATED_PSL_MATCH:
-        if (IsExtendedPublicSuffixDomainMatch(form.url, digest.url,
-                                              psl_extensions)) {
+        // Always return true if the feature to use extension list is disabled
+        // since the normal PSL check had already passed inside GetMatchResult.
+        if (!base::FeatureList::IsEnabled(
+                features::kUseExtensionListForPSLMatching) ||
+            affiliations::IsExtendedPublicSuffixDomainMatch(
+                form.url, digest.url, psl_extensions)) {
           form.match_type = PasswordForm::MatchType::kPSL;
         }
         break;

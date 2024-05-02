@@ -257,6 +257,15 @@ std::string GetExtendedTopLevelDomain(
     const GURL& url,
     const base::flat_set<std::string>& psl_extensions);
 
+// Two URLs are considered an Extended Public Suffix Domain match if they have
+// the same extended top level domain (See `GetExtendedTopLevelDomain`). The
+// `psl_extensions` list is used to calculate the appropriate top domain. If one
+// or both arguments do not describe valid URLs, returns false.
+bool IsExtendedPublicSuffixDomainMatch(
+    const GURL& url1,
+    const GURL& url2,
+    const base::flat_set<std::string>& psl_extensions);
+
 // For logging use only.
 std::ostream& operator<<(std::ostream& os, const FacetURI& facet_uri);
 
