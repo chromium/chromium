@@ -6255,6 +6255,61 @@ TEST_F(SnapGroupMultiDisplayTest, LandscapeAndPortrait) {
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 }
 
+// Tests that the snap group bounds are updated for removing and adding the
+// primary display. Regression test for http://b/335313098.
+TEST_F(SnapGroupMultiDisplayTest, AddRemovePrimaryDisplay) {
+  UpdateDisplay("800x700,801+0-800x700");
+  const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  const int64_t secondary_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .GetSecondaryDisplay()
+          .id();
+
+  // Create Snap Group #1 on display #1.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(50, 50, 100, 200)));
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group_controller = SnapGroupController::Get();
+  auto* group1 = snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  VerifySnapGroupOnDisplay(group1, primary_id);
+
+  // Create Snap Group #2 on display #2.
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(801, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w4(
+      CreateAppWindow(gfx::Rect(810, 50, 100, 200)));
+  SnapTwoTestWindows(w3.get(), w4.get(), /*horizontal=*/true);
+  auto* group2 = snap_group_controller->GetSnapGroupForGivenWindow(w3.get());
+  VerifySnapGroupOnDisplay(group2, secondary_id);
+
+  // Disconnect primary display.
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(primary_id);
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(secondary_id);
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  const auto& displays = display_manager()->active_display_list();
+  ASSERT_EQ(1U, displays.size());
+  ASSERT_EQ(WindowTreeHostManager::GetPrimaryDisplayId(), secondary_id);
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
+                                   group1->snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(),
+                                   group2->snap_group_divider());
+
+  // Reconnect primary display.
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  ASSERT_EQ(2U, displays.size());
+  ASSERT_EQ(WindowTreeHostManager::GetPrimaryDisplayId(), primary_id);
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(),
+                                   group1->snap_group_divider());
+  UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(),
+                                   group2->snap_group_divider());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupHistogramTest:
 
