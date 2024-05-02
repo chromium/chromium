@@ -33,6 +33,7 @@ public class PdfDocumentRequest {
     public static class Builder {
         private Uri mUri;
         private File mFile;
+        private PdfViewSettings mPdfViewSettings;
 
         public Builder() {}
 
@@ -45,6 +46,12 @@ public class PdfDocumentRequest {
         @NonNull
         public Builder setFile(File file) {
             this.mFile = file;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPdfViewSettings(PdfViewSettings settings) {
+            this.mPdfViewSettings = settings;
             return this;
         }
 

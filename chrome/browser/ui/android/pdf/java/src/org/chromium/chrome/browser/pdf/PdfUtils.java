@@ -18,6 +18,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.fakepdf.PdfDocumentListener;
 import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
+import org.chromium.chrome.browser.fakepdf.PdfViewSettings;
 import org.chromium.chrome.browser.fakepdf.PdfViewerFragment;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
@@ -147,6 +148,8 @@ public class PdfUtils {
             Log.e(TAG, "Couldn't generate URI for pdf file: " + e);
             return null;
         }
+        builder.setPdfViewSettings(
+                new PdfViewSettings(/* overrideDefaultUrlClickBehavior= */ true));
         return new PdfDocumentRequest(builder);
     }
 

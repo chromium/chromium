@@ -439,6 +439,12 @@ public class NativePageFactory {
         }
 
         @Override
+        public void openNewTab(LoadUrlParams urlParams) {
+            mTabModelSelector.openNewTab(
+                    urlParams, TabLaunchType.FROM_LINK, mTab, mTab.isIncognito());
+        }
+
+        @Override
         public int getParentId() {
             return mTab.getParentId();
         }

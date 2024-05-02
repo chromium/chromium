@@ -16,12 +16,17 @@ import org.chromium.chrome.browser.fakepdf.PdfDocument;
 import org.chromium.chrome.browser.fakepdf.PdfDocumentListener;
 import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
 import org.chromium.chrome.browser.fakepdf.PdfViewerFragment;
+import org.chromium.chrome.browser.fakepdf.PdfViewerFragment.PdfEventsListener;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.content_public.browser.LoadUrlParams;
+
+import java.net.URL;
 
 /** The class responsible for setting up PdfPage. */
 public class PdfCoordinator {
     private static final String TAG = "PdfCoordinator";
+    private NativePageHost mHost;
     private final View mView;
     private final FragmentManager mFragmentManager;
     private int mFragmentContainerViewId;
@@ -30,6 +35,7 @@ public class PdfCoordinator {
     private boolean mIsPdfLoaded;
     private PdfViewerFragment mPdfViewerFragment;
     private PdfDocument mPdfDocument;
+    private PdfEventsListener mPdfEventsListener;
 
     /**
      * Creates a PdfCoordinator for the PdfPage.
@@ -42,6 +48,7 @@ public class PdfCoordinator {
      */
     public PdfCoordinator(
             NativePageHost host, Profile profile, Activity activity, String filepath, String url) {
+        mHost = host;
         mIsPdfLoaded = false;
         mView = LayoutInflater.from(host.getContext()).inflate(R.layout.pdf_page, null);
         mView.addOnAttachStateChangeListener(
@@ -75,6 +82,13 @@ public class PdfCoordinator {
         }
     }
 
+    class ChromePdfEventsListener implements PdfEventsListener {
+        @Override
+        public void onHyperlinkClicked(URL url) {
+            mHost.openNewTab(new LoadUrlParams(url.toString()));
+        }
+    }
+
     /** Returns the intended view for PdfPage tab. */
     View getView() {
         return mView;
@@ -90,8 +104,11 @@ public class PdfCoordinator {
     }
 
     void destroy() {
-        // TODO: stop download if still in progress.
-        // TODO: removePdfEventsListener
+        if (mPdfViewerFragment != null && mPdfEventsListener != null) {
+            mPdfViewerFragment.removePdfEventsListener(mPdfEventsListener);
+            mPdfViewerFragment = null;
+            mPdfEventsListener = null;
+        }
     }
 
     void onDownloadComplete(String pdfFilePath) {
@@ -125,6 +142,8 @@ public class PdfCoordinator {
         PdfDocumentRequest pdfDocumentRequest = PdfUtils.getPdfDocumentRequest(mPdfFilePath);
         if (pdfDocumentRequest != null) {
             mPdfViewerFragment = new PdfViewerFragment();
+            mPdfEventsListener = new ChromePdfEventsListener();
+            mPdfViewerFragment.addPdfEventsListener(mPdfEventsListener);
             PdfDocumentListener documentListener = new ChromePdfDocumentListener();
             PdfUtils.loadPdf(
                     mPdfViewerFragment,
@@ -144,5 +163,9 @@ public class PdfCoordinator {
 
     boolean getIsPdfLoadedForTesting() {
         return mIsPdfLoaded;
+    }
+
+    PdfEventsListener getPdfEventsListenerForTesting() {
+        return mPdfEventsListener;
     }
 }

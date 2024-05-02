@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.pdf;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -32,6 +34,8 @@ import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
+
+import java.net.URL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class PdfPageUnitTest {
@@ -52,6 +56,7 @@ public class PdfPageUnitTest {
     private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
     private static final String FILE_URL = "file:///media/external/downloads/sample.pdf";
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
+    private static final String EXAMPLE_URL = "https://www.example.com/";
     private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
     private static final String FILE_NAME = "sample.pdf";
     private static final String IMAGE_FILE_URL = "file:///media/external/downloads/sample.jpg";
@@ -139,7 +144,7 @@ public class PdfPageUnitTest {
     }
 
     @Test
-    public void testCreatePdfPage_WithPdfLink() {
+    public void testCreatePdfPage_WithPdfLink() throws Exception {
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
@@ -170,7 +175,21 @@ public class PdfPageUnitTest {
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+
+        // Simulate open embedded hyperlink in PDF
+        pdfPage.mPdfCoordinator
+                .getPdfEventsListenerForTesting()
+                .onHyperlinkClicked(new URL(EXAMPLE_URL));
+        ArgumentCaptor<LoadUrlParams> params = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mMockNativePageHost).openNewTab(params.capture());
+        Assert.assertEquals(
+                "The URL to be loaded should match.", EXAMPLE_URL, params.getValue().getUrl());
+
         contentView.removeView(view);
+        pdfPage.destroy();
+        Assert.assertNull(
+                "PdfEventsListener should be reset to null.",
+                pdfPage.mPdfCoordinator.getPdfEventsListenerForTesting());
     }
 
     @Test
