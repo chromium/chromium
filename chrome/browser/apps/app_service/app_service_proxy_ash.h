@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/app_storage/app_storage.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -113,21 +112,13 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // etc. This is used when the app platform is unavailable, e.g. GuestOS
   // disabled, ARC disabled, etc.
   //
-  // All apps for `app_type` will be deleted from AppRegistryCache and
-  // AppStorage. So this function should not be called for the normal shutdown
-  // process.
+  // All apps for `app_type` will be deleted from AppRegistryCache. So this
+  // function should not be called for the normal shutdown process.
   void SetPublisherUnavailable(AppType app_type);
-
-  // Signals when AppServiceProxy becomes ready after reading the AppStorage
-  // file, and init publishers.
-  const base::OneShotEvent* OnReady() const {
-    return on_ready_ ? on_ready_.get() : nullptr;
-  }
 
   apps::AppInstallService& AppInstallService();
 
   // apps::AppServiceProxyBase overrides:
-  void RegisterPublisher(AppType app_type, AppPublisher* publisher) override;
   void OnApps(std::vector<AppPtr> deltas,
               AppType app_type,
               bool should_notify_initialized) override;
@@ -325,10 +316,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       base::flat_map<apps::ShortcutId,
                      std::unique_ptr<apps::ShortcutRemovalDialog>>;
 
-  // Map of app ID to a list of launch params.
-  using LaunchRequests =
-      std::map<std::string, std::vector<std::unique_ptr<LaunchParams>>>;
-
   bool IsValidProfile() override;
   void Initialize() override;
 
@@ -386,11 +373,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // apps::AppServiceProxyBase overrides:
   void InitializePreferredAppsForAllSubscribers() override;
   void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
-  // Displays spinner, and store the launch parameters to implement the launch
-  // task when the publisher is ready.
-  void OnPublisherNotReadyForLaunch(
-      const std::string& app_id,
-      std::unique_ptr<LaunchParams> launch_request) override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
   void OnLaunched(LaunchCallback callback,
                   LaunchResult&& launch_result) override;
@@ -424,10 +406,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   void PerformPostLaunchTasks(apps::LaunchSource launch_source) override;
 
-  // Invoked after reading the app info from the AppStorage file. Publishers are
-  // initialized, and other OnApps operations can be executed too.
-  void OnAppsReady();
-
   void RecordAppPlatformMetrics(Profile* profile,
                                 const apps::AppUpdate& update,
                                 apps::LaunchSource launch_source,
@@ -456,9 +434,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                     WindowInfoPtr window_info,
                                     LaunchCallback callback,
                                     bool is_allowed);
-
-  // Launches apps saved in `launch_requests_` for `app_type`.
-  void LaunchFromPendingRequests(AppType app_type);
 
   bool ShouldReadIcons(AppType app_type) override;
 
@@ -557,8 +532,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   IconCoalescer shortcut_icon_coalescer_;
   IconCache shortcut_outer_icon_loader_;
 
-  std::unique_ptr<apps::AppStorage> app_storage_;
-
   raw_ptr<SubscriberCrosapi> crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
@@ -589,20 +562,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   UninstallDialogs uninstall_dialogs_;
   ShortcutRemovalDialogs shortcut_removal_dialogs_;
 
-  // Whether AppRegistryCache is ready to publish apps. Returns true when
-  // AppServiceProxy is ready, and the apps can be published to
-  // AppRegistryCache.
-  bool is_on_apps_ready_ = false;
-
-  // Represents an event when AppServiceProxy is ready after reading the
-  // AppStorage file and publishers have been initiated for `publisher_host_`.
-  std::unique_ptr<base::OneShotEvent> on_ready_;
-
-  // Saves the parameters for OnApps callings. Before reading the AppStorage
-  // file, OnApps requests are cached in `pending_on_apps_requests_`, and after
-  // reading the AppStorage file, all requests saved will be executed.
-  std::vector<std::unique_ptr<OnAppsRequest>> pending_on_apps_requests_;
-
   // When the icon folder is being deleted, the `ReadIcons` request is added to
   // `pending_read_icon_requests_` to wait for the deletion. When the icon
   // folder has being deleted, the saved `ReadIcons` requests in
@@ -631,9 +590,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // from the outstanding callback queue.
   std::list<std::pair<base::RepeatingCallback<bool(void)>, base::OnceClosure>>
       callback_list_;
-
-  // The launch requests when the publisher is not available.
-  LaunchRequests launch_requests_;
 
   base::flat_map<AppType, ShortcutPublisher*> shortcut_publishers_;
 

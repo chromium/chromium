@@ -80,19 +80,6 @@ struct IntentLaunchInfo {
 class AppServiceProxyBase : public KeyedService,
                             public PreferredAppsImpl::Host {
  public:
-  // The parameters of the launch calling.
-  struct LaunchParams {
-    LaunchParams();
-    ~LaunchParams();
-    int32_t event_flags_ = 0;
-    IntentPtr intent_;
-    LaunchSource launch_source_ = LaunchSource::kUnknown;
-    std::vector<base::FilePath> file_paths_;
-    WindowInfoPtr window_info_;
-    std::optional<AppLaunchParams> params_;
-    LaunchCallback call_back_;
-  };
-
   explicit AppServiceProxyBase(Profile* profile);
   AppServiceProxyBase(const AppServiceProxyBase&) = delete;
   AppServiceProxyBase& operator=(const AppServiceProxyBase&) = delete;
@@ -115,7 +102,7 @@ class AppServiceProxyBase : public KeyedService,
   // Registers `publisher` with the App Service as exclusively publishing apps
   // of type `app_type`. `publisher` must have a lifetime equal to or longer
   // than this object.
-  virtual void RegisterPublisher(AppType app_type, AppPublisher* publisher);
+  void RegisterPublisher(AppType app_type, AppPublisher* publisher);
 
   // UnRegisters the publisher for `app_type`, As the publisher(ArcApps) might
   // be destroyed earlier than AppServiceProxy.
@@ -400,11 +387,6 @@ class AppServiceProxyBase : public KeyedService,
   virtual void Initialize();
 
   AppPublisher* GetPublisher(AppType app_type);
-
-  // Called when a publisher is not ready to launch an app.
-  virtual void OnPublisherNotReadyForLaunch(
-      const std::string& app_id,
-      std::unique_ptr<LaunchParams> launch_request);
 
   // Returns true if the app cannot be launched and a launch prevention dialog
   // is shown to the user (e.g. the app is paused or blocked). Returns false
