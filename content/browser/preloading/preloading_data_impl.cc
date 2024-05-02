@@ -7,6 +7,7 @@
 #include <limits>
 #include <string_view>
 
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -61,11 +62,12 @@ static void CheckPreloadingPredictorValidity(PreloadingPredictor predictor) {
 // static
 PreloadingURLMatchCallback PreloadingData::GetSameURLMatcher(
     const GURL& destination_url) {
+  // To save memory, only bind a hash of the URL for comparison.
   return base::BindRepeating(
-      [](const GURL& predicted_url, const GURL& navigated_url) {
-        return predicted_url == navigated_url;
+      [](size_t predicted_url_hash, const GURL& navigated_url) {
+        return predicted_url_hash == base::FastHash(navigated_url.spec());
       },
-      destination_url);
+      base::FastHash(destination_url.spec()));
 }
 
 // static
@@ -152,10 +154,10 @@ void PreloadingDataImpl::AddPreloadingPrediction(
   // impact of PreloadingPredictions on the page user is viewing.
   // TODO(crbug.com/40227283): Extend this for non-primary page and inner
   // WebContents preloading predictions.
-  auto prediction = std::make_unique<PreloadingPrediction>(
-      predictor, confidence, triggering_primary_page_source_id,
-      std::move(url_match_predicate));
-  preloading_predictions_.push_back(std::move(prediction));
+  // TODO(mcnee): We should prevent this from growing indefinitely.
+  preloading_predictions_.emplace_back(predictor, confidence,
+                                       triggering_primary_page_source_id,
+                                       std::move(url_match_predicate));
 }
 
 void PreloadingDataImpl::AddExperimentalPreloadingPrediction(
@@ -165,10 +167,9 @@ void PreloadingDataImpl::AddExperimentalPreloadingPrediction(
     float min_score,
     float max_score,
     size_t buckets) {
-  experimental_predictions_.push_back(
-      std::make_unique<ExperimentalPreloadingPrediction>(
-          name, std::move(url_match_predicate), score, min_score, max_score,
-          buckets));
+  // TODO(mcnee): We should prevent this from growing indefinitely.
+  experimental_predictions_.emplace_back(name, std::move(url_match_predicate),
+                                         score, min_score, max_score, buckets);
 }
 
 void PreloadingDataImpl::SetIsNavigationInDomainCallback(
@@ -259,7 +260,7 @@ void PreloadingDataImpl::WebContentsDestroyed() {
   RecordUKMForPreloadingPredictions(ukm::kInvalidSourceId);
 
   for (const auto& experimental_prediction : experimental_predictions_) {
-    experimental_prediction->RecordToUMA();
+    experimental_prediction.RecordToUMA();
   }
   experimental_predictions_.clear();
 
@@ -354,8 +355,8 @@ void PreloadingDataImpl::RecordRecallStatsToUMA(
 void PreloadingDataImpl::SetIsAccurateTriggeringAndPrediction(
     const GURL& navigated_url) {
   for (auto& experimental_prediction : experimental_predictions_) {
-    experimental_prediction->SetIsAccuratePrediction(navigated_url);
-    experimental_prediction->RecordToUMA();
+    experimental_prediction.SetIsAccuratePrediction(navigated_url);
+    experimental_prediction.RecordToUMA();
   }
   experimental_predictions_.clear();
 
@@ -366,9 +367,9 @@ void PreloadingDataImpl::SetIsAccurateTriggeringAndPrediction(
   }
 
   for (auto& prediction : preloading_predictions_) {
-    prediction->SetIsAccuratePrediction(navigated_url);
-    RecordPredictionPrecisionToUMA(*prediction);
-    UpdatePredictionRecallStats(*prediction);
+    prediction.SetIsAccuratePrediction(navigated_url);
+    RecordPredictionPrecisionToUMA(prediction);
+    UpdatePredictionRecallStats(prediction);
   }
 }
 
@@ -396,8 +397,8 @@ void PreloadingDataImpl::RecordUKMForPreloadingPredictions(
     // reported from the same thread (whichever thread calls
     // `PreloadingDataImpl::WebContentsDestroyed` or
     // `PreloadingDataImpl::DidFinishNavigation`).
-    CheckPreloadingPredictorValidity(prediction->predictor_type());
-    prediction->RecordPreloadingPredictionUKMs(navigated_page_source_id);
+    CheckPreloadingPredictorValidity(prediction.predictor_type());
+    prediction.RecordPreloadingPredictionUKMs(navigated_page_source_id);
   }
 
   // Clear all records once we record the UKMs.

@@ -96,9 +96,16 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
     params["random_anchor_sampling_period"] = "1";
     params["traffic_client_enabled_percent"] = "100";
 
+    // TODO(crbug.com/40278151): Repeated executions of the model may be
+    // undesirable for performance, but that behaviour is what's tested in
+    // ProcessPointerEventUsingMLModel. Determine what the final behaviour
+    // should be and then update the test accordingly.
+    std::map<std::string, std::string> ml_model_params;
+    ml_model_params["one_execution_per_hover"] = "false";
+
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kNavigationPredictor, params},
-         {blink::features::kPreloadingHeuristicsMLModel, {}}},
+         {blink::features::kPreloadingHeuristicsMLModel, ml_model_params}},
         {});
   }
 

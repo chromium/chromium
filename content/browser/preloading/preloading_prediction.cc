@@ -19,11 +19,14 @@ PreloadingPrediction::PreloadingPrediction(
     ukm::SourceId triggered_primary_page_source_id,
     PreloadingURLMatchCallback url_match_predicate)
     : predictor_type_(predictor),
-      confidence_(confidence),
       triggered_primary_page_source_id_(triggered_primary_page_source_id),
-      url_match_predicate_(std::move(url_match_predicate)) {}
+      url_match_predicate_(std::move(url_match_predicate)),
+      confidence_(confidence) {}
 
 PreloadingPrediction::~PreloadingPrediction() = default;
+PreloadingPrediction::PreloadingPrediction(PreloadingPrediction&&) = default;
+PreloadingPrediction& PreloadingPrediction::operator=(PreloadingPrediction&&) =
+    default;
 
 void PreloadingPrediction::RecordPreloadingPredictionUKMs(
     ukm::SourceId navigated_page_source_id) {
@@ -78,12 +81,11 @@ ExperimentalPreloadingPrediction::ExperimentalPreloadingPrediction(
     float max_score,
     size_t buckets)
     : name_(name),
-      score_(score),
-      min_score_(min_score),
-      max_score_(max_score),
       buckets_(buckets),
+      normalized_score_((score - min_score) / (max_score - min_score)),
       url_match_predicate_(std::move(url_match_predicate)) {
   CHECK_GT(max_score, min_score);
+  CHECK_LT(buckets, 101u);
 }
 
 void ExperimentalPreloadingPrediction::SetIsAccuratePrediction(
@@ -92,14 +94,17 @@ void ExperimentalPreloadingPrediction::SetIsAccuratePrediction(
 }
 
 ExperimentalPreloadingPrediction::~ExperimentalPreloadingPrediction() = default;
+ExperimentalPreloadingPrediction::ExperimentalPreloadingPrediction(
+    ExperimentalPreloadingPrediction&&) = default;
+ExperimentalPreloadingPrediction& ExperimentalPreloadingPrediction::operator=(
+    ExperimentalPreloadingPrediction&&) = default;
 
 void ExperimentalPreloadingPrediction::RecordToUMA() const {
   const auto uma_experimental_prediction =
       base::StrCat({"Preloading.Experimental.", PredictorName(), ".",
                     IsAccuratePrediction() ? "Positive" : "Negative"});
-  float normalized_param = (Score() - min_score_) / (max_score_ - min_score_);
   base::UmaHistogramExactLinear(uma_experimental_prediction,
-                                normalized_param * buckets_, buckets_ + 1);
+                                normalized_score_ * buckets_, buckets_ + 1);
 }
 
 }  // namespace content

@@ -1818,6 +1818,8 @@ const base::FeatureParam<int> kPreloadingModelTimerStartDelay{
     &kPreloadingHeuristicsMLModel, "timer_start_delay", 0};
 const base::FeatureParam<int> kPreloadingModelTimerInterval{
     &kPreloadingHeuristicsMLModel, "timer_interval", 100};
+const base::FeatureParam<bool> kPreloadingModelOneExecutionPerHover{
+    &kPreloadingHeuristicsMLModel, "one_execution_per_hover", true};
 const base::FeatureParam<bool> kPreloadingModelEnactCandidates{
     &kPreloadingHeuristicsMLModel, "enact_candidates", false};
 const base::FeatureParam<int> kPreloadingModelPrefetchModerateThreshold{

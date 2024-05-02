@@ -27,6 +27,8 @@ class PreloadingPrediction {
   // Disallow copy and assign.
   PreloadingPrediction(const PreloadingPrediction& other) = delete;
   PreloadingPrediction& operator=(const PreloadingPrediction& other) = delete;
+  PreloadingPrediction(PreloadingPrediction&&);
+  PreloadingPrediction& operator=(PreloadingPrediction&&);
 
   // Records both UKMs Preloading_Prediction and
   // Preloading_Prediction_PreviousPrimaryPage. Metrics for both these are same.
@@ -54,26 +56,26 @@ class PreloadingPrediction {
 
  private:
   // Preloading predictor of this preloading prediction.
-  const PreloadingPredictor predictor_type_;
-
-  // Confidence percentage of predictor's preloading prediction. This value
-  // should be between 0 - 100.
-  const PreloadingConfidence confidence_;
+  PreloadingPredictor predictor_type_;
 
   // Holds the triggered primary page of preloading operation ukm::SourceId.
-  const ukm::SourceId triggered_primary_page_source_id_;
+  ukm::SourceId triggered_primary_page_source_id_;
 
   // Triggers can specify their own predicate to judge whether two URLs are
   // considered as pointing to the same destination as this varies for different
   // predictors.
-  const PreloadingURLMatchCallback url_match_predicate_;
+  PreloadingURLMatchCallback url_match_predicate_;
+
+  // Confidence percentage of predictor's preloading prediction. This value
+  // should be between 0 - 100.
+  PreloadingConfidence confidence_;
 
   // Set to true when preloading prediction was correct i.e., when the
   // navigation happens to the same predicted URL.
   bool is_accurate_prediction_ = false;
 
   // Records when the preloading prediction was first recorded.
-  const base::ElapsedTimer elapsed_timer_;
+  base::ElapsedTimer elapsed_timer_;
 
   // The time between the creation of the prediction and the start of the next
   // navigation, whether accurate or not. The latency is reported as standard
@@ -103,9 +105,16 @@ class ExperimentalPreloadingPrediction {
       size_t buckets);
   ~ExperimentalPreloadingPrediction();
 
+  ExperimentalPreloadingPrediction(
+      const ExperimentalPreloadingPrediction& other) = delete;
+  ExperimentalPreloadingPrediction& operator=(
+      const ExperimentalPreloadingPrediction& other) = delete;
+  ExperimentalPreloadingPrediction(ExperimentalPreloadingPrediction&&);
+  ExperimentalPreloadingPrediction& operator=(
+      ExperimentalPreloadingPrediction&&);
+
   std::string_view PredictorName() const { return name_; }
   bool IsAccuratePrediction() const { return is_accurate_prediction_; }
-  float Score() const { return score_; }
 
   void SetIsAccuratePrediction(const GURL& navigated_url);
   void RecordToUMA() const;
@@ -116,15 +125,12 @@ class ExperimentalPreloadingPrediction {
   // Set to true when preloading prediction was correct i.e., when the
   // navigation happens to the same predicted URL.
   bool is_accurate_prediction_ = false;
-  // The logit or probability score output of the predictor model.
-  float score_;
-  // The minimum value that the `score` can have
-  float min_score_;
-  // The maximum value that the `score` can have
-  float max_score_;
   // The number of buckets that will be used for UMA aggregation. It must be
   // less than 101.
-  size_t buckets_;
+  uint8_t buckets_;
+  // The logit or probability score output of the predictor model.
+  // Normalized based on the min and max score values.
+  float normalized_score_;
   // The callback to verify that the navigated URL is a match.
   PreloadingURLMatchCallback url_match_predicate_;
 };
