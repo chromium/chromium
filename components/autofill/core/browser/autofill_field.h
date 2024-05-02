@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -310,6 +311,11 @@ class AutofillField : public FormFieldData {
   }
   std::optional<FieldType> autofilled_type() const { return autofilled_type_; }
 
+  void set_filling_product(FillingProduct filling_product) {
+    filling_product_ = filling_product;
+  }
+  FillingProduct filling_product() const { return filling_product_; }
+
   bool WasAutofilledWithFallback() const;
 
   void set_did_trigger_suggestions(bool did_trigger_suggestions) {
@@ -445,9 +451,8 @@ class AutofillField : public FormFieldData {
   std::vector<FieldLogEventType> field_log_events_;
 
   // The autofill profile's GUID that was used for field filling. It corresponds
-  // to the autofill profile's GUID for the current value if `is_autofilled` is
-  // set or for the previously autofilled value if the field was changed after
-  // filling. nullopt means the field wasn't autofilled.
+  // to the autofill profile's GUID for the last address filling value of the
+  // field. nullopt means the field was never autofilled with address data.
   // Note: `is_autofilled` is true for autocompleted fields. So `is_autofilled`
   // is not a sufficient condition for `autofill_source_profile_guid_` to have a
   // value. This is not tracked for fields filled with field by field filling.
@@ -459,6 +464,14 @@ class AutofillField : public FormFieldData {
   // than the classified one, based on country-specific rules.
   // This is not tracked for fields filled with field by field filling.
   std::optional<FieldType> autofilled_type_;
+
+  // Denotes the product last responsible for filling the field. If the field is
+  // autofilled, then it will correspond to the current filler, otherwise it
+  // would correspond to the last filler of the field before the field became
+  // not autofilled (due to user or JS edits). Note that this is not necessarily
+  // tied to the field type, as some filling mechanisms are independent of the
+  // field type (e.g. Autocomplete).
+  FillingProduct filling_product_ = FillingProduct::kNone;
 
   // Denotes whether a user triggered suggestions from this field.
   bool did_trigger_suggestions_ = false;

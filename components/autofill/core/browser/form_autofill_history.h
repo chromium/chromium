@@ -31,7 +31,8 @@ class FormAutofillHistory {
         std::u16string field_value,
         bool field_is_autofilled,
         std::optional<std::string> field_autofill_source_profile_guid,
-        std::optional<FieldType> field_autofilled_type);
+        std::optional<FieldType> field_autofilled_type,
+        FillingProduct filling_product);
 
     ~FieldFillingEntry();
     FieldFillingEntry(const FieldFillingEntry&);
@@ -60,6 +61,11 @@ class FormAutofillHistory {
     // especially if the field is reverted with Undo to a previous autofilled
     // state.
     std::optional<FieldType> autofilled_type;
+
+    // Last product used to fill the field. This is stored so that Autofill
+    // stores accurate information about the last modifier of the field,
+    // especially since a single field can now be filled via different products.
+    FillingProduct filling_product;
   };
 
   struct FormFillingEntry {

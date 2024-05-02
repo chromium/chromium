@@ -14,9 +14,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
 #include "components/autofill/core/browser/field_filling_payments_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -401,6 +403,7 @@ FillingProduct FormFiller::UndoAutofill(
     autofill_field.set_autofill_source_profile_guid(
         previous_state.autofill_source_profile_guid);
     autofill_field.set_autofilled_type(previous_state.autofilled_type);
+    autofill_field.set_filling_product(previous_state.filling_product);
   }
 
   // Do not attempt a refill after an Undo operation.
@@ -435,6 +438,8 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     SuggestionType type) {
   if (autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
     autofill_field->set_is_autofilled(true);
+    autofill_field->set_filling_product(
+        GetFillingProductFromSuggestionType(type));
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
         .fill_event_id = GetNextFillEventId(),
         .had_value_before_filling = ToOptionalBoolean(!field.value().empty()),
@@ -469,17 +474,20 @@ void FormFiller::FillOrPreviewForm(
     AutofillField* autofill_trigger_field,
     const AutofillTriggerDetails& trigger_details,
     bool is_refill) {
-  bool is_credit_card =
-      absl::holds_alternative<const CreditCard*>(profile_or_credit_card);
+  FillingProduct filling_product =
+      absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
+          ? FillingProduct::kCreditCard
+          : FillingProduct::kAddress;
 
-  DCHECK(is_credit_card || !cvc.has_value());
+  DCHECK(filling_product == FillingProduct::kCreditCard || !cvc.has_value());
   DCHECK(form_structure);
   DCHECK(autofill_trigger_field);
 
   LogBuffer buffer(IsLoggingActive(log_manager_));
   LOG_AF(buffer) << "action_persistence: "
                  << ActionPersistenceToString(action_persistence);
-  LOG_AF(buffer) << "is credit card section: " << is_credit_card << Br{};
+  LOG_AF(buffer) << "is credit card section: "
+                 << (filling_product == FillingProduct::kCreditCard) << Br{};
   LOG_AF(buffer) << "is refill: " << is_refill << Br{};
   LOG_AF(buffer) << *form_structure << Br{};
   LOG_AF(buffer) << Tag{"table"};
@@ -540,8 +548,9 @@ void FormFiller::FillOrPreviewForm(
 
     TriggerFillFieldLogEvent trigger_fill_field_log_event =
         TriggerFillFieldLogEvent{
-            .data_type = is_credit_card ? FillDataType::kCreditCard
-                                        : FillDataType::kAutofillProfile,
+            .data_type = filling_product == FillingProduct::kCreditCard
+                             ? FillDataType::kCreditCard
+                             : FillDataType::kAutofillProfile,
             .associated_country_code = country_code,
             .timestamp = AutofillClock::Now()};
 
@@ -564,14 +573,14 @@ void FormFiller::FillOrPreviewForm(
           trigger_details.field_types_to_fill,
           filling_context ? &filling_context->type_groups_originally_filled
                           : nullptr,
-          is_credit_card ? FillingProduct::kCreditCard
-                         : FillingProduct::kAddress,
+          filling_product,
           /*skip_unrecognized_autocomplete_fields=*/
           trigger_details.trigger_source !=
               AutofillTriggerSource::kManualFallback,
           is_refill,
-          is_credit_card && absl::get<const CreditCard*>(profile_or_credit_card)
-                                ->IsExpired(AutofillClock::Now()));
+          filling_product == FillingProduct::kCreditCard &&
+              absl::get<const CreditCard*>(profile_or_credit_card)
+                  ->IsExpired(AutofillClock::Now()));
 
   constexpr DenseSet<FieldFillingSkipReason> pre_ukm_logging_skips{
       FieldFillingSkipReason::kNotInFilledSection,
@@ -646,7 +655,7 @@ void FormFiller::FillOrPreviewForm(
     // filling (note that <select> and <selectlist> controls may not be empty
     // but will still be autofilled).
     const bool should_notify =
-        !is_credit_card &&
+        filling_product != FillingProduct::kCreditCard &&
         (result_form.fields[i].SameFieldAs(trigger_field) ||
          result_form.fields[i].IsSelectOrSelectListElement() ||
          !has_value_before);
@@ -798,10 +807,9 @@ void FormFiller::FillOrPreviewForm(
 
   // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::ActionPersistence::kFill) {
-    form_autofill_history_.AddFormFillEntry(
-        safe_newly_filled_fields.old_values, safe_newly_filled_fields.cached,
-        is_credit_card ? FillingProduct::kCreditCard : FillingProduct::kAddress,
-        is_refill);
+    form_autofill_history_.AddFormFillEntry(safe_newly_filled_fields.old_values,
+                                            safe_newly_filled_fields.cached,
+                                            filling_product, is_refill);
   }
 
   LOG_AF(buffer) << CTag{"table"};
@@ -1067,6 +1075,10 @@ bool FormFiller::FillField(
     // Mark the cached field as autofilled, so that we can detect when a
     // user edits an autofilled field (for metrics).
     autofill_field.set_is_autofilled(true);
+    autofill_field.set_filling_product(
+        absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
+            ? FillingProduct::kCreditCard
+            : FillingProduct::kAddress);
     if (const AutofillProfile** profile =
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       autofill_field.set_autofill_source_profile_guid((*profile)->guid());
