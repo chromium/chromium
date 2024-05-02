@@ -56,13 +56,15 @@ class GraphBuilder {
  public:
   // Tracks Operand information during graph building, so that
   // future operations can look them up based on operand id.
-  //
-  // For the inputs of the model, this information is exposed
-  // publicly via FindInputOperandInfo.
+  // When an operation is decomposed, additional `OperandInfo` entities are
+  // created to represent intermediate layers.
+
+  // For the inputs of the model, this information is exposed publicly via
+  // FindInputOperandInfo.
   struct OperandInfo {
     OperandInfo();
-    OperandInfo(std::string name, std::vector<uint32_t> dimensions,
-                mojom::Operand::DataType data_type,
+    OperandInfo(std::string name,
+                base::span<const uint32_t> dimensions,
                 CoreML::Specification::MILSpec::DataType mil_data_type);
     OperandInfo(OperandInfo&);
     OperandInfo(OperandInfo&&);
@@ -76,7 +78,6 @@ class GraphBuilder {
     // preserves the 0D shape.
     std::string external_coreml_name;
     std::vector<uint32_t> dimensions;
-    mojom::Operand::DataType data_type;
     CoreML::Specification::MILSpec::DataType mil_data_type;
   };
 
@@ -160,18 +161,15 @@ class GraphBuilder {
 
   [[nodiscard]] base::expected<CoreML::Specification::MILSpec::Operation*,
                                mojom::ErrorPtr>
-  CreateUnaryOperation(
-      SupportedDataType supported_data_type,
-      std::string_view op_name,
-      std::string_view input_name,
-      CoreML::Specification::MILSpec::DataType input_mil_data_type,
-      uint64_t output_operand_id,
-      CoreML::Specification::MILSpec::Block& block);
+  CreateUnaryOperation(SupportedDataType supported_data_type,
+                       std::string_view op_name,
+                       uint64_t input_operand_id,
+                       uint64_t output_operand_id,
+                       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryOperation(
       SupportedDataType supported_data_type,
       std::string_view op_name,
-      std::string_view input_name,
-      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      uint64_t input_operand_id,
       uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block);
   template <typename T>
@@ -199,13 +197,11 @@ class GraphBuilder {
   // Serialization functions for members of the mojom::Operation union. Keep
   // these functions in the same order as in webnn_graph.mojom.
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForCast(
-      const std::string& input_name,
+      uint64_t input_operand_id,
       uint64_t output_operand_id,
-      webnn::mojom::Operand::DataType input_data_type,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForClamp(
-      std::string_view input_name,
-      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      uint64_t input_operand_id,
       float min_value,
       float max_value,
       uint64_t output_operand_id,
@@ -221,28 +217,42 @@ class GraphBuilder {
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseBinary(
-      const mojom::ElementWiseBinary& operation,
+      uint64_t lhs_operand_id,
+      uint64_t rhs_operand_id,
+      uint64_t output_operand_id,
+      const mojom::ElementWiseBinary::Kind kind,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr>
   AddOperationForElementwiseUnary(const mojom::ElementWiseUnary& operation,
                                   CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForElu(
-      std::string_view input_name,
-      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      uint64_t input_operand_id,
       float alpha,
       uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForElu(
       const mojom::Elu& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForGemm(
+      const mojom::Gemm& operation,
+      CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLeakyRelu(
-      std::string_view input_name,
-      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      uint64_t input_operand_id,
       float alpha,
       uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForLeakyRelu(
       const mojom::LeakyRelu& operation,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForMatmul(
+      uint64_t input_x_operand_id,
+      uint64_t input_y_operand_id,
+      bool transpose_x,
+      bool transpose_y,
+      uint64_t output_operand_id,
+      CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForMatmul(
+      const mojom::Matmul& operation,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForPool2d(
       const mojom::Pool2d& operation,
@@ -255,8 +265,7 @@ class GraphBuilder {
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReshape(
       uint64_t input_operand_id,
-      std::string_view output_name,
-      base::span<const uint32_t> output_dimensions,
+      uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOperationForReshape(
       const mojom::Reshape& operation,
@@ -269,16 +278,21 @@ class GraphBuilder {
       CoreML::Specification::MILSpec::Block& block);
 
   // Add constants as immediate values in the model file.
-  base::expected<void, mojom::ErrorPtr> AddConstantImmediateValue(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddConstantImmediateValue(
       uint64_t constant_id,
       CoreML::Specification::MILSpec::Block& block);
   // Add constants to weight file.
-  base::expected<void, mojom::ErrorPtr> AddConstantFileValue(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddConstantFileValue(
       uint64_t constant_id,
       uint64_t offset,
       CoreML::Specification::MILSpec::Block& block);
-  // Populate generic fields that apply to both `AddConstantImmediateValue`
-  // and `AddConstantFileValue`.
+  // Create a `const` operation for an internal operand with `value`.
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddInternalConstantWithValue(uint64_t internal_operand_id,
+                               CoreML::Specification::MILSpec::Value value,
+                               CoreML::Specification::MILSpec::Block& block);
+
+  // Populate generic fields that apply to all `const` operations.
   base::expected<void, mojom::ErrorPtr> PopulateConstantOpFromOperand(
       uint64_t constant_id,
       CoreML::Specification::MILSpec::Operation& op);
@@ -322,7 +336,9 @@ class GraphBuilder {
   SetupMlPackageDirStructure();
 
   std::string GetCoreMLNameFromOperand(uint64_t operand_id);
-  [[nodiscard]] std::string GenerateCoreMLNameForInternalOperand();
+  [[nodiscard]] uint64_t GenerateInternalOperandInfo(
+      CoreML::Specification::MILSpec::DataType mil_data_type,
+      base::span<const uint32_t> dimensions);
 
   // A reference to the WebNN compute graph that `this` instance is converting
   // to CoreML model. The creator of `this` must ensure the GraphInfo reference
@@ -331,7 +347,7 @@ class GraphBuilder {
 
   // Used to generate unique names for internal operands generated for WebNN
   // operations that need to be decomposed into multiple CoreML operations.
-  uint64_t internal_operand_id_ = 0;
+  uint64_t internal_operand_id_;
 
   CoreML::Specification::Model ml_model_;
   raw_ptr<CoreML::Specification::MILSpec::Program> program_;
