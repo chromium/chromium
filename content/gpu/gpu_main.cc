@@ -243,9 +243,6 @@ int GpuMain(MainFunctionParams parameters) {
 
 #if BUILDFLAG(IS_WIN)
   base::win::EnableHighDPISupport();
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  base::trace_event::TraceEventETWExport::EnableETWExport();
-#endif
 
   // Prevent Windows from displaying a modal dialog on failures like not being
   // able to load a DLL.
