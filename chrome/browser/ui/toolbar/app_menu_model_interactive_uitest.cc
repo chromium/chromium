@@ -469,7 +469,7 @@ class UniversalInstallAppMenuModelInteractiveTest
   // a corresponding menu item entry for installation, as well as the default
   // install icon next to them.
   auto VerifyDiyAppMenuItemViews() {
-    if (IsUniversalInstallEnabled()) {
+    if (ShouldShowDiyAppInstallOption()) {
       const ui::ImageModel icon_image = ui::ImageModel::FromVectorIcon(
           kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
           ui::SimpleMenuModel::kDefaultIconSize);
@@ -497,7 +497,7 @@ class UniversalInstallAppMenuModelInteractiveTest
   // so we do a 1:1 comparison.
   auto CompareIcons() {
     return base::BindLambdaForTesting([&](views::MenuItemView* item_view) {
-      if (IsUniversalInstallEnabled()) {
+      if (GetParam()) {
         EXPECT_TRUE(item_view->GetIcon().IsImage());
         EXPECT_EQ(
             GetMidColorFromBitmap(item_view->GetIcon().GetImage().AsBitmap()),
@@ -536,7 +536,13 @@ class UniversalInstallAppMenuModelInteractiveTest
   }
 
  private:
-  bool IsUniversalInstallEnabled() { return GetParam(); }
+  bool ShouldShowDiyAppInstallOption() {
+#if BUILDFLAG(IS_CHROMEOS)
+    return false;
+#else
+    return GetParam();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   SkColor GetAppIconColorBasedOnBannerData() {
     std::optional<WebAppBannerData> banner_data =
