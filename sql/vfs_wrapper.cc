@@ -368,7 +368,7 @@ void EnsureVfsWrapper() {
   // use this code with any other VFS, you're not in a good place.
   std::string_view vfs_name(wrapped_vfs->zName);
   CHECK(vfs_name == "unix" || vfs_name == "win32" || vfs_name == "unix-none" ||
-        vfs_name == "storage-service")
+        vfs_name == "storage_service")
       << "Wrapping unexpected VFS " << vfs_name;
 
   std::unique_ptr<sqlite3_vfs, std::function<void(sqlite3_vfs*)>> wrapper_vfs(

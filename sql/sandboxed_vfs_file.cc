@@ -320,7 +320,7 @@ bool IsExclusiveLockMode(int sqlite_lock_mode) {
 }  // namespace
 
 int SandboxedVfsFile::Lock(int mode) {
-  DCHECK_GT(mode, sqlite_lock_mode_)
+  DCHECK_GE(mode, sqlite_lock_mode_)
       << "SQLite asked the VFS to lock the file up to mode " << mode
       << " but the file is already locked at mode " << sqlite_lock_mode_;
 
