@@ -195,6 +195,7 @@
   E_CPONLY(kColorSysStateHeaderHover) \
   E_CPONLY(kColorSysStateHeaderHoverInactive) \
   E_CPONLY(kColorSysStateHeaderSelect) \
+  E_CPONLY(kColorSysStateInactiveRing) \
   /* Effects. */ \
   E_CPONLY(kColorSysShadow) \
   /* AI. */ \

@@ -607,3 +607,38 @@ IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
       TryDiscardTab(0), CheckTabIsDiscarded(0, true),
       WaitForPromo(feature_engagement::kIPHDiscardRingFeature));
 }
+
+class MemorySaverImprovedFaviconTreatmentTest
+    : public MemorySaverFaviconTreatmentTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        performance_manager::features::kDiscardRingImprovements);
+    MemorySaverFaviconTreatmentTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MemorySaverImprovedFaviconTreatmentTest,
+                       FaviconTreatmentOnDiscard) {
+  constexpr char kFirstTabFavicon[] = "first_tab_favicon";
+
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL()),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      Do(base::BindLambdaForTesting(
+          [=]() { GetTabStrip()->StopAnimating(true); })),
+      TryDiscardTab(0), CheckTabIsDiscarded(0, true),
+      NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
+                 return views::AsViewClass<views::View>(GetTabIcon(0));
+               })),
+      WaitForEvent(kFirstTabFavicon, kDiscardAnimationFinishes), FlushEvents(),
+      Screenshot(kFirstTabFavicon,
+                 /*screenshot_name=*/"NoFadeSlightlySmallerFaviconOnDiscard",
+                 /*baseline_cl=*/"5493847"));
+}

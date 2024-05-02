@@ -46,8 +46,6 @@ FirstRunDialogTest.*
 FirstRunIntroPixelTest.*
 GlobalErrorBubbleTest.*
 HatsBubbleTest.*
-*HighEfficiencyFaviconTreatmentTest.*
-*HighEfficiencyMemorySavingsReportingImprovementsTest.*
 HomeButtonUiTest.*
 HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
@@ -60,6 +58,9 @@ InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
 IsolatedWebAppInstallerViewUiPixelTest.*
 LocalCardMigrationBrowserUiTest.*
+*MemorySaverChipInteractiveTest.*
+*MemorySaverFaviconTreatmentTest.*
+*MemorySaverImprovedFaviconTreatmentTest.*
 NewTabPageTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
 OutdatedUpgradeBubbleTest.*

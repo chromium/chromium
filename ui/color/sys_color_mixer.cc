@@ -78,6 +78,9 @@ void AddThemedSysColorOverrides(ColorMixer& mixer,
                                                : kColorRefPrimary80};
 
   // States.
+  mixer[kColorSysStateInactiveRing] = {
+      dark_mode ? SetAlpha({kColorRefPrimary70}, 0x8C)
+                : SetAlpha({kColorRefPrimary20}, 0x8C)};
   mixer[kColorSysStateOnHeaderHover] = {dark_mode ? kColorRefPrimary90
                                                   : kColorRefPrimary20};
   mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefPrimary30
@@ -115,6 +118,9 @@ void AddGrayscaleSysColorOverrides(ColorMixer& mixer,
                                                : kColorRefNeutral40};
 
   // States.
+  mixer[kColorSysStateInactiveRing] = {
+      dark_mode ? SetAlpha({kColorRefNeutral70}, 0x8C)
+                : SetAlpha({kColorRefNeutral20}, 0x8C)};
   mixer[kColorSysStateOnHeaderHover] = {dark_mode ? kColorRefNeutral90
                                                   : kColorRefNeutral20};
   mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefNeutral30
@@ -322,6 +328,9 @@ void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   mixer[kColorSysStateHoverBrightBlendProtection] = {
       dark_mode ? SetAlpha({kColorRefNeutral99}, 0x29)
                 : SetAlpha({kColorRefNeutral10}, 0x0F)};
+  mixer[kColorSysStateInactiveRing] = {
+      dark_mode ? SetAlpha({kColorRefNeutral70}, 0x8C)
+                : SetAlpha({kColorRefPrimary20}, 0x8C)};
   mixer[kColorSysStateOnHeaderHover] = {dark_mode ? kColorRefSecondary90
                                                   : kColorRefPrimary20};
   mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefSecondary30

@@ -484,7 +484,9 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
   }
 
   cc::PaintFlags opacity_flag;
-  if (was_discard_indicator_shown_) {
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardRingImprovements) &&
+      was_discard_indicator_shown_) {
     opacity_flag.setAlphaf(gfx::Tween::FloatValueBetween(
         gfx::Tween::CalculateValue(gfx::Tween::EASE_OUT,
                                    tab_discard_animation_.GetCurrentValue()),
