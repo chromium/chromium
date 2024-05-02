@@ -4,7 +4,7 @@
 """Definitions of builders in the chromium.memory.fyi builder group."""
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -139,11 +139,13 @@ ci.builder(
             "dcheck_always_on",
             "release_builder",
             "reclient",
+            "x64",
         ],
     ),
     builderless = 1,
     cores = None,
     os = os.MAC_ANY,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac|lsan",
         short_name = "lsan",

@@ -237,6 +237,7 @@ try_.builder(
         "ci/mac-lsan-fyi-rel",
     ],
     gn_args = "ci/mac-lsan-fyi-rel",
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
