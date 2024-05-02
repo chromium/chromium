@@ -28,7 +28,7 @@ class LogFile {
   bool IsInFailState() const;
   bool IsAtEOF() const;
   bool Refresh();
-  std::vector<std::string> RetrieveNextLogs(int count);
+  std::vector<std::string> RetrieveNextLogs(size_t count);
 
  private:
   std::streampos GetCurrentOffset();

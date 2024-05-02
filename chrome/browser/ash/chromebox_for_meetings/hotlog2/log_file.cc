@@ -92,12 +92,12 @@ bool LogFile::Refresh() {
   return OpenAtOffset(curr_pos);
 }
 
-std::vector<std::string> LogFile::RetrieveNextLogs(int count) {
+std::vector<std::string> LogFile::RetrieveNextLogs(size_t count) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   std::vector<std::string> logs;
-  int num_read_lines = 0;
+  size_t num_read_lines = 0;
 
   std::string line;
   while (!IsAtEOF() && !IsInFailState() && num_read_lines < count &&

@@ -19,7 +19,9 @@ inline constexpr int kInvalidFileInode = -1;
 // This class tracks data from a single log file.
 class LogSource : public LocalDataSource {
  public:
-  LogSource(const std::string& filepath, base::TimeDelta poll_rate);
+  LogSource(const std::string& filepath,
+            base::TimeDelta poll_rate,
+            size_t batch_size);
   LogSource(const LogSource&) = delete;
   LogSource& operator=(const LogSource&) = delete;
   ~LogSource() override;
@@ -39,6 +41,9 @@ class LogSource : public LocalDataSource {
   // TODO(b/320996557): this should be a collection of log files
   // after adding rotation support.
   LogFile log_file_;
+
+  // Number of lines to read from the log file at each iteration.
+  const size_t batch_size_;
 
   // Keep track of the last-known inode to detect when the underlying
   // file has rotated. Inodes will not change when the file is renamed.

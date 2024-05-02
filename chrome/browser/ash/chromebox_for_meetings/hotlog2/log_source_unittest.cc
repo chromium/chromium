@@ -17,8 +17,14 @@ namespace {
 constexpr std::string kTestFileName = "test_file.log";
 constexpr std::string kRotatedTestFileName = "test_file.log.1";
 
-constexpr unsigned int kTestFileNumLines = 10;
+constexpr size_t kTestFileNumLines = 10;
 constexpr int kLargeOffset = 100000;
+
+// We aren't actually polling, so this value doesn't matter.
+constexpr base::TimeDelta kDefaultPollFrequency = base::Seconds(0);
+
+// Default to reading all lines in test file.
+constexpr size_t kDefaultBatchSize = kTestFileNumLines;
 
 // Define test fixture. This fixture will be used for both the
 // LogFile and LogSource objects as they are closely linked and
@@ -136,18 +142,13 @@ TEST_F(HotlogLogSourceTest, RequestVaryingAmountOfLogLines) {
   logfile.CloseStream();
 
   // Verify partial reads
-  unsigned int num_to_read = 3;
+  size_t num_to_read = 3;
   logfile.OpenAtOffset(0);
   lines = logfile.RetrieveNextLogs(num_to_read);
   EXPECT_EQ(lines.size(), num_to_read);
   lines = logfile.RetrieveNextLogs(kTestFileNumLines - num_to_read);
   EXPECT_EQ(lines.size(), kTestFileNumLines - num_to_read);
   logfile.CloseStream();
-
-  // Negative read should yield nothing
-  logfile.OpenAtOffset(0);
-  lines = logfile.RetrieveNextLogs(-1);
-  EXPECT_EQ(lines.size(), 0u);
 }
 
 TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
@@ -177,8 +178,24 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
 
 // ------- Start LogSource tests -------
 
+TEST_F(HotlogLogSourceTest, TestBatchSizeCorrectlyLimitsOutput) {
+  const size_t batch_size = 2;
+  const size_t expected_num_reads = kTestFileNumLines / batch_size;
+
+  auto log_source = LogSource(kTestFileName, kDefaultPollFrequency, batch_size);
+
+  for (size_t i = 0; i < expected_num_reads; ++i) {
+    auto data = log_source.GetNextData();
+    EXPECT_EQ(data.size(), batch_size);
+  }
+
+  auto data = log_source.GetNextData();
+  EXPECT_EQ(data.size(), 0u);
+}
+
 TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRotation) {
-  auto log_source = LogSource(kTestFileName, base::Seconds(0));
+  auto log_source =
+      LogSource(kTestFileName, kDefaultPollFrequency, kDefaultBatchSize);
 
   // Initial setup. Read everything from original file
   auto data = log_source.GetNextData();

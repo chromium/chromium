@@ -22,6 +22,7 @@ static DataAggregatorService* g_data_aggregator_service = nullptr;
 constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
 constexpr base::TimeDelta kDefaultCommandPollFrequency = base::Seconds(5);
 constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
+constexpr size_t kDefaultLogBatchSize = 500;  // lines
 
 const char* kLocalCommandSources[] = {
     "ip -brief address",
@@ -188,8 +189,8 @@ void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
              const std::string& filepath) {
-            auto source =
-                std::make_unique<LogSource>(filepath, kDefaultLogPollFrequency);
+            auto source = std::make_unique<LogSource>(
+                filepath, kDefaultLogPollFrequency, kDefaultLogBatchSize);
             source->StartCollectingData();
 
             mojo::MakeSelfOwnedReceiver(std::move(source),

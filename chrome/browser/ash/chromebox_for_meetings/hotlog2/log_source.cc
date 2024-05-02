@@ -14,15 +14,14 @@
 
 namespace ash::cfm {
 
-// (Maximum) number of log lines that will be loaded into the buffer
-// every time FillLogBuffer is called.
-constexpr int kFileBatchSize = 500;
-
-LogSource::LogSource(const std::string& filepath, base::TimeDelta poll_rate)
+LogSource::LogSource(const std::string& filepath,
+                     base::TimeDelta poll_rate,
+                     size_t batch_size)
     : LocalDataSource(poll_rate,
                       /*data_needs_redacting=*/true,
                       /*is_incremental=*/true),
-      log_file_(filepath) {
+      log_file_(filepath),
+      batch_size_(batch_size) {
   // No point in proceeding here if the file can't be opened
   // TODO(b/322505142): load offset from persistent cache
   if (!log_file_.OpenAtOffset(0)) {
@@ -64,7 +63,7 @@ std::vector<std::string> LogSource::GetNextData() {
     log_file_.Refresh();
   }
 
-  return log_file_.RetrieveNextLogs(kFileBatchSize);
+  return log_file_.RetrieveNextLogs(batch_size_);
 }
 
 int LogSource::GetCurrentFileInode() {
