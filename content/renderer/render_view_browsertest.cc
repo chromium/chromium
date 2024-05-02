@@ -3200,13 +3200,13 @@ TEST_F(RenderViewImplScaleFactorTest, AutoResize) {
 TEST_F(RenderViewImplTest, ZoomLevelUpdate) {
   // 0 will use the minimum zoom level, which is the default, nothing will
   // change.
-  EXPECT_FLOAT_EQ(0u, web_view_->MainFrameWidget()->GetZoomLevel());
+  EXPECT_FLOAT_EQ(0u, web_view_->ZoomLevel());
 
   double zoom_level = blink::PageZoomFactorToZoomLevel(0.25);
   // Change the zoom level to 25% and check if the view gets the change.
   main_frame_widget()->SetZoomLevelForTesting(zoom_level);
   // Use EXPECT_FLOAT_EQ here because view()->GetZoomLevel returns a float.
-  EXPECT_FLOAT_EQ(zoom_level, web_view_->MainFrameWidget()->GetZoomLevel());
+  EXPECT_FLOAT_EQ(zoom_level, web_view_->ZoomLevel());
 }
 
 #endif

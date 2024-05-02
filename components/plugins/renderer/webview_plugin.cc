@@ -121,7 +121,7 @@ bool WebViewPlugin::Initialize(WebPluginContainer* container) {
 
   old_title_ = container_->GetElement().GetAttribute("title");
 
-  web_view()->MainFrameWidget()->SetZoomLevel(
+  web_view()->SetZoomLevel(
       blink::PageZoomFactorToZoomLevel(container_->PageZoomFactor()));
 
   return true;
@@ -410,7 +410,7 @@ void WebViewPlugin::WebViewHelper::FrameDetached() {
 
 void WebViewPlugin::OnZoomLevelChanged() {
   if (container_) {
-    web_view()->MainFrameWidget()->SetZoomLevel(
+    web_view()->SetZoomLevel(
         blink::PageZoomFactorToZoomLevel(container_->PageZoomFactor()));
   }
 }
