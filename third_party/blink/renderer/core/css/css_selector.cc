@@ -139,10 +139,6 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
       return kIdSpecificity;
     case kPseudoClass:
       switch (GetPseudoType()) {
-        case kPseudoActiveViewTransitionType:
-          CHECK(!IdentList().empty());
-          // TODO(csswg-drafts:10071): Figure out the specificity.
-          return 2 * kClassLikeSpecificity;
         case kPseudoWhere:
           return 0;
         case kPseudoHost:
