@@ -256,20 +256,20 @@ export class ComposeAppElement extends ComposeAppElementBase {
               isDefault: true,
             },
             {
-              value: StyleModifier.kFormal,
-              label: loadTimeData.getString('formalToneOption'),
-            },
-            {
-              value: StyleModifier.kCasual,
-              label: loadTimeData.getString('casualToneOption'),
-            },
-            {
               value: StyleModifier.kLonger,
               label: loadTimeData.getString('longerOption'),
             },
             {
               value: StyleModifier.kShorter,
               label: loadTimeData.getString('shorterOption'),
+            },
+            {
+              value: StyleModifier.kFormal,
+              label: loadTimeData.getString('formalToneOption'),
+            },
+            {
+              value: StyleModifier.kCasual,
+              label: loadTimeData.getString('casualToneOption'),
             },
             {
               value: StyleModifier.kRetry,

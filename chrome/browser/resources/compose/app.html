@@ -164,9 +164,12 @@
     width: var(--scrollbar-width_);
   }
 
-  #body::-webkit-scrollbar-thumb,
-      #resultTextContainer::-webkit-scrollbar-thumb {
+  #body::-webkit-scrollbar-thumb {
     background: var(--color-compose-dialog-scrollbar-thumb);
+  }
+
+  #resultTextContainer::-webkit-scrollbar-thumb {
+    background: var(--color-compose-dialog-result-container-scrollbar-thumb);
   }
 
   :host([loading-indicator-shown_]) #bodyAndFooter {
@@ -241,7 +244,7 @@
   }
 
   :host([enable-ui-refinements]) #resultOptionsContainer {
-    border-top: 1px solid #D3E3FD;
+    border-top: 1px solid var(--color-compose-dialog-divider);
   }
 
   #resultOptions {
@@ -319,7 +322,7 @@
   :host([enable-ui-refinements]) .icon-buttons-row
       .button-container:last-child {
     padding-left: 10px;
-    border-left: 1px solid #A8C7FA;
+    border-left: 1px solid var(--color-compose-dialog-result-buttons-divider);
   }
 
   .footer {
