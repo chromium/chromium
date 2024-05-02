@@ -232,7 +232,6 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
       0, "EventLatency.GestureScrollUpdate.TotalLatency2"));
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // A basic smoke test verifying that key scroll-related events are recorded
 // during scrolling. This test performs a simple scroll and expects to see three
 // EventLatency events with the correct types.
@@ -263,6 +262,5 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingEventLatencyTrace) {
                   std::vector<std::string>{"FIRST_GESTURE_SCROLL_UPDATE"},
                   std::vector<std::string>{"GESTURE_SCROLL_UPDATE"}));
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace content
