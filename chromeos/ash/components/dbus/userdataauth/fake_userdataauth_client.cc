@@ -110,6 +110,9 @@ struct FakeUserDataAuthClient::UserCryptohomeState {
   // If users are created in test constructor, UserDataDir is not available
   // yet, so actual directory creation needs to be postponed.
   bool postponed_directory_creation = false;
+
+  // Is the user ephemeral.
+  bool ephemeral = false;
 };
 
 namespace {
@@ -426,6 +429,17 @@ class ReplyOnReturn {
   chromeos::DBusMethodCallback<ReplyType> callback_;
 };
 
+user_data_auth::VaultEncryptionType HomeEncryptionMethodToVaultEncryptionType(
+    const FakeUserDataAuthClient::HomeEncryptionMethod home_encryption) {
+  switch (home_encryption) {
+    case FakeUserDataAuthClient::HomeEncryptionMethod::kDirCrypto:
+      return user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_FSCRYPT;
+    case FakeUserDataAuthClient::HomeEncryptionMethod::kEcryptfs:
+      return user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ECRYPTFS;
+    case FakeUserDataAuthClient::HomeEncryptionMethod::kDmCrypt:
+      return user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_DMCRYPT;
+  }
+}
 }  // namespace
 
 // =============== `AuthSessionData` =====================
@@ -708,6 +722,52 @@ void FakeUserDataAuthClient::IsMounted(
         mounted_user_dirs_.find(request.username()) != mounted_user_dirs_.end();
   }
   reply.set_is_mounted(result);
+}
+
+void FakeUserDataAuthClient::GetVaultProperties(
+    const ::user_data_auth::GetVaultPropertiesRequest& request,
+    GetVaultPropertiesCallback callback) {
+  ::user_data_auth::GetVaultPropertiesReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  if (request.username().empty()) {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+    return;
+  }
+  cryptohome::AccountIdentifier account;
+  account.set_account_id(request.username());
+  const auto user_it = users_.find(account);
+
+  // User does not exist, return an error.
+  if (user_it != std::end(users_)) {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+    return;
+  }
+
+  // User is not mounted, return an error.
+  if (mounted_user_dirs_.find(request.username()) == mounted_user_dirs_.end()) {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+    return;
+  }
+
+  const auto user_state = user_it->second;
+
+  // If ephemeral, then return error.
+  if (user_state.ephemeral) {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+    return;
+  }
+
+  reply.set_encryption_type(HomeEncryptionMethodToVaultEncryptionType(
+      user_state.home_encryption_method));
 }
 
 void FakeUserDataAuthClient::Unmount(
@@ -1023,8 +1083,10 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
   auth_session.lifetime =
       base::Time::Now() + cryptohome::kAuthsessionInitialLifetime;
 
+  auto user_state = UserCryptohomeState();
+  user_state.ephemeral = true;
   const auto [_, was_inserted] =
-      users_.insert({auth_session.account, UserCryptohomeState()});
+      users_.insert({auth_session.account, user_state});
 
   if (!was_inserted) {
     LOG(ERROR) << "User already exists: " << auth_session.account.account_id();

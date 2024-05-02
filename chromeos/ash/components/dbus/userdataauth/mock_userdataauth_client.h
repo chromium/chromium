@@ -36,6 +36,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                IsMountedCallback callback),
               (override));
   MOCK_METHOD(void,
+              GetVaultProperties,
+              (const ::user_data_auth::GetVaultPropertiesRequest& request,
+               GetVaultPropertiesCallback callback),
+              (override));
+  MOCK_METHOD(void,
               Unmount,
               (const ::user_data_auth::UnmountRequest& request,
                UnmountCallback callback),

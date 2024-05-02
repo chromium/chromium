@@ -53,6 +53,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   enum class HomeEncryptionMethod {
     kDirCrypto,
     kEcryptfs,
+    kDmCrypt,
   };
 
   // The TestAPI of FakeUserDataAuth. Prefer to use `ash::CryptohomeMixin`,
@@ -221,6 +222,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void IsMounted(const ::user_data_auth::IsMountedRequest& request,
                  IsMountedCallback callback) override;
+  void GetVaultProperties(
+      const ::user_data_auth::GetVaultPropertiesRequest& request,
+      GetVaultPropertiesCallback callback) override;
   void Unmount(const ::user_data_auth::UnmountRequest& request,
                UnmountCallback callback) override;
   void Remove(const ::user_data_auth::RemoveRequest& request,

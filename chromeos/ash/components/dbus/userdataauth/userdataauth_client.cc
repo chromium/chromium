@@ -121,6 +121,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void GetVaultProperties(
+      const ::user_data_auth::GetVaultPropertiesRequest& request,
+      GetVaultPropertiesCallback callback) override {
+    CallProtoMethod(::user_data_auth::kGetVaultProperties,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
   void Unmount(const ::user_data_auth::UnmountRequest& request,
                UnmountCallback callback) override {
     CallProtoMethod(::user_data_auth::kUnmount,
