@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
@@ -32,11 +33,12 @@ std::optional<LayoutUnit> ApplyJustification(LayoutUnit space,
 std::optional<LayoutUnit> ComputeRubyBaseInset(LayoutUnit space,
                                                const LineInfo& line_info);
 
-// Add spaces to the line. This works only for ruby-base and ruby-text for now.
-// Returns false if we couldn't expand the line.
-bool ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
-                                      LayoutUnit trailing_expansion,
-                                      LineInfo& line_info);
+// Add spaces to a part of a line. This works only for ruby-base and ruby-text
+// for now. Returns false if we couldn't expand the line.
+bool ApplyLeftAndRightExpansion(LayoutUnit leading_expansion,
+                                LayoutUnit trailing_expansion,
+                                LogicalLineItems::iterator begin,
+                                LogicalLineItems::iterator end);
 
 }  // namespace blink
 

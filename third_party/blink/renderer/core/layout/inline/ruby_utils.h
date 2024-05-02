@@ -77,7 +77,12 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
 LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
                                     LineInfo* line_info);
 
-void ApplyRubyAlign(LayoutUnit available_line_size, LineInfo& line_info);
+// Justify InlineItemResutls of the specified `line_info`.
+// Returns a pair of the left and the right insets.  They should be applied
+// to LogicalLineItems generated from `line_info` after bidi reorder.
+[[nodiscard]] std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(
+    LayoutUnit available_line_size,
+    LineInfo& line_info);
 
 // Stores ComputeAnnotationOverflow() results.
 //

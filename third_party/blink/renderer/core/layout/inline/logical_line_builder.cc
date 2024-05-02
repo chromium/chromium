@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
+#include "third_party/blink/renderer/core/layout/inline/justification_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/inline/ruby_utils.h"
@@ -77,6 +78,14 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
     box_states_->UpdateAfterReorder(line_box);
   } else {
     DCHECK(IsLtr(line_info->BaseDirection()));
+  }
+
+  for (auto& logical_column : box_states_->RubyColumnList()) {
+    std::pair<LayoutUnit, LayoutUnit>& insets = logical_column->base_insets;
+    LogicalLineItems::iterator start =
+        line_box->begin() + logical_column->start_index;
+    ApplyLeftAndRightExpansion(insets.first, insets.second, start,
+                               start + logical_column->size);
   }
 }
 
@@ -415,7 +424,8 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
     LogicalLineItems& line_box,
     InlineBoxState* box) {
   InlineItemResultRubyColumn& ruby_column = *item_result.ruby_column;
-  ApplyRubyAlign(item_result.inline_size, ruby_column.base_line);
+  std::pair<LayoutUnit, LayoutUnit> base_insets =
+      ApplyRubyAlign(item_result.inline_size, ruby_column.base_line);
 
   // Set up LogicalRubyColumns. This should be done before consuming the base
   // InlineItemResults because it might contain ruby columns, and annotation
@@ -450,6 +460,9 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
         }
       }
     }
+    if (i == 0) {
+      logical_column.base_insets = base_insets;
+    }
     logical_column.size = column_base_size;
     PlaceRubyAnnotation(item_result, i, ruby_column.annotation_line_list[i],
                         logical_column);
@@ -463,13 +476,16 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
     wtf_size_t index,
     LineInfo& annotation_line,
     LogicalRubyColumn& logical_column) {
-  ApplyRubyAlign(item_result.inline_size, annotation_line);
+  std::pair<LayoutUnit, LayoutUnit> insets =
+      ApplyRubyAlign(item_result.inline_size, annotation_line);
 
   auto* line_items = MakeGarbageCollected<LogicalLineItems>();
   LogicalLineBuilder annotation_builder(node_, constraint_space_,
                                         &logical_column.state_stack, context_);
   annotation_builder.CreateLine(&annotation_line, line_items,
                                 /* main_line_helper */ nullptr);
+  ApplyLeftAndRightExpansion(insets.first, insets.second, line_items->begin(),
+                             line_items->end());
 
   logical_column.state_stack.ComputeInlinePositions(
       line_items, LayoutUnit(), /* ignore_box_margin_border_padding */ false);

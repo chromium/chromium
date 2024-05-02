@@ -361,6 +361,8 @@ struct CORE_EXPORT LogicalRubyColumn
   unsigned start_index;
   // The number of ruby-base items in the corresponding LogicalLineItems.
   unsigned size;
+  // Inset values applied after bidi reorder.
+  std::pair<LayoutUnit, LayoutUnit> base_insets;
 
   Member<LogicalLineItems> annotation_items;
 

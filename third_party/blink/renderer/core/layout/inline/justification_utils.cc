@@ -185,66 +185,56 @@ class ExpandableItemsFinder {
   STACK_ALLOCATED();
 
  public:
-  void Find(InlineItemResults& results) {
-    for (auto& item_result : results) {
-      if (item_result.shape_result ||
-          item_result.item->Type() == InlineItem::kAtomicInline) {
-        last_item_ = &item_result;
+  void Find(LogicalLineItems::iterator begin, LogicalLineItems::iterator end) {
+    for (auto iter = begin; iter != end; ++iter) {
+      LogicalLineItem& item = *iter;
+      if (item.shape_result || item.layout_result) {
+        last_item_ = &item;
         if (!first_item_) {
-          first_item_ = &item_result;
+          first_item_ = &item;
         }
-      } else if (item_result.item->Type() == InlineItem::kRubyLinePlaceholder) {
-        last_placeholder_item_ = &item_result;
+      } else if (item.IsRubyLinePlaceholder()) {
+        last_placeholder_item_ = &item;
         if (!first_placeholder_item_) {
-          first_placeholder_item_ = &item_result;
-        }
-      }
-      if (item_result.item->Type() == InlineItem::kOpenRubyColumn &&
-          item_result.ruby_column) {
-        LineInfo& base_line = item_result.ruby_column->base_line;
-        if (item_result.inline_size == base_line.Width()) {
-          Find(*base_line.MutableResults());
+          first_placeholder_item_ = &item;
         }
       }
     }
   }
 
-  InlineItemResult* FirstExpandable() const {
+  LogicalLineItem* FirstExpandable() const {
     return first_item_ ? first_item_ : first_placeholder_item_;
   }
-  InlineItemResult* LastExpandable() const {
+  LogicalLineItem* LastExpandable() const {
     return last_item_ ? last_item_ : last_placeholder_item_;
   }
 
  private:
-  // The first or the last InlineItemResult which has a ShapeResult or is an
+  // The first or the last LogicalLineItem which has a ShapeResult or is an
   // atomic-inline.
-  InlineItemResult* first_item_ = nullptr;
-  InlineItemResult* last_item_ = nullptr;
+  LogicalLineItem* first_item_ = nullptr;
+  LogicalLineItem* last_item_ = nullptr;
   // The first or the last kRubyLinePlaceholder.
-  InlineItemResult* first_placeholder_item_ = nullptr;
-  InlineItemResult* last_placeholder_item_ = nullptr;
+  LogicalLineItem* first_placeholder_item_ = nullptr;
+  LogicalLineItem* last_placeholder_item_ = nullptr;
 };
 
-void ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
-                                      LayoutUnit trailing_expansion,
-                                      InlineItemResult& item_result) {
-  if (item_result.shape_result) {
-    ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
-    shape_result->ApplyLeadingExpansion(leading_expansion);
-    shape_result->ApplyTrailingExpansion(trailing_expansion);
-    item_result.inline_size = shape_result->SnappedWidth();
-    if (UNLIKELY(item_result.is_hyphenated)) {
-      item_result.inline_size += item_result.hyphen.InlineSize();
-    }
-    item_result.shape_result = ShapeResultView::Create(shape_result);
-  } else if (item_result.item->Type() == InlineItem::kAtomicInline) {
-    item_result.inline_size += leading_expansion + trailing_expansion;
-    item_result.spacing_before += leading_expansion;
+void ApplyLeftAndRightExpansion(LayoutUnit left_expansion,
+                                LayoutUnit right_expansion,
+                                LogicalLineItem& item) {
+  if (item.shape_result) {
+    ShapeResult* shape_result = item.shape_result->CreateShapeResult();
+    shape_result->ApplyLeadingExpansion(left_expansion);
+    shape_result->ApplyTrailingExpansion(right_expansion);
+    item.inline_size += left_expansion + right_expansion;
+    item.shape_result = ShapeResultView::Create(shape_result);
+  } else if (item.layout_result) {
+    item.inline_size += left_expansion + right_expansion;
+    item.rect.offset.inline_offset += left_expansion;
   } else {
-    DCHECK_EQ(item_result.item->Type(), InlineItem::kRubyLinePlaceholder);
-    item_result.inline_size += leading_expansion + trailing_expansion;
-    item_result.spacing_before += leading_expansion;
+    DCHECK(item.IsRubyLinePlaceholder());
+    item.inline_size += left_expansion + right_expansion;
+    item.margin_line_left += left_expansion;
   }
 }
 
@@ -337,18 +327,20 @@ std::optional<LayoutUnit> ComputeRubyBaseInset(LayoutUnit space,
                                     line_info, nullptr);
 }
 
-bool ApplyLeadingAndTrailingExpansion(LayoutUnit leading_expansion,
-                                      LayoutUnit trailing_expansion,
-                                      LineInfo& line_info) {
+bool ApplyLeftAndRightExpansion(LayoutUnit left_expansion,
+                                LayoutUnit right_expansion,
+                                LogicalLineItems::iterator begin,
+                                LogicalLineItems::iterator end) {
+  if (!left_expansion && !right_expansion) {
+    return true;
+  }
   ExpandableItemsFinder finder;
-  finder.Find(*line_info.MutableResults());
-  InlineItemResult* first_expandable = finder.FirstExpandable();
-  InlineItemResult* last_expandable = finder.LastExpandable();
+  finder.Find(begin, end);
+  LogicalLineItem* first_expandable = finder.FirstExpandable();
+  LogicalLineItem* last_expandable = finder.LastExpandable();
   if (first_expandable && last_expandable) {
-    ApplyLeadingAndTrailingExpansion(leading_expansion, LayoutUnit(),
-                                     *first_expandable);
-    ApplyLeadingAndTrailingExpansion(LayoutUnit(), trailing_expansion,
-                                     *last_expandable);
+    ApplyLeftAndRightExpansion(left_expansion, LayoutUnit(), *first_expandable);
+    ApplyLeftAndRightExpansion(LayoutUnit(), right_expansion, *last_expandable);
     return true;
   }
   return false;

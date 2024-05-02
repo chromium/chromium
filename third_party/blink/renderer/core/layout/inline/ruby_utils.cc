@@ -382,11 +382,12 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
   return end_overhang;
 }
 
-void ApplyRubyAlign(LayoutUnit available_line_size, LineInfo& line_info) {
+std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(LayoutUnit available_line_size,
+                                                 LineInfo& line_info) {
   DCHECK(line_info.IsRubyBase() || line_info.IsRubyText());
   LayoutUnit space = available_line_size - line_info.WidthForAlignment();
   if (space <= LayoutUnit()) {
-    return;
+    return {LayoutUnit(), LayoutUnit()};
   }
   ETextAlign text_align = line_info.TextAlign();
   // Handle `space-around`.
@@ -401,43 +402,37 @@ void ApplyRubyAlign(LayoutUnit available_line_size, LineInfo& line_info) {
     std::optional<LayoutUnit> inset =
         ApplyJustification(space, target, &line_info);
     if (inset) {
-      ApplyLeadingAndTrailingExpansion(*inset, *inset, line_info);
-    } else {
-      ApplyLeadingAndTrailingExpansion(space / 2, space / 2, line_info);
+      return {*inset, *inset};
     }
-    return;
+    return {space / 2, space / 2};
   }
 
   bool is_ltr = IsLtr(line_info.BaseDirection());
-  if (text_align == ETextAlign::kLeft ||
-      text_align == ETextAlign::kWebkitLeft) {
-    text_align = is_ltr ? ETextAlign::kStart : ETextAlign::kEnd;
-  } else if (text_align == ETextAlign::kRight ||
-             text_align == ETextAlign::kWebkitRight) {
-    text_align = is_ltr ? ETextAlign::kEnd : ETextAlign::kStart;
+  if (text_align == ETextAlign::kStart) {
+    text_align = is_ltr ? ETextAlign::kLeft : ETextAlign::kRight;
+  } else if (text_align == ETextAlign::kEnd) {
+    text_align = is_ltr ? ETextAlign::kRight : ETextAlign::kLeft;
   }
   switch (text_align) {
-    case ETextAlign::kStart:
-      ApplyLeadingAndTrailingExpansion(LayoutUnit(), space, line_info);
-      return;
+    case ETextAlign::kLeft:
+    case ETextAlign::kWebkitLeft:
+      return {LayoutUnit(), space};
 
-    case ETextAlign::kEnd:
-      ApplyLeadingAndTrailingExpansion(space, LayoutUnit(), line_info);
-      return;
+    case ETextAlign::kRight:
+    case ETextAlign::kWebkitRight:
+      return {space, LayoutUnit()};
 
     case ETextAlign::kCenter:
     case ETextAlign::kWebkitCenter:
-      ApplyLeadingAndTrailingExpansion(space / 2, space / 2, line_info);
-      return;
+      return {space / 2, space / 2};
 
-    case ETextAlign::kLeft:
-    case ETextAlign::kWebkitLeft:
-    case ETextAlign::kRight:
-    case ETextAlign::kWebkitRight:
+    case ETextAlign::kStart:
+    case ETextAlign::kEnd:
     case ETextAlign::kJustify:
       NOTREACHED();
       break;
   }
+  return {LayoutUnit(), LayoutUnit()};
 }
 
 AnnotationMetrics ComputeAnnotationOverflow(
