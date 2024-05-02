@@ -62,30 +62,23 @@ class SignedWebBundleSignatureVerifier {
                                 SignatureVerificationCallback callback);
 
  private:
-  // We don't use `SHA512_DIGEST_LENGTH` or `SHA256_DIGEST_LENGTH` here, because
-  // we don't want to include large BoringSSL headers in a header file.
-  static constexpr size_t kSHA256DigestLength = 32;
+  // We don't use `SHA512_DIGEST_LENGTH` here, because we don't want to include
+  // large BoringSSL headers in a header file.
   static constexpr size_t kSHA512DigestLength = 64;
 
-  using SHA256Digest = std::array<uint8_t, kSHA256DigestLength>;
   using SHA512Digest = std::array<uint8_t, kSHA512DigestLength>;
 
-  using SHA256Or512Digest = absl::variant<SHA256Digest, SHA512Digest>;
-
-  enum class HashingAlgorithm { SHA256, SHA512 };
-
-  // Calculate the SHA hash of the Signed Web Bundle excluding the integrity
-  // block, i.e., the unsigned Web Bundle, according to the given `algorithm`.
-  static base::expected<SHA256Or512Digest, std::string>
-  CalculateHashOfUnsignedWebBundle(HashingAlgorithm algorithm,
-                                   base::File file,
+  // Calculate the SHA-512 hash of the Signed Web Bundle excluding the integrity
+  // block, i.e., the unsigned Web Bundle.
+  static base::expected<SHA512Digest, std::string>
+  CalculateHashOfUnsignedWebBundle(base::File file,
                                    int64_t web_bundle_chunk_size,
                                    int64_t integrity_block_size);
 
   void OnHashOfUnsignedWebBundleCalculated(
       SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback,
-      base::expected<SHA256Or512Digest, std::string> unsigned_web_bundle_hash);
+      base::expected<SHA512Digest, std::string> unsigned_web_bundle_hash);
 
   const uint64_t web_bundle_chunk_size_;
 

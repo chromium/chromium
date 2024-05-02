@@ -48,7 +48,6 @@ std::vector<uint8_t> CreateIntegrityBlockCBOR() {
 SignedWebBundleSignatureVerifier::SignedWebBundleSignatureVerifier(
     uint64_t web_bundle_chunk_size)
     : web_bundle_chunk_size_(web_bundle_chunk_size) {
-  static_assert(kSHA256DigestLength == SHA256_DIGEST_LENGTH);
   static_assert(kSHA512DigestLength == SHA512_DIGEST_LENGTH);
 }
 
@@ -65,14 +64,11 @@ void SignedWebBundleSignatureVerifier::VerifySignatures(
   int64_t integrity_block_size =
       base::checked_cast<int64_t>(integrity_block.size_in_bytes());
 
-  // TODO: crbug.com/330378455 - Select hashing algorithm based on the current
-  // signature.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           &SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle,
-          /*algorithm=*/HashingAlgorithm::SHA512, std::move(file),
-          base::checked_cast<int64_t>(web_bundle_chunk_size_),
+          std::move(file), base::checked_cast<int64_t>(web_bundle_chunk_size_),
           integrity_block_size),
       base::BindOnce(&SignedWebBundleSignatureVerifier::
                          OnHashOfUnsignedWebBundleCalculated,
@@ -81,9 +77,8 @@ void SignedWebBundleSignatureVerifier::VerifySignatures(
 }
 
 // static
-base::expected<SignedWebBundleSignatureVerifier::SHA256Or512Digest, std::string>
+base::expected<SignedWebBundleSignatureVerifier::SHA512Digest, std::string>
 SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
-    HashingAlgorithm algorithm,
     base::File file,
     int64_t web_bundle_chunk_size,
     int64_t integrity_block_size) {
@@ -95,14 +90,8 @@ SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
     return base::unexpected(base::File::ErrorToString(file.GetLastFileError()));
   }
 
-  auto secure_hash = crypto::SecureHash::Create([&]() {
-    switch (algorithm) {
-      case HashingAlgorithm::SHA256:
-        return crypto::SecureHash::Algorithm::SHA256;
-      case HashingAlgorithm::SHA512:
-        return crypto::SecureHash::Algorithm::SHA512;
-    }
-  }());
+  auto secure_hash =
+      crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA512);
 
   // Calculate the hash of the Signed Web Bundle excluding its integrity block.
   // The file might be too big to read it into memory all at once, which is why
@@ -126,26 +115,16 @@ SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
     }
   }
 
-  switch (algorithm) {
-    case HashingAlgorithm::SHA256: {
-      CHECK_EQ(kSHA256DigestLength, secure_hash->GetHashLength());
-      SHA256Digest digest;
-      secure_hash->Finish(digest.data(), digest.size());
-      return digest;
-    }
-    case HashingAlgorithm::SHA512: {
-      CHECK_EQ(kSHA512DigestLength, secure_hash->GetHashLength());
-      SHA512Digest digest;
-      secure_hash->Finish(digest.data(), digest.size());
-      return digest;
-    }
-  }
+  CHECK_EQ(kSHA512DigestLength, secure_hash->GetHashLength());
+  SHA512Digest digest;
+  secure_hash->Finish(digest.data(), digest.size());
+  return digest;
 }
 
 void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
     SignedWebBundleIntegrityBlock integrity_block,
     SignatureVerificationCallback callback,
-    base::expected<SHA256Or512Digest, std::string> unsigned_web_bundle_hash) {
+    base::expected<SHA512Digest, std::string> unsigned_web_bundle_hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RETURN_IF_ERROR(unsigned_web_bundle_hash, [&](std::string error) {
@@ -174,18 +153,12 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   // "Rule Of 2". Any CBOR parsing must occur in `WebBundleParser`.
   //
   // Similarly, magic bytes and version of the integrity block are read deep
-  // within the low-level `IntegrityBlockParser`. The code that
-  // checks that the signature stack entry attributes only contain the
-  // `ed25519PublicKey` attribute also lives in that class.
+  // within the low-level `IntegrityBlockParser`.
   //
   // [1]
-  // https://github.com/WICG/webpackage/blob/3f95ec365b87ed19d2cb5186e473ccc4d011e2af/explainers/integrity-signature.md
+  // https://github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md
   std::vector<uint8_t> payload_to_verify = CreateSignaturePayload({
-      .unsigned_web_bundle_hash = absl::visit(
-          base::Overloaded([](const auto& digest) -> base::span<const uint8_t> {
-            return digest;
-          }),
-          *unsigned_web_bundle_hash),
+      .unsigned_web_bundle_hash = *unsigned_web_bundle_hash,
       .integrity_block_cbor = CreateIntegrityBlockCBOR(),
       .attributes_cbor = signature_stack_entry.attributes_cbor(),
   });
