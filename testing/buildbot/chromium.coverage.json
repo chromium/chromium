@@ -18787,8 +18787,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18820,8 +18820,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18853,8 +18853,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -18885,8 +18885,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -23244,8 +23244,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -23277,8 +23277,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -23310,8 +23310,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -23342,8 +23342,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "isolate_profile_data": true,
         "merge": {

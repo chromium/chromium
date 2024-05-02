@@ -2418,6 +2418,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2433,6 +2434,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2499,6 +2501,7 @@
         'telemetry_test_name': 'webgpu_compat_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
         ],
         'args': [
@@ -2518,6 +2521,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2535,6 +2539,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2552,6 +2557,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2569,6 +2575,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2583,6 +2590,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2603,6 +2611,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2617,6 +2626,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2631,6 +2641,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2645,6 +2656,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2659,6 +2671,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2673,6 +2686,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],
@@ -2688,6 +2702,7 @@
         'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
           'webgpu_telemetry_cts',
           'linux_vulkan',
         ],

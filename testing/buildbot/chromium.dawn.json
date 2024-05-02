@@ -137,8 +137,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -176,8 +177,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -214,8 +216,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -254,8 +257,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -421,8 +425,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -460,8 +465,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -498,8 +504,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -538,8 +545,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -664,8 +672,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -703,8 +712,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -741,8 +751,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -780,8 +791,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -907,8 +919,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -947,8 +960,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -986,8 +1000,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1026,8 +1041,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1152,8 +1168,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1191,8 +1208,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1229,8 +1247,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1268,8 +1287,9 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1756,8 +1776,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "experiment_percentage": 100,
@@ -1794,8 +1814,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1831,8 +1851,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -1931,8 +1951,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1970,8 +1990,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -2305,8 +2325,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2342,8 +2362,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2378,8 +2398,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2414,8 +2434,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2449,8 +2469,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2486,8 +2506,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2585,8 +2605,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2624,8 +2644,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2981,8 +3001,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "experiment_percentage": 100,
@@ -3021,8 +3041,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3060,8 +3080,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -3166,8 +3186,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3207,8 +3227,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -3544,8 +3564,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "experiment_percentage": 100,
@@ -3582,8 +3602,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3619,8 +3639,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -3719,8 +3739,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3758,8 +3778,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -4093,8 +4113,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4130,8 +4150,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4166,8 +4186,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4202,8 +4222,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4237,8 +4257,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4274,8 +4294,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4373,8 +4393,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4412,8 +4432,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4782,8 +4802,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4822,8 +4842,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4862,8 +4882,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4901,8 +4921,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -4942,8 +4962,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5051,8 +5071,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5094,8 +5114,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5468,8 +5488,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5508,8 +5528,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5548,8 +5568,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5587,8 +5607,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5628,8 +5648,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5737,8 +5757,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5780,8 +5800,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6154,8 +6174,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6194,8 +6214,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6234,8 +6254,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6273,8 +6293,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6314,8 +6334,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6423,8 +6443,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6466,8 +6486,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6830,8 +6850,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6870,8 +6890,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -6976,8 +6996,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7018,8 +7038,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7357,8 +7377,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7395,8 +7415,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7495,8 +7515,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7535,8 +7555,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7905,8 +7925,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7946,8 +7966,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8055,8 +8075,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8098,8 +8118,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8449,8 +8469,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8488,8 +8508,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8591,8 +8611,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8632,8 +8652,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -8992,8 +9012,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9032,8 +9052,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9138,8 +9158,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9180,8 +9200,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9519,8 +9539,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9557,8 +9577,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9657,8 +9677,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -9697,8 +9717,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10041,8 +10061,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10078,8 +10098,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10482,8 +10502,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10519,8 +10539,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10557,8 +10577,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10594,8 +10614,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10630,8 +10650,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11053,8 +11073,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -11093,8 +11113,8 @@
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -11131,8 +11151,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11231,8 +11251,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11622,8 +11642,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11659,8 +11679,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -11699,8 +11719,8 @@
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -11738,8 +11758,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11775,8 +11795,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11811,8 +11831,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11849,8 +11869,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11949,8 +11969,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -11989,8 +12009,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12429,8 +12449,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12467,8 +12487,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -12508,8 +12528,8 @@
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -12548,8 +12568,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12586,8 +12606,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12623,8 +12643,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12662,8 +12682,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12765,8 +12785,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -12806,8 +12826,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13167,8 +13187,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -13207,8 +13227,8 @@
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -13245,8 +13265,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13345,8 +13365,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13736,8 +13756,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=dedicated",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13773,8 +13793,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -13813,8 +13833,8 @@
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -13852,8 +13872,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=service",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13889,8 +13909,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-worker=shared",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13925,8 +13945,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13963,8 +13983,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14063,8 +14083,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14103,8 +14123,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14441,8 +14461,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -14540,8 +14560,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -14876,8 +14896,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -14975,8 +14995,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15015,8 +15035,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15398,8 +15418,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -15439,8 +15459,8 @@
           "--enforce-browser-version",
           "--enable-dawn-backend-validation",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -15541,8 +15561,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15582,8 +15602,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -15919,8 +15939,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -16018,8 +16038,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=1"
+          "--jobs=1",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16354,8 +16374,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--enforce-browser-version",
           "--use-fxc",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
         "merge": {
@@ -16453,8 +16473,8 @@
           "--enforce-browser-version",
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -16493,8 +16513,8 @@
           "--use-webgpu-adapter=swiftshader",
           "--test-filter=*web_platform*",
           "--enable-dawn-backend-validation",
-          "--use-webgpu-power-preference=default-high-performance",
-          "--jobs=4"
+          "--jobs=4",
+          "--use-webgpu-power-preference=default-high-performance"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

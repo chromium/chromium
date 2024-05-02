@@ -2287,6 +2287,7 @@ targets.legacy_basic_suite(
         # non-SwiftShader coverage should be sufficient.
         "webgpu_swiftshader_web_platform_cts_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2300,6 +2301,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_swiftshader_web_platform_cts_with_validation_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2370,6 +2372,7 @@ targets.legacy_basic_suite(
         # unlikely that the compat path will interact with workers.
         "webgpu_cts_compat_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
             ],
             args = [
@@ -2390,6 +2393,7 @@ targets.legacy_basic_suite(
     tests = {
         "webgpu_cts_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2402,6 +2406,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_service_worker_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2414,6 +2419,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_dedicated_worker_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2426,6 +2432,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_shared_worker_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2438,6 +2445,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_with_validation_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2461,6 +2469,7 @@ targets.legacy_basic_suite(
     tests = {
         "webgpu_cts_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2470,6 +2479,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_service_worker_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2479,6 +2489,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_dedicated_worker_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2488,6 +2499,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_shared_worker_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2497,6 +2509,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_fxc_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2519,6 +2532,7 @@ targets.legacy_basic_suite(
         # non-fxc + worker should provide sufficient coverage.
         "webgpu_cts_fxc_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],
@@ -2532,6 +2546,7 @@ targets.legacy_basic_suite(
         ),
         "webgpu_cts_fxc_with_validation_tests": targets.legacy_test_config(
             mixins = [
+                "gpu_integration_test_common_args",
                 "webgpu_telemetry_cts",
                 "linux_vulkan",
             ],

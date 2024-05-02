@@ -1701,7 +1701,6 @@ targets.mixin(
     args = [
         "--extra-browser-args=--force_high_performance_gpu",
         "--use-webgpu-power-preference=default-high-performance",
-        "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
     ],
 )
 
