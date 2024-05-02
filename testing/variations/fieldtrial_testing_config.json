@@ -14301,9 +14301,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240502",
                     "enable_features": [
-                        "OnPreFreezeTrimMemory"
+                        "OnPreFreezeMemoryTrim"
                     ]
                 }
             ]
