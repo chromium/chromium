@@ -284,7 +284,7 @@ class GenerateSymKeyState : public NSSOperationState {
   ~GenerateSymKeyState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, key_id_, status);
+    CallBack(from, /*key_id=*/std::vector<uint8_t>(), status);
   }
 
   void OnSuccess(const base::Location& from) {
@@ -948,6 +948,15 @@ void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
   if (state->key_size_ != 32) {
     LOG(ERROR) << "Only 32-byte keys are supported.";
     state->OnError(FROM_HERE, Status::kErrorAlgorithmNotSupported);
+    return;
+  }
+
+  crypto::ScopedPK11SymKey key =
+      GetSymKey(state->key_id_, state->slot_.get(), std::nullopt);
+  if (key) {
+    LOG(ERROR)
+        << "Cannot generate key because a key with given id already exists";
+    state->OnError(FROM_HERE, Status::kErrorInternal);
     return;
   }
 

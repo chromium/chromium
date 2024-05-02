@@ -71,6 +71,10 @@ using ::chromeos::platform_keys::TokenId;
 
 constexpr char kTestUserEmail[] = "test@example.com";
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
+const std::vector<uint8_t> kTestingData = {9, 8, 7, 6, 5, 0, 1, 2, 3};
+const std::vector<uint8_t> kSymId = {1, 2, 3, 0, 1, 2, 3};
+const int kDefaultSymKeySize = 32;
+const unsigned long kDefaultSymSignatureSize = 32;
 
 enum class ProfileToUse {
   // A Profile that belongs to a user that is not affiliated with the device (no
@@ -828,6 +832,185 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_EQ(get_key_locations_waiter.status(), Status::kSuccess);
   ASSERT_EQ(get_key_locations_waiter.key_locations().size(), 1U);
   EXPECT_EQ(get_key_locations_waiter.key_locations()[0], token_id);
+}
+
+// Generates symmetric key and uses it to sign with HMAC.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, SymKeySign) {
+  const TokenId token_id = GetParam().token_id;
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kHmac,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
+  platform_keys_service()->SignWithSymKey(token_id, kTestingData, kSymId,
+                                          sign_waiter.GetCallback());
+  EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(sign_waiter.Get<std::vector<uint8_t>>().size(),
+            kDefaultSymSignatureSize);
+}
+
+// Cannot sign with invalid/abscent key.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SymKeySignInvalidKey) {
+  const TokenId token_id = GetParam().token_id;
+
+  // Should fail because the key doesn't exist.
+  base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
+  platform_keys_service()->SignWithSymKey(token_id, kTestingData, kSymId,
+                                          sign_waiter.GetCallback());
+  EXPECT_EQ(sign_waiter.Get<Status>(), Status::kErrorKeyNotFound);
+  EXPECT_TRUE(sign_waiter.Get<std::vector<uint8_t>>().empty());
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kAesCbc,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  // Should fail because the key is generated for purposes other than signing.
+  base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter2;
+  platform_keys_service()->SignWithSymKey(token_id, kTestingData, kSymId,
+                                          sign_waiter2.GetCallback());
+  EXPECT_EQ(sign_waiter2.Get<Status>(), Status::kErrorInternal);
+  EXPECT_TRUE(sign_waiter2.Get<std::vector<uint8_t>>().empty());
+}
+
+// Generates symmetric key and uses it to encrypt/decrypt with AES-CBC.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SymKeyEncryptDecrypt) {
+  const TokenId token_id = GetParam().token_id;
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kAesCbc,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  // Initialization vector must have a length of 16.
+  const std::vector<uint8_t> kInitVecIncorrect(/*count=*/7, /*value=*/0);
+  base::test::TestFuture<std::vector<uint8_t>, Status> encrypt_waiter;
+  platform_keys_service()->EncryptAES(token_id, kTestingData, kSymId, "AES-CBC",
+                                      kInitVecIncorrect,
+                                      encrypt_waiter.GetCallback());
+  EXPECT_EQ(encrypt_waiter.Get<Status>(), Status::kErrorAlgorithmNotSupported);
+
+  const std::vector<uint8_t> kInitVec(/*count=*/16, /*value=*/0);
+  base::test::TestFuture<std::vector<uint8_t>, Status> encrypt_waiter2;
+  platform_keys_service()->EncryptAES(token_id, kTestingData, kSymId, "AES-CBC",
+                                      kInitVec, encrypt_waiter2.GetCallback());
+  EXPECT_EQ(encrypt_waiter2.Get<Status>(), Status::kSuccess);
+
+  std::vector<uint8_t> encrypted_data =
+      encrypt_waiter2.Get<std::vector<uint8_t>>();
+  // Encrypted data's length should be divisible by 16.
+  EXPECT_TRUE(encrypted_data.size() % 16 == 0);
+
+  // Decrypting the resulting encrypted data to see if it matches the original
+  // data.
+  base::test::TestFuture<std::vector<uint8_t>, Status> decrypt_waiter;
+  platform_keys_service()->DecryptAES(token_id, encrypted_data, kSymId,
+                                      "AES-CBC", kInitVec,
+                                      decrypt_waiter.GetCallback());
+  EXPECT_EQ(decrypt_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kTestingData, decrypt_waiter.Get<std::vector<uint8_t>>());
+}
+
+// Cannot encrypt with invalid/abscent key.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SymKeyEncryptInvalidKey) {
+  const TokenId token_id = GetParam().token_id;
+  // Initialization vector must have a length of 16.
+  const std::vector<uint8_t> kInitVec(/*count=*/16, /*value=*/0);
+
+  // Should fail because the key doesn't exist.
+  base::test::TestFuture<std::vector<uint8_t>, Status> encrypt_waiter;
+  platform_keys_service()->EncryptAES(token_id, kTestingData, kSymId, "AES-CBC",
+                                      kInitVec, encrypt_waiter.GetCallback());
+  EXPECT_EQ(encrypt_waiter.Get<Status>(), Status::kErrorKeyNotFound);
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kHmac,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  // Should fail because the key is generated for purposes other than
+  // encrypting/decrypting.
+  base::test::TestFuture<std::vector<uint8_t>, Status> encrypt_waiter2;
+  platform_keys_service()->EncryptAES(token_id, kTestingData, kSymId, "AES-CBC",
+                                      kInitVec, encrypt_waiter2.GetCallback());
+  EXPECT_EQ(encrypt_waiter2.Get<Status>(), Status::kErrorInternal);
+}
+
+// Cannot decrypt with invalid/abscent key.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
+                       SymKeyDecryptInvalidKey) {
+  const TokenId token_id = GetParam().token_id;
+  // Initialization vector must have a length of 16.
+  const std::vector<uint8_t> kInitVec(/*count=*/16, /*value=*/0);
+
+  // Should fail because the key doesn't exist.
+  base::test::TestFuture<std::vector<uint8_t>, Status> decrypt_waiter;
+  platform_keys_service()->DecryptAES(token_id, kTestingData, kSymId, "AES-CBC",
+                                      kInitVec, decrypt_waiter.GetCallback());
+  EXPECT_EQ(decrypt_waiter.Get<Status>(), Status::kErrorKeyNotFound);
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kHmac,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  // Should fail because the key is generated for purposes other than
+  // encrypting/decrypting.
+  base::test::TestFuture<std::vector<uint8_t>, Status> decrypt_waiter2;
+  platform_keys_service()->DecryptAES(token_id, kTestingData, kSymId, "AES-CBC",
+                                      kInitVec, decrypt_waiter2.GetCallback());
+  EXPECT_EQ(decrypt_waiter2.Get<Status>(), Status::kErrorInternal);
+}
+
+// Generates symmetric key and then removes it.
+IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, SymRemoveKey) {
+  const TokenId token_id = GetParam().token_id;
+
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kAesCbc,
+      generate_key_waiter.GetCallback());
+  EXPECT_EQ(generate_key_waiter.Get<Status>(), Status::kSuccess);
+  EXPECT_EQ(kSymId, generate_key_waiter.Get<std::vector<uint8_t>>());
+
+  // Generating another key with the same key ID should fail.
+  base::test::TestFuture<std::vector<uint8_t>, Status> generate_key_waiter2;
+  platform_keys_service()->GenerateSymKey(
+      token_id, kSymId, kDefaultSymKeySize,
+      chromeos::platform_keys::SymKeyType::kHmac,
+      generate_key_waiter2.GetCallback());
+  EXPECT_EQ(generate_key_waiter2.Get<Status>(), Status::kErrorInternal);
+  EXPECT_TRUE(generate_key_waiter2.Get<std::vector<uint8_t>>().empty());
+
+  base::test::TestFuture<Status> remove_waiter;
+  platform_keys_service()->RemoveSymKey(token_id, kSymId,
+                                        remove_waiter.GetCallback());
+  EXPECT_EQ(remove_waiter.Get<Status>(), Status::kSuccess);
+
+  // Key is already removed, so this should fail.
+  base::test::TestFuture<Status> remove_waiter2;
+  platform_keys_service()->RemoveSymKey(token_id, kSymId,
+                                        remove_waiter2.GetCallback());
+  EXPECT_EQ(remove_waiter2.Get<Status>(), Status::kErrorKeyNotFound);
 }
 
 INSTANTIATE_TEST_SUITE_P(
