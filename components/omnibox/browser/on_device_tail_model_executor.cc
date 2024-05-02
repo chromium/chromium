@@ -243,11 +243,10 @@ bool OnDeviceTailModelExecutor::InitModelInterpreter(
   }
   model_fb_ = std::move(model_fb);
 
-  tflite::StderrReporter error_reporter;
   std::unique_ptr<tflite::FlatBufferModel> model =
-      tflite::FlatBufferModel::BuildFromBuffer(
-          reinterpret_cast<const char*>(model_fb_->data()), model_fb_->length(),
-          &error_reporter);
+      tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
+          reinterpret_cast<const char*>(model_fb_->data()),
+          model_fb_->length());
 
   if (model == nullptr) {
     DVLOG(1) << "Could not create flat buffer model for file "
