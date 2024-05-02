@@ -1650,6 +1650,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             IDR_AUTOFILL_IBAN);
+    suggestion.icon = Suggestion::Icon::kIban;
     suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kLocalIban) {
       suggestion.payload = Suggestion::BackendId(Suggestion::Guid(iban.guid()));

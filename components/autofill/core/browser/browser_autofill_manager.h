@@ -367,6 +367,23 @@ class BrowserAutofillManager : public AutofillManager {
     return *manual_fallback_logger_;
   }
 
+  // Attempts to show touch-to-fill with `suggestions` and falls back to showing
+  // the keyboard accessory/popup if that is not available. Called only for
+  // single field form filler suggestions.
+  // This callback will be triggered by running
+  // SingleFieldFormFiller::OnSuggestionsReturnedCallback.
+  // When `form_element_was_clicked` is true, it indicates that the form field
+  // has been clicked. `request_start_time` is the time when the user clicks on
+  // the form field, and `focused_field_type_group` specifies the type of field
+  // being focused.
+  void OnGetSingleFieldSuggestionsCallback(
+      bool form_element_was_clicked,
+      const FormData& form,
+      base::TimeTicks request_start_time,
+      FieldTypeGroup focused_field_type_group,
+      FieldGlobalId field_id,
+      const std::vector<Suggestion>& suggestions);
+
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older
   // callback for `form_signature` or triggering a pending callback in case too

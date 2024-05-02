@@ -1280,23 +1280,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
           single_field_form_fill_router_->OnGetSingleFieldSuggestions(
               field, client(),
               base::BindRepeating(
-                  [](base::WeakPtr<BrowserAutofillManager> self,
-                     base::TimeTicks request_start_time,
-                     FieldTypeGroup focused_field_type_group,
-                     FieldGlobalId field_id,
-                     const std::vector<Suggestion>& suggestions) {
-                    if (!self) {
-                      return;
-                    }
-                    MaybeLogAutocompleteSuppressionByPlusAddresses(
-                        self->client(), suggestions, focused_field_type_group);
-                    LogTimeDelayForSingleFieldFormFill(
-                        suggestions,
-                        base::TimeTicks::Now() - request_start_time);
-                    self->external_delegate_->OnSuggestionsReturned(
-                        field_id, suggestions);
-                  },
-                  weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                  &BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback,
+                  weak_ptr_factory_.GetWeakPtr(), form_element_was_clicked,
+                  form, base::TimeTicks::Now(),
                   context.focused_field ? context.focused_field->Type().group()
                                         : FieldTypeGroup::kNoGroup),
               context);
@@ -1876,6 +1862,28 @@ void BrowserAutofillManager::
         self->four_digit_combinations_in_dom_ = four_digit_combinations_in_dom;
       },
       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback(
+    bool form_element_was_clicked,
+    const FormData& form,
+    base::TimeTicks request_start_time,
+    FieldTypeGroup focused_field_type_group,
+    FieldGlobalId field_id,
+    const std::vector<Suggestion>& suggestions) {
+  MaybeLogAutocompleteSuppressionByPlusAddresses(client(), suggestions,
+                                                 focused_field_type_group);
+  LogTimeDelayForSingleFieldFormFill(
+      suggestions, base::TimeTicks::Now() - request_start_time);
+  // TODO(b/309163415): Replace parameter of FormFieldData in
+  // `TryToShowTouchToFill` by FieldGlobalId.
+  if (form_element_was_clicked && touch_to_fill_delegate_ &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableServerIban) &&
+      touch_to_fill_delegate_->TryToShowTouchToFill(
+          form, *form.FindFieldByGlobalId(field_id))) {
+    return;
+  }
+  external_delegate_->OnSuggestionsReturned(field_id, suggestions);
 }
 
 void BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(

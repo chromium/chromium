@@ -103,7 +103,7 @@ struct Suggestion {
     kSettings,
     kSettingsAndroid,
     kUndo,
-    // Credit card icons
+    // Payment method icons
     kCardGeneric,
     kCardAmericanExpress,
     kCardDiners,
@@ -115,6 +115,7 @@ struct Suggestion {
     kCardTroy,
     kCardUnionPay,
     kCardVisa,
+    kIban,
   };
 
   // TODO(b/335194240): Consolidate expected param types for these constructors.

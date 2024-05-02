@@ -57,6 +57,7 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_TROY, R.drawable.troy_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
                  R.drawable.unionpay_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA, R.drawable.visa_metadata_card)
+LINK_RESOURCE_ID(IDR_AUTOFILL_IBAN, R.drawable.iban_icon)
 
 // Use DECLARE_RESOURCE_ID here as these resources are used for android only.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CC_SCAN_NEW,

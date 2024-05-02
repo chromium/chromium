@@ -6918,8 +6918,24 @@ TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
   browser_autofill_manager_->OnDidEndTextFieldEditing();
 }
 
+// Tests that keyboard accessory is not shown if TTF is eligible.
+TEST_F(BrowserAutofillManagerTest, TouchToFillSuggestionForIban) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableServerIban);
+  FormData form = CreateTestIbanFormData();
+  FormsSeen({form});
+
+  // A form element click and TTF available, Autofill suggestions not shown.
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill)
+      .WillOnce(Return(true));
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+  browser_autofill_manager_->OnGetSingleFieldSuggestionsCallback(
+      /*form_element_was_clicked=*/true, form, base::TimeTicks::Now(),
+      FieldTypeGroup::kIban, form.fields[0].global_id(), /*suggestion=*/{});
+}
+
 // Tests that Autofill suggestions are not shown if TTF is eligible and shown.
-TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
+TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFillForCards) {
   FormData form;
   CreateTestCreditCardFormData(&form, /*is_https=*/true,
                                /*use_month_type=*/false);
