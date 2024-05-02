@@ -237,7 +237,8 @@ int ProviderTypesPicker(bool bookmarks, bool history, bool open_tabs) {
   if (history) {
     providers |= AutocompleteProvider::TYPE_HISTORY_QUICK |
                  AutocompleteProvider::TYPE_HISTORY_URL |
-                 AutocompleteProvider::TYPE_HISTORY_FUZZY;
+                 AutocompleteProvider::TYPE_HISTORY_FUZZY |
+                 AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS;
   }
 
   if (open_tabs) {
