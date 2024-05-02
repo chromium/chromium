@@ -12,11 +12,8 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/grit/theme_resources.h"
 #include "extensions/browser/extension_action.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -98,33 +95,11 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
                 badge_.get(), get_color_provider_callback_.Run()))
           : badge_->text_color;
 
-  const int badge_height = features::IsChromeRefresh2023() ? 14 : 12;
-  ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
-  gfx::FontList base_font =
-      features::IsChromeRefresh2023()
-          ? views::TypographyProvider::Get().GetFont(
-                views::style::CONTEXT_BADGE, views::style::STYLE_SECONDARY)
-          : rb->GetFontList(ui::ResourceBundle::BaseFont)
-                .DeriveWithHeightUpperBound(badge_height);
+  constexpr int badge_height = 14;
+  gfx::FontList base_font = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_BADGE, views::style::STYLE_SECONDARY);
   std::u16string utf16_text = base::UTF8ToUTF16(badge_->text);
 
-  if (!features::IsChromeRefresh2023()) {
-    // See if we can squeeze a slightly larger font into the badge given the
-    // actual string that is to be displayed.
-    constexpr int kMaxIncrementAttempts = 5;
-    for (size_t i = 0; i < kMaxIncrementAttempts; ++i) {
-      int w = 0;
-      int h = 0;
-      gfx::FontList bigger_font =
-          base_font.Derive(1, 0, gfx::Font::Weight::BOLD);
-      gfx::Canvas::SizeStringInt(utf16_text, bigger_font, &w, &h, 0,
-                                 gfx::Canvas::NO_ELLIPSIS);
-      if (h > badge_height) {
-        break;
-      }
-      base_font = bigger_font;
-    }
-  }
   constexpr int kMaxTextWidth = 23;
   const int text_width = std::min(
       kMaxTextWidth, gfx::Canvas::GetStringWidth(utf16_text, base_font));
@@ -154,22 +129,15 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
                 badge_width, badge_height);
   gfx::Rect badge_rect = badge_background_rect_;
 
-  if (features::IsChromeRefresh2023()) {
-    const int top_inset = (badge_height - base_font.GetHeight()) / 2;
-    const int bottom_inset = (badge_height - base_font.GetHeight()) - top_inset;
-    const int left_inset = (badge_rect.width() - text_width) / 2;
-    const int right_inset = (badge_rect.width() - text_width) - left_inset;
-    badge_rect.Inset(
-        gfx::Insets::TLBR(top_inset, left_inset, bottom_inset, right_inset));
-  } else {
-    badge_rect.Inset(gfx::Insets::TLBR(
-        badge_height - base_font.GetHeight(),
-        std::max(kPadding, (badge_rect.width() - text_width) / 2), 0,
-        kPadding));
-  }
+  const int top_inset = (badge_height - base_font.GetHeight()) / 2;
+  const int bottom_inset = (badge_height - base_font.GetHeight()) - top_inset;
+  const int left_inset = (badge_rect.width() - text_width) / 2;
+  const int right_inset = (badge_rect.width() - text_width) - left_inset;
+  badge_rect.Inset(
+      gfx::Insets::TLBR(top_inset, left_inset, bottom_inset, right_inset));
+
   badge_text_ = gfx::RenderText::CreateRenderText();
-  badge_text_->SetHorizontalAlignment(
-      features::IsChromeRefresh2023() ? gfx::ALIGN_CENTER : gfx::ALIGN_LEFT);
+  badge_text_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   badge_text_->SetCursorEnabled(false);
   badge_text_->SetFontList(base_font);
   badge_text_->SetColor(text_color);
@@ -225,9 +193,7 @@ void IconWithBadgeImageSource::PaintBadge(gfx::Canvas* canvas) {
   cc::PaintFlags cutout_flags = rect_flags;
   cutout_flags.setBlendMode(SkBlendMode::kClear);
   constexpr int kOuterCornerRadius = 3;
-  const int corner_radius_for_badge_background_rect =
-      features::IsChromeRefresh2023() ? kOuterCornerRadius + 1
-                                      : kOuterCornerRadius - 1;
+  const int corner_radius_for_badge_background_rect = kOuterCornerRadius + 1;
   canvas->DrawRoundRect(cutout_rect, kOuterCornerRadius, cutout_flags);
 
   // Paint the backdrop.
