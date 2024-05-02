@@ -43,6 +43,16 @@ std::string SerializeIntoKey(BuyerReportType report_type) {
   NOTREACHED_NORETURN();
 }
 
+using RealTimeReportingType =
+    AuctionConfig::NonSharedParams::RealTimeReportingType;
+std::string SerializeIntoValue(RealTimeReportingType report_type) {
+  switch (report_type) {
+    case RealTimeReportingType::kDefaultLocalReporting:
+      return "default-local-reporting";
+  };
+  NOTREACHED_NORETURN();
+}
+
 template <typename T>
 base::Value SerializeIntoValue(const T& in) {
   return base::Value(in);
@@ -399,6 +409,12 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
           conf.non_shared_params.per_buyer_multi_bid_limits),
       result);
   SerializeIntoDict("auctionNonce", conf.non_shared_params.auction_nonce,
+                    result);
+  SerializeIntoDict("sellerRealTimeReportingType",
+                    conf.non_shared_params.seller_real_time_reporting_type,
+                    result);
+  SerializeIntoDict("perBuyerRealTimeReportingTypes",
+                    conf.non_shared_params.per_buyer_real_time_reporting_types,
                     result);
 
   // For component auctions, we only serialize the seller names to give a

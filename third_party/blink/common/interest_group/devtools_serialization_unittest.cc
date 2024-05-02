@@ -190,7 +190,11 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
    },
    "sellerTimeout": 6000.0,
    "reportingTimeout": 7000.0,
-   "trustedScoringSignalsURL": "https://seller.test/bar"
+   "trustedScoringSignalsURL": "https://seller.test/bar",
+   "sellerRealTimeReportingType": "default-local-reporting",
+   "perBuyerRealTimeReportingTypes": {
+      "https://buyer.test": "default-local-reporting"
+   }
 }
 )";
 

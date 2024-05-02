@@ -221,6 +221,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     using BuyerReportType =
         blink::mojom::AuctionAdConfigNonSharedParams_BuyerReportType;
 
+    // The type of real time reports.
+    using RealTimeReportingType =
+        blink::mojom::AuctionAdConfigNonSharedParams_RealTimeReportingType;
+
     // For each report type, provides the bucket offset and scalar multiplier
     // for that report.
     //
@@ -369,6 +373,13 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // top-level auction config; it's ignored in component auction configs.
     std::optional<base::Uuid> auction_nonce;
 
+    // The seller's real time reports type.
+    std::optional<RealTimeReportingType> seller_real_time_reporting_type;
+
+    // Per buyer's real time reports type.
+    std::optional<base::flat_map<url::Origin, RealTimeReportingType>>
+        per_buyer_real_time_reporting_types;
+
     // Nested auctions whose results will also be fed to `seller`. Only the top
     // level auction config can have component auctions.
     std::vector<AuctionConfig> component_auctions;
@@ -452,7 +463,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Origin for the Coordinator to be used for Private Aggregation.
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 455, R"(
+  static_assert(__LINE__ == 466, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

@@ -226,6 +226,10 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadAllSlotsRequestedSizes(&out->all_slots_requested_sizes) ||
       !data.ReadPerBuyerMultiBidLimits(&out->per_buyer_multi_bid_limits) ||
       !data.ReadAuctionNonce(&out->auction_nonce) ||
+      !data.ReadSellerRealTimeReportingType(
+          &out->seller_real_time_reporting_type) ||
+      !data.ReadPerBuyerRealTimeReportingTypes(
+          &out->per_buyer_real_time_reporting_types) ||
       !data.ReadComponentAuctions(&out->component_auctions) ||
       !data.ReadDeprecatedRenderUrlReplacements(
           &out->deprecated_render_url_replacements)) {

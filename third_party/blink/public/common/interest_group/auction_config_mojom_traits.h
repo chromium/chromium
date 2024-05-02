@@ -417,6 +417,21 @@ struct BLINK_COMMON_EXPORT
     return params.auction_nonce;
   }
 
+  static const std::optional<
+      blink::AuctionConfig::NonSharedParams::RealTimeReportingType>&
+  seller_real_time_reporting_type(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.seller_real_time_reporting_type;
+  }
+
+  static const std::optional<base::flat_map<
+      url::Origin,
+      blink::AuctionConfig::NonSharedParams::RealTimeReportingType>>&
+  per_buyer_real_time_reporting_types(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.per_buyer_real_time_reporting_types;
+  }
+
   static const std::vector<blink::AuctionConfig>& component_auctions(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.component_auctions;

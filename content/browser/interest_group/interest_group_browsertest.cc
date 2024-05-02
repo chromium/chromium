@@ -721,8 +721,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeMultiBid, {}},
          {blink::features::kFledgeCustomMaxAuctionAdComponents,
           {{"FledgeAdComponentLimit", "40"}}},
-         {blink::features::kFledgeReportingTimeout, {}},
-         {blink::features::kFledgeDeprecatedRenderURLReplacements, {}}},
+         {blink::features::kFledgeRealTimeReporting, {}},
+         {blink::features::kFledgeReportingTimeout, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
@@ -23739,6 +23739,59 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                        BidderSignalsNoCors) {
   TestTrustedBidderSignals(/*expect_success=*/false, /*add_cors_header=*/false);
+}
+
+class AuctionConfigRealTimeReportingEnabledTest
+    : public InterestGroupBrowserTest {
+ public:
+  AuctionConfigRealTimeReportingEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        {blink::features::kFledgeRealTimeReporting});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/337132755): Real time reporting fields are not applied yet.
+// Test them after they are applied.
+IN_PROC_BROWSER_TEST_F(AuctionConfigRealTimeReportingEnabledTest,
+                       RealTimeReporting) {
+  const char kHostA[] = "a.test";
+  GURL test_url =
+      embedded_https_test_server().GetURL(kHostA, "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL(kHostA, "/echo?render_cars");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/test_origin,
+                /*name=*/"cars",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                embedded_https_test_server().GetURL(
+                    kHostA, "/interest_group/bidding_logic.js"),
+                /*ads=*/{{{ad_url, /*metadata=*/std::nullopt}}}));
+
+  const char kConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+    sellerRealTimeReportingConfig: {type: 'default-local-reporting'},
+    perBuyerRealTimeReportingConfig: {
+      $1: {type: 'default-local-reporting'}
+    }
+  })";
+
+  std::string auction_config =
+      JsReplace(kConfigTemplate, test_origin,
+                embedded_https_test_server().GetURL(
+                    kHostA, "/interest_group/decision_logic.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 }
 
 }  // namespace

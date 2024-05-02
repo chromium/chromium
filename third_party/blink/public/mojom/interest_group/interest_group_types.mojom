@@ -382,6 +382,13 @@ struct AuctionAdConfigNonSharedParams {
     kTotalSignalsFetchLatency,
   };
 
+  // For each realtime monitoring report, this enum specifies the type of the
+  // report.
+  enum RealTimeReportingType {
+    // The default local DP type.
+    kDefaultLocalReporting,
+  };
+
   // Owners of interest groups allowed to participate in the auction.
   // Must all be HTTPS.
   array<url.mojom.Origin>? interest_group_buyers;
@@ -493,6 +500,12 @@ struct AuctionAdConfigNonSharedParams {
   // In multi-seller auctions, it must be component auction configs providing
   // this for their auctions.
   mojo_base.mojom.Uuid? auction_nonce;
+
+  // The seller's real time reports type.
+  RealTimeReportingType? seller_real_time_reporting_type;
+
+  // Per buyer's real time reports type.
+  map<url.mojom.Origin, RealTimeReportingType>? per_buyer_real_time_reporting_types;
 
   // Nested auctions whose results will also be fed to `seller`. Only the top
   // level auction config can have component auctions.

@@ -30,6 +30,10 @@ dictionary AuctionReportBuyerDebugModeConfig {
   bigint? debugKey;
 };
 
+dictionary AuctionRealTimeReportingConfig {
+  required DOMString type;
+};
+
 dictionary AuctionAdConfig {
   required USVString seller;
 
@@ -96,6 +100,11 @@ dictionary AuctionAdConfig {
   DOMString auctionNonce;
 
   ProtectedAudiencePrivateAggregationConfig privateAggregationConfig;
+
+  [RuntimeEnabled=FledgeRealTimeReporting]
+  AuctionRealTimeReportingConfig sellerRealTimeReportingConfig;
+  [RuntimeEnabled=FledgeRealTimeReporting]
+  record<USVString, AuctionRealTimeReportingConfig> perBuyerRealTimeReportingConfig;
 
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
