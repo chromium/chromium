@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.ConfirmationChip.PageInfoDialogAccessType"
-    enum="PageInfoDialogAccessType" expires_after="2024-05-05">
+    enum="PageInfoDialogAccessType" expires_after="2025-05-05">
   <owner>fjacky@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -622,7 +622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.PageInfo.Changed.{PermissionType}.{ReloadInfoBar}"
-    enum="PermissionChangeAction" expires_after="2024-04-28">
+    enum="PermissionChangeAction" expires_after="2025-04-28">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1296,7 +1296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Usage.Notifications.DidRecordUkm" enum="Boolean"
-    expires_after="2024-05-05">
+    expires_after="2025-05-05">
   <owner>engedy@chromium.org</owner>
   <owner>willxu@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
