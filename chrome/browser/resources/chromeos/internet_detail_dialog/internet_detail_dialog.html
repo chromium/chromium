@@ -140,11 +140,20 @@
           isApnRevampEnabled_)]]">
     <cr-expand-button id="apnRow" class="settings-box cr-row"
         expanded="{{apnExpanded_}}">
-      <div id="apnRowTitle">$i18n{internetApnPageTitle}</div>
-      <div id="apnRowSublabel"
-          class="cr-secondary-text"
-          warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
-        [[getApnRowSublabel_(managedProperties_, apnExpanded_)]]
+      <div class="property-box two-line">
+        <div class="flex layout vertical">
+          <div id="apnRowTitle">$i18n{internetApnPageTitle}</div>
+          <div id="apnRowSublabel"
+              class="cr-secondary-text"
+              warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
+            [[getApnRowSublabel_(managedProperties_, apnExpanded_)]]
+          </div>
+        </div>
+        <template is="dom-if" if="[[isApnManaged_(globalPolicy_)]]">
+          <cr-policy-indicator id="apnManagedIcon"
+              indicator-type="devicePolicy">
+          </cr-policy-indicator>
+        </template>
       </div>
     </cr-expand-button>
     <iron-collapse opened="[[apnExpanded_]]">

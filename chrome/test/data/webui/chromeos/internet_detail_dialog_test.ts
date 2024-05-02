@@ -20,7 +20,7 @@ import {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/netwo
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType, GlobalPolicy, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -484,6 +484,43 @@ suite('internet-detail-dialog', () => {
         assertFalse(!!apnSection);
       }
     });
+  });
+
+  [true, false].forEach(isApnRevampAndPoliciesEnabled => {
+    test(
+        `Managed APN icon visibility when isApnRevampAndPoliciesEnabled is ${
+            isApnRevampAndPoliciesEnabled}`,
+        async () => {
+          loadTimeData.overrideValues({
+            apnRevamp: true,
+            isApnRevampAndPoliciesEnabled: isApnRevampAndPoliciesEnabled,
+          });
+          await setupCellularNetwork(
+              /* isPrimary= */ true, /* isInhibited= */ false);
+
+          await init();
+          assertTrue(!!internetDetailDialog.shadowRoot!.querySelector(
+              'cr-expand-button'));
+
+          // Check for APN policies managed icon.
+          const getApnManagedIcon = () =>
+              internetDetailDialog.shadowRoot!.querySelector('#apnManagedIcon');
+          assertFalse(!!getApnManagedIcon());
+
+          let globalPolicy = {
+            allowApnModification: true,
+          } as GlobalPolicy;
+          mojoApi.setGlobalPolicy(globalPolicy);
+          await flushAsync();
+          assertFalse(!!getApnManagedIcon());
+
+          globalPolicy = {
+            allowApnModification: false,
+          } as GlobalPolicy;
+          mojoApi.setGlobalPolicy(globalPolicy);
+          await flushAsync();
+          assertEquals(isApnRevampAndPoliciesEnabled, !!getApnManagedIcon());
+        });
   });
 
   test(
