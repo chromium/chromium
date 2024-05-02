@@ -36,23 +36,19 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     SHARED_IMAGE_USAGE_MIPMAP;
 
-#if BUILDFLAG(IS_ANDROID)
-// AHardwareBufferImageBackingFactory is used for interop with WebGL and WebGPU
-// on Android.
-constexpr uint32_t kGraphiteDawnFallbackUsage = 0;
-#else
-constexpr uint32_t kGraphiteDawnFallbackUsage =
-    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
-    // NOTE: In this case, it is also possible to support raster-over-GLES2.
-    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY | SHARED_IMAGE_USAGE_WEBGPU_READ |
-    SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE;
-#endif
-
 uint32_t GetSupportedUsage(const SharedContextState* context_state) {
+#if BUILDFLAG(SKIA_USE_DAWN) && !BUILDFLAG(IS_ANDROID)
   // We support WebGL and WebGPU fallback when using Graphite Dawn Vulkan or
-  // D3D12.
+  // D3D12. Except on Android where AHardwareBufferImageBackingFactory is used
+  // for interop with WebGL and WebGPU.
+  constexpr uint32_t kGraphiteDawnFallbackUsage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+      SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
+      // NOTE: In this case, it is also possible to support raster-over-GLES2.
+      SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+      SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE;
+
   if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
     switch (context_state->dawn_context_provider()->backend_type()) {
       case wgpu::BackendType::D3D12:
@@ -62,6 +58,7 @@ uint32_t GetSupportedUsage(const SharedContextState* context_state) {
         break;
     }
   }
+#endif
   return kSupportedUsage;
 }
 

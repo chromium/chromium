@@ -11,9 +11,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/synchronization/lock.h"
-#include "base/thread_annotations.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
@@ -34,14 +31,11 @@ class Context;
 }  // namespace skgpu::graphite
 
 namespace gpu {
-namespace webgpu {
-class DawnInstance;
-}  // namespace webgpu
 
-class GPU_GLES2_EXPORT DawnContextProvider
-    : public base::trace_event::MemoryDumpProvider {
+class DawnSharedState;
+
+class GPU_GLES2_EXPORT DawnContextProvider {
  public:
-  using CacheBlobCallback = webgpu::DawnCachingInterface::CacheBlobCallback;
   static std::unique_ptr<DawnContextProvider> Create(
       const GpuPreferences& gpu_preferences = GpuPreferences(),
       const GpuDriverBugWorkarounds& gpu_driver_workarounds =
@@ -58,15 +52,12 @@ class GPU_GLES2_EXPORT DawnContextProvider
 
   DawnContextProvider(const DawnContextProvider&) = delete;
   DawnContextProvider& operator=(const DawnContextProvider&) = delete;
+  ~DawnContextProvider();
 
-  ~DawnContextProvider() override;
-
-  wgpu::Device GetDevice() const { return device_; }
-  wgpu::BackendType backend_type() const { return backend_type_; }
-  bool is_vulkan_swiftshader_adapter() const {
-    return is_vulkan_swiftshader_adapter_;
-  }
-  wgpu::Adapter GetAdapter() const { return adapter_; }
+  wgpu::Device GetDevice() const;
+  wgpu::BackendType backend_type() const;
+  bool is_vulkan_swiftshader_adapter() const;
+  wgpu::Adapter GetAdapter() const;
   wgpu::Instance GetInstance() const;
 
   void SetCachingInterface(
@@ -87,45 +78,12 @@ class GPU_GLES2_EXPORT DawnContextProvider
 
   std::optional<error::ContextLostReason> GetResetStatus() const;
 
-  void OnError(WGPUErrorType error_type, const char* message);
-
  private:
-  // Cache functions for Dawn device to use.
-  static size_t LoadCachedData(const void* key,
-                               size_t key_size,
-                               void* value,
-                               size_t value_size,
-                               void* userdata);
-  static void StoreCachedData(const void* key,
-                              size_t key_size,
-                              const void* value,
-                              size_t value_size,
-                              void* userdata);
+  explicit DawnContextProvider(
+      scoped_refptr<DawnSharedState> dawn_shared_state);
 
-  explicit DawnContextProvider();
-
-  bool Initialize(wgpu::BackendType backend_type,
-                  bool force_fallback_adapter,
-                  const GpuPreferences& gpu_preferences,
-                  const GpuDriverBugWorkarounds& gpu_driver_workarounds);
-
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
-
-  std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
-  std::unique_ptr<dawn::platform::Platform> platform_;
-  std::unique_ptr<webgpu::DawnInstance> instance_;
-  wgpu::Adapter adapter_;
-  wgpu::Device device_;
-  wgpu::BackendType backend_type_;
-  bool is_vulkan_swiftshader_adapter_ = false;
+  scoped_refptr<DawnSharedState> dawn_shared_state_;
   std::unique_ptr<skgpu::graphite::Context> graphite_context_;
-
-  bool registered_memory_dump_provider_ = false;
-
-  mutable base::Lock context_lost_lock_;
-  std::optional<error::ContextLostReason> context_lost_reason_
-      GUARDED_BY(context_lost_lock_);
 };
 
 }  // namespace gpu

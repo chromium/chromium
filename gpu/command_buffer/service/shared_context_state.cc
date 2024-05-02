@@ -140,6 +140,7 @@ SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
       // Graphite/Metal isn't expected to be used outside tests.
       return SkiaBackendType::kUnknown;
     case gpu::GrContextType::kGraphiteDawn: {
+#if BUILDFLAG(SKIA_USE_DAWN)
       if (!context->dawn_context_provider()) {
         // TODO(kylechar): Bail out of GPU process earlier if
         // DawnContextProvider initialization fails.
@@ -157,6 +158,9 @@ SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
         default:
           break;
       }
+#else
+      break;
+#endif
     }
   }
   return SkiaBackendType::kUnknown;
