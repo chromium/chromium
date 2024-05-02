@@ -298,6 +298,18 @@ Status DevToolsClientImpl::StartBidiServer(
     }
   }
   {
+    // Click on the Mapper tab to interact with the page in order to
+    // "beforeunload" being triggered when the tab is closed.
+    base::Value::Dict params;
+    params.Set("expression", "document.body.click()");
+    params.Set("userGesture", true);
+    status =
+        SendCommandAndIgnoreResponse("Runtime.evaluate", std::move(params));
+    if (status.IsError()) {
+      return status;
+    }
+  }
+  {
     base::Value::Dict params;
     params.Set("expression", std::move(bidi_mapper_script));
     base::Value::Dict result;
