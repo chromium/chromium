@@ -2,34 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://diagnostics/touchscreen_tester.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {DialogType, SCREEN_MAX_LENGTH, TouchEventType} from 'chrome://diagnostics/touchscreen_tester.js';
+import {DialogType, SCREEN_MAX_LENGTH, TouchEventType, TouchscreenTesterElement} from 'chrome://diagnostics/touchscreen_tester.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {MockController} from '../mock_controller.m.js';
-import {eventToPromise} from '../test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('touchscreenTesterTestSuite', function() {
-  /** @type {?TouchscreenTesterElement} */
-  let touchscreenTesterElement = null;
+  let touchscreenTesterElement: TouchscreenTesterElement|null = null;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    touchscreenTesterElement.remove();
+    touchscreenTesterElement?.remove();
     touchscreenTesterElement = null;
   });
 
 
-  function initializeTouchscreenTester() {
-    assertFalse(!!touchscreenTesterElement);
-    touchscreenTesterElement = /** @type {!TouchscreenTesterElement} */ (
-        document.createElement('touchscreen-tester'));
-    assertTrue(!!touchscreenTesterElement);
+  function initializeTouchscreenTester(): Promise<void> {
+    touchscreenTesterElement = document.createElement('touchscreen-tester');
+    assert(touchscreenTesterElement);
     document.body.appendChild(touchscreenTesterElement);
 
     return flushTasks();
@@ -40,13 +41,15 @@ suite('touchscreenTesterTestSuite', function() {
    * intro dialog, clicks the start testing button and makes sure canvas dialog
    * is open. The function then returns the canvas dialog.
    */
-  async function openTester() {
+  async function openTester(): Promise<CrDialogElement> {
+    assert(touchscreenTesterElement);
     const introDialog = touchscreenTesterElement.getDialog(DialogType.INTRO);
     introDialog.showModal();
     await flushTasks();
     assertTrue(introDialog.open);
 
-    const getStartedButton = introDialog.querySelector('cr-button');
+    const getStartedButton =
+    strictQuery('cr-button', introDialog, CrButtonElement);
     getStartedButton.click();
     await flushTasks();
     assertFalse(introDialog.open);
@@ -59,6 +62,7 @@ suite('touchscreenTesterTestSuite', function() {
 
   test('OpenIntroDialog', async () => {
     await initializeTouchscreenTester();
+    assert(touchscreenTesterElement);
     const introDialog = touchscreenTesterElement.getDialog(DialogType.INTRO);
     introDialog.showModal();
     await flushTasks();
@@ -70,12 +74,14 @@ suite('touchscreenTesterTestSuite', function() {
     const canvasDialog = await openTester();
 
     const canvas = canvasDialog.querySelector('canvas');
+    assert(canvas);
     assertEquals(canvas.width, SCREEN_MAX_LENGTH);
     assertEquals(canvas.height, SCREEN_MAX_LENGTH);
   });
 
   test('OnDrawStart', async () => {
     await initializeTouchscreenTester();
+    assert(touchscreenTesterElement);
     await openTester();
 
     // Mock drawTrailMark and drawTrail function.
@@ -115,6 +121,7 @@ suite('touchscreenTesterTestSuite', function() {
 
   test('OnDraw', async () => {
     await initializeTouchscreenTester();
+    assert(touchscreenTesterElement);
     await openTester();
 
     // Mock drawTrailMark and drawTrail function.
@@ -159,6 +166,7 @@ suite('touchscreenTesterTestSuite', function() {
 
   test('OnDrawEnd', async () => {
     await initializeTouchscreenTester();
+    assert(touchscreenTesterElement);
     await openTester();
 
     // Mock drawTrailMark and drawTrail function.
@@ -217,8 +225,10 @@ suite('touchscreenTesterTestSuite', function() {
 
   test('ObserveDataSource', async () => {
     await initializeTouchscreenTester();
+    assert(touchscreenTesterElement);
     const canvasDialog = await openTester();
     const canvas = canvasDialog.querySelector('canvas');
+    assert(canvas);
     const mockController = new MockController();
 
     // Create a mock touch.
@@ -246,7 +256,7 @@ suite('touchscreenTesterTestSuite', function() {
         mockFunction.addExpectation(
             touch.identifier, expectedTouchPt, touch.force);
       }
-
+      assert(eventType);
       const touchEvent = eventToPromise(eventType, canvas);
       canvas.dispatchEvent(
           new TouchEvent(eventType, {changedTouches: [touch]}));
