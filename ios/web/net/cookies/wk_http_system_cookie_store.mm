@@ -230,10 +230,15 @@ void WKHTTPSystemCookieStore::SetCookieAsync(
     NSHTTPCookie* cookie,
     const base::Time* optional_creation_time,
     SystemCookieCallback callback) {
+  base::WeakPtr<net::CookieCreationTimeManager> weak_time_manager =
+      creation_time_manager_->GetWeakPtr();
+
   base::OnceClosure closure = base::BindOnce(
-      &net::CookieCreationTimeManager::SetCreationTime,
-      creation_time_manager_->GetWeakPtr(), cookie,
-      optional_creation_time ? *optional_creation_time : base::Time::Now());
+      &net::CookieCreationTimeManager::SetCreationTime, weak_time_manager,
+      cookie,
+      weak_time_manager->MakeUniqueCreationTime(optional_creation_time
+                                                    ? *optional_creation_time
+                                                    : base::Time::Now()));
 
   helper_->InsertCookie(cookie,
                         ChainClosure(std::move(closure), std::move(callback)));
