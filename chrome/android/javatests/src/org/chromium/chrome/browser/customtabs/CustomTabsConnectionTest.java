@@ -165,8 +165,6 @@ public class CustomTabsConnectionTest {
         assertWarmupAndMayLaunchUrl(token, URL, true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    String referrer =
-                            mCustomTabsConnection.getDefaultReferrerForSession(token).getUrl();
                     Assert.assertFalse(WarmupManager.getInstance().hasSpareWebContents());
                 });
     }
@@ -622,8 +620,8 @@ public class CustomTabsConnectionTest {
         waitForConnection.waitForCallback(0);
         CustomTabsClient client = clientReference.get();
         final CallbackHelper warmupWaiter = new CallbackHelper();
-        CustomTabsSession session = newSessionWithWarmupWaiter(client, warmupWaiter);
-        CustomTabsSession session2 = newSessionWithWarmupWaiter(client, warmupWaiter);
+        newSessionWithWarmupWaiter(client, warmupWaiter);
+        newSessionWithWarmupWaiter(client, warmupWaiter);
 
         // Both sessions should be notified.
         Assert.assertTrue(mCustomTabsConnection.warmup(0));
