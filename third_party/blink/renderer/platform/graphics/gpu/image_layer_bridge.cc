@@ -243,7 +243,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
     if (!sk_image->readPixels(dst_info, pixels, dst_info.minRowBytes(), 0, 0))
       return false;
 
-    *out_resource = viz::TransferableResource::MakeSoftware(
+    *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
         registered.bitmap->id(), gpu::SyncToken(), size, format,
         viz::TransferableResource::ResourceSource::kImageLayerBridge);
     out_resource->color_space = sk_image->colorSpace()

@@ -514,7 +514,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
   ReadFramebufferIntoBitmapPixels(
       static_cast<uint8_t*>(registered.bitmap->memory()));
 
-  *out_resource = viz::TransferableResource::MakeSoftware(
+  *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
       registered.bitmap->id(), gpu::SyncToken(), size_,
       viz::SinglePlaneFormat::kRGBA_8888,
       viz::TransferableResource::ResourceSource::kDrawingBuffer);
