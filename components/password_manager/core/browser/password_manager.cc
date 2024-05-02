@@ -1190,6 +1190,14 @@ void PasswordManager::OnLoginSuccessful() {
   if (logger)
     logger->LogSuccessfulSubmissionIndicatorEvent(submission_event);
 
+  password_manager::PasswordReuseManager* reuse_manager =
+      client_->GetPasswordReuseManager();
+  // May be null in tests.
+  if (reuse_manager) {
+    reuse_manager->MaybeSavePasswordHash(submitted_manager->GetSubmittedForm(),
+                                         client_);
+  }
+
   bool able_to_save_passwords =
       password_manager_util::IsAbleToSavePasswords(client_);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
@@ -1210,14 +1218,6 @@ void PasswordManager::OnLoginSuccessful() {
       !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
     leak_delegate_.StartLeakCheck(LeakDetectionInitiator::kSignInCheck,
                                   submitted_manager->GetPendingCredentials());
-  }
-
-  password_manager::PasswordReuseManager* reuse_manager =
-      client_->GetPasswordReuseManager();
-  // May be null in tests.
-  if (reuse_manager) {
-    reuse_manager->MaybeSavePasswordHash(submitted_manager->GetSubmittedForm(),
-                                         client_);
   }
 
   // TODO(crbug.com/40570965): Implement checking whether to save with

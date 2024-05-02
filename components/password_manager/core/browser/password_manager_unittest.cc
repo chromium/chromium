@@ -3199,6 +3199,24 @@ TEST_P(PasswordManagerTest, SaveEnterprisePasswordHash) {
   task_environment_.RunUntilIdle();
 }
 
+// Tests that password hash can be saved even if saving passwords in
+// password manager is disabled.
+TEST_P(PasswordManagerTest, PhishGuardWhenSavingDisabled) {
+  FormData form_data(MakeSimpleFormData());
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(false));
+  manager()->OnPasswordFormsRendered(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  auto submitted_form_data = form_data;
+  submitted_form_data.fields[0].set_value(u"username");
+  submitted_form_data.fields[1].set_value(u"strong_password");
+  OnPasswordFormSubmitted(submitted_form_data);
+
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash);
+  manager()->OnPasswordFormsRendered(&driver_, {});
+  task_environment_.RunUntilIdle();
+}
+
 TEST_P(PasswordManagerTest, CreatingFormManagers) {
   FormData form_data(MakeSimpleFormData());
   std::vector<FormData> observed;
