@@ -507,6 +507,7 @@ android_library("cronet_impl_native_java") {
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
     "java/src/org/chromium/net/impl/CronetMetrics.java",
+    "java/src/org/chromium/net/impl/CronetRequestCommon.java",
     "java/src/org/chromium/net/impl/CronetUploadDataStream.java",
     "java/src/org/chromium/net/impl/CronetUrlRequest.java",
     "java/src/org/chromium/net/impl/CronetUrlRequestContext.java",

@@ -4,6 +4,10 @@
 
 package org.chromium.net.impl;
 
+import static java.lang.Math.max;
+
+import android.os.Build;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -21,14 +25,17 @@ import org.chromium.net.NetworkException;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RequestPriority;
 import org.chromium.net.UrlResponseInfo;
+import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +43,13 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.security.auth.callback.Callback;
 
 /**
- * {@link BidirectionalStream} implementation using Chromium network stack.
- * All @CalledByNative methods are called on the native network thread
- * and post tasks with callback calls onto Executor. Upon returning from callback, the native
- * stream is called on Executor thread and posts native tasks to the native network thread.
+ * {@link BidirectionalStream} implementation using Chromium network stack. All @CalledByNative
+ * methods are called on the native network thread and post tasks with callback calls onto Executor.
+ * Upon returning from callback, the native stream is called on Executor thread and posts native
+ * tasks to the native network thread.
  */
 @JNINamespace("cronet")
 @VisibleForTesting
@@ -111,6 +119,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     private final boolean mTrafficStatsUidSet;
     private final int mTrafficStatsUid;
     private final long mNetworkHandle;
+    private final CronetLogger mLogger;
     private RefCountDelegate mInflightDoneCallbackCount;
     private CronetException mException;
 
@@ -280,6 +289,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         mTrafficStatsUidSet = trafficStatsUidSet;
         mTrafficStatsUid = trafficStatsUid;
         mNetworkHandle = networkHandle;
+        mLogger = requestContext.getCronetLogger();
     }
 
     @Override
@@ -753,7 +763,9 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             long requestEndMs,
             boolean socketReused,
             long sentByteCount,
-            long receivedByteCount) {
+            long receivedByteCount,
+            boolean quicConnectionMigrationAttempted,
+            boolean quicConnectionMigrationSuccessful) {
         synchronized (mNativeStreamLock) {
             try {
                 if (mMetrics != null) {
@@ -781,13 +793,21 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 assert (mReadState == State.SUCCESS)
                         || (mReadState == State.ERROR)
                         || (mReadState == State.CANCELED);
-                int finishedReason;
+                @RequestFinishedInfoImpl.FinishedReason int finishedReason;
                 if (mReadState == State.SUCCESS) {
                     finishedReason = RequestFinishedInfo.SUCCEEDED;
                 } else if (mReadState == State.CANCELED) {
                     finishedReason = RequestFinishedInfo.CANCELED;
                 } else {
                     finishedReason = RequestFinishedInfo.FAILED;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mLogger.logCronetTrafficInfo(
+                            mRequestContext.getLogId(),
+                            buildCronetTrafficInfo(
+                                    finishedReason,
+                                    quicConnectionMigrationAttempted,
+                                    quicConnectionMigrationSuccessful));
                 }
                 final RequestFinishedInfo requestFinishedInfo =
                         new RequestFinishedInfoImpl(
@@ -803,6 +823,102 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mInflightDoneCallbackCount.decrement();
             }
         }
+    }
+
+    @GuardedBy("mNativeStreamLock")
+    private CronetTrafficInfo buildCronetTrafficInfo(
+            @RequestFinishedInfoImpl.FinishedReason int finishedReason,
+            boolean quicConnectionMigrationAttempted,
+            boolean quicConnectionMigrationSuccessful) {
+        assert mMetrics != null;
+        assert mRequestHeaders != null;
+
+        // Most of the CronetTrafficInfo fields have similar names/semantics. To avoid bugs due to
+        // typos everything is final, this means that things have to initialized through an if/else.
+        final Map<String, List<String>> responseHeaders;
+        final String negotiatedProtocol;
+        final int httpStatusCode;
+        final boolean wasCached;
+        if (mResponseInfo != null) {
+            responseHeaders = mResponseInfo.getAllHeaders();
+            negotiatedProtocol = mResponseInfo.getNegotiatedProtocol();
+            httpStatusCode = mResponseInfo.getHttpStatusCode();
+            wasCached = mResponseInfo.wasCached();
+        } else {
+            responseHeaders = Collections.emptyMap();
+            negotiatedProtocol = "";
+            httpStatusCode = 0;
+            wasCached = false;
+        }
+
+        // TODO(stefanoduo): A better approach might be keeping track of the total length of an
+        // upload and use that value as the request body size instead.
+        final long requestTotalSizeInBytes = mMetrics.getSentByteCount();
+        final long requestHeaderSizeInBytes;
+        final long requestBodySizeInBytes;
+        // Cached responses might still need to be revalidated over the network before being served
+        // (from UrlResponseInfo#wasCached documentation).
+        if (wasCached && requestTotalSizeInBytes == 0) {
+            // Served from cache without the need to revalidate.
+            requestHeaderSizeInBytes = 0;
+            requestBodySizeInBytes = 0;
+        } else {
+            // Served from cache with the need to revalidate or served from the network directly.
+            requestHeaderSizeInBytes =
+                    CronetRequestCommon.estimateHeadersSizeInBytes(mRequestHeaders);
+            requestBodySizeInBytes = max(0, requestTotalSizeInBytes - requestHeaderSizeInBytes);
+        }
+
+        final long responseTotalSizeInBytes = mMetrics.getReceivedByteCount();
+        final long responseBodySizeInBytes;
+        final long responseHeaderSizeInBytes;
+        // Cached responses might still need to be revalidated over the network before being served
+        // (from UrlResponseInfo#wasCached documentation).
+        if (wasCached && responseTotalSizeInBytes == 0) {
+            // Served from cache without the need to revalidate.
+            responseBodySizeInBytes = 0;
+            responseHeaderSizeInBytes = 0;
+        } else {
+            // Served from cache with the need to revalidate or served from the network directly.
+            responseHeaderSizeInBytes =
+                    CronetRequestCommon.estimateHeadersSizeInBytes(responseHeaders);
+            responseBodySizeInBytes = max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
+        }
+
+        final Duration headersLatency;
+        if (mMetrics.getRequestStart() != null && mMetrics.getResponseStart() != null) {
+            headersLatency =
+                    Duration.ofMillis(
+                            mMetrics.getResponseStart().getTime()
+                                    - mMetrics.getRequestStart().getTime());
+        } else {
+            headersLatency = Duration.ofSeconds(0);
+        }
+
+        final Duration totalLatency;
+        if (mMetrics.getRequestStart() != null && mMetrics.getRequestEnd() != null) {
+            totalLatency =
+                    Duration.ofMillis(
+                            mMetrics.getRequestEnd().getTime()
+                                    - mMetrics.getRequestStart().getTime());
+        } else {
+            totalLatency = Duration.ofSeconds(0);
+        }
+
+        return new CronetTrafficInfo(
+                requestHeaderSizeInBytes,
+                requestBodySizeInBytes,
+                responseHeaderSizeInBytes,
+                responseBodySizeInBytes,
+                httpStatusCode,
+                headersLatency,
+                totalLatency,
+                negotiatedProtocol,
+                quicConnectionMigrationAttempted,
+                quicConnectionMigrationSuccessful,
+                CronetRequestCommon.finishedReasonToCronetTrafficInfoRequestTerminalState(
+                        finishedReason),
+                /* isBidiStream= */ true);
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {

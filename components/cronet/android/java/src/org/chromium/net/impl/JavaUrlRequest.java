@@ -986,7 +986,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     // There is no connection migration for the fallback implementation.
                     false, // wasConnectionMigrationAttempted
                     false, // didConnectionMigrationSucceed
-                    requestTerminalState);
+                    requestTerminalState,
+                    /* isBidiStream= */ false);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and

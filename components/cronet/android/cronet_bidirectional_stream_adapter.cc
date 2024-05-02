@@ -476,6 +476,8 @@ void CronetBidirectionalStreamAdapter::MaybeReportMetrics() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::Time start_time = load_timing_info.request_start_time;
   base::TimeTicks start_ticks = load_timing_info.request_start;
+  net::NetErrorDetails net_error_details;
+  bidi_stream_->PopulateNetErrorDetails(&net_error_details);
   cronet::Java_CronetBidirectionalStream_onMetricsCollected(
       env, owner_,
       metrics_util::ConvertTime(start_ticks, start_ticks, start_time),
@@ -506,7 +508,11 @@ void CronetBidirectionalStreamAdapter::MaybeReportMetrics() {
       metrics_util::ConvertTime(base::TimeTicks::Now(), start_ticks,
                                 start_time),
       load_timing_info.socket_reused, bidi_stream_->GetTotalSentBytes(),
-      bidi_stream_->GetTotalReceivedBytes());
+      bidi_stream_->GetTotalReceivedBytes(),
+      net_error_details.quic_connection_migration_attempted ? JNI_TRUE
+                                                            : JNI_FALSE,
+      net_error_details.quic_connection_migration_successful ? JNI_TRUE
+                                                             : JNI_FALSE);
 }
 
 }  // namespace cronet

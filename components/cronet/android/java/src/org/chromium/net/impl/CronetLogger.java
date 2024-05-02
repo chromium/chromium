@@ -204,6 +204,7 @@ public abstract class CronetLogger {
         private final boolean mWasConnectionMigrationAttempted;
         private final boolean mDidConnectionMigrationSucceed;
         private final RequestTerminalState mTerminalState;
+        private final boolean mIsBidiStream;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -216,7 +217,8 @@ public abstract class CronetLogger {
                 String negotiatedProtocol,
                 boolean wasConnectionMigrationAttempted,
                 boolean didConnectionMigrationSucceed,
-                RequestTerminalState terminalState) {
+                RequestTerminalState terminalState,
+                boolean isBidiStream) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -228,9 +230,12 @@ public abstract class CronetLogger {
             mWasConnectionMigrationAttempted = wasConnectionMigrationAttempted;
             mDidConnectionMigrationSucceed = didConnectionMigrationSucceed;
             mTerminalState = terminalState;
+            mIsBidiStream = isBidiStream;
         }
 
-        /** @return The total size of headers sent in bytes */
+        /**
+         * @return The total size of headers sent in bytes
+         */
         public long getRequestHeaderSizeInBytes() {
             return mRequestHeaderSizeInBytes;
         }
@@ -292,6 +297,10 @@ public abstract class CronetLogger {
 
         public RequestTerminalState getTerminalState() {
             return mTerminalState;
+        }
+
+        public boolean getIsBidiStream() {
+            return mIsBidiStream;
         }
     }
 

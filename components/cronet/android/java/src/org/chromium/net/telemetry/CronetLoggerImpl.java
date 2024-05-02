@@ -200,8 +200,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     /* total_user_executor_execute_latency_millis= */ -1,
                     /* read_count= */ -1,
                     /* on_upload_read_count= */ -1,
-                    /* is_bidi_stream= */ CronetStatsLog
-                            .CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__OPTIONAL_BOOLEAN_UNSET);
+                    OptionalBoolean.fromBoolean(trafficInfo.getIsBidiStream()).getValue());
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);

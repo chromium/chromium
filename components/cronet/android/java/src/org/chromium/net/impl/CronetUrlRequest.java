@@ -450,44 +450,6 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         }
     }
 
-    /**
-     * Estimates the byte size of the headers in their on-wire format.
-     * We are not really interested in their specific size but something which is close enough.
-     */
-    @VisibleForTesting
-    static long estimateHeadersSizeInBytes(Map<String, List<String>> headers) {
-        if (headers == null) return 0;
-
-        long responseHeaderSizeInBytes = 0;
-        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
-            String key = entry.getKey();
-            if (key != null) responseHeaderSizeInBytes += key.length();
-            if (entry.getValue() == null) continue;
-
-            for (String content : entry.getValue()) {
-                responseHeaderSizeInBytes += content.length();
-            }
-        }
-        return responseHeaderSizeInBytes;
-    }
-
-    /**
-     * Estimates the byte size of the headers in their on-wire format. We are not really interested
-     * in their specific size but something which is close enough.
-     */
-    @VisibleForTesting
-    static long estimateHeadersSizeInBytes(List<Map.Entry<String, String>> headers) {
-        if (headers == null) return 0;
-        long responseHeaderSizeInBytes = 0;
-        for (Map.Entry<String, String> entry : headers) {
-            String key = entry.getKey();
-            if (key != null) responseHeaderSizeInBytes += key.length();
-            String value = entry.getValue();
-            if (value != null) responseHeaderSizeInBytes += entry.getValue().length();
-        }
-        return responseHeaderSizeInBytes;
-    }
-
     private UrlResponseInfoImpl prepareResponseInfoOnNetworkThread(
             int httpStatusCode,
             String httpStatusText,
@@ -1007,7 +969,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             requestBodySizeInBytes = 0;
         } else {
             // Served from cache with the need to revalidate or served from the network directly.
-            requestHeaderSizeInBytes = estimateHeadersSizeInBytes(mRequestHeaders);
+            requestHeaderSizeInBytes =
+                    CronetRequestCommon.estimateHeadersSizeInBytes(mRequestHeaders);
             requestBodySizeInBytes = max(0, requestTotalSizeInBytes - requestHeaderSizeInBytes);
         }
 
@@ -1022,7 +985,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             responseHeaderSizeInBytes = 0;
         } else {
             // Served from cache with the need to revalidate or served from the network directly.
-            responseHeaderSizeInBytes = estimateHeadersSizeInBytes(responseHeaders);
+            responseHeaderSizeInBytes =
+                    CronetRequestCommon.estimateHeadersSizeInBytes(responseHeaders);
             responseBodySizeInBytes = max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
         }
 
@@ -1046,24 +1010,6 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             totalLatency = Duration.ofSeconds(0);
         }
 
-        CronetTrafficInfo.RequestTerminalState requestTerminalState;
-        switch (mFinishedReason) {
-            case RequestFinishedInfo.SUCCEEDED:
-                requestTerminalState = CronetTrafficInfo.RequestTerminalState.SUCCEEDED;
-                break;
-            case RequestFinishedInfo.FAILED:
-                requestTerminalState = CronetTrafficInfo.RequestTerminalState.ERROR;
-                break;
-            case RequestFinishedInfo.CANCELED:
-                requestTerminalState = CronetTrafficInfo.RequestTerminalState.CANCELLED;
-                break;
-            default:
-                throw new IllegalStateException(
-                        "Internal Cronet error: attempted to report "
-                                + "metrics with invalid finished reason: "
-                                + mFinishedReason);
-        }
-
         return new CronetTrafficInfo(
                 requestHeaderSizeInBytes,
                 requestBodySizeInBytes,
@@ -1075,7 +1021,9 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 negotiatedProtocol,
                 mQuicConnectionMigrationAttempted,
                 mQuicConnectionMigrationSuccessful,
-                requestTerminalState);
+                CronetRequestCommon.finishedReasonToCronetTrafficInfoRequestTerminalState(
+                        mFinishedReason),
+                /* isBidiStream= */ false);
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and
