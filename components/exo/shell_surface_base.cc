@@ -2067,6 +2067,7 @@ void ShellSurfaceBase::UpdateHostWindowOrigin() {
   // This may not be necessary
   set_bounds_is_dirty(true);
   host_window()->SetBounds(surface_bounds);
+  UpdateHostWindowOpaqueRegion();
 }
 
 void ShellSurfaceBase::UpdateShadow() {

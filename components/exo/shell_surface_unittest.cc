@@ -67,6 +67,8 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -4915,6 +4917,57 @@ TEST_F(ShellSurfaceTest, GetWidgetHitTestMask) {
   shell_surface->GetWidgetHitTestMask(&mask);
   // Returned HitMask should be in the widget local coordinates.
   EXPECT_EQ(SkRect::MakeLTRB(0, 0, 256, 256), mask.getBounds());
+}
+
+TEST_F(ShellSurfaceTest, HostWindowOpaqueRegionForOcclusion) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+  auto* root_surface = shell_surface->root_surface();
+
+  // Makes root surface fill bounds opaquely.
+  root_surface->SetBlendMode(SkBlendMode::kSrc);
+  root_surface->Commit();
+  ASSERT_TRUE(shell_surface->host_window()->GetTransparent());
+  ASSERT_TRUE(root_surface->FillsBoundsOpaquely());
+
+  auto opaque_occlusion_region =
+      shell_surface->host_window()->opaque_regions_for_occlusion();
+  EXPECT_EQ(opaque_occlusion_region.size(), 1u);
+  EXPECT_EQ(opaque_occlusion_region.back(), gfx::Rect(256, 256));
+
+  // Adding a subsurface will expand the host window to include the sub-surface.
+  constexpr gfx::Size kChildBufferSize(32, 32);
+  auto child_buffer1 = test::ExoTestHelper::CreateBuffer(kChildBufferSize);
+  auto child_surface1 = std::make_unique<Surface>();
+  child_surface1->Attach(child_buffer1.get());
+  auto subsurface1 = std::make_unique<SubSurface>(
+      child_surface1.get(), shell_surface->root_surface());
+  subsurface1->SetPosition(gfx::PointF(256, 256));
+  child_surface1->Commit();
+
+  root_surface->Commit();
+
+  constexpr gfx::Rect kUpdatedHostWindowBounds(0, 0, 288, 288);
+  EXPECT_EQ(shell_surface->host_window()->bounds(), kUpdatedHostWindowBounds);
+
+  // After bounds update, host window does not fill the bounds opaquely, since
+  // the content_size of root surface does not match host_window size. In this
+  // case, host_window does not specify any region for occlusion.
+  opaque_occlusion_region =
+      shell_surface->host_window()->opaque_regions_for_occlusion();
+  EXPECT_EQ(opaque_occlusion_region.size(), 0u);
+
+  // Update the content_size of root surface. This ensure, that host window
+  // fills the bounds opaquely again.
+  root_surface->SetViewport(gfx::SizeF(kUpdatedHostWindowBounds.size()));
+  root_surface->Commit();
+
+  // Confirm that new occlusion region reflects the updated bounds of host
+  // window.
+  opaque_occlusion_region =
+      shell_surface->host_window()->opaque_regions_for_occlusion();
+  EXPECT_EQ(opaque_occlusion_region.size(), 1u);
+  EXPECT_EQ(opaque_occlusion_region.back(), kUpdatedHostWindowBounds);
 }
 
 TEST_F(ShellSurfaceTest, InitiallyMaximizedWindowIsOpaque) {

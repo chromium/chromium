@@ -48,6 +48,7 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -495,31 +496,45 @@ void SurfaceTreeHost::UpdateSurfaceLayerSizeAndRootSurfaceOrigin() {
     gfx::Rect updated_bounds(root_surface_origin_dp, window_bounds.size());
     root_surface_->window()->SetBounds(updated_bounds);
   }
+
+  UpdateHostWindowOpaqueRegion();
 }
 
 void SurfaceTreeHost::UpdateHostLayerOpacity() {
   ui::Layer* commit_target_layer = GetCommitTargetLayer();
 
-  const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
-
-  const bool fills_bounds_opaquely =
-      gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
-      root_surface_->FillsBoundsOpaquely();
-
   if (commit_target_layer == host_window_->layer()) {
-    host_window_->SetTransparent(!fills_bounds_opaquely);
+    UpdateHostWindowOpaqueRegion();
   } else if (commit_target_layer) {
-    commit_target_layer->SetFillsBoundsOpaquely(fills_bounds_opaquely);
+    commit_target_layer->SetFillsBoundsOpaquely(
+        ContentsFillsHostWindowOpaquely());
+  }
+}
+
+void SurfaceTreeHost::UpdateHostWindowOpaqueRegion() {
+  if (ContentsFillsHostWindowOpaquely()) {
+    host_window_->SetOpaqueRegionsForOcclusion(
+        {gfx::Rect(host_window_->bounds().size())});
+  } else {
+    host_window_->SetOpaqueRegionsForOcclusion({});
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceTreeHost, private:
 
+bool SurfaceTreeHost::ContentsFillsHostWindowOpaquely() const {
+  const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
+  return gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
+         root_surface_->FillsBoundsOpaquely();
+}
+
 void SurfaceTreeHost::InitHostWindow(const std::string& window_name) {
   host_window_->SetName(window_name);
   host_window_->Init(ui::LAYER_SOLID_COLOR);
   host_window_->set_owned_by_parent(false);
+  host_window_->SetTransparent(true);
+
   // The host window is a container of surface tree. It doesn't handle pointer
   // events.
   host_window_->SetEventTargetingPolicy(

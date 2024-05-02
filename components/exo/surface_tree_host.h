@@ -210,6 +210,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // surface's resource is updated.
   void UpdateHostLayerOpacity();
 
+  void UpdateHostWindowOpaqueRegion();
+
   bool client_submits_surfaces_in_pixel_coordinates() const {
     return client_submits_surfaces_in_pixel_coordinates_;
   }
@@ -267,6 +269,9 @@ class SurfaceTreeHost : public SurfaceDelegate,
   viz::FrameSinkId frame_sink_id_;
 
  private:
+  // Returns true if contents of `host_window_` fills the bounds opaquely.
+  bool ContentsFillsHostWindowOpaquely() const;
+
   void InitHostWindow(const std::string& window_name);
 
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
