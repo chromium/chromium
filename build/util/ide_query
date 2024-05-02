@@ -89,7 +89,9 @@ def main():
         options.out_dir,
     ])
     args.extend(targets)
-    p = subprocess.run(args, cwd=repo_root, stdout=2, stderr=2)
+    env = os.environ.copy()
+    env['SISO_EXPERIMENTS'] = 'no-fast-deps'
+    p = subprocess.run(args, cwd=repo_root, stdout=2, stderr=2, env=env)
     if p.returncode != 0:
       # TODO: report error in IdeAnalysis.Status?
       sys.stderr.write('build failed with %d\n' % p.returncode)
