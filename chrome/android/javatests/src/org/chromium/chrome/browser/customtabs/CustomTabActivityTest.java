@@ -1386,7 +1386,7 @@ public class CustomTabActivityTest {
      * mayLaunchUrl("http://example.com/page.html#first-fragment") -
      * loadUrl("http://example.com/page.html#other-fragment")
      *
-     * <p>There are two parameters changing the bahavior:
+     * <p>There are two parameters changing the behavior:
      *
      * @param ignoreFragments Whether the hidden tab should be kept.
      * @param wait Whether to wait for the hidden tab to load.
