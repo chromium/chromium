@@ -30,5 +30,11 @@ message OverlayObject {
   // The rendering metadata for the object.
   RenderingMetadata rendering_metadata = 8;
 
-  reserved 3, 4, 5, 6, 7;
+  message InteractionProperties {
+    // Whether an object can be tapped
+    bool select_on_tap = 1;
+  }
+  InteractionProperties interaction_properties = 4;
+
+  reserved 3, 5, 6, 7;
 }
