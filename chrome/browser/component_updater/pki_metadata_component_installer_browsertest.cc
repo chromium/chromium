@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/command_line.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,7 +22,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
 #include "content/public/browser/network_service_util.h"
@@ -104,13 +102,6 @@ class PKIMetadataComponentUpdaterTest
   }
 
  protected:
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
-    InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
-    test_launcher_utils::RemoveCommandLineSwitch(
-        default_command_line, switches::kDisableComponentUpdate, command_line);
-  }
-
   // Waits for the PKI to have been configured at least |expected_times|.
   void WaitForPKIConfiguration(int expected_times) {
     if (GetParam() == CTEnforcement::kDisabledByFeature) {
@@ -431,13 +422,6 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
   }
 
  protected:
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
-    InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
-    test_launcher_utils::RemoveCommandLineSwitch(
-        default_command_line, switches::kDisableComponentUpdate, command_line);
-  }
-
   base::ScopedTempDir component_dir_;
 
  private:
@@ -621,13 +605,6 @@ class PKIMetadataComponentCtAndCrsUpdaterTest
   }
 
  protected:
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
-    InProcessBrowserTest::SetUpDefaultCommandLine(&default_command_line);
-    test_launcher_utils::RemoveCommandLineSwitch(
-        default_command_line, switches::kDisableComponentUpdate, command_line);
-  }
-
   // Waits for the CT log lists to have been configured at least
   // |expected_times|.
   void WaitForCtConfiguration(int expected_times) {
