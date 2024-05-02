@@ -48,10 +48,11 @@ public class ConditionChecker {
     /**
      * Spot checks each of the {@link Condition}s.
      *
+     * @param stateName the name of the state whose conditions we are checking.
      * @param conditions the {@link Condition}s to check.
      * @throws AssertionError if not all Conditions are fulfilled.
      */
-    public static void check(List<Condition> conditions) {
+    public static void check(String stateName, List<Condition> conditions) {
         boolean anyCriteriaMissing = false;
         List<ConditionCheck> checks = new ArrayList<>();
         for (Condition condition : conditions) {
@@ -63,13 +64,17 @@ public class ConditionChecker {
         }
 
         if (anyCriteriaMissing) {
-            throw buildCheckConditionsException(checks);
+            throw buildCheckConditionsException(stateName, checks);
         }
     }
 
-    private static AssertionError buildCheckConditionsException(List<ConditionCheck> checks) {
+    private static AssertionError buildCheckConditionsException(
+            String stateName, List<ConditionCheck> checks) {
         return new AssertionError(
-                "Preconditions not fulfilled:\n" + createCheckConditionsSummary(checks));
+                "Preconditions not fulfilled for "
+                        + stateName
+                        + ":\n"
+                        + createCheckConditionsSummary(checks));
     }
 
     private static String createCheckConditionsSummary(List<ConditionCheck> checks) {

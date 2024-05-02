@@ -30,6 +30,7 @@ public abstract class Facility<HostStationT extends Station> extends Conditional
     protected final HostStationT mHostStation;
     private final int mId;
     private static int sLastFacilityId = 1000;
+    private String mName;
 
     /**
      * Constructor.
@@ -48,12 +49,19 @@ public abstract class Facility<HostStationT extends Station> extends Conditional
         mId = ++sLastFacilityId;
         mHostStation = hostStation;
         mHostStation.registerFacility(this);
+        mName =
+                String.format(
+                        "<S%d|F%d: %s>", mHostStation.getId(), mId, getClass().getSimpleName());
+    }
+
+    @Override
+    public String getName() {
+        return mName;
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "<S%d|F%d: %s>", mHostStation.getId(), mId, getClass().getSimpleName());
+        return mName;
     }
 
     /**

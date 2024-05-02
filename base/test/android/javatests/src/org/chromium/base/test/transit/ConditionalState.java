@@ -118,6 +118,11 @@ public abstract class ConditionalState {
     protected void onStopMonitoringTransitionFrom() {}
 
     /**
+     * @return the name of the State for use in debugging/error messages.
+     */
+    public abstract String getName();
+
+    /**
      * @return the lifecycle {@link Phase} this ConditionalState is in.
      */
     public @Phase int getPhase() {
@@ -147,7 +152,7 @@ public abstract class ConditionalState {
             }
         }
 
-        ConditionChecker.check(enterConditions);
+        ConditionChecker.check(getName(), enterConditions);
     }
 
     /**

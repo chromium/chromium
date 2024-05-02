@@ -26,10 +26,12 @@ public abstract class Station extends ConditionalState {
     private final int mId;
     private static int sLastStationId;
     private List<Facility> mFacilities = new ArrayList<>();
+    private String mName;
 
     protected Station() {
         mId = ++sLastStationId;
         TrafficControl.notifyCreatedStation(this);
+        mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
     }
 
     Elements getElementsIncludingFacilitiesWithPhase(@Phase int phase) {
@@ -48,8 +50,13 @@ public abstract class Station extends ConditionalState {
     }
 
     @Override
+    public String getName() {
+        return mName;
+    }
+
+    @Override
     public String toString() {
-        return String.format("<S%d: %s>", mId, getClass().getSimpleName());
+        return mName;
     }
 
     /**
