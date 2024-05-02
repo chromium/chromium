@@ -3770,7 +3770,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.PreFilledFieldClassificationsQuality.{FormType}"
     enum="AutofillPreFilledFieldClassificationsQuality"
-    expires_after="2024-09-22">
+    expires_after="2024-10-20">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3782,7 +3782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PreFilledFields.ByFieldType"
-    enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2024-06-10">
+    enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2024-10-20">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3792,7 +3792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PreFilledFields.{FormType}"
-    enum="AutofillPreFilledFieldStatus" expires_after="2024-07-21">
+    enum="AutofillPreFilledFieldStatus" expires_after="2024-10-20">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3803,7 +3803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PreFilledValueStatus.{FormType}"
-    enum="AutofillPreFilledValueStatus" expires_after="2024-09-22">
+    enum="AutofillPreFilledValueStatus" expires_after="2024-10-20">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
