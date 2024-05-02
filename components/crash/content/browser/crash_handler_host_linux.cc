@@ -175,9 +175,9 @@ void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
   struct msghdr msg = {nullptr};
   struct iovec iov[kCrashIovSize];
 
-  auto crash_context = std::make_unique<char[]>(kCrashContextSize);
+  auto crash_context = base::HeapArray<char>::Uninit(kCrashContextSize);
 #if defined(ADDRESS_SANITIZER)
-  auto asan_report = std::make_unique<char[]>(kMaxAsanReportSize + 1);
+  auto asan_report = base::HeapArray<char>::Uninit(kMaxAsanReportSize + 1);
 #endif
 
   auto crash_keys =
@@ -201,8 +201,8 @@ void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
 #endif
       sizeof(oom_size) +
       crash_keys_size;
-  iov[0].iov_base = crash_context.get();
-  iov[0].iov_len = kCrashContextSize;
+  iov[0].iov_base = crash_context.data();
+  iov[0].iov_len = crash_context.size();
   iov[1].iov_base = &tid_buf_addr;
   iov[1].iov_len = sizeof(tid_buf_addr);
   iov[2].iov_base = &tid_fd;
@@ -216,8 +216,8 @@ void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
 #if !defined(ADDRESS_SANITIZER)
   static_assert(5 == kCrashIovSize - 1, "kCrashIovSize should equal 6");
 #else
-  iov[6].iov_base = asan_report.get();
-  iov[6].iov_len = kMaxAsanReportSize + 1;
+  iov[6].iov_base = asan_report.data();
+  iov[6].iov_len = asan_report.size();
   static_assert(6 == kCrashIovSize - 1, "kCrashIovSize should equal 7");
 #endif
   msg.msg_iov = iov;
@@ -320,11 +320,11 @@ void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
 void CrashHandlerHostLinux::FindCrashingThreadAndDump(
     pid_t crashing_pid,
     const std::string& expected_syscall_data,
-    std::unique_ptr<char[]> crash_context,
+    base::HeapArray<char> crash_context,
     std::unique_ptr<crash_reporter::internal::TransitionalCrashKeyStorage>
         crash_keys,
 #if defined(ADDRESS_SANITIZER)
-    std::unique_ptr<char[]> asan_report,
+    base::HeapArray<char> asan_report,
 #endif
     uint64_t uptime,
     size_t oom_size,
@@ -366,7 +366,7 @@ void CrashHandlerHostLinux::FindCrashingThreadAndDump(
   }
 
   ExceptionHandler::CrashContext* bad_context =
-      reinterpret_cast<ExceptionHandler::CrashContext*>(crash_context.get());
+      reinterpret_cast<ExceptionHandler::CrashContext*>(crash_context.data());
   bad_context->tid = crashing_tid;
 
   auto info = std::make_unique<BreakpadInfo>();
@@ -407,7 +407,7 @@ void CrashHandlerHostLinux::FindCrashingThreadAndDump(
 }
 
 void CrashHandlerHostLinux::WriteDumpFile(BreakpadInfo* info,
-                                          std::unique_ptr<char[]> crash_context,
+                                          base::HeapArray<char> crash_context,
                                           pid_t crashing_pid) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -432,13 +432,10 @@ void CrashHandlerHostLinux::WriteDumpFile(BreakpadInfo* info,
                          process_type_.c_str(),
                          base::RandUint64());
 
-  if (!google_breakpad::WriteMinidump(minidump_filename.c_str(),
-                                      kMaxMinidumpFileSize,
-                                      crashing_pid,
-                                      crash_context.get(),
-                                      kCrashContextSize,
-                                      google_breakpad::MappingList(),
-                                      google_breakpad::AppMemoryList())) {
+  if (!google_breakpad::WriteMinidump(
+          minidump_filename.c_str(), kMaxMinidumpFileSize, crashing_pid,
+          crash_context.data(), crash_context.size(),
+          google_breakpad::MappingList(), google_breakpad::AppMemoryList())) {
     LOG(ERROR) << "Failed to write crash dump for pid " << crashing_pid;
   }
 #if defined(ADDRESS_SANITIZER)

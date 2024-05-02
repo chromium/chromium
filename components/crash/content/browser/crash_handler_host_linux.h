@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -81,7 +82,7 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
 
   // Do work on |blocking_task_runner_| for OnFileCanReadWithoutBlocking().
   void WriteDumpFile(BreakpadInfo* info,
-                     std::unique_ptr<char[]> crash_context,
+                     base::HeapArray<char> crash_context,
                      pid_t crashing_pid);
 
   // Continue OnFileCanReadWithoutBlocking()'s work on the IO thread.
@@ -91,11 +92,11 @@ class CrashHandlerHostLinux : public base::MessagePumpForIO::FdWatcher,
   void FindCrashingThreadAndDump(
       pid_t crashing_pid,
       const std::string& expected_syscall_data,
-      std::unique_ptr<char[]> crash_context,
+      base::HeapArray<char> crash_context,
       std::unique_ptr<crash_reporter::internal::TransitionalCrashKeyStorage>
           crash_keys,
 #if defined(ADDRESS_SANITIZER)
-      std::unique_ptr<char[]> asan_report,
+      base::HeapArray<char> asan_report,
 #endif
       uint64_t uptime,
       size_t oom_size,
