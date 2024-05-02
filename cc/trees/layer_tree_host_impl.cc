@@ -4800,13 +4800,13 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   } else if (use_shared_image_software) {
     auto sii = layer_tree_frame_sink_->shared_image_interface();
     gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
-    transferable = viz::TransferableResource::MakeSoftware(
-        client_shared_image->mailbox(), sync_token, upload_size, format,
+    transferable = viz::TransferableResource::MakeSoftwareSharedImage(
+        client_shared_image, sync_token, upload_size, format,
         viz::TransferableResource::ResourceSource::kUI);
   } else {
     layer_tree_frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
                                                     shared_bitmap_id);
-    transferable = viz::TransferableResource::MakeSoftware(
+    transferable = viz::TransferableResource::MakeSoftwareSharedBitmap(
         shared_bitmap_id, gpu::SyncToken(), upload_size, format,
         viz::TransferableResource::ResourceSource::kUI);
   }

@@ -246,7 +246,7 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
   source.readPixels(info, mapping.memory(), info.minRowBytes(), 0, 0);
 
   return child_resource_provider_->ImportResource(
-      viz::TransferableResource::MakeSoftware(
+      viz::TransferableResource::MakeSoftwareSharedBitmap(
           shared_bitmap_id, gpu::SyncToken(), size,
           viz::SinglePlaneFormat::kRGBA_8888),
       base::DoNothing());
