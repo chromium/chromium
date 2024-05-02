@@ -87,6 +87,7 @@ Input before setting suggested values:
 |         pseudo="select-fallback-datalist"
 |         shadow:pseudoId="select-fallback-datalist"
 |         <slot>
+|           id="select-datalist-options"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -198,6 +199,7 @@ Input after setting suggestedValue:
 |         pseudo="select-fallback-datalist"
 |         shadow:pseudoId="select-fallback-datalist"
 |         <slot>
+|           id="select-datalist-options"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -306,6 +308,7 @@ After resetting suggestedValue value:
 |         pseudo="select-fallback-datalist"
 |         shadow:pseudoId="select-fallback-datalist"
 |         <slot>
+|           id="select-datalist-options"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "

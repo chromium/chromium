@@ -446,7 +446,10 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     default_datalist_->SetShadowPseudoId(
         shadow_element_names::kSelectFallbackDatalist);
     datalist_slot_->AppendChild(default_datalist_);
+
     default_datalist_options_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
+    default_datalist_options_slot_->SetIdAttribute(
+        shadow_element_names::kSelectDatalistOptions);
     default_datalist_->AppendChild(default_datalist_options_slot_);
   }
 }

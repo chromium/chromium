@@ -94,6 +94,10 @@
       Symbol: "kSelectDatalist",
     },
     {
+      name: "select-datalist-options",
+      Symbol: "kSelectDatalistOptions",
+    },
+    {
       name: "select-fallback-button",
       Symbol: "kSelectFallbackButton",
     },

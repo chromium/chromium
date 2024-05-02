@@ -113,6 +113,7 @@ instead of "initial value".
 |         pseudo="select-fallback-datalist"
 |         shadow:pseudoId="select-fallback-datalist"
 |         <slot>
+|           id="select-datalist-options"
 | "input.value: initial value"
 | "internals.suggestedValue(input): suggested value"
 | "input.selectionStart: 0"

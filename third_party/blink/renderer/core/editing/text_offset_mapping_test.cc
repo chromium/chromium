@@ -465,7 +465,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
       "</button>"
       "</slot>"
       "<slot id=\"select-datalist\">"
-      "<datalist pseudo=\"select-fallback-datalist\"><slot></slot></datalist>"
+      "<datalist pseudo=\"select-fallback-datalist\">"
+      "<slot id=\"select-datalist-options\"></slot>"
+      "</datalist>"
       "</slot>"
       "</select>foo|";
   const auto& expected_inner =
@@ -479,7 +481,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
       "</button>"
       "</slot>"
       "<slot id=\"select-datalist\">"
-      "<datalist pseudo=\"select-fallback-datalist\"><slot></slot></datalist>"
+      "<datalist pseudo=\"select-fallback-datalist\">"
+      "<slot id=\"select-datalist-options\"></slot>"
+      "</datalist>"
       "</slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
@@ -501,7 +505,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
       "</button>"
       "</slot>"
       "<slot id=\"select-datalist\">"
-      "<datalist pseudo=\"select-fallback-datalist\"><slot></slot></datalist>"
+      "<datalist pseudo=\"select-fallback-datalist\">"
+      "<slot id=\"select-datalist-options\"></slot>"
+      "</datalist>"
       "</slot>"
       "</select>foo|";
   const auto& expected_inner =
@@ -515,7 +521,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
       "</button>"
       "</slot>"
       "<slot id=\"select-datalist\">"
-      "<datalist pseudo=\"select-fallback-datalist\"><slot></slot></datalist>"
+      "<datalist pseudo=\"select-fallback-datalist\">"
+      "<slot id=\"select-datalist-options\"></slot>"
+      "</datalist>"
       "</slot>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
