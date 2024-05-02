@@ -46,21 +46,10 @@ const NSTimeInterval kAnimationDuration = 0.15;
 const CGFloat kResizeFactor = 4;
 }  // anonymous namespace
 
-@interface CardSideSwipeView ()
-
-// Pan touches ended or were cancelled.
-- (void)finishPan;
-// Is the current card is an edge card based on swipe direction.
-- (BOOL)isEdgeSwipe;
-// Initialize card based on model_'s webstatelist index.
-- (void)setupCard:(SwipeView*)card withIndex:(int)index;
-// Build a `kResizeFactor` sized greyscaled version of `image`.
-- (UIImage*)smallGreyImage:(UIImage*)image;
-
-@property(nonatomic, strong) NSLayoutConstraint* backgroundTopConstraint;
-@end
-
 @implementation CardSideSwipeView {
+  // Constraint defining the top edge of the background.
+  NSLayoutConstraint* _backgroundTopConstraint;
+
   // The direction of the swipe that initiated this horizontal view.
   UISwipeGestureRecognizerDirection _direction;
 
@@ -75,7 +64,6 @@ const CGFloat kResizeFactor = 4;
   raw_ptr<WebStateList> _webStateList;
 }
 
-@synthesize backgroundTopConstraint = _backgroundTopConstraint;
 @synthesize delegate = _delegate;
 @synthesize topMargin = _topMargin;
 
@@ -93,13 +81,13 @@ const CGFloat kResizeFactor = 4;
 
     [background setTranslatesAutoresizingMaskIntoConstraints:NO];
     CGFloat topInset = self.safeAreaInsets.top;
-    self.backgroundTopConstraint =
+    _backgroundTopConstraint =
         [[background topAnchor] constraintEqualToAnchor:self.topAnchor
                                                constant:-topInset];
     [NSLayoutConstraint activateConstraints:@[
       [[background rightAnchor] constraintEqualToAnchor:self.rightAnchor],
       [[background leftAnchor] constraintEqualToAnchor:self.leftAnchor],
-      self.backgroundTopConstraint,
+      _backgroundTopConstraint,
       [[background bottomAnchor] constraintEqualToAnchor:self.bottomAnchor]
     ]];
 
@@ -132,7 +120,7 @@ const CGFloat kResizeFactor = 4;
 - (void)updateConstraints {
   [super updateConstraints];
   CGFloat topInset = self.safeAreaInsets.top;
-  self.backgroundTopConstraint.constant = -topInset;
+  _backgroundTopConstraint.constant = -topInset;
 }
 
 - (CGFloat)cardWidth {
@@ -154,6 +142,7 @@ const CGFloat kResizeFactor = 4;
   }
 }
 
+// Build a `kResizeFactor` sized greyscaled version of `image`.
 - (UIImage*)smallGreyImage:(UIImage*)image {
   CGRect smallSize = CGRectMake(0, 0, image.size.width / kResizeFactor,
                                 image.size.height / kResizeFactor);
@@ -265,7 +254,8 @@ const CGFloat kResizeFactor = 4;
 }
 
 // Update layout with new touch event.
-- (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture {
+- (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
+      actionBeforeTabSwitch:(TabSwipeHandler)actionBeforeTabSwitch {
   _currentPoint = [gesture locationInView:self];
   _currentPoint.x -= gesture.swipeOffset;
 
@@ -292,10 +282,11 @@ const CGFloat kResizeFactor = 4;
   if (gesture.state == UIGestureRecognizerStateEnded ||
       gesture.state == UIGestureRecognizerStateCancelled ||
       gesture.state == UIGestureRecognizerStateFailed) {
-    [self finishPan];
+    [self finishPanWithActionBeforeTabSwitch:actionBeforeTabSwitch];
   }
 }
 
+// Returns whether the current card is an edge card based on swipe direction.
 - (BOOL)isEdgeSwipe {
   int currentIndex = _webStateList->active_index();
   return (IsSwipingBack(_direction) && currentIndex == 0) ||
@@ -305,7 +296,8 @@ const CGFloat kResizeFactor = 4;
 
 // Update the current WebState and animate the proper card view if the
 // `currentPoint_` is past the center of `bounds`.
-- (void)finishPan {
+- (void)finishPanWithActionBeforeTabSwitch:
+    (TabSwipeHandler)actionBeforeTabSwitch {
   int currentIndex = _webStateList->active_index();
   // Something happened and now there is not active WebState.  End card side let
   // swipe and BVC show no tabs UI.
@@ -349,6 +341,10 @@ const CGFloat kResizeFactor = 4;
       dominantCard = _leftCard;
       base::RecordAction(UserMetricsAction("MobileStackSwipeCancelled"));
     }
+  }
+
+  if (actionBeforeTabSwitch) {
+    actionBeforeTabSwitch(destinationWebStateIndex);
   }
 
   if (destinationWebStateIndex != currentIndex) {

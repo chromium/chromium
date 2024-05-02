@@ -36,7 +36,12 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
 TabBasedIPHBrowserAgent::~TabBasedIPHBrowserAgent() = default;
 
 void TabBasedIPHBrowserAgent::RootViewForInProductHelpDidAppear() {
-  // TODO(crbug.com/40276959): Show toolbar swipe IPH.
+  web::WebState* current_web_state = web_state_list_->GetActiveWebState();
+  if (tapped_adjacent_tab_ && current_web_state &&
+      !current_web_state->IsLoading()) {
+    [HelpHandler() presentToolbarSwipeGestureInProductHelp];
+    tapped_adjacent_tab_ = false;
+  }
 }
 
 void TabBasedIPHBrowserAgent::RootViewForInProductHelpWillDisappear() {
@@ -46,14 +51,14 @@ void TabBasedIPHBrowserAgent::RootViewForInProductHelpWillDisappear() {
 void TabBasedIPHBrowserAgent::NotifyMultiGestureRefreshEvent() {
   engagement_tracker_->NotifyEvent(
       feature_engagement::events::kIOSMultiGestureRefreshUsed);
-  web::WebState* currentWebState = web_state_list_->GetActiveWebState();
-  if (currentWebState) {
+  web::WebState* current_web_state = web_state_list_->GetActiveWebState();
+  if (current_web_state) {
     // Check whether the page is scrolled to the top. Normally this should be
     // checked after the page has been fully refreshed, but at that time the web
     // view might not have resumed its original scroll offset. Adding a check
     // here as a precaution.
     CRWWebViewScrollViewProxy* proxy =
-        currentWebState->GetWebViewProxy().scrollViewProxy;
+        current_web_state->GetWebViewProxy().scrollViewProxy;
     CGPoint scroll_offset = proxy.contentOffset;
     UIEdgeInsets content_inset = proxy.contentInset;
     if (AreCGFloatsEqual(scroll_offset.y, -content_inset.top)) {
@@ -66,6 +71,12 @@ void TabBasedIPHBrowserAgent::NotifyBackForwardButtonTap() {
   engagement_tracker_->NotifyEvent(
       feature_engagement::events::kIOSBackForwardButtonTapped);
   back_forward_button_tapped_ = true;
+}
+
+void TabBasedIPHBrowserAgent::NotifySwitchToAdjacentTabFromTabGrid() {
+  engagement_tracker_->NotifyEvent(
+      feature_engagement::events::kIOSTabGridAdjacentTabTapped);
+  tapped_adjacent_tab_ = true;
 }
 
 #pragma mark - BrowserObserver
@@ -86,13 +97,13 @@ void TabBasedIPHBrowserAgent::TabDidLoadUrl(
     const GURL& url,
     ui::PageTransition transition_type) {
   ResetFeatureStatesAndRemoveIPHViews();
-  web::WebState* currentWebState = web_state_list_->GetActiveWebState();
-  if (currentWebState) {
+  web::WebState* current_web_state = web_state_list_->GetActiveWebState();
+  if (current_web_state) {
     if ((transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
         (transition_type & ui::PAGE_TRANSITION_FORWARD_BACK)) {
       [HelpHandler() presentNewTabToolbarItemBubble];
     }
-    GURL visible = currentWebState->GetLastCommittedURL();
+    GURL visible = current_web_state->GetLastCommittedURL();
     if (url == visible &&
         transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR &&
         url != kChromeUINewTabURL) {
@@ -152,6 +163,9 @@ void TabBasedIPHBrowserAgent::DidStopLoading(web::WebState* web_state) {
     } else if (back_forward_button_tapped_) {
       [HelpHandler() presentBackForwardSwipeGestureInProductHelp];
       back_forward_button_tapped_ = false;
+    } else if (tapped_adjacent_tab_) {
+      [HelpHandler() presentToolbarSwipeGestureInProductHelp];
+      tapped_adjacent_tab_ = false;
     }
     return;
   }
@@ -183,6 +197,7 @@ void TabBasedIPHBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 void TabBasedIPHBrowserAgent::ResetFeatureStatesAndRemoveIPHViews() {
   multi_gesture_refresh_ = false;
   back_forward_button_tapped_ = false;
+  tapped_adjacent_tab_ = false;
   // Invocation of this method is usually caused by manually triggered changes
   // to the web state, which is a result of the user tapping the location bar or
   // toolbar, both outside of the gestural IPH.

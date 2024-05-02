@@ -58,9 +58,7 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
 
   // Notifies that the user has used the tab grid solely to switch to an
   // adjacent tab.
-  void NotifySwitchToAdjacentTabFromTabGrid() {
-    // TODO(crbug.com/40276959): implement in implementation file.
-  }
+  void NotifySwitchToAdjacentTabFromTabGrid();
 
 #pragma mark - Observer headers
 
@@ -116,6 +114,9 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
   // Whether the user has just tapped back/forward button in the toolbar; will
   // be reset to `false` after the navigation has completed.
   bool back_forward_button_tapped_ = false;
+  // Whether the user has just tapped an adjacent tab through the tab grid; will
+  // be reset to `false` once the active tab is changed.
+  bool tapped_adjacent_tab_ = false;
 
   BROWSER_USER_DATA_KEY_DECL();
 };

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+Testing.h"
 
 #import <memory>
 
@@ -15,6 +14,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/side_swipe/card_side_swipe_view.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+Testing.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_navigation_view.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_highlighting.h"
@@ -194,13 +195,11 @@ const CGFloat kIpadTabSwipeDistance = 100;
   }
   switch (swipeType) {
     case SwipeType::NONE:
+    case SwipeType::CHANGE_TAB:
       NOTREACHED();
       break;
     case SwipeType::CHANGE_PAGE:
       [self animatePageNavigationInDirection:direction];
-      break;
-    case SwipeType::CHANGE_TAB:
-      // TODO(crbug.com/40276959): Implement.
       break;
   }
 }
@@ -293,6 +292,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
       }
 
       if (newIndex != currentIndex) {
+        [self willActivateWebStateAtIndex:newIndex];
         web::WebState* webState = self.webStateList->GetWebStateAt(newIndex);
         // Toggle overlay preview mode for selected tab.
         PagePlaceholderTabHelper::FromWebState(webState)
@@ -324,6 +324,19 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
     // Stop disabling fullscreen.
     _fullscreenDisabler = nullptr;
+  }
+}
+
+// Invoked when the active tab is about to be changed.
+- (void)willActivateWebStateAtIndex:(int)index {
+  if (!self.activeWebState || index == WebStateList::kInvalidIndex) {
+    return;
+  }
+  int currentIndex = self.webStateList->GetIndexOfWebState(self.activeWebState);
+  if (currentIndex != index && currentIndex != WebStateList::kInvalidIndex) {
+    _engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSSwipeToolbarToChangeTabUsed);
+    [self.helpHandler handleToolbarSwipeGesture];
   }
 }
 
@@ -502,7 +515,12 @@ const CGFloat kIpadTabSwipeDistance = 100;
     [gesture.view addSubview:_tabSideSwipeView];
   }
 
-  [_tabSideSwipeView handleHorizontalPan:gesture];
+  __weak SideSwipeMediator* weakSelf = self;
+  [_tabSideSwipeView
+        handleHorizontalPan:gesture
+      actionBeforeTabSwitch:^(int destinationWebStateIndex) {
+        [weakSelf willActivateWebStateAtIndex:destinationWebStateIndex];
+      }];
 }
 
 - (void)addCurtainWithCompletionHandler:(ProceduralBlock)completionHandler {

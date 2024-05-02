@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
 
+using TabSwipeHandler = void (^)(int destinationWebStateIndex);
+
 @class SideSwipeGestureRecognizer;
 @protocol SideSwipeToolbarSnapshotProviding;
 class WebStateList;
@@ -26,7 +28,8 @@ class WebStateList;
                     topMargin:(CGFloat)margin
                  webStateList:(WebStateList*)webStateList;
 - (void)updateViewsForDirection:(UISwipeGestureRecognizerDirection)direction;
-- (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture;
+- (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
+      actionBeforeTabSwitch:(TabSwipeHandler)completionHandler;
 
 @end
 

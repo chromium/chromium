@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class FullscreenController;
+@protocol HelpCommands;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabStripHighlighting;
@@ -67,6 +68,9 @@ enum class SwipeType { NONE, CHANGE_TAB, CHANGE_PAGE };
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
 @property(nonatomic) feature_engagement::Tracker* engagementTracker;
+
+// Handler for in-product help tips.
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
 
 // Initializer.
 - (instancetype)
