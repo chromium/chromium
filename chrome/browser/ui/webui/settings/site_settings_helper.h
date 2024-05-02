@@ -51,6 +51,20 @@ struct StorageAccessEmbeddingException {
   base::Time expiration;
 };
 
+enum class SiteSettingSource {
+  kAdsFilterBlocklist,
+  kEmbargo,
+  kInsecureOrigin,
+  kKillSwitch,
+  kAllowlist,
+  kPolicy,
+  kExtension,
+  kHostedApp,
+  kPreference,
+  kDefault,
+  kNumSources,
+};
+
 // Maps from a pair(secondary pattern, incognito)  to a setting and if it's
 // embargoed.
 typedef std::map<std::pair<ContentSettingsPattern, bool>, SiteExceptionInfo>
@@ -63,14 +77,17 @@ typedef std::map<std::pair<ContentSettingsPattern, bool>, SiteExceptionInfo>
 // preferences are saved in lowest precedence pattern to the highest. However,
 // we want to show the patterns with the highest precedence (the more specific
 // ones) on the top, hence `std::greater<>`.
-typedef std::map<std::pair<ContentSettingsPattern, std::string>,
+typedef std::map<std::pair<ContentSettingsPattern, SiteSettingSource>,
                  OnePatternSettings,
                  std::greater<>>
     AllPatternsSettings;
 
 // A set of <origin, source, incognito> tuple for organizing granted permission
 // objects that belong to the same device.
-using ChooserExceptionDetails = std::set<std::tuple<GURL, std::string, bool>>;
+
+using ChooserExceptionDetails =
+    std::set<std::tuple<GURL, SiteSettingSource, bool>>;
+
 constexpr char kChooserType[] = "chooserType";
 constexpr char kCloseDescription[] = "closeDescription";
 constexpr char kDisabled[] = "disabled";
@@ -100,20 +117,6 @@ constexpr char kType[] = "type";
 constexpr char kNotificationPermissionsReviewListMaybeChangedEvent[] =
     "notification-permission-review-list-maybe-changed";
 
-enum class SiteSettingSource {
-  kAllowlist,
-  kAdsFilterBlocklist,
-  kDefault,
-  kEmbargo,
-  kExtension,
-  kHostedApp,
-  kInsecureOrigin,
-  kKillSwitch,
-  kPolicy,
-  kPreference,
-  kNumSources,
-};
-
 // Returns whether a group name has been registered for the given type.
 bool HasRegisteredGroupName(ContentSettingsType type);
 
@@ -138,7 +141,7 @@ base::Value::Dict GetFileSystemExceptionForPage(
     const std::string& origin,
     const base::FilePath& file_path,
     const ContentSetting& setting,
-    const std::string& provider_name,
+    SiteSettingSource source,
     bool incognito,
     bool is_embargoed = false);
 
@@ -171,7 +174,7 @@ base::Value::Dict GetExceptionForPage(
     const ContentSettingsPattern& secondary_pattern,
     const std::string& display_name,
     const ContentSetting& setting,
-    const std::string& provider_name,
+    const SiteSettingSource source,
     const base::Time& expiration,
     bool incognito,
     bool is_embargoed = false);
@@ -212,7 +215,7 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
                                           const HostContentSettingsMap* map,
                                           const GURL& origin,
                                           ContentSettingsType content_type,
-                                          std::string* source_string);
+                                          SiteSettingSource* source);
 
 // Returns URLs with granted entries from the File System Access API.
 void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,

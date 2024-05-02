@@ -2553,9 +2553,7 @@ TEST_F(SiteSettingsHandlerTest,
   base::Value::Dict exception = site_settings::GetExceptionForPage(
       ContentSettingsType::NOTIFICATIONS, /*profile=*/nullptr, pattern,
       ContentSettingsPattern::Wildcard(), pattern.ToString(),
-      CONTENT_SETTING_BLOCK,
-      site_settings::SiteSettingSourceToString(
-          site_settings::SiteSettingSource::kPreference),
+      CONTENT_SETTING_BLOCK, site_settings::SiteSettingSource::kPreference,
       /*expiration=*/base::Time::Now(), /*incognito=*/false);
 
   CHECK(exception.FindString(site_settings::kOrigin));

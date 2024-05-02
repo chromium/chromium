@@ -1410,9 +1410,9 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(profile_);
 
-    std::string source_string;
+    site_settings::SiteSettingSource source;
     ContentSetting content_setting = site_settings::GetContentSettingForOrigin(
-        profile_, map, origin_url, content_type, &source_string);
+        profile_, map, origin_url, content_type, &source);
     std::string content_setting_string =
         content_settings::ContentSettingToString(content_setting);
 
@@ -1422,7 +1422,8 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
                            profile_->IsOffTheRecord());
     raw_site_exception.Set(site_settings::kOrigin, origin);
     raw_site_exception.Set(site_settings::kSetting, content_setting_string);
-    raw_site_exception.Set(site_settings::kSource, source_string);
+    raw_site_exception.Set(site_settings::kSource,
+                           site_settings::SiteSettingSourceToString(source));
 
     UrlIdentity identity = site_settings::GetUrlIdentityForGURL(
         profile_, origin_url, /*hostname_only=*/false);

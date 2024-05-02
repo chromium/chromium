@@ -547,27 +547,27 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
   GURL origin("https://www.example.com/");
-  std::string source;
+  SiteSettingSource source;
   ContentSetting content_setting;
 
   // Built in Chrome default.
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDefault), source);
+  EXPECT_EQ(SiteSettingSource::kDefault, source);
   EXPECT_EQ(CONTENT_SETTING_ASK, content_setting);
 
   // User-set global default.
   map->SetDefaultContentSetting(kContentType, CONTENT_SETTING_ALLOW);
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDefault), source);
+  EXPECT_EQ(SiteSettingSource::kDefault, source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
   // User-set pattern.
   AddSetting(map, "https://*", CONTENT_SETTING_BLOCK);
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPreference), source);
+  EXPECT_EQ(SiteSettingSource::kPreference, source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
 
   // User-set origin setting.
@@ -575,7 +575,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
                                      CONTENT_SETTING_ALLOW);
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPreference), source);
+  EXPECT_EQ(SiteSettingSource::kPreference, source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
   // Extension.
@@ -591,7 +591,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
       ProviderType::kCustomExtensionProvider);
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kExtension), source);
+  EXPECT_EQ(SiteSettingSource::kExtension, source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
 
   // Enterprise policy.
@@ -606,15 +606,14 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
                                                 ProviderType::kPolicyProvider);
   content_setting =
       GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPolicy), source);
+  EXPECT_EQ(SiteSettingSource::kPolicy, source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
   // Insecure origins.
   content_setting = GetContentSettingForOrigin(
       &profile, map, GURL("http://www.insecure_http_site.com/"), kContentType,
       &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kInsecureOrigin),
-            source);
+  EXPECT_EQ(SiteSettingSource::kInsecureOrigin, source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
 }
 
@@ -882,7 +881,7 @@ void ExpectValidChooserExceptionObject(
 void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
                                     const std::string& display_name,
                                     const GURL& origin,
-                                    const std::string source,
+                                    const SiteSettingSource source,
                                     bool incognito) {
   ASSERT_TRUE(actual_site_object.is_dict());
 
@@ -903,7 +902,7 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
 
   const std::string* source_value = actual_site_dict.FindString(kSource);
   ASSERT_TRUE(source_value);
-  EXPECT_EQ(*source_value, source);
+  EXPECT_EQ(*source_value, SiteSettingSourceToString(source));
 
   std::optional<bool> incognito_value = actual_site_dict.FindBool(kIncognito);
   ASSERT_TRUE(incognito_value.has_value());
@@ -915,10 +914,8 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
 TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   const std::string kUsbChooserGroupName(
       ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
-  const std::string& kPolicySource =
-      SiteSettingSourceToString(SiteSettingSource::kPolicy);
-  const std::string& kPreferenceSource =
-      SiteSettingSourceToString(SiteSettingSource::kPreference);
+  auto kPolicySource = SiteSettingSource::kPolicy;
+  auto kPreferenceSource = SiteSettingSource::kPreference;
   const std::u16string& kObjectName = u"Gadget";
   ChooserExceptionDetails exception_details;
 
@@ -1092,11 +1089,11 @@ TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
   constexpr char kAllowed[] = "https://www.allowed.com:443";
 
   // Automatic Fullscreen is not visible for sites with the default BLOCK value.
-  std::string source;
+  SiteSettingSource source;
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
   ContentSetting content_setting =
       GetContentSettingForOrigin(&profile, map, GURL(kDefault), type, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDefault), source);
+  EXPECT_EQ(SiteSettingSource::kDefault, source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
   types = GetVisiblePermissionCategories(kDefault, &profile);
   EXPECT_FALSE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
@@ -1115,7 +1112,7 @@ TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
   // Automatic Fullscreen is visible for origins with non-default values.
   content_setting =
       GetContentSettingForOrigin(&profile, map, GURL(kAllowed), type, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPolicy), source);
+  EXPECT_EQ(SiteSettingSource::kPolicy, source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
   types = GetVisiblePermissionCategories(kAllowed, &profile);
   EXPECT_TRUE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
@@ -1214,10 +1211,8 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
       ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
   const ChooserTypeNameEntry* chooser_type =
       ChooserTypeFromGroupName(kUsbChooserGroupName);
-  const std::string& kPolicySource =
-      SiteSettingSourceToString(SiteSettingSource::kPolicy);
-  const std::string& kPreferenceSource =
-      SiteSettingSourceToString(SiteSettingSource::kPreference);
+  auto kPolicySource = SiteSettingSource::kPolicy;
+  auto kPreferenceSource = SiteSettingSource::kPreference;
 
   // The chooser exceptions are ordered by display name. Their corresponding
   // sites are ordered by permission source precedence, then by the origin.
@@ -1421,8 +1416,7 @@ class SiteSettingsHelperExtensionTest
 TEST_F(SiteSettingsHelperExtensionTest, CreateChooserExceptionObject) {
   const std::string kUsbChooserGroupName(
       ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
-  const std::string& kPreferenceSource =
-      SiteSettingSourceToString(SiteSettingSource::kPreference);
+  auto kPreferenceSource = SiteSettingSource::kPreference;
   const std::u16string& kObjectName = u"Gadget";
   ChooserExceptionDetails exception_details;
   const std::string extension_name = "Test Extension";
@@ -1539,10 +1533,7 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest,
        IsolatedWebAppsUseAppNameAsDisplayName) {
   const std::string kUsbChooserGroupName(
       ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
-  const std::string& kPolicySource =
-      SiteSettingSourceToString(SiteSettingSource::kPolicy);
-  const std::string& kPreferenceSource =
-      SiteSettingSourceToString(SiteSettingSource::kPreference);
+  auto kPreferenceSource = SiteSettingSource::kPreference;
   const std::u16string& kObjectName = u"Gadget";
 
   InstallIsolatedWebApp(kAppUrl, kAppName);
@@ -1583,11 +1574,11 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest, AutomaticFullscreenVisibility) {
   InstallIsolatedWebApp(kAppUrl, kAppName);
 
   // Automatic Fullscreen is visible for IWAs, even with default BLOCK values.
-  std::string source;
+  SiteSettingSource source;
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   ContentSetting content_setting =
       GetContentSettingForOrigin(profile(), map, kAppUrl, type, &source);
-  EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDefault), source);
+  EXPECT_EQ(SiteSettingSource::kDefault, source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
   const auto types = GetVisiblePermissionCategories(kAppUrl.spec(), profile());
   EXPECT_TRUE(base::ranges::any_of(types, [](auto& t) { return t == type; }));
