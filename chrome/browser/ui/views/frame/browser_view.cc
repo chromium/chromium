@@ -960,10 +960,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       this, is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
   left_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
-  if (features::IsChromeRefresh2023()) {
-    side_panel_rounded_corner_ =
-        AddChildView(std::make_unique<SidePanelRoundedCorner>(this));
-  }
+  side_panel_rounded_corner_ =
+      AddChildView(std::make_unique<SidePanelRoundedCorner>(this));
 
   SidePanelUI::SetSidePanelUIForBrowser(
       browser_.get(), std::make_unique<SidePanelCoordinator>(this));
@@ -2467,10 +2465,8 @@ void BrowserView::UpdateSidePanelHorizontalAlignment() {
   unified_side_panel_->SetHorizontalAlignment(
       is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft);
   GetBrowserViewLayout()->Layout(this);
-  if (side_panel_rounded_corner_) {
-    side_panel_rounded_corner_->DeprecatedLayoutImmediately();
-    side_panel_rounded_corner_->SchedulePaint();
-  }
+  side_panel_rounded_corner_->DeprecatedLayoutImmediately();
+  side_panel_rounded_corner_->SchedulePaint();
 }
 
 void BrowserView::FocusBookmarksToolbar() {

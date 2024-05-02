@@ -90,7 +90,7 @@ class BrowserViewTest : public InProcessBrowserTest {
   SidePanel* side_panel() { return browser_view()->unified_side_panel(); }
 
   views::View* side_panel_rounded_corner() {
-    return browser_view()->GetSidePanelRoundedCorner();
+    return browser_view()->GetSidePanelRoundedCornerForTesting();
   }
 
   void OpenDevToolsWindow(bool docked) {

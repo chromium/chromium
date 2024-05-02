@@ -214,6 +214,9 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     infobar_container_ = browser_view_->AddChildView(
         std::make_unique<InfoBarContainerView>(nullptr));
 
+    side_panel_rounded_corner_ =
+        browser_view_->AddChildView(CreateFixedSizeView(gfx::Size(16, 16)));
+
     contents_container_ =
         browser_view_->AddChildView(CreateFixedSizeView(gfx::Size(800, 600)));
     devtools_web_view_ = contents_container_->AddChildView(
@@ -236,7 +239,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         /*left_aligned_side_panel_separator=*/nullptr,
         /*unified_side_panel=*/nullptr,
         /*right_aligned_side_panel_separator=*/nullptr,
-        /*side_panel_rounded_corner=*/nullptr, immersive_mode_controller_.get(),
+        side_panel_rounded_corner_, immersive_mode_controller_.get(),
         separator_);
     layout->set_webui_tab_strip(webui_tab_strip());
     layout_ = layout.get();
@@ -265,6 +268,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   raw_ptr<views::View> toolbar_;
   raw_ptr<views::Separator> separator_;
   raw_ptr<InfoBarContainerView> infobar_container_;
+  raw_ptr<views::View> side_panel_rounded_corner_;
   raw_ptr<views::View> contents_container_;
   raw_ptr<views::View> contents_web_view_;
   raw_ptr<views::View> devtools_web_view_;

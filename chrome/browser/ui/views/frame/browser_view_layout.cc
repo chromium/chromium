@@ -698,9 +698,7 @@ void BrowserViewLayout::LayoutSidePanelView(
     gfx::Rect& contents_container_bounds) {
   const bool side_panel_visible = side_panel && side_panel->GetVisible();
   // Update side panel rounded corner visibility to match side panel visibility.
-  if (side_panel_rounded_corner_) {
-    SetViewVisibility(side_panel_rounded_corner_, side_panel_visible);
-  }
+  SetViewVisibility(side_panel_rounded_corner_, side_panel_visible);
 
   if (left_aligned_side_panel_separator_) {
     const bool side_panel_visible_on_left =
@@ -794,23 +792,21 @@ void BrowserViewLayout::LayoutSidePanelView(
 
   // Adjust the side panel rounded corner bounds based on the side panel bounds
   // calculated above.
-  if (side_panel_rounded_corner_) {
-    const float corner_radius =
-        side_panel_rounded_corner_->GetLayoutProvider()->GetCornerRadiusMetric(
-            views::ShapeContextTokens::kSidePanelPageContentRadius);
-    if (is_container_after_side_panel) {
-      side_panel_rounded_corner_->SetBounds(
-          side_panel_bounds.right(),
-          side_panel_bounds.y() - views::Separator::kThickness,
-          corner_radius + views::Separator::kThickness,
-          corner_radius + views::Separator::kThickness);
-    } else {
-      side_panel_rounded_corner_->SetBounds(
-          side_panel_bounds.x() - corner_radius - views::Separator::kThickness,
-          side_panel_bounds.y() - views::Separator::kThickness,
-          corner_radius + views::Separator::kThickness,
-          corner_radius + views::Separator::kThickness);
-    }
+  const float corner_radius =
+      side_panel_rounded_corner_->GetLayoutProvider()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kSidePanelPageContentRadius);
+  if (is_container_after_side_panel) {
+    side_panel_rounded_corner_->SetBounds(
+        side_panel_bounds.right(),
+        side_panel_bounds.y() - views::Separator::kThickness,
+        corner_radius + views::Separator::kThickness,
+        corner_radius + views::Separator::kThickness);
+  } else {
+    side_panel_rounded_corner_->SetBounds(
+        side_panel_bounds.x() - corner_radius - views::Separator::kThickness,
+        side_panel_bounds.y() - views::Separator::kThickness,
+        corner_radius + views::Separator::kThickness,
+        corner_radius + views::Separator::kThickness);
   }
 }
 
