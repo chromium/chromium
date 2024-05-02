@@ -49,7 +49,7 @@ struct Transaction : base::RefCounted<Transaction> {
         return;
       }
 
-      FIDO_LOG(ERROR) << "<- " << cbor::DiagnosticWriter::Write(request_);
+      FIDO_LOG(EVENT) << "<- " << cbor::DiagnosticWriter::Write(request_);
       BuildCommandRequestBody(
           std::move(request_), std::move(signing_callback_), *handshake_hash_,
           base::BindOnce(&Transaction::RequestReady, scoped_refptr(this)));
@@ -69,7 +69,7 @@ struct Transaction : base::RefCounted<Transaction> {
           break;
         }
 
-        FIDO_LOG(ERROR) << "-> " << cbor::DiagnosticWriter::Write(*response);
+        FIDO_LOG(EVENT) << "-> " << cbor::DiagnosticWriter::Write(*response);
         if (!response->is_map()) {
           std::move(callback_).Run(std::nullopt);
           break;
