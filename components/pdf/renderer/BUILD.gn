@@ -65,6 +65,10 @@ static_library("renderer") {
   }
 
   if (enable_screen_ai_service) {
+    sources += [
+      "pdf_ocr_helper.cc",
+      "pdf_ocr_helper.h",
+    ]
     deps += [ "//components/language/core/common" ]
   }
 }

@@ -29,7 +29,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "pdf/pdf_accessibility_action_handler.h"
-#include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -52,187 +51,11 @@
 #include "base/containers/contains.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/language/core/common/language_util.h"  // nogncheck
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace pdf {
 
 namespace ranges = base::ranges;
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-//
-// PdfOcrRequest
-//
-
-using PdfOcrRequest = PdfAccessibilityTree::PdfOcrRequest;
-
-PdfOcrRequest::PdfOcrRequest(const ui::AXNodeID& image_node_id,
-                             const chrome_pdf::AccessibilityImageInfo& image,
-                             const ui::AXNodeID& root_node_id,
-                             const ui::AXNodeID& parent_node_id,
-                             const ui::AXNodeID& page_node_id,
-                             uint32_t page_index)
-    : image_node_id(image_node_id),
-      image(image),
-      root_node_id(root_node_id),
-      parent_node_id(parent_node_id),
-      page_node_id(page_node_id),
-      page_index(page_index) {}
-
-PdfOcrRequest::PdfOcrRequest(const PdfOcrRequest& other) = default;
-
-//
-// PdfOcrService
-//
-
-using PdfOcrService = PdfAccessibilityTree::PdfOcrService;
-
-PdfOcrService::PdfOcrService(
-    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
-    content::RenderFrame& render_frame,
-    ui::AXNodeID root_node_id,
-    uint32_t page_count,
-    OnOcrDataReceivedCallback callback)
-    : image_fetcher_(image_fetcher),
-      pages_per_batch_(ComputePagesPerBatch(page_count)),
-      remaining_page_count_(page_count),
-      root_node_id_(root_node_id),
-      on_ocr_data_received_callback_(std::move(callback)) {
-  CHECK(features::IsPdfOcrEnabled());
-  render_frame.GetBrowserInterfaceBroker()->GetInterface(
-      screen_ai_annotator_.BindNewPipeAndPassReceiver());
-}
-
-PdfOcrService::~PdfOcrService() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void PdfOcrService::ResetService(ui::AXNodeID root_node_id,
-                                 uint32_t page_count) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  CHECK_GT(page_count, 0u);
-  pages_per_batch_ = ComputePagesPerBatch(page_count);
-  remaining_page_count_ = page_count;
-  root_node_id_ = root_node_id;
-
-  if (!is_ocr_in_progress_) {
-    return;
-  }
-
-  batch_requests_.clear();
-  batch_tree_updates_.clear();
-  while (!all_requests_.empty()) {
-    all_requests_.pop();
-  }
-
-  is_ocr_in_progress_ = false;
-}
-
-// static
-uint32_t PdfOcrService::ComputePagesPerBatch(uint32_t page_count) {
-  constexpr uint32_t kMinPagesPerBatch = 1u;
-  constexpr uint32_t kMaxPagesPerBatch = 20u;
-
-  return std::clamp<uint32_t>(page_count * 0.1, kMinPagesPerBatch,
-                              kMaxPagesPerBatch);
-}
-
-void PdfOcrService::OcrPage(base::queue<PdfOcrRequest> page_requests) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!page_requests.empty());
-  CHECK_GT(remaining_page_count_, 0u);
-  page_requests.back().is_last_on_page = true;
-  while (!page_requests.empty()) {
-    all_requests_.push(page_requests.front());
-    page_requests.pop();
-  }
-  if (!is_ocr_in_progress_) {
-    is_ocr_in_progress_ = true;
-    OcrNextImage();
-  }
-}
-
-bool PdfOcrService::AreAllPagesOcred() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return remaining_page_count_ == 0u;
-}
-
-bool PdfOcrService::AreAllPagesInBatchOcred() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AreAllPagesOcred() || remaining_page_count_ % pages_per_batch_ == 0u;
-}
-
-void PdfOcrService::SetScreenAIAnnotatorForTesting(
-    mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
-        screen_ai_annotator) {
-  screen_ai_annotator_.reset();
-  screen_ai_annotator_.Bind(std::move(screen_ai_annotator));
-}
-
-void PdfOcrService::ResetRemainingPageCountForTesting() {
-  remaining_page_count_ = 0;
-}
-
-void PdfOcrService::OcrNextImage() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (all_requests_.empty()) {
-    return;
-  }
-  PdfOcrRequest request = all_requests_.front();
-  all_requests_.pop();
-
-  SkBitmap bitmap = image_fetcher_->GetImageForOcr(
-      request.page_index, request.image.page_object_index);
-  request.image_pixel_size = gfx::SizeF(bitmap.width(), bitmap.height());
-  if (bitmap.drawsNothing()) {
-    ReceiveOcrResultsForImage(std::move(request), ui::AXTreeUpdate());
-    return;
-  }
-
-  screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
-      std::move(bitmap),
-      base::BindOnce(&PdfOcrService::ReceiveOcrResultsForImage,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
-
-  base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
-                                PdfOcrRequestStatus::kRequested);
-}
-
-void PdfOcrService::ReceiveOcrResultsForImage(
-    PdfOcrRequest request,
-    const ui::AXTreeUpdate& tree_update) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
-                                PdfOcrRequestStatus::kPerformed);
-
-  // Ignore the result if the tree has changed.
-  if (request.root_node_id != root_node_id_) {
-    VLOG(1) << "Tree update for stale tree ignored.";
-    return;
-  }
-
-  const bool is_last_on_page = request.is_last_on_page;
-  batch_requests_.push_back(std::move(request));
-  batch_tree_updates_.push_back(tree_update);
-  if (is_last_on_page) {
-    CHECK_GT(remaining_page_count_, 0u);
-    --remaining_page_count_;
-    if (AreAllPagesInBatchOcred()) {
-      CHECK(!batch_requests_.empty());
-      CHECK_EQ(batch_requests_.size(), batch_tree_updates_.size());
-      on_ocr_data_received_callback_.Run(std::move(batch_requests_),
-                                         std::move(batch_tree_updates_));
-    }
-  }
-  if (all_requests_.empty()) {
-    is_ocr_in_progress_ = false;
-  } else {
-    OcrNextImage();
-  }
-}
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace {
 
@@ -713,7 +536,7 @@ class PdfAccessibilityTreeBuilder {
           node_id_to_annotation_info
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       ,
-      PdfOcrService* ocr_service,
+      PdfOcrHelper* ocr_helper,
       bool has_accessible_text
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       )
@@ -734,7 +557,7 @@ class PdfAccessibilityTreeBuilder {
         node_id_to_annotation_info_(node_id_to_annotation_info)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
         ,
-        ocr_service_(ocr_service),
+        ocr_helper_(ocr_helper),
         has_accessible_text_(has_accessible_text)
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   {
@@ -1456,7 +1279,7 @@ class PdfAccessibilityTreeBuilder {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     base::queue<PdfOcrRequest> ocr_requests;
-    bool ocr_available = ocr_service_;
+    bool ocr_available = ocr_helper_;
 #endif
 
     // Push all the images not anchored to any text run to the last paragraph.
@@ -1473,7 +1296,7 @@ class PdfAccessibilityTreeBuilder {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     if (!ocr_requests.empty()) {
-      ocr_service_->OcrPage(std::move(ocr_requests));
+      ocr_helper_->OcrPage(std::move(ocr_requests));
     }
 #endif
 
@@ -1540,7 +1363,7 @@ class PdfAccessibilityTreeBuilder {
   float paragraph_spacing_threshold_ = 0;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  raw_ptr<PdfOcrService> ocr_service_ = nullptr;
+  raw_ptr<PdfOcrHelper> ocr_helper_ = nullptr;
   const bool has_accessible_text_;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 };
@@ -1809,8 +1632,8 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (ocr_service_) {
-    ocr_service_->ResetService(doc_node_->id, page_count_);
+  if (ocr_helper_) {
+    ocr_helper_->Reset(doc_node_->id, page_count_);
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -1877,7 +1700,7 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
   // TODO(crbug.com/40267312): Use a more explicit flag indicating whether any
   // image was sent to the OCR model in `AddRemainingAnnotations()`.
   if (features::IsPdfOcrEnabled() && !did_get_a_text_run_ && has_image) {
-    if (ocr_service_) {
+    if (ocr_helper_) {
       // Notify users via the status node that PDF OCR is about to run since
       // the AXMode was set for PDF OCR.
       SetStatusMessage(IDS_PDF_OCR_IN_PROGRESS);
@@ -1927,7 +1750,7 @@ void PdfAccessibilityTree::AddPageContent(
       &node_id_to_annotation_info_
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       ,
-      ocr_service_.get(), did_get_a_text_run_
+      ocr_helper_.get(), did_get_a_text_run_
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   );
   tree_builder.BuildPageTree();
@@ -1987,7 +1810,7 @@ void PdfAccessibilityTree::UnserializeNodes() {
     if (features::IsPdfOcrEnabled() && !did_get_a_text_run_) {
       base::UmaHistogramBoolean(
           "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
-          ocr_service_ != nullptr);
+          ocr_helper_ != nullptr);
     }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   }
@@ -1998,8 +1821,8 @@ void PdfAccessibilityTree::AddPostamblePageIfNeeded(
     const ui::AXNodeID& last_page_node_id) {
   CHECK_NE(last_page_node_id, ui::kInvalidAXNodeID);
   CHECK(doc_node_);
-  if (!ocr_service_) {
-    return;  // Service not enabled.
+  if (!ocr_helper_) {
+    return;  // OCR helper not enabled.
   }
 
   if (postamble_page_tree_update_) {
@@ -2031,7 +1854,7 @@ void PdfAccessibilityTree::AddPostamblePageIfNeeded(
       base::debug::DumpWithoutCrashing();
     }
 
-    if (ocr_service_->AreAllPagesOcred()) {
+    if (ocr_helper_->AreAllPagesOcred()) {
       postamble_page_tree_update_.reset();
       SetOcrCompleteStatus();
       return;
@@ -2042,7 +1865,7 @@ void PdfAccessibilityTree::AddPostamblePageIfNeeded(
     doc_node_->child_ids.insert(++iter, page_id);
     postamble_page_tree_update_->nodes[0] = *doc_node_;
   } else {
-    if (ocr_service_->AreAllPagesOcred()) {
+    if (ocr_helper_->AreAllPagesOcred()) {
       SetOcrCompleteStatus();
       return;
     }
@@ -2381,19 +2204,19 @@ void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (!mode.has_mode(ui::AXMode::kPDFOcr)) {
-    if (ocr_service_) {
-      VLOG(2) << "PDF OCR has been turned off. So, deleting OCR service.";
-      ocr_service_.reset();
+    if (ocr_helper_) {
+      VLOG(2) << "PDF OCR has been turned off. So, deleting OCR helper.";
+      ocr_helper_.reset();
     }
     MaybeHandleAccessibilityChange(
         /*always_load_or_reload_accessibility=*/true);
     return;
   }
 
-  if (ocr_service_) {
+  if (ocr_helper_) {
     return;
   }
-  CreateOcrService();
+  CreateOcrHelper();
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   MaybeHandleAccessibilityChange(
       /*always_load_or_reload_accessibility=*/true);
@@ -2420,9 +2243,9 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     return;
   }
 
-  // Check if `ocr_service_` is still available. If not, it means PDF OCR has
+  // Check if `ocr_helper_` is still available. If not, it means PDF OCR has
   // been turned off, so just return here to ignore OCR results.
-  if (!ocr_service_) {
+  if (!ocr_helper_) {
     return;
   }
 
@@ -2576,7 +2399,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     // PDF accessibility tree is not yet available. If all pages are OCRed
     // before PDF content is being loaded into the accessibility tree, update
     // the status node's message here.
-    if (ocr_service_->AreAllPagesOcred()) {
+    if (ocr_helper_->AreAllPagesOcred()) {
       // This message will be loaded to the status node in the tree along with
       // the PDF content when `UnserializeNodes()` gets called.
       SetStatusMessage(was_text_converted_from_image_ ? IDS_PDF_OCR_COMPLETED
@@ -2585,12 +2408,12 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   }
 }
 
-void PdfAccessibilityTree::CreateOcrService() {
-  VLOG(2) << "Creating OCR service.";
-  // If `doc_node_` is not created yet, root id should be sent to `ocr_service_`
+void PdfAccessibilityTree::CreateOcrHelper() {
+  VLOG(2) << "Creating OCR helper.";
+  // If `doc_node_` is not created yet, root id should be sent to `ocr_helper_`
   // when its created.
   auto root_id = doc_node_ ? doc_node_->id : ui::kInvalidAXNodeID;
-  ocr_service_ = std::make_unique<PdfOcrService>(
+  ocr_helper_ = std::make_unique<PdfOcrHelper>(
       image_fetcher_, *render_frame_, root_id, page_count_,
       base::BindRepeating(&PdfAccessibilityTree::OnOcrDataReceived,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -2657,8 +2480,8 @@ void PdfAccessibilityTree::MaybeHandleAccessibilityChange(
       action_handler_->LoadOrReloadAccessibility();
     } else {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      // Create `ocr_service_` here when AXMode is set for PDF OCR but
-      // `ocr_service_` has not been created. `ocr_service_` is supposed to be
+      // Create `ocr_helper_` here when AXMode is set for PDF OCR but
+      // `ocr_helper_` has not been created. `ocr_helper_` is supposed to be
       // created upon receiving AXMode with `ui::AXMode::kPDFOcr` above in
       // `AccessibilityModeChanged()`. However, it's possible that
       // `PdfAccessibilityTree` starts observing `content::RenderFrame` after
@@ -2669,8 +2492,8 @@ void PdfAccessibilityTree::MaybeHandleAccessibilityChange(
           render_frame() ? render_frame()->GetRenderAccessibility() : nullptr;
       if (render_accessibility &&
           render_accessibility->GetAXMode().has_mode(ui::AXMode::kPDFOcr) &&
-          !ocr_service_) {
-        CreateOcrService();
+          !ocr_helper_) {
+        CreateOcrHelper();
       }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       action_handler_->EnableAccessibility();
