@@ -181,7 +181,9 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
   base::RepeatingClosure recovery_screen_exit_callback_;
 };
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, GaiaPasswordChoice) {
+// TODO(crbug.com/337798763): Flaky.
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+                       DISABLED_GaiaPasswordChoice) {
   StartLogin();
   WaitForScreen();
   test::OobeJS().ExpectVisiblePath(kGaiaPasswordButton);
