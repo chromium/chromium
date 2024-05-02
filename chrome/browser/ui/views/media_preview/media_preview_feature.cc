@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
@@ -15,7 +15,7 @@
 
 namespace media_preview_feature {
 
-bool ShouldShowMediaPreview(Profile& profile,
+bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
                             const GURL& requesting_origin_url,
                             const GURL& embedding_origin_url) {
   if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
@@ -29,7 +29,7 @@ bool ShouldShowMediaPreview(Profile& profile,
   }
 
   content::OriginTrialsControllerDelegate* origin_trials =
-      profile.GetOriginTrialsControllerDelegate();
+      browser_context.GetOriginTrialsControllerDelegate();
 
   // The URLs passed in originate a url::Origin, so this is safe.
   url::Origin requesting_origin = url::Origin::Create(requesting_origin_url);

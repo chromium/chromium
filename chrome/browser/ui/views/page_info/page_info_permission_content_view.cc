@@ -35,6 +35,10 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/media_preview/media_preview_feature.h"
+#endif
+
 bool UseUpdatedFileSystemPersistentPermissionUI() {
   return base::FeatureList::IsEnabled(
              features::kFileSystemAccessPersistentPermissions) &&
@@ -345,12 +349,14 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
     content::WebContents* web_contents,
     views::View& preceding_separator) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
+  if (type_ != ContentSettingsType::MEDIASTREAM_CAMERA &&
+      type_ != ContentSettingsType::MEDIASTREAM_MIC) {
     return;
   }
 
-  if (type_ != ContentSettingsType::MEDIASTREAM_CAMERA &&
-      type_ != ContentSettingsType::MEDIASTREAM_MIC) {
+  const GURL& site_url = web_contents->GetLastCommittedURL();
+  if (!media_preview_feature::ShouldShowMediaPreview(
+          *web_contents->GetBrowserContext(), site_url, site_url)) {
     return;
   }
 

@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_PREVIEW_FEATURE_H_
 
 class GURL;
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 namespace media_preview_feature {
 
@@ -15,7 +17,7 @@ namespace media_preview_feature {
 // embedding (top-level) origin.
 //
 // TODO(crbug.com/335672563): Pass url::Origin, not GURL for origin values.
-bool ShouldShowMediaPreview(Profile& profile,
+bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
                             const GURL& requesting_origin_url,
                             const GURL& embedding_origin_url);
 
