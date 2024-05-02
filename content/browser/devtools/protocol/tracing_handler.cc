@@ -69,9 +69,7 @@ const double kMinimumReportingInterval = 250.0;
 const char kRecordModeParam[] = "record_mode";
 const char kTraceBufferSizeInKb[] = "trace_buffer_size_in_kb";
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 const char kTrackEventDataSourceName[] = "track_event";
-#endif
 
 // Frames need to be at least 1x1, otherwise nothing would be captured.
 constexpr gfx::Size kMinFrameSize = gfx::Size(1, 1);
@@ -232,11 +230,7 @@ StringToMemoryDumpLevelOfDetail(const std::string& str) {
 void AddPidsToProcessFilter(
     const std::unordered_set<base::ProcessId>& included_process_ids,
     perfetto::TraceConfig& trace_config) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   const std::string kDataSourceName = kTrackEventDataSourceName;
-#else
-  const std::string kDataSourceName = tracing::mojom::kTraceEventDataSourceName;
-#endif
   for (auto& data_source : *(trace_config.mutable_data_sources())) {
     auto* source_config = data_source.mutable_config();
     if (source_config->name() == kDataSourceName) {
@@ -280,7 +274,6 @@ std::optional<perfetto::BackendType> GetBackendTypeFromParameters(
 // a chrome_config instead. We build a track_event_config based on the
 // chrome_config if no other track_event data sources have been configured.
 void ConvertToTrackEventConfigIfNeeded(perfetto::TraceConfig& trace_config) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   for (const auto& data_source : trace_config.data_sources()) {
     if (!data_source.config().track_event_config_raw().empty()) {
       return;
@@ -300,7 +293,6 @@ void ConvertToTrackEventConfigIfNeeded(perfetto::TraceConfig& trace_config) {
       return;
     }
   }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 // We currently don't support concurrent tracing sessions, but are planning to.
