@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -39,7 +40,9 @@ class ManifestV2ExperimentManagerFactory
 ManifestV2ExperimentManagerFactory::ManifestV2ExperimentManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "ManifestV2ExperimentManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(ExtensionManagementFactory::GetInstance());
+}
 
 ManifestV2ExperimentManager*
 ManifestV2ExperimentManagerFactory::GetForBrowserContext(
@@ -59,12 +62,15 @@ ManifestV2ExperimentManagerFactory::GetBrowserContextToUse(
 
 KeyedService* ManifestV2ExperimentManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new ManifestV2ExperimentManager();
+  return new ManifestV2ExperimentManager(context);
 }
 
 }  // namespace
 
-ManifestV2ExperimentManager::ManifestV2ExperimentManager() = default;
+ManifestV2ExperimentManager::ManifestV2ExperimentManager(
+    content::BrowserContext* browser_context)
+    : extension_management_(
+          ExtensionManagementFactory::GetForBrowserContext(browser_context)) {}
 ManifestV2ExperimentManager::~ManifestV2ExperimentManager() = default;
 
 // static
@@ -113,8 +119,13 @@ bool ManifestV2ExperimentManager::IsExtensionAffected(
 
   // TODO(https://crbug.com/337191307): Finalize behavior for unpacked,
   // commandline, default-installed, OS-installed, etc extensions.
-  // TODO(https://crbug.com/337191307): Ignore policy-installed extensions in
-  // accordance with the active admin policy.
+
+  // Ignore MV2 extensions that are allowed by policy.
+  if (extension_management_->IsExemptFromMV2DeprecationByPolicy(
+          extension.manifest_version(), extension.id(),
+          extension.manifest()->type())) {
+    return false;
+  }
 
   // The extension is an MV2 (or lower) extension; we should warn the user
   // about it.

@@ -164,6 +164,12 @@ class ExtensionManagement : public KeyedService {
                                 Manifest::Type manifest_type);
   bool IsAllowedManifestVersion(const Extension* extension);
 
+  // Returns true if the extension associated with the given `extension_id` is
+  // exempt from the MV2 deprecation because of an active admin policy.
+  bool IsExemptFromMV2DeprecationByPolicy(int manifest_version,
+                                          const std::string& extension_id,
+                                          Manifest::Type manifest_type);
+
   bool IsAllowedByUnpublishedAvailabilityPolicy(const Extension* extension);
 
   // Returns the list of blocked API permissions for |extension|.

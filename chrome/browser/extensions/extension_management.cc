@@ -319,6 +319,41 @@ bool ExtensionManagement::IsAllowedManifestVersion(const Extension* extension) {
                                   extension->id(), extension->GetType());
 }
 
+bool ExtensionManagement::IsExemptFromMV2DeprecationByPolicy(
+    int manifest_version,
+    const std::string& extension_id,
+    Manifest::Type manifest_type) {
+  // This policy only affects MV2 extensions.
+  if (manifest_version != 2) {
+    return false;
+  }
+  if (manifest_type != Manifest::Type::TYPE_EXTENSION &&
+      manifest_type != Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION) {
+    return false;
+  }
+
+  switch (global_settings_->manifest_v2_setting) {
+    case internal::GlobalSettings::ManifestV2Setting::kDefault:
+      // Default browser behavior. Not exempt.
+      return false;
+    case internal::GlobalSettings::ManifestV2Setting::kDisabled:
+      // All MV2 extensions are disallowed. Not exempt.
+      return false;
+    case internal::GlobalSettings::ManifestV2Setting::kEnabled:
+      // All MV2 extensions are allowed. Exempt.
+      return true;
+    case internal::GlobalSettings::ManifestV2Setting::kEnabledForForceInstalled:
+      // Force-installed MV2 extensions are allowed. Exempt if it's a force-
+      // installed extension only.
+      auto installation_mode =
+          GetInstallationMode(extension_id, /*update_url=*/std::string());
+      return installation_mode == INSTALLATION_FORCED ||
+             installation_mode == INSTALLATION_RECOMMENDED;
+  }
+
+  return false;
+}
+
 bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
     const Extension* extension) {
   // Check the kill switch before applying policy check.

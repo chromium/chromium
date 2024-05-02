@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 #define CHROME_BROWSER_EXTENSIONS_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
 
@@ -16,13 +17,15 @@ class BrowserContext;
 
 namespace extensions {
 class Extension;
+class ExtensionManagement;
 enum class MV2ExperimentStage;
 
 // The central class responsible for managing experiments related to the MV2
 // deprecation.
 class ManifestV2ExperimentManager : public KeyedService {
  public:
-  ManifestV2ExperimentManager();
+  explicit ManifestV2ExperimentManager(
+      content::BrowserContext* browser_context);
   ManifestV2ExperimentManager(const ManifestV2ExperimentManager&) = delete;
   ManifestV2ExperimentManager& operator=(const ManifestV2ExperimentManager&) =
       delete;
@@ -45,6 +48,11 @@ class ManifestV2ExperimentManager : public KeyedService {
   // Returns true if the given `extension` is affected by the MV2 deprecation.
   // This may be false if, e.g., the extension is policy-installed.
   bool IsExtensionAffected(const Extension& extension);
+
+ private:
+  // The associated `ExtensionManagement` class. Guaranteed to be safe since
+  // this KeyedService depends upon it as another KeyedService.
+  raw_ptr<ExtensionManagement> extension_management_;
 };
 
 }  // namespace extensions
