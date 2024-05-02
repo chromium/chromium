@@ -34,13 +34,20 @@ namespace {
 void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
                    const std::vector<std::string>& app_ids,
                    const std::vector<std::u16string>& names,
-                   const std::vector<int>& last_used_in_days) {
+                   const std::vector<int>& last_used_in_days,
+                   const std::vector<SkBitmap>& icons) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PwaRestorableListCallback_onResultFromNative(
+  ScopedJavaLocalRef<jobject> jbitmaps =
+      Java_WebApkSyncService_createBitmapList(env);
+  for (const SkBitmap& bitmap : icons) {
+    ScopedJavaLocalRef<jobject> jbitmap = gfx::ConvertToJavaBitmap(bitmap);
+    Java_WebApkSyncService_addToBitmapList(env, jbitmaps, jbitmap);
+  }
+  Java_PwaRestorableListCallback_onRestorableAppsAvailable(
       env, java_callback, true,
       base::android::ToJavaArrayOfStrings(env, app_ids),
       base::android::ToJavaArrayOfStrings(env, names),
-      base::android::ToJavaIntArray(env, last_used_in_days));
+      base::android::ToJavaIntArray(env, last_used_in_days), jbitmaps);
 }
 
 }  // anonymous namespace

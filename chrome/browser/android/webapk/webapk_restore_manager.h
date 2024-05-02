@@ -40,7 +40,8 @@ class WebApkRestoreManager {
   using RestorableAppsCallback =
       base::OnceCallback<void(const std::vector<std::string>& app_ids,
                               const std::vector<std::u16string>& names,
-                              const std::vector<int>& last_used_in_days)>;
+                              const std::vector<int>& last_used_in_days,
+                              const std::vector<SkBitmap>& icons)>;
 
   void PrepareRestorableApps(std::vector<WebApkRestoreData>&& apps,
                              RestorableAppsCallback result_callback);

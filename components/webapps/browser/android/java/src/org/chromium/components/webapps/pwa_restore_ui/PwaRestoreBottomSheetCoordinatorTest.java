@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,6 +38,9 @@ import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.shadows.ShadowColorUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Instrumentation tests for PWA Restore bottom sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -51,6 +56,12 @@ public class PwaRestoreBottomSheetCoordinatorTest {
     // mLastUsedList below.
     private final String[] mDefaultAppIds = new String[] {"appId1", "appId2", "appId3"};
     private final String[] mDefaultAppNames = new String[] {"App 1", "App 2", "App 3"};
+    private final ArrayList<Bitmap> mDefaultAppIcons =
+            new ArrayList<Bitmap>(
+                    List.of(
+                            createBitmap(Color.RED),
+                            createBitmap(Color.GREEN),
+                            createBitmap(Color.BLUE)));
     private final int[] mLastUsedList = new int[] {1, 1, 35};
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
@@ -69,6 +80,11 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         ShadowColorUtils.sInNightMode = false;
     }
 
+    private static Bitmap createBitmap(int color) {
+        int[] colors = {color};
+        return Bitmap.createBitmap(colors, 1, 1, Bitmap.Config.ALPHA_8);
+    }
+
     @Test
     @MediumTest
     public void testViewInitialization() {
@@ -76,6 +92,7 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                 new PwaRestoreBottomSheetCoordinator(
                         mDefaultAppIds,
                         mDefaultAppNames,
+                        mDefaultAppIcons,
                         mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
@@ -126,6 +143,7 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                 new PwaRestoreBottomSheetCoordinator(
                         mDefaultAppIds,
                         mDefaultAppNames,
+                        mDefaultAppIcons,
                         mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,

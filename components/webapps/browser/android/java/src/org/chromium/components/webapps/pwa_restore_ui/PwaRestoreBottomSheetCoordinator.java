@@ -5,6 +5,7 @@
 package org.chromium.components.webapps.pwa_restore_ui;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.View;
 
 import androidx.annotation.MainThread;
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** The Coordinator for managing the Pwa Restore bottom sheet experience. */
 public class PwaRestoreBottomSheetCoordinator {
@@ -28,6 +30,7 @@ public class PwaRestoreBottomSheetCoordinator {
     public PwaRestoreBottomSheetCoordinator(
             @NonNull String[] appIds,
             @NonNull String[] appNames,
+            @NonNull List<Bitmap> appIcons,
             @NonNull int[] lastUsedInDays,
             Activity activity,
             BottomSheetController bottomSheetController,
@@ -39,9 +42,11 @@ public class PwaRestoreBottomSheetCoordinator {
 
         assert appIds.length == appNames.length;
         assert appIds.length == lastUsedInDays.length;
+        assert appIds.length == appIcons.size();
         for (int i = 0; i < appIds.length; i++) {
             recentApps.add(
-                    new PwaRestoreProperties.AppInfo(appIds[i], appNames[i], lastUsedInDays[i]));
+                    new PwaRestoreProperties.AppInfo(
+                            appIds[i], appNames[i], appIcons.get(i), lastUsedInDays[i]));
         }
 
         mView = new PwaRestoreBottomSheetView(activity);

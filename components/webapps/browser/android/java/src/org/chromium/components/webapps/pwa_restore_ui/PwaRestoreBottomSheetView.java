@@ -6,7 +6,6 @@ package org.chromium.components.webapps.pwa_restore_ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.util.TypedValue;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 
@@ -51,9 +49,6 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
 
     // The details of the bottom sheet.
     private View mContentView;
-
-    // The icon generator for the app icon placeholders.
-    private RoundedIconGenerator mIconGenerator;
 
     // The listener to notify when the Back button is clicked.
     private OnClickListener mBackButtonListener;
@@ -88,16 +83,6 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
         contentViewTitle.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 mBackArrow, null, null, null);
         contentViewTitle.setOnTouchListener(this::onTouch);
-
-        int iconColor = mContext.getColor(R.color.default_favicon_background_color);
-        mIconGenerator =
-                new RoundedIconGenerator(
-                        mContext.getResources(),
-                        APP_ICON_SIZE_DP,
-                        APP_ICON_SIZE_DP,
-                        APP_ICON_CORNER_RADIUS_DP,
-                        iconColor,
-                        APP_ICON_TEXT_SIZE_DP);
     }
 
     public View getContentView() {
@@ -156,9 +141,7 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
             }
             item += 1;
 
-            // TODO(finnur): Replace with actual app icons.
-            Bitmap placeholder = mIconGenerator.generateIconForText(app.getName());
-            ((ImageView) appView.findViewById(R.id.app_icon)).setImageBitmap(placeholder);
+            ((ImageView) appView.findViewById(R.id.app_icon)).setImageBitmap(app.getIcon());
             ((TextView) appView.findViewById(R.id.app_name)).setText(app.getName());
             CheckBox checkBox = (CheckBox) appView.findViewById(R.id.checkbox);
             checkBox.setTag(app.getId());

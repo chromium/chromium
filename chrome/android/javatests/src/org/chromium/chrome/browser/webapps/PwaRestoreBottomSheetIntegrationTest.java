@@ -29,8 +29,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -45,11 +45,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Test the showing of the PWA Restore Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Function getURL for EmbeddedTestServer fails when batching")
 @EnableFeatures({
     ChromeFeatureList.PWA_RESTORE_UI,
     ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND
@@ -66,22 +67,27 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     private static @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
 
+    private static final String ICON_URL1 = "/chrome/test/data/banners/256x256-green.png";
+    private static final String ICON_URL2 = "/chrome/test/data/banners/256x256-red.png";
+
     private static String[][] sDefaultApps = {
-        {"https://example.com/app1/", "App 1"},
-        {"https://example.com/app2/", "App 2"},
-        {"https://example.com/app3/", "App 3"}
+        {"https://example.com/app1/", "App 1", ICON_URL1},
+        {"https://example.com/app2/", "App 2", ICON_URL2},
+        {"https://example.com/app3/", "App 3", ICON_URL1}
     };
     private static int[] sDefaultLastUsed = {1, 2, 3};
 
     private static final String TAG = "PwaRestoreIntegrTest";
 
     private SharedPreferencesManager mPreferences;
+    private EmbeddedTestServer mTestServer;
 
     @Before
     public void setUp() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mPreferences = ChromeSharedPreferences.getInstance();
+        mTestServer = mActivityTestRule.getTestServer();
 
         // Promos only run *after* the first run experience has completed, so we need to make sure
         // the testing environment reflects that. Note that individual tests below can set whether
@@ -95,6 +101,10 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     private boolean setTestAppsForRestoring(String[][] appList, int[] lastUsed) {
         Assert.assertEquals(appList.length, lastUsed.length);
+
+        for (String[] app : appList) {
+            app[2] = mTestServer.getURL(app[2]);
+        }
         try {
             PwaRestoreBottomSheetTestUtils.waitForWebApkDatabaseInitialization();
             PwaRestoreBottomSheetTestUtils.setAppListForRestoring(appList, lastUsed);

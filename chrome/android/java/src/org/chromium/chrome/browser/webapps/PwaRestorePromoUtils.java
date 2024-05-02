@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -25,6 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * This class is responsible for coordinating the showing of the PWA Restore promo (which aims to
@@ -147,12 +149,13 @@ public class PwaRestorePromoUtils {
     private static void launchPromo(Profile profile, WindowAndroid windowAndroid) {
         WebApkSyncService.fetchRestorableApps(
                 profile,
-                (success, appIds, names, lastUsedInDays) -> {
+                (success, appIds, names, lastUsedInDays, icons) -> {
                     onRestorableAppsAvailable(
                             success,
                             appIds,
                             names,
                             lastUsedInDays,
+                            icons,
                             windowAndroid,
                             R.drawable.ic_arrow_back_24dp);
                 });
@@ -163,6 +166,7 @@ public class PwaRestorePromoUtils {
             @NonNull String[] appIds,
             @NonNull String[] appNames,
             @NonNull int[] lastUsedInDays,
+            @NonNull List<Bitmap> icons,
             WindowAndroid windowAndroid,
             int arrowResourceId) {
         BottomSheetController controller = BottomSheetControllerProvider.from(windowAndroid);
@@ -174,6 +178,7 @@ public class PwaRestorePromoUtils {
                     new PwaRestoreBottomSheetCoordinator(
                             appIds,
                             appNames,
+                            icons,
                             lastUsedInDays,
                             activity,
                             controller,

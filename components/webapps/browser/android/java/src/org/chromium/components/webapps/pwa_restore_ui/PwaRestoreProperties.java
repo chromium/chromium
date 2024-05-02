@@ -4,6 +4,7 @@
 
 package org.chromium.components.webapps.pwa_restore_ui;
 
+import android.graphics.Bitmap;
 import android.util.Pair;
 import android.view.View.OnClickListener;
 
@@ -25,6 +26,7 @@ public class PwaRestoreProperties {
     public static class AppInfo {
         private final String mAppId;
         private final String mAppName;
+        private final Bitmap mAppIcon;
         private int mLastUsedDaysAgo;
 
         // Whether the app is selected or not.
@@ -33,11 +35,13 @@ public class PwaRestoreProperties {
         /**
          * @param appId the ID of the app.
          * @param appName the name of the app.
+         * @param appIcon the app icon.
          * @param lastUsedDaysAgo when the app was last used (days ago).
          */
-        public AppInfo(String appId, String appName, int lastUsedDaysAgo) {
+        public AppInfo(String appId, String appName, Bitmap appIcon, int lastUsedDaysAgo) {
             mAppId = appId;
             mAppName = appName;
+            mAppIcon = appIcon;
             mLastUsedDaysAgo = lastUsedDaysAgo;
 
             mSelected = true;
@@ -49,6 +53,10 @@ public class PwaRestoreProperties {
 
         public String getName() {
             return mAppName;
+        }
+
+        public Bitmap getIcon() {
+            return mAppIcon;
         }
 
         public long getLastUsedDaysAgo() {

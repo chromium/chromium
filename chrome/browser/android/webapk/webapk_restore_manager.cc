@@ -73,15 +73,16 @@ void WebApkRestoreManager::OnAllIconsDownloaded(
   std::vector<std::string> app_ids;
   std::vector<std::u16string> names;
   std::vector<int> last_used_in_days;
+  std::vector<SkBitmap> icons;
 
   for (auto&& [app_id, task] : restorable_tasks_) {
     app_ids.emplace_back(app_id);
     names.emplace_back(task->app_name());
     last_used_in_days.emplace_back(
         (base::Time::Now() - task->last_used_time()).InDays());
-    CHECK(!task->app_icon().drawsNothing());
+    icons.push_back(task->app_icon());
   }
-  std::move(apps_info_callback).Run(app_ids, names, last_used_in_days);
+  std::move(apps_info_callback).Run(app_ids, names, last_used_in_days, icons);
 }
 
 void WebApkRestoreManager::ScheduleRestoreTasks(

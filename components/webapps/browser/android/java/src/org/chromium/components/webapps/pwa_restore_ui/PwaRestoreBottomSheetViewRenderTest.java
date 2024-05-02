@@ -5,6 +5,7 @@
 package org.chromium.components.webapps.pwa_restore_ui;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Render test for {@link PwaRestoreBottomSheetView}. */
@@ -94,14 +96,25 @@ public class PwaRestoreBottomSheetViewRenderTest {
 
     private final boolean mNightModeEnabled;
 
+    private static Bitmap createBitmap(int color) {
+        int[] colors = {color};
+        return Bitmap.createBitmap(colors, 1, 1, Bitmap.Config.ALPHA_8);
+    }
+
     private void initializeBottomSheet() {
         String[] appIds = new String[] {"foo", "bar", "foobar"};
         String[] appNames = new String[] {"Foo", "Bar", "Barfoo"};
+        List<Bitmap> appIcons = new ArrayList<Bitmap>();
+        appIcons.add(createBitmap(Color.RED));
+        appIcons.add(createBitmap(Color.GREEN));
+        appIcons.add(createBitmap(Color.BLUE));
         int[] lastUsedList = new int[] {1, 2, 3};
+
         mCoordinator =
                 new PwaRestoreBottomSheetCoordinator(
                         appIds,
                         appNames,
+                        appIcons,
                         lastUsedList,
                         sActivity,
                         null,

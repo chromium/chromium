@@ -166,16 +166,16 @@ TEST_F(WebApkRestoreManagerTest, GetAppResults) {
   base::RunLoop run_loop;
   manager->PrepareRestorableApps(
       std::move(apps),
-      base::BindLambdaForTesting(
-          [&](const std::vector<std::string>& ids,
-              const std::vector<std::u16string>& names,
-              const std::vector<int>& last_used_in_days) {
-            EXPECT_THAT(ids, testing::ElementsAre(
-                                 GenerateAppIdFromManifestId(kManifestId1),
-                                 GenerateAppIdFromManifestId(kManifestId2)));
-            EXPECT_THAT(names, testing::ElementsAre(u"app1", u"app2"));
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](const std::vector<std::string>& ids,
+                                     const std::vector<std::u16string>& names,
+                                     const std::vector<int>& last_used_in_days,
+                                     const std::vector<SkBitmap>& icons) {
+        EXPECT_THAT(ids, testing::ElementsAre(
+                             GenerateAppIdFromManifestId(kManifestId1),
+                             GenerateAppIdFromManifestId(kManifestId2)));
+        EXPECT_THAT(names, testing::ElementsAre(u"app1", u"app2"));
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
 }

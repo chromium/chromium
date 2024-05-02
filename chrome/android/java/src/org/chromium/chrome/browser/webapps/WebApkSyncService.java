@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync.protocol.WebApkIconInfo;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Static class to update WebAPK data to sync. */
 @JNINamespace("webapk")
 public class WebApkSyncService {
@@ -28,11 +32,12 @@ public class WebApkSyncService {
     /** Called with update result. */
     public static interface PwaRestorableListCallback {
         @CalledByNative("PwaRestorableListCallback")
-        public void onResultFromNative(
+        public void onRestorableAppsAvailable(
                 boolean success,
                 @NonNull String[] appIds,
                 @NonNull String[] appNames,
-                @NonNull int[] lastUsedInDays);
+                @NonNull int[] lastUsedInDays,
+                @NonNull List<Bitmap> icons);
     }
 
     static void onWebApkUsed(
@@ -117,6 +122,16 @@ public class WebApkSyncService {
 
     public static void fetchRestorableApps(Profile profile, PwaRestorableListCallback callback) {
         WebApkSyncServiceJni.get().fetchRestorableApps(profile, callback);
+    }
+
+    @CalledByNative
+    private static List<Bitmap> createBitmapList() {
+        return new ArrayList<Bitmap>();
+    }
+
+    @CalledByNative
+    private static void addToBitmapList(List<Bitmap> bitmaps, Bitmap bitmap) {
+        bitmaps.add(bitmap);
     }
 
     @NativeMethods

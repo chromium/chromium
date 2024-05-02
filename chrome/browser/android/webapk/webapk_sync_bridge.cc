@@ -299,6 +299,16 @@ void WebApkSyncBridge::MergeSyncDataForTesting(
     specifics->set_start_url(app[0]);
     specifics->set_manifest_id(app[0]);
     specifics->set_name(app[1]);
+
+    const std::string icon_url = app[2];
+    const int32_t icon_size_in_px = 256;
+    const sync_pb::WebApkIconInfo_Purpose icon_purpose =
+        sync_pb::WebApkIconInfo_Purpose_ANY;
+    sync_pb::WebApkIconInfo* icon_info = specifics->add_icon_infos();
+    icon_info->set_size_in_px(icon_size_in_px);
+    icon_info->set_url(icon_url);
+    icon_info->set_purpose(icon_purpose);
+
     base::Time time = base::Time::Now() - base::Days(last_used_days_vector[i]);
     specifics->set_last_used_time_windows_epoch_micros(
         time.ToDeltaSinceWindowsEpoch().InMicroseconds());
