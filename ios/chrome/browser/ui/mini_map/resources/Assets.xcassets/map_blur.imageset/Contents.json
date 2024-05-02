@@ -15,7 +15,7 @@
       "scale" : "1x"
     },
     {
-      "filename" : "map_blur_light_iphone@2x.png",
+      "filename" : "map_blur_light_iphone@2x.jpg",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -26,12 +26,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "map_blur_dark_iphone@2x.png",
+      "filename" : "map_blur_dark_iphone@2x.jpg",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "map_blur_light_iphone@3x.png",
+      "filename" : "map_blur_light_iphone@3x.jpg",
       "idiom" : "universal",
       "scale" : "3x"
     },
@@ -42,7 +42,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "map_blur_dark_iphone@3x.png",
+      "filename" : "map_blur_dark_iphone@3x.jpg",
       "idiom" : "universal",
       "scale" : "3x"
     },
@@ -61,7 +61,7 @@
       "scale" : "1x"
     },
     {
-      "filename" : "map_blur_light_ipad@2x.png",
+      "filename" : "map_blur_light_ipad@2x.jpg",
       "idiom" : "ipad",
       "scale" : "2x"
     },
@@ -72,7 +72,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "map_blur_dark_ipad@2x.png",
+      "filename" : "map_blur_dark_ipad@2x.jpg",
       "idiom" : "ipad",
       "scale" : "2x"
     }
