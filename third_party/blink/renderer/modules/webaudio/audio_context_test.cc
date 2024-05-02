@@ -41,6 +41,7 @@ class MockWebAudioDeviceForAudioContext : public WebAudioDevice {
   double SampleRate() override { return sample_rate_; }
   int FramesPerBuffer() override { return frames_per_buffer_; }
   int MaxChannelCount() override { return 2; }
+  void SetDetectSilence(bool detect_silence) override {}
   media::OutputDeviceStatus CreateSinkAndGetDeviceStatus() override {
     // In this test, we assume the sink creation always succeeds.
     return media::OUTPUT_DEVICE_STATUS_OK;

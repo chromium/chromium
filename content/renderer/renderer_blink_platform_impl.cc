@@ -458,20 +458,8 @@ std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
     unsigned number_of_output_channels,
     const blink::WebAudioLatencyHint& latency_hint,
     media::AudioRendererSink::RenderCallback* callback) {
-  // The `number_of_output_channels` does not manifest the actual channel
-  // layout of the audio output device. We use the best guess to the channel
-  // layout based on the number of channels.
-  media::ChannelLayout layout =
-      media::GuessChannelLayout(number_of_output_channels);
-
-  // Use "discrete" channel layout when the best guess was not successful.
-  if (layout == media::CHANNEL_LAYOUT_UNSUPPORTED) {
-    layout = media::CHANNEL_LAYOUT_DISCRETE;
-  }
-
-  return RendererWebAudioDeviceImpl::Create(sink_descriptor, layout,
-                                            number_of_output_channels,
-                                            latency_hint, callback);
+  return RendererWebAudioDeviceImpl::Create(
+      sink_descriptor, number_of_output_channels, latency_hint, callback);
 }
 
 bool RendererBlinkPlatformImpl::DecodeAudioFileData(

@@ -47,7 +47,6 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   static std::unique_ptr<RendererWebAudioDeviceImpl> Create(
       const blink::WebAudioSinkDescriptor& sink_descriptor,
-      media::ChannelLayout layout,
       int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
       media::AudioRendererSink::RenderCallback* webaudio_callback);
