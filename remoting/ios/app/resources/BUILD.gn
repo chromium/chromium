@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/ios/asset_catalog.gni")
 import("//build/config/ios/rules.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/remoting_locales.gni")
@@ -35,7 +34,8 @@ group("assets") {
   ]
 }
 
-imageset("Background") {
+bundle_data_xcassets("Background") {
+  catalog = "Assets.xcassets"
   sources = [
     "Assets.xcassets/Background.imageset/Contents.json",
     "Assets.xcassets/Background.imageset/bkg1.jpg",
@@ -43,24 +43,13 @@ imageset("Background") {
   ]
 }
 
-group("launchscreen_assets") {
-  public_deps = [
-    ":launchscreen_app_logo",
-    ":launchscreen_brand_name",
-  ]
-}
-
-imageset("launchscreen_app_logo") {
+bundle_data_xcassets("launchscreen_assets") {
+  catalog = "launchscreen_images.xcassets"
   sources = [
     "launchscreen_images.xcassets/launchscreen_app_logo.imageset/Contents.json",
     "launchscreen_images.xcassets/launchscreen_app_logo.imageset/launchscreen_app_logo.png",
     "launchscreen_images.xcassets/launchscreen_app_logo.imageset/launchscreen_app_logo@2x.png",
     "launchscreen_images.xcassets/launchscreen_app_logo.imageset/launchscreen_app_logo@3x.png",
-  ]
-}
-
-imageset("launchscreen_brand_name") {
-  sources = [
     "launchscreen_images.xcassets/launchscreen_brand_name.imageset/Contents.json",
     "launchscreen_images.xcassets/launchscreen_brand_name.imageset/launchscreen_brand_name.png",
     "launchscreen_images.xcassets/launchscreen_brand_name.imageset/launchscreen_brand_name@2x.png",
@@ -68,19 +57,20 @@ imageset("launchscreen_brand_name") {
   ]
 }
 
-appiconset("remoting_icons") {
+bundle_data_xcassets("remoting_icons") {
+  catalog = "ChromiumIcons.xcassets"
   sources = [
-    "chromium/AppIcon.appiconset/Contents.json",
-    "chromium/AppIcon.appiconset/Icon-1024.png",
-    "chromium/AppIcon.appiconset/Icon-120.png",
-    "chromium/AppIcon.appiconset/Icon-152.png",
-    "chromium/AppIcon.appiconset/Icon-167.png",
-    "chromium/AppIcon.appiconset/Icon-180.png",
-    "chromium/AppIcon.appiconset/Icon-29.png",
-    "chromium/AppIcon.appiconset/Icon-40.png",
-    "chromium/AppIcon.appiconset/Icon-58.png",
-    "chromium/AppIcon.appiconset/Icon-80.png",
-    "chromium/AppIcon.appiconset/Icon-87.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Contents.json",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-120.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-152.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-167.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-180.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-29.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-40.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-58.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-80.png",
+    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-87.png",
   ]
 }
 
