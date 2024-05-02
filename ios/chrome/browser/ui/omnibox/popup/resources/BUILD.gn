@@ -2,51 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-group("resources") {
-  deps = [
-    ":omnibox_popout_overlay_color",
-    ":omnibox_popout_suggestion_row_separator_color",
-    ":omnibox_suggestion_answer_icon_color",
-    ":omnibox_suggestion_answer_icon_dark_color",
-    ":omnibox_suggestion_icon_color",
-    ":omnibox_suggestion_icon_dark_color",
-    ":omnibox_suggestion_row_highlight_color",
-    ":omnibox_suggestion_row_separator_color",
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/omnibox_popout_overlay_color.colorset/Contents.json",
+    "Assets.xcassets/omnibox_popout_suggestion_row_separator_color.colorset/Contents.json",
+    "Assets.xcassets/omnibox_suggestion_answer_icon_color.colorset/Contents.json",
+    "Assets.xcassets/omnibox_suggestion_answer_icon_dark_color.colorset/Contents.json",
+    "Assets.xcassets/omnibox_suggestion_icon_color.colorset/Contents.json",
+    "Assets.xcassets/omnibox_suggestion_icon_dark_color.colorset/Contents.json",
+    "Assets.xcassets/omnibox_suggestion_row_highlight_color.colorset/Contents.json",
+    "Assets.xcassets/omnibox_suggestion_row_separator_color.colorset/Contents.json",
   ]
-}
-
-colorset("omnibox_suggestion_answer_icon_color") {
-  sources = [ "omnibox_suggestion_answer_icon_color.colorset/Contents.json" ]
-}
-
-colorset("omnibox_suggestion_answer_icon_dark_color") {
-  sources =
-      [ "omnibox_suggestion_answer_icon_dark_color.colorset/Contents.json" ]
-}
-
-colorset("omnibox_suggestion_icon_color") {
-  sources = [ "omnibox_suggestion_icon_color.colorset/Contents.json" ]
-}
-
-colorset("omnibox_suggestion_icon_dark_color") {
-  sources = [ "omnibox_suggestion_icon_dark_color.colorset/Contents.json" ]
-}
-
-colorset("omnibox_suggestion_row_highlight_color") {
-  sources = [ "omnibox_suggestion_row_highlight_color.colorset/Contents.json" ]
-}
-
-colorset("omnibox_suggestion_row_separator_color") {
-  sources = [ "omnibox_suggestion_row_separator_color.colorset/Contents.json" ]
-}
-
-colorset("omnibox_popout_suggestion_row_separator_color") {
-  sources =
-      [ "omnibox_popout_suggestion_row_separator_color.colorset/Contents.json" ]
-}
-
-colorset("omnibox_popout_overlay_color") {
-  sources = [ "omnibox_popout_overlay_color.colorset/Contents.json" ]
 }

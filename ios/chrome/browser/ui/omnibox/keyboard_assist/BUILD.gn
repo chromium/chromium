@@ -19,8 +19,6 @@ source_set("keyboard_assist") {
     "omnibox_ui_bar_button_item.mm",
   ]
   deps = [
-    "resources:keyboard_accessory_qr_scanner",
-    "resources:keyboard_accessory_voice_search",
     "//base",
     "//base:i18n",
     "//components/search_engines",
@@ -40,6 +38,7 @@ source_set("keyboard_assist") {
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
+    "//ios/chrome/browser/ui/omnibox/keyboard_assist/resources",
     "//ios/chrome/browser/voice/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
