@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_characteristic.h"
@@ -37,6 +38,8 @@ using NiceMockBluetoothGattConnection =
 
 using Properties = device::BluetoothGattCharacteristic::Properties;
 using Property = device::BluetoothGattCharacteristic::Property;
+using Permissions = device::BluetoothGattCharacteristic::Permissions;
+using Permission = device::BluetoothGattCharacteristic::Permission;
 
 namespace {
 const char kTestLeDeviceAddress0[] = "11:22:33:44:55:66";
@@ -60,6 +63,9 @@ const char kTestCharacteristicUuid2[] = "9012";
 const Properties kReadWriteProperties =
     Property::PROPERTY_READ | Property::PROPERTY_WRITE;
 const Properties kAllProperties = Property::NUM_PROPERTY - 1;
+const Permissions kReadWritePermissions =
+    Permission::PERMISSION_READ | Permission::PERMISSION_WRITE;
+const Permissions kAllPermissions = Permission::NUM_PERMISSION - 1;
 
 class BluetoothInterfaceDeviceTest : public testing::Test {
  public:
@@ -84,13 +90,13 @@ class BluetoothInterfaceDeviceTest : public testing::Test {
         std::make_unique<NiceMockBluetoothGattCharacteristic>(
             service1.get(), kTestCharacteristicId0,
             device::BluetoothUUID(kTestCharacteristicUuid0),
-            kReadWriteProperties, 0 /* permissions */);
+            kReadWriteProperties, kReadWritePermissions);
 
     auto characteristic2 =
         std::make_unique<NiceMockBluetoothGattCharacteristic>(
             service1.get(), kTestCharacteristicId1,
             device::BluetoothUUID(kTestCharacteristicUuid1),
-            kReadWriteProperties, 0 /* permissions */);
+            kReadWriteProperties, kReadWritePermissions);
 
     service1->AddMockCharacteristic(std::move(characteristic1));
     service1->AddMockCharacteristic(std::move(characteristic2));
@@ -103,7 +109,7 @@ class BluetoothInterfaceDeviceTest : public testing::Test {
         std::make_unique<NiceMockBluetoothGattCharacteristic>(
             service2.get(), kTestCharacteristicId2,
             device::BluetoothUUID(kTestCharacteristicUuid2), kAllProperties,
-            0 /* permissions */);
+            kAllPermissions);
 
     service2->AddMockCharacteristic(std::move(characteristic3));
 
@@ -195,6 +201,27 @@ TEST_F(BluetoothInterfaceDeviceTest, GetServices) {
   proxy_->GetServices(CheckGetServicesCount(Call::EXPECTED));
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(BluetoothInterfaceDeviceTest, GetCharacteristics) {
+  EXPECT_CALL(device_, IsGattServicesDiscoveryComplete())
+      .WillRepeatedly(Return(true));
+
+  base::test::TestFuture<
+      std::optional<std::vector<bluetooth::mojom::CharacteristicInfoPtr>>>
+      future;
+  proxy_->GetCharacteristics(kTestServiceId0, future.GetCallback());
+
+  const auto& characteristics = future.Get();
+  EXPECT_TRUE(characteristics.has_value());
+  EXPECT_EQ(2u, characteristics.value().size());
+
+  const auto& characteristic = characteristics.value().at(0);
+  EXPECT_EQ(kTestCharacteristicId0, characteristic->id);
+  EXPECT_EQ(device::BluetoothUUID(kTestCharacteristicUuid0),
+            characteristic->uuid);
+  EXPECT_EQ(kReadWriteProperties, characteristic->properties);
+  EXPECT_EQ(kReadWritePermissions, characteristic->permissions);
 }
 
 TEST_F(BluetoothInterfaceDeviceTest, GetServicesNotDiscovered) {
