@@ -70,53 +70,15 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
 std::string BuildRequest(blink::mojom::DigitalCredentialProviderPtr provider) {
   auto result = Value::Dict();
 
-  if (provider->params) {
-    auto params = Value::Dict();
-    for (const auto& pair : *provider->params) {
-      params.Set(pair.first, pair.second);
-    }
-    result.Set("params", std::move(params));
+  if (!provider->protocol) {
+    return "";
   }
+  result.Set("protocol", *provider->protocol);
 
-  if (provider->selector) {
-    auto formats = Value::List();
-    for (auto& format : provider->selector->format) {
-      formats.Append(format);
-    }
-
-    auto fields = Value::List();
-
-    if (provider->selector->doctype) {
-      auto doctype = Value::Dict();
-      doctype.Set("name", "doctype");
-      doctype.Set("equals", provider->selector->doctype.value());
-      fields.Append(std::move(doctype));
-    }
-
-    for (auto& value : provider->selector->fields) {
-      auto field = Value::Dict();
-      field.Set("name", value->name);
-      if (value->equals) {
-        field.Set("equals", value->equals.value());
-      }
-      fields.Append(std::move(field));
-    }
-
-    result.Set("selector", Value::Dict().Set("fields", std::move(fields)));
-    result.Set("responseFormat", std::move(formats));
+  if (!provider->request) {
+    return "";
   }
-
-  if (provider->protocol) {
-    result.Set("protocol", *provider->protocol);
-  }
-
-  if (provider->request) {
-    result.Set("request", *provider->request);
-  }
-
-  if (provider->publicKey) {
-    result.Set("publicKey", *provider->publicKey);
-  }
+  result.Set("request", *provider->request);
 
   base::Value::Dict out =
       Value::Dict().Set("providers", Value::List().Append(std::move(result)));
@@ -167,6 +129,11 @@ void DigitalIdentityRequestImpl::Request(
   }
 
   std::string request = BuildRequest(std::move(digital_credential_provider));
+  if (request.empty()) {
+    CompleteRequest("", RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
   provider_->Request(
       WebContents::FromRenderFrameHost(&render_frame_host()), origin(), request,
       base::BindOnce(&DigitalIdentityRequestImpl::ShowInterstitialIfNeeded,

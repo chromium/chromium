@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
@@ -56,21 +56,20 @@ class MockDigitalIdentityRequest : public mojom::DigitalIdentityRequest {
 };
 
 CredentialRequestOptions* CreateOptionsWithProviders(
-    const HeapVector<Member<IdentityProviderRequestOptions>>& providers) {
-  IdentityCredentialRequestOptions* identity_credential_request =
-      IdentityCredentialRequestOptions::Create();
-  identity_credential_request->setProviders(providers);
+    const HeapVector<Member<IdentityRequestProvider>>& providers) {
+  DigitalCredentialRequestOptions* digital_credential_request =
+      DigitalCredentialRequestOptions::Create();
+  digital_credential_request->setProviders(providers);
   CredentialRequestOptions* options = CredentialRequestOptions::Create();
-  options->setIdentity(identity_credential_request);
+  options->setDigital(digital_credential_request);
   return options;
 }
 
 CredentialRequestOptions* CreateValidOptions() {
-  IdentityProviderRequestOptions* identity_provider_request =
-      IdentityProviderRequestOptions::Create();
-  identity_provider_request->setHolder(DigitalCredentialProvider::Create());
-  HeapVector<Member<IdentityProviderRequestOptions>> identity_providers;
-  identity_providers.push_back(identity_provider_request);
+  IdentityRequestProvider* identity_provider =
+      IdentityRequestProvider::Create();
+  HeapVector<Member<IdentityRequestProvider>> identity_providers;
+  identity_providers.push_back(identity_provider);
   return CreateOptionsWithProviders(identity_providers);
 }
 

@@ -14,9 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_request_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_provider.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -55,7 +53,6 @@ void AbortRequest(ScriptState* script_state) {
 void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
                        std::unique_ptr<ScopedAbortState> scoped_abort_state,
                        const WTF::String& protocol,
-                       bool should_return_digital_credential,
                        RequestDigitalIdentityStatus status,
                        const WTF::String& token) {
   switch (status) {
@@ -88,13 +85,8 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kIdentityDigitalCredentialsSuccess);
 
-      if (should_return_digital_credential) {
-        DigitalCredential* credential =
-            DigitalCredential::Create(protocol, token);
-        resolver->Resolve(credential);
-        return;
-      }
-      IdentityCredential* credential = IdentityCredential::Create(token);
+      DigitalCredential* credential =
+          DigitalCredential::Create(protocol, token);
       resolver->Resolve(credential);
       return;
     }
@@ -104,11 +96,6 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
 }  // anonymous namespace
 
 bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
-  if (options.hasIdentity()) {
-    return options.identity()->hasProviders() &&
-           base::ranges::any_of(options.identity()->providers(),
-                                &IdentityProviderConfig::hasHolder);
-  }
   return options.hasDigital();
 }
 
@@ -125,16 +112,9 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     return resolver->Promise();
   }
 
-  size_t num_providers = 0u;
-  if (options.hasIdentity()) {
-    num_providers = options.identity()->hasProviders()
-                        ? options.identity()->providers().size()
-                        : 0u;
-  } else {
-    num_providers = options.digital()->hasProviders()
-                        ? options.digital()->providers().size()
-                        : 0u;
-  }
+  size_t num_providers = options.digital()->hasProviders()
+                             ? options.digital()->providers().size()
+                             : 0u;
 
   if (num_providers == 0) {
     resolver->RejectWithTypeError(
@@ -178,32 +158,19 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
-  WTF::String protocol;
-  blink::mojom::blink::DigitalCredentialProviderPtr digital_credential_provider;
-  if (options.hasIdentity()) {
-    digital_credential_provider =
-        blink::mojom::blink::DigitalCredentialProvider::From(
-            *options.identity()->providers()[0]->holder());
-  } else if (options.hasDigital()) {
-    digital_credential_provider =
-        blink::mojom::blink::DigitalCredentialProvider::New();
-    auto provider = options.digital()->providers()[0];
-    if (provider->hasProtocol()) {
-      digital_credential_provider->protocol = provider->protocol();
-    }
-    if (provider->hasRequest()) {
-      digital_credential_provider->request = provider->request();
-    }
-    protocol = provider->protocol();
-  }
+  blink::mojom::blink::DigitalCredentialProviderPtr
+      digital_credential_provider =
+          blink::mojom::blink::DigitalCredentialProvider::New();
+  auto provider = options.digital()->providers()[0];
+  digital_credential_provider->protocol = provider->protocol();
+  digital_credential_provider->request = provider->request();
 
   auto* request =
       CredentialManagerProxy::From(script_state)->DigitalIdentityRequest();
   request->Request(
       std::move(digital_credential_provider),
       WTF::BindOnce(&OnCompleteRequest, WrapPersistent(resolver),
-                    std::move(scoped_abort_state), protocol,
-                    /*should_return_digital_credential=*/options.hasDigital()));
+                    std::move(scoped_abort_state), provider->protocol()));
   return resolver->Promise();
 }
 

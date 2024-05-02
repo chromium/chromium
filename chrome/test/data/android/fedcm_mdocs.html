@@ -5,28 +5,24 @@
 </head>
 <script>
   async function request() {
-    const mdoc = await navigator.credentials.get({
-      identity: {
+    const mdoc = await navigator.identity.get({
+      digital: {
         providers: [{
-          holder: {
-            selector: {
-              format: ["mdoc"],
-              doctype: "org.iso.18013.5.1.mDL",
-              fields: [
-                "org.iso.18013.5.1.family_name"
-              ]
-            },
-            params: {
-              nonce: "1234",
-              readerPublicKey: 'test_reader_public_key',
-              moreParametersAsNeededHere: true
-            },
-          },
+          protocol: "urn:openid.net:oid4vp",
+          request: JSON.stringify({
+            // Based on https://github.com/openid/OpenID4VP/issues/125
+            client_id: "client.example.org",
+            client_id_scheme: "web-origin",
+            nonce: "n-0S6_WzA2Mj",
+            presentation_definition: {
+              // Presentation Exchange request, omitted for brevity
+            }
+          }),
         }],
-      },
+      }
     });
-   const token = mdoc.token;
-   document.getElementById("log").textContent += `${token}`;
+    const token = mdoc.data;
+    document.getElementById("log").textContent += `${token}`;
   }
 </script>
 
