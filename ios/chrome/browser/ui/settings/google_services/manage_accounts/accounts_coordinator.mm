@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 
+#import "base/metrics/user_metrics.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -64,6 +65,7 @@
 }
 
 - (void)start {
+  base::RecordAction(base::UserMetricsAction("Signin_AccountsTableView_Open"));
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   _mediator = [[AccountsMediator alloc]
         initWithSyncService:SyncServiceFactory::GetForBrowserState(browserState)
@@ -121,6 +123,7 @@
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
+  base::RecordAction(base::UserMetricsAction("Signin_AccountsTableView_Close"));
   [_viewController settingsWillBeDismissed];
   [_viewController.navigationController dismissViewControllerAnimated:YES
                                                            completion:nil];

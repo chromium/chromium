@@ -460,6 +460,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
   switch (itemType) {
     case ItemTypeAccount: {
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountsTableView_AccountDetail"));
       TableViewAccountItem* item =
           base::apple::ObjCCastStrict<TableViewAccountItem>(
               [self.tableViewModel itemAtIndexPath:indexPath]);
@@ -471,16 +473,22 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       break;
     }
     case ItemTypeAddAccount: {
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountsTableView_AddAccount"));
       [self showAddAccount];
       break;
     }
     case ItemTypeSignOut: {
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountsTableView_SignOut"));
       UIView* itemView =
           [[tableView cellForRowAtIndexPath:indexPath] contentView];
       [self showSignOutWithItemView:itemView];
       break;
     }
     case ItemTypeAccountErrorButton: {
+      base::RecordAction(
+          base::UserMetricsAction("Signin_AccountsTableView_ErrorButton"));
       [self handleAccountErrorUserActionable];
       break;
     }
@@ -552,6 +560,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "Signin_AccountsTableView_AccountDetail_OpenMyGoogleUI"));
                   [weakSelf handleManageGoogleAccountWithIdentity:identity];
                   [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
@@ -560,6 +570,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "Signin_AccountsTableView_AccountDetail_RemoveAccount"));
                   [weakSelf handleRemoveAccountWithIdentity:identity];
                   [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
@@ -567,6 +579,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self.removeOrMyGoogleChooserAlertCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^() {
+                  base::RecordAction(base::UserMetricsAction(
+                      "Signin_AccountsTableView_AccountDetail_Cancel"));
                   [weakSelf handleAlertCoordinatorCancel];
                   [weakSelf dismissRemoveOrMyGoogleChooserAlert];
                 }
@@ -612,6 +626,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self.removeAccountCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "Signin_AccountsTableView_AccountDetail_RemoveAccount_"
+                      "ConfirmationCancelled"));
                   weakSelf.removeAccountCoordinator = nil;
                   [weakSelf dismissRemoveAccountCoordinator];
                 }
@@ -619,6 +636,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   [self.removeAccountCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACCOUNT_LABEL)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "Signin_AccountsTableView_AccountDetail_RemoveAccount_"
+                      "Confirmed"));
                   [weakSelf removeIdentity:identity];
                   [weakSelf dismissRemoveAccountCoordinator];
                 }

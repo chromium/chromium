@@ -34935,6 +34935,104 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountsTableView_AccountDetail">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user opens the detail alert dialog (to choose between
+    MyAccount UI or remove the identity) in the accounts table view. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_AccountDetail_Cancel">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user cancels the account detail alert dialog in the
+    accounts table view. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_AccountDetail_OpenMyGoogleUI">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user opens MyGoogleUI from the accounts table view. iOS
+    only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_AccountDetail_RemoveAccount">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user asks to remove an identity in the accounts table
+    view. iOS only.
+  </description>
+</action>
+
+<action
+    name="Signin_AccountsTableView_AccountDetail_RemoveAccount_ConfirmationCancelled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user cancels the account removal action in the accounts
+    table view. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_AccountDetail_RemoveAccount_Confirmed">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user confirms the account removal action in the accounts
+    table view. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_AddAccount">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Add Account…&quot; button in the
+    accounts table view. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_Close">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes the accounts table view. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_ErrorButton">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Error&quot; button in the accounts
+    table view. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_Open">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user opens the account table view. iOS only.
+  </description>
+</action>
+
+<action name="Signin_AccountsTableView_SignOut">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user taps on &quot;Sign-out&quot; button in the accounts
+    table view. iOS only.
+  </description>
+</action>
+
 <action name="Signin_AddAccountToDevice">
   <owner>gogerald@chromium.org</owner>
   <description>Recorded when the add account dialog is opened.</description>
