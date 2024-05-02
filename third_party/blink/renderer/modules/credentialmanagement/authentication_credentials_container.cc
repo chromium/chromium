@@ -259,7 +259,7 @@ bool CheckSecurityRequirementsBeforeRequest(
               mojom::blink::PermissionsPolicyFeature::kOTPCredentials)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
-            "The 'otp-credentials` feature is not enabled in this document."));
+            "The 'otp-credentials' feature is not enabled in this document."));
         return false;
       }
       if (!IsAncestorChainValidForWebOTP(
@@ -277,7 +277,7 @@ bool CheckSecurityRequirementsBeforeRequest(
                   kIdentityCredentialsGet)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
-            "The 'identity-credentials-get` feature is not enabled in this "
+            "The 'identity-credentials-get' feature is not enabled in this "
             "document."));
         return false;
       }

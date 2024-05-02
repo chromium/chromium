@@ -121,7 +121,7 @@ ScriptPromise<IDLUndefined> IdentityCredential::disconnect(
           mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "The 'identity-credentials-get` feature is not enabled in this "
+        "The 'identity-credentials-get' feature is not enabled in this "
         "document.");
     return promise;
   }
