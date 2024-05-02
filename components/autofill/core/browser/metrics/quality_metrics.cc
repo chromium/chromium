@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,6 +21,29 @@
 
 namespace autofill::autofill_metrics {
 
+namespace {
+
+void LogPredictionMetrics(
+    const FormStructure& form,
+    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    bool observed_submission) {
+  const AutofillMetrics::QualityMetricType metric_type =
+      observed_submission ? AutofillMetrics::TYPE_SUBMISSION
+                          : AutofillMetrics::TYPE_NO_SUBMISSION;
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    AutofillMetrics::LogHeuristicPredictionQualityMetrics(
+        form_interactions_ukm_logger, form, *field, metric_type);
+    AutofillMetrics::LogServerPredictionQualityMetrics(
+        form_interactions_ukm_logger, form, *field, metric_type);
+    AutofillMetrics::LogOverallPredictionQualityMetrics(
+        form_interactions_ukm_logger, form, *field, metric_type);
+    AutofillMetrics::LogEmailFieldPredictionMetrics(*field);
+    autofill_metrics::LogShadowPredictionComparison(*field);
+  }
+}
+
+}  // namespace
+
 void LogQualityMetrics(
     const FormStructure& form_structure,
     const base::TimeTicks& load_time,
@@ -28,6 +53,9 @@ void LogQualityMetrics(
     bool observed_submission) {
   // Use the same timestamp on UKM Metrics generated within this method's scope.
   AutofillMetrics::UkmTimestampPin timestamp_pin(form_interactions_ukm_logger);
+
+  LogPredictionMetrics(form_structure, form_interactions_ukm_logger,
+                       observed_submission);
 
   // Determine the type of the form.
   DenseSet<FormType> form_types = form_structure.GetFormTypes();
@@ -55,10 +83,6 @@ void LogQualityMetrics(
   // A perfectly filled form is submitted as it was filled from Autofill without
   // subsequent changes.
   bool perfect_filling = true;
-  // Contain the frames across which the fields are distributed.
-  base::flat_set<LocalFrameToken> frames_of_detected_fields;
-  base::flat_set<LocalFrameToken> frames_of_detected_credit_card_fields;
-  base::flat_set<LocalFrameToken> frames_of_autofilled_credit_card_fields;
 
   // Determine the correct suffix for the metric, depending on whether or
   // not a submission was observed.
@@ -74,15 +98,6 @@ void LogQualityMetrics(
 
     form_interactions_ukm_logger->LogFieldFillStatus(form_structure, *field,
                                                      metric_type);
-    AutofillMetrics::LogHeuristicPredictionQualityMetrics(
-        form_interactions_ukm_logger, form_structure, *field, metric_type);
-    AutofillMetrics::LogServerPredictionQualityMetrics(
-        form_interactions_ukm_logger, form_structure, *field, metric_type);
-    AutofillMetrics::LogOverallPredictionQualityMetrics(
-        form_interactions_ukm_logger, form_structure, *field, metric_type);
-    AutofillMetrics::LogEmailFieldPredictionMetrics(*field);
-
-    autofill_metrics::LogShadowPredictionComparison(*field);
 
     if (type.html_type() == HtmlFieldType::kOneTimeCode) {
       has_observed_one_time_code_field = true;
@@ -199,15 +214,6 @@ void LogQualityMetrics(
 
     if (field->is_autofilled()) {
       autofilled_field_types.insert(type.GetStorableType());
-    }
-
-    // Keep track of the frames of detected and autofilled (credit card) fields.
-    frames_of_detected_fields.insert(field->host_frame());
-    if (group == FieldTypeGroup::kCreditCard) {
-      frames_of_detected_credit_card_fields.insert(field->host_frame());
-      if (field->is_autofilled()) {
-        frames_of_autofilled_credit_card_fields.insert(field->host_frame());
-      }
     }
     if (observed_submission) {
       base::UmaHistogramEnumeration(
