@@ -259,16 +259,6 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
           inline_text_box.GetStringAttribute(ax::mojom::StringAttribute::kName)
               .length()));
 
-  if (!word_box.language().empty() &&
-      inline_text_box.GetStringAttribute(
-          ax ::mojom::StringAttribute::kLanguage) != word_box.language()) {
-    // TODO(crbug.com/40946728): Need to test it more with a more diverse set of
-    // PDF examples that contain from different languages. Design heuristics
-    // of verifying language recognition output from OCR.
-    VLOG(2) << "A `WordBox` has a different language than its enclosing "
-               "`LineBox`.";
-  }
-
   if (word_box.estimate_color_success()) {
     if (!inline_text_box.HasIntAttribute(
             ax::mojom::IntAttribute::kBackgroundColor)) {
@@ -322,14 +312,6 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
   // bounding box of `inline_text_box_node`.
   DCHECK(inline_text_box_node.relative_bounds.bounds.IsEmpty());
 
-  std::string language;
-  if (static_text_node.GetStringAttribute(ax::mojom::StringAttribute::kLanguage,
-                                          &language)) {
-    // TODO(crbug.com/40064422): Only set language if different from parent node
-    // (i.e. the static text node), in order to minimize memory usage.
-    inline_text_box_node.AddStringAttribute(
-        ax::mojom::StringAttribute::kLanguage, language);
-  }
   static_text_node.child_ids.push_back(inline_text_box_node.id);
 
   const auto formatting_context_start =
@@ -344,6 +326,15 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
        word_iter != formatting_context_end; ++word_iter) {
     SerializeWordBox(*word_iter, inline_text_box_node);
   }
+
+  std::string language = formatting_context_start->language();
+  if (!language.empty() &&
+      language != static_text_node.GetStringAttribute(
+                      ax::mojom::StringAttribute::kLanguage)) {
+    inline_text_box_node.AddStringAttribute(
+        ax::mojom::StringAttribute::kLanguage, language);
+  }
+
   if (formatting_context_end != std::cend(word_boxes)) {
     return 1u +
            SerializeWordBoxes(
@@ -388,9 +379,9 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
   // `ax::mojom::NameFrom` should be set to the correct value based on the
   // role.
   line_box_node.SetNameChecked(line_box.utf8_string());
-  if (!line_box.language().empty()) {
-    // TODO(crbug.com/40064422): Only set language if different from parent node
-    // (i.e. the page node), in order to minimize memory usage.
+  if (!line_box.language().empty() &&
+      line_box.language() != parent_node.GetStringAttribute(
+                                 ax::mojom::StringAttribute::kLanguage)) {
     line_box_node.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                      line_box.language());
   }

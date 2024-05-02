@@ -178,10 +178,85 @@ TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
         "offset_container_id=-5 (100, 100)-(500, 20) text_direction=rtl "
         "language=en\n"
         "      id=-7 inlineTextBox name=Hello world (100, 100)-(500, 20) "
-        "background_color=&FFFFFF00 color=&0 text_direction=rtl language=en "
-        "word_starts=0,6 word_ends=6,11\n"
-        "  id=-8 contentInfo child_ids=-9 (800, 900)-(1, 1)\n"
+        "background_color=&FFFFFF00 color=&0 text_direction=rtl "
+        "word_starts=0,6 word_ends=6,11\n  id=-8 contentInfo child_ids=-9 "
+        "(800, 900)-(1, 1)\n"
         "    id=-9 staticText name=End of extracted text (800, 900)-(1, 1)\n");
+    EXPECT_EQ(expected_update, update.ToString());
+  }
+}
+
+TEST_F(ScreenAIVisualAnnotatorProtoConvertorTest,
+       VisualAnnotationToAXTreeUpdate_OcrResults_MultipleLanguages) {
+  chrome_screen_ai::VisualAnnotation annotation;
+  gfx::Rect snapshot_bounds(800, 900);
+
+  screen_ai::ResetNodeIDForTesting();
+
+  {
+    chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
+
+    InitWordBox(line_0->add_words(),
+                /*x=*/100,
+                /*y=*/100,
+                /*width=*/250,
+                /*height=*/20,
+                /*text=*/"Bonjour",
+                /*language=*/"fr",
+                /*direction=*/chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT,
+                /*has_space_after=*/true,
+                /*background_rgb_value=*/0xffffff00,
+                /*foreground_rgb_value=*/0x00000000,  // Black on white.
+                /*angle=*/0);
+
+    InitWordBox(line_0->add_words(),
+                /*x=*/350,
+                /*y=*/100,
+                /*width=*/250,
+                /*height=*/20,
+                /*text=*/"world",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT,
+                /*has_space_after=*/false,
+                /*background_rgb_value=*/0xffffff00,
+                /*foreground_rgb_value=*/0xff000000,  // Blue on white.
+                /*angle=*/0);
+
+    InitLineBox(line_0,
+                /*x=*/100,
+                /*y=*/100,
+                /*width=*/500,
+                /*height=*/20,
+                /*text=*/"Bonjour world",
+                /*language=*/"en",
+                /*direction=*/chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT,
+                /*block_id=*/1,
+                /*order_within_block=*/1,
+                /*angle=*/0);
+  }
+
+  {
+    const ui::AXTreeUpdate update =
+        VisualAnnotationToAXTreeUpdate(annotation, snapshot_bounds);
+
+    const std::string expected_update(
+        "AXTreeUpdate: root id -2\n"
+        "id=-2 region child_ids=-3,-5,-9 (0, 0)-(800, 900) "
+        "is_page_breaking_object=true\n"
+        "  id=-3 banner child_ids=-4 (0, 0)-(1, 1)\n"
+        "    id=-4 staticText name=Start of extracted text (0, 0)-(1, 1)\n"
+        "  id=-5 paragraph child_ids=-6 (100, 100)-(500, 20)\n"
+        "    id=-6 staticText name=Bonjour world child_ids=-7,-8 "
+        "offset_container_id=-5 (100, 100)-(500, 20) text_direction=rtl "
+        "language=en\n"
+        "      id=-7 inlineTextBox name=Bonjour  (100, 100)-(250, 20) "
+        "background_color=&FFFFFF00 color=&0 text_direction=rtl language=fr "
+        "word_starts=0 word_ends=8\n"
+        "      id=-8 inlineTextBox name=world (350, 100)-(250, 20) "
+        "background_color=&FFFFFF00 color=&FF000000 text_direction=rtl "
+        "word_starts=0 word_ends=5\n"
+        "  id=-9 contentInfo child_ids=-10 (800, 900)-(1, 1)\n"
+        "    id=-10 staticText name=End of extracted text (800, 900)-(1, 1)\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
 }
