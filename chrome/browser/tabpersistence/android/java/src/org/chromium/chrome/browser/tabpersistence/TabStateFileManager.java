@@ -78,8 +78,6 @@ public class TabStateFileManager {
     /** Overrides the Chrome channel/package name to test a variant channel-specific behaviour. */
     private static String sChannelNameOverrideForTest;
 
-    private static boolean sDeferredStartupComplete;
-
     private static final long NO_TAB_GROUP_ID = 0L;
 
     /** Enum representing the exception that occurred during {@link restoreTabState}. */
@@ -436,10 +434,7 @@ public class TabStateFileManager {
         // FlatBuffers safely.
         saveStateInternal(
                 getTabStateFile(directory, tabId, isEncrypted, false), tabState, isEncrypted);
-        if (isFlatBufferSchemaEnabled() && sDeferredStartupComplete) {
-            // If deferred startup is complete save the FlatBuffer file. If we save the
-            // FlatBuffer file before deferred startup, there is risk the additional save may
-            // cause Jank.
+        if (isFlatBufferSchemaEnabled()) {
             saveStateInternal(
                     getTabStateFile(directory, tabId, isEncrypted, true), tabState, isEncrypted);
         }
@@ -681,20 +676,5 @@ public class TabStateFileManager {
 
     private static boolean isFlatBufferSchemaEnabled() {
         return ChromeFeatureList.sTabStateFlatBuffer.isEnabled();
-    }
-
-    /***
-     * Signal to {@link TabStateFileManager} that deferred startup has commenced.
-     */
-    public static void onDeferredStartup() {
-        if (!isFlatBufferSchemaEnabled()) {
-            return;
-        }
-        sDeferredStartupComplete = true;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void resetDeferredStartupCompleteForTesting() {
-        sDeferredStartupComplete = false;
     }
 }

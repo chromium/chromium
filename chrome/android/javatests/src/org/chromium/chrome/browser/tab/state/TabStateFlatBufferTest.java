@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tab.state;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -73,11 +72,6 @@ public class TabStateFlatBufferTest {
     @BeforeClass
     public static void beforeClass() {
         sTestServer = sActivityTestRule.getTestServer();
-    }
-
-    @Before
-    public void before() {
-        TabStateFileManager.resetDeferredStartupCompleteForTesting();
     }
 
     @Test

@@ -88,6 +88,8 @@ public class TabPersistentStore {
     /** Prevents two TabPersistentStores from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
 
+    private static boolean sDeferredStartupComplete;
+
     private TabModelObserver mTabModelObserver;
     private TabModelSelectorTabRegistrationObserver mTabRegistrationObserver;
     private boolean mSkipSavingNonActiveNtps;
@@ -1852,6 +1854,15 @@ public class TabPersistentStore {
                 .readInt(
                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                         ActiveTabState.EMPTY);
+    }
+
+    public static void onDeferredStartup() {
+        sDeferredStartupComplete = true;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void resetDeferredStartupCompleteForTesting() {
+        sDeferredStartupComplete = false;
     }
 
     SequencedTaskRunner getTaskRunnerForTests() {
