@@ -75,6 +75,7 @@ std::ostream& operator<<(std::ostream&, const NeedsAdmin&);
 
 // This struct contains the "runtime mode" parsed from the metainstaller tag.
 struct RuntimeModeArgs {
+  auto operator<=>(const RuntimeModeArgs&) const = default;
   std::optional<NeedsAdmin> needs_admin;
 };
 
