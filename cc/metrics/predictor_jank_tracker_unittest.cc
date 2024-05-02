@@ -36,9 +36,7 @@ class PredictorJankTrackerTest : public testing::Test {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<PredictorJankTracker> predictor_jank_tracker_;
   base::TimeTicks base_presentation_ts_;
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   ::base::test::TracingEnvironment tracing_environment_;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   const char* missed_fast_histogram_name =
       "Event.Jank.ScrollUpdate.FastScroll.MissedVsync."
       "FrameAboveJankyThreshold2";
@@ -146,7 +144,6 @@ TEST_F(PredictorJankTrackerTest, BasicMissedLowerJankCase) {
   EXPECT_EQ(histogram_tester_->GetTotalSum(missed_fast_histogram_name), 380);
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(PredictorJankTrackerTest, BasicNonMissedUpperJankCaseWithTracing) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("input.scrolling");
@@ -183,7 +180,6 @@ TEST_F(PredictorJankTrackerTest, BasicNonMissedUpperJankCaseWithTracing) {
                                   std::vector<std::string>{"10", "50", "11"}));
 }
 
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(PredictorJankTrackerTest, NoReportingDirectionChange) {
   // [50, -100, 50] means the user changed their scrolling direction
   // and no predictor performance should be reported.
