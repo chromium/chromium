@@ -722,7 +722,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeCustomMaxAuctionAdComponents,
           {{"FledgeAdComponentLimit", "40"}}},
          {blink::features::kFledgeRealTimeReporting, {}},
-         {blink::features::kFledgeReportingTimeout, {}}},
+         {blink::features::kFledgeReportingTimeout, {}},
+         {blink::features::kFledgeDeprecatedRenderURLReplacements, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
