@@ -185,7 +185,7 @@ void KeyboardEvdev::DispatchKey(unsigned int key,
   if (auto button_key_code = RemapButtonsToKeyboardCodes(key);
       button_key_code.has_value()) {
     dom_code = DomCode::NONE;
-    dom_key = DomKey::InvalidKey::NONE;
+    dom_key = DomKey::NONE;
     key_code = *button_key_code;
   } else {
     if (dom_code == DomCode::NONE) {
