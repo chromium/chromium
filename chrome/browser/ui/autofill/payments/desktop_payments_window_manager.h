@@ -109,6 +109,9 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // window to trigger. If the user cancels the dialog the flow will end.
   void ShowVcn3dsConsentDialog();
 
+  // Handles the user accepting the VCN 3DS consent dialog.
+  void OnVcn3dsConsentDialogAccepted();
+
   // Handles the user cancelling the VCN 3DS consent dialog.
   void OnVcn3dsConsentDialogCancelled();
 

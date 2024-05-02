@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -27,6 +28,8 @@
 namespace autofill::payments {
 
 namespace {
+
+using Vcn3dsFlowEvent = autofill_metrics::Vcn3dsFlowEvent;
 
 gfx::Rect GetPopupSizeForVcn3ds() {
   // The first two arguments do not matter as position gets overridden by
@@ -58,7 +61,15 @@ void DesktopPaymentsWindowManager::InitVcn3dsAuthentication(
   CHECK(!context.completion_callback.is_null());
   flow_type_ = FlowType::kVcn3ds;
   vcn_3ds_context_ = std::move(context);
+  autofill_metrics::LogVcn3dsFlowEvent(
+      Vcn3dsFlowEvent::kFlowStarted,
+      /*user_consent_already_given=*/vcn_3ds_context_
+          ->user_consent_already_given);
   if (vcn_3ds_context_->user_consent_already_given) {
+    autofill_metrics::LogVcn3dsFlowEvent(
+        Vcn3dsFlowEvent::kUserConsentDialogSkipped,
+        /*user_consent_already_given=*/vcn_3ds_context_
+            ->user_consent_already_given);
     CreatePopup(vcn_3ds_context_->challenge_option.url_to_open,
                 GetPopupSizeForVcn3ds());
   } else {
@@ -116,6 +127,10 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
           Navigate(&params)) {
     content::WebContentsObserver::Observe(navigation_handle->GetWebContents());
   } else {
+    autofill_metrics::LogVcn3dsFlowEvent(
+        Vcn3dsFlowEvent::kPopupNotShown,
+        /*user_consent_already_given=*/vcn_3ds_context_
+            ->user_consent_already_given);
     client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/false));
@@ -167,9 +182,18 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
   // the user closing the pop-up.
   if (result.error() ==
       Vcn3dsAuthenticationPopupNonSuccessResult::kAuthenticationFailed) {
+    autofill_metrics::LogVcn3dsFlowEvent(
+        Vcn3dsFlowEvent::kAuthenticationInsidePopupFailed,
+        /*user_consent_already_given=*/vcn_3ds_context_
+            ->user_consent_already_given);
     client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/true));
+  } else {
+    autofill_metrics::LogVcn3dsFlowEvent(
+        Vcn3dsFlowEvent::kFlowCancelledUserClosedPopup,
+        /*user_consent_already_given=*/vcn_3ds_context_
+            ->user_consent_already_given);
   }
 
   // The callback is always run at this point, which can be either when the user
@@ -204,17 +228,29 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
       /*show_confirmation_before_closing=*/response.card.has_value(),
       /*no_interactive_authentication_callback=*/base::OnceClosure());
   if (!response.card.has_value()) {
+    autofill_metrics::LogVcn3dsFlowEvent(
+        Vcn3dsFlowEvent::kFlowFailedWhileRetrievingVCN,
+        /*user_consent_already_given=*/vcn_3ds_context_
+            ->user_consent_already_given);
     client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/true));
   }
 
+  autofill_metrics::LogVcn3dsFlowEvent(
+      Vcn3dsFlowEvent::kFlowSucceeded,
+      /*user_consent_already_given=*/vcn_3ds_context_
+          ->user_consent_already_given);
   std::move(vcn_3ds_context_->completion_callback).Run(std::move(response));
   Reset();
 }
 
 void DesktopPaymentsWindowManager::
     OnVcn3dsAuthenticationProgressDialogCancelled() {
+  autofill_metrics::LogVcn3dsFlowEvent(
+      Vcn3dsFlowEvent::kProgressDialogCancelled,
+      /*user_consent_already_given=*/vcn_3ds_context_
+          ->user_consent_already_given);
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->CancelRequest();
@@ -229,10 +265,8 @@ void DesktopPaymentsWindowManager::ShowVcn3dsConsentDialog() {
   payments_window_user_consent_dialog_controller_ =
       std::make_unique<PaymentsWindowUserConsentDialogControllerImpl>(
           /*accept_callback=*/base::BindOnce(
-              &DesktopPaymentsWindowManager::CreatePopup,
-              weak_ptr_factory_.GetWeakPtr(),
-              vcn_3ds_context_->challenge_option.url_to_open,
-              GetPopupSizeForVcn3ds()),
+              &DesktopPaymentsWindowManager::OnVcn3dsConsentDialogAccepted,
+              weak_ptr_factory_.GetWeakPtr()),
           /*cancel_callback=*/base::BindOnce(
               &DesktopPaymentsWindowManager::OnVcn3dsConsentDialogCancelled,
               weak_ptr_factory_.GetWeakPtr()));
@@ -242,7 +276,20 @@ void DesktopPaymentsWindowManager::ShowVcn3dsConsentDialog() {
       base::Unretained(&client_->GetWebContents())));
 }
 
+void DesktopPaymentsWindowManager::OnVcn3dsConsentDialogAccepted() {
+  autofill_metrics::LogVcn3dsFlowEvent(
+      Vcn3dsFlowEvent::kUserConsentDialogAccepted,
+      /*user_consent_already_given=*/vcn_3ds_context_
+          ->user_consent_already_given);
+  CreatePopup(vcn_3ds_context_->challenge_option.url_to_open,
+              GetPopupSizeForVcn3ds());
+}
+
 void DesktopPaymentsWindowManager::OnVcn3dsConsentDialogCancelled() {
+  autofill_metrics::LogVcn3dsFlowEvent(
+      Vcn3dsFlowEvent::kUserConsentDialogDeclined,
+      /*user_consent_already_given=*/vcn_3ds_context_
+          ->user_consent_already_given);
   // In the case of the dialog cancelled, we still run the callback to let the
   // caller know the flow has finished unsuccessfully.
   std::move(vcn_3ds_context_->completion_callback)

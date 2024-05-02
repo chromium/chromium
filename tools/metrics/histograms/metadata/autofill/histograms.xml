@@ -522,6 +522,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".Upload" summary="Server IBAN save"/>
 </variants>
 
+<variants name="Vcn3ds.ConsentAlreadyGiven">
+  <variant name="ConsentAlreadyGiven"
+      summary="The consent for a pop-up was already given prior to the flow
+               starting"/>
+  <variant name="ConsentNotGivenYet"
+      summary="The consent for a pop-up was not given prior to the flow
+               starting and needs to be requested"/>
+</variants>
+
 <histogram name="Autocomplete.DaysSinceLastUse" units="days"
     expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
@@ -5574,6 +5583,40 @@ chromium-metrics-reviews@google.com.
     it has already been accessed for the card twice before, then &quot;3&quot;
     is recorded.
   </summary>
+</histogram>
+
+<histogram name="Autofill.Vcn3ds.FlowEvents" enum="Vcn3dsFlowEvents"
+    expires_after="2024-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks when a user starts and completes a VCN 3DS flow, as well as events
+    throughout the flow. The metrics for flow started log when we initiate a VCN
+    3DS auth flow and are about to either show the consent dialog or the pop-up
+    directly. The metrics for flow completion are logged when the full flow is
+    considered completed, and are broken down by completion result. Other events
+    are logged at the moment they occur. This histogram is an aggregated version
+    of the Autofill.Vcn3ds.FlowEvents.{ConsentAlreadyGiven} histogram.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Vcn3ds.FlowEvents.{ConsentAlreadyGiven}"
+    enum="Vcn3dsFlowEvents" expires_after="2024-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks when a user starts and completes a VCN 3DS flow, as well as events
+    throughout the flow. The metrics for flow started log when we initiate a VCN
+    3DS auth flow and are about to either show the consent dialog or the pop-up
+    directly. The metrics for flow completion are logged when the full flow is
+    considered completed, and are broken down by completion result. Other events
+    are logged at the moment they occur. The histogram is broken down into
+    sub-histograms by whether user consent was already given prior to the flow
+    starting. If consent was already given, the consent dialog is not shown and
+    the pop-up is immediately triggered, otherwise the consent dialog is shown
+    and must be accepted for the pop-up to be triggered.
+  </summary>
+  <token key="ConsentAlreadyGiven" variants="Vcn3ds.ConsentAlreadyGiven"/>
 </histogram>
 
 <histogram name="Autofill.VirtualCard.Enroll.Attempt.{Source}"

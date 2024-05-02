@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager_test_api.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -54,6 +56,12 @@ namespace payments {
 
 constexpr std::string_view kVcn3dsTestUrl = "https://site.example/";
 constexpr std::string_view kTestContextToken = "Test context token";
+constexpr std::string_view kVcn3dsFlowEventsHistogramName =
+    "Autofill.Vcn3ds.FlowEvents";
+constexpr std::string_view kVcn3dsFlowEventsConsentAlreadyGivenHistogramName =
+    "Autofill.Vcn3ds.FlowEvents.ConsentAlreadyGiven";
+constexpr std::string_view kVcn3dsFlowEventsConsentNotGivenYetHistogramName =
+    "Autofill.Vcn3ds.FlowEvents.ConsentNotGivenYet";
 
 class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
  public:
@@ -162,6 +170,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
   }
 
   CreditCard card_;
+  base::HistogramTester histogram_tester_;
 
  private:
   TestAutofillClientInjector<TestContentAutofillClientForWindowManagerTest>
@@ -173,6 +182,27 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse>
       authentication_response_;
 };
+
+// Test that the VCN 3DS flow started and consent dialog skipped histogram
+// buckets are logged to when the flow starts.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Vcn3ds_FlowStartedHistogramBucketLogs) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kFlowStarted, 1);
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsConsentAlreadyGivenHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kFlowStarted, 1);
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kUserConsentDialogSkipped, 1);
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsConsentAlreadyGivenHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kUserConsentDialogSkipped, 1);
+}
 
 // Test that the VCN 3DS pop-up is shown correctly, and on close an
 // UnmaskCardRequest is triggered with the proper fields set if the right query
@@ -245,6 +275,128 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 }
 
+// Tests that the VCN 3DS flow succeeded histogram bucket is logged to when a
+// successful flow is completed for VCN 3DS.
+IN_PROC_BROWSER_TEST_F(
+    DesktopPaymentsWindowManagerInteractiveUiTest,
+    InvokeUi_Vcn3ds_QueryParamsPresent_SuccessHistogramBucketLogs) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  // Navigate to a page where there are shouldProceed and token query params.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(
+          GURL("https://site.example/?shouldProceed=true&token=sometesttoken"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate a response for the UnmaskCardRequest and ensure the callback is
+  // run with the correct information.
+  PaymentsNetworkInterface::UnmaskResponseDetails response_details;
+  response_details.with_real_pan("1111222233334444");
+  response_details.with_dcvv("123");
+  response_details.expiration_month = "01";
+  response_details.expiration_year = "2030";
+  test_api(window_manager())
+      .OnVcn3dsAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kSuccess, response_details);
+
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kFlowSucceeded, 1);
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsConsentAlreadyGivenHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kFlowSucceeded, 1);
+}
+
+// Test that the VCN 3DS pop-up is shown correctly, and on close an
+// UnmaskCardRequest is triggered with the proper fields set if the right query
+// params are present. Then mock an UnmaskCardRequest failure, and check that
+// the requester was notified of this failure.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Vcn3ds_UnmaskCardRequestFailure) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  // Navigate to a page where there are shouldProceed and token query params.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(
+          GURL("https://site.example/?shouldProceed=true&token=sometesttoken"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  ClosePopup();
+  EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
+
+  // Check that the flow was successful and an UnmaskCardRequest was triggered
+  // with the correct fields set, and the progress dialog was shown.
+  EXPECT_TRUE(
+      client()->GetPaymentsAutofillClient()->autofill_progress_dialog_shown());
+  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
+      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
+                           client()
+                               ->GetPaymentsAutofillClient()
+                               ->GetPaymentsNetworkInterface())
+                           ->unmask_request();
+  ASSERT_TRUE(unmask_request.has_value());
+  EXPECT_EQ(unmask_request->card, card_);
+  EXPECT_EQ(unmask_request->redirect_completion_proof.value(), "sometesttoken");
+  EXPECT_EQ(unmask_request->last_committed_primary_main_frame_origin,
+            client()->GetLastCommittedPrimaryMainFrameOrigin().GetURL());
+
+  // Simulate a response for the UnmaskCardRequest and ensure the callback is
+  // run with the correct information.
+  test_api(window_manager())
+      .OnVcn3dsAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kPermanentFailure,
+          PaymentsNetworkInterface::UnmaskResponseDetails());
+
+  std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
+      authentication_response();
+  ASSERT_TRUE(response.has_value());
+  EXPECT_FALSE(response->card.has_value());
+}
+
+// Tests that the VCN 3DS flow failed during second server call histogram bucket
+// is logged to when a flow fails in the second UnmaskCardRequest.
+IN_PROC_BROWSER_TEST_F(
+    DesktopPaymentsWindowManagerInteractiveUiTest,
+    InvokeUi_Vcn3ds_UnmaskCardRequestFailure_FailureHistogramBucketLogs) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  // Navigate to a page where there are shouldProceed and token query params.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(
+          GURL("https://site.example/?shouldProceed=true&token=sometesttoken"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  ClosePopup();
+
+  // Simulate a response for the UnmaskCardRequest and ensure the callback is
+  // run with the correct information.
+  test_api(window_manager())
+      .OnVcn3dsAuthenticationResponseReceived(
+          AutofillClient::PaymentsRpcResult::kPermanentFailure,
+          PaymentsNetworkInterface::UnmaskResponseDetails());
+
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kFlowFailedWhileRetrievingVCN, 1);
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsConsentAlreadyGivenHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kFlowFailedWhileRetrievingVCN, 1);
+}
+
 // Test that the VCN 3DS pop-up is shown correctly, and on close an
 // UnmaskCardRequest is not triggered if the query params indicate the
 // authentication failed.
@@ -282,6 +434,34 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
 
+// Tests that the VCN 3DS authentication failed histogram bucket is logged to
+// when the authentication inside of the pop-up failed for VCN 3DS.
+IN_PROC_BROWSER_TEST_F(
+    DesktopPaymentsWindowManagerInteractiveUiTest,
+    InvokeUi_Vcn3ds_QueryParams_AuthenticationFailed_FailureHistogramBucketLogs) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  // Navigate to a page where there is an shouldProceed query param that denotes
+  // the authentication failed.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL("https://site.example/?shouldProceed=false"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kAuthenticationInsidePopupFailed, 1);
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsConsentAlreadyGivenHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kAuthenticationInsidePopupFailed, 1);
+}
+
 // Test that the VCN 3DS pop-up is shown correctly, and on close an
 // UnmaskCardRequest is not triggered if there are no query params present.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
@@ -306,6 +486,24 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   EXPECT_FALSE(response->card.has_value());
   EXPECT_FALSE(
       client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
+}
+
+// Tests that the VCN 3DS flow cancelled histogram bucket is logged to when the
+// user closes the pop-up.
+IN_PROC_BROWSER_TEST_F(
+    DesktopPaymentsWindowManagerInteractiveUiTest,
+    InvokeUi_Vcn3ds_NoQueryParamsAndPopupClosed_CancelledHistogramBucketLogs) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  ClosePopup();
+
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kFlowCancelledUserClosedPopup, 1);
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsConsentAlreadyGivenHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kFlowCancelledUserClosedPopup, 1);
 }
 
 // Test that the VCN 3DS pop-up is shown correctly, and on close an
@@ -378,6 +576,35 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 }
 
+// Tests that the VCN 3DS progress dialog cancelled histogram bucket is logged
+// to when the progress dialog is cancelled during the VCN 3DS flow.
+IN_PROC_BROWSER_TEST_F(
+    DesktopPaymentsWindowManagerInteractiveUiTest,
+    InvokeUi_Vcn3ds_ProgressDialogCancelled_ProgressDialogCancelledHistogramBucketLogs) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  // Navigate to a page where there are shouldProceed and token query params.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(
+          GURL("https://site.example/?shouldProceed=true&token=sometesttoken"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  base::RunLoop().RunUntilIdle();
+
+  test_api(window_manager()).OnVcn3dsAuthenticationProgressDialogCancelled();
+
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kProgressDialogCancelled, 1);
+  histogram_tester_.ExpectBucketCount(
+      kVcn3dsFlowEventsConsentAlreadyGivenHistogramName,
+      autofill_metrics::Vcn3dsFlowEvent::kProgressDialogCancelled, 1);
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that if a VCN 3DS flow is ongoing, and the original tab is set active,
 // the payments window manager popup's web contents are re-activated.
@@ -444,6 +671,8 @@ class PaymentsWindowUserConsentDialogIntegrationTest
     return authentication_response_;
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   InteractiveTestApi::StepBuilder TriggerDialog() {
     return Do([this]() {
@@ -473,6 +702,20 @@ class PaymentsWindowUserConsentDialogIntegrationTest
       authentication_response_;
 };
 
+// Ensures that the flow started, consent not given yet histogram bucket is
+// logged to when a payments window flow is started without consent already
+// given.
+IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
+                       FlowStartedConsentNotGivenYetHistogramBucketLogs) {
+  RunTestSequence(
+      TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
+      FlushEvents(), Check([this]() {
+        return histogram_tester_.GetBucketCount(
+                   kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
+                   autofill_metrics::Vcn3dsFlowEvent::kFlowStarted) == 1;
+      }));
+}
+
 // Ensures the UI can be shown, and verifies that accepting the dialog runs the
 // accept callback and creates the pop-up.
 IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
@@ -487,6 +730,33 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
           PressButton(views::DialogClientView::kOkButtonElementId),
           AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId, []() {
             EXPECT_EQ(BrowserList::GetInstance()->size(), 2U);
+          }))));
+}
+
+// Tests that the VCN 3DS consent dialog accepted histogram bucket is logged to
+// when the consent dialog is accepted.
+IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
+                       DialogAccepted_AcceptedHistogramBucketLogs) {
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1U);
+
+  RunTestSequence(
+      TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
+      // TriggerDialogAndWaitForShow() changes the context, so the same context
+      // must be used.
+      InSameContext(Steps(
+          PressButton(views::DialogClientView::kOkButtonElementId),
+          AfterHide(
+              PaymentsWindowUserConsentDialogView::kTopViewId,
+              []() { EXPECT_EQ(BrowserList::GetInstance()->size(), 2U); }),
+          FlushEvents(), Check([this]() {
+            return histogram_tester_.GetBucketCount(
+                       kVcn3dsFlowEventsHistogramName,
+                       autofill_metrics::Vcn3dsFlowEvent::
+                           kUserConsentDialogAccepted) == 1 &&
+                   histogram_tester_.GetBucketCount(
+                       kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
+                       autofill_metrics::Vcn3dsFlowEvent::
+                           kUserConsentDialogAccepted) == 1;
           }))));
 }
 
@@ -510,6 +780,29 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
             ASSERT_TRUE(response.has_value());
             EXPECT_FALSE(response->card.has_value());
           }))));
+}
+
+// Tests that the VCN 3DS consent dialog declined histogram bucket is logged to
+// when the consent dialog is declined.
+IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
+                       DialogDeclined_DeclinedHistogramBucketLogs) {
+  RunTestSequence(
+      TriggerDialogAndWaitForShow(
+          views::DialogClientView::kCancelButtonElementId),
+      // TriggerDialogAndWaitForShow() changes the context, so the same context
+      // must be used.
+      InSameContext(
+          Steps(PressButton(views::DialogClientView::kCancelButtonElementId),
+                FlushEvents(), Check([this]() {
+                  return histogram_tester_.GetBucketCount(
+                             kVcn3dsFlowEventsHistogramName,
+                             autofill_metrics::Vcn3dsFlowEvent::
+                                 kUserConsentDialogDeclined) == 1 &&
+                         histogram_tester_.GetBucketCount(
+                             kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
+                             autofill_metrics::Vcn3dsFlowEvent::
+                                 kUserConsentDialogDeclined) == 1;
+                }))));
 }
 
 }  // namespace payments

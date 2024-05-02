@@ -4080,6 +4080,27 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Upload was for newly-seen payment method"/>
 </enum>
 
+<enum name="Vcn3dsFlowEvents">
+  <int value="0"
+      label="The flow has started, and the consent dialog or a pop-up are
+             about to be shown"/>
+  <int value="1" label="The consent dialog was skipped"/>
+  <int value="2" label="The consent dialog was accepted"/>
+  <int value="3" label="The consent dialog was declined"/>
+  <int value="4"
+      label="The pop-up was not able to be shown when a show was attempted"/>
+  <int value="5"
+      label="The user cancelled the flow by closing the pop-up before
+             authentication has finished"/>
+  <int value="6" label="The authentication inside of the pop-up failed"/>
+  <int value="7"
+      label="The user cancelled the progress dialog while retrieving the VCN"/>
+  <int value="8"
+      label="The flow failed after pop-up closed while retrieving the VCN"/>
+  <int value="9"
+      label="The flow has successfully completed and retrieved a VCN"/>
+</enum>
+
 <enum name="VirtualCardStandaloneCvcSuggestionFormEvent">
   <int value="0" label="Suggestions shown"/>
   <int value="1" label="Suggestions shown (once)"/>
