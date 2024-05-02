@@ -7,12 +7,6 @@
     padding: 19px 10px;
     gap: var(--about-page-image-space);
   }
-
-  @media (max-width: 680px) {
-    #id-2 {
-      display: none;
-    }
-  }
 </style>
 
 <settings-section page-title="$i18n{getTheMostOutOfChrome}">
@@ -20,7 +14,7 @@
       on-click="onGetTheMostOutOfChromeClick_"
       role-description="$i18n{getTheMostOutOfChromePageButton}">
     <template is="dom-repeat" items="[[entries_]]">
-      <div class="get-most-chrome-item" id="id-[[index]]">
+      <div class="get-most-chrome-item">
         <picture>
           <source
               srcset="chrome://settings/images/[[item.iconDark]]"
