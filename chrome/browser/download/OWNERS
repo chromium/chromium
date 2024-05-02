@@ -13,3 +13,4 @@ per-file download_item_warning_data*=file://chrome/browser/download/bubble/OWNER
 per-file download_ui_controller*=file://chrome/browser/download/bubble/OWNERS
 per-file download_ui_model*=file://chrome/browser/download/bubble/OWNERS
 per-file download_ui_safe_browsing_util*=file://chrome/browser/download/bubble/OWNERS
+per-file download_warning_desktop_hats_utils*=file://chrome/browser/download/bubble/OWNERS
