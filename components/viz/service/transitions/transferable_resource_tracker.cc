@@ -80,7 +80,7 @@ TransferableResourceTracker::ImportResource(
     SharedBitmapId id = SharedBitmap::GenerateId();
     shared_bitmap_manager_->LocalAllocatedSharedBitmap(
         std::move(output_copy.bitmap), id);
-    resource = TransferableResource::MakeSoftware(
+    resource = TransferableResource::MakeSoftwareSharedBitmap(
         id, gpu::SyncToken(), output_copy.draw_data.size,
         SinglePlaneFormat::kRGBA_8888,
         TransferableResource::ResourceSource::kSharedElementTransition);

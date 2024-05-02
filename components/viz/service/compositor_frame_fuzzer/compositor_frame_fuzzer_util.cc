@@ -271,9 +271,9 @@ void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
   FuzzedBitmap* fuzzed_bitmap = AllocateFuzzedBitmap(
       tile_size, GetColorFromProtobuf(quad_spec.tile_quad().texture_color()));
   TransferableResource transferable_resource =
-      TransferableResource::MakeSoftware(fuzzed_bitmap->id, gpu::SyncToken(),
-                                         fuzzed_bitmap->size,
-                                         SinglePlaneFormat::kRGBA_8888);
+      TransferableResource::MakeSoftwareSharedBitmap(
+          fuzzed_bitmap->id, gpu::SyncToken(), fuzzed_bitmap->size,
+          SinglePlaneFormat::kRGBA_8888);
 
   auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
   ConfigureSharedQuadState(shared_quad_state, quad_spec);

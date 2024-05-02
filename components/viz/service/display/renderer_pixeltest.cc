@@ -308,9 +308,9 @@ void CreateTestTwoColoredTextureDrawQuad(
         AllocateAndRegisterSharedBitmapMemory(shared_bitmap_id, rect.size(),
                                               shared_bitmap_manager);
     resource = child_resource_provider->ImportResource(
-        TransferableResource::MakeSoftware(shared_bitmap_id, gpu::SyncToken(),
-                                           rect.size(),
-                                           SinglePlaneFormat::kRGBA_8888),
+        TransferableResource::MakeSoftwareSharedBitmap(
+            shared_bitmap_id, gpu::SyncToken(), rect.size(),
+            SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
@@ -370,9 +370,9 @@ void CreateTestTextureDrawQuad(
         AllocateAndRegisterSharedBitmapMemory(shared_bitmap_id, rect.size(),
                                               shared_bitmap_manager);
     resource = child_resource_provider->ImportResource(
-        TransferableResource::MakeSoftware(shared_bitmap_id, gpu::SyncToken(),
-                                           rect.size(),
-                                           SinglePlaneFormat::kRGBA_8888),
+        TransferableResource::MakeSoftwareSharedBitmap(
+            shared_bitmap_id, gpu::SyncToken(), rect.size(),
+            SinglePlaneFormat::kRGBA_8888),
         base::DoNothing());
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());

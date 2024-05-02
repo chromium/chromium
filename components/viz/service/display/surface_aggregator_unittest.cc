@@ -6861,7 +6861,7 @@ CompositorFrame BuildCompositorFrameWithResources(
   }
 
   for (ResourceId resource_id : resource_ids) {
-    auto resource = TransferableResource::MakeSoftware(
+    auto resource = TransferableResource::MakeSoftwareSharedBitmap(
         SharedBitmap::GenerateId(), gpu::SyncToken(), gfx::Size(1, 1),
         SinglePlaneFormat::kRGBA_8888);
     resource.id = resource_id;
