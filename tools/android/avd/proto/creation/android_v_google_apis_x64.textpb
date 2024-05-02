@@ -15,7 +15,7 @@ system_image_package {
   version: "pYnbszrCPFbN1j_Dv23ipSu1A326FJ89qXO9z2-F_MEC"  # v4
   dest_path: "android_v_google_apis_x64"
 }
-system_image_name: "system-images;android-vanillaicecream;google_apis;x86_64"
+system_image_name: "system-images;android-VanillaIceCream;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-vanillaicecream/google_apis/x86_64"
