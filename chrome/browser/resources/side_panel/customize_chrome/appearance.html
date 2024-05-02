@@ -1,157 +1,61 @@
-<style include="cr-hidden-style cr-icons sp-shared-style">
-  #editButtonsContainer {
-    display: flex;
-    gap: 8px;
-    margin: 0 16px 16px;
-    width: calc(100% - 32px);
-  }
-
-  #editThemeButton {
-    flex-grow: 1;
-  }
-
-  #wallpaperSearchButton {
-    flex-grow: 1.5;
-  }
-
-  .edit-theme-icon {
-    --cr-icon-color: currentColor;
-    margin-inline-end: 0;
-    margin-inline-start: 0;
-  }
-
-  #editThemeIcon {
-    --cr-icon-image: url(icons/image.svg);
-    --cr-icon-size: 12px;
-    height: 12px;
-    width: 12px;
-  }
-
-  #wallpaperSearchIcon {
-    --cr-icon-image: url(icons/sparkle.svg);
-    --cr-icon-size: 20px;
-    height: 20px;
-    width: 20px;
-  }
-
-  #setClassicChromeButton {
-    --cr-icon-image: url(icons/reset.svg);
-  }
-
-  #thirdPartyLinkButton {
-    --cr-icon-image: url('chrome://resources/images/open_in_new.svg');
-  }
-
-  #uploadedImageButton {
-    --cr-icon-image: url(icons/upload.svg);
-  }
-
-  #searchedImageButton {
-    --cr-icon-image: url(icons/generated_image.svg);
-  }
-
-  managed-dialog {
-    --cr-dialog-width: min(calc(100% - 32px), 512px);
-  }
-
-  customize-color-scheme-mode,
-  .sp-hr {
-    width: calc(100% - 32px);
-  }
-
-  .sp-hr {
-    margin: 0 16px;
-  }
-
-  customize-color-scheme-mode {
-    display: block;
-    margin: 16px;
-  }
-
-  cr-theme-color-picker {
-    display: block;
-    margin-bottom: 16px;
-  }
-
-  .theme-button {
-    margin-top: 16px;
-  }
-
-  .theme-button:not([hidden]) ~ #editButtonsContainer {
-    margin: 20px 16px;
-  }
-
-  #followThemeToggle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 8px 0;
-    padding: 10px var(--sp-card-inline-padding);
-  }
-
-  #followThemeToggleTitle {
-    font-size: inherit;
-    line-height: inherit;
-  }
-</style>
 <customize-chrome-theme-snapshot id="themeSnapshot"
-    on-edit-theme-click="onEditThemeClicked_"
-    hidden$="[[!showThemeSnapshot_]]">
+    @edit-theme-click="${this.onEditThemeClicked_}"
+    ?hidden="${!this.showThemeSnapshot_}">
 </customize-chrome-theme-snapshot>
 <customize-chrome-hover-button id="thirdPartyLinkButton" class="theme-button"
-    hidden$="[[!thirdPartyThemeId_]]" on-click="onThirdPartyLinkButtonClick_"
-    label="[[thirdPartyThemeName_]]"
+    ?hidden="${!this.thirdPartyThemeId_}" @click="${this.onThirdPartyLinkButtonClick_}"
+    label="${this.thirdPartyThemeName_}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
 <customize-chrome-hover-button id="uploadedImageButton" class="theme-button"
-    hidden$="[[!showUploadedImageButton_]]"
-    on-click="onUploadedImageButtonClick_"
+    ?hidden="${!this.showUploadedImageButton_}"
+    @click="${this.onUploadedImageButtonClick_}"
     label="$i18n{yourUploadedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
 <customize-chrome-hover-button id="searchedImageButton" class="theme-button"
-    hidden$="[[!showSearchedImageButton_]]"
-    on-click="onSearchedImageButtonClick_"
+    ?hidden="${!this.showSearchedImageButton_}"
+    @click="${this.onSearchedImageButtonClick_}"
     label="$i18n{yourSearchedImage}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
 <div id="editButtonsContainer">
-  <cr-button id="editThemeButton" on-click="onEditThemeClicked_"
+  <cr-button id="editThemeButton" @click="${this.onEditThemeClicked_}"
       class="floating-button">
     <div id="editThemeIcon" class="cr-icon edit-theme-icon" slot="prefix-icon"
-        hidden$="[[wallpaperSearchButtonEnabled_]]"></div>
-    [[editThemeButtonText_]]
+        ?hidden="${this.wallpaperSearchButtonEnabled_}"></div>
+    ${this.editThemeButtonText_}
   </cr-button>
-  <template is="dom-if" if="[[wallpaperSearchButtonEnabled_]]">
-    <cr-button id="wallpaperSearchButton" on-click="onWallpaperSearchClicked_"
-        class="floating-button">
+  ${this.wallpaperSearchButtonEnabled_ ? html`
+    <cr-button id="wallpaperSearchButton"
+        @click="${this.onWallpaperSearchClicked_}" class="floating-button">
       <div id="wallpaperSearchIcon" class="cr-icon edit-theme-icon"
           slot="prefix-icon"></div>
       $i18n{wallpaperSearchTileLabel}
     </cr-button>
-  </template>
+  ` : ''}
 </div>
 <hr class="sp-hr">
 <customize-color-scheme-mode></customize-color-scheme-mode>
-<cr-theme-color-picker id="chromeColors" hidden$="[[!showColorPicker_]]">
+<cr-theme-color-picker id="chromeColors" ?hidden="${!this.showColorPicker_}">
 </cr-theme-color-picker>
-<hr class="sp-hr" hidden$="[[!showBottomDivider_]]">
+<hr class="sp-hr" ?hidden="${!this.showBottomDivider_}">
 <div id="followThemeToggle" class="sp-card-content"
-    hidden$="[[!showDeviceThemeToggle_]]">
+    ?hidden="${!this.showDeviceThemeToggle_}">
   <div id="followThemeToggleTitle">$i18n{followThemeToggle}</div>
   <cr-toggle id="followThemeToggleControl" title="$i18n{followThemeToggle}"
-      checked="[[theme_.followDeviceTheme]]"
-      on-change="onFollowThemeToggleChange_">
+      ?checked="${!!this.theme_ && this.theme_.followDeviceTheme}"
+      @change="${this.onFollowThemeToggleChange_}">
   </cr-toggle>
 </div>
 <customize-chrome-hover-button id="setClassicChromeButton"
-    hidden$="[[!showClassicChromeButton_]]"
+    ?hidden="${!this.showClassicChromeButton_}"
     label="$i18n{resetToClassicChrome}"
-    on-click="onSetClassicChromeClicked_">
+    @click="${this.onSetClassicChromeClicked_}">
 </customize-chrome-hover-button>
-<template is="dom-if" if="[[showManagedDialog_]]" restamp>
-  <managed-dialog on-close="onManagedDialogClosed_"
+${this.showManagedDialog_ ? html`
+  <managed-dialog @close="${this.onManagedDialogClosed_}"
       title="$i18n{managedColorsTitle}"
       body="$i18n{managedColorsBody}">
   </managed-dialog>
-</template>
+` : ''}
