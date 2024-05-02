@@ -182,13 +182,20 @@ ServiceWorkerContainerHost::ServiceWorkerContainerHost(
 ServiceWorkerContainerHostForServiceWorker::
     ServiceWorkerContainerHostForServiceWorker(
         base::WeakPtr<ServiceWorkerContextCore> context,
-        ServiceWorkerHost* service_worker_host)
+        ServiceWorkerHost* service_worker_host,
+        const GURL& url,
+        const blink::StorageKey& storage_key)
     : ServiceWorkerContainerHost(
           std::move(context),
           /*is_parent_frame_secure=*/true,
           /*container_remote=*/{},
           /*process_id_for_worker_client=*/ChildProcessHost::kInvalidUniqueID),
       service_worker_host_(service_worker_host) {
+  url_ = url;
+  key_ = storage_key;
+  top_frame_origin_ = url::Origin::Create(key_.top_level_site().GetURL());
+  CHECK(!url_.has_ref());
+  service_worker_security_utils::CheckOnUpdateUrls(url_, key_);
 }
 
 ServiceWorkerContainerHostForClient::ServiceWorkerContainerHostForClient(

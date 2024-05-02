@@ -138,7 +138,7 @@ CreateContainerHostAndInfoForWindow(
 std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
     int process_id,
     bool is_parent_frame_secure,
-    ServiceWorkerVersion* hosted_version,
+    ServiceWorkerVersion& hosted_version,
     base::WeakPtr<ServiceWorkerContextCore> context,
     ServiceWorkerRemoteContainerEndpoint* output_endpoint);
 

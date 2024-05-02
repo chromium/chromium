@@ -2275,7 +2275,7 @@ void ServiceWorkerVersion::StartWorkerInternal() {
       blink::mojom::ServiceWorkerProviderInfoForStartWorker::New();
   DCHECK(!worker_host_);
   worker_host_ = std::make_unique<content::ServiceWorkerHost>(
-      provider_info->host_remote.InitWithNewEndpointAndPassReceiver(), this,
+      provider_info->host_remote.InitWithNewEndpointAndPassReceiver(), *this,
       context());
 
   auto params = blink::mojom::EmbeddedWorkerStartParams::New();

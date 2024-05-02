@@ -321,11 +321,12 @@ EmbeddedWorkerTestHelper::CreateStartParams(
 blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr
 EmbeddedWorkerTestHelper::CreateProviderInfo(
     scoped_refptr<ServiceWorkerVersion> version) {
+  CHECK(version);
   auto provider_info =
       blink::mojom::ServiceWorkerProviderInfoForStartWorker::New();
   version->worker_host_ = std::make_unique<ServiceWorkerHost>(
-      provider_info->host_remote.InitWithNewEndpointAndPassReceiver(),
-      version.get(), context()->AsWeakPtr());
+      provider_info->host_remote.InitWithNewEndpointAndPassReceiver(), *version,
+      context()->AsWeakPtr());
   return provider_info;
 }
 

@@ -38,23 +38,19 @@ namespace content {
 ServiceWorkerHost::ServiceWorkerHost(
     mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
         host_receiver,
-    ServiceWorkerVersion* version,
+    ServiceWorkerVersion& version,
     base::WeakPtr<ServiceWorkerContextCore> context)
-    : version_(version),
+    : version_(&version),
       token_(blink::ServiceWorkerToken()),
       broker_(this),
       container_host_(
           std::make_unique<content::ServiceWorkerContainerHostForServiceWorker>(
               std::move(context),
-              this)),
+              this,
+              version_->script_url(),
+              version_->key())),
       host_receiver_(container_host_.get(), std::move(host_receiver)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(version_);
-
-  container_host_->UpdateUrls(
-      version_->script_url(),
-      url::Origin::Create(version_->key().top_level_site().GetURL()),
-      version_->key());
 }
 
 ServiceWorkerHost::~ServiceWorkerHost() {

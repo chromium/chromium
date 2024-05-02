@@ -528,14 +528,6 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
   const GURL url2("https://origin2.example.com/page2.html");
   const blink::StorageKey key2 =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(url2));
-  const GURL url3("https://origin3.example.com/sw.js");
-  const blink::StorageKey key3 =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(url3));
-  const GURL url4("https://origin3.example.com/sw.js");
-  const GURL url4_top_level_site("https://other.com/");
-  const blink::StorageKey key4 = blink::StorageKey::Create(
-      url::Origin::Create(url4), net::SchemefulSite(url4_top_level_site),
-      blink::mojom::AncestorChainBit::kCrossSite, true);
 
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       CreateContainerHost(url1);
@@ -543,17 +535,32 @@ TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_CorrectStorageKey) {
 
   container_host->UpdateUrls(url2, url::Origin::Create(url2), key2);
   EXPECT_EQ(key2, container_host->key());
+}
+
+TEST_F(ServiceWorkerContainerHostTest, ForServiceWorker_CorrectStorageKey) {
+  const GURL url3("https://origin3.example.com/sw.js");
+  const blink::StorageKey key3 =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url3));
 
   auto container_host_for_service_worker =
       std::make_unique<ServiceWorkerContainerHostForServiceWorker>(
-          helper_->context()->AsWeakPtr(), /*service_worker_host=*/nullptr);
-
-  container_host_for_service_worker->UpdateUrls(url3, url::Origin::Create(url3),
-                                                key3);
+          helper_->context()->AsWeakPtr(), /*service_worker_host=*/nullptr,
+          url3, key3);
   EXPECT_EQ(key3, container_host_for_service_worker->key());
+}
 
-  container_host_for_service_worker->UpdateUrls(
-      url4, url::Origin::Create(url4_top_level_site), key4);
+TEST_F(ServiceWorkerContainerHostTest,
+       ForServiceWorkerWithTopLevelSite_CorrectStorageKey) {
+  const GURL url4("https://origin3.example.com/sw.js");
+  const GURL url4_top_level_site("https://other.com/");
+  const blink::StorageKey key4 = blink::StorageKey::Create(
+      url::Origin::Create(url4), net::SchemefulSite(url4_top_level_site),
+      blink::mojom::AncestorChainBit::kCrossSite, true);
+
+  auto container_host_for_service_worker =
+      std::make_unique<ServiceWorkerContainerHostForServiceWorker>(
+          helper_->context()->AsWeakPtr(), /*service_worker_host=*/nullptr,
+          url4, key4);
   EXPECT_EQ(key4, container_host_for_service_worker->key());
 }
 
@@ -772,7 +779,7 @@ TEST_F(ServiceWorkerContainerHostTest, AllowServiceWorker) {
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   std::unique_ptr<ServiceWorkerHost> worker_host = CreateServiceWorkerHost(
       helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-      version.get(), helper_->context()->AsWeakPtr(), &remote_endpoint);
+      *version, helper_->context()->AsWeakPtr(), &remote_endpoint);
   ServiceWorkerContainerHost* container_host = worker_host->container_host();
 
   ServiceWorkerTestContentBrowserClient test_browser_client;
@@ -1329,7 +1336,7 @@ void ServiceWorkerContainerHostTest::TestBackForwardCachedClientsAreNotExposed(
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     worker_host = CreateServiceWorkerHost(
         helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
-        version.get(), helper_->context()->AsWeakPtr(), &remote_endpoint);
+        *version, helper_->context()->AsWeakPtr(), &remote_endpoint);
     ASSERT_TRUE(worker_host);
   }
   {

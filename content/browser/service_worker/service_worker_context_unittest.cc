@@ -1170,7 +1170,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   // ServiceWorkerHost creates ServiceWorkerContainerHost for a service worker
   // execution context.
   std::unique_ptr<ServiceWorkerHost> worker_host4 = CreateServiceWorkerHost(
-      kRenderProcessId2, true /* is_parent_frame_secure */, version.get(),
+      kRenderProcessId2, true /* is_parent_frame_secure */, *version,
       context()->AsWeakPtr(), &remote_endpoints.back());
 
   ASSERT_TRUE(container_host1);

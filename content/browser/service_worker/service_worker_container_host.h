@@ -891,7 +891,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHostForServiceWorker final
  public:
   ServiceWorkerContainerHostForServiceWorker(
       base::WeakPtr<ServiceWorkerContextCore> context,
-      ServiceWorkerHost* service_worker_host);
+      ServiceWorkerHost* service_worker_host,
+      const GURL& url,
+      const blink::StorageKey& storage_key);
   ~ServiceWorkerContainerHostForServiceWorker() override;
 
   // Implements blink::mojom::ServiceWorkerContainerHost.

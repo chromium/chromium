@@ -60,7 +60,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
  public:
   ServiceWorkerHost(mojo::PendingAssociatedReceiver<
                         blink::mojom::ServiceWorkerContainerHost> host_receiver,
-                    ServiceWorkerVersion* version,
+                    ServiceWorkerVersion& version,
                     base::WeakPtr<ServiceWorkerContextCore> context);
 
   ServiceWorkerHost(const ServiceWorkerHost&) = delete;
