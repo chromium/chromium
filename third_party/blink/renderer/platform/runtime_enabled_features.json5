@@ -2880,6 +2880,9 @@
       implied_by: ["ViewTransitionOnNavigation"],
     },
     {
+      name: "PaintHoldingForLocalIframes",
+    },
+    {
       name: "PaintUnderInvalidationChecking",
       settable_from_internals: true,
     },

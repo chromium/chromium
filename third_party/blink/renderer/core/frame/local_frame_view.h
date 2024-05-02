@@ -640,6 +640,8 @@ class CORE_EXPORT LocalFrameView final
                                     bool display_locked,
                                     bool recurse = false) override;
 
+  void SetThrottledForViewTransition(bool throttled);
+
   void BeginLifecycleUpdates();
 
   // Records a timestamp in PaintTiming when the frame is first not
@@ -1039,8 +1041,6 @@ class CORE_EXPORT LocalFrameView final
 
   DarkModeFilter& EnsureDarkModeFilter();
 
-  bool HasViewTransitionThrottlingRendering() const;
-
   void UpdateCanCompositeBackgroundAttachmentFixed();
 
   void EnqueueSnapChangingFromImplIfNecessary();
@@ -1147,6 +1147,8 @@ class CORE_EXPORT LocalFrameView final
   // We won't defer again for the same document. This is only meaningful for
   // main frames.
   bool have_deferred_main_frame_commits_ = false;
+
+  bool throttled_for_view_transition_ = false;
 
   bool visual_viewport_or_overlay_needs_repaint_ = false;
 

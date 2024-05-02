@@ -4277,13 +4277,15 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
 
   // When a frame is throttled, we delete its previous painted output, so it
   // will need to be repainted, even if nothing else has changed.
-  if (LayoutView* layout_view = GetLayoutView())
+  if (LayoutView* layout_view = GetLayoutView()) {
     layout_view->Layer()->SetNeedsRepaint();
+  }
   // The painted output of the frame may be included in a cached subsequence
   // associated with the embedding document, so invalidate the owner.
   if (auto* owner = GetFrame().OwnerLayoutObject()) {
-    if (PaintLayer* owner_layer = owner->Layer())
+    if (PaintLayer* owner_layer = owner->Layer()) {
       owner_layer->SetNeedsRepaint();
+    }
   }
 
   if (!CanThrottleRendering()) {
@@ -4435,7 +4437,7 @@ bool LocalFrameView::ShouldThrottleRenderingForTest() const {
 
 bool LocalFrameView::CanThrottleRendering() const {
   if (lifecycle_updates_throttled_ || IsSubtreeThrottled() ||
-      IsDisplayLocked() || HasViewTransitionThrottlingRendering()) {
+      IsDisplayLocked() || throttled_for_view_transition_) {
     return true;
   }
   // We only throttle hidden cross-origin frames. This is to avoid a situation
@@ -4447,20 +4449,6 @@ bool LocalFrameView::CanThrottleRendering() const {
   return IsHiddenForThrottling() && frame_->IsCrossOriginToNearestMainFrame();
 }
 
-bool LocalFrameView::HasViewTransitionThrottlingRendering() const {
-  if (!frame_->GetDocument())
-    return false;
-
-  // Only nested local frames should be throttled. Pausing rendering for root
-  // local frames is done by pausing frames in the compositor.
-  // See ViewTransition::ScopedPauseRendering for details.
-  auto* transition = ViewTransitionUtils::GetTransition(*frame_->GetDocument());
-  const bool should_throttle =
-      transition && transition->ShouldThrottleRendering();
-  DCHECK(!should_throttle || !frame_->IsLocalRoot());
-  return should_throttle;
-}
-
 void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
                                                   bool subtree_throttled,
                                                   bool display_locked,
@@ -4470,6 +4458,23 @@ void LocalFrameView::UpdateRenderThrottlingStatus(bool hidden_for_throttling,
       hidden_for_throttling, subtree_throttled, display_locked, recurse);
   if (was_throttled != CanThrottleRendering())
     RenderThrottlingStatusChanged();
+}
+
+void LocalFrameView::SetThrottledForViewTransition(bool throttled) {
+  if (throttled_for_view_transition_ == throttled) {
+    return;
+  }
+
+  bool was_throttled = CanThrottleRendering();
+  throttled_for_view_transition_ = throttled;
+
+  // Invalidating paint here will cause the iframe to draw with no content
+  // instead of showing old content. This will be fixed by paint holding for
+  // local iframes.
+  if (RuntimeEnabledFeatures::PaintHoldingForLocalIframesEnabled() &&
+      was_throttled != CanThrottleRendering()) {
+    RenderThrottlingStatusChanged();
+  }
 }
 
 void LocalFrameView::BeginLifecycleUpdates() {

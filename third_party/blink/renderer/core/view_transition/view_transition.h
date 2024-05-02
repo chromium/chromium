@@ -231,10 +231,6 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // snapshot.
   void ActivateFromSnapshot();
 
-  // Returns true if lifecycle updates should be throttled for the Document
-  // associated with this transition.
-  bool ShouldThrottleRendering() const;
-
   // Ensure the LayoutViewTransitionRoot, representing the snapshot containing
   // block concept, has up to date style.
   void UpdateSnapshotContainingBlockStyle();

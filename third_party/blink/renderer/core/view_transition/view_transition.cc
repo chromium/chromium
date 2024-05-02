@@ -909,6 +909,10 @@ void ViewTransition::PauseRendering() {
   rendering_paused_scope_.emplace(*document_);
   document_->GetPage()->GetChromeClient().UnregisterFromCommitObservation(this);
 
+  if (rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
+    document_->View()->SetThrottledForViewTransition(true);
+  }
+
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink", "ViewTransition::PauseRendering",
                                     this);
   const base::TimeDelta kTimeout = [this]() {
@@ -941,6 +945,9 @@ void ViewTransition::ResumeRendering() {
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("blink", "ViewTransition::PauseRendering",
                                   this);
+  if (rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
+    document_->View()->SetThrottledForViewTransition(false);
+  }
   rendering_paused_scope_.reset();
 }
 
@@ -968,11 +975,6 @@ void ViewTransition::ActivateFromSnapshot() {
   bool process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
   DCHECK(process_next_state);
   ProcessCurrentState();
-}
-
-bool ViewTransition::ShouldThrottleRendering() const {
-  return rendering_paused_scope_ &&
-         rendering_paused_scope_->ShouldThrottleRendering();
 }
 
 }  // namespace blink
