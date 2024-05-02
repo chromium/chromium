@@ -813,6 +813,9 @@ chromium-metrics-reviews@google.com.
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution.
+
+    One some clients this metric will be logged only one time out of one
+    thousand to reduce the overhead of taking the metric.
   </summary>
 </histogram>
 
@@ -831,6 +834,9 @@ chromium-metrics-reviews@google.com.
     to measure improvement steps. This metric will instead cap at 5s, and allow
     the buckets to give us better visibility into the 15ms-250ms interval
     ranges. We will use this one until we improve the blocking call.
+
+    One some clients this metric will be logged only one time out of one
+    thousand to reduce the overhead of taking the metric.
   </summary>
 </histogram>
 

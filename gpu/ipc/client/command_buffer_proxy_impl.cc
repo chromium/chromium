@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/command_line.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -439,12 +440,14 @@ void CommandBufferProxyImpl::EnsureWorkVisible() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu,login", kEnsureWorkVisible,
                                   TRACE_ID_LOCAL(kEnsureWorkVisible));
 
-  GetUMAHistogramEnsureWorkVisibleDuration()->Add(
-      elapsed_timer.Elapsed().InMicroseconds());
+  if (base::ShouldLogHistogramForCpuReductionExperiment()) {
+    GetUMAHistogramEnsureWorkVisibleDuration()->Add(
+        elapsed_timer.Elapsed().InMicroseconds());
 
-  UMA_HISTOGRAM_CUSTOM_TIMES("GPU.EnsureWorkVisibleDurationLowRes",
-                             elapsed_timer.Elapsed(), base::Milliseconds(1),
-                             base::Seconds(5), 100);
+    UMA_HISTOGRAM_CUSTOM_TIMES("GPU.EnsureWorkVisibleDurationLowRes",
+                               elapsed_timer.Elapsed(), base::Milliseconds(1),
+                               base::Seconds(5), 100);
+  }
 }
 
 gpu::CommandBufferNamespace CommandBufferProxyImpl::GetNamespaceID() const {
