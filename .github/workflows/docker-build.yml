@@ -59,7 +59,11 @@ jobs:
       - name: Add directory to PATH
         run: echo "$GITHUB_WORKSPACE/depot_tools" >> $GITHUB_PATH
       - name: Generate gclient file
-        run: gclient config --name=src https://github.com/${{ github.repository }}
+        run: |
+          whoami
+          gclient config --help
+          gclient sync --help
+          gclient config --name=src https://github.com/${{ github.repository }}
       - name: Gclient sync
         run: gclient sync -v --shallow --no-history -r ${{ github.sha }}
       - name: DF
