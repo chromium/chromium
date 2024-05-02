@@ -215,6 +215,10 @@ void WaylandDataDragController::CancelSession() {
   Reset(DragResult::kCancelled, ui::EventTimeForNow());
 }
 
+bool WaylandDataDragController::IsDragInProgress() const {
+  return state_ != State::kIdle;
+}
+
 void WaylandDataDragController::UpdateDragImage(const gfx::ImageSkia& image,
                                                 const gfx::Vector2d& offset) {
   icon_image_ = image;

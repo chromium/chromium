@@ -177,6 +177,10 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     return connection_->data_drag_controller();
   }
 
+  WaylandDataDragController::State drag_controller_state() const {
+    return connection_->data_drag_controller()->state_;
+  }
+
   WaylandDataDevice* data_device() const {
     return connection_->data_device_manager()->GetDevice();
   }
@@ -443,13 +447,11 @@ TEST_P(WaylandDataDragControllerTest, CancelIncomingDrag) {
   WaitForDragDropTasks();
 
   EXPECT_EQ(drag_controller(), data_device()->drag_delegate_);
-  EXPECT_NE(drag_controller()->state(),
-            WaylandDataDragController::State::kIdle);
+  EXPECT_NE(drag_controller_state(), WaylandDataDragController::State::kIdle);
 
   drag_controller()->CancelSession();
 
-  EXPECT_EQ(drag_controller()->state(),
-            WaylandDataDragController::State::kIdle);
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
   EXPECT_FALSE(data_device()->drag_delegate_);
   Mock::VerifyAndClearExpectations(drop_handler_.get());
 
@@ -1376,7 +1378,7 @@ TEST_P(WaylandDataDragControllerTest,
   WaitForDragDropTasks();
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
-  EXPECT_EQ(drag_controller()->state(),
+  EXPECT_EQ(drag_controller_state(),
             WaylandDataDragController::State::kStarted);
 
   SendDndLeave();
@@ -1384,8 +1386,7 @@ TEST_P(WaylandDataDragControllerTest,
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drop_handler_->dropped_data());
   EXPECT_FALSE(data_device()->drag_delegate_);
-  EXPECT_EQ(drag_controller()->state(),
-            WaylandDataDragController::State::kIdle);
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
 }
 
 // Emulate an incoming DnD session and verifies that data drag controller aborts
@@ -1431,8 +1432,7 @@ TEST_P(WaylandDataDragControllerTest, LeaveWindowWhileFetchingData) {
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drop_handler_->dropped_data());
   EXPECT_FALSE(data_device()->drag_delegate_);
-  EXPECT_EQ(drag_controller()->state(),
-            WaylandDataDragController::State::kIdle);
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
 }
 
 // Cursor position should be updated during a (outgoing) drag with mouse.

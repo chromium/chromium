@@ -82,7 +82,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   bool Drag(WaylandToplevelWindow* window, const gfx::Vector2d& offset);
   void StopDragging();
 
-  State state() const { return state_; }
+  // Returns true if there is an in-progress drag session owned by the window
+  // drag controller.
+  bool IsDragInProgress() const;
 
   void OnToplevelWindowCreated(WaylandToplevelWindow* window);
 
@@ -117,6 +119,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
  private:
   class ExtendedDragSource;
 
+  friend class WaylandWindowDragControllerTest;
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
                            HandleDraggedWindowDestructionAfterMoveLoop);
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,

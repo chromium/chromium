@@ -328,9 +328,9 @@ void WaylandPointer::OnTilt(void* data,
 }
 
 // Enter/Leave events cause undesirable tab detaches in window dragging
-// sessions. At least KWin, Mutter, and old Exo versions (Ash < 112) are known
-// to send leave/enter events before the events currently used by the window
-// drag controller to detect drop, see the crbug linked below for more details.
+// sessions. At least KWin and Mutter are known to send leave/enter events
+// before the events currently used by the window drag controller to detect
+// drop, see the crbug linked below for more details.
 //
 // TODO(crbug.com/329479345): Move this suppression logic to drag controller
 // code once they're refactored to intercept events for the whole session. Also,
@@ -343,8 +343,7 @@ bool WaylandPointer::SuppressFocusChangeEvents() const {
     return false;
   }
   return connection_->window_drag_controller() &&
-         connection_->window_drag_controller()->state() !=
-             WaylandWindowDragController::State::kIdle;
+         connection_->window_drag_controller()->IsDragInProgress();
 }
 
 }  // namespace ui

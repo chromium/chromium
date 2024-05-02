@@ -114,6 +114,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // window and then back over it again).
   void CancelSession();
 
+  // Returns true if there is an in-progress drag session owned by the data drag
+  // controller.
+  bool IsDragInProgress() const;
+
   // Updates the drag image. An empty |image| may be used to hide a previously
   // set non-empty drag image, and a non-empty |image| shows the drag image
   // again if it was previously hidden.
@@ -121,8 +125,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // This must be called during an active drag session.
   void UpdateDragImage(const gfx::ImageSkia& image,
                        const gfx::Vector2d& offset);
-
-  State state() const { return state_; }
 
   // TODO(crbug.com/40598679): Remove once focus is fixed during DND sessions.
   WaylandWindow* entered_window() const { return window_; }
@@ -138,6 +140,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // able to track only the current fetching task, on which it's interested in.
   using CancelFlag = base::RefCountedData<base::AtomicFlag>;
 
+  friend class WaylandDataDragControllerTest;
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, AsyncNoopStartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, CancelDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,

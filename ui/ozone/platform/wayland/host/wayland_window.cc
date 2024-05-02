@@ -350,8 +350,7 @@ bool WaylandWindow::StartDrag(
 
 void WaylandWindow::UpdateDragImage(const gfx::ImageSkia& image,
                                     const gfx::Vector2d& offset) {
-  if (connection_->data_drag_controller()->state() !=
-      WaylandDataDragController::State::kIdle) {
+  if (connection_->data_drag_controller()->IsDragInProgress()) {
     connection_->data_drag_controller()->UpdateDragImage(image, offset);
   }
 }

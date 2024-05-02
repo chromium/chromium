@@ -207,6 +207,10 @@ void WaylandWindowDragController::StopDragging() {
   QuitLoop();
 }
 
+bool WaylandWindowDragController::IsDragInProgress() const {
+  return state_ != State::kIdle;
+}
+
 bool WaylandWindowDragController::IsDragSource() const {
   CHECK(data_source_);
   return true;
