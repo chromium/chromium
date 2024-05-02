@@ -44,6 +44,11 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
+BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
+             "AutofillCreditCardUserPerceptionSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the two most recent address forms and the most recent credit card
 // forms, which were submitted on the same origin, are associated with each
 // other. The association only happens if at most `kAutofillAssociateFormsTTL`

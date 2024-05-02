@@ -75,6 +75,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
@@ -1048,23 +1049,33 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
 }
 
 void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
+    FillingProduct filling_product,
     const std::map<std::string, std::string>& field_filling_stats_data) {
 #if !BUILDFLAG(IS_ANDROID)
+  CHECK(filling_product == FillingProduct::kAddress ||
+        filling_product == FillingProduct::kCreditCard);
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
   CHECK(hats_service);
-  // Also add information about whether the granular filling feature is
-  // available". The goal is to correlate the user's perception of autofill with
-  // the feature.
-  hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerAutofillAddressUserPerception, web_contents(),
-      /*timeout_ms=*/5000, /*product_specific_bits_data=*/
-      {{"granular filling available",
-        base::FeatureList::IsEnabled(
-            features::kAutofillGranularFillingAvailable)}},
-      field_filling_stats_data);
+  if (filling_product == FillingProduct::kAddress) {
+    // Also add information about whether the granular filling feature is
+    // available". The goal is to correlate the user's perception of autofill
+    // with the feature.
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerAutofillAddressUserPerception, web_contents(),
+        /*timeout_ms=*/5000, /*product_specific_bits_data=*/
+        {{"granular filling available",
+          base::FeatureList::IsEnabled(
+              features::kAutofillGranularFillingAvailable)}},
+        field_filling_stats_data);
+  } else {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerAutofillCreditCardUserPerception, web_contents(),
+        /*timeout_ms=*/5000, /*product_specific_bits_data=*/
+        {}, field_filling_stats_data);
+  }
 #endif
 }
 

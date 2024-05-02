@@ -275,9 +275,9 @@ TEST_F(ChromeAutofillClientTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Test that the hats service is called with the expected params.
-// Note that Surveys are only launched on Desktop.
-TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
+// Test that the hats service is called with the expected params for different
+// surveys. Note that Surveys are only launched on Desktop.
+TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillAddressSurvey) {
   MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&BuildMockHatsService)));
@@ -291,7 +291,8 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
                   kHatsSurveyTriggerAutofillAddressUserPerception, _, _,
                   expected_bits, Ref(field_filling_stats_data), _, _, _, _, _));
 
-  client()->TriggerUserPerceptionOfAutofillSurvey(field_filling_stats_data);
+  client()->TriggerUserPerceptionOfAutofillSurvey(FillingProduct::kAddress,
+                                                  field_filling_stats_data);
 }
 
 TEST_F(ChromeAutofillClientTest,

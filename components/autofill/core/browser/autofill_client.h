@@ -752,7 +752,10 @@ class AutofillClient {
   // `autofill_metrics::FormGroupFillingStats`. See
   // chrome/browser/ui/hats/survey_config.cc for details on what values should
   // be present.
+  // `filling_product` defines whether an address or payments survey will be
+  // displayed.
   virtual void TriggerUserPerceptionOfAutofillSurvey(
+      FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data);
 
   // Whether the Autocomplete feature of Autofill should be enabled.

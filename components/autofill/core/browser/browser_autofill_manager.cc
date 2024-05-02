@@ -2004,6 +2004,7 @@ void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
         autofill_metrics::GetAddressFormFillingStats(*submitted_form);
     if (filling_stats.TotalFilled() > 0) {
       client().TriggerUserPerceptionOfAutofillSurvey(
+          FillingProduct::kAddress,
           AddressFormFillingStatsToSurveyStringData(filling_stats));
     }
   }

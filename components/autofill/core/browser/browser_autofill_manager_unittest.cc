@@ -447,7 +447,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const override));
   MOCK_METHOD(void,
               TriggerUserPerceptionOfAutofillSurvey,
-              ((const std::map<std::string, std::string>&)),
+              (FillingProduct, (const std::map<std::string, std::string>&)),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(void,
@@ -3604,8 +3604,9 @@ TEST_F(BrowserAutofillManagerTest,
       {"Total manually filled", "0"},
       {"Total number of fields", base::NumberToString(n_fields)}};
 
-  EXPECT_CALL(autofill_client_, TriggerUserPerceptionOfAutofillSurvey(
-                                    expected_field_filling_stats_data));
+  EXPECT_CALL(autofill_client_,
+              TriggerUserPerceptionOfAutofillSurvey(
+                  FillingProduct::kAddress, expected_field_filling_stats_data));
 
   // Simulate form submission.
   FormSubmitted(response_data);

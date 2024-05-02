@@ -21,6 +21,8 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressProfileSavePromptNicknameSupport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAddressUserPerceptionSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillCreditCardUserPerceptionSurvey);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillAssociateForms);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL;

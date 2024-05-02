@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -227,6 +228,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options) override;
   void TriggerUserPerceptionOfAutofillSurvey(
+      FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data)
       override;
   bool IsAutocompleteEnabled() const override;
