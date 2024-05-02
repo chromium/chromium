@@ -9205,6 +9205,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_VOICE_MENU_DOWNLOADING" desc="Label for status text when a voice is downloading from the Read Aloud voice menu.">
         Downloading <ph name="LANGUAGE">$1<ex>English</ex></ph> voices...
       </message>
+      <message name="IDS_READING_MODE_LANGUAGE_DOWNLOAD_UNAVAILALBLE" desc="Label for status text when a downloads are unsupported on the Read Aloud language menu.">
+       There are no <ph name="LANGUAGE">$1<ex>English</ex></ph> voices on your device. You can install voices in settings.
+      </message>
+      <message name="IDS_READING_MODE_LANGUAGE_DOWNLOAD_UNAVAILALBLE_LEARN_MORE_LINK" desc="Label for a link to a help page added to status text when downloads are unsupported on the Read Aloud language menu.">
+       Learn more.
+      </message>
       <message name="IDS_READING_MODE_LANGUAGE_MENU_VOICES_UNAVAILABLE" desc="Label for status text when a voice attempted to be downloaded from the Read Aloud language menu is unavailable.">
         Some Google voices may not be available right now
       </message>
