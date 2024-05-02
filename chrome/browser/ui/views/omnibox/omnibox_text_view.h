@@ -37,7 +37,8 @@ class OmniboxTextView : public views::View {
   ~OmniboxTextView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool GetCanProcessEventsWithinSubtree() const override;
   int GetHeightForWidth(int width) const override;
   void OnPaint(gfx::Canvas* canvas) override;

@@ -147,7 +147,8 @@ OmniboxTextView::OmniboxTextView(OmniboxResultView* result_view)
 
 OmniboxTextView::~OmniboxTextView() = default;
 
-gfx::Size OmniboxTextView::CalculatePreferredSize() const {
+gfx::Size OmniboxTextView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return render_text_ ? render_text_->GetStringSize() : gfx::Size();
 }
 
@@ -291,7 +292,7 @@ void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
   if (text_field) {
     AppendText(*text_field, space);
   }
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
 }
 
 int OmniboxTextView::GetLineHeight() const {
@@ -378,7 +379,7 @@ void OmniboxTextView::OnStyleChanged() {
   font_height_ += kVerticalPadding;
 
   render_text_->SetElideBehavior(gfx::NO_ELIDE);
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   render_text_->SetElideBehavior(gfx::ELIDE_TAIL);
   SchedulePaint();
 }

@@ -87,7 +87,8 @@ class OmniboxMatchCellView : public views::View {
   gfx::Insets GetInsets() const override;
   void Layout(PassKey) override;
   bool GetCanProcessEventsWithinSubtree() const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   enum class LayoutStyle {

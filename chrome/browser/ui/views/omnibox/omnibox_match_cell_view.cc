@@ -554,7 +554,8 @@ bool OmniboxMatchCellView::GetCanProcessEventsWithinSubtree() const {
   return false;
 }
 
-gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
+gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int height = GetEntityImageSize() +
                2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
   if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)

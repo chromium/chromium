@@ -88,9 +88,11 @@ class RemoveSuggestionBubbleDialogDelegateView
   }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // TODO(tommycli): Replace with the real width from UX.
-    return gfx::Size(500, GetHeightForWidth(500));
+    return gfx::Size(500,
+                     GetLayoutManager()->GetPreferredHeightForWidth(this, 500));
   }
 
   // views::WidgetDelegate:
