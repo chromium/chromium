@@ -302,6 +302,45 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+try_.orchestrator_builder(
+    name = "mac14-arm64-rel",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "Compiles and runs MacOS 14 tests on ARM machines",
+    mirrors = [
+        "ci/mac-arm64-rel",
+        "ci/mac14-arm64-rel-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "arm64",
+            "gpu_tests",
+            "release_try_builder",
+            "reclient",
+            "no_symbols",
+        ],
+    ),
+    compilator = "mac14-arm64-rel-compilator",
+    contact_team_email = "bling-engprod@google.com",
+    main_list_view = "try",
+    tryjob = try_.job(
+        # TODO (crbug.com/338209817): change to 100,
+        # then move out of experimental CQ after,
+        # mac14-arm64-rel replaces mac13-arm64-rel on CQ.
+        experiment_percentage = 1,
+    ),
+)
+
+try_.compilator_builder(
+    name = "mac14-arm64-rel-compilator",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    description_html = "compilator for mac14-arm64-rel",
+    cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
+    # TODO (crbug.com/1245171): Revert when root issue is fixed
+    grace_period = 4 * time.minute,
+    main_list_view = "try",
+)
+
 try_.builder(
     name = "mac12-arm64-wpt-content-shell-fyi-rel",
     mirrors = [

@@ -885,6 +885,7 @@
       'mac11-arm64-rel-tests', # https://crbug.com/1406364
       'mac12-arm64-rel-tests', # https://crbug.com/1406364
       'mac13-arm64-rel-tests', # https://crbug.com/1406364
+      'mac14-arm64-rel-tests', # https://crbug.com/1406364
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-chromeos-chrome-preuprev', # http://b/331706144
       'Win10 Tests x64 (dbg)',
@@ -2981,6 +2982,8 @@
       'mac12-arm64-rel-tests',
       # TODO(crbug.com/40204342): Re-enable.
       'mac13-arm64-rel-tests',
+      # TODO(crbug.com/40204342): Re-enable.
+      'mac14-arm64-rel-tests',
     ],
   },
   'gwp_asan_unittests': {
@@ -3231,6 +3234,12 @@
         },
       },
       'mac13-arm64-rel-tests': {
+        'ci_only': False,
+        'swarming': {
+          'shards': 6,
+        },
+      },
+      'mac14-arm64-rel-tests': {
         'ci_only': False,
         'swarming': {
           'shards': 6,
@@ -4413,6 +4422,8 @@
       'mac12-arm64-rel-tests',
       # TODO(crbug.com/40204348): Re-enable when platform is supported.
       'mac13-arm64-rel-tests',
+      # TODO(crbug.com/40204348): Re-enable when platform is supported.
+      'mac14-arm64-rel-tests',
     ],
   },
   'testing_pytype': {
