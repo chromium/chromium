@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -36,11 +37,18 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
     if (!browser) {
       return;
     }
+
+    TurnSyncOnHelper::SigninAbortedMode abort_mode =
+        switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+                access_point == signin_metrics::AccessPoint::
+                                    ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN
+            ? TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT
+            : TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
+
     // TurnSyncOnHelper is suicidal (it will kill itself once it
     // finishes enabling sync).
     new TurnSyncOnHelper(profile, browser, access_point, promo_action,
-                         account_info.account_id,
-                         TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+                         account_info.account_id, abort_mode);
   });
 }
 
