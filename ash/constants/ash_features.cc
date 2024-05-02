@@ -12,6 +12,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/components/libsegmentation/buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 
 namespace ash::features {
@@ -3657,6 +3658,15 @@ bool IsGlanceablesTimeManagementClassroomStudentDataEnabled() {
 }
 
 bool IsGlanceablesTimeManagementTasksViewEnabled() {
+  const auto* const command_line = base::CommandLine::ForCurrentProcess();
+
+#if BUILDFLAG(ENABLE_MERGE_REQUEST)
+  if (!command_line->HasSwitch(
+          switches::kGlanceablesIgnoreEnableMergeRequestBuildFlag)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_MERGE_REQUEST)
+
   const bool device_enrolled_in_holdback =
       !base::FeatureList::IsEnabled(
           kFeatureManagementShouldExcludeFromSysUiHoldback) &&
@@ -3665,7 +3675,6 @@ bool IsGlanceablesTimeManagementTasksViewEnabled() {
     return false;
   }
 
-  const auto* const command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kGlanceablesKeySwitch)) {
     // Force-enable or -disable based on hash correctness.
     return base::SHA1HashString(command_line->GetSwitchValueASCII(

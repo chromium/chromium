@@ -5,6 +5,7 @@ include_rules = [
   "+ash/constants",
   "+base",
   "+build",
+  "+chromeos/components/libsegmentation",
   "+chromeos/constants",
 
   # Abseil is allowed by default, but some features are banned. See
