@@ -60,8 +60,6 @@ export class ItemScanManager extends ItemNavigatorInterface {
     // as they are detected using an interval set in DesktopNode.
     this.node_ = this.group_.firstChild;
     this.history_ = new FocusHistory();
-
-    this.init_();
   }
 
   // =============== ItemNavigatorInterface implementation ==============
@@ -360,7 +358,7 @@ export class ItemScanManager extends ItemNavigatorInterface {
     this.restoreFromHistory_();
   }
 
-  private init_(): void {
+  override start(): void {
     chrome.automation.getFocus((focus: AutomationNode) => {
       if (focus && this.history_.buildFromAutomationNode(focus)) {
         this.restoreFromHistory_();

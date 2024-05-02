@@ -44,6 +44,7 @@ export class SwitchAccess {
   /** Starts Switch Access behavior. */
   static start(): void {
     KeyboardRootNode.startWatchingVisibility();
+    Navigator.byItem.start();
     readyCallback();
   }
 

@@ -480,6 +480,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', async function() {
       chrome.automation.RoleType.DESKTOP, desktop.role,
       `Unexpected desktop ${desktop.toString()}`);
   const manager = new ItemScanManager(desktop);
+  manager.start();
   assertEquals(
       button.automationNode, manager.node_.automationNode,
       `Unexpected focus ${manager.node_.debugString()}`);
