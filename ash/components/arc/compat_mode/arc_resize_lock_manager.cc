@@ -11,6 +11,7 @@
 #include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/components/arc/compat_mode/touch_mode_mouse_rewriter.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/resize_shadow_type.h"
@@ -306,7 +307,9 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
                                mojom::ArcResizeLockState::READY;
   UpdateResizeLockState(window);
 
-  if (is_first_launch && ShouldShowSplashScreenDialog(pref_delegate_)) {
+  // No need to show splash screen dialog for game apps.
+  if (is_first_launch && ShouldShowSplashScreenDialog(pref_delegate_) &&
+      !ash::GameDashboardController::IsGameWindow(window)) {
     // UpdateResizeLockState() must be called beforehand as compat-mode button
     // must exist before showing the splash dialog because it's used as the
     // anchoring target.

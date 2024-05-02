@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -496,6 +497,29 @@ TEST_F(ArcResizeLockManagerTest, ShowSplashScreen) {
                           ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
 
   EXPECT_TRUE(show_splash_called);
+}
+
+// Test that showing splash screen dialog is not called for game apps.
+TEST_F(ArcResizeLockManagerTest, TestGameApp) {
+  auto arc_window = CreateFakeWindow(true);
+  arc_window->SetProperty(chromeos::kIsGameKey, true);
+
+  const std::string app_id = "app-id";
+  arc_window->SetProperty(ash::kAppIDKey, app_id);
+  pref_delegate()->SetResizeLockState(app_id, mojom::ArcResizeLockState::READY);
+  pref_delegate()->SetShowSplashScreenDialogCount(1);
+
+  EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
+
+  bool show_splash_called = false;
+  SetShowSplashCallback(base::BindLambdaForTesting(
+      [&](aura::Window* window) { show_splash_called = true; }));
+
+  // Enable resize-lock.
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
+
+  EXPECT_FALSE(show_splash_called);
 }
 
 }  // namespace arc
