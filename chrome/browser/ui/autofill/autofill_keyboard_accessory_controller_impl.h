@@ -76,7 +76,7 @@ class AutofillKeyboardAccessoryControllerImpl
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void DisableThresholdForTesting(bool disable_threshold) override;
-  void KeepPopupOpenForTesting() override;
+  void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
 

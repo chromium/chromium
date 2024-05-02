@@ -336,14 +336,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // Updating every field takes time and triggers every time hiding the Autofill
   // Popup with the reason `SuggestionHidingReason::kEndEditing` (because each
   // field gains focus while it is autofilled). Therefore, we use
-  // `ChromeAutofillClient::KeepPopupOpenForTesting()` to keep the autofill
+  // `ChromeAutofillClient::SetKeepPopupOpenForTesting()` to keep the autofill
   // popup open (and prevent the controller from being deleted).
-  // Note that `ChromeAutofillClient::KeepPopupOpenForTesting()` only ignores a
-  // specific very small set of hiding reasons, so the popup can still be hidden
-  // by almost all of the reasons (such as `SuggestionHidingReason::kStaleData`,
-  // which occurs only once when the test removes logins from the password
-  // store).
-  autofill_client->KeepPopupOpenForTesting();
+  // Note that `ChromeAutofillClient::SetKeepPopupOpenForTesting()` only ignores
+  // a specific very small set of hiding reasons, so the popup can still be
+  // hidden by almost all of the reasons (such as
+  // `SuggestionHidingReason::kStaleData`, which occurs only once when the test
+  // removes logins from the password store).
+  autofill_client->SetKeepPopupOpenForTesting(true);
 
   ContentPasswordManagerDriverFactory* factory =
       ContentPasswordManagerDriverFactory::FromWebContents(WebContents());

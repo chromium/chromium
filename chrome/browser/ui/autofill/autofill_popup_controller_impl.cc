@@ -242,8 +242,9 @@ void AutofillPopupControllerImpl::DisableThresholdForTesting(
   disable_threshold_for_testing_ = disable_threshold;
 }
 
-void AutofillPopupControllerImpl::KeepPopupOpenForTesting() {
-  keep_popup_open_for_testing_ = true;
+void AutofillPopupControllerImpl::SetKeepPopupOpenForTesting(
+    bool keep_popup_open_for_testing) {
+  keep_popup_open_for_testing_ = keep_popup_open_for_testing;
 }
 
 void AutofillPopupControllerImpl::UpdateDataListValues(

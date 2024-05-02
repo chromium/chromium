@@ -250,7 +250,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     autofill::ChromeAutofillClient* autofill_client =
         autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-    autofill_client->KeepPopupOpenForTesting();
+    autofill_client->SetKeepPopupOpenForTesting(true);
 
     // Execute the Conditional UI request.
     content::DOMMessageQueue message_queue(web_contents);
@@ -300,7 +300,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     autofill::ChromeAutofillClient* autofill_client =
         autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-    autofill_client->KeepPopupOpenForTesting();
+    autofill_client->SetKeepPopupOpenForTesting(true);
 
     // Execute the Conditional UI request.
     content::DOMMessageQueue message_queue(web_contents);
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
       browser()->tab_strip_model()->GetActiveWebContents();
   autofill::ChromeAutofillClient* autofill_client =
       autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-  autofill_client->KeepPopupOpenForTesting();
+  autofill_client->SetKeepPopupOpenForTesting(true);
 
   // Execute the Conditional UI request.
   content::DOMMessageQueue message_queue(web_contents);
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   autofill::ChromeAutofillClient* autofill_client =
       autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-  autofill_client->KeepPopupOpenForTesting();
+  autofill_client->SetKeepPopupOpenForTesting(true);
 
   // Execute the Conditional UI request.
   content::DOMMessageQueue message_queue(web_contents);

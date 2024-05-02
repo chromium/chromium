@@ -85,7 +85,7 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // browsertests).
   virtual void DisableThresholdForTesting(bool disable_threshold) = 0;
 
-  virtual void KeepPopupOpenForTesting() = 0;
+  virtual void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) = 0;
 
   // Updates the data list values currently shown with the popup.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;

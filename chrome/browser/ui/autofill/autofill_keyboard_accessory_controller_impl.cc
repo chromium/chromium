@@ -473,8 +473,9 @@ void AutofillKeyboardAccessoryControllerImpl::DisableThresholdForTesting(
   disable_threshold_for_testing_ = disable_threshold;
 }
 
-void AutofillKeyboardAccessoryControllerImpl::KeepPopupOpenForTesting() {
-  keep_popup_open_for_testing_ = true;
+void AutofillKeyboardAccessoryControllerImpl::SetKeepPopupOpenForTesting(
+    bool keep_popup_open_for_testing) {
+  keep_popup_open_for_testing_ = keep_popup_open_for_testing;
 }
 
 void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(

@@ -137,7 +137,7 @@ void AutofillUiTest::SetUpOnMainThread() {
       ChromeAutofillClient::FromWebContentsForTesting(GetWebContents());
 
   // Make autofill popup stay open by ignoring external changes when possible.
-  client->KeepPopupOpenForTesting();
+  client->SetKeepPopupOpenForTesting(true);
 
   // Inject the test delegate into the BrowserAutofillManager of the main frame.
   RenderFrameHostChanged(

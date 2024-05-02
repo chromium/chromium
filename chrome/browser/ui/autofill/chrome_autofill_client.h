@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -49,7 +50,6 @@
 namespace autofill {
 
 class AutofillOptimizationGuide;
-class AutofillSuggestionController;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
@@ -257,7 +257,13 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
   base::span<const AutofillProfile> GetTestAddresses() const override;
 #if defined(UNIT_TEST)
-  void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
+  void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) {
+    keep_popup_open_for_testing_ = keep_popup_open_for_testing;
+    if (suggestion_controller_) {
+      suggestion_controller_->SetKeepPopupOpenForTesting(
+          keep_popup_open_for_testing);
+    }
+  }
   void SetAutofillFieldPromoControllerManualFallbackForTesting(
       std::unique_ptr<AutofillFieldPromoController> test_controller) {
     autofill_field_promo_controller_manual_fallback_ =

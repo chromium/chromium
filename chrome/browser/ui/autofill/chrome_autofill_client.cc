@@ -46,7 +46,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
-#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
@@ -1274,8 +1273,9 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
   // - An external browser frame resize that is extraneous to our testing goals.
   // - Too many fields get focus one after another (for example, multiple
   // password fields being autofilled by default on Desktop).
-  if (keep_popup_open_for_testing_ && suggestion_controller_.get()) {
-    suggestion_controller_->KeepPopupOpenForTesting();
+  if (suggestion_controller_) {
+    suggestion_controller_->SetKeepPopupOpenForTesting(
+        keep_popup_open_for_testing_);
   }
 }
 

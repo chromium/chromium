@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
       browser()->tab_strip_model()->GetActiveWebContents();
   autofill::ChromeAutofillClient* autofill_client =
       autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-  autofill_client->KeepPopupOpenForTesting();
+  autofill_client->SetKeepPopupOpenForTesting(true);
 
   // Execute the Conditional UI request.
   content::DOMMessageQueue message_queue(web_contents);
