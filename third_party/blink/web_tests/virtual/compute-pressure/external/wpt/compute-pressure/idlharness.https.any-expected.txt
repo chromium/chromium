@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] PressureObserver interface: attribute supportedSources
+  assert_own_property: The interface object must have a property "supportedSources" expected property "supportedSources" missing
+Harness: the test ran to completion.
+

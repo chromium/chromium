@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The input layout nchw is not supported."
 [FAIL] NavigatorML must be primary interface of navigator
@@ -18,9 +18,17 @@ Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property has wrong .length expected 1 but got 2
 [FAIL] MLGraphBuilder interface: operation not(MLOperand)
   assert_own_property: interface prototype object missing non-static operation expected property "not" missing
+[FAIL] MLGraphBuilder interface: operation softmax(MLOperand, unsigned long)
+  assert_equals: property has wrong .length expected 1 but got 0
+[FAIL] MLGraphBuilder interface: operation softmax(unsigned long)
+  assert_equals: property has wrong .length expected 1 but got 0
 [FAIL] MLGraphBuilder interface: builder must inherit property "not(MLOperand)" with the proper type
   assert_inherits: property "not" not found in prototype chain
 [FAIL] MLGraphBuilder interface: calling not(MLOperand) on builder with too few arguments must throw TypeError
   assert_inherits: property "not" not found in prototype chain
+[FAIL] MLGraphBuilder interface: calling softmax(MLOperand, unsigned long) on builder with too few arguments must throw TypeError
+  assert_throws_js: Called with 0 arguments function "function() {\n            fn.apply(obj, args);\n        }" did not throw
+[FAIL] MLGraphBuilder interface: calling softmax(unsigned long) on builder with too few arguments must throw TypeError
+  assert_throws_js: Called with 0 arguments function "function() {\n            fn.apply(obj, args);\n        }" did not throw
 Harness: the test ran to completion.
 
