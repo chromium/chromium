@@ -74,9 +74,8 @@ per-file chromium.webrtc.fyi.json=file://infra/config/subprojects/webrtc/OWNERS
 per-file chromium.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
 per-file tryserver.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
 
-# Open Screen owners.  Keep in sync with openscreen.py recipe owners.
-per-file *openscreen*.json=jophba@chromium.org
-per-file *openscreen*.json=mfoltz@chromium.org
+# Open Screen owners.
+per-file *openscreen*.json=file://third_party/openscreen/OWNERS
 
 # Code Coverage
 per-file chromium.coverage.json=jeffyoon@google.com
