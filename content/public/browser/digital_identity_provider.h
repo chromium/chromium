@@ -10,12 +10,13 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 #include <string>
 
 namespace content {
+
+class WebContents;
 
 // Coordinates between the web and native apps such that the latter can share
 // vcs with the web API caller. The functions are platform agnostic and
