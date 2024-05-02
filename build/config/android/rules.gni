@@ -2,126 +2,121 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/abi.gni")
+import("//build/config/android/copy_ex.gni")
+import("//build/config/clang/clang.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
 
 assert(
     is_android || is_robolectric,
     "current_toolchain=$current_toolchain default_toolchain=$default_toolchain")
 
-if (is_robolectric) {
-  template("create_native_executable_dist") {
-    not_needed(invoker, [ "*" ])
+_sanitizer_runtimes = []
+if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
+  _sanitizer_runtimes += [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.ubsan_standalone-$sanitizer_arch-android.so" ]
+}
+if (is_asan) {
+  _sanitizer_runtimes += [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.asan-$sanitizer_arch-android.so" ]
+}
+
+# Creates a dist directory for a native executable.
+#
+# Running a native executable on a device requires all the shared library
+# dependencies of that executable. To make it easier to install and run such an
+# executable, this will create a directory containing the native exe and all
+# it's library dependencies.
+#
+# Note: It's usually better to package things as an APK than as a native
+# executable.
+#
+# Variables
+#   dist_dir: Directory for the exe and libraries. Everything in this directory
+#     will be deleted before copying in the exe and libraries.
+#   binary: Path to (stripped) executable.
+#   extra_files: List of extra files to copy in (optional).
+#
+# Example
+#   create_native_executable_dist("foo_dist") {
+#     dist_dir = "$root_build_dir/foo_dist"
+#     binary = "$root_build_dir/foo"
+#     deps = [ ":the_thing_that_makes_foo" ]
+#   }
+template("create_native_executable_dist") {
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+  _libraries_list = "${target_gen_dir}/${target_name}_library_dependencies.list"
+
+  _sanitizer_runtimes_target_name = "${target_name}__sanitizer_runtimes"
+  group(_sanitizer_runtimes_target_name) {
+    metadata = {
+      shared_libraries = _sanitizer_runtimes
+    }
   }
-} else if (enable_java_templates) {
-  import("//build/config/android/abi.gni")
+
+  generated_file("${target_name}__library_list") {
+    forward_variables_from(invoker, [ "deps" ])
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [ ":${_sanitizer_runtimes_target_name}" ]
+    output_conversion = "json"
+    outputs = [ _libraries_list ]
+    data_keys = [ "shared_libraries" ]
+    walk_keys = [ "shared_libraries_barrier" ]
+    rebase = root_build_dir
+  }
+
+  copy_ex(target_name) {
+    inputs = [
+      _libraries_list,
+      invoker.binary,
+    ]
+
+    dest = invoker.dist_dir
+    data = [ "${invoker.dist_dir}/" ]
+
+    _rebased_libraries_list = rebase_path(_libraries_list, root_build_dir)
+    _rebased_binaries_list = rebase_path([ invoker.binary ], root_build_dir)
+    args = [
+      "--clear",
+      "--files=@FileArg($_rebased_libraries_list)",
+      "--files=$_rebased_binaries_list",
+    ]
+    if (defined(invoker.extra_files)) {
+      _rebased_extra_files = rebase_path(invoker.extra_files, root_build_dir)
+      args += [ "--files=$_rebased_extra_files" ]
+    }
+
+    _depfile = "$target_gen_dir/$target_name.d"
+    _stamp_file = "$target_gen_dir/$target_name.stamp"
+    outputs = [ _stamp_file ]
+    args += [
+      "--depfile",
+      rebase_path(_depfile, root_build_dir),
+      "--stamp",
+      rebase_path(_stamp_file, root_build_dir),
+    ]
+
+    deps = [ ":${target_name}__library_list" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+  }
+}
+
+if (!is_robolectric && enable_java_templates) {
   import("//build/config/android/config.gni")
-  import("//build/config/android/copy_ex.gni")
   import("//build/config/android/internal_rules.gni")
-  import("//build/config/clang/clang.gni")
   import("//build/config/compiler/compiler.gni")
   import("//build/config/coverage/coverage.gni")
   import("//build/config/profiling/profiling.gni")
   import("//build/config/python.gni")
-  import("//build/config/sanitizers/sanitizers.gni")
   import("//build/config/zip.gni")
   import("//build/toolchain/toolchain.gni")
 
   _BUNDLETOOL_JAR_PATH =
       "//third_party/android_build_tools/bundletool/bundletool.jar"
-
-  _sanitizer_runtimes = []
-  if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
-    _sanitizer_runtimes += [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.ubsan_standalone-$sanitizer_arch-android.so" ]
-  }
-  if (is_asan) {
-    _sanitizer_runtimes += [ "$clang_base_path/lib/clang/$clang_version/lib/linux/libclang_rt.asan-$sanitizer_arch-android.so" ]
-  }
-
-  # Creates a dist directory for a native executable.
-  #
-  # Running a native executable on a device requires all the shared library
-  # dependencies of that executable. To make it easier to install and run such an
-  # executable, this will create a directory containing the native exe and all
-  # it's library dependencies.
-  #
-  # Note: It's usually better to package things as an APK than as a native
-  # executable.
-  #
-  # Variables
-  #   dist_dir: Directory for the exe and libraries. Everything in this directory
-  #     will be deleted before copying in the exe and libraries.
-  #   binary: Path to (stripped) executable.
-  #   extra_files: List of extra files to copy in (optional).
-  #
-  # Example
-  #   create_native_executable_dist("foo_dist") {
-  #     dist_dir = "$root_build_dir/foo_dist"
-  #     binary = "$root_build_dir/foo"
-  #     deps = [ ":the_thing_that_makes_foo" ]
-  #   }
-  template("create_native_executable_dist") {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-    _libraries_list =
-        "${target_gen_dir}/${target_name}_library_dependencies.list"
-
-    _sanitizer_runtimes_target_name = "${target_name}__sanitizer_runtimes"
-    group(_sanitizer_runtimes_target_name) {
-      metadata = {
-        shared_libraries = _sanitizer_runtimes
-      }
-    }
-
-    generated_file("${target_name}__library_list") {
-      forward_variables_from(invoker, [ "deps" ])
-      if (!defined(deps)) {
-        deps = []
-      }
-      deps += [ ":${_sanitizer_runtimes_target_name}" ]
-      output_conversion = "json"
-      outputs = [ _libraries_list ]
-      data_keys = [ "shared_libraries" ]
-      walk_keys = [ "shared_libraries_barrier" ]
-      rebase = root_build_dir
-    }
-
-    copy_ex(target_name) {
-      inputs = [
-        _libraries_list,
-        invoker.binary,
-      ]
-
-      dest = invoker.dist_dir
-      data = [ "${invoker.dist_dir}/" ]
-
-      _rebased_libraries_list = rebase_path(_libraries_list, root_build_dir)
-      _rebased_binaries_list = rebase_path([ invoker.binary ], root_build_dir)
-      args = [
-        "--clear",
-        "--files=@FileArg($_rebased_libraries_list)",
-        "--files=$_rebased_binaries_list",
-      ]
-      if (defined(invoker.extra_files)) {
-        _rebased_extra_files = rebase_path(invoker.extra_files, root_build_dir)
-        args += [ "--files=$_rebased_extra_files" ]
-      }
-
-      _depfile = "$target_gen_dir/$target_name.d"
-      _stamp_file = "$target_gen_dir/$target_name.stamp"
-      outputs = [ _stamp_file ]
-      args += [
-        "--depfile",
-        rebase_path(_depfile, root_build_dir),
-        "--stamp",
-        rebase_path(_stamp_file, root_build_dir),
-      ]
-
-      deps = [ ":${target_name}__library_list" ]
-      if (defined(invoker.deps)) {
-        deps += invoker.deps
-      }
-    }
-  }
 
   # Declare a target for c-preprocessor-generated java files
   #
