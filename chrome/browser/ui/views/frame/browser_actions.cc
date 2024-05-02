@@ -185,20 +185,24 @@ void BrowserActions::InitializeBrowserActions() {
   }
 
   if (lens::features::IsLensOverlayEnabled()) {
-    //  TODO(b/328295358): Change title, tooltip and icon when available.
-    root_action_item_->AddChild(
-        ChromeMenuAction(
-            lens::LensOverlaySidePanelCoordinator::
-                CreateSidePanelActionCallback(&(browser_.get())),
-            kActionSidePanelShowLensOverlayResults,
-            IDS_SIDE_PANEL_COMPANION_TITLE,
-            IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP,
+    actions::ActionItem::InvokeActionCallback callback =
+        lens::LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
+            &(browser_.get()));
+    const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            vector_icons::kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon
+        vector_icons::kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon;
 #else
-            vector_icons::kSearchIcon
+        vector_icons::kSearchIcon;
 #endif
-            )
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(callback)
+            .SetActionId(kActionSidePanelShowLensOverlayResults)
+            .SetText(std::u16string())
+            .SetTooltipText(l10n_util::GetStringUTF16(
+                IDS_SIDE_PANEL_LENS_OVERLAY_TOOLBAR_TOOLTIP))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+            .SetProperty(actions::kActionItemPinnableKey, true)
             .Build());
   } else if (companion::IsCompanionFeatureEnabled()) {
     if (SearchCompanionSidePanelCoordinator::IsSupported(

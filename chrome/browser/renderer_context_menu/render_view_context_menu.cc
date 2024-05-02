@@ -2669,13 +2669,6 @@ void RenderViewContextMenu::AppendClickToCallItem() {
 }
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
-  int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
-
-  if (lens::features::IsLensFullscreenSearchEnabled()) {
-    // Default text for fullscreen search when enabled.
-    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
-  }
-
   // GetDefaultSearchProvider can return null in unit tests or when the
   // default search provider is disabled by policy. In these cases, we align
   // with the search web for image menu item by not adding the region search
@@ -2683,12 +2676,25 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   const TemplateURL* provider = GetImageSearchProvider();
   if (provider) {
     const int region_search_idc = GetRegionSearchIdc();
-    menu_model_.AddItem(region_search_idc,
-                        l10n_util::GetStringFUTF16(
-                            resource_id, GetImageSearchProviderName(provider)));
-    if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
-      menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+    if (lens::features::IsLensOverlayEnabled()) {
+      menu_model_.AddItem(
+          region_search_idc,
+          l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_LENS_OVERLAY));
+    } else {
+      int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
+      if (lens::features::IsLensFullscreenSearchEnabled()) {
+        // Default text for fullscreen search when enabled.
+        resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
+      }
+      menu_model_.AddItem(
+          region_search_idc,
+          l10n_util::GetStringFUTF16(resource_id,
+                                     GetImageSearchProviderName(provider)));
+      if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
+        menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
+      }
     }
+
     menu_model_.SetElementIdentifierAt(
         menu_model_.GetIndexOfCommandId(region_search_idc).value(),
         kRegionSearchItem);
