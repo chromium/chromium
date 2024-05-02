@@ -387,7 +387,7 @@ bool TestPlugin::PrepareTransferableResource(
         bitmap_registrar->RegisterSharedBitmapId(shared_bitmap_->id(),
                                                  shared_bitmap_);
 
-    *resource = viz::TransferableResource::MakeSoftware(
+    *resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
         shared_bitmap_->id(), gpu::SyncToken(), shared_bitmap_->size(),
         viz::SinglePlaneFormat::kRGBA_8888);
     *release_callback =

@@ -781,7 +781,7 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
              pixel_image_size, viz::SinglePlaneFormat::kRGBA_8888));
   image_data_->Unmap();
 
-  *transferable_resource = viz::TransferableResource::MakeSoftware(
+  *transferable_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
       shared_bitmap->id(), gpu::SyncToken(), pixel_image_size,
       viz::SinglePlaneFormat::kRGBA_8888,
       viz::TransferableResource::ResourceSource::kPepperGraphics2D);
