@@ -1205,6 +1205,14 @@ void LoginAuthUserView::OnOnlineSignInMessageTap() {
     return;
   }
 
+  // Do not propageta OnOnlineSignInMessageTap while user is mid login.
+  if (Shell::Get()->session_controller()->GetSessionState() ==
+      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE) {
+    LOG(WARNING) << "LoginAuthUserView::OnOnlineSignInMessageTap called during "
+                    "session is in LOGGED_IN_NOT_ACTIVE state.";
+    return;
+  }
+
   if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
     // TODO(b/330738798): We should prevent starting a
     // new authentication process if one is already running.
