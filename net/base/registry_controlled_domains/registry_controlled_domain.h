@@ -249,6 +249,14 @@ NET_EXPORT bool HostHasRegistryControlledDomain(
     UnknownRegistryFilter unknown_filter,
     PrivateRegistryFilter private_filter);
 
+// Returns true if the given host name is a registry identifier. The name should
+// be already canonicalized, and not an IP address. This returns true for
+// registries specified by wildcard rules as well as non-wildcard rules. For
+// example, if there is a wildcard rule of "foo.bar", then "a.foo.bar" is
+// considered a registry identifier.
+NET_EXPORT bool HostIsRegistryIdentifier(std::string_view canon_host,
+                                         PrivateRegistryFilter private_filter);
+
 // Like GetRegistryLength, but takes a previously-canonicalized host instead of
 // a GURL. Prefer the GURL version or HasRegistryControlledDomain to eliminate
 // the possibility of bugs with non-canonical hosts.
