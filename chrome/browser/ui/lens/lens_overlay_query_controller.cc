@@ -149,11 +149,17 @@ LensOverlayQueryController::~LensOverlayQueryController() = default;
 
 void LensOverlayQueryController::StartQueryFlow(const SkBitmap& screenshot) {
   DCHECK_EQ(query_controller_state_, QueryControllerState::kOff);
-  query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
   original_screenshot_ = screenshot;
+  PrepareAndFetchFullImageRequest();
+}
+
+void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
+  DCHECK(query_controller_state_ !=
+         QueryControllerState::kAwaitingFullImageResponse);
+  query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
 
   base::ThreadPool::PostTask(
-      base::BindOnce(&DownscaleAndEncodeBitmap, screenshot)
+      base::BindOnce(&DownscaleAndEncodeBitmap, original_screenshot_)
           .Then(base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(&LensOverlayQueryController::FetchFullImageRequest,
@@ -228,6 +234,14 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
 
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
   cluster_info_->CopyFrom(server_response.objects_response().cluster_info());
+
+  // Clear the cluster info after its lifetime expires.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LensOverlayQueryController::ResetRequestFlowState,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(
+          lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
 
   if (!cluster_info_received_callback_.is_null()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -342,6 +356,13 @@ void LensOverlayQueryController::
             FetchInteractionRequestAndGenerateLensSearchUrl,
         weak_ptr_factory_.GetWeakPtr(), request_index, std::move(region),
         query_text, object_id, additional_search_query_params, image_crop);
+
+    // If the cluster info is missing but we have already received a full image
+    // response, the query must be restarted.
+    if (query_controller_state_ ==
+        QueryControllerState::kReceivedFullImageResponse) {
+      PrepareAndFetchFullImageRequest();
+    }
   }
 
   if (image_crop.has_value()) {

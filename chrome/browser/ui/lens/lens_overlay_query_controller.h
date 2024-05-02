@@ -117,6 +117,9 @@ class LensOverlayQueryController {
     kReceivedFullImageResponse = 2,
   };
 
+  // Processes the screenshot and fetches a full image request.
+  void PrepareAndFetchFullImageRequest();
+
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
 

@@ -240,6 +240,10 @@ extern bool IsLensOverlayDebuggingEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseOauthForLensOverlayRequests();
 
+// Returns the time before the Lens overlay cluster info is invalid, in seconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayClusterInfoLifetimeSeconds();
+
 // Returns the margin in pixels to add to the top and bottom of word bounding
 // boxes.
 COMPONENT_EXPORT(LENS_FEATURES)

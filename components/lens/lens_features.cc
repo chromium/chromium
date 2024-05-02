@@ -79,6 +79,9 @@ constexpr base::FeatureParam<std::string> kLensOverlayEndpointUrl{
 constexpr base::FeatureParam<bool> kUseOauthForLensOverlayRequests{
     &kLensOverlay, "use-oauth-for-requests", true};
 
+constexpr base::FeatureParam<int> kLensOverlayClusterInfoLifetimeSeconds{
+    &kLensOverlay, "cluster-info-lifetime-seconds", 600};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -248,6 +251,10 @@ bool IsLensOverlayDebuggingEnabled() {
 
 bool UseOauthForLensOverlayRequests() {
   return kUseOauthForLensOverlayRequests.Get();
+}
+
+int GetLensOverlayClusterInfoLifetimeSeconds() {
+  return kLensOverlayClusterInfoLifetimeSeconds.Get();
 }
 
 int GetLensOverlayVerticalTextMargin() {

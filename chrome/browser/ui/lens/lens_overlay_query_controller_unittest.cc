@@ -464,4 +464,53 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_FALSE(interaction_data_response_future.IsReady());
 }
 
+TEST_F(LensOverlayQueryControllerTest,
+       FetchInteraction_StartsNewQueryFlowAfterTimeout) {
+  task_environment_.RunUntilIdle();
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayInteractionResponse>
+      interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      profile()->GetVariationsClient(),
+      IdentityManagerFactory::GetForProfile(profile()));
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(30, 40, 50, 60);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kImage;
+
+  query_controller.StartQueryFlow(bitmap);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  full_image_response_future.Clear();
+
+  task_environment_.FastForwardBy(base::TimeDelta(base::Minutes(60)));
+  query_controller.SendRegionSearch(std::move(region),
+                                    additional_search_query_params);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  // The full image response having another value, after it was already
+  // cleared, indicates that the query controller successfully started a
+  // new query flow due to the timeout occurring.
+  ASSERT_TRUE(full_image_response_future.IsReady());
+  ASSERT_TRUE(url_response_future.IsReady());
+  ASSERT_TRUE(interaction_data_response_future.IsReady());
+}
+
 }  // namespace lens
