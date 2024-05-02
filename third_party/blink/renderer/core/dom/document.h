@@ -2135,6 +2135,9 @@ class CORE_EXPORT Document : public ContainerNode,
                            BeforeMatchExpandedHiddenMatchableUkmNoHandler);
   FRIEND_TEST_ALL_PREFIXES(DictionaryLoadFromHeaderTest,
                            LoadDictionaryFromHeader);
+  FRIEND_TEST_ALL_PREFIXES(
+      RangeTest,
+      ContainerNodeRemovalWithSequentialFocusNavigationStartingPoint);
 
   // Listed elements that are not associated to a <form> element.
   class UnassociatedListedElementsList {

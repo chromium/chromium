@@ -617,4 +617,28 @@ TEST_F(RangeTest, ContainerNodeRemoval) {
   EXPECT_EQ(0u, rangeb2b6->endOffset());
 }
 
+TEST_F(RangeTest,
+       ContainerNodeRemovalWithSequentialFocusNavigationStartingPoint) {
+  SetBodyContent("<input value='text inside input'>");
+  const auto& input =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
+  Node* text_inside_input = input.InnerEditorElement()->firstChild();
+  GetDocument().SetSequentialFocusNavigationStartingPoint(text_inside_input);
+
+  // Remove children in body.
+  GetDocument().body()->setTextContent("");
+
+  Range* sequential_focus_navigation_starting_point =
+      GetDocument().sequential_focus_navigation_starting_point_;
+
+  EXPECT_TRUE(
+      sequential_focus_navigation_starting_point->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(),
+            sequential_focus_navigation_starting_point->startContainer());
+  EXPECT_EQ(0u, sequential_focus_navigation_starting_point->startOffset());
+  EXPECT_EQ(GetDocument().body(),
+            sequential_focus_navigation_starting_point->endContainer());
+  EXPECT_EQ(0u, sequential_focus_navigation_starting_point->endOffset());
+}
+
 }  // namespace blink

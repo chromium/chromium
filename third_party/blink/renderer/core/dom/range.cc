@@ -1393,15 +1393,8 @@ static inline void BoundaryNodeChildrenWillBeRemoved(
 static void BoundaryShadowNodeChildrenWillBeRemoved(
     RangeBoundaryPoint& boundary,
     ContainerNode& container) {
-  for (Node* node_to_be_removed = container.firstChild(); node_to_be_removed;
-       node_to_be_removed = node_to_be_removed->nextSibling()) {
-    for (Node* n = &boundary.Container(); n;
-         n = n->ParentOrShadowHostElement()) {
-      if (n == node_to_be_removed) {
-        boundary.SetToStartOfNode(container);
-        return;
-      }
-    }
+  if (boundary.Container().IsDescendantOrShadowDescendantOf(&container)) {
+    boundary.SetToStartOfNode(container);
   }
 }
 
