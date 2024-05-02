@@ -129,6 +129,9 @@ public class TabStripTransitionCoordinatorUnitTest {
         doAnswer(invocationOnMock -> mTopControlsContentOffset)
                 .when(mBrowserControlsVisibilityManager)
                 .getContentOffset();
+        doReturn(true)
+                .when(mBrowserControlsVisibilityManager)
+                .shouldAnimateBrowserControlsHeightChanges();
 
         // Setup other mocks.
         doAnswer((arg) -> mAppHeaderState).when(mDesktopWindowStateProvider).getAppHeaderState();
@@ -183,6 +186,17 @@ public class TabStripTransitionCoordinatorUnitTest {
     public void hideTabStripWithOffsetOverride() {
         // Simulate top controls size change from browser.
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
+        assertTabStripHeightForMargins(0);
+        assertObservedHeight(0);
+    }
+
+    @Test
+    public void hideTabStripWithAnimationDisabled() {
+        // Simulate top controls size change from browser.
+        doReturn(false)
+                .when(mBrowserControlsVisibilityManager)
+                .shouldAnimateBrowserControlsHeightChanges();
         setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
@@ -279,6 +293,19 @@ public class TabStripTransitionCoordinatorUnitTest {
         settleTransitionDuringInitForNarrowWindow();
         // Simulate top controls size change from browser.
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
+        setDeviceWidthDp(600);
+        assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
+        assertObservedHeight(TEST_TAB_STRIP_HEIGHT);
+    }
+
+    @Test
+    @Config(qualifiers = "w320dp")
+    public void showTabStripWithAnimationDisabled() {
+        settleTransitionDuringInitForNarrowWindow();
+        // Simulate top controls size change from browser.
+        doReturn(false)
+                .when(mBrowserControlsVisibilityManager)
+                .shouldAnimateBrowserControlsHeightChanges();
         setDeviceWidthDp(600);
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
         assertObservedHeight(TEST_TAB_STRIP_HEIGHT);

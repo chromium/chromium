@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubLayout;
@@ -108,6 +109,15 @@ public class AppHeaderCoordinatorBrowserTest {
                             "Tab strip height is different",
                             activity.getToolbarManager().getTabStripHeightSupplier().get(),
                             Matchers.equalTo(mTestAppHeaderHeight));
+
+                    StripLayoutHelperManager stripLayoutHelperManager =
+                            activity.getLayoutManager().getStripLayoutHelperManager();
+                    Criteria.checkThat(stripLayoutHelperManager, Matchers.notNullValue());
+                    float density = activity.getResources().getDisplayMetrics().density;
+                    Criteria.checkThat(
+                            "Tab strip does not resized.",
+                            stripLayoutHelperManager.getHeight() * density,
+                            Matchers.equalTo((float) mTestAppHeaderHeight));
                 });
     }
 

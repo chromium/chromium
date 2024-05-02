@@ -456,7 +456,12 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         // #onControlsOffsetChanged is called. This avoid the toolbar margins gets
         // updated too fast before the cc layer respond, in which the Android views
         // in the browser control are still visible.
-        if (mBrowserControlsVisibilityManager.offsetOverridden()) {
+        //
+        // For cases where transition is disabled (e.g. AppHeaderState updates), we'll
+        // call updateTabStripHeightImpl directly since browser control is already finished
+        // in the same task during #onTransitionRequested before we reach this line.
+        if (mBrowserControlsVisibilityManager.offsetOverridden()
+                || !mBrowserControlsVisibilityManager.shouldAnimateBrowserControlsHeightChanges()) {
             updateTabStripHeightImpl();
             return;
         }
