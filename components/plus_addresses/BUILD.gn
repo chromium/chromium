@@ -35,6 +35,8 @@ source_set("parsing") {
 
 source_set("plus_addresses") {
   sources = [
+    "affiliations/plus_address_affiliation_match_helper.cc",
+    "affiliations/plus_address_affiliation_match_helper.h",
     "affiliations/plus_address_affiliation_source_adapter.cc",
     "affiliations/plus_address_affiliation_source_adapter.h",
     "plus_address_allocator.h",
