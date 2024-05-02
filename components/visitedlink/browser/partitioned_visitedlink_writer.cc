@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/browser/visitedlink_event_listener.h"
+#include "components/visitedlink/core/visited_link.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/schemeful_site.h"
@@ -104,14 +105,14 @@ void PartitionedVisitedLinkWriter::TableBuilder::OnVisitedLink(
     const url::Origin& frame_origin) {
   // We only want to store valid visited links in the partitioned hashtable.
   // Otherwise we cannot determine if they are visited in the renderer.
-  if (!link_url.is_valid() || top_level_site.opaque() ||
-      frame_origin.opaque()) {
+  VisitedLink link = {link_url, top_level_site, frame_origin};
+  if (!link.IsValid()) {
     return;
   }
   // Attempt to add this visited link to the partitioned hashtable.
   const uint64_t salt = GetOrAddLocalOriginSalt(frame_origin);
-  fingerprints_.push_back(VisitedLinkWriter::ComputePartitionedFingerprint(
-      link_url, top_level_site, frame_origin, salt));
+  fingerprints_.push_back(
+      VisitedLinkWriter::ComputePartitionedFingerprint(link, salt));
 }
 
 // NOTE: in prod, this function should not be called on the UI thread.
@@ -160,8 +161,11 @@ PartitionedVisitedLinkWriter::PartitionedVisitedLinkWriter(
 
 PartitionedVisitedLinkWriter::PartitionedVisitedLinkWriter(
     VisitedLinkDelegate* delegate,
+    bool suppress_build,
     int32_t default_table_size)
-    : delegate_(delegate), table_size_override_(default_table_size) {}
+    : delegate_(delegate),
+      suppress_build_(suppress_build),
+      table_size_override_(default_table_size) {}
 
 PartitionedVisitedLinkWriter::~PartitionedVisitedLinkWriter() = default;
 
@@ -173,8 +177,18 @@ bool PartitionedVisitedLinkWriter::Init() {
     return false;
   }
 
+  // When enabled in unit tests, prevents building from the VisitedLinkDatabase.
+  // Resulting hashtable is of size `DefaultTableSize()` but empty.
+  if (suppress_build_) {
+    return true;
+  }
+
   // TODO(crbug.com/332364003): Notify the listener instance of the new
   // `mapped_table_memory_` region.
+
+#ifndef NDEBUG
+  DebugValidate();
+#endif
 
   return BuildTableFromDelegate();
 }
@@ -216,6 +230,69 @@ bool PartitionedVisitedLinkWriter::CreateVisitedLinkTableHelper(
       static_cast<PartitionedSharedHeader*>(memory->mapping.memory());
   header->length = num_entries;
   return true;
+}
+
+bool PartitionedVisitedLinkWriter::ResizeTableIfNecessary() {
+  DCHECK(table_length_ > 0) << "Must have a table";
+
+  // Load limits for good performance/space. We are pretty conservative about
+  // keeping the table not very full. This is because we use linear probing
+  // which increases the likelihood of clumps of entries which will reduce
+  // performance.
+  const float max_table_load = 0.5f;  // Grow when we're > this full.
+  const float min_table_load = 0.2f;  // Shrink when we're < this full.
+
+  float load = ComputeTableLoad();
+  if (load < max_table_load &&
+      (table_length_ <= static_cast<float>(kDefaultTableSize) ||
+       load > min_table_load)) {
+    return false;
+  }
+
+  // Table needs to grow or shrink.
+  int new_size = NewTableSizeForCount(used_items_);
+  DCHECK(new_size > used_items_);
+  DCHECK(load <= min_table_load || new_size > table_length_);
+  ResizeTable(new_size);
+  return true;
+}
+
+void PartitionedVisitedLinkWriter::ResizeTable(int32_t new_size) {
+  DCHECK(mapped_table_memory_.region.IsValid() &&
+         mapped_table_memory_.mapping.IsValid());
+
+#ifndef NDEBUG
+  DebugValidate();
+#endif
+
+  auto old_hash_table_mapping = std::move(mapped_table_memory_.mapping);
+  int32_t old_table_length = table_length_;
+  if (!CreateVisitedLinkTable(new_size)) {
+    // Restore modified members.
+    mapped_table_memory_.mapping = std::move(old_hash_table_mapping);
+    return;
+  }
+
+  {
+    Fingerprint* old_hash_table =
+        GetHashTableFromMapping(old_hash_table_mapping);
+    // Now we have two tables, our local copy which is the old one, and the new
+    // one loaded into this object where we need to copy the data.
+    for (int32_t i = 0; i < old_table_length; i++) {
+      Fingerprint cur = old_hash_table[i];
+      if (cur) {
+        AddFingerprint(cur, false);
+      }
+    }
+  }
+
+  // TODO(crbug.com/332364003): Notify the listener instance of the new
+  // `mapped_table_memory_` region. We will send an update notification to all
+  // child processes so they read the new table.
+
+#ifndef NDEBUG
+  DebugValidate();
+#endif
 }
 
 // See the TableBuilder definition in the header file for how this works.
@@ -264,6 +341,17 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
       return null_hash_;
     }
   }
+}
+
+void PartitionedVisitedLinkWriter::DeleteFingerprintsFromCurrentTable(
+    const std::set<Fingerprint>& fingerprints) {
+  // Delete the Fingerprints from the table.
+  for (auto i = fingerprints.begin(); i != fingerprints.end(); ++i) {
+    DeleteFingerprint(*i);
+  }
+
+  // These deleted fingerprints may make us shrink the table.
+  ResizeTableIfNecessary();
 }
 
 bool PartitionedVisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint) {
@@ -327,6 +415,8 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
     bool success,
     const std::vector<Fingerprint>& fingerprints,
     std::map<url::Origin, uint64_t> salts) {
+  table_builder_ = nullptr;  // Will release our reference to the builder.
+
   if (success) {
     // Replace salts_ with the map created when we built the hashtable on the DB
     // thread.
@@ -341,21 +431,24 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
         AddFingerprint(fingerprint, false);
       }
 
-      // TODO(crbug.com/41483930): Implement support for adding and deleting
-      // visited links from the partitioned hashtable; specifically populate
-      // `added_during_build_` and `deleted_during_build`.
-      //
       // Also add anything that was added while we were asynchronously
       // generating the new table.
-      for (const auto& fingerprint : added_during_build_) {
-        AddFingerprint(fingerprint, false);
+      for (const auto& link : added_during_build_) {
+        const std::optional<uint64_t> salt =
+            GetOrAddOriginSalt(link.frame_origin);
+        CHECK(salt.has_value());
+        AddFingerprint(ComputePartitionedFingerprint(link, salt.value()),
+                       false);
       }
       added_during_build_.clear();
 
       // Now handle deletions. Do not shrink the table now, we'll shrink it when
-      // adding or deleting an url the next time.
-      for (const auto& fingerprint : deleted_during_build_) {
-        DeleteFingerprint(fingerprint);
+      // adding or deleting a visited link the next time.
+      for (const auto& link : deleted_during_build_) {
+        const std::optional<uint64_t> salt =
+            GetOrAddOriginSalt(link.frame_origin);
+        CHECK(salt.has_value());
+        DeleteFingerprint(ComputePartitionedFingerprint(link, salt.value()));
       }
       deleted_during_build_.clear();
 
@@ -363,7 +456,6 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
       // and ask the VisitedLinkReaders to reset their links.
     }
   }
-  table_builder_ = nullptr;  // Will release our reference to the builder.
 
   // Notify the unit test that the build is complete (will be NULL in prod.)
   if (!build_complete_task_.is_null()) {
@@ -410,6 +502,121 @@ uint32_t PartitionedVisitedLinkWriter::NewTableSizeForCount(
   // Growing very big, just approximate a "good" number, not growing as much
   // as normal.
   return item_count * 2 - 1;
+}
+
+void PartitionedVisitedLinkWriter::AddVisitedLink(const VisitedLink& link) {
+  Hash index = TryToAddVisitedLink(link);
+  if (!table_builder_ && index != null_hash_) {
+    // Not building the table from the VisitedLinkDatabase, so we may need to
+    // resize the table.
+    ResizeTableIfNecessary();
+  }
+}
+
+VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::TryToAddVisitedLink(
+    const VisitedLink& link) {
+  // Extra check that we are not incognito. This should not happen.
+  // TODO(boliu): Move this check to HistoryService when IsOffTheRecord is
+  // removed from BrowserContext.
+  if (browser_context_ && browser_context_->IsOffTheRecord()) {
+    NOTREACHED();
+    return null_hash_;
+  }
+
+  // We don't want to add any invalid VisitedLinks to the hashtable.
+  if (!link.IsValid()) {
+    return null_hash_;
+  }
+
+  // If the table isn't finished building, accumulated links will be
+  // applied to the table.
+  if (table_builder_.get()) {
+    // If we have a pending delete for this link, cancel it.
+    deleted_during_build_.erase(link);
+
+    // A build is in progress, save this addition in the temporary
+    // list so it can be added once build is complete.
+    added_during_build_.insert(link);
+  }
+
+  const std::optional<uint64_t> salt = GetOrAddOriginSalt(link.frame_origin);
+  if (!salt.has_value()) {
+    return null_hash_;
+  }
+  Fingerprint fingerprint = ComputePartitionedFingerprint(link, salt.value());
+
+  // If the table is "full", we don't add URLs and just drop them on the floor.
+  // This can happen if we get thousands of new URLs and something causes
+  // the table resizing to fail. This check prevents a hang in that case. Note
+  // that this is *not* the resize limit, this is just a sanity check.
+  if (used_items_ / 8 > table_length_ / 10) {
+    return null_hash_;  // Table is more than 80% full.
+  }
+
+  return AddFingerprint(fingerprint, true);
+}
+
+void PartitionedVisitedLinkWriter::DeleteAllVisitedLinks() {
+  // Any pending modifications are invalid.
+  added_during_build_.clear();
+  deleted_during_build_.clear();
+
+  // Clear the hash table.
+  used_items_ = 0;
+  memset(hash_table_, 0, this->table_length_ * sizeof(Fingerprint));
+
+  // Resize it if it is now too empty. Resize may write the new table out for
+  // us, otherwise, schedule writing the new table to disk ourselves.
+  ResizeTableIfNecessary();
+
+  // TODO(crbug.com/332364003): Notify the listener instance that we reset the
+  // hashtable.
+}
+
+void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
+    VisitedLinkIterator* links) {
+  if (!links->HasNextVisitedLink()) {
+    return;
+  }
+
+  // TODO(crbug.com/332364003): Notify the listener instance that we reset the
+  // hashtable.
+
+  if (table_builder_.get()) {
+    // A build is in progress, save this deletion in the temporary
+    // list so it can be deleted once the build is complete.
+    while (links->HasNextVisitedLink()) {
+      const VisitedLink& link(links->NextVisitedLink());
+
+      if (!link.IsValid()) {
+        continue;
+      }
+
+      deleted_during_build_.insert(link);
+
+      // If the VisitedLink  was just added and now we're deleting it, it may be
+      // in the list of things added since the last build. Delete it from that
+      // list.
+      added_during_build_.erase(link);
+    }
+    return;
+  }
+
+  // Compute the deleted URLs' fingerprints and delete them
+  std::set<Fingerprint> deleted_fingerprints;
+  while (links->HasNextVisitedLink()) {
+    const VisitedLink& link(links->NextVisitedLink());
+    if (!link.IsValid()) {
+      continue;
+    }
+    const std::optional<uint64_t> salt = GetOrAddOriginSalt(link.frame_origin);
+    if (!salt.has_value()) {
+      continue;
+    }
+    deleted_fingerprints.insert(
+        ComputePartitionedFingerprint(link, salt.value()));
+  }
+  DeleteFingerprintsFromCurrentTable(deleted_fingerprints);
 }
 
 std::optional<uint64_t> PartitionedVisitedLinkWriter::GetOrAddOriginSalt(

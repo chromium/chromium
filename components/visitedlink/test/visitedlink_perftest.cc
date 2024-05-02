@@ -138,7 +138,7 @@ void FillTable(VisitedLinkWriter& writer,
   }
 }
 
-class VisitedLink : public testing::Test {
+class VisitedLinkPerfTest : public testing::Test {
  protected:
   base::FilePath db_path_;
   void SetUp() override { ASSERT_TRUE(base::CreateTemporaryFile(&db_path_)); }
@@ -155,7 +155,7 @@ class VisitedLink : public testing::Test {
 // is the total time to do all the operations, and as such, it is only
 // useful for a regression test. If there is a regression, it might be
 // useful to make another set of tests to test these things in isolation.
-TEST_F(VisitedLink, TestAddAndQuery) {
+TEST_F(VisitedLinkPerfTest, TestAddAndQuery) {
   // init
   VisitedLinkWriter writer(new DummyVisitedLinkEventListener(), nullptr, true,
                            true, db_path_, 0);
@@ -190,7 +190,7 @@ TEST_F(VisitedLink, TestAddAndQuery) {
 #else
 #define MAYBE_TestBigTable TestBigTable
 #endif
-TEST_F(VisitedLink, MAYBE_TestBigTable) {
+TEST_F(VisitedLinkPerfTest, MAYBE_TestBigTable) {
   base::test::ScopedDisableRunLoopTimeout disable_run_timeout;
   // create a big DB
   {

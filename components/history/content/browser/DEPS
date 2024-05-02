@@ -1,6 +1,7 @@
 include_rules = [
   "+components/download/public/common",
   "+components/visitedlink/browser",
+  "+components/visitedlink/core",
   "+content/public/browser",
 ]
 

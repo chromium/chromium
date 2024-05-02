@@ -175,6 +175,18 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // thread.
     virtual void NotifyDeletions(DeletionInfo deletion_info) = 0;
 
+    // Notify HistoryService that partitioned visited links have been added.
+    // This event will be forwarded to PartitionedVisitedLinkWriter, where the
+    // corresponding visited links will be added to the in-memory hashtable.
+    virtual void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) = 0;
+
+    // Notify HistoryService that partitioned visited links have been deleted.
+    // This event will be forwarded to the PartitionedVisitedLinkWriter, where
+    // the corresponding visited links will be deleted from the in-memory
+    // hashtable.
+    virtual void NotifyVisitedLinksDeleted(
+        const std::vector<DeletedVisitedLink>& links) = 0;
+
     // Notify HistoryService that some keyword has been searched using omnibox.
     // The event will be forwarded to the HistoryServiceObservers in the correct
     // thread.
@@ -821,8 +833,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   friend class base::RefCountedThreadSafe<HistoryBackend>;
   friend class TestHistoryBackend;
   friend class HistoryBackendTest;
-  friend class HistoryBackendDBBaseTest;  // So the unit tests can poke our
-                                          // innards.
+  friend class HistoryBackendDBBaseTest;
+  FRIEND_TEST_ALL_PREFIXES(OrderingHistoryServiceTest, EnsureCorrectOrder);
 
   // Returns the name of the Favicons database.
   base::FilePath GetFaviconsFileName() const;
@@ -1006,7 +1018,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void NotifyDeletions(DeletionInfo deletion_info) override;
   void NotifyVisitUpdated(const VisitRow& visit,
                           VisitUpdateReason reason) override;
-  void NotifyVisitDeleted(const VisitRow& visit) override;
+  void NotifyVisitsDeleted(const std::vector<DeletedVisit>& visits) override;
 
   // Deleting all history ------------------------------------------------------
 

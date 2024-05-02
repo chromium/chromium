@@ -827,6 +827,30 @@ class DeletionInfo {
   OriginCountAndLastVisitMap deleted_urls_origin_map_;
 };
 
+// When a VisitedLink is deleted from the VisitedLinkDatabase, we notify the
+// HistoryService with the following information. In `visited_link_row`, we are
+// given a URLID. Callers should obtain the GURL associated with that URLID from
+// the URLDatabase and pass it along with this payload.
+struct DeletedVisitedLink {
+  GURL link_url;
+  VisitedLinkRow visited_link_row;
+};
+
+// When a Visit is deleted from the the VisitDatabase, we notify the
+// HistoryService with the following information. `deleted_visited_link` is
+// optional, as not all VisitRow deletions result in a deletion from the
+// VisitedLinkDatabase.
+struct DeletedVisit {
+  DeletedVisit(VisitRow visit);
+  DeletedVisit(VisitRow visit, DeletedVisitedLink deleted_visited_link);
+  DeletedVisit(const DeletedVisit& other);
+  DeletedVisit& operator=(const DeletedVisit& other);
+  ~DeletedVisit();
+
+  VisitRow visit_row;
+  std::optional<DeletedVisitedLink> deleted_visited_link;
+};
+
 // Represents a visit to a domain.
 class DomainVisit {
  public:

@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/hash/md5.h"
 #include "base/notreached.h"
+#include "components/visitedlink/core/visited_link.h"
 #include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -56,6 +57,10 @@ bool VisitedLinkCommon::IsVisited(std::string_view canonical_url) const {
 
 bool VisitedLinkCommon::IsVisited(const GURL& url) const {
   return IsVisited(url.spec());
+}
+
+bool VisitedLinkCommon::IsVisited(const VisitedLink& link, uint64_t salt) {
+  return IsVisited(link.link_url, link.top_level_site, link.frame_origin, salt);
 }
 
 bool VisitedLinkCommon::IsVisited(const GURL& link_url,
@@ -120,6 +125,14 @@ VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputeURLFingerprint(
   base::MD5Final(&digest, &ctx);
 
   return ConvertDigestToFingerprint(digest);
+}
+
+// static
+VisitedLinkCommon::Fingerprint VisitedLinkCommon::ComputePartitionedFingerprint(
+    const VisitedLink& link,
+    uint64_t salt) {
+  return ComputePartitionedFingerprint(link.link_url, link.top_level_site,
+                                       link.frame_origin, salt);
 }
 
 // static

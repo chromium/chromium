@@ -1212,6 +1212,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                       last_visit_id);
   }
 
+  delegate_->NotifyVisitedLinksAdded(request);
+
   ScheduleCommit();
 }
 
@@ -3656,11 +3658,22 @@ void HistoryBackend::NotifyVisitUpdated(const VisitRow& visit,
   }
 }
 
-void HistoryBackend::NotifyVisitDeleted(const VisitRow& visit) {
-  tracker_.RemoveVisitById(visit.visit_id);
-  for (HistoryBackendObserver& observer : observers_) {
-    observer.OnVisitDeleted(visit);
+void HistoryBackend::NotifyVisitsDeleted(
+    const std::vector<DeletedVisit>& visits) {
+  std::vector<DeletedVisitedLink> links;
+  for (const DeletedVisit& visit : visits) {
+    tracker_.RemoveVisitById(visit.visit_row.visit_id);
+    for (HistoryBackendObserver& observer : observers_) {
+      observer.OnVisitDeleted(visit.visit_row);
+    }
+    // Determine if a VisitedLink was deleted as a result of the deleted Visit.
+    if (visit.deleted_visited_link.has_value()) {
+      links.push_back(visit.deleted_visited_link.value());
+    }
   }
+  // We want to avoid posting a new task for every VisitedLink deleted, so we
+  // notify the `delegate_` in a batch.
+  delegate_->NotifyVisitedLinksDeleted(links);
 }
 
 // Deleting --------------------------------------------------------------------

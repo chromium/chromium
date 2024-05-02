@@ -24,6 +24,7 @@ static_library("browser") {
     "//components/history/core/browser",
     "//components/version_info",
     "//components/visitedlink/browser",
+    "//components/visitedlink/core",
     "//content/public/browser",
     "//url:url",
   ]

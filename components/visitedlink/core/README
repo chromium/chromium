@@ -1,0 +1,4 @@
+This directory exists for "core" types within visitedlink, which do not include
+any dependencies on //content. As a result, classes in this directory can be
+accessed in codepaths used in ios-builds, i.e. HistoryService, without
+encountering layering errors.

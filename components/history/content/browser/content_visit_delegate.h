@@ -13,6 +13,7 @@
 #include "components/history/core/browser/visit_delegate.h"
 #include "components/visitedlink/browser/partitioned_visitedlink_writer.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
+#include "components/visitedlink/core/visited_link.h"
 
 namespace content {
 class BrowserContext;
@@ -25,6 +26,8 @@ class Origin;
 namespace visitedlink {
 class VisitedLinkWriter;
 }
+
+using VisitedLink = visitedlink::VisitedLink;
 
 namespace history {
 
@@ -47,6 +50,9 @@ class ContentVisitDelegate : public VisitDelegate,
   void AddURLs(const std::vector<GURL>& urls) override;
   void DeleteURLs(const std::vector<GURL>& urls) override;
   void DeleteAllURLs() override;
+  void AddVisitedLink(const VisitedLink& link) override;
+  void DeleteVisitedLinks(const std::vector<VisitedLink>& links) override;
+  void DeleteAllVisitedLinks() override;
   std::optional<uint64_t> GetOrAddOriginSalt(
       const url::Origin& origin) override;
 

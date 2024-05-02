@@ -213,7 +213,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   }
   void NotifyVisitUpdated(const VisitRow& visit,
                           VisitUpdateReason reason) override {}
-  void NotifyVisitDeleted(const VisitRow& visit) override {}
+  void NotifyVisitsDeleted(const std::vector<DeletedVisit>& visits) override {}
 };
 
 // The example data consists of 4 visits. The middle two visits are to the

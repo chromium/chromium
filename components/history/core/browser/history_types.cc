@@ -450,6 +450,20 @@ DeletionInfo::DeletionInfo(DeletionInfo&& other) noexcept = default;
 
 DeletionInfo& DeletionInfo::operator=(DeletionInfo&& rhs) noexcept = default;
 
+// DeletedVisit ----------------------------------------------------------------
+
+DeletedVisit::DeletedVisit(VisitRow visit)
+    : visit_row(visit), deleted_visited_link(std::nullopt) {}
+
+DeletedVisit::DeletedVisit(VisitRow visit,
+                           DeletedVisitedLink deleted_visited_link)
+    : visit_row(visit), deleted_visited_link(deleted_visited_link) {}
+
+DeletedVisit::DeletedVisit(const DeletedVisit& other) = default;
+DeletedVisit& DeletedVisit::operator=(const DeletedVisit& other) = default;
+
+DeletedVisit::~DeletedVisit() = default;
+
 // Clusters --------------------------------------------------------------------
 
 VisitContextAnnotations::VisitContextAnnotations() = default;

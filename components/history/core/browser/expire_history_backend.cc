@@ -465,6 +465,7 @@ VisitVector ExpireHistoryBackend::GetVisitsAndRedirectParents(
 
 void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
                                                   DeleteEffects* effects) {
+  std::vector<DeletedVisit> deleted_visits;
   for (const auto& visit : visits) {
     // Delete the visit itself.
     main_db_->DeleteVisit(visit);
@@ -483,6 +484,9 @@ void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
     if (visit.visit_id)
       main_db_->DeleteAnnotationsForVisit(visit.visit_id);
 
+    // Prepare to send a notification with deletion information.
+    DeletedVisit deleted_visit(visit);
+
     // Decrease the visit count of the corresponding VisitedLinkRow if the flag
     // is enabled.
     if (base::FeatureList::IsEnabled(kPopulateVisitedLinkDatabase)) {
@@ -497,13 +501,26 @@ void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
           main_db_->UpdateVisitedLinkRowVisitCount(visited_link_row.id,
                                                    new_visit_count);
         } else {
+          // In our VisitedLinkRow, we are given a URLID. We need to obtain the
+          // GURL associated with that URLID from the URLDatabase.
+          URLRow link_url_info;
+          if (main_db_->GetURLRow(visited_link_row.link_url_id,
+                                  &link_url_info)) {
+            // We only want to send our deleted VisitedLink if we can determine
+            // its link_url.
+            DeletedVisitedLink link;
+            link.link_url = link_url_info.url();
+            link.visited_link_row = visited_link_row;
+            deleted_visit.deleted_visited_link = link;
+          }
+          // This deletes the VisitedLinkRow from the VisitedLinkDatabase.
           main_db_->DeleteVisitedLinkRow(visit.visited_link_id);
         }
       }
     }
-
-    notifier_->NotifyVisitDeleted(visit);
+    deleted_visits.push_back(deleted_visit);
   }
+  notifier_->NotifyVisitsDeleted(deleted_visits);
 }
 
 void ExpireHistoryBackend::DeleteOneURL(const URLRow& url_row,

@@ -9,6 +9,7 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/visitedlink/common/visitedlink_common.h"
+#include "components/visitedlink/core/visited_link.h"
 #include "content/public/browser/browser_context.h"
 
 namespace base {
@@ -64,6 +65,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
 
   // This constructor is used by unit tests.
   PartitionedVisitedLinkWriter(VisitedLinkDelegate* delegate,
+                               bool suppress_build,
                                int32_t default_table_size);
 
   ~PartitionedVisitedLinkWriter() override;
@@ -72,6 +74,30 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // until this is called. Returns true on success, false means that this
   // object won't work.
   bool Init();
+
+  // Adds a VisitedLink to the hashtable.
+  void AddVisitedLink(const VisitedLink& link);
+
+  // See DeleteURLs.
+  class VisitedLinkIterator {
+   public:
+    // HasNextVisitedLink must return true when this is called. Returns the next
+    // VisitedLink then advances the iterator. Note that the returned reference
+    // is only valid until the next call of NextVisitedLink.
+    virtual const VisitedLink& NextVisitedLink() = 0;
+
+    // Returns true if still has VisitedLinks to be iterated.
+    virtual bool HasNextVisitedLink() const = 0;
+
+   protected:
+    virtual ~VisitedLinkIterator() {}
+  };
+
+  // Deletes the specified VisitedLinks from the hashtable.
+  void DeleteVisitedLinks(VisitedLinkIterator* iterator);
+
+  // Clears all VisitedLinks from the hashtable.
+  void DeleteAllVisitedLinks();
 
   // Return the salt used to hash visited links from this origin. If we have not
   // visited this origin before, a new <origin, salt> pair will be added to the
@@ -82,6 +108,10 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   std::optional<uint64_t> GetOrAddOriginSalt(const url::Origin& origin);
 
 #if defined(UNIT_TEST) || !defined(NDEBUG) || defined(PERF_TEST)
+  // This is a debugging function that can be called to double-check internal
+  // data structures. It will assert if the check fails.
+  void DebugValidate();
+
   // Sets a task to execute when we've completed building the table from
   // history. This is ONLY used by unit tests to wait for the build to complete
   // before they continue. The pointer will be owned by this object after the
@@ -90,9 +120,15 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
     DCHECK(build_complete_task_.is_null());
     build_complete_task_ = std::move(task);
   }
+
+  // Returns the number non-null hashes in the table for testing verification.
+  int32_t GetUsedCount() const { return used_items_; }
 #endif
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PartitionedVisitedLinkTest, DeleteWithCollisions);
+  FRIEND_TEST_ALL_PREFIXES(PartitionedVisitedLinkTest, HashRangeWraparound);
+
   // When creating an empty table, we use this many entries (see the .cc file).
   static const unsigned kDefaultTableSize;
   // Object to build the table on the history thread (see the .cc file).
@@ -108,6 +144,21 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // Allocates the Fingerprint structure and length. Returns true on success.
   static bool CreateVisitedLinkTableHelper(int32_t num_entries,
                                            base::MappedReadOnlyRegion* memory);
+
+  // ResizeTableIfNecessary will check to see if the table should be resized and
+  // calls ResizeTable if needed. Returns true if we decided to resize the
+  // table.
+  bool ResizeTableIfNecessary();
+
+  // Resizes the table (growing or shrinking) as necessary to accommodate the
+  // current count.
+  void ResizeTable(int32_t new_size);
+
+  // Computes the table load as fraction. For example, if 1/4 of the entries are
+  // full, this value will be 0.25
+  float ComputeTableLoad() const {
+    return static_cast<float>(used_items_) / static_cast<float>(table_length_);
+  }
 
   // Populates the partitioned hashtable based on the browser history stored
   // in the VisitedLinkDatabase. This will set table_builder_ while working, and
@@ -126,6 +177,11 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   void OnTableBuildComplete(bool success,
                             const std::vector<Fingerprint>& fingerprints,
                             std::map<url::Origin, uint64_t> salts);
+
+  // If a build is in progress, we save `link` in `added_during_build`.
+  // Otherwise, we add to the hashtable. Returns the index of the inserted
+  // fingerprint or `null_hash_` on failure.
+  Hash TryToAddVisitedLink(const VisitedLink& link);
 
   // Increases or decreases the given hash value by one, wrapping around as
   // necessary. Used for probing.
@@ -149,6 +205,12 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // TODO(crbug.com/332364003): If `send_notifications` is true
   // and the item is added successfully, Listener::Add will be invoked.
   Hash AddFingerprint(Fingerprint fingerprint, bool send_notifications);
+
+  // Deletes all fingerprints from the given vector from the current hashtable.
+  // This does not update the `deleted_during_build_` list, the caller must
+  // update this itself if there is a build pending.
+  void DeleteFingerprintsFromCurrentTable(
+      const std::set<Fingerprint>& fingerprints);
 
   // Removes the indicated fingerprint from the table. Returns true if the
   // fingerprint was deleted, false if it was not in the table to delete.
@@ -175,13 +237,14 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // VisitedLinkDatabase.
   scoped_refptr<TableBuilder> table_builder_;
 
-  // TODO(crbug.com/41483930): Implement support for adding and deleting visited
-  // links from the partitioned hashtable; specifically populate these instances
-  // of `added_during_build_` and `deleted_during_build_`.
-  std::set<Fingerprint> added_during_build_;
-  std::set<Fingerprint> deleted_during_build_;
+  // Contains the fingerprints of visited links that have been added or deleted
+  // on the main thread since we started building the hashtable on the DB
+  // thread.
+  std::set<VisitedLink> added_during_build_;
+  std::set<VisitedLink> deleted_during_build_;
 
-  // Shared memory consists of a PartitionedSharedHeader followed by the table.
+  // Shared memory consisting of a PartitionedSharedHeader followed by the
+  // table.
   base::MappedReadOnlyRegion mapped_table_memory_;
 
   // Number of non-empty items in the table, used to compute fullness.
@@ -221,7 +284,11 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // failure. This is used for testing, will be false in production.
   static bool fail_table_creation_for_testing_;
 
-  // When nonzero, overrides the table size for new databases for testing.
+  // Set to prevent us from building from the VisitedLinkDatabase. This is used
+  // for testing and will be false in production.
+  const bool suppress_build_ = false;
+
+  // When nonzero, overrides the table size for testing.
   const int32_t table_size_override_ = 0;
 
   // When set, indicates the task that should be run after the next build from
@@ -230,6 +297,22 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
 
   base::WeakPtrFactory<PartitionedVisitedLinkWriter> weak_ptr_factory_{this};
 };
+
+// NOTE: These methods are defined inline here, so we can share the compilation
+// of partitioned_visitedlink_writer.cc between the browser and the unit/perf
+// tests.
+
+#if defined(UNIT_TEST) || defined(PERF_TEST) || !defined(NDEBUG)
+inline void PartitionedVisitedLinkWriter::DebugValidate() {
+  int32_t used_count = 0;
+  for (int32_t i = 0; i < table_length_; i++) {
+    if (hash_table_[i]) {
+      used_count++;
+    }
+  }
+  DCHECK_EQ(used_count, used_items_);
+}
+#endif
 
 }  // namespace visitedlink
 

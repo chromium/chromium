@@ -52,8 +52,9 @@ class HistoryBackendNotifier {
   virtual void NotifyVisitUpdated(const VisitRow& visit,
                                   VisitUpdateReason reason) = 0;
 
-  // Called after a visit has been deleted.
-  virtual void NotifyVisitDeleted(const VisitRow& visit) = 0;
+  // Called after visits have been deleted. May also notify of any deleted
+  // VisitedLinkRows as a result of the VisitRow deletion.
+  virtual void NotifyVisitsDeleted(const std::vector<DeletedVisit>& visits) = 0;
 };
 
 }  // namespace history

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/visitedlink/core/visited_link.h"
 
 class GURL;
 
@@ -79,12 +80,13 @@ class VisitedLinkCommon {
     return ComputeURLFingerprint(canonical_url, salt_);
   }
 
-  // Looks up the given key in the table. Returns true if found. Does not modify
-  // the hashtable.
+  // Looks up the given key in the table. Returns true if found. Does not
+  // modify the hashtable.
   bool IsVisited(const std::string_view canonical_url) const;
   bool IsVisited(const GURL& url) const;
-  // To check if a link is visited in a partitioned table, callers MUST provide
-  // <link url, top-level site, frame origin> AND the origin salt.
+  // To check if a link is visited in a partitioned table, callers MUST
+  // provide <link url, top-level site, frame origin> AND the origin salt.
+  bool IsVisited(const VisitedLink& link, uint64_t salt);
   bool IsVisited(const GURL& link_url,
                  const net::SchemefulSite& top_level_site,
                  const url::Origin& frame_origin,
@@ -152,6 +154,11 @@ class VisitedLinkCommon {
   static Fingerprint ComputeURLFingerprint(
       std::string_view canonical_url,
       const uint8_t salt[LINK_SALT_LENGTH]);
+
+  // Computes the fingerprint of the given VisitedLink using the provided
+  // per-origin `salt`.
+  static Fingerprint ComputePartitionedFingerprint(const VisitedLink& link,
+                                                   uint64_t salt);
 
   // Computes the fingerprint of the given partition key. Used when constructing
   // the partitioned :visited link hashtable.
