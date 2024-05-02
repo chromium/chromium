@@ -9,16 +9,21 @@
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/push_notification/prefs/push_notification_prefs.h"
 #include "chrome/browser/push_notification/push_notification_service_desktop_impl.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
@@ -45,7 +50,11 @@ PushNotificationService* PushNotificationServiceFactory::GetForBrowserContext(
 }
 
 PushNotificationServiceFactory::PushNotificationServiceFactory()
-    : ProfileKeyedServiceFactory(kServiceName) {}
+    : ProfileKeyedServiceFactory(kServiceName) {
+  DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
+  DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 PushNotificationServiceFactory::~PushNotificationServiceFactory() = default;
 
@@ -83,8 +92,13 @@ PushNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
 
   VLOG(1) << __func__ << ": creating PushNotificationService.";
 
-  return std::make_unique<PushNotificationServiceDesktopImpl>(
-      Profile::FromBrowserContext(context)->GetPrefs());
+  auto service = std::make_unique<PushNotificationServiceDesktopImpl>(
+      Profile::FromBrowserContext(context)->GetPrefs(),
+      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+          ->driver(),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetURLLoaderFactory());
+  return service;
 }
 
 void PushNotificationServiceFactory::RegisterProfilePrefs(
