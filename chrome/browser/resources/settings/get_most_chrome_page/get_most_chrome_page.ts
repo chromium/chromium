@@ -15,6 +15,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
@@ -33,7 +34,8 @@ export enum GetTheMostOutOfChromeUserAction {
     'Settings.GetTheMostOutOfChrome.ThirdSectionExpanded',
 }
 
-const SettingsGetMostChromePageElementBase = RouteObserverMixin(PolymerElement);
+const SettingsGetMostChromePageElementBase =
+    RouteObserverMixin(I18nMixin(PolymerElement));
 
 export class SettingsGetMostChromePageElement extends
     SettingsGetMostChromePageElementBase {
@@ -68,6 +70,16 @@ export class SettingsGetMostChromePageElement extends
   private expandedFirst_: boolean;
   private expandedSecond_: boolean;
   private expandedThird_: boolean;
+
+  override ready() {
+    super.ready();
+
+    // Add aria-description to links dynamically, as the links reside in
+    // localized strings.
+    this.shadowRoot!.querySelectorAll('a').forEach(
+        link =>
+            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
+  }
 
   override currentRouteChanged(newRoute: Route) {
     if (newRoute === Router.getInstance().getRoutes().GET_MOST_CHROME) {

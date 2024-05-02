@@ -9,7 +9,7 @@ import type {CrExpandButtonElement, IronCollapseElement, SettingsGetMostChromePa
 import {GetTheMostOutOfChromeUserAction} from 'chrome://settings/lazy_load.js';
 import type {SettingsRoutes} from 'chrome://settings/settings.js';
 import {buildRouter, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, Router, TrustSafetyInteraction} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -80,5 +80,15 @@ suite('GetMostChromePage', function() {
     const result =
         await hatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
     assertEquals(TrustSafetyInteraction.OPENED_GET_MOST_CHROME, result);
+  });
+
+  test('LinksAriaDescriptions', function() {
+    const links = testElement.shadowRoot!.querySelectorAll('a');
+    assertGT(links.length, 0, 'page should contain links');
+    links.forEach(
+        link => assertEquals(
+            loadTimeData.getString('opensInNewTab'),
+            link.getAttribute('aria-description'),
+            'the link should indicate that it will be opened in a new tab'));
   });
 });
