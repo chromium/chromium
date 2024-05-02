@@ -1178,6 +1178,15 @@ void LoginAuthUserView::OnUserViewTap() {
     // Tapping anywhere in the user view is the same with tapping the message.
     OnOnlineSignInMessageTap();
   } else {
+    // Do not propageta OnOnlineSignInMessageTap callback while user is mid
+    // login.
+    if (Shell::Get()->session_controller()->GetSessionState() ==
+        session_manager::SessionState::LOGGED_IN_NOT_ACTIVE) {
+      LOG(WARNING) << "Skip on_tap_ callback during session is in "
+                      "LOGGED_IN_NOT_ACTIVE state.";
+      return;
+    }
+
     if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
       // TODO(b/330738798): We should prevent starting a
       // new authentication process if one is already running.
