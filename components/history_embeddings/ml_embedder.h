@@ -21,9 +21,8 @@ class PassageEmbeddingsServiceController;
 class MlEmbedder : public Embedder,
                    public optimization_guide::OptimizationTargetModelObserver {
  public:
-  MlEmbedder(
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<PassageEmbeddingsServiceController> service_controller);
+  MlEmbedder(optimization_guide::OptimizationGuideModelProvider* model_provider,
+             PassageEmbeddingsServiceController* service_controller);
   ~MlEmbedder() override;
 
   // Embedder:
@@ -44,7 +43,7 @@ class MlEmbedder : public Embedder,
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
 
   // The controller used to interact with the PassageEmbeddingsService.
-  scoped_refptr<PassageEmbeddingsServiceController> service_controller_;
+  raw_ptr<PassageEmbeddingsServiceController> service_controller_;
 };
 
 }  // namespace history_embeddings

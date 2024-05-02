@@ -63,7 +63,7 @@ class HistoryEmbeddingsService : public KeyedService,
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<PassageEmbeddingsServiceController> service_controller);
+      PassageEmbeddingsServiceController* service_controller);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;

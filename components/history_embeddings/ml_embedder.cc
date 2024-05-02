@@ -12,7 +12,7 @@ namespace history_embeddings {
 
 MlEmbedder::MlEmbedder(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<PassageEmbeddingsServiceController> service_controller)
+    PassageEmbeddingsServiceController* service_controller)
     : model_provider_(model_provider), service_controller_(service_controller) {
   if (model_provider_) {
     model_provider_->AddObserverForOptimizationTargetModel(

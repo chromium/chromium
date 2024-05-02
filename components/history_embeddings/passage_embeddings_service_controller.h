@@ -12,10 +12,10 @@
 
 namespace history_embeddings {
 
-class PassageEmbeddingsServiceController
-    : public base::RefCounted<PassageEmbeddingsServiceController> {
+class PassageEmbeddingsServiceController {
  public:
   PassageEmbeddingsServiceController();
+  virtual ~PassageEmbeddingsServiceController();
 
   // Launches the passage embeddings service.
   virtual void LaunchService() = 0;
@@ -34,8 +34,6 @@ class PassageEmbeddingsServiceController
                      GetEmbeddingsCallback callback);
 
  protected:
-  virtual ~PassageEmbeddingsServiceController();
-
   // Reset both service_remote_ and embedder_remote_.
   void ResetRemotes();
 
@@ -44,8 +42,6 @@ class PassageEmbeddingsServiceController
   mojo::Remote<passage_embeddings::mojom::PassageEmbedder> embedder_remote_;
 
  private:
-  friend class base::RefCounted<PassageEmbeddingsServiceController>;
-
   // Called when the model files on disks are opened and ready to be sent to
   // the service.
   void LoadModelsToService(

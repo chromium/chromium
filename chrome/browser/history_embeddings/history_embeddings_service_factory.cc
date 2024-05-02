@@ -14,18 +14,6 @@
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 
-namespace {
-
-scoped_refptr<history_embeddings::PassageEmbeddingsServiceController>
-GetPassageEmbeddingsServiceController() {
-  scoped_refptr<history_embeddings::PassageEmbeddingsServiceController>
-      service_controller =
-          history_embeddings::ChromePassageEmbeddingsServiceController::Get();
-  return service_controller;
-}
-
-}  // namespace
-
 // static
 history_embeddings::HistoryEmbeddingsService*
 HistoryEmbeddingsServiceFactory::GetForProfile(Profile* profile) {
@@ -67,5 +55,5 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
       history_service, page_content_annotations_service,
       optimization_guide_keyed_service,
-      GetPassageEmbeddingsServiceController());
+      history_embeddings::ChromePassageEmbeddingsServiceController::Get());
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_CHROME_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
 #define CHROME_BROWSER_HISTORY_EMBEDDINGS_CHROME_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
 
+#include "base/no_destructor.h"
 #include "components/history_embeddings/passage_embeddings_service_controller.h"
 
 namespace history_embeddings {
@@ -19,6 +20,8 @@ class ChromePassageEmbeddingsServiceController
   static ChromePassageEmbeddingsServiceController* Get();
 
  private:
+  friend base::NoDestructor<ChromePassageEmbeddingsServiceController>;
+
   ChromePassageEmbeddingsServiceController();
   ~ChromePassageEmbeddingsServiceController() override;
 

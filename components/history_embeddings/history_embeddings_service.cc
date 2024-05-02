@@ -97,7 +97,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
         page_content_annotations_service,
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_model_provider,
-    scoped_refptr<PassageEmbeddingsServiceController> service_controller)
+    PassageEmbeddingsServiceController* service_controller)
     : history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       query_id_(0u),

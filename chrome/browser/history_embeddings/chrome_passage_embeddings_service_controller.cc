@@ -8,14 +8,11 @@
 
 namespace history_embeddings {
 
-// TODO(b/333094780): Figure out if we want to switch to using a global
-// instance in an anonymous namespace.
 // static
 ChromePassageEmbeddingsServiceController*
 ChromePassageEmbeddingsServiceController::Get() {
-  static ChromePassageEmbeddingsServiceController* instance =
-      new ChromePassageEmbeddingsServiceController();
-  return instance;
+  static base::NoDestructor<ChromePassageEmbeddingsServiceController> instance;
+  return instance.get();
 }
 
 ChromePassageEmbeddingsServiceController::
