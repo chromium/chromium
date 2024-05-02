@@ -62,9 +62,7 @@ class UmaPageLoadMetricsObserverTest
     tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
   }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   ::base::test::TracingEnvironment tracing_environment_;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
  protected:
   bool WithFencedFrames() { return GetParam(); }
@@ -1549,7 +1547,6 @@ TEST_P(UmaPageLoadMetricsObserverTest,
 // The following tests are ensure that Page Load metrics are recorded in a
 // trace. Currently enabled only for platforms where USE_PERFETTO_CLIENT_LIBRARY
 // is true (Android, Linux) as test infra (TestTraceProcessor) requires it.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(UmaPageLoadMetricsObserverTest, TestTracingFirstContentfulPaint) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("interactions");
@@ -1712,4 +1709,3 @@ TEST_F(UmaPageLoadMetricsObserverTest, TestTracingDomContentLoadedEventStart) {
                                      std::vector<std::string>{
                                          base::NumberToString(navigation_id)}));
 }
-#endif
