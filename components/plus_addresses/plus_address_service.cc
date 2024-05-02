@@ -137,7 +137,15 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PlusProfile::facet_t facet;
   if (IsSyncingPlusAddresses()) {
-    facet = affiliations::FacetURI::FromCanonicalSpec(origin.GetURL().spec());
+    // Even though `origin.GetURL().spec()` is always a valid spec, using
+    // `FacetURI::FromCanonicalSpec(spec)` can lead to mismatches in the
+    // underlying representation, since it uses the spec verbatim. E.g., a
+    // trailing "/" is removed by `FacetURI::FromPotentiallyInvalidSpec()`, but
+    // kept by `FacetURI::FromCanonicalSpec(spec)`.
+    // TODO(b/338342346): Revise `FacetURI::FromCanonicalSpec()`.
+    facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
+        origin.GetURL().spec());
+    CHECK(absl::get<affiliations::FacetURI>(facet).is_valid());
   } else {
     facet = GetEtldPlusOne(origin);
   }
