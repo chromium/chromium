@@ -6365,6 +6365,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.PowerNotification.TimeToEmptyForCritialState"
+    units="seconds" expires_after="2025-05-01">
+  <owner>dpad@google.com</owner>
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the remaining battery time when the status changes to critical and
+    the corresponding notification is displayed. This metric is recorded only
+    once per transition to critical state.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PowerSoundsController.PluggedInBatteryLevel" units="%"
     expires_after="2024-09-01">
   <owner>hongyulong@chromium.org</owner>

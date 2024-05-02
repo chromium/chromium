@@ -20,6 +20,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -90,6 +91,19 @@ void LogBatteryForNoCharger(
   VLOG(1) << "Showing " << GetNotificationStateString(state)
           << " notification. No charger connected."
           << " Remaining time: " << remaining_minutes << " minutes.";
+}
+
+// Record remaining battery time in second when notification is shown for
+// critical state.
+void RecordTimeToEmptyForCriticalState(base::TimeDelta remaining_time) {
+  // Use the custom counts function instead of custom times so we can record in
+  // seconds instead of milliseconds. The max bucket is 10 minutes.
+  base::UmaHistogramCustomCounts(
+      "Ash.PowerNotification.TimeToEmptyForCritialState",
+      remaining_time.InSeconds(),
+      /*min=*/1,
+      /*exclusive_max=*/base::Minutes(10).InSeconds(),
+      /*buckets=*/100);
 }
 
 }  // namespace
@@ -394,6 +408,7 @@ bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
       if (remaining_minutes <= kCriticalMinutes) {
         notification_state_ = NOTIFICATION_CRITICAL;
         LogBatteryForNoCharger(notification_state_, remaining_minutes);
+        RecordTimeToEmptyForCriticalState(remaining_time.value());
         return true;
       }
       if (remaining_minutes <= kLowPowerMinutes) {
@@ -409,6 +424,7 @@ bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
       if (remaining_minutes <= kCriticalMinutes) {
         notification_state_ = NOTIFICATION_CRITICAL;
         LogBatteryForNoCharger(notification_state_, remaining_minutes);
+        RecordTimeToEmptyForCriticalState(remaining_time.value());
         return true;
       }
       return false;

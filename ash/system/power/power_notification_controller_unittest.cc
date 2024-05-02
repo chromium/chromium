@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/message_center/fake_message_center.h"
@@ -97,6 +98,7 @@ class PowerNotificationControllerTest : public AshTestBase {
     message_center_ = std::make_unique<MockMessageCenter>();
     controller_ =
         std::make_unique<PowerNotificationController>(message_center_.get());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -163,6 +165,9 @@ class PowerNotificationControllerTest : public AshTestBase {
   int GetNoWarningPercentageExperiment() const {
     return controller_->no_warning_percentage_;
   }
+
+ protected:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
   std::unique_ptr<MockMessageCenter> message_center_;
@@ -804,6 +809,43 @@ TEST_F(PowerNotificationControllerTest, IgnoreMissingBatteryEstimates) {
   proto.set_battery_time_to_empty_sec(-1);
   UpdateNotificationState(proto, PowerNotificationController::NOTIFICATION_NONE,
                           false, false);
+}
+
+TEST_F(PowerNotificationControllerTest,
+       HistogramTest_RemainingMinutesForCriticalState) {
+  // Verify no initial histogram data is recorded.
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 0);
+
+  // Set the default power state.
+  PowerSupplyProperties proto = DefaultPowerSupplyProperties();
+  EXPECT_EQ(PowerNotificationController::NOTIFICATION_NONE,
+            notification_state());
+
+  // Simulate setting to low power without reaching critical state, expecting no
+  // metrics emitted.
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kLowPowerMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_IN,
+      true, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 0);
+
+  // Set conditions to trigger a critical notification and record the metrics.
+  proto.set_battery_time_to_empty_sec(
+      PowerNotificationController::kCriticalMinutes * 60);
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, true, true);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 1);
+
+  // Trigger another update; the state remains critical, so no additional
+  // metrics should be emitted.
+  UpdateNotificationState(
+      proto, PowerNotificationController::NOTIFICATION_CRITICAL, false, false);
+  histogram_tester_->ExpectTotalCount(
+      "Ash.PowerNotification.TimeToEmptyForCritialState", 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
