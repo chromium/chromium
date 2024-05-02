@@ -134,6 +134,11 @@ class ParentPermissionDialogViewHarness
     return under_test_->GetInvalidCredentialReceived();
   }
 
+  void SetRepromptAfterIncorrectCredential(
+      bool reprompt_on_incorrect_password) {
+    reprompt_on_incorrect_password_ = reprompt_on_incorrect_password;
+  }
+
  protected:
   template <typename T>
   std::unique_ptr<ParentPermissionDialog> CreatePermissionDialog(
@@ -180,8 +185,11 @@ class ParentPermissionDialogViewHarness
     under_test_ = view;
     under_test_->SetIdentityManagerForTesting(
         supervision_mixin_->GetIdentityTestEnvironment()->identity_manager());
-    under_test_->SetRepromptAfterIncorrectCredential(false);
+    under_test_->SetRepromptAfterIncorrectCredential(
+        reprompt_on_incorrect_password_);
   }
+
+  bool reprompt_on_incorrect_password_ = false;
 
   // Provides identity manager to the view.
   raw_ref<supervised_user::SupervisionMixin> supervision_mixin_;
@@ -418,6 +426,34 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
       CheckResult(GetActionStatus(SupervisedUserExtensionsMetricsRecorder::
                                       kParentPermissionDialogOpenedActionName),
                   ActionStatus::kWasPerformed))));
+}
+
+IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
+                       PermissionFailedInvalidPasswordWithRepromt_extension) {
+  harness_.SetRepromptAfterIncorrectCredential(true);
+  supervision_mixin_.SetNextReAuthStatus(
+      GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant);
+
+  RunTestSequence(InAnyContext(Steps(
+      ShowDialog(),
+      WaitForShow(ParentPermissionDialog::kDialogViewIdForTesting),
+      PressButton(views::DialogClientView::kOkButtonElementId),
+      WaitForShow(ParentPermissionDialog::kIncorrectParentPasswordIdForTesting),
+      CheckResult([this]() { return harness_.InvalidCredentialWasReceived(); },
+                  true),
+      CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
+                                    kParentPermissionDialogHistogramName,
+                                SupervisedUserExtensionsMetricsRecorder::
+                                    ParentPermissionDialogState::kOpened,
+                                1),
+      // The dialog remains open waiting for the correct password and has not
+      // failed.
+      EnsurePresent(ParentPermissionDialog::kDialogViewIdForTesting),
+      CheckHistogramBucketCount(SupervisedUserExtensionsMetricsRecorder::
+                                    kParentPermissionDialogHistogramName,
+                                SupervisedUserExtensionsMetricsRecorder::
+                                    ParentPermissionDialogState::kFailed,
+                                0))));
 }
 
 IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,

@@ -40,6 +40,7 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -87,10 +88,15 @@ class MaybeEmptyLabel : public views::Label {
   // views::Label:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::Label::GetAccessibleNodeData(node_data);
-    if (!GetText().empty())
+    if (!GetText().empty()) {
       node_data->SetNameChecked(GetText());
-    else
+    } else {
       node_data->SetNameExplicitlyEmpty();
+    }
+
+    // Set the role to kAlert as this is required for
+    // sending accessibility notification alerts.
+    node_data->role = ax::mojom::Role::kAlert;
   }
 };
 
@@ -108,6 +114,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     kExtensionsParentApprovalVerificationTextIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ParentPermissionDialog,
                                       kParentAccountTextIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ParentPermissionDialog,
+                                      kIncorrectParentPasswordIdForTesting);
 
 // Create the parent permission input section of the dialog and
 // listens for updates to its controls.
@@ -792,6 +800,9 @@ void ParentPermissionDialogView::OnReAuthProofTokenFailure(
       parent_permission_input_section_->FocusCredentialInputField();
       invalid_credential_label_->SetText(l10n_util::GetStringUTF16(
           IDS_PARENT_PERMISSION_PROMPT_PASSWORD_INCORRECT_LABEL));
+      invalid_credential_label_->SetProperty(
+          views::kElementIdentifierKey,
+          ParentPermissionDialog::kIncorrectParentPasswordIdForTesting);
       invalid_credential_label_->NotifyAccessibilityEvent(
           ax::mojom::Event::kAlert, true);
       return;
