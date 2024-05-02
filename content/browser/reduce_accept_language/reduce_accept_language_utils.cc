@@ -148,6 +148,12 @@ bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
   if (!OriginCanReduceAcceptLanguage(request_origin))
     return false;
 
+  // Skip when reading user's accept-language is empty since it's required when
+  // doing language negotiation.
+  if (delegate_->GetUserAcceptLanguages().empty()) {
+    return false;
+  }
+
   std::string initial_accept_language;
   if (!request_headers.GetHeader(net::HttpRequestHeaders::kAcceptLanguage,
                                  &initial_accept_language)) {
@@ -192,6 +198,13 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
     return std::nullopt;
   }
 
+  const std::vector<std::string>& user_accept_languages =
+      delegate_->GetUserAcceptLanguages();
+  // Early return when user's accept-language preference is empty.
+  if (user_accept_languages.empty()) {
+    return std::nullopt;
+  }
+
   const std::optional<url::Origin>& origin_for_lookup =
       GetOriginForLanguageLookup(request_origin, frame_tree_node);
 
@@ -199,9 +212,6 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
       origin_for_lookup
           ? delegate_->GetReducedLanguage(origin_for_lookup.value())
           : std::nullopt;
-
-  const std::vector<std::string>& user_accept_languages =
-      delegate_->GetUserAcceptLanguages();
 
   // We should not return user's first accept-language if the feature not enable
   // and no persist language was found in prefs service. The request headers

@@ -464,6 +464,9 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
          "zh-CN", true},
         {"zh-CN,zh,zh-HK", "zh-CN", "zh-HK", "zh-HK, zh, zh-CN", true, "zh-CN",
          "zh-CN", true},
+        // Test cases with empty user accept-language we ignore reduce the
+        // Accept-Language HTTP header.
+        {"", "zh", "ja", "ja, en", false, std::nullopt, std::nullopt},
     };
 
     for (size_t i = 0; i < std::size(tests); ++i) {

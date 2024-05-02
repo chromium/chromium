@@ -9234,7 +9234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.AcceptLanguageNegotiationRestart"
-    enum="AcceptLanguageNegotiationRestart" expires_after="2024-09-22">
+    enum="AcceptLanguageNegotiationRestart" expires_after="M130">
   <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
@@ -9244,8 +9244,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReduceAcceptLanguage.AcceptLanguagePrefValueIsEmpty"
+    enum="BooleanAvailable" expires_after="M130">
+  <owner>victortan@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    Measure how often user accept-language is empty when reading accept-language
+    from prefs.
+  </summary>
+</histogram>
+
 <histogram name="ReduceAcceptLanguage.ClearLatency" units="ms"
-    expires_after="M128">
+    expires_after="M130">
   <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
@@ -9257,7 +9268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.FetchLatencyUs" units="microseconds"
-    expires_after="2024-09-22">
+    expires_after="M130">
   <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
@@ -9275,7 +9286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.StoreLatency" units="ms"
-    expires_after="M128">
+    expires_after="M130">
   <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
@@ -9287,7 +9298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.UpdateSize" units="count"
-    expires_after="M128">
+    expires_after="M130">
   <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>

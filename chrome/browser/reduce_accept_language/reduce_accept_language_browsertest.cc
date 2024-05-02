@@ -517,6 +517,29 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
+                       EmptyUserAcceptLanguage) {
+  base::HistogramTester histograms;
+
+  SetTestOptions({.content_language_in_parent = "es",
+                  .avail_language_in_parent = "es, en-US",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+
+  SetPrefsAcceptLanguage({});
+  // Expect no reduced Accept-Language header set on navigation request.
+  NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                               std::nullopt);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histograms.ExpectBucketCount(
+      "ReduceAcceptLanguage.AcceptLanguagePrefValueIsEmpty", true, 1);
+
+  // No prefs read and write operations.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 0);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                        NoAvailLanguageHeader) {
   base::HistogramTester histograms;
 

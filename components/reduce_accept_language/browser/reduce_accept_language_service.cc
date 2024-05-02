@@ -152,6 +152,10 @@ void ReduceAcceptLanguageService::UpdateAcceptLanguage() {
           : pref_accept_language_.GetValue());
   user_accept_languages_ = base::SplitString(
       accept_languages_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+  base::UmaHistogramBoolean(
+      "ReduceAcceptLanguage.AcceptLanguagePrefValueIsEmpty",
+      user_accept_languages_.empty());
 }
 
 }  // namespace reduce_accept_language
