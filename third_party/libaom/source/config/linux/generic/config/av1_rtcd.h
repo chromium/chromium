@@ -455,6 +455,15 @@ cfl_predict_lbd_fn cfl_get_predict_lbd_fn_c(TX_SIZE tx_size);
 cfl_subtract_average_fn cfl_get_subtract_average_fn_c(TX_SIZE tx_size);
 #define cfl_get_subtract_average_fn cfl_get_subtract_average_fn_c
 
+bool resize_vert_dir_c(uint8_t* intbuf,
+                       uint8_t* output,
+                       int out_stride,
+                       int height,
+                       int height2,
+                       int width2,
+                       int start_col);
+#define resize_vert_dir resize_vert_dir_c
+
 void av1_rtcd(void);
 
 #include "config/aom_config.h"

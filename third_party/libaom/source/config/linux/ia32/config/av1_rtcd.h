@@ -627,6 +627,35 @@ cfl_subtract_average_fn cfl_get_subtract_average_fn_sse2(TX_SIZE tx_size);
 cfl_subtract_average_fn cfl_get_subtract_average_fn_avx2(TX_SIZE tx_size);
 RTCD_EXTERN cfl_subtract_average_fn (*cfl_get_subtract_average_fn)(TX_SIZE tx_size);
 
+bool resize_vert_dir_c(uint8_t* intbuf,
+                       uint8_t* output,
+                       int out_stride,
+                       int height,
+                       int height2,
+                       int width2,
+                       int start_col);
+bool resize_vert_dir_sse2(uint8_t* intbuf,
+                          uint8_t* output,
+                          int out_stride,
+                          int height,
+                          int height2,
+                          int width2,
+                          int start_col);
+bool resize_vert_dir_avx2(uint8_t* intbuf,
+                          uint8_t* output,
+                          int out_stride,
+                          int height,
+                          int height2,
+                          int width2,
+                          int start_col);
+RTCD_EXTERN bool (*resize_vert_dir)(uint8_t* intbuf,
+                                    uint8_t* output,
+                                    int out_stride,
+                                    int height,
+                                    int height2,
+                                    int width2,
+                                    int start_col);
+
 void av1_rtcd(void);
 
 #ifdef RTCD_C
@@ -854,6 +883,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) cfl_get_predict_lbd_fn = cfl_get_predict_lbd_fn_avx2;
     cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_sse2;
     if (flags & HAS_AVX2) cfl_get_subtract_average_fn = cfl_get_subtract_average_fn_avx2;
+    resize_vert_dir = resize_vert_dir_sse2;
+    if (flags & HAS_AVX2) {
+      resize_vert_dir = resize_vert_dir_avx2;
+    }
 }
 #endif
 

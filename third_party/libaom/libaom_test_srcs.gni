@@ -76,6 +76,7 @@ aom_unit_test_encoder_sources = [
   "//third_party/libaom/source/libaom/test/fdct4x4_test.cc",
   "//third_party/libaom/source/libaom/test/fft_test.cc",
   "//third_party/libaom/source/libaom/test/forced_max_frame_width_height_test.cc",
+  "//third_party/libaom/source/libaom/test/frame_resize_test.cc",
   "//third_party/libaom/source/libaom/test/frame_size_tests.cc",
   "//third_party/libaom/source/libaom/test/fwht4x4_test.cc",
   "//third_party/libaom/source/libaom/test/hadamard_test.cc",
