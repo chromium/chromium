@@ -1833,17 +1833,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.Handwriting.CommitType"
-    enum="VirtualKeyboardHandwritingCommitType" expires_after="2024-11-01">
-  <owner>curtismcmullan@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Warning: this histogram was expired from 2022-02 to 2023-11; data may be
-    missing. What kind of commit method was used when text was committed to an
-    input from the handwriting input method in the virtual keyboard.
-  </summary>
-</histogram>
-
 <histogram
     name="InputMethod.VirtualKeyboard.Handwriting.DWServiceCallbackFailed"
     enum="Boolean" expires_after="2024-06-30">

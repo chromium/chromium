@@ -576,12 +576,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="30998784" label="Generic Error"/>
 </enum>
 
-<enum name="VirtualKeyboardHandwritingCommitType">
-  <int value="0" label="Commit text only"/>
-  <int value="1" label="Commit text with newline"/>
-  <int value="2" label="Commit text with space"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>
