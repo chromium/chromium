@@ -1059,13 +1059,17 @@ class Port(object):
                 return tests matching at least one path in paths.
 
         Returns:
-            An array of test paths and test names. The latter are web platform
-            tests that don't correspond to file paths but are valid tests,
-            for instance a file path test.any.js could correspond to two test
-            names: test.any.html and test.any.worker.html.
+            A list of concrete test URLs. Each URL usually corresponds to a
+            file under `web_tests/`, but not always [0, 1, 2].
+
+        [0]: https://web-platform-tests.org/writing-tests/testharness.html#variants
+        [1]: https://web-platform-tests.org/writing-tests/testharness.html#tests-for-other-or-multiple-globals-any-js
+        [2]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md#Virtual-test-suites
         """
         tests = self.real_tests(paths)
 
+        # TODO(crbug.com/338295229): Consolidate the code paths for all/explicit
+        # tests so that they're less likely to diverge.
         if paths:
             if self._options.virtual_tests:
                 tests.extend(self._virtual_tests_matching_paths(paths))
@@ -1097,8 +1101,8 @@ class Port(object):
         for path in paths:
             # Some WPT files can expand to multiple tests, and the file itself
             # is not a test so it is not in tests_by_dir. Do special handling
-            # when we found a WPT file in virtual bases.
-            if self.is_wpt_file(path):
+            # when we find a WPT URL, file, or directory in virtual bases.
+            if any(path.startswith(wpt_dir) for wpt_dir in self.WPT_DIRS):
                 files.extend(self._wpt_test_urls_matching_paths([path]))
                 continue
             if self._has_supported_extension_for_all(path):

@@ -886,6 +886,14 @@ class TestPort(Port):
                              bases=[],
                              args=['--virtual-arg-empty-bases']),
             VirtualTestSuite(
+                prefix='generated_wpt',
+                platforms=['Linux', 'Mac', 'Win'],
+                bases=[
+                    'external/wpt/html/parse.html?run_type=uri',
+                    'external/wpt/console/console-is-a-namespace.any.html',
+                ],
+                args=['--fake-switch']),
+            VirtualTestSuite(
                 prefix='mixed_wpt',
                 platforms=['Linux', 'Mac', 'Win'],
                 bases=[

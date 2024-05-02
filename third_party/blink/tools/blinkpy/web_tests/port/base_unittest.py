@@ -1073,6 +1073,24 @@ class PortTest(LoggingTestCase):
         ])
         self.assertLessEqual(all_virtual_console, set(port.tests()))
 
+    def test_virtual_wpt_tests_paths_with_generated_bases(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+
+        self.assertEqual(
+            {
+                'virtual/generated_wpt/external/wpt/html/parse.html?run_type=uri',
+                'virtual/generated_wpt/external/wpt/console/console-is-a-namespace.any.html',
+            }, set(port.tests(['virtual/generated_wpt/'])))
+
+        all_tests = port.tests()
+        self.assertIn(
+            'virtual/generated_wpt/external/wpt/html/parse.html?run_type=uri',
+            all_tests)
+        self.assertIn(
+            'virtual/generated_wpt/external/wpt/console/console-is-a-namespace.any.html',
+            all_tests)
+
     def test_virtual_test_paths(self):
         port = self.make_port(with_tests=True)
         add_manifest_to_mock_filesystem(port)
