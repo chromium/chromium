@@ -248,8 +248,8 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
           configOptions.bypass_public_key_pinning_for_local_trust_anchors(),
           configOptions.network_thread_priority() >= -20 &&
                   configOptions.network_thread_priority() <= 19
-              ? std::optional<double>(configOptions.network_thread_priority())
-              : std::optional<double>());
+              ? std::optional<int>(configOptions.network_thread_priority())
+              : std::optional<int>());
   return reinterpret_cast<jlong>(url_request_context_config.release());
 }
 

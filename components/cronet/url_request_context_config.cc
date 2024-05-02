@@ -269,7 +269,7 @@ URLRequestContextConfig::URLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    std::optional<double> network_thread_priority)
+    std::optional<int> network_thread_priority)
     : enable_quic(enable_quic),
       enable_spdy(enable_spdy),
       enable_brotli(enable_brotli),
@@ -309,7 +309,7 @@ URLRequestContextConfig::CreateURLRequestContextConfig(
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
-    std::optional<double> network_thread_priority) {
+    std::optional<int> network_thread_priority) {
   std::optional<base::Value::Dict> experimental_options =
       ParseExperimentalOptions(unparsed_experimental_options);
   if (!experimental_options) {

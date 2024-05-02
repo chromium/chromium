@@ -297,7 +297,7 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
                          base::BindOnce([](int error) { NOTREACHED(); })));
 
   EXPECT_TRUE(config->network_thread_priority);
-  EXPECT_EQ(42.0, config->network_thread_priority.value());
+  EXPECT_EQ(42, config->network_thread_priority.value());
   EXPECT_FALSE(config->bidi_stream_detect_broken_connection);
 
   // When UseDnsHttpsSvcb option is not set, the value of net::features are
