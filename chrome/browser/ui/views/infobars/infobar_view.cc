@@ -111,9 +111,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     // This is the wrong color, but allows the button's size to be computed
     // correctly.  We'll reset this with the correct color in OnThemeChanged().
     views::SetImageFromVectorIconWithColor(
-        close_button.get(),
-        features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
-                                        : vector_icons::kCloseRoundedIcon,
+        close_button.get(), vector_icons::kCloseChromeRefreshIcon,
         gfx::kPlaceholderColor, gfx::kPlaceholderColor);
     close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
     gfx::Insets close_button_spacing = GetCloseButtonSpacing();
@@ -125,9 +123,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     close_button_->SetProperty(views::kElementIdentifierKey,
                                kDismissButtonElementId);
 
-    if (features::IsChromeRefresh2023()) {
-      InstallCircleHighlightPathGenerator(close_button_);
-    }
+    InstallCircleHighlightPathGenerator(close_button_);
   }
 
   SetTargetHeight(
@@ -217,10 +213,8 @@ void InfoBarView::OnThemeChanged() {
       cp->GetColor(kColorInfoBarButtonIconDisabled);
   if (close_button_) {
     views::SetImageFromVectorIconWithColor(
-        close_button_,
-        features::IsChromeRefresh2023() ? vector_icons::kCloseChromeRefreshIcon
-                                        : vector_icons::kCloseRoundedIcon,
-        icon_color, icon_disabled_color);
+        close_button_, vector_icons::kCloseChromeRefreshIcon, icon_color,
+        icon_disabled_color);
   }
 
   for (views::View* child : children()) {
