@@ -83,6 +83,7 @@ Object: {
 				}
 			]
 			mimeType: string
+			protocol: http/1.1
 			requestId: string
 			responseTime: number
 			statusCode: number
@@ -214,6 +215,7 @@ Object: {
 				}
 			]
 			mimeType: string
+			protocol: http/1.1
 			requestId: string
 			responseTime: number
 			statusCode: number
@@ -327,6 +329,7 @@ Object: {
 				}
 			]
 			mimeType: string
+			protocol: http/1.1
 			requestId: string
 			responseTime: number
 			statusCode: number
@@ -458,6 +461,7 @@ Object: {
 				}
 			]
 			mimeType: string
+			protocol: http/1.1
 			requestId: string
 			responseTime: number
 			statusCode: number

@@ -48,7 +48,7 @@
   for (const key of orderedKeys) {
     const events = eventsByRequestId.get(key);
     for (const event of events) {
-      tracingHelper.logEventShape(event, [], ['name', 'resourceType', 'isLinkPreload', 'fetchPriorityHint', 'fetchType'])
+      tracingHelper.logEventShape(event, [], ['name', 'resourceType', 'isLinkPreload', 'fetchPriorityHint', 'fetchType', 'protocol'])
     }
   }
 

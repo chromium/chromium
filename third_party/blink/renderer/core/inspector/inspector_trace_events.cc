@@ -1038,6 +1038,7 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
   }
 
   SetHeaders(dict.AddItem("headers"), response.HttpHeaderFields());
+  dict.Add("protocol", InspectorNetworkAgent::GetProtocolAsString(response));
 }
 
 void inspector_receive_data_event::Data(perfetto::TracedValue context,

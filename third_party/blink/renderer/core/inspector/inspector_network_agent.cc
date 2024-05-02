@@ -1112,26 +1112,8 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
     response_object->setRemotePort(remote_ip_endpoint.port());
   }
 
-  String protocol = response.AlpnNegotiatedProtocol();
-  if (protocol.empty() || protocol == "unknown") {
-    if (response.WasFetchedViaSPDY()) {
-      protocol = "h2";
-    } else if (response.IsHTTP()) {
-      protocol = "http";
-      if (response.HttpVersion() ==
-          ResourceResponse::HTTPVersion::kHTTPVersion_0_9)
-        protocol = "http/0.9";
-      else if (response.HttpVersion() ==
-               ResourceResponse::HTTPVersion::kHTTPVersion_1_0)
-        protocol = "http/1.0";
-      else if (response.HttpVersion() ==
-               ResourceResponse::HTTPVersion::kHTTPVersion_1_1)
-        protocol = "http/1.1";
-    } else {
-      protocol = response.CurrentRequestUrl().Protocol();
-    }
-  }
-  response_object->setProtocol(protocol);
+  response_object->setProtocol(
+      InspectorNetworkAgent::GetProtocolAsString(response));
   if (response.AlternateProtocolUsage() !=
       net::AlternateProtocolUsage::
           ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON) {
@@ -1851,6 +1833,31 @@ InspectorNetworkAgent::BuildInitiatorObject(
   return protocol::Network::Initiator::create()
       .setType(protocol::Network::Initiator::TypeEnum::Other)
       .build();
+}
+
+String InspectorNetworkAgent::GetProtocolAsString(
+    const ResourceResponse& response) {
+  String protocol = response.AlpnNegotiatedProtocol();
+  if (protocol.empty() || protocol == "unknown") {
+    if (response.WasFetchedViaSPDY()) {
+      protocol = "h2";
+    } else if (response.IsHTTP()) {
+      protocol = "http";
+      if (response.HttpVersion() ==
+          ResourceResponse::HTTPVersion::kHTTPVersion_0_9) {
+        protocol = "http/0.9";
+      } else if (response.HttpVersion() ==
+                 ResourceResponse::HTTPVersion::kHTTPVersion_1_0) {
+        protocol = "http/1.0";
+      } else if (response.HttpVersion() ==
+                 ResourceResponse::HTTPVersion::kHTTPVersion_1_1) {
+        protocol = "http/1.1";
+      }
+    } else {
+      protocol = response.CurrentRequestUrl().Protocol();
+    }
+  }
+  return protocol;
 }
 
 void InspectorNetworkAgent::WillCreateP2PSocketUdp(

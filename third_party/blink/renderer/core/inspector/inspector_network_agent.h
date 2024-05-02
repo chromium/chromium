@@ -279,6 +279,7 @@ class CORE_EXPORT InspectorNetworkAgent final
       Document*,
       const FetchInitiatorInfo&,
       int max_async_depth);
+  static String GetProtocolAsString(const ResourceResponse& response);
 
  private:
   String RequestId(DocumentLoader*, uint64_t identifier);
