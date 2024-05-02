@@ -215,6 +215,7 @@ export class SelectionOverlayElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent(
         'selection-overlay-clicked', {bubbles: true, composed: true}));
     this.addDragListeners();
+    BrowserProxyImpl.getInstance().handler.closeSearchBubble();
 
     this.currentGesture = {
       state: GestureState.STARTING,

@@ -1170,6 +1170,9 @@ void PopulateChromeWebUIFrameBinders(
   if (lens::features::IsLensOverlayEnabled()) {
     RegisterWebUIControllerInterfaceBinder<lens::mojom::LensPageHandlerFactory,
                                            lens::LensUntrustedUI>(map);
+  }
+
+  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         lens::mojom::SearchBubblePageHandlerFactory, lens::SearchBubbleUI>(map);
   }

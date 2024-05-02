@@ -249,6 +249,10 @@ extern int GetLensOverlayVerticalTextMargin();
 // boxes.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayHorizontalTextMargin();
+
+// Returns whether to show the lens overlay search bubble.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlaySearchBubbleEnabled();
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

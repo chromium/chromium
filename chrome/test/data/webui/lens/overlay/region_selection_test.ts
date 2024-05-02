@@ -12,7 +12,7 @@ import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_ov
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
-import {simulateDrag} from '../utils/selection_utils.js';
+import {getImageBoundingRect, simulateDrag} from '../utils/selection_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -43,17 +43,13 @@ suite('ManualRegionSelection', function() {
 
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
-    const boundingRect = getImageBoundingRect();
+    const boundingRect = getImageBoundingRect(selectionOverlayElement);
     return {
       x: box.x / boundingRect.width,
       y: box.y / boundingRect.height,
       width: box.width / boundingRect.width,
       height: box.height / boundingRect.height,
     };
-  }
-
-  function getImageBoundingRect() {
-    return selectionOverlayElement.$.backgroundImage.getBoundingClientRect();
   }
 
   // Does a drag and verifies that expectedRect is sent via mojo.
@@ -72,7 +68,7 @@ suite('ManualRegionSelection', function() {
       `verify that completing a drag within the overlay bounds issues correct
       lens request via mojo`,
       async () => {
-        const imageBounds = getImageBoundingRect();
+        const imageBounds = getImageBoundingRect(selectionOverlayElement);
         const startPointInsideOverlay = {
           x: imageBounds.left + 10,
           y: imageBounds.top + 10,
@@ -94,7 +90,7 @@ suite('ManualRegionSelection', function() {
   test(
       'verify that completing a drag above the selection overlay rounds y to 0',
       async () => {
-        const imageBounds = getImageBoundingRect();
+        const imageBounds = getImageBoundingRect(selectionOverlayElement);
         const startPointInsideOverlay = {
           x: imageBounds.left + 10,
           y: imageBounds.top + 10,
@@ -117,7 +113,7 @@ suite('ManualRegionSelection', function() {
       `verify that completing a drag below the selection overlay rounds y to
       overlay height`,
       async () => {
-        const imageBounds = getImageBoundingRect();
+        const imageBounds = getImageBoundingRect(selectionOverlayElement);
         const startPointInsideOverlay = {
           x: imageBounds.left + 10,
           y: imageBounds.bottom - 20,
@@ -141,7 +137,7 @@ suite('ManualRegionSelection', function() {
       `verify that completing a drag to the left of the selection overlay rounds
        x to 0`,
       async () => {
-        const imageBounds = getImageBoundingRect();
+        const imageBounds = getImageBoundingRect(selectionOverlayElement);
         const startPointInsideOverlay = {
           x: imageBounds.left + 20,
           y: imageBounds.top + 10,
@@ -164,7 +160,7 @@ suite('ManualRegionSelection', function() {
       `verify that completing a drag to the right of the selection overlay
       rounds x to overlay width`,
       async () => {
-        const imageBounds = getImageBoundingRect();
+        const imageBounds = getImageBoundingRect(selectionOverlayElement);
         const startPointInsideOverlay = {
           x: imageBounds.right - 20,
           y: imageBounds.top + 10,

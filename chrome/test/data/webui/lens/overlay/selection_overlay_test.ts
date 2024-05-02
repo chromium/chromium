@@ -15,7 +15,7 @@ import {assertDeepEquals, assertEquals, assertNotEquals, assertNull, assertStrin
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
-import {simulateClick, simulateDrag} from '../utils/selection_utils.js';
+import {getImageBoundingRect, simulateClick, simulateDrag} from '../utils/selection_utils.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
@@ -488,4 +488,30 @@ suite('SelectionOverlay', function() {
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertBoxesWithinThreshold(expectedRect, rect);
       });
+  test('verify that completing a drag calls closeSearchBubble', async () => {
+    const imageBounds = getImageBoundingRect(selectionOverlayElement);
+    const startPointInsideOverlay = {
+      x: imageBounds.left + 10,
+      y: imageBounds.top + 10,
+    };
+    const endPointAboveOverlay = {
+      x: imageBounds.left + 100,
+      y: imageBounds.top - 30,
+    };
+
+    await simulateDrag(
+        selectionOverlayElement, startPointInsideOverlay, endPointAboveOverlay);
+
+    await testBrowserProxy.handler.whenCalled('closeSearchBubble');
+    assertEquals(1, testBrowserProxy.handler.getCallCount('closeSearchBubble'));
+  });
+  test(`verify that a tap calls closeSearchBubble`, async () => {
+    const imageBounds = getImageBoundingRect(selectionOverlayElement);
+    await simulateClick(
+        selectionOverlayElement,
+        {x: imageBounds.left + 10, y: imageBounds.top + 10});
+
+    await testBrowserProxy.handler.whenCalled('closeSearchBubble');
+    assertEquals(1, testBrowserProxy.handler.getCallCount('closeSearchBubble'));
+  });
 });

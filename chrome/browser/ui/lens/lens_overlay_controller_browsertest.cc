@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -230,6 +231,10 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     tabs::TabFeatures::ReplaceTabFeaturesForTesting(base::BindRepeating(
         &LensOverlayControllerBrowserTest::CreateTabFeatures,
         base::Unretained(this)));
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay, {
+                                          {"search-bubble", "true"},
+                                      });
   }
 
   void SetUp() override {
@@ -301,7 +306,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
@@ -988,6 +993,49 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // It should not open a new tab as the initatior origin should not be
   // considered "trusted".
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       CloseSearchBubbleOnOverlayInteraction) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state. When the overlay is
+  // bound, it should start the query flow which returns a response for the
+  // interaction data callback.
+  controller->ShowUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  auto* bubble_controller =
+      lens::LensSearchBubbleController::FromBrowser(browser());
+  EXPECT_TRUE(!!bubble_controller->bubble_view_for_testing());
+
+  // We need to flush the mojo receiver calls to make sure the screenshot was
+  // passed back to the WebUI or else the region selection UI will not render.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Simulate mouse events on the overlay for drawing a manual region.
+  gfx::Point center =
+      GetOverlayWebContents()->GetContainerBounds().CenterPoint();
+  gfx::Point off_center = gfx::Point(center);
+  off_center.Offset(100, 100);
+  SimulateLeftClickDrag(center, off_center);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  EXPECT_FALSE(!!bubble_controller->bubble_view_for_testing());
 }
 
 }  // namespace

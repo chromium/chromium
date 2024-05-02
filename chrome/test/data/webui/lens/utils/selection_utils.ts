@@ -17,6 +17,11 @@ function createPointerEvent(eventType: string, point: Point): PointerEvent {
   });
 }
 
+export function getImageBoundingRect(
+    selectionOverlayElement: SelectionOverlayElement) {
+  return selectionOverlayElement.$.backgroundImage.getBoundingClientRect();
+}
+
 export function simulateClick(
     selectionOverlayElement: SelectionOverlayElement, point: Point) {
   const pointerDownEvent = createPointerEvent('pointerdown', point);

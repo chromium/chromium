@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/lens/lens_features.h"
@@ -186,14 +187,18 @@ void LensOverlayController::ShowUI() {
 
   // Create the results side panel coordinator when showing the UI if it does
   // not already exist for this tab's web contents.
+  Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
+  CHECK(tab_browser);
   if (!results_side_panel_coordinator_) {
-    Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
-    CHECK(tab_browser);
     results_side_panel_coordinator_ =
         std::make_unique<lens::LensOverlaySidePanelCoordinator>(
             tab_browser, this,
             SidePanelUI::GetSidePanelUIForBrowser(tab_browser),
             tab_->GetContents());
+  }
+  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
+    lens::LensSearchBubbleController::GetOrCreateForBrowser(tab_browser)
+        ->Show();
   }
 
   // Create the query controller.
@@ -238,6 +243,9 @@ void LensOverlayController::CloseUI() {
     RemoveGlueForWebView(glued_webviews_.front());
   }
   glued_webviews_.clear();
+
+  // Closes lens search bubble if it exists.
+  CloseSearchBubble();
 
   // A permission prompt may be suspended if the overlay was showing when the
   // permission was queued. Restore the suspended prompt if possible.
@@ -771,6 +779,15 @@ void LensOverlayController::AddBackgroundBlur() {
 
 void LensOverlayController::CloseRequestedByOverlay() {
   CloseUIAsync();
+}
+
+void LensOverlayController::CloseSearchBubble() {
+  if (Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents())) {
+    if (auto* controller =
+            lens::LensSearchBubbleController::FromBrowser(tab_browser)) {
+      controller->Close();
+    }
+  }
 }
 
 void LensOverlayController::CloseUIAsync() {

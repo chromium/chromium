@@ -12,7 +12,12 @@
 namespace lens {
 class LensSearchBubbleInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  LensSearchBubbleInteractiveUiTest() = default;
+  LensSearchBubbleInteractiveUiTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay, {
+                                          {"search-bubble", "true"},
+                                      });
+  }
   ~LensSearchBubbleInteractiveUiTest() override = default;
   LensSearchBubbleInteractiveUiTest(const LensSearchBubbleInteractiveUiTest&)
   = delete;
@@ -43,7 +48,7 @@ class LensSearchBubbleInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LensSearchBubbleInteractiveUiTest,
