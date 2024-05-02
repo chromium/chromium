@@ -57,6 +57,9 @@
     <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME" desc="Section title for the 'Get the most out of Chrome' page.">
       Get the most out of Chrome
     </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_PAGE_BUTTON" desc="Accessibility description for a button navigating the user to the 'Get the most out of Chromne' page.">
+      Get the most out of Chrome, page
+    </message>
     <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BETTER_FOR_YOU" desc="Title of the 'Chrome makes the web work better for you' section of the 'Get the most out of Chrome' page.">
       Chrome makes the web work better for you
     </message>
