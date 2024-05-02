@@ -8,7 +8,6 @@
 
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/navigation_handle.h"
