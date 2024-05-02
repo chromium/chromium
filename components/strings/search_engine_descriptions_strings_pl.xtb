@@ -6,11 +6,12 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="pl">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Obsługiwane przez GPT-4 ChatGPT</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Nie śledzimy Cię. Prywatność, po prostu.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Prywatna. Szybka. Mniej reklam. DuckDuckGo nigdy Cię nie śledzi.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Wyszukuj i sadź przy tym drzewa, za darmo. Już 200 milionów zasadzonych drzew.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Znajdź to, czego potrzebujesz</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Znajdź to, czego potrzebujesz z Google</translation>
   <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Chroń zwierzęta i różnorodność biologiczną – liczy się każde wyszukiwanie!</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Twoje stowarzyszenia finansują badania internetowe za darmo</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Twoje wyszukiwania czyśćą nasze oceany i plaże z plastiku.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Wyszukiwarka, która chroni Twoją prywatność.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Przeszukuj sieć i odpowiadaj na codzienne pytania dzięki Yahoo.</translation>
 </translationbundle>

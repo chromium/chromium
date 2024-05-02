@@ -5,5 +5,6 @@
 http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="ru">
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Найдите то, что вам нужно</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Найдите то, что вам нужно, вместе с Google</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Поисковая система, которая защищает вашу конфиденциальность.</translation>
 </translationbundle>

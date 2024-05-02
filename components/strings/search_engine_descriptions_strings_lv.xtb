@@ -6,7 +6,6 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="lv">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Darbojas ar ChatGPT GPT-4</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Mēs jūs neizsekojam. Privātums, vienkāršots.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Atrodiet meklēto, lietojot pasaulē visvairāk izmantoto meklētājprogrammu.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Atrodi to, kas nepieciešams ar Google</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Meklētājprogramma, kas aizsargā jūsu privātumu.</translation>
 </translationbundle>

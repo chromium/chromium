@@ -7,12 +7,13 @@ Do not modify it manually. -->
 <translationbundle lang="pt-PT">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Alimentado pelo GPT-4 do ChatGPT</translation>
   <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Bloqueie anúncios e rastreadores enquanto você navega na Web.</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Nós não o monitorizamos. Privacidade, simplificada.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Privado. Rápido. Menos anúncios. O DuckDuckGo nunca te rastreia.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Planta árvores ao navegar na internet. Mais de 200 milhões de árvores plantadas.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Encontre o que precisa</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Encontra o que precisas com a Google</translation>
   <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Proteja os animais e a biodiversidade - faça com que cada pesquisa conte!</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Sua pesquisa na Internet financia associações gratuitamente</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Suas buscas limpam nossos oceanos e praias do plástico.</translation>
   <translation id="IDS_PANDA_SEARCH_DESCRIPTION">Pesquise com o Panda e apoie projectos e campanhas da WWF.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Um mecanismo de pesquisa que protege sua privacidade.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Procure na web e responda às perguntas diárias da vida com o Yahoo.</translation>
 </translationbundle>

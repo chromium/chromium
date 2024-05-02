@@ -7,7 +7,7 @@ Do not modify it manually. -->
 <translationbundle lang="tr">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">ChatGPT'nin GPT-4'ü tarafından desteklenmektedir</translation>
   <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Web'de gezinirken reklamları ve izleyicileri engelleyin.</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Sizi takip etmeyiz. Gizlilik, basitleştirildi.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Dünyanın en çok kullanılan arama motoruyla aradığınızı bulun.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Özel. Hızlı. Daha Az Reklam. DuckDuckGo sizi asla izlemez.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Google ile aradığınızı bulun</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Gizliliğinizi koruyan bir arama motoru.</translation>
 </translationbundle>

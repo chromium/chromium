@@ -6,10 +6,11 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="ro">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Susținut de GPT-4 de la ChatGPT</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Noi nu iți urmărim activitatea. Confidențialitatea, simplificată.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Privat. Rapid. Mai puține reclame. DuckDuckGo nu te urmărește niciodată.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Plantați copaci în timp ce navigați. Peste 200 de milioane de copaci plantați.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Găsești ce ai nevoie</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Găsești ce ai nevoie cu Google</translation>
   <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Protejați animalele și biodiversitatea - faceți ca fiecare căutare să conteze!</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Cercetarea dvs. pe internet finanțează asociații gratuit</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Un motor de căutare care vă protejează confidențialitatea.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Căutați pe web și răspundeți la întrebările zilnice ale vieții cu Yahoo.</translation>
 </translationbundle>

@@ -6,9 +6,8 @@ http://go/chrome-search-engines-marketing-snippets-script.
 Do not modify it manually. -->
 <translationbundle lang="hr">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Pokreće ChatGPT GPT-4</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Ne pratimo Vas. Privatnost, u pojednostavljenom obliku.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Sadi stabla dok pretražuješ. Već je posađeno više od 200 milijuna stabala.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Nađi što ti treba</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Pronađite ono što vam je potrebno pomoću Googlea</translation>
   <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Zaštitite životinje i bioraznolikost - neka se svaka pretraga računa!</translation>
   <translation id="IDS_LILO_SEARCH_DESCRIPTION">Vaše internetsko istraživanje besplatno financira udruge</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Tražilica koja štiti vašu privatnost.</translation>
