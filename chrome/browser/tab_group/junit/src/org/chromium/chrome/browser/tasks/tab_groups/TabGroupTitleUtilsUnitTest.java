@@ -82,4 +82,20 @@ public class TabGroupTitleUtilsUnitTest {
         verify(mEditor).putString(eq(String.valueOf(TAB_ID)), eq(TAB_TITLE));
         verify(mPutStringEditor).apply();
     }
+
+    @Test
+    public void testStoreTabGroupTitle_Empty() {
+        TabGroupTitleUtils.storeTabGroupTitle(TAB_ID, "");
+
+        verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
+        verify(mRemoveEditor).apply();
+    }
+
+    @Test
+    public void testStoreTabGroupTitle_Null() {
+        TabGroupTitleUtils.storeTabGroupTitle(TAB_ID, null);
+
+        verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
+        verify(mRemoveEditor).apply();
+    }
 }

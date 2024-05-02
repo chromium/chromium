@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_groups;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -25,7 +26,11 @@ public class TabGroupTitleUtils {
      */
     static void storeTabGroupTitle(int tabRootId, String title) {
         assert tabRootId != Tab.INVALID_TAB_ID;
-        getSharedPreferences().edit().putString(String.valueOf(tabRootId), title).apply();
+        if (TextUtils.isEmpty(title)) {
+            deleteTabGroupTitle(tabRootId);
+        } else {
+            getSharedPreferences().edit().putString(String.valueOf(tabRootId), title).apply();
+        }
     }
 
     /**
