@@ -54,7 +54,6 @@ namespace ash {
 class AppListTestHelper;
 class AmbientAshTestHelper;
 class AshPixelTestHelper;
-class FakeFwupdDownloadClient;
 class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
@@ -222,7 +221,6 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
   std::unique_ptr<SavedDeskTestHelper> saved_desk_test_helper_;
-  std::unique_ptr<FakeFwupdDownloadClient> fwupd_download_client_;
   std::unique_ptr<quick_pair::Mediator::Factory> quick_pair_mediator_factory_;
   std::unique_ptr<quick_pair::QuickPairBrowserDelegate>
       quick_pair_browser_delegate_;

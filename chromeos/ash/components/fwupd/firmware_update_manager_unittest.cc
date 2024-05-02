@@ -38,7 +38,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/message_center/fake_message_center.h"
 #include "ui/message_center/message_center.h"
 
@@ -61,12 +60,6 @@ const char kFakeUpdateVersionForTesting[] = "1.0.0";
 const char kFakeUpdateUriForTesting[] =
     "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
 const char kFakeUpdateFileNameForTesting[] = "testFirmwarePath-V1.cab";
-const char kChecksumFileUriForTesting[] =
-    "https://storage.googleapis.com/chromeos-localmirror/lvfs/"
-    "firmware.xml.xz.jcat";
-const char kFirmwareFileUriForTesting[] =
-    "https://storage.googleapis.com/chromeos-localmirror/lvfs/"
-    "firmware-07171-test.xml.xz";
 const char kEmptyFileSha256ForTesting[] =
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const char kFilePathIdentifier[] = "file://";
@@ -86,60 +79,6 @@ const char kFlagsKey[] = "Flags";
 const uint64_t kFakeFlagForTesting = 1;
 const char kTrustFlagsKey[] = "TrustFlags";
 const uint64_t kFakeReportFlagForTesting = 1llu << 8;
-
-/*
-  Test checksum json file mimicking a real checksum data file
-  {"JcatVersionMajor": 0, "JcatVersionMinor": 1, "Items": [{"Id":
-  "firmware-07171-test.xml.xz", "AliasIds": ["firmware.xml.xz"], "Blobs":
-  [{"Kind": 4, "Flags": 1, "Timestamp": 0, "Data": "test-data"}, {"Kind": 1,
-  "Flags": 1, "Timestamp": 0, "Data": "test-data"}, {"Kind": 3, "Flags": 1,
-  "Timestamp": 1713183334, "Data": "test-data"}]}]}
-*/
-// This is the string representation of gzip compressed string above which
-// is the real value from a checksum file. It was obtained by running echo
-// -n $STRING | gzip -c | hexdump -e '8 1 ", 0x%x"'
-const uint8_t kTestChecksumData[] = {
-    0x1f, 0x8b, 0x8,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0x3,  0xab, 0x56,
-    0xf2, 0x4a, 0x4e, 0x2c, 0x9,  0x4b, 0x2d, 0x2a, 0xce, 0xcc, 0xcf, 0xf3,
-    0x4d, 0xcc, 0xca, 0x2f, 0x52, 0xb2, 0x52, 0x30, 0xd0, 0x51, 0x40, 0x11,
-    0xce, 0xcc, 0x3,  0xb,  0x1b, 0x2,  0x85, 0x3d, 0x4b, 0x52, 0x73, 0x8b,
-    0x81, 0xec, 0xe8, 0x6a, 0x25, 0xcf, 0x14, 0x20, 0xad, 0x94, 0x96, 0x59,
-    0x94, 0x5b, 0x9e, 0x58, 0x94, 0xaa, 0x6b, 0x60, 0x6e, 0x68, 0x6e, 0xa8,
-    0x5b, 0x92, 0x5a, 0x5c, 0xa2, 0x57, 0x91, 0x9b, 0xa3, 0x57, 0x51, 0xa5,
-    0x4,  0x54, 0xee, 0x98, 0x93, 0x99, 0x58, 0xec, 0x99, 0x2,  0xd6, 0x1,
-    0x57, 0xa,  0x93, 0x8f, 0x5,  0x2a, 0x70, 0xca, 0xc9, 0x4f, 0x82, 0x9a,
-    0xe7, 0x9d, 0x99, 0x7,  0x32, 0xd1, 0x4,  0x28, 0xea, 0x96, 0x93, 0x98,
-    0x5e, 0xc,  0xb5, 0x31, 0x24, 0x33, 0x17, 0x68, 0x66, 0x62, 0x6e, 0x1,
-    0xd4, 0x61, 0x2e, 0x89, 0x25, 0x89, 0x20, 0x8b, 0x41, 0x36, 0xe9, 0xa6,
-    0x80, 0x38, 0xb5, 0x3a, 0xa,  0x70, 0xdd, 0x86, 0x14, 0xe9, 0x36, 0xc6,
-    0xa3, 0x1b, 0xe8, 0x3b, 0x63, 0x43, 0xb,  0x63, 0x63, 0x63, 0x13, 0xec,
-    0xc6, 0xc4, 0x2,  0x21, 0x0,  0x64, 0x30, 0x78, 0x6e, 0x4e, 0x1,  0x0,
-    0x0};
-
-// "Id" key changed to "ID" in the above json string
-const uint8_t kIncorrectTestChecksumData[] = {
-    0x1f, 0x8b, 0x8,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0x3,  0xab, 0x56,
-    0xf2, 0x4a, 0x4e, 0x2c, 0x9,  0x4b, 0x2d, 0x2a, 0xce, 0xcc, 0xcf, 0xf3,
-    0x4d, 0xcc, 0xca, 0x2f, 0x52, 0xb2, 0x52, 0x30, 0xd0, 0x51, 0x40, 0x11,
-    0xce, 0xcc, 0x3,  0xb,  0x1b, 0x2,  0x85, 0x3d, 0x4b, 0x52, 0x73, 0x8b,
-    0x81, 0xec, 0xe8, 0x6a, 0x25, 0x4f, 0x17, 0x20, 0xad, 0x94, 0x96, 0x59,
-    0x94, 0x5b, 0x9e, 0x58, 0x94, 0xaa, 0x6b, 0x60, 0x6e, 0x68, 0x6e, 0xa8,
-    0x5b, 0x92, 0x5a, 0x5c, 0xa2, 0x57, 0x91, 0x9b, 0xa3, 0x57, 0x51, 0xa5,
-    0x4,  0x54, 0xee, 0x98, 0x93, 0x99, 0x58, 0xec, 0x99, 0x2,  0xd6, 0x1,
-    0x57, 0xa,  0x93, 0x8f, 0x5,  0x2a, 0x70, 0xca, 0xc9, 0x4f, 0x82, 0x9a,
-    0xe7, 0x9d, 0x99, 0x97, 0x2,  0x64, 0x99, 0x0,  0x45, 0xdd, 0x72, 0x12,
-    0xd3, 0x8b, 0xa1, 0x36, 0x86, 0x64, 0xe6, 0x2,  0xcd, 0x4c, 0xcc, 0x2d,
-    0x80, 0x3a, 0xcc, 0x25, 0xb1, 0x24, 0x11, 0x64, 0x31, 0xc8, 0x26, 0xdd,
-    0x14, 0x10, 0xa7, 0x56, 0x47, 0x1,  0xae, 0xdb, 0x90, 0x22, 0xdd, 0xc6,
-    0x78, 0x74, 0x3,  0x7d, 0x67, 0x6c, 0x68, 0x61, 0x6c, 0x6c, 0x6c, 0x82,
-    0xdd, 0x98, 0x58, 0x20, 0x4,  0x0,  0x5a, 0x30, 0x56, 0xa6, 0x4e, 0x1,
-    0x0,  0x0};
-
-// Used "hello world" as string
-const uint8_t kGarbageTestChecksumData[] = {
-    0x1f, 0x8b, 0x8,  0x0,  0x0,  0x0,  0x0,  0x0,  0x0,  0x3,  0xcb,
-    0x48, 0xcd, 0xc9, 0xc9, 0x57, 0x28, 0xcf, 0x2f, 0xca, 0x49, 0x1,
-    0x0,  0x85, 0x11, 0x4a, 0xd,  0xb,  0x0,  0x0,  0x0};
 
 void RunResponseCallback(dbus::ObjectProxy::ResponseOrErrorCallback callback,
                          std::unique_ptr<dbus::Response> response) {
@@ -286,11 +225,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
   }
 
  protected:
-  void SetUp() override {
-    // Default behaviour is RefreshRemote will always be called
-    PrepareForRefreshRemote();
-  }
-
   void InitializeNotificationController() {
     message_center::MessageCenter::Initialize();
     firmware_update_notification_controller_ =
@@ -342,15 +276,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
   }
 
   void SetFakeUrlForTesting(const std::string& fake_url) {
-    firmware_update_manager_->set_fake_url_for_testing(fake_url);
+    firmware_update_manager_->SetFakeUrlForTesting(fake_url);
   }
 
   message_center::MessageCenter* message_center() const {
     return message_center::MessageCenter::Get();
-  }
-
-  std::unique_ptr<dbus::Response> CreateEmptyResponse() {
-    return dbus::Response::CreateEmpty();
   }
 
   std::unique_ptr<dbus::Response> CreateEmptyDeviceResponse() {
@@ -636,29 +566,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void PrepareForRefreshRemote() {
-    firmware_update_manager_->set_refresh_remote_for_testing(true);
-    // Add default response for downloading checksum and firmware file for
-    // RefreshRemote logic.
-    std::string data(reinterpret_cast<const char*>(kTestChecksumData),
-                     std::size(kTestChecksumData));
-    GetTestUrlLoaderFactory().AddResponse(kChecksumFileUriForTesting, data);
-    GetTestUrlLoaderFactory().AddResponse(kFirmwareFileUriForTesting, "");
-    dbus_responses_.push_back(CreateEmptyResponse());
-  }
-
-  void PrepareForIncorrectKeyJsonRefreshRemote() {
-    std::string data(reinterpret_cast<const char*>(kIncorrectTestChecksumData),
-                     std::size(kIncorrectTestChecksumData));
-    GetTestUrlLoaderFactory().AddResponse(kChecksumFileUriForTesting, data);
-  }
-
-  void PrepareForIncorrectFormatRefreshRemote() {
-    std::string data(reinterpret_cast<const char*>(kGarbageTestChecksumData),
-                     std::size(kGarbageTestChecksumData));
-    GetTestUrlLoaderFactory().AddResponse(kChecksumFileUriForTesting, data);
-  }
-
   bool PrepareForUpdate(const std::string& device_id) {
     base::test::TestFuture<
         mojo::PendingRemote<ash::firmware_update::mojom::InstallController>>
@@ -691,20 +598,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
         FirmwareUpdateManager::Source::kInstallComplete);
   }
 
-  void RequestAllUpdatesFromSource(FirmwareUpdateManager::Source source) {
-    firmware_update_manager_->RequestAllUpdates(source);
-  }
-
   void AdvanceClock(base::TimeDelta time) {
     task_environment_.AdvanceClock(time);
-  }
-
-  void SetCellularService() {
-    network_handler_test_helper_->ClearServices();
-    network_handler_test_helper_->ConfigureService(
-        R"({"GUID": "cellular_guid", "Type": "cellular", "Technology": "LTE",
-            "State": "online"})");
-    task_environment_.RunUntilIdle();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -832,7 +727,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
             updates[0]->priority);
 }
 
-TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMultipleTimes) {
+TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMutipleTimes) {
   dbus_responses_.push_back(CreateNumberOfDeviceResponses(2));
   dbus_responses_.push_back(CreateNoUpdateResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
@@ -848,7 +743,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMultipleTimes) {
 
   // Request all updates multiple times, this time while a request is already
   // being made.
-  PrepareForRefreshRemote();
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   RequestAllUpdates();
@@ -860,7 +754,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMultipleTimes) {
 
   // Now request all updates again, this time after the previous request has
   // been completed.
-  PrepareForRefreshRemote();
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   RequestAllUpdates();
@@ -878,7 +771,6 @@ TEST_F(FirmwareUpdateManagerTest, BeginUpdate) {
   // InstallUpdate success response.
   dbus_responses_.push_back(dbus::Response::CreateEmpty());
   // For RequestAllUpdates() call after install completes.
-  PrepareForRefreshRemote();
   CreateOneDeviceAndUpdateResponse();
 
   FakeUpdateObserver update_observer;
@@ -906,64 +798,65 @@ TEST_F(FirmwareUpdateManagerTest, BeginUpdate) {
                                       MethodResult::kSuccess, 1);
 }
 
-struct FailedMethodWithErrorParam {
-  explicit FailedMethodWithErrorParam(std::string error_name,
-                                      MethodResult install_result)
+struct FailedInstallWithErrorParam {
+  explicit FailedInstallWithErrorParam(std::string error_name,
+                                       MethodResult install_result)
       : error_name(error_name), install_result(install_result) {}
 
   std::string error_name;
   MethodResult install_result;
 };
 
-class FirmwareUpdateManagerTest_FailedMethodWithErrorMessage
+class FirmwareUpdateManagerTest_FailedInstallWithErrorMessage
     : public FirmwareUpdateManagerTest,
-      public testing::WithParamInterface<FailedMethodWithErrorParam> {};
+      public testing::WithParamInterface<FailedInstallWithErrorParam> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    FirmwareUpdateManagerTest_FailedMethodWithErrorMessage,
-    FirmwareUpdateManagerTest_FailedMethodWithErrorMessage,
+    FirmwareUpdateManagerTest_FailedInstallWithErrorMessage,
+    FirmwareUpdateManagerTest_FailedInstallWithErrorMessage,
     ::testing::Values(
-        FailedMethodWithErrorParam(kFwupdErrorName_Internal,
-                                   MethodResult::kInternalError),
-        FailedMethodWithErrorParam(kFwupdErrorName_VersionNewer,
-                                   MethodResult::kVersionNewerError),
-        FailedMethodWithErrorParam(kFwupdErrorName_VersionSame,
-                                   MethodResult::kVersionSameError),
-        FailedMethodWithErrorParam(kFwupdErrorName_AlreadyPending,
-                                   MethodResult::kAlreadyPendingError),
-        FailedMethodWithErrorParam(kFwupdErrorName_AuthFailed,
-                                   MethodResult::kAuthFailedError),
-        FailedMethodWithErrorParam(kFwupdErrorName_Read,
-                                   MethodResult::kReadError),
-        FailedMethodWithErrorParam(kFwupdErrorName_Write,
-                                   MethodResult::kWriteError),
-        FailedMethodWithErrorParam(kFwupdErrorName_InvalidFile,
-                                   MethodResult::kInvalidFileError),
-        FailedMethodWithErrorParam(kFwupdErrorName_NotFound,
-                                   MethodResult::kNotFoundError),
-        FailedMethodWithErrorParam(kFwupdErrorName_NothingToDo,
-                                   MethodResult::kNothingToDoError),
-        FailedMethodWithErrorParam(kFwupdErrorName_NotSupported,
-                                   MethodResult::kNotSupportedError),
-        FailedMethodWithErrorParam(kFwupdErrorName_SignatureInvalid,
-                                   MethodResult::kSignatureInvalidError),
-        FailedMethodWithErrorParam(kFwupdErrorName_AcPowerRequired,
-                                   MethodResult::kAcPowerRequiredError),
-        FailedMethodWithErrorParam(kFwupdErrorName_PermissionDenied,
-                                   MethodResult::kPermissionDeniedError),
-        FailedMethodWithErrorParam(kFwupdErrorName_BrokenSystem,
-                                   MethodResult::kBrokenSystemError),
-        FailedMethodWithErrorParam(kFwupdErrorName_BatteryLevelTooLow,
-                                   MethodResult::kBatteryLevelTooLowError),
-        FailedMethodWithErrorParam(kFwupdErrorName_NeedsUserAction,
-                                   MethodResult::kNeedsUserActionError),
-        FailedMethodWithErrorParam(kFwupdErrorName_AuthExpired,
-                                   MethodResult::kAuthExpiredError),
-        FailedMethodWithErrorParam("Random Error", MethodResult::kUnknownError),
-        FailedMethodWithErrorParam("Random Error 2",
-                                   MethodResult::kUnknownError)));
+        FailedInstallWithErrorParam(kFwupdErrorName_Internal,
+                                    MethodResult::kInternalError),
+        FailedInstallWithErrorParam(kFwupdErrorName_VersionNewer,
+                                    MethodResult::kVersionNewerError),
+        FailedInstallWithErrorParam(kFwupdErrorName_VersionSame,
+                                    MethodResult::kVersionSameError),
+        FailedInstallWithErrorParam(kFwupdErrorName_AlreadyPending,
+                                    MethodResult::kAlreadyPendingError),
+        FailedInstallWithErrorParam(kFwupdErrorName_AuthFailed,
+                                    MethodResult::kAuthFailedError),
+        FailedInstallWithErrorParam(kFwupdErrorName_Read,
+                                    MethodResult::kReadError),
+        FailedInstallWithErrorParam(kFwupdErrorName_Write,
+                                    MethodResult::kWriteError),
+        FailedInstallWithErrorParam(kFwupdErrorName_InvalidFile,
+                                    MethodResult::kInvalidFileError),
+        FailedInstallWithErrorParam(kFwupdErrorName_NotFound,
+                                    MethodResult::kNotFoundError),
+        FailedInstallWithErrorParam(kFwupdErrorName_NothingToDo,
+                                    MethodResult::kNothingToDoError),
+        FailedInstallWithErrorParam(kFwupdErrorName_NotSupported,
+                                    MethodResult::kNotSupportedError),
+        FailedInstallWithErrorParam(kFwupdErrorName_SignatureInvalid,
+                                    MethodResult::kSignatureInvalidError),
+        FailedInstallWithErrorParam(kFwupdErrorName_AcPowerRequired,
+                                    MethodResult::kAcPowerRequiredError),
+        FailedInstallWithErrorParam(kFwupdErrorName_PermissionDenied,
+                                    MethodResult::kPermissionDeniedError),
+        FailedInstallWithErrorParam(kFwupdErrorName_BrokenSystem,
+                                    MethodResult::kBrokenSystemError),
+        FailedInstallWithErrorParam(kFwupdErrorName_BatteryLevelTooLow,
+                                    MethodResult::kBatteryLevelTooLowError),
+        FailedInstallWithErrorParam(kFwupdErrorName_NeedsUserAction,
+                                    MethodResult::kNeedsUserActionError),
+        FailedInstallWithErrorParam(kFwupdErrorName_AuthExpired,
+                                    MethodResult::kAuthExpiredError),
+        FailedInstallWithErrorParam("Random Error",
+                                    MethodResult::kUnknownError),
+        FailedInstallWithErrorParam("Random Error 2",
+                                    MethodResult::kUnknownError)));
 
-TEST_P(FirmwareUpdateManagerTest_FailedMethodWithErrorMessage,
+TEST_P(FirmwareUpdateManagerTest_FailedInstallWithErrorMessage,
        FailedInstall_WithErrorMessage) {
   base::HistogramTester histogram_tester;
 
@@ -972,7 +865,6 @@ TEST_P(FirmwareUpdateManagerTest_FailedMethodWithErrorMessage,
   // InstallUpdate failed response.
   dbus_responses_.push_back(CreateErrorResponseWithName(GetParam().error_name));
   // For RequestAllUpdates() call after install completes.
-  PrepareForRefreshRemote();
   CreateOneDeviceAndUpdateResponse();
 
   FakeUpdateObserver update_observer;
@@ -1000,27 +892,6 @@ TEST_P(FirmwareUpdateManagerTest_FailedMethodWithErrorMessage,
                                       GetParam().install_result, 1);
 }
 
-TEST_P(FirmwareUpdateManagerTest_FailedMethodWithErrorMessage,
-       FailedRefreshRemote_WithErrorMessage) {
-  base::HistogramTester histogram_tester;
-
-  // Clear default "empty" dbus response expected from RefreshRemote in SetUp()
-  dbus_responses_.clear();
-  // Set RefreshRemote failed response.
-  dbus_responses_.push_back(CreateErrorResponseWithName(GetParam().error_name));
-  // Provide one device and update for RequestUpdates() call from SetupObserver.
-  CreateOneDeviceAndUpdateResponse();
-
-  FakeUpdateObserver update_observer;
-  SetupObserver(&update_observer);
-  // RequestAllUpdates is called even after RefreshRemote failed with error
-  ASSERT_EQ(1, update_observer.num_times_notified());
-
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.FirmwareUpdateUi.RefreshRemoteResult",
-      GetParam().install_result, 1);
-}
-
 TEST_F(FirmwareUpdateManagerTest, BeginUpdateLocalPatch) {
   base::HistogramTester histogram_tester;
 
@@ -1029,7 +900,6 @@ TEST_F(FirmwareUpdateManagerTest, BeginUpdateLocalPatch) {
   // InstallUpdate success response.
   dbus_responses_.push_back(dbus::ErrorResponse::CreateEmpty());
   // For RequestAllUpdates() call after install completes.
-  PrepareForRefreshRemote();
   CreateOneDeviceAndUpdateResponse();
 
   FakeUpdateObserver update_observer;
@@ -1067,7 +937,6 @@ TEST_F(FirmwareUpdateManagerTest, BeginUpdateInvalidFile) {
   // InstallUpdateResponse.
   dbus_responses_.push_back(dbus::Response::CreateEmpty());
   // For RequestAllUpdates() call after install completes.
-  PrepareForRefreshRemote();
   CreateOneDeviceAndUpdateResponse();
 
   FakeUpdateObserver update_observer;
@@ -1517,102 +1386,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestSucceededWithDurationMetric) {
   // recorded again.
   histogram_tester.ExpectTimeBucketCount(request_success_metric_name,
                                          base::Minutes(5), 1);
-}
-
-TEST_F(FirmwareUpdateManagerTest, RefreshRemoteMeteredConnectionFromUI) {
-  base::HistogramTester histogram_tester;
-
-  // Provide one device and one update for RequestUpdates() call from
-  // SetupObserver.
-  CreateOneDeviceAndUpdateResponse();
-
-  // Set connection to cellular (metered)
-  SetCellularService();
-
-  FakeUpdateObserver update_observer;
-  SetupObserver(&update_observer);
-  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
-      update_observer.updates();
-
-  // Verify updates were caught even though RefreshRemote ran
-  ASSERT_EQ(1U, updates.size());
-  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
-
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.RefreshRemoteResult", MethodResult::kSuccess,
-      1);
-}
-
-TEST_F(FirmwareUpdateManagerTest,
-       RefreshRemoteMeteredConnectionFromOtherSource) {
-  base::HistogramTester histogram_tester;
-
-  // Clear default empty dbus response expected from RefreshRemote in SetUp()
-  dbus_responses_.clear();
-  // Provide one device for RequestUpdates() call twice
-  CreateOneDeviceAndUpdateResponse();
-
-  // Set connection to cellular (metered)
-  SetCellularService();
-
-  RequestAllUpdatesFromSource(FirmwareUpdateManager::Source::kStartup);
-  task_environment_.RunUntilIdle();
-  // Verify updates were caught even though RefreshRemote was skipped
-  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
-
-  CreateOneDeviceAndUpdateResponse();
-  RequestAllUpdatesFromSource(FirmwareUpdateManager::Source::kUSBChange);
-  task_environment_.RunUntilIdle();
-  ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
-
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.FirmwareUpdateUi.RefreshRemoteResult", 0);
-}
-
-TEST_F(FirmwareUpdateManagerTest, RefreshRemoteIncorrectJsonKey) {
-  base::HistogramTester histogram_tester;
-
-  dbus_responses_.clear();
-  PrepareForIncorrectKeyJsonRefreshRemote();
-  // Provide one device and one update for RequestUpdates() call from
-  // SetupObserver.
-  CreateOneDeviceAndUpdateResponse();
-
-  FakeUpdateObserver update_observer;
-  SetupObserver(&update_observer);
-  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
-      update_observer.updates();
-
-  // Verify updates were caught even though RefreshRemote got an error
-  ASSERT_EQ(1U, updates.size());
-  ASSERT_EQ(1, update_observer.num_times_notified());
-
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.RefreshRemoteResult",
-      MethodResult::kFailedToGetFirmwareFilename, 1);
-}
-
-TEST_F(FirmwareUpdateManagerTest, RefreshRemoteIncorrectChecksumFormat) {
-  base::HistogramTester histogram_tester;
-
-  dbus_responses_.clear();
-  PrepareForIncorrectFormatRefreshRemote();
-  // Provide one device and one update for RequestUpdates() call from
-  // SetupObserver.
-  CreateOneDeviceAndUpdateResponse();
-
-  FakeUpdateObserver update_observer;
-  SetupObserver(&update_observer);
-  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
-      update_observer.updates();
-
-  // Verify updates were caught even though RefreshRemote got an error
-  ASSERT_EQ(1U, updates.size());
-  ASSERT_EQ(1, update_observer.num_times_notified());
-
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.RefreshRemoteResult",
-      MethodResult::kFailedToGetFirmwareFilename, 1);
 }
 
 }  // namespace ash
