@@ -90,7 +90,7 @@ FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
                                                 const url::Origin& idp_origin);
 
 // Returns the eTLD+1 for a given url. For localhost, returns the host.
-std::string FormatUrlWithDomain(const GURL& url, bool for_display);
+std::string FormatUrlForDisplay(const GURL& url);
 
 // Returns true if the user has used FedCM to login to the RP via the IdP
 // account or if the IdP has third party cookies access. For the former, if

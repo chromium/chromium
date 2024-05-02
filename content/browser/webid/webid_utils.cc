@@ -391,7 +391,7 @@ FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
   return GetFedCmIdpSigninStatusFlag();
 }
 
-std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
+std::string FormatUrlForDisplay(const GURL& url) {
   // We do not use url_formatter::FormatUrlForSecurityDisplay() directly because
   // our UI intentionally shows only the eTLD+1, as it makes for a shorter text
   // that is also clearer to users. The identity provider's well-known file is
@@ -402,20 +402,9 @@ std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
           ? url.host()
           : net::registry_controlled_domains::GetDomainAndRegistry(
                 url, kDefaultPrivateRegistryFilter);
-  if (for_display) {
-    return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
-        GURL(url.scheme() + "://" + formatted_url_str),
-        url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-  }
-  // We want defaults but we need to keep the scheme.
-  url_formatter::FormatUrlTypes types =
-      url_formatter::kFormatUrlOmitDefaults &
-      ~(url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS |
-        url_formatter::kFormatUrlOmitFileScheme);
-  std::string out = base::UTF16ToUTF8(url_formatter::FormatUrl(
-      GURL(url.scheme() + "://" + formatted_url_str), types,
-      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-  return out;
+  return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+      GURL(url.scheme() + "://" + formatted_url_str),
+      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
 }
 
 bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(

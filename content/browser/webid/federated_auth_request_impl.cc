@@ -328,8 +328,7 @@ base::TimeDelta GetRandomRejectionTime() {
 }
 
 std::string FormatOriginForDisplay(const url::Origin& origin) {
-  return webid::FormatUrlWithDomain(origin.GetURL(),
-                                    /*for_display=*/true);
+  return webid::FormatUrlForDisplay(origin.GetURL());
 }
 
 FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
@@ -1432,7 +1431,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
   bool request_permission = ShouldMediateAuthzFor(*idp_info->provider);
 
   const std::string idp_for_display =
-      webid::FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
+      webid::FormatUrlForDisplay(idp_config_url);
   idp_info->data = IdentityProviderData(
       idp_for_display, accounts, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
@@ -1807,7 +1806,7 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
   fetch_data_.pending_idps.erase(idp_config_url);
 
   const std::string idp_for_display =
-      webid::FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
+      webid::FormatUrlForDisplay(idp_config_url);
   idp_info->data = IdentityProviderData(
       idp_for_display, std::vector<IdentityRequestAccount>(),
       idp_info->metadata, ClientMetadata{GURL(), GURL(), GURL()},
