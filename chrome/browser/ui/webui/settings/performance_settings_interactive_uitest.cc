@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest, MemorySaverPrefChanged) {
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
-      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabledOnTimer));
+      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled));
 }
 
 IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsInteractiveTest,
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage,
                                kMemorySaverToggleQuery, true),
-      CheckMemorySaverModeLogged(MemorySaverModeState::kEnabledOnTimer, 1,
+      CheckMemorySaverModeLogged(MemorySaverModeState::kEnabled, 1,
                                  histogram_tester));
 }
 
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(MemorySaverSettingsMultiStateModeInteractiveTest,
       ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
                                true),
-      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabledOnTimer),
+      CheckMemorySaverModePrefState(MemorySaverModeState::kEnabled),
 
       // Turn off memory saver mode
       ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
@@ -331,94 +331,19 @@ IN_PROC_BROWSER_TEST_F(MemorySaverSettingsMultiStateModeInteractiveTest,
       WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
                                          iron_collapse),
 
-      // Change memory saver setting to discard tabs based on timer
-      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
-                               true),
-      CheckMemorySaverModeLogged(MemorySaverModeState::kEnabledOnTimer, 1,
-                                 histogram_tester),
-
       // Change memory saver setting to discard tabs based on usage
       ClickElement(kPerformanceSettingsPage, kDiscardOnUsageQuery),
       WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
                                true),
+      CheckMemorySaverModeLogged(MemorySaverModeState::kDeprecated, 1,
+                                 histogram_tester),
+
+      // Change memory saver setting to discard tabs based on timer
+      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
+      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
+                               true),
       CheckMemorySaverModeLogged(MemorySaverModeState::kEnabled, 2,
                                  histogram_tester));
-}
-
-// Checks that the selected discard timer value is preserved as the high
-// efficiency mode gets toggled
-IN_PROC_BROWSER_TEST_F(MemorySaverSettingsMultiStateModeInteractiveTest,
-                       DiscardTimerStateIsPreserved) {
-  const DeepQuery discard_time_menu = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-performance-page",
-      "settings-dropdown-menu#discardTimeDropdown"};
-
-  const DeepQuery discard_time_drop_down = {
-      "settings-ui",
-      "settings-main",
-      "settings-basic-page",
-      "settings-performance-page",
-      "settings-dropdown-menu#discardTimeDropdown",
-      "select#dropdownMenu"};
-
-  const DeepQuery iron_collapse = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-performance-page", "iron-collapse#radioGroupCollapse"};
-
-  const std::string discard_timer_value = "5";
-
-  RunTestSequence(
-      InstrumentTab(kPerformanceSettingsPage),
-      NavigateWebContents(
-          kPerformanceSettingsPage,
-          GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))),
-      WaitForElementToRender(kPerformanceSettingsPage, kMemorySaverToggleQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage,
-                               kMemorySaverToggleQuery, true),
-
-      // Select discard on timer option
-      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
-                               true),
-      WaitForDisabledStateChange(kPerformanceSettingsPage,
-                                 discard_time_drop_down, false),
-
-      // Change the selected timer value
-      ExecuteJsAt(
-          kPerformanceSettingsPage, discard_time_drop_down,
-          base::ReplaceStringPlaceholders("(el) => { el.value = $1}",
-                                          {discard_timer_value}, nullptr)),
-
-      // Turn off memory saver mode
-      ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage,
-                               kMemorySaverToggleQuery, false),
-      // Turn memory saver mode back on
-      ClickElement(kPerformanceSettingsPage, kMemorySaverToggleQuery),
-      WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
-                                         iron_collapse),
-      CheckJsResultAt(kPerformanceSettingsPage, discard_time_drop_down,
-                      "(el) => el.value", discard_timer_value),
-      WaitForDisabledStateChange(kPerformanceSettingsPage, discard_time_menu,
-                                 true),
-      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
-                               true),
-
-      // Change discard settings to discard tabs based on timer
-      ClickElement(kPerformanceSettingsPage, kDiscardOnTimerQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnTimerQuery,
-                               true),
-      CheckJsResultAt(kPerformanceSettingsPage, discard_time_drop_down,
-                      "(el) => el.value", discard_timer_value),
-
-      // Change discard settings to discard tabs based on usage
-      ClickElement(kPerformanceSettingsPage, kDiscardOnUsageQuery),
-      WaitForButtonStateChange(kPerformanceSettingsPage, kDiscardOnUsageQuery,
-                               true),
-      CheckJsResultAt(kPerformanceSettingsPage, discard_time_drop_down,
-                      "(el) => el.value", discard_timer_value));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

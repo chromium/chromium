@@ -7,10 +7,9 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrIconButtonElement, IronCollapseElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsDropdownMenuElement, SettingsPerformancePageElement} from 'chrome://settings/settings.js';
+import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement} from 'chrome://settings/settings.js';
 import {convertDateToWindowsEpoch, MEMORY_SAVER_MODE_PREF, MemorySaverModeExceptionListAction, MemorySaverModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
@@ -73,7 +72,7 @@ suite('PerformancePage', function() {
 
   test('testMemorySaverModeEnabled', function() {
     performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED_ON_TIMER);
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
     assertTrue(performancePage.$.toggleButton.checked);
   });
 
@@ -90,10 +89,10 @@ suite('PerformancePage', function() {
     performancePage.$.toggleButton.click();
     let state = await performanceMetricsProxy.whenCalled(
         'recordMemorySaverModeChanged');
-    assertEquals(state, MemorySaverModeState.ENABLED_ON_TIMER);
+    assertEquals(state, MemorySaverModeState.ENABLED);
     assertEquals(
         performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
-        MemorySaverModeState.ENABLED_ON_TIMER);
+        MemorySaverModeState.ENABLED);
 
     performanceMetricsProxy.reset();
     performancePage.$.toggleButton.click();
@@ -109,13 +108,9 @@ suite('PerformancePage', function() {
 suite('PerformancePageMultistate', function() {
   let performancePage: SettingsPerformancePageElement;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
-  let enabledOnTimerButton: HTMLElement;
+  let enabledHeurusticButton: HTMLElement;
   let radioGroup: SettingsRadioGroupElement;
   let radioGroupCollapse: IronCollapseElement;
-  let discardTimeDropdown: SettingsDropdownMenuElement;
-
-  const DISCARD_TIME_PREF =
-      'performance_tuning.high_efficiency_mode.time_before_discard_in_minutes';
 
   /**
    * Used to get elements form the performance page that may or may not exist,
@@ -146,10 +141,10 @@ suite('PerformancePageMultistate', function() {
     document.body.appendChild(performancePage);
     flush();
 
-    enabledOnTimerButton = getPerformancePageElement('enabledOnTimerButton');
+    enabledHeurusticButton =
+        getPerformancePageElement('enabledHeurusticButton');
     radioGroup = getPerformancePageElement('radioGroup');
     radioGroupCollapse = getPerformancePageElement('radioGroupCollapse');
-    discardTimeDropdown = getPerformancePageElement('discardTimeDropdown');
   });
 
   test('testMemorySaverModeDisabled', function() {
@@ -157,47 +152,22 @@ suite('PerformancePageMultistate', function() {
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DISABLED);
     assertFalse(performancePage.$.toggleButton.checked);
     assertFalse(radioGroupCollapse.opened);
-    assertTrue(discardTimeDropdown.disabled);
   });
 
   test('testMemorySaverModeEnabled', function() {
+    performancePage.setPrefValue(
+        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.DEPRECATED);
+    assertTrue(performancePage.$.toggleButton.checked);
+    assertTrue(radioGroupCollapse.opened);
+    assertEquals(String(MemorySaverModeState.DEPRECATED), radioGroup.selected);
+  });
+
+  test('testMemorySaverModeEnabledOnTimer', function() {
     performancePage.setPrefValue(
         MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED);
     assertTrue(performancePage.$.toggleButton.checked);
     assertTrue(radioGroupCollapse.opened);
     assertEquals(String(MemorySaverModeState.ENABLED), radioGroup.selected);
-    assertTrue(discardTimeDropdown.disabled);
-  });
-
-  test('testMemorySaverModeEnabledOnTimer', function() {
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED_ON_TIMER);
-    assertTrue(performancePage.$.toggleButton.checked);
-    assertTrue(radioGroupCollapse.opened);
-    assertEquals(
-        String(MemorySaverModeState.ENABLED_ON_TIMER), radioGroup.selected);
-    assertFalse(discardTimeDropdown.disabled);
-  });
-
-  test('testMemorySaverModeDiscardTime', async function() {
-    performancePage.setPrefValue(
-        MEMORY_SAVER_MODE_PREF, MemorySaverModeState.ENABLED_ON_TIMER);
-    performancePage.setPrefValue(DISCARD_TIME_PREF, 120);
-    // Need to wait for dropdown menu to update its selection using a microtask
-    await flushTasks();
-    assertTrue(!!discardTimeDropdown.$.dropdownMenu.options[4]);
-    assertTrue(discardTimeDropdown.$.dropdownMenu.options[4].selected);
-    assertEquals(
-        performancePage.getPref(DISCARD_TIME_PREF).value,
-        Number(discardTimeDropdown.$.dropdownMenu.value));
-
-    assertTrue(!!discardTimeDropdown.$.dropdownMenu.options[3]);
-    const newDiscardTime = discardTimeDropdown.$.dropdownMenu.options[3].value;
-    discardTimeDropdown.$.dropdownMenu.options[3].selected = true;
-    discardTimeDropdown.$.dropdownMenu.dispatchEvent(new CustomEvent('change'));
-    assertEquals(
-        Number(newDiscardTime),
-        performancePage.getPref(DISCARD_TIME_PREF).value);
   });
 
   test('testMemorySaverModeChangeState', async function() {
@@ -213,13 +183,13 @@ suite('PerformancePageMultistate', function() {
         MemorySaverModeState.ENABLED);
 
     performanceMetricsProxy.reset();
-    enabledOnTimerButton.click();
+    enabledHeurusticButton.click();
     state = await performanceMetricsProxy.whenCalled(
         'recordMemorySaverModeChanged');
-    assertEquals(state, MemorySaverModeState.ENABLED_ON_TIMER);
+    assertEquals(state, MemorySaverModeState.DEPRECATED);
     assertEquals(
         performancePage.getPref(MEMORY_SAVER_MODE_PREF).value,
-        MemorySaverModeState.ENABLED_ON_TIMER);
+        MemorySaverModeState.DEPRECATED);
 
     performanceMetricsProxy.reset();
     performancePage.$.toggleButton.click();

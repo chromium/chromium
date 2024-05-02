@@ -30,7 +30,7 @@ void MemorySaverPolicyHandler::ApplyPolicySettings(
   }
 
   MemorySaverModeState state = value->GetBool()
-                                   ? MemorySaverModeState::kEnabledOnTimer
+                                   ? MemorySaverModeState::kEnabled
                                    : MemorySaverModeState::kDisabled;
 
   prefs->SetValue(kMemorySaverModeState, base::Value(static_cast<int>(state)));

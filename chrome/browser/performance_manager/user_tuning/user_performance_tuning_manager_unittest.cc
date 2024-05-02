@@ -114,11 +114,7 @@ INSTANTIATE_TEST_SUITE_P(
         },
         PrefTestParams{
             .pref_state = MemorySaverModeState::kEnabled,
-            .expected_state = MemorySaverModeState::kEnabledOnTimer,
-        },
-        PrefTestParams{
-            .pref_state = MemorySaverModeState::kEnabledOnTimer,
-            .expected_state = MemorySaverModeState::kEnabledOnTimer,
+            .expected_state = MemorySaverModeState::kEnabled,
         }));
 
 TEST_P(UserPerformanceTuningManagerTest, OnPrefChanged) {

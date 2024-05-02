@@ -26,8 +26,10 @@ inline constexpr char kMemorySaverModeEnabled[] =
 
 enum class MemorySaverModeState {
   kDisabled = 0,
-  kEnabled = 1,
-  kEnabledOnTimer = 2,
+  // This option is now deprecated. It was only ever available behind an
+  // unlaunched experiment.
+  kDeprecated = 1,
+  kEnabled = 2,
 };
 
 inline constexpr char kMemorySaverModeState[] =
@@ -84,6 +86,12 @@ BatterySaverModeState GetCurrentBatterySaverModeState(
 // integer one that represents a value of the `MemorySaverModeState` enum. This
 // is done once at startup.
 void MigrateMemorySaverModePref(PrefService* pref_service);
+
+// This function migrates the kDeprecated state to kEnabled. During previous
+// experimentation, this state represented an option to use a heuristic version
+// of Memory Saver. But this mode got migrated in to what is now called
+// KEnabled.
+void MigrateMultiStateMemorySaverModePref(PrefService* pref_service);
 
 // This function migrates the old, list tab discarding exceptions preference to
 // the new, dictionary one that includes the time of the last edit of the

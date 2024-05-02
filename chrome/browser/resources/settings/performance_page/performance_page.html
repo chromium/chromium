@@ -36,8 +36,7 @@
     sub-label="$i18n{memorySaverModeDescription}"
     learn-more-url="$i18n{memorySaverLearnMoreUrl}"
     numeric-unchecked-values="[[numericUncheckedValues_]]"
-    numeric-checked-value="[[toggleButtonCheckedValue_(
-        isMemorySaverMultistateModeEnabled_)]]">
+    numeric-checked-value="[[numericCheckedValue_]]">
 </settings-toggle-button>
 <template is="dom-if" if="[[isMemorySaverMultistateModeEnabled_]]">
   <iron-collapse id="radioGroupCollapse"
@@ -47,28 +46,15 @@
       <settings-radio-group id="radioGroup" on-change="onChange_"
           pref="{{prefs.performance_tuning.high_efficiency_mode.state}}"
           group-aria-label="$i18n{memorySaverModeRadioGroupAriaLabel}">
-        <controlled-radio-button
+        <controlled-radio-button id="enabledHeurusticButton"
             label="$i18n{memorySaverModeHeuristicsLabel}"
-            name="[[memorySaverModeStateEnum_.ENABLED]]"
+            name="[[memorySaverModeStateEnum_.DEPRECATED]]"
             pref="[[prefs.performance_tuning.high_efficiency_mode.state]]">
-          <div class="badge"
-              hidden$="[[!showMemorySaverHeuristicModeRecommendedBadge_]]">
-            $i18n{memorySaverModeRecommendedBadge}
-          </div>
         </controlled-radio-button>
         <controlled-radio-button id="enabledOnTimerButton"
             label="$i18n{memorySaverModeOnTimerLabel}"
-            name="[[memorySaverModeStateEnum_.ENABLED_ON_TIMER]]"
-            pref="[[prefs.performance_tuning.high_efficiency_mode.state]]"
-            exportparts="labelWrapper">
-          <settings-dropdown-menu id="discardTimeDropdown"
-              label="$i18n{memorySaverChooseDiscardTimeAriaLabel}"
-              disabled="[[!isMemorySaverModeEnabledOnTimer_(
-                  prefs.performance_tuning.high_efficiency_mode.state.value)]]"
-              pref="{{prefs.performance_tuning.high_efficiency_mode.time_before_discard_in_minutes}}"
-              menu-options="[[discardTimerOptions_]]"
-              on-click="onDropdownClick_">
-          </settings-dropdown-menu>
+            name="[[memorySaverModeStateEnum_.ENABLED]]"
+            pref="[[prefs.performance_tuning.high_efficiency_mode.state]]">
         </controlled-radio-button>
       </settings-radio-group>
     </div>

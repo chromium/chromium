@@ -23,7 +23,7 @@ class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
     local_state()->SetInteger(
         performance_manager::user_tuning::prefs::kMemorySaverModeState,
         static_cast<int>(enabled ? performance_manager::user_tuning::prefs::
-                                       MemorySaverModeState::kEnabledOnTimer
+                                       MemorySaverModeState::kEnabled
                                  : performance_manager::user_tuning::prefs::
                                        MemorySaverModeState::kDisabled));
   }

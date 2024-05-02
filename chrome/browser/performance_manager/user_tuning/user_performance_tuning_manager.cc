@@ -60,11 +60,9 @@ class MemorySaverModeDelegateImpl
                   memory_saver_mode_policy->OnMemorySaverModeChanged(false);
                   return;
                 case MemorySaverModeState::kEnabled:
-                  // TODO(crbug.com/40936185): This setting should enable the
-                  // non-timer Memory Saver policy.
-                  memory_saver_mode_policy->OnMemorySaverModeChanged(false);
-                  return;
-                case MemorySaverModeState::kEnabledOnTimer:
+                // The kDeprecated setting is being migrated to kEnabled so
+                // treat them the same.
+                case MemorySaverModeState::kDeprecated:
                   memory_saver_mode_policy->OnMemorySaverModeChanged(true);
                   return;
               }
@@ -149,7 +147,7 @@ bool UserPerformanceTuningManager::IsMemorySaverModeDefault() const {
 }
 
 void UserPerformanceTuningManager::SetMemorySaverModeEnabled(bool enabled) {
-  MemorySaverModeState state = enabled ? MemorySaverModeState::kEnabledOnTimer
+  MemorySaverModeState state = enabled ? MemorySaverModeState::kEnabled
                                        : MemorySaverModeState::kDisabled;
   pref_change_registrar_.prefs()->SetInteger(kMemorySaverModeState,
                                              static_cast<int>(state));
@@ -232,7 +230,7 @@ void UserPerformanceTuningManager::UpdateMemorySaverModeState() {
       // The user has enabled memory saver mode, but without the multistate
       // UI they didn't choose a policy. The feature controls which policy to
       // use.
-      state = MemorySaverModeState::kEnabledOnTimer;
+      state = MemorySaverModeState::kEnabled;
     }
   }
   memory_saver_mode_delegate_->ToggleMemorySaverMode(state);
