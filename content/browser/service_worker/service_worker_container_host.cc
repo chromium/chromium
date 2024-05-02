@@ -346,8 +346,9 @@ void ServiceWorkerContainerHostForClient::Register(
 
   // Registrations could come from different origins when "disable-web-security"
   // is active, we need to make sure we get the correct key.
-  const blink::StorageKey& key =
-      GetCorrectStorageKeyForWebSecurityState(options->scope);
+  const blink::StorageKey key =
+      service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState(
+          key_, options->scope);
 
   context_->RegisterServiceWorker(
       script_url, key, *options,
@@ -390,8 +391,9 @@ void ServiceWorkerContainerHostForClient::GetRegistration(
 
   // The client_url may be cross-origin if "disable-web-security" is active,
   // make sure we get the correct key.
-  const blink::StorageKey& key =
-      GetCorrectStorageKeyForWebSecurityState(client_url);
+  const blink::StorageKey key =
+      service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState(
+          key_, client_url);
 
   context_->registry()->FindRegistrationForClientUrl(
       ServiceWorkerRegistry::Purpose::kNotForNavigation, client_url, key,
@@ -1981,19 +1983,6 @@ bool ServiceWorkerContainerHostForClient::CanServeContainerHostMethods(
   }
 
   return true;
-}
-
-blink::StorageKey
-ServiceWorkerContainerHost::GetCorrectStorageKeyForWebSecurityState(
-    const GURL& url) const {
-  if (service_worker_security_utils::IsWebSecurityDisabled()) {
-    url::Origin other_origin = url::Origin::Create(url);
-
-    if (key_.origin() != other_origin)
-      return blink::StorageKey::CreateFirstParty(other_origin);
-  }
-
-  return key_;
 }
 
 const GURL& ServiceWorkerContainerHost::GetUrlForScopeMatch() const {

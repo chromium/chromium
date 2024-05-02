@@ -23,6 +23,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -376,8 +377,10 @@ void DidGetExecutionReadyClient(
 
   // In a scenario where "--disable-web-security" is specified the |script_url|
   // may be cross-origin
-  CHECK_EQ(container_host->GetCorrectStorageKeyForWebSecurityState(script_url),
-           key);
+  CHECK_EQ(
+      service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState(
+          container_host->key(), script_url),
+      key);
 
   blink::mojom::ServiceWorkerClientInfoPtr info = GetWindowClientInfo(
       container_host->GetRenderFrameHostId(), container_host->create_time(),

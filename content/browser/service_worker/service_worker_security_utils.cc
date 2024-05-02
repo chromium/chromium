@@ -75,5 +75,19 @@ void CheckOnUpdateUrls(const GURL& url, const blink::StorageKey& key) {
 #endif
 }
 
+blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
+    const blink::StorageKey& key,
+    const GURL& url) {
+  if (IsWebSecurityDisabled()) {
+    url::Origin other_origin = url::Origin::Create(url);
+
+    if (key.origin() != other_origin) {
+      return blink::StorageKey::CreateFirstParty(other_origin);
+    }
+  }
+
+  return key;
+}
+
 }  // namespace service_worker_security_utils
 }  // namespace content

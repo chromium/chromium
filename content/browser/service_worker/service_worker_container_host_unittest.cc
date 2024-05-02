@@ -25,6 +25,7 @@
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_registration.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_navigation_policy.h"
@@ -325,7 +326,8 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
       ServiceWorkerContainerHost* container_host,
       const GURL& url) const {
-    return container_host->GetCorrectStorageKeyForWebSecurityState(url);
+    return service_worker_security_utils::
+        GetCorrectStorageKeyForWebSecurityState(container_host->key(), url);
   }
 
   void TestReservedClientsAreNotExposed(ServiceWorkerClientInfo client_info,

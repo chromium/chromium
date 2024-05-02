@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -34,6 +35,17 @@ CONTENT_EXPORT bool IsWebSecurityDisabled();
 // Check origins etc. on setting URLs.
 CONTENT_EXPORT void CheckOnUpdateUrls(const GURL& url,
                                       const blink::StorageKey& key);
+
+// This function returns the correct StorageKey depending on the state of the
+// "disable-web-security" flag.
+//
+// If web security is disabled then it's possible for the `url` to be
+// cross-origin from `this`'s origin. In that case we need to make a new key
+// with the `url`'s origin, otherwise we might access the wrong storage
+// partition.
+CONTENT_EXPORT blink::StorageKey GetCorrectStorageKeyForWebSecurityState(
+    const blink::StorageKey& key,
+    const GURL& url);
 
 }  // namespace service_worker_security_utils
 }  // namespace content
