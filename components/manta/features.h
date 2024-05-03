@@ -24,6 +24,8 @@ COMPONENT_EXPORT(MANTA) bool IsOrcaUseProdServerEnabled();
 
 COMPONENT_EXPORT(MANTA) bool IsSeaPenUseProdServerEnabled();
 
+COMPONENT_EXPORT(MANTA) bool IsMahiUseProdServerEnabled();
+
 }  // namespace manta::features
 
 #endif  // COMPONENTS_MANTA_FEATURES_H_

@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/base_provider.h"
+#include "components/manta/features.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
@@ -94,11 +95,12 @@ void MahiProvider::Summarize(const std::string& input,
 
   // TODO(b:333459933): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
-  RequestInternal(GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
-                  MISSING_TRAFFIC_ANNOTATION, request,
-                  MantaMetricType::kMahiSummary,
-                  base::BindOnce(&OnServerResponseOrErrorReceived,
-                                 std::move(done_callback)));
+  RequestInternal(
+      GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
+      kOauthConsumerName, MISSING_TRAFFIC_ANNOTATION, request,
+      MantaMetricType::kMahiSummary,
+      base::BindOnce(&OnServerResponseOrErrorReceived,
+                     std::move(done_callback)));
 }
 
 void MahiProvider::Outline(const std::string& input,
@@ -135,10 +137,12 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
 
   // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
-  RequestInternal(GURL{GetProviderEndpoint(false)}, kOauthConsumerName,
-                  MISSING_TRAFFIC_ANNOTATION, request, MantaMetricType::kMahiQA,
-                  base::BindOnce(&OnServerResponseOrErrorReceived,
-                                 std::move(done_callback)));
+  RequestInternal(
+      GURL{GetProviderEndpoint(features::IsMahiUseProdServerEnabled())},
+      kOauthConsumerName, MISSING_TRAFFIC_ANNOTATION, request,
+      MantaMetricType::kMahiQA,
+      base::BindOnce(&OnServerResponseOrErrorReceived,
+                     std::move(done_callback)));
 }
 
 }  // namespace manta
