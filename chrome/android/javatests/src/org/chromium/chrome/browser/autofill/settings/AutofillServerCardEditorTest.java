@@ -54,7 +54,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
@@ -82,7 +81,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for AutofillServerCardEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 public class AutofillServerCardEditorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mMocker = new JniMocker();
@@ -259,7 +257,6 @@ public class AutofillServerCardEditorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/329593484")
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentSuccessful()
                     throws Exception {
@@ -381,7 +378,6 @@ public class AutofillServerCardEditorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/329593484")
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentFailure()
                     throws Exception {
@@ -470,7 +466,6 @@ public class AutofillServerCardEditorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/329593484")
     public void virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollRejected()
             throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
