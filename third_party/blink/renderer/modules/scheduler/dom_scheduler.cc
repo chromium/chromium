@@ -122,32 +122,39 @@ ScriptPromise<IDLUndefined> DOMScheduler::yield(
                                   fixed_priority_continuation_queues_);
   }
 
-  // Abort and priority can be inherited together or separately. Abort
-  // inheritance only depends on the signal option. Signal inheritance implies
-  // priority inheritance, but can be overridden by specifying a fixed
-  // priority.
   absl::variant<AbortSignal*, InheritOption> signal_option(nullptr);
-  if (options->hasSignal()) {
-    if (options->signal()->IsSchedulerSignalInherit()) {
-      // {signal: "inherit"}
-      signal_option = InheritOption::kInherit;
-    } else {
-      // {signal: signalObject}
-      signal_option = options->signal()->GetAsAbortSignal();
-    }
-  }
-
   absl::variant<AtomicString, InheritOption> priority_option(g_null_atom);
-  if ((options->hasPriority() && options->priority() == "inherit")) {
-    // {priority: "inherit"}
+  // If neither the signal option nor priority option was given, inherit by
+  // default.
+  if (!options->hasSignal() && !options->hasPriority()) {
+    signal_option = InheritOption::kInherit;
     priority_option = InheritOption::kInherit;
-  } else if (!options->hasPriority() &&
-             absl::holds_alternative<InheritOption>(signal_option)) {
-    // {signal: "inherit"} with no priority override.
-    priority_option = InheritOption::kInherit;
-  } else if (options->hasPriority()) {
-    // Priority override.
-    priority_option = AtomicString(IDLEnumAsString(options->priority()));
+  } else {
+    // Abort and priority can be inherited together or separately. Abort
+    // inheritance only depends on the signal option. Signal inheritance implies
+    // priority inheritance, but can be overridden by specifying a fixed
+    // priority.
+    if (options->hasSignal()) {
+      if (options->signal()->IsSchedulerSignalInherit()) {
+        // {signal: "inherit"}
+        signal_option = InheritOption::kInherit;
+      } else {
+        // {signal: signalObject}
+        signal_option = options->signal()->GetAsAbortSignal();
+      }
+    }
+
+    if ((options->hasPriority() && options->priority() == "inherit")) {
+      // {priority: "inherit"}
+      priority_option = InheritOption::kInherit;
+    } else if (!options->hasPriority() &&
+               absl::holds_alternative<InheritOption>(signal_option)) {
+      // {signal: "inherit"} with no priority override.
+      priority_option = InheritOption::kInherit;
+    } else if (options->hasPriority()) {
+      // Priority override.
+      priority_option = AtomicString(IDLEnumAsString(options->priority()));
+    }
   }
 
   SchedulingState state = GetSchedulingStateFromOptions(
