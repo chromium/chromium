@@ -20,6 +20,7 @@
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate
+                       menuActions:(NSArray<UIAction*>*)menuActions
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -30,10 +31,13 @@
 // and send the data to the delegate.
 @interface ManualFillCardCell : TableViewCell
 
-// Updates the cell with credit card and the `delegate` to be notified.
+// Updates the cell with credit card and the `navigationDelegate` to be
+// notified. `menuActions` are the UIActions that should be available from the
+// cell's overflow menu button.
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
             contentInjector:(id<ManualFillContentInjector>)contentInjector
-         navigationDelegate:(id<CardListDelegate>)navigationDelegate;
+         navigationDelegate:(id<CardListDelegate>)navigationDelegate
+                menuActions:(NSArray<UIAction*>*)menuActions;
 
 @end
 

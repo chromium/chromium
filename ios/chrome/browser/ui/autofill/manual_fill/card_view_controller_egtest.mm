@@ -126,6 +126,21 @@ id<GREYMatcher> CreditCardManualFillViewTab() {
       nil);
 }
 
+// Matcher for the overflow menu button shown in the payment method cells.
+id<GREYMatcher> OverflowMenuButton() {
+  return grey_allOf(
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL),
+      grey_interactable(), nullptr);
+}
+
+// Matcher for the "Edit" action made available by the overflow menu button.
+id<GREYMatcher> OverflowMenuEditAction() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_EDIT_ACTION_TITLE),
+                    grey_interactable(), nullptr);
+}
+
 // Opens the payment method manual fill view when there are no saved payment
 // methods and verifies that the card view controller is visible afterwards.
 // Only useful when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
@@ -785,6 +800,59 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
 
   // TODO(crbug.com/40577448): maybe figure a way to enter CVC and get the
   // unlocked card result.
+}
+
+// Tests that the overflow menu button is only visible when the Keyboard
+// Accessory Upgrade feature is enabled.
+- (void)testOverflowMenuVisibility {
+  // Save a card.
+  [AutofillAppInterface saveLocalCreditCard];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the payment method manual fill view.
+  OpenPaymentMethodManualFillView();
+
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+        assertWithMatcher:grey_notVisible()];
+  }
+}
+
+// Tests the "Edit" action of the overflow menu button displays the card's
+// details in edit mode.
+- (void)testEditCardFromThreeDotMenu {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  // Save a card.
+  [AutofillAppInterface saveLocalCreditCard];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the payment method manual fill view.
+  OpenPaymentMethodManualFillView();
+
+  // Tap the overflow menu button and select the "Edit" action.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
+      performAction:grey_tap()];
+
+  // TODO(crbug.com/326413453): Check that the card details opened.
 }
 
 #pragma mark - Private

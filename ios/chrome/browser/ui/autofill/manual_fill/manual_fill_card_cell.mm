@@ -43,6 +43,9 @@ using base::SysNSStringToUTF8;
 // The credit card for this item.
 @property(nonatomic, readonly) ManualFillCreditCard* card;
 
+// The UIActions that should be available from the cell's overflow menu button.
+@property(nonatomic, strong) NSArray<UIAction*>* menuActions;
+
 @end
 
 @implementation ManualFillCardItem
@@ -50,12 +53,14 @@ using base::SysNSStringToUTF8;
 - (instancetype)initWithCreditCard:(ManualFillCreditCard*)card
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
-                navigationDelegate:(id<CardListDelegate>)navigationDelegate {
+                navigationDelegate:(id<CardListDelegate>)navigationDelegate
+                       menuActions:(NSArray<UIAction*>*)menuActions {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _contentInjector = contentInjector;
     _navigationDelegate = navigationDelegate;
     _card = card;
+    _menuActions = menuActions;
     self.cellClass = [ManualFillCardCell class];
   }
   return self;
@@ -66,7 +71,8 @@ using base::SysNSStringToUTF8;
   [super configureCell:cell withStyler:styler];
   [cell setUpWithCreditCard:self.card
             contentInjector:self.contentInjector
-         navigationDelegate:self.navigationDelegate];
+         navigationDelegate:self.navigationDelegate
+                menuActions:self.menuActions];
 }
 
 @end
@@ -86,6 +92,9 @@ using base::SysNSStringToUTF8;
 
 // The credit card icon.
 @property(nonatomic, strong) UIImageView* cardIcon;
+
+// The menu button displayed in the cell's header.
+@property(nonatomic, strong) UIButton* overflowMenuButton;
 
 // The text view with instructions for how to use virtual cards.
 @property(nonatomic, strong) UITextView* virtualCardInstructionTextView;
@@ -172,7 +181,8 @@ using base::SysNSStringToUTF8;
 
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
             contentInjector:(id<ManualFillContentInjector>)contentInjector
-         navigationDelegate:(id<CardListDelegate>)navigationDelegate {
+         navigationDelegate:(id<CardListDelegate>)navigationDelegate
+                menuActions:(NSArray<UIAction*>*)menuActions {
   if (!self.dynamicConstraints) {
     self.dynamicConstraints = [[NSMutableArray alloc] init];
   }
@@ -185,7 +195,7 @@ using base::SysNSStringToUTF8;
   self.navigationDelegate = navigationDelegate;
   self.card = card;
 
-  [self populateViewsWithCardData:card];
+  [self populateViewsWithCardData:card menuActions:menuActions];
   [self verticallyArrangeViews:card];
 }
 
@@ -204,8 +214,9 @@ using base::SysNSStringToUTF8;
   self.cardIcon.translatesAutoresizingMaskIntoConstraints = NO;
   [self.cardIcon setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                    forAxis:UILayoutConstraintAxisHorizontal];
-  self.headerView = CreateHeaderView(self.cardIcon, self.cardLabel,
-                                     CreateOverflowMenuButton());
+  self.overflowMenuButton = CreateOverflowMenuButton();
+  self.headerView =
+      CreateHeaderView(self.cardIcon, self.cardLabel, self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
@@ -321,8 +332,16 @@ using base::SysNSStringToUTF8;
 }
 
 // Adds the data from the ManualFillCreditCard to the corresponding UIViews.
-- (void)populateViewsWithCardData:(ManualFillCreditCard*)card {
+- (void)populateViewsWithCardData:(ManualFillCreditCard*)card
+                      menuActions:(NSArray<UIAction*>*)menuActions {
   self.cardIcon.image = NativeImage(card.issuerNetworkIconID);
+
+  if (menuActions && menuActions.count) {
+    self.overflowMenuButton.menu = [UIMenu menuWithChildren:menuActions];
+    self.overflowMenuButton.hidden = NO;
+  } else {
+    self.overflowMenuButton.hidden = YES;
+  }
 
   // If Virtual Cards are enabled set text for labeled chips, else set text for
   // buttons.
