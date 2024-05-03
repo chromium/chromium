@@ -17,7 +17,6 @@
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/browser/navigation_entry.h"
 #include "headless/public/headless_browser.h"
-#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/tcp_server_socket.h"
@@ -27,30 +26,20 @@ namespace headless {
 
 namespace {
 
-const char kUseLocalHostForDevToolsHttpServer[] = "localhost";
 const int kBackLog = 10;
 
-class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
+class TCPServerSocketFactory : public content::DevToolsSocketFactory {
  public:
-  explicit TCPEndpointServerSocketFactory(const net::HostPortPair& endpoint)
-      : endpoint_(endpoint) {
-    DCHECK(!endpoint_.IsEmpty());
-    if (!endpoint.host().empty() &&
-        endpoint.host() != kUseLocalHostForDevToolsHttpServer) {
-      net::IPAddress ip;
-      DCHECK(ip.AssignFromIPLiteral(endpoint.host()));
-    }
-  }
+  explicit TCPServerSocketFactory(int port) : port_(port) {}
 
-  TCPEndpointServerSocketFactory(const TCPEndpointServerSocketFactory&) =
-      delete;
-  TCPEndpointServerSocketFactory& operator=(
-      const TCPEndpointServerSocketFactory&) = delete;
+  TCPServerSocketFactory(const TCPServerSocketFactory&) = delete;
+  TCPServerSocketFactory& operator=(const TCPServerSocketFactory&) = delete;
 
  private:
   // This function, and the logic below that uses it, is copied from
   // chrome/browser/devtools/remote_debugging_server.cc
-  std::unique_ptr<net::ServerSocket> CreateLocalHostServerSocket(int port) {
+  static std::unique_ptr<net::ServerSocket> CreateLocalHostServerSocket(
+      int port) {
     std::unique_ptr<net::ServerSocket> socket(
         new net::TCPServerSocket(nullptr, net::NetLogSource()));
     if (socket->ListenWithAddressAndPort("127.0.0.1", port, kBackLog) ==
@@ -63,14 +52,7 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
 
   // content::DevToolsSocketFactory.
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
-    std::unique_ptr<net::ServerSocket> socket(
-        new net::TCPServerSocket(nullptr, net::NetLogSource()));
-    if (endpoint_.host() == kUseLocalHostForDevToolsHttpServer)
-      return CreateLocalHostServerSocket(endpoint_.port());
-    if (socket->ListenWithAddressAndPort(endpoint_.host(), endpoint_.port(),
-                                         kBackLog) == net::OK)
-      return socket;
-    return nullptr;
+    return CreateLocalHostServerSocket(port_);
   }
 
   std::unique_ptr<net::ServerSocket> CreateForTethering(
@@ -78,7 +60,7 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
     return nullptr;
   }
 
-  net::HostPortPair endpoint_;
+  const int port_;
 };
 
 #if BUILDFLAG(IS_POSIX)
@@ -101,7 +83,7 @@ class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
       return nullptr;
     }
     // Note that we assume that the socket is already listening, so unlike
-    // TCPEndpointServerSocketFactory, we don't call Listen.
+    // TCPServerSocketFactory, we don't call Listen.
     return std::unique_ptr<net::ServerSocket>(std::move(tsock));
   }
 
@@ -148,12 +130,14 @@ void StartLocalDevToolsHttpHandler(HeadlessBrowserImpl* browser) {
     content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
         base::BindOnce(&PostTaskToCloseBrowser, browser->GetWeakPtr()));
   }
-  if (options->devtools_endpoint.IsEmpty())
+
+  if (!options->devtools_port.has_value()) {
     return;
+  }
 
   std::unique_ptr<content::DevToolsSocketFactory> socket_factory;
-  const net::HostPortPair& endpoint = options->devtools_endpoint;
-  socket_factory = std::make_unique<TCPEndpointServerSocketFactory>(endpoint);
+  socket_factory =
+      std::make_unique<TCPServerSocketFactory>(options->devtools_port.value());
 
   content::DevToolsAgentHost::StartRemoteDebuggingServer(
       std::move(socket_factory),

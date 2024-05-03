@@ -74,7 +74,6 @@ class TCPServerSocketFactory
     return CreateLocalHostServerSocket(port);
   }
 
-  std::string address_;
   uint16_t port_;
   uint16_t last_tethering_port_;
 };

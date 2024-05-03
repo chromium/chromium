@@ -78,7 +78,7 @@ Options::~Options() = default;
 Options& Options::operator=(Options&& options) = default;
 
 bool Options::DevtoolsServerEnabled() {
-  return (devtools_pipe_enabled || !devtools_endpoint.IsEmpty());
+  return (devtools_pipe_enabled || devtools_port.has_value());
 }
 
 Builder::Builder() = default;
@@ -105,8 +105,8 @@ Builder& Builder::SetEnableBeginFrameControl(bool enable) {
   return *this;
 }
 
-Builder& Builder::EnableDevToolsServer(const net::HostPortPair& endpoint) {
-  options_.devtools_endpoint = endpoint;
+Builder& Builder::EnableDevToolsServer(int port) {
+  options_.devtools_port = port;
   return *this;
 }
 

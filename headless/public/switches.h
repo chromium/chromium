@@ -34,7 +34,6 @@ HEADLESS_EXPORT extern const char kNoSystemProxyConfigService[];
 HEADLESS_EXPORT extern const char kPasswordStore[];
 HEADLESS_EXPORT extern const char kProxyBypassList[];
 HEADLESS_EXPORT extern const char kProxyServer[];
-HEADLESS_EXPORT extern const char kRemoteDebuggingAddress[];
 HEADLESS_EXPORT extern const char kUserAgent[];
 HEADLESS_EXPORT extern const char kUserDataDir[];
 HEADLESS_EXPORT extern const char kWindowSize[];

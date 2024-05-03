@@ -13,8 +13,6 @@
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
 #include "headless/public/switches.h"
-#include "net/base/host_port_pair.h"
-#include "net/base/ip_address.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "third_party/blink/public/common/switches.h"
@@ -24,9 +22,6 @@
 namespace headless {
 
 namespace {
-
-// By default listen to incoming DevTools connections on localhost.
-const char kLocalHost[] = "localhost";
 
 void HandleDeterministicModeSwitch(base::CommandLine& command_line) {
   DCHECK(command_line.HasSwitch(switches::kDeterministicMode));
@@ -49,16 +44,6 @@ bool HandleRemoteDebuggingPort(base::CommandLine& command_line,
                                HeadlessBrowser::Options::Builder& builder) {
   DCHECK(command_line.HasSwitch(::switches::kRemoteDebuggingPort));
 
-  net::IPAddress address;
-  std::string address_str = kLocalHost;
-  if (command_line.HasSwitch(switches::kRemoteDebuggingAddress)) {
-    address_str =
-        command_line.GetSwitchValueASCII(switches::kRemoteDebuggingAddress);
-    if (!address.AssignFromIPLiteral(address_str)) {
-      LOG(ERROR) << "Invalid devtools server address: " << address_str;
-      return false;
-    }
-  }
   int port;
   std::string port_str =
       command_line.GetSwitchValueASCII(::switches::kRemoteDebuggingPort);
@@ -67,9 +52,7 @@ bool HandleRemoteDebuggingPort(base::CommandLine& command_line,
     LOG(ERROR) << "Invalid devtools server port: " << port_str;
     return false;
   }
-  const net::HostPortPair endpoint(address_str,
-                                   base::checked_cast<uint16_t>(port));
-  builder.EnableDevToolsServer(endpoint);
+  builder.EnableDevToolsServer(base::checked_cast<uint16_t>(port));
   return true;
 }
 

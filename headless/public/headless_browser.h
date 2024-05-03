@@ -6,6 +6,7 @@
 #define HEADLESS_PUBLIC_HEADLESS_BROWSER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "build/build_config.h"
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_export.h"
-#include "net/base/host_port_pair.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -97,9 +97,8 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
 
   Options& operator=(Options&& options);
 
-  // Address at which DevTools should listen for connections. Disabled by
-  // default.
-  net::HostPortPair devtools_endpoint;
+  // Port at which DevTools should listen for connections on localhost.
+  std::optional<int> devtools_port;
 
   // Enables remote debug over stdio pipes [in=3, out=4].
   bool devtools_pipe_enabled = false;
@@ -159,7 +158,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
 
   // Browser-wide settings.
 
-  Builder& EnableDevToolsServer(const net::HostPortPair& endpoint);
+  Builder& EnableDevToolsServer(int port);
   Builder& EnableDevToolsPipe();
 
   // Settings that are currently browser-wide, but could be per-context if

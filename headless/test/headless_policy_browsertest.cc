@@ -117,7 +117,7 @@ class HeadlessBrowserTestWithHeadlessModePolicy
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    HeadlessBrowserTestWithHeadlessModePolicy,
+    /* no prefix */,
     HeadlessBrowserTestWithHeadlessModePolicy,
     testing::Values(std::make_tuple(kHeadlessModePolicyEnabled, true),
                     std::make_tuple(kHeadlessModePolicyDisabled, false),
@@ -187,7 +187,7 @@ class HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy
   CaptureStdErr capture_stderr_;
 };
 
-INSTANTIATE_TEST_SUITE_P(HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
                          testing::Values(true, false));
 
