@@ -470,10 +470,12 @@ export class SettingsCupsPrintersElement extends
   }
 
   private onAddPrinterDialogClose_(): void {
-    const icon = this.shadowRoot!.querySelector<CrIconButtonElement>(
-        '#addManualPrinterButton');
-    assert(icon);
-    focusWithoutInk(icon);
+    afterNextRender(this, () => {
+      const icon = this.shadowRoot!.querySelector<CrIconButtonElement>(
+          '#addManualPrinterButton');
+      assert(icon);
+      focusWithoutInk(icon);
+    });
   }
 
   private onShowCupsEditPrinterDialog_(): void {
