@@ -77,9 +77,9 @@ class NearbyPresenceServerClientImpl : public NearbyPresenceServerClient {
   void UpdateDevice(const ash::nearby::proto::UpdateDeviceRequest& request,
                     UpdateDeviceCallback callback,
                     ErrorCallback error_callback) override;
-  void ListPublicCertificates(
-      const ash::nearby::proto::ListPublicCertificatesRequest& request,
-      ListPublicCertificatesCallback callback,
+  void ListSharedCredentials(
+      const ash::nearby::proto::ListSharedCredentialsRequest& request,
+      ListSharedCredentialsCallback callback,
       ErrorCallback error_callback) override;
   std::string GetAccessTokenUsed() override;
 

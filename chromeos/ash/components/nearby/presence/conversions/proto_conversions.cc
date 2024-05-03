@@ -8,6 +8,42 @@
 
 namespace ash::nearby::presence::proto {
 
+namespace {
+
+::nearby::internal::CredentialType
+RemoteCredentialTypeToThirdPartyCredentialType(
+    ash::nearby::proto::CredentialType remote_credential_type) {
+  switch (remote_credential_type) {
+    case ash::nearby::proto::CredentialType::CREDENTIAL_TYPE_UNKNOWN:
+      return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_UNKNOWN;
+    case ash::nearby::proto::CredentialType::CREDENTIAL_TYPE_DEVICE:
+      return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_DEVICE;
+    case ash::nearby::proto::CredentialType::CREDENTIAL_TYPE_GAIA:
+      return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_GAIA;
+    default:
+      NOTREACHED();
+  }
+  NOTREACHED_NORETURN();
+}
+
+::nearby::internal::IdentityType RemoteIdentityTypeToThirdPartyIdentityType(
+    ash::nearby::proto::IdentityType remote_identity_type) {
+  switch (remote_identity_type) {
+    case ash::nearby::proto::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
+    case ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE;
+    case ash::nearby::proto::IdentityType::IDENTITY_TYPE_TRUSTED:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED;
+    default:
+      NOTREACHED();
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
 ::nearby::internal::DeviceIdentityMetaData BuildMetadata(
     ::nearby::internal::DeviceType device_type,
     const std::string& device_name,
@@ -323,26 +359,6 @@ int64_t MillisecondsToSeconds(int64_t milliseconds) {
   return milliseconds / 1000.0;
 }
 
-::nearby::internal::SharedCredential PublicCertificateToSharedCredential(
-    ash::nearby::proto::PublicCertificate certificate) {
-  ::nearby::internal::SharedCredential shared_credential;
-  shared_credential.set_secret_id(certificate.secret_id());
-  shared_credential.set_key_seed(certificate.secret_key());
-  shared_credential.set_connection_signature_verification_key(
-      certificate.public_key());
-  shared_credential.set_start_time_millis(
-      SecondsToMilliseconds(certificate.start_time().seconds()));
-  shared_credential.set_end_time_millis(
-      SecondsToMilliseconds(certificate.end_time().seconds()));
-  shared_credential.set_encrypted_metadata_bytes_v0(
-      certificate.encrypted_metadata_bytes());
-  shared_credential.set_metadata_encryption_key_tag_v0(
-      certificate.metadata_encryption_key_tag());
-  shared_credential.set_identity_type(
-      TrustTypeToIdentityType(certificate.trust_type()));
-  return shared_credential;
-}
-
 ::nearby::internal::IdentityType TrustTypeToIdentityType(
     ash::nearby::proto::TrustType trust_type) {
   switch (trust_type) {
@@ -357,8 +373,42 @@ int64_t MillisecondsToSeconds(int64_t milliseconds) {
   }
 }
 
-int64_t SecondsToMilliseconds(int64_t seconds) {
-  return seconds * 1000.0;
+::nearby::internal::SharedCredential
+RemoteSharedCredentialToThirdPartySharedCredential(
+    ash::nearby::proto::SharedCredential remote_shared_credential) {
+  ::nearby::internal::SharedCredential shared_credential;
+
+  shared_credential.set_id(remote_shared_credential.id());
+  shared_credential.set_key_seed(remote_shared_credential.key_seed());
+  shared_credential.set_connection_signature_verification_key(
+      remote_shared_credential.connection_signature_verification_key());
+
+  shared_credential.set_advertisement_signature_verification_key(
+      remote_shared_credential.advertisement_signature_verification_key());
+
+  shared_credential.set_start_time_millis(
+      remote_shared_credential.start_time_millis());
+  shared_credential.set_end_time_millis(
+      remote_shared_credential.end_time_millis());
+
+  shared_credential.set_version(remote_shared_credential.version());
+  shared_credential.set_credential_type(
+      RemoteCredentialTypeToThirdPartyCredentialType(
+          remote_shared_credential.credential_type()));
+  shared_credential.set_encrypted_metadata_bytes_v1(
+      remote_shared_credential.encrypted_metadata_bytes_v1());
+  shared_credential.set_metadata_encryption_key_unsigned_adv_tag_v1(
+      remote_shared_credential.metadata_encryption_key_unsigned_adv_tag_v1());
+
+  shared_credential.set_encrypted_metadata_bytes_v0(
+      remote_shared_credential.encrypted_metadata_bytes_v0());
+  shared_credential.set_metadata_encryption_key_tag_v0(
+      remote_shared_credential.metadata_encryption_key_tag_v0());
+  shared_credential.set_identity_type(
+      RemoteIdentityTypeToThirdPartyIdentityType(
+          remote_shared_credential.identity_type()));
+
+  return shared_credential;
 }
 
 }  // namespace ash::nearby::presence::proto

@@ -33,7 +33,7 @@ class NearbyScheduler;
 
 namespace ash::nearby::proto {
 class UpdateDeviceResponse;
-class ListPublicCertificatesResponse;
+class ListSharedCredentialsResponse;
 }  // namespace ash::nearby::proto
 
 namespace nearby::internal {
@@ -249,7 +249,7 @@ class NearbyPresenceCredentialManagerImpl
           void(std::vector<::nearby::internal::SharedCredential>, bool)>
           download_credentials_result_callback,
       base::TimeTicks download_request_start_time,
-      const ash::nearby::proto::ListPublicCertificatesResponse& response);
+      const ash::nearby::proto::ListSharedCredentialsResponse& response);
   void OnDownloadCredentialsFailure(
       base::RepeatingCallback<
           void(std::vector<::nearby::internal::SharedCredential>, bool)>

@@ -204,9 +204,9 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
 
     // Next, mock and return the server response for fetching remote device
     // public certificates.
-    ash::nearby::proto::ListPublicCertificatesResponse certificate_response;
+    ash::nearby::proto::ListSharedCredentialsResponse certificate_response;
     server_client_factory_.fake_server_client()
-        ->InvokeListPublicCertificatesSuccessCallback({certificate_response});
+        ->InvokeListSharedCredentialsSuccessCallback({certificate_response});
   }
 
   void CreateCredentialManager(base::OnceClosure on_created) {
@@ -622,9 +622,9 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
   first_time_download_scheduler->SetNumConsecutiveFailures(
       kServerCommunicationMaxAttempts);
   first_time_download_scheduler->InvokeRequestCallback();
-  ash::nearby::proto::ListPublicCertificatesResponse certificate_response;
+  ash::nearby::proto::ListSharedCredentialsResponse certificate_response;
   server_client_factory_.fake_server_client()
-      ->InvokeListPublicCertificatesErrorCallback(
+      ->InvokeListSharedCredentialsErrorCallback(
           ash::nearby::NearbyHttpError::kInternalServerError);
 
   create_credential_manager_run_loop.Run();
@@ -884,7 +884,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   upload_scheduler->SetNumConsecutiveFailures(kServerCommunicationMaxAttempts);
   upload_scheduler->InvokeRequestCallback();
   server_client_factory_.fake_server_client()
-      ->InvokeListPublicCertificatesErrorCallback(
+      ->InvokeListSharedCredentialsErrorCallback(
           ash::nearby::NearbyHttpError::kInternalServerError);
 
   EXPECT_FALSE(daily_sync_scheduler_->handled_results().front());

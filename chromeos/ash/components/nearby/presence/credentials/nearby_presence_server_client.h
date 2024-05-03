@@ -12,8 +12,8 @@
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 
 namespace ash::nearby::proto {
-class ListPublicCertificatesRequest;
-class ListPublicCertificatesResponse;
+class ListSharedCredentialsRequest;
+class ListSharedCredentialsResponse;
 class UpdateDeviceRequest;
 class UpdateDeviceResponse;
 }  // namespace ash::nearby::proto
@@ -27,8 +27,8 @@ namespace ash::nearby::presence {
 class NearbyPresenceServerClient {
  public:
   using ErrorCallback = base::OnceCallback<void(ash::nearby::NearbyHttpError)>;
-  using ListPublicCertificatesCallback = base::OnceCallback<void(
-      const ash::nearby::proto::ListPublicCertificatesResponse&)>;
+  using ListSharedCredentialsCallback = base::OnceCallback<void(
+      const ash::nearby::proto::ListSharedCredentialsResponse&)>;
   using UpdateDeviceCallback =
       base::OnceCallback<void(const ash::nearby::proto::UpdateDeviceResponse&)>;
 
@@ -42,10 +42,10 @@ class NearbyPresenceServerClient {
       ErrorCallback error_callback) = 0;
 
   // Communicates with the NearbyPresenceService server v1:
-  // ListPublicCertificates RPC.
-  virtual void ListPublicCertificates(
-      const ash::nearby::proto::ListPublicCertificatesRequest& request,
-      ListPublicCertificatesCallback callback,
+  // ListSharedCredentials RPC.
+  virtual void ListSharedCredentials(
+      const ash::nearby::proto::ListSharedCredentialsRequest& request,
+      ListSharedCredentialsCallback callback,
       ErrorCallback error_callback) = 0;
 
   // Returns the access token used to make the request. If no request has been

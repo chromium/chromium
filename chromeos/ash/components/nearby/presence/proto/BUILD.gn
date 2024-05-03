@@ -10,7 +10,7 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [
-    "list_public_certificates_rpc.proto",
+    "list_shared_credentials_rpc.proto",
     "rpc_resources.proto",
     "update_device_rpc.proto",
   ]

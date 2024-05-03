@@ -58,11 +58,12 @@ ash::nearby::proto::TrustType TrustTypeFromIdentityType(
     ::nearby::internal::IdentityType identity_type);
 int64_t MillisecondsToSeconds(int64_t milliseconds);
 
-::nearby::internal::SharedCredential PublicCertificateToSharedCredential(
-    ash::nearby::proto::PublicCertificate certificate);
 ::nearby::internal::IdentityType TrustTypeToIdentityType(
     ash::nearby::proto::TrustType trust_type);
-int64_t SecondsToMilliseconds(int64_t seconds);
+
+::nearby::internal::SharedCredential
+RemoteSharedCredentialToThirdPartySharedCredential(
+    ash::nearby::proto::SharedCredential remote_shared_credential);
 
 }  // namespace ash::nearby::presence::proto
 

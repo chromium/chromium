@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
-#include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
+#include "chromeos/ash/components/nearby/presence/proto/list_shared_credentials_rpc.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "components/cross_device/logging/logging.h"
@@ -858,9 +858,12 @@ void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback) {
   download_credentials_attempts_needed_count_++;
-  ash::nearby::proto::ListPublicCertificatesRequest request;
-  request.set_parent(kDeviceIdPrefix +
-                     local_device_data_provider_->GetDeviceId());
+  ash::nearby::proto::ListSharedCredentialsRequest request;
+
+  // TODO(hansberry): Populate with actual DUSI.
+  request.set_dusi("test_dusi");
+  request.set_identity_type(
+      ash::nearby::proto::IdentityType::IDENTITY_TYPE_PRIVATE);
 
   server_response_timer_.Start(
       FROM_HERE, kServerResponseTimeout,
@@ -875,7 +878,7 @@ void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
   server_client_ = NearbyPresenceServerClientImpl::Factory::Create(
       std::make_unique<ash::nearby::NearbyApiCallFlowImpl>(), identity_manager_,
       url_loader_factory_);
-  server_client_->ListPublicCertificates(
+  server_client_->ListSharedCredentials(
       request,
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess,
@@ -945,22 +948,23 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess(
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback,
     base::TimeTicks download_request_start_time,
-    const ash::nearby::proto::ListPublicCertificatesResponse& response) {
+    const ash::nearby::proto::ListSharedCredentialsResponse& response) {
   server_response_timer_.Stop();
   base::TimeDelta download_request_duration =
       base::TimeTicks::Now() - download_request_start_time;
   metrics::RecordSharedCredentialDownloadDuration(download_request_duration);
 
-  std::vector<::nearby::internal::SharedCredential> remote_credentials;
-  for (auto public_certificate : response.public_certificates()) {
-    remote_credentials.push_back(
-        proto::PublicCertificateToSharedCredential(public_certificate));
+  std::vector<::nearby::internal::SharedCredential> shared_credentials;
+  for (auto remote_shared_credential : response.shared_credentials()) {
+    shared_credentials.push_back(
+        proto::RemoteSharedCredentialToThirdPartySharedCredential(
+            remote_shared_credential));
   }
 
   HandleDownloadCredentialsResult(
       download_credentials_result_callback,
       /*result=*/ash::nearby::NearbyHttpResult::kSuccess,
-      /*credentials=*/remote_credentials);
+      /*credentials=*/shared_credentials);
 }
 
 void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsFailure(

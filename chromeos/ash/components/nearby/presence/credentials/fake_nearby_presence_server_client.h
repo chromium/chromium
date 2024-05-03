@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
-#include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
+#include "chromeos/ash/components/nearby/presence/proto/list_shared_credentials_rpc.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 
 namespace ash::nearby::presence {
@@ -53,9 +53,9 @@ class FakeNearbyPresenceServerClient : public NearbyPresenceServerClient {
   void InvokeUpdateDeviceSuccessCallback(
       const ash::nearby::proto::UpdateDeviceResponse& response);
   void InvokeUpdateDeviceErrorCallback(ash::nearby::NearbyHttpError error);
-  void InvokeListPublicCertificatesSuccessCallback(
-      const ash::nearby::proto::ListPublicCertificatesResponse& response);
-  void InvokeListPublicCertificatesErrorCallback(
+  void InvokeListSharedCredentialsSuccessCallback(
+      const ash::nearby::proto::ListSharedCredentialsResponse& response);
+  void InvokeListSharedCredentialsErrorCallback(
       ash::nearby::NearbyHttpError error);
 
  private:
@@ -63,17 +63,17 @@ class FakeNearbyPresenceServerClient : public NearbyPresenceServerClient {
   void UpdateDevice(const ash::nearby::proto::UpdateDeviceRequest& request,
                     UpdateDeviceCallback callback,
                     ErrorCallback error_callback) override;
-  void ListPublicCertificates(
-      const ash::nearby::proto::ListPublicCertificatesRequest& request,
-      ListPublicCertificatesCallback callback,
+  void ListSharedCredentials(
+      const ash::nearby::proto::ListSharedCredentialsRequest& request,
+      ListSharedCredentialsCallback callback,
       ErrorCallback error_callback) override;
   std::string GetAccessTokenUsed() override;
 
   std::string access_token_used_;
   UpdateDeviceCallback update_device_callback_;
-  ListPublicCertificatesCallback list_public_certificates_callback_;
+  ListSharedCredentialsCallback list_shared_credentials_callback_;
   ErrorCallback update_device_error_callback_;
-  ErrorCallback list_public_certificates_error_callback_;
+  ErrorCallback list_shared_credentials_error_callback_;
 };
 
 }  // namespace ash::nearby::presence
