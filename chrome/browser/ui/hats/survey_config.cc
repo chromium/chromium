@@ -13,6 +13,7 @@
 #include "components/permissions/permission_hats_trigger_helper.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"  // nogncheck
 #include "components/performance_manager/public/features.h"         // nogncheck
@@ -31,6 +32,18 @@ constexpr char kHatsSurveyTriggerAutofillCreditCardUserPerception[] =
     "autofill-credit-card-users-perception";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
+    "download-warning-bubble-bypass";
+constexpr char kHatsSurveyTriggerDownloadWarningBubbleHeed[] =
+    "download-warning-bubble-heed";
+constexpr char kHatsSurveyTriggerDownloadWarningBubbleIgnore[] =
+    "download-warning-bubble-ignore";
+constexpr char kHatsSurveyTriggerDownloadWarningPageBypass[] =
+    "download-warning-page-bypass";
+constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
+    "download-warning-page-heed";
+constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
+    "download-warning-page-ignore";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kHatsSurveyTriggerGetMostChrome[] = "get-most-chrome";
 #endif
@@ -446,6 +459,42 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       password_manager::features::kPasswordGenerationExperimentSurveyTriggerId
           .Get(),
       std::vector<std::string>{"Suggested password accepted"});
+
+  // Desktop download warning surveys.
+  std::vector<std::string> download_bits_data_fields =
+      DownloadWarningHatsProductSpecificData::GetBitsDataFields();
+  std::vector<std::string> download_string_data_fields =
+      DownloadWarningHatsProductSpecificData::GetStringDataFields();
+  survey_configs.emplace_back(&safe_browsing::kDownloadWarningSurvey,
+                              kHatsSurveyTriggerDownloadWarningBubbleBypass,
+                              /*presupplied_trigger_id=*/std::nullopt,
+                              download_bits_data_fields,
+                              download_string_data_fields);
+  survey_configs.emplace_back(&safe_browsing::kDownloadWarningSurvey,
+                              kHatsSurveyTriggerDownloadWarningBubbleHeed,
+                              /*presupplied_trigger_id=*/std::nullopt,
+                              download_bits_data_fields,
+                              download_string_data_fields);
+  survey_configs.emplace_back(&safe_browsing::kDownloadWarningSurvey,
+                              kHatsSurveyTriggerDownloadWarningBubbleIgnore,
+                              /*presupplied_trigger_id=*/std::nullopt,
+                              download_bits_data_fields,
+                              download_string_data_fields);
+  survey_configs.emplace_back(&safe_browsing::kDownloadWarningSurvey,
+                              kHatsSurveyTriggerDownloadWarningPageBypass,
+                              /*presupplied_trigger_id=*/std::nullopt,
+                              download_bits_data_fields,
+                              download_string_data_fields);
+  survey_configs.emplace_back(&safe_browsing::kDownloadWarningSurvey,
+                              kHatsSurveyTriggerDownloadWarningPageHeed,
+                              /*presupplied_trigger_id=*/std::nullopt,
+                              download_bits_data_fields,
+                              download_string_data_fields);
+  survey_configs.emplace_back(&safe_browsing::kDownloadWarningSurvey,
+                              kHatsSurveyTriggerDownloadWarningPageIgnore,
+                              /*presupplied_trigger_id=*/std::nullopt,
+                              download_bits_data_fields,
+                              download_string_data_fields);
 
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

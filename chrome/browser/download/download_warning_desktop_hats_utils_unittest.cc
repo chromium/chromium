@@ -288,4 +288,63 @@ TEST_F(DownloadWarningDesktopHatsUtilsTest,
   EXPECT_THAT(psd, Not(StringDataMatches(Fields::kNumPageWarnings, _)));
 }
 
+TEST_F(DownloadWarningDesktopHatsUtilsTest,
+       MaybeGetDownloadWarningHatsTrigger_FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(safe_browsing::kDownloadWarningSurvey);
+
+  for (DownloadWarningHatsType type :
+       {DownloadWarningHatsType::kDownloadBubbleBypass,
+        DownloadWarningHatsType::kDownloadBubbleHeed,
+        DownloadWarningHatsType::kDownloadBubbleIgnore,
+        DownloadWarningHatsType::kDownloadsPageBypass,
+        DownloadWarningHatsType::kDownloadsPageHeed,
+        DownloadWarningHatsType::kDownloadsPageIgnore}) {
+    EXPECT_FALSE(MaybeGetDownloadWarningHatsTrigger(type));
+  }
+}
+
+TEST_F(DownloadWarningDesktopHatsUtilsTest,
+       MaybeGetDownloadWarningHatsTrigger_ParamOutOfRange) {
+  for (DownloadWarningHatsType type :
+       {DownloadWarningHatsType::kDownloadBubbleBypass,
+        DownloadWarningHatsType::kDownloadBubbleHeed,
+        DownloadWarningHatsType::kDownloadBubbleIgnore,
+        DownloadWarningHatsType::kDownloadsPageBypass,
+        DownloadWarningHatsType::kDownloadsPageHeed,
+        DownloadWarningHatsType::kDownloadsPageIgnore}) {
+    for (const std::string& param_value : {"", "-1", "6"}) {
+      base::test::ScopedFeatureList features;
+      features.InitAndEnableFeatureWithParameters(
+          safe_browsing::kDownloadWarningSurvey,
+          {{safe_browsing::kDownloadWarningSurveyType.name, param_value}});
+
+      EXPECT_FALSE(MaybeGetDownloadWarningHatsTrigger(type));
+    }
+  }
+}
+
+TEST_F(DownloadWarningDesktopHatsUtilsTest,
+       MaybeGetDownloadWarningHatsTrigger_OnlyReturnsTriggerIfEligible) {
+  for (DownloadWarningHatsType type :
+       {DownloadWarningHatsType::kDownloadBubbleBypass,
+        DownloadWarningHatsType::kDownloadBubbleHeed,
+        DownloadWarningHatsType::kDownloadBubbleIgnore,
+        DownloadWarningHatsType::kDownloadsPageBypass,
+        DownloadWarningHatsType::kDownloadsPageHeed,
+        DownloadWarningHatsType::kDownloadsPageIgnore}) {
+    for (int param_value = 0; param_value < 6; ++param_value) {
+      std::string param_value_string = base::NumberToString(param_value);
+      base::test::ScopedFeatureList features;
+      features.InitAndEnableFeatureWithParameters(
+          safe_browsing::kDownloadWarningSurvey,
+          {{safe_browsing::kDownloadWarningSurveyType.name,
+            param_value_string}});
+
+      bool eligible = param_value == static_cast<int>(type);
+      EXPECT_EQ(MaybeGetDownloadWarningHatsTrigger(type).has_value(), eligible);
+    }
+  }
+}
+
 }  // namespace

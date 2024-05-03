@@ -81,6 +81,14 @@ BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDownloadWarningSurvey,
+             "DownloadWarningSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A default value of -1 indicates configuration error.
+const base::FeatureParam<int> kDownloadWarningSurveyType{
+    &kDownloadWarningSurvey, "survey_type", -1};
+
 BASE_FEATURE(kEncryptedArchivesMetadata,
              "SafeBrowsingEncryptedArchivesMetadata",
              base::FEATURE_DISABLED_BY_DEFAULT);

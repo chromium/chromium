@@ -69,6 +69,17 @@ BASE_DECLARE_FEATURE(kDownloadReportWithoutUserDecision);
 // server-side.
 BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
 
+// Enables HaTS surveys for users encountering desktop download warnings on the
+// download bubble or the downloads page.
+BASE_DECLARE_FEATURE(kDownloadWarningSurvey);
+
+// Gives the type of the download warning HaTS survey that the user is eligible
+// for. This should be set in the fieldtrial config along with the trigger ID
+// for the corresponding survey (as en_site_id). The int value corresponds to
+// the value of DownloadWarningHatsType enum (see
+// //c/b/download/download_warning_desktop_hats_util.h).
+extern const base::FeatureParam<int> kDownloadWarningSurveyType;
+
 // Controls whether Standard Safe Browsing users are permitted to provide
 // passwords for local decryption on encrypted archives.
 BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);

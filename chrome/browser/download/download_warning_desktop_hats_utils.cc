@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,11 +20,13 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/download_item_utils.h"
 
@@ -290,4 +293,42 @@ DownloadWarningHatsProductSpecificData::GetStringDataFields() {
       Fields::kFilename,
       // TODO(chlily): Add kIgnoreTimeout.
   };
+}
+
+std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(
+    DownloadWarningHatsType survey_type) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadWarningSurvey)) {
+    return std::nullopt;
+  }
+
+  const int eligible_survey_type =
+      safe_browsing::kDownloadWarningSurveyType.Get();
+
+  // Configuration error.
+  if (eligible_survey_type < 0 ||
+      eligible_survey_type >
+          static_cast<int>(DownloadWarningHatsType::kMaxValue)) {
+    return std::nullopt;
+  }
+
+  // User is not assigned to be eligible for this type.
+  if (static_cast<DownloadWarningHatsType>(eligible_survey_type) !=
+      survey_type) {
+    return std::nullopt;
+  }
+
+  switch (survey_type) {
+    case DownloadWarningHatsType::kDownloadBubbleBypass:
+      return kHatsSurveyTriggerDownloadWarningBubbleBypass;
+    case DownloadWarningHatsType::kDownloadBubbleHeed:
+      return kHatsSurveyTriggerDownloadWarningBubbleHeed;
+    case DownloadWarningHatsType::kDownloadBubbleIgnore:
+      return kHatsSurveyTriggerDownloadWarningBubbleIgnore;
+    case DownloadWarningHatsType::kDownloadsPageBypass:
+      return kHatsSurveyTriggerDownloadWarningPageBypass;
+    case DownloadWarningHatsType::kDownloadsPageHeed:
+      return kHatsSurveyTriggerDownloadWarningPageHeed;
+    case DownloadWarningHatsType::kDownloadsPageIgnore:
+      return kHatsSurveyTriggerDownloadWarningPageIgnore;
+  }
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_WARNING_DESKTOP_HATS_UTILS_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_WARNING_DESKTOP_HATS_UTILS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,6 +32,7 @@ enum class DownloadWarningHatsType {
   // Navigated away from or closed the downloads page without acting on the
   // warning.
   kDownloadsPageIgnore = 5,
+  kMaxValue = kDownloadsPageIgnore,
 };
 
 // Stores the PSD for the download warning HaTS survey.
@@ -136,5 +138,11 @@ class DownloadWarningHatsProductSpecificData {
   SurveyBitsData bits_data_;
   SurveyStringData string_data_;
 };
+
+// Returns the HaTS trigger string for the survey_type, if the user is eligible
+// for that type of survey (according to the fieldtrial config). If the user
+// is not eligible, or there is a configuration error, this returns nullopt.
+std::optional<std::string> MaybeGetDownloadWarningHatsTrigger(
+    DownloadWarningHatsType survey_type);
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_WARNING_DESKTOP_HATS_UTILS_H_

@@ -23,6 +23,12 @@ extern const char kHatsSurveyTriggerDevToolsIssuesMixedContent[];
 extern const char kHatsSurveyTriggerDevToolsIssuesCookiesSameSite[];
 extern const char kHatsSurveyTriggerDevToolsIssuesHeavyAd[];
 extern const char kHatsSurveyTriggerDevToolsIssuesCSP[];
+extern const char kHatsSurveyTriggerDownloadWarningBubbleBypass[];
+extern const char kHatsSurveyTriggerDownloadWarningBubbleHeed[];
+extern const char kHatsSurveyTriggerDownloadWarningBubbleIgnore[];
+extern const char kHatsSurveyTriggerDownloadWarningPageBypass[];
+extern const char kHatsSurveyTriggerDownloadWarningPageHeed[];
+extern const char kHatsSurveyTriggerDownloadWarningPageIgnore[];
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kHatsSurveyTriggerGetMostChrome[];
 #endif
