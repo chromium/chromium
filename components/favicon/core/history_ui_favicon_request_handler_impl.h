@@ -67,7 +67,7 @@ class HistoryUiFaviconRequestHandlerImpl
  private:
   // Called after the first attempt to retrieve the icon bitmap from local
   // storage. If request succeeded, sends the result. Otherwise, if allowed by
-  // user settings, (i.e. if |can_send_history_data_getter_| returns true),
+  // user settings, (i.e. if `can_send_history_data_getter_` returns true),
   // attempts to retrieve from the Google favicon server.
   void OnBitmapLocalDataAvailable(
       const GURL& page_url,
@@ -78,7 +78,7 @@ class HistoryUiFaviconRequestHandlerImpl
 
   // Called after the first attempt to retrieve the icon image from local
   // storage. If request succeeded, sends the result. Otherwise, if allowed by
-  // user settings, (i.e. if |can_send_history_data_getter_| returns true),
+  // user settings, (i.e. if `can_send_history_data_getter_` returns true),
   // attempts to retrieve from the Google favicon server.
   void OnImageLocalDataAvailable(
       const GURL& page_url,
@@ -87,17 +87,17 @@ class HistoryUiFaviconRequestHandlerImpl
       const favicon_base::FaviconImageResult& image_result);
 
   // Requests an icon from Google favicon server. Since requests work by
-  // populating local storage, a |local_lookup_callback| will be needed in case
-  // of success and an |empty_response_callback| in case of failure. Neither
-  // callback is run if |this| is deleted before completion.
+  // populating local storage, a `local_lookup_callback` will be needed in case
+  // of success and an `empty_response_callback` in case of failure. Neither
+  // callback is run if `this` is deleted before completion.
   void RequestFromGoogleServer(const GURL& page_url,
                                base::OnceClosure empty_response_callback,
                                base::OnceClosure local_lookup_callback,
                                HistoryUiFaviconRequestOrigin origin_for_uma);
 
   // Called once the request to the favicon server has finished. If the request
-  // succeeded, |local_lookup_callback| is called to effectively retrieve the
-  // icon, otherwise |empty_response_callback| is called.
+  // succeeded, `local_lookup_callback` is called to effectively retrieve the
+  // icon, otherwise `empty_response_callback` is called.
   void OnGoogleServerDataAvailable(
       base::OnceClosure empty_response_callback,
       base::OnceClosure local_lookup_callback,

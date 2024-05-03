@@ -308,7 +308,7 @@ void LargeIconServiceImpl::
   }
 
   // Do not download if there is a previous cache miss recorded for
-  // |server_request_url|.
+  // `server_request_url`.
   if (favicon_service_->WasUnableToDownloadFavicon(server_request_url)) {
     FinishServerRequestAsynchronously(
         std::move(callback),

@@ -27,7 +27,7 @@ enum class HistoryUiFaviconRequestOrigin {
 // Requests must be made by page url, as opposed to icon url.
 class HistoryUiFaviconRequestHandler : public KeyedService {
  public:
-  // Requests favicon bitmap at |page_url| of size |desired_size_in_pixel|.
+  // Requests favicon bitmap at `page_url` of size `desired_size_in_pixel`.
   // Tries to fetch the icon from local storage and falls back to the Google
   // favicon server if user settings allow to query it using history data.
   virtual void GetRawFaviconForPageURL(
@@ -36,7 +36,7 @@ class HistoryUiFaviconRequestHandler : public KeyedService {
       favicon_base::FaviconRawBitmapCallback callback,
       HistoryUiFaviconRequestOrigin request_origin_for_uma) = 0;
 
-  // Requests favicon image at |page_url|. The same fallback considerations for
+  // Requests favicon image at `page_url`. The same fallback considerations for
   // GetRawFaviconForPageURL apply.
   // This method is only called by desktop code.
   virtual void GetFaviconImageForPageURL(

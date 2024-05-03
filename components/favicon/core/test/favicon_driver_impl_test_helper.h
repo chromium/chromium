@@ -19,7 +19,7 @@ class FaviconDriverImplTestHelper {
       delete;
   FaviconDriverImplTestHelper() = delete;
 
-  // Resets |driver->handler_| to a FaviconHandler of type |type|. This should
+  // Resets `driver->handler_` to a FaviconHandler of type `type`. This should
   // be called at a time when there are no outstanding requests.
   static void RecreateHandlerForType(
       FaviconDriverImpl* driver,

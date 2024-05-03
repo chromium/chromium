@@ -34,8 +34,8 @@ bool ShouldReturnBitmap(const favicon_base::FaviconRawBitmapResult& db_result,
               NoBigEnoughIconBehavior::kReturnBitmap);
 }
 
-// Wraps the PNG data in |db_result| in a gfx::Image. If |desired_size| is not
-// 0, the image gets decoded and resized to |desired_size| (in px). Must run on
+// Wraps the PNG data in `db_result` in a gfx::Image. If `desired_size` is not
+// 0, the image gets decoded and resized to `desired_size` (in px). Must run on
 // a background thread in production.
 gfx::Image ResizeLargeIconOnBackgroundThread(
     const favicon_base::FaviconRawBitmapResult& db_result,
@@ -53,10 +53,10 @@ gfx::Image ResizeLargeIconOnBackgroundThread(
   return gfx::Image::CreateFrom1xBitmap(resized);
 }
 
-// Processes the |db_result| and writes the result into |raw_result| if
-// |raw_result| is not nullptr or to |bitmap|, otherwise. If |db_result| is not
-// valid or is smaller than |min_source_size|, the resulting fallback style is
-// written into |fallback_icon_style|.
+// Processes the `db_result` and writes the result into `raw_result` if
+// `raw_result` is not nullptr or to `bitmap`, otherwise. If `db_result` is not
+// valid or is smaller than `min_source_size`, the resulting fallback style is
+// written into `fallback_icon_style`.
 void ProcessIconOnBackgroundThread(
     const favicon_base::FaviconRawBitmapResult& db_result,
     int min_source_size,
@@ -184,7 +184,7 @@ base::CancelableTaskTracker::TaskId LargeIconWorker::GetLargeIconRawBitmap(
 }
 
 void LargeIconWorker::OnIconProcessingComplete() {
-  // If |raw_bitmap_callback_| is provided, return the raw result.
+  // If `raw_bitmap_callback_` is provided, return the raw result.
   if (raw_bitmap_callback_) {
     if (raw_bitmap_result_.is_valid()) {
       std::move(raw_bitmap_callback_)

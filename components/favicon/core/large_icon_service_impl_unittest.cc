@@ -73,7 +73,7 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(int w,
   favicon_base::FaviconRawBitmapResult result;
   result.expired = false;
 
-  // Create bitmap and fill with |color|.
+  // Create bitmap and fill with `color`.
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
   gfx::PNGCodec::EncodeBGRASkBitmap(gfx::test::CreateBitmap(w, h, color), false,
                                     &data->as_vector());
@@ -424,7 +424,7 @@ class LargeIconServiceGetterTest : public LargeIconServiceTest,
     }
   }
 
-  // The parameter |mock_result| needs to be passed by value otherwise the
+  // The parameter `mock_result` needs to be passed by value otherwise the
   // lambda injected into the mock may capture a reference to a temporary,
   // which would cause Undefined Behaviour.
   void InjectMockResult(const GURL& page_url,
@@ -451,8 +451,8 @@ TEST_P(LargeIconServiceGetterTest, SameSize) {
   InjectMockResult(GURL(kDummyUrl), CreateTestBitmapResult(24, 24, kTestColor));
   GetLargeIconOrFallbackStyleAndWaitForCallback(
       GURL(kDummyUrl),
-      24,   // |min_source_size_in_pixel|
-      24);  // |desired_size_in_pixel|
+      24,   // `min_source_size_in_pixel`
+      24);  // `desired_size_in_pixel`
   EXPECT_EQ(gfx::Size(24, 24), returned_bitmap_size_);
   EXPECT_EQ(std::nullopt, returned_fallback_style_);
 }
@@ -474,7 +474,7 @@ TEST_P(LargeIconServiceGetterTest, ScaleUp) {
   EXPECT_EQ(std::nullopt, returned_fallback_style_);
 }
 
-// |desired_size_in_pixel| == 0 means retrieve original image without scaling.
+// `desired_size_in_pixel` == 0 means retrieve original image without scaling.
 TEST_P(LargeIconServiceGetterTest, NoScale) {
   InjectMockResult(GURL(kDummyUrl), CreateTestBitmapResult(24, 24, kTestColor));
   GetLargeIconOrFallbackStyleAndWaitForCallback(GURL(kDummyUrl), 16, 0);

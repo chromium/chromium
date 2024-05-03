@@ -197,7 +197,7 @@ FaviconServiceImpl::GetLargestRawFaviconForID(
     favicon_base::FaviconRawBitmapCallback callback,
     base::CancelableTaskTracker* tracker) {
   TRACE_EVENT0("browser", "FaviconServiceImpl::GetLargestRawFaviconForID");
-  // Use 0 as |desired_size| to get the largest bitmap for |favicon_id| without
+  // Use 0 as `desired_size` to get the largest bitmap for `favicon_id` without
   // any resizing.
   int desired_size = 0;
   favicon_base::FaviconResultsCallback callback_runner =

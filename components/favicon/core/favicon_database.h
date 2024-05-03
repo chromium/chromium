@@ -62,42 +62,42 @@ class FaviconDatabase {
   void TrimMemory();
 
   // Get all on-demand favicon bitmaps that have been last requested prior to
-  // |threshold|.
+  // `threshold`.
   std::map<favicon_base::FaviconID, IconMappingsForExpiry>
   GetOldOnDemandFavicons(base::Time threshold);
 
   // Favicon Bitmaps -----------------------------------------------------------
 
-  // Returns true if there are favicon bitmaps for |icon_id|. If
-  // |bitmap_id_sizes| is non NULL, sets it to a list of the favicon bitmap ids
-  // and their associated pixel sizes for the favicon with |icon_id|.
+  // Returns true if there are favicon bitmaps for `icon_id`. If
+  // `bitmap_id_sizes` is non NULL, sets it to a list of the favicon bitmap ids
+  // and their associated pixel sizes for the favicon with `icon_id`.
   // The list contains results for the bitmaps which are cached in the
   // favicon_bitmaps table. The pixel sizes are a subset of the sizes in the
-  // 'sizes' field of the favicons table for |icon_id|.
+  // 'sizes' field of the favicons table for `icon_id`.
   bool GetFaviconBitmapIDSizes(
       favicon_base::FaviconID icon_id,
       std::vector<FaviconBitmapIDSize>* bitmap_id_sizes);
 
-  // Returns true if there are any matched bitmaps for the given |icon_id|. All
-  // matched results are returned if |favicon_bitmaps| is not NULL.
+  // Returns true if there are any matched bitmaps for the given `icon_id`. All
+  // matched results are returned if `favicon_bitmaps` is not NULL.
   bool GetFaviconBitmaps(favicon_base::FaviconID icon_id,
                          std::vector<FaviconBitmap>* favicon_bitmaps);
 
   // Gets the last updated time, bitmap data, and pixel size of the favicon
-  // bitmap at |bitmap_id|. Returns true if successful.
+  // bitmap at `bitmap_id`. Returns true if successful.
   bool GetFaviconBitmap(FaviconBitmapID bitmap_id,
                         base::Time* last_updated,
                         base::Time* last_requested,
                         scoped_refptr<base::RefCountedMemory>* png_icon_data,
                         gfx::Size* pixel_size);
 
-  // Adds a bitmap component of |type| at |pixel_size| for the favicon with
-  // |icon_id|. Only favicons representing a .ico file should have multiple
+  // Adds a bitmap component of `type` at `pixel_size` for the favicon with
+  // `icon_id`. Only favicons representing a .ico file should have multiple
   // favicon bitmaps per favicon.
-  // |icon_data| is the png encoded data.
-  // The |type| indicates how the lifetime of this icon should be managed.
-  // The |time| is used for lifetime management of the bitmap (should be Now()).
-  // |pixel_size| is the pixel dimensions of |icon_data|.
+  // `icon_data` is the png encoded data.
+  // The `type` indicates how the lifetime of this icon should be managed.
+  // The `time` is used for lifetime management of the bitmap (should be Now()).
+  // `pixel_size` is the pixel dimensions of `icon_data`.
   // Returns the id of the added bitmap or 0 if unsuccessful.
   FaviconBitmapID AddFaviconBitmap(
       favicon_base::FaviconID icon_id,
@@ -107,41 +107,41 @@ class FaviconDatabase {
       const gfx::Size& pixel_size);
 
   // Sets the bitmap data and the last updated time for the favicon bitmap at
-  // |bitmap_id|. Should not be called for bitmaps of type ON_DEMAND as they
+  // `bitmap_id`. Should not be called for bitmaps of type ON_DEMAND as they
   // should never get updated (the call silently changes the type to ON_VISIT).
   // Returns true if successful.
   bool SetFaviconBitmap(FaviconBitmapID bitmap_id,
                         scoped_refptr<base::RefCountedMemory> bitmap_data,
                         base::Time time);
 
-  // Sets the last_updated time for the favicon bitmap at |bitmap_id|. Should
+  // Sets the last_updated time for the favicon bitmap at `bitmap_id`. Should
   // not be called for bitmaps of type ON_DEMAND as last_updated time is only
   // tracked for ON_VISIT bitmaps (the call silently changes the type to
   // ON_VISIT). Returns true if successful.
   bool SetFaviconBitmapLastUpdateTime(FaviconBitmapID bitmap_id,
                                       base::Time time);
 
-  // Deletes the favicon bitmap with |bitmap_id|.
+  // Deletes the favicon bitmap with `bitmap_id`.
   // Returns true if successful.
   bool DeleteFaviconBitmap(FaviconBitmapID bitmap_id);
 
   // Favicons ------------------------------------------------------------------
 
-  // Sets the the favicon as out of date. This will set |last_updated| for all
-  // of the bitmaps for |icon_id| to be out of date.
+  // Sets the the favicon as out of date. This will set `last_updated` for all
+  // of the bitmaps for `icon_id` to be out of date.
   bool SetFaviconOutOfDate(favicon_base::FaviconID icon_id);
 
   // Mark all favicons as out of date that have been modified at or after
-  // |begin| and before |end|. This will set |last_updated| for all matching
+  // `begin` and before `end`. This will set `last_updated` for all matching
   // bitmaps to be out of date.
   bool SetFaviconsOutOfDateBetween(base::Time begin, base::Time end);
 
-  // Retrieves the newest |last_updated| time across all bitmaps for |icon_id|.
+  // Retrieves the newest `last_updated` time across all bitmaps for `icon_id`.
   // Returns true if successful and if there is at least one bitmap.
   bool GetFaviconLastUpdatedTime(favicon_base::FaviconID icon_id,
                                  base::Time* last_updated);
 
-  // Mark all bitmaps of type ON_DEMAND at |icon_url| as requested at |time|.
+  // Mark all bitmaps of type ON_DEMAND at `icon_url` as requested at `time`.
   // This postpones their automatic eviction from the database. Not all calls
   // end up in a write into the DB:
   // - it is no-op if the bitmaps are not of type ON_DEMAND;
@@ -168,18 +168,18 @@ class FaviconDatabase {
       const GURL& icon_url,
       favicon_base::IconType icon_type);
 
-  // Gets the icon_url, icon_type and sizes for the specified |icon_id|.
+  // Gets the icon_url, icon_type and sizes for the specified `icon_id`.
   bool GetFaviconHeader(favicon_base::FaviconID icon_id,
                         GURL* icon_url,
                         favicon_base::IconType* icon_type);
 
-  // Adds favicon with |icon_url|, |icon_type| and |favicon_sizes| to the
+  // Adds favicon with `icon_url`, `icon_type` and `favicon_sizes` to the
   // favicon db, returning its id.
   favicon_base::FaviconID AddFavicon(const GURL& icon_url,
                                      favicon_base::IconType icon_type);
 
   // Adds a favicon with a single bitmap. This call is equivalent to calling
-  // AddFavicon and AddFaviconBitmap of type |type|.
+  // AddFavicon and AddFaviconBitmap of type `type`.
   favicon_base::FaviconID AddFavicon(
       const GURL& icon_url,
       favicon_base::IconType icon_type,
@@ -199,7 +199,7 @@ class FaviconDatabase {
   // not NULL.
 
   // Returns true if there are icon mappings for the given page and icon types.
-  // The matched icon mappings are returned in the |mapping_data| parameter if
+  // The matched icon mappings are returned in the `mapping_data` parameter if
   // it is not NULL.
   bool GetIconMappingsForPageURL(
       const GURL& page_url,
@@ -212,12 +212,12 @@ class FaviconDatabase {
   bool GetIconMappingsForPageURL(const GURL& page_url,
                                  std::vector<IconMapping>* mapping_data);
 
-  // Given |url|, returns the |page_url| page mapped to an icon with
-  // |required_icon_types|, where |page_url| has host = url.host(). This allows
+  // Given `url`, returns the `page_url` page mapped to an icon with
+  // `required_icon_types`, where `page_url` has host = url.host(). This allows
   // for icons to be retrieved when a full URL is not available. For example,
-  // |url| = http://www.google.com would match
-  // |page_url| = https://www.google.com/search. The returned optional will be
-  // empty if no such |page_url| exists.
+  // `url` = http://www.google.com would match
+  // `page_url` = https://www.google.com/search. The returned optional will be
+  // empty if no such `page_url` exists.
   std::optional<GURL> FindFirstPageURLForHost(
       const GURL& url,
       const favicon_base::IconTypeSet& required_icon_types);
@@ -235,15 +235,15 @@ class FaviconDatabase {
   // Returns true if the deletion succeeded.
   bool DeleteIconMappingsForFaviconId(favicon_base::FaviconID id);
 
-  // Deletes the icon mapping with |mapping_id|.
+  // Deletes the icon mapping with `mapping_id`.
   // Returns true if the deletion succeeded.
   bool DeleteIconMapping(IconMappingID mapping_id);
 
   // Checks whether a favicon is used by any URLs in the database.
   bool HasMappingFor(favicon_base::FaviconID id);
 
-  // Returns the ids of favicons which were last updated before |time|. This
-  // returns at most |max_count| ids.
+  // Returns the ids of favicons which were last updated before `time`. This
+  // returns at most `max_count` ids.
   std::vector<favicon_base::FaviconID> GetFaviconsLastUpdatedBefore(
       base::Time time,
       int max_count);
@@ -270,7 +270,7 @@ class FaviconDatabase {
     sql::Statement statement_;
   };
 
-  // Return all icon mappings of the given |icon_type|.
+  // Return all icon mappings of the given `icon_type`.
   bool InitIconMappingEnumerator(favicon_base::IconType type,
                                  IconMappingEnumerator* enumerator);
 
@@ -299,8 +299,8 @@ class FaviconDatabase {
 
   // Open database on a given filename. If the file does not exist,
   // it is created.
-  // |db| is the database to open.
-  // |db_name| is a path to the database file.
+  // `db` is the database to open.
+  // `db_name` is a path to the database file.
   sql::InitStatus OpenDatabase(sql::Database* db,
                                const base::FilePath& db_name);
 
@@ -321,7 +321,7 @@ class FaviconDatabase {
   // Adds support for bitmap usage tracking.
   bool UpgradeToVersion8();
 
-  // Returns true if the |favicons| database is missing a column.
+  // Returns true if the `favicons` database is missing a column.
   bool IsFaviconDBStructureIncorrect();
 
   sql::Database db_;

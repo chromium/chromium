@@ -44,10 +44,10 @@ namespace favicon {
 //   icon_id          The ID of favicon that this mapping maps to.
 //
 // favicons           This table associates a row to each favicon for a
-//                    |page_url| in the |icon_mapping| table. This is the
-//                    default favicon |page_url|/favicon.ico plus any favicons
+//                    `page_url` in the `icon_mapping` table. This is the
+//                    default favicon `page_url`/favicon.ico plus any favicons
 //                    associated via <link rel="icon_type" href="url">.
-//                    The |id| matches the |icon_id| field in the appropriate
+//                    The `id` matches the `icon_id` field in the appropriate
 //                    row in the icon_mapping table.
 //
 //   id               Unique ID.
@@ -59,8 +59,8 @@ namespace favicon {
 // favicon_bitmaps    This table contains the PNG encoded bitmap data of the
 //                    favicons. There is a separate row for every size in a
 //                    multi resolution bitmap. The bitmap data is associated
-//                    to the favicon via the |icon_id| field which matches
-//                    the |id| field in the appropriate row in the |favicons|
+//                    to the favicon via the `icon_id` field which matches
+//                    the `id` field in the appropriate row in the `favicons`
 //                    table.
 //
 //   id               Unique ID.
@@ -72,8 +72,8 @@ namespace favicon {
 //                    This is used only for ON_VISIT icons, for ON_DEMAND the
 //                    value is always 0.
 //   image_data       PNG encoded data of the favicon.
-//   width            Pixel width of |image_data|.
-//   height           Pixel height of |image_data|.
+//   width            Pixel width of `image_data`.
+//   height           Pixel height of `image_data`.
 //   last_requested   The time at which this bitmap was last requested. This
 //                    entry is non-zero iff the bitmap is of type ON_DEMAND.
 //                    This info is used for clearing old ON_DEMAND bitmaps.
@@ -117,7 +117,7 @@ void FillIconMapping(const GURL& page_url,
 }
 
 // NOTE(shess): Schema modifications must consider initial creation in
-// |InitImpl()| and history pruning in |RetainDataForPageUrls()|.
+// `InitImpl()` and history pruning in `RetainDataForPageUrls()`.
 bool InitTables(sql::Database* db) {
   static const char kIconMappingSql[] =
       "CREATE TABLE IF NOT EXISTS icon_mapping"
@@ -160,7 +160,7 @@ bool InitTables(sql::Database* db) {
 }
 
 // NOTE(shess): Schema modifications must consider initial creation in
-// |InitImpl()| and history pruning in |RetainDataForPageUrls()|.
+// `InitImpl()` and history pruning in `RetainDataForPageUrls()`.
 bool InitIndices(sql::Database* db) {
   static const char kIconMappingUrlIndexSql[] =
       "CREATE INDEX IF NOT EXISTS icon_mapping_page_url_idx"
@@ -568,7 +568,7 @@ bool FaviconDatabase::GetFaviconLastUpdatedTime(favicon_base::FaviconID icon_id,
   if (!statement.Step())
     return false;
 
-  // Return false also if there there is no bitmap with |icon_id|.
+  // Return false also if there there is no bitmap with `icon_id`.
   if (statement.GetColumnType(0) == sql::ColumnType::kNull)
     return false;
 
@@ -852,7 +852,7 @@ bool FaviconDatabase::RetainDataForPageUrls(
   if (!transaction.Begin())
     return false;
 
-  // Populate temp.retained_urls with |urls_to_keep|.
+  // Populate temp.retained_urls with `urls_to_keep`.
   {
     static const char kCreateRetainedUrls[] =
         "CREATE TEMP TABLE retained_urls (url LONGVARCHAR PRIMARY KEY)";

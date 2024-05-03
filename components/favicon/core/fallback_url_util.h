@@ -13,7 +13,7 @@ class GURL;
 namespace favicon {
 
 // Returns a very short string (e.g., capitalized first letter in a domain's
-// name) to represent |url|.
+// name) to represent `url`.
 std::u16string GetFallbackIconText(const GURL& url);
 
 }  // namespace favicon

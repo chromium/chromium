@@ -15,8 +15,8 @@ class FaviconBackendDelegate {
  public:
   FaviconBackendDelegate() = default;
 
-  // Returns the redirects for |page_url|. This should always return a
-  // vector with at least one element (|page_url|).
+  // Returns the redirects for `page_url`. This should always return a
+  // vector with at least one element (`page_url`).
   virtual std::vector<GURL> GetCachedRecentRedirectsForPage(
       const GURL& page_url) = 0;
  protected:

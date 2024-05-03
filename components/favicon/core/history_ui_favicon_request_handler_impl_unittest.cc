@@ -89,8 +89,8 @@ class MockFaviconServiceWithFake : public MockFaviconService {
 
   ~MockFaviconServiceWithFake() override = default;
 
-  // Simulates the service having an icon stored for |page_url|, the URL of the
-  // image being |icon_url|. The real FaviconService performs resizing if it
+  // Simulates the service having an icon stored for `page_url`, the URL of the
+  // image being `icon_url`. The real FaviconService performs resizing if it
   // can't find a stored icon matching the requested size, so the same is true
   // here: any requested size will return a bitmap of that size.
   void StoreMockLocalFavicon(const GURL& page_url, const GURL& icon_url) {
@@ -136,9 +136,9 @@ class MockLargeIconServiceWithFake : public LargeIconService {
 
   ~MockLargeIconServiceWithFake() override = default;
 
-  // Simulates the Google Server having an icon stored for |page_url|, of
-  // associated |icon_url|. Requests will cause the icon to be stored in
-  // |mock_favicon_service_with_fake_|.
+  // Simulates the Google Server having an icon stored for `page_url`, of
+  // associated `icon_url`. Requests will cause the icon to be stored in
+  // `mock_favicon_service_with_fake_`.
   void StoreMockGoogleServerFavicon(const GURL& page_url,
                                     const GURL& icon_url) {
     ON_CALL(*this,
