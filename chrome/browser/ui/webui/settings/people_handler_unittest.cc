@@ -1450,18 +1450,21 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
 TEST_F(PeopleHandlerWithExplicitBrowserSigninTest,
        ChromeSigninUserInfoUpdateOnPrefValueChange) {
   const std::string email("user@gmail.com");
-  identity_test_env()->MakePrimaryAccountAvailable(email,
-                                                   ConsentLevel::kSignin);
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      email, ConsentLevel::kSignin);
   SetExplicitSignin(true);
 
   CreatePeopleHandler();
 
   ASSERT_FALSE(HasChromeSigninUserChoiceInfoChangeEvent());
 
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
   auto new_choice_value = ChromeSigninUserChoice::kSignin;
-  DiceWebSigninInterceptor::SetChromeSigninUserChoice(*profile()->GetPrefs(),
-                                                      email, new_choice_value);
-
+  ASSERT_NE(
+      signin_prefs.GetChromeSigninInterceptionUserChoice(account_info.gaia),
+      new_choice_value);
+  signin_prefs.SetChromeSigninInterceptionUserChoice(account_info.gaia,
+                                                     new_choice_value);
   ExpectChromeSigninUserChoiceInfoFromLastChangeEvent(true, new_choice_value,
                                                       email);
 }

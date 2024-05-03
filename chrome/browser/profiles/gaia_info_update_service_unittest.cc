@@ -132,8 +132,10 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   }
 
   void InitializeAccountPref(const std::string& gaia_id) {
-    // 5 is just a random value to create the pref.
-    SigninPrefs(pref_service_).SetDummyValue(gaia_id, 5);
+    // Set any pref value to create the pref container.
+    SigninPrefs(pref_service_)
+        .SetChromeSigninInterceptionUserChoice(gaia_id,
+                                               ChromeSigninUserChoice::kSignin);
   }
 
   content::BrowserTaskEnvironment task_environment_;

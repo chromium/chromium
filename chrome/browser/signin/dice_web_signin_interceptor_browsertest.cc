@@ -506,19 +506,15 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
  public:
   ChromeSigninUserChoice GetChromeSigninUserChoicePref(
       const AccountInfo& account_info) {
-    return DiceWebSigninInterceptor::GetChromeSigninUserChoice(
-        *GetProfile()->GetPrefs(), account_info.email);
+    return SigninPrefs(*GetProfile()->GetPrefs())
+        .GetChromeSigninInterceptionUserChoice(account_info.gaia);
   }
 
-  std::optional<int> GetChromeSigninInterceptDismissCountPref(
+  int GetChromeSigninInterceptDismissCountPref(
       const AccountInfo& account_info) {
-    return GetProfile()
-        ->GetPrefs()
-        ->GetDict(prefs::kChromeSigninInterceptionDismissCount)
-        .FindInt(DiceWebSigninInterceptor::GetPersistentEmailHash(
-            account_info.email));
+    return SigninPrefs(*GetProfile()->GetPrefs())
+        .GetChromeSigninInterceptionDismissCount(account_info.gaia);
   }
-
 
   void Signout() { identity_test_env()->ClearPrimaryAccount(); }
 
@@ -763,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup a first account for interception.
   const std::string email1("alice1@example.com");
   AccountInfo info1 = MakeAccountInfoAvailableAndUpdate(email1);
-  ASSERT_FALSE(GetChromeSigninInterceptDismissCountPref(info1).has_value());
+  ASSERT_EQ(GetChromeSigninInterceptDismissCountPref(info1), 0);
   ASSERT_EQ(GetChromeSigninUserChoicePref(info1),
             ChromeSigninUserChoice::kNoChoice);
 
@@ -789,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(
   // Setup the second account for interception.
   AccountInfo info2 = MakeAccountInfoAvailableAndUpdate("alice2@example.com");
   ASSERT_FALSE(info2.IsEmpty());
-  ASSERT_FALSE(GetChromeSigninInterceptDismissCountPref(info2).has_value());
+  ASSERT_EQ(GetChromeSigninInterceptDismissCountPref(info2), 0);
 
   // Intercept dismissed on account2.
   ShowAndCompleteSigninBubbleWithResult(info2,
@@ -837,9 +833,9 @@ IN_PROC_BROWSER_TEST_F(
   // Make account1 available again.
   info1 = MakeAccountInfoAvailableAndUpdate(email1);
   // Override account1 pref to always ask.
-  DiceWebSigninInterceptor::SetChromeSigninUserChoice(
-      *GetProfile()->GetPrefs(), info1.email,
-      ChromeSigninUserChoice::kAlwaysAsk);
+  SigninPrefs(*GetProfile()->GetPrefs())
+      .SetChromeSigninInterceptionUserChoice(
+          info1.gaia, ChromeSigninUserChoice::kAlwaysAsk);
   // Showing the bubble should succeed -- result is not important, only affect
   // histogram recorded.
   ShowAndCompleteSigninBubbleWithResult(info1,
@@ -877,8 +873,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Override account1 pref to always ask -- simulating changing it through the
   // settings.
-  DiceWebSigninInterceptor::SetChromeSigninUserChoice(
-      *GetProfile()->GetPrefs(), email, ChromeSigninUserChoice::kAlwaysAsk);
+  SigninPrefs(*GetProfile()->GetPrefs())
+      .SetChromeSigninInterceptionUserChoice(
+          info.gaia, ChromeSigninUserChoice::kAlwaysAsk);
   // Showing the bubble should succeed -- result is not important.
   ShowAndCompleteSigninBubbleWithResult(info,
                                         SigninInterceptionResult::kDismissed);
@@ -907,8 +904,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Override account1 pref to always ask -- simulating changing it through the
   // settings.
-  DiceWebSigninInterceptor::SetChromeSigninUserChoice(
-      *GetProfile()->GetPrefs(), email, ChromeSigninUserChoice::kAlwaysAsk);
+  SigninPrefs(*GetProfile()->GetPrefs())
+      .SetChromeSigninInterceptionUserChoice(
+          info.gaia, ChromeSigninUserChoice::kAlwaysAsk);
   // Showing the bubble should succeed -- result is not important.
   ShowAndCompleteSigninBubbleWithResult(info,
                                         SigninInterceptionResult::kDismissed);

@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
-#include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -51,6 +50,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -380,8 +380,8 @@ void PeopleHandler::OnJavascriptAllowed() {
       base::BindRepeating(&PeopleHandler::UpdateSyncStatus,
                           base::Unretained(this)));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  profile_pref_registrar_->Add(
-      prefs::kChromeSigninInterceptionUserChoice,
+  SigninPrefs::ObserveSigninPrefsChanges(
+      *profile_pref_registrar_,
       base::BindRepeating(&PeopleHandler::UpdateChromeSigninUserChoiceInfo,
                           base::Unretained(this)));
 #endif
@@ -1258,25 +1258,25 @@ base::Value::Dict PeopleHandler::GetChromeSigninUserChoiceInfo() {
       IdentityManagerFactory::GetForProfile(profile_);
   // Gets the Chrome signed in account or the first signed in account in the
   // cooke jar, refresh token should be available too.
-  std::string signed_in_email =
-      signin_ui_util::GetSingleAccountForPromos(identity_manager).email;
+  AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(identity_manager);
 
   bool should_show_settings =
       !signin::IsImplicitBrowserSigninOrExplicitDisabled(
           identity_manager, profile_->GetPrefs()) &&
-      !signed_in_email.empty();
+      !account.IsEmpty();
 
   ChromeSigninUserChoice choice =
       should_show_settings
-          ? DiceWebSigninInterceptor::GetChromeSigninUserChoice(
-                *profile_->GetPrefs(), signed_in_email)
+          ? SigninPrefs(*profile_->GetPrefs())
+                .GetChromeSigninInterceptionUserChoice(account.gaia)
           : ChromeSigninUserChoice::kNoChoice;
 
   base::Value::Dict chrome_signin_user_choice_info;
   chrome_signin_user_choice_info.Set("shouldShowSettings",
                                      should_show_settings);
   chrome_signin_user_choice_info.Set("choice", static_cast<int>(choice));
-  chrome_signin_user_choice_info.Set("signedInEmail", signed_in_email);
+  chrome_signin_user_choice_info.Set("signedInEmail", account.email);
 
   return chrome_signin_user_choice_info;
 }
@@ -1303,8 +1303,12 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
   std::string signed_in_email = args[1].GetString();
   CHECK(!signed_in_email.empty());
 
-  DiceWebSigninInterceptor::SetChromeSigninUserChoice(
-      *profile_->GetPrefs(), signed_in_email, user_choice);
+  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      IdentityManagerFactory::GetForProfile(profile_));
+  CHECK_EQ(account.email, signed_in_email);
+
+  SigninPrefs(*profile_->GetPrefs())
+      .SetChromeSigninInterceptionUserChoice(account.gaia, user_choice);
 }
 
 void PeopleHandler::UpdateChromeSigninUserChoiceInfo() {

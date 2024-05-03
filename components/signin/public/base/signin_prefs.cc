@@ -4,27 +4,40 @@
 
 #include "components/signin/public/base/signin_prefs.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
-#include "base/logging.h"
 #include "base/values.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-namespace {
 
+namespace {
 // Name of the main pref dictionary holding the account dictionaries of the
-// underlying prefs, with the key as the GaiaIds. The prefs stored through this
-// dict here are information not directly related to the account itself, only
-// metadata.
+// underlying prefs, with the key as the GaiaIds. The prefs stored through
+// this dict here are information not directly related to the account itself,
+// only metadata.
 constexpr char kSigninAccountPrefs[] = "signin.accounts_metadata_dict";
 
-// Dummy value pref; will later be replaced with real values.
-constexpr char kSigninAccountDummyValuePref[] = "dummy_value";
+// Pref used to store the user choice for the Chrome Signin Intercept. It is
+// tied to an account, stored as the content of a dictionary mapped by the
+// gaia id of the account.
+constexpr char kChromeSigninInterceptionUserChoice[] =
+    "ChromeSigninInterceptionUserChoice";
+
+// Pref used to store the number of dismisses of the Chrome Signin Bubble. It
+// is tied to an account, stored as the content of a dictionary mapped by the
+// gaia id of the account.
+constexpr char kChromeSigninInterceptionDismissCount[] =
+    "ChromeSigninInterceptionDismissCount";
 
 }  // namespace
 
 SigninPrefs::SigninPrefs(PrefService& pref_service)
     : pref_service_(pref_service) {}
+
+SigninPrefs::~SigninPrefs() = default;
 
 void SigninPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSigninAccountPrefs);
@@ -54,17 +67,61 @@ void SigninPrefs::RemoveAllAccountPrefsExcept(
   }
 }
 
-void SigninPrefs::SetDummyValue(GaiaId gaia_id, int dummy_value) {
-  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+// static
+void SigninPrefs::ObserveSigninPrefsChanges(PrefChangeRegistrar& registrar,
+                                            base::RepeatingClosure callback) {
+  registrar.Add(kSigninAccountPrefs, callback);
+}
 
+void SigninPrefs::SetChromeSigninInterceptionUserChoice(
+    GaiaId gaia_id,
+    ChromeSigninUserChoice user_choice) {
+  if (GetChromeSigninInterceptionUserChoice(gaia_id) == user_choice) {
+    return;
+  }
+
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
   // `EnsureDict` gets or create the dictionary.
   base::Value::Dict* account_dict = scoped_update->EnsureDict(gaia_id);
   // `Set` will add an entry if it doesn't already exists, or if it does, it
   // will overwrite it.
-  account_dict->Set(kSigninAccountDummyValuePref, dummy_value);
+  account_dict->Set(kChromeSigninInterceptionUserChoice,
+                    static_cast<int>(user_choice));
 }
 
-int SigninPrefs::GetDummyValue(GaiaId gaia_id) const {
+ChromeSigninUserChoice SigninPrefs::GetChromeSigninInterceptionUserChoice(
+    GaiaId gaia_id) const {
+  const base::Value::Dict* account_dict =
+      pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id);
+  // If the account dict does not exist yet; return the default value.
+  if (!account_dict) {
+    return ChromeSigninUserChoice::kNoChoice;
+  }
+  // Return the pref value if it exists, otherwise return the default value.
+  // No value default to 0 -> `ChromeSigninUserChoice::kNoChoice`.
+  return static_cast<ChromeSigninUserChoice>(
+      account_dict->FindInt(kChromeSigninInterceptionUserChoice).value_or(0));
+}
+
+int SigninPrefs::IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id) {
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+
+  // `EnsureDict` gets or create the dictionary.
+  base::Value::Dict* account_dict = scoped_update->EnsureDict(gaia_id);
+  // Get the current value of the pref.
+  std::optional<int> value =
+      account_dict->FindInt(kChromeSigninInterceptionDismissCount);
+  // Increment the `value`. If `value` was not set before, default is 0.
+  int new_value = value.value_or(0) + 1;
+
+  // `Set` will add an entry if it doesn't already exists.
+  account_dict->Set(kChromeSigninInterceptionDismissCount, new_value);
+
+  // Return the incremented value.
+  return new_value;
+}
+
+int SigninPrefs::GetChromeSigninInterceptionDismissCount(GaiaId gaia_id) const {
   const base::Value::Dict* account_dict =
       pref_service_->GetDict(kSigninAccountPrefs).FindDict(gaia_id);
   // If the account dict does not exist yet; return the default value.
@@ -73,5 +130,6 @@ int SigninPrefs::GetDummyValue(GaiaId gaia_id) const {
   }
 
   // Return the pref value if it exists, otherwise return the default value.
-  return account_dict->FindInt(kSigninAccountDummyValuePref).value_or(0);
+  return account_dict->FindInt(kChromeSigninInterceptionDismissCount)
+      .value_or(0);
 }

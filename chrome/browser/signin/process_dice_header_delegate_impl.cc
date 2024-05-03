@@ -64,8 +64,8 @@ void AttemptChromeSignin(CoreAccountId account_id,
           identity_manager->FindExtendedAccountInfoByAccountId(account_id);
       // If the user did not choose the signin choice, do not proceed with a
       // sign in from a Web Signin.
-      if (DiceWebSigninInterceptor::GetChromeSigninUserChoice(
-              *profile.GetPrefs(), account_info.email) !=
+      if (SigninPrefs(*profile.GetPrefs())
+              .GetChromeSigninInterceptionUserChoice(account_info.gaia) !=
           ChromeSigninUserChoice::kSignin) {
         return;
       }

@@ -8,10 +8,32 @@
 #include <string_view>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 class PrefService;
 class PrefRegistrySimple;
+class PrefChangeRegistrar;
+
+// Value of the user choice for the Chrome Signin bubble effect.
+// Theses values are persisted to disk through prefs, they should not be
+// renumbered or reused.
+// - `kNoChoice` is the default value, it is applied when the user made no
+// explicit choice yet (on the bubble or the settings).
+// - The user can made a choice through the Chrome Signin bubble by accepting or
+// declining the bubble leading to `kSignin` and `kDoNotSignin` respectively.
+// - Dismissing the bubble multiple times will be treated as `kDoNotSignin` as
+// long as the user is in `kNoChoice` mode.
+// - There is no way to go back to `kNoChoice` after a choice has been taken or
+// applied.
+enum class ChromeSigninUserChoice {
+  kNoChoice = 0,
+  kAlwaysAsk = 1,
+  kSignin = 2,
+  kDoNotSignin = 3,
+};
 
 // Wrapper around `PrefService` to access/update account signin prefs.
 // The prefs used here are Chrome specific prefs that are tied to the accounts
@@ -32,6 +54,7 @@ class SigninPrefs {
   using GaiaId = std::string_view;
 
   explicit SigninPrefs(PrefService& pref_service);
+  ~SigninPrefs();
 
   // Pref access:
   // Writing a value will create the account dictionary and the pref value if
@@ -40,12 +63,21 @@ class SigninPrefs {
   // Reading a value from a pref dictionary or a data pref that do not exist yet
   // will return the default value of that pref.
 
-  // Dummy value to show the interface/implementation. To be removed when adding
-  // a real value.
-  void SetDummyValue(GaiaId gaia_id, int dummy_value);
-  int GetDummyValue(GaiaId gaia_id) const;
+  void SetChromeSigninInterceptionUserChoice(
+      GaiaId gaia_id,
+      ChromeSigninUserChoice user_choice);
+  ChromeSigninUserChoice GetChromeSigninInterceptionUserChoice(
+      GaiaId gaia_id) const;
 
-  // Checks if the an account pref with the given `gaia_id` exists.
+  int IncrementChromeSigninInterceptionDismissCount(GaiaId gaia_id);
+  int GetChromeSigninInterceptionDismissCount(GaiaId gaia_id) const;
+
+  // Note: `callback` will be notified on every change in the main dictionary
+  // and sub-dictionries (account dictionaries).
+  static void ObserveSigninPrefsChanges(PrefChangeRegistrar& registrar,
+                                        base::RepeatingClosure callback);
+
+  // Checks if the account pref with the given `gaia_id` exists.
   bool HasAccountPrefs(GaiaId gaia_id) const;
 
   // Keeps all prefs with the gaia ids given in `gaia_ids_to_keep`.
@@ -58,7 +90,7 @@ class SigninPrefs {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
-  const raw_ref<PrefService> pref_service_;
+  const raw_ref<PrefService, DanglingUntriaged> pref_service_;
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_PREFS_H_

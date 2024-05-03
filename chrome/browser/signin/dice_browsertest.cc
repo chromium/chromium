@@ -1378,8 +1378,9 @@ class DiceBrowserTextWithExplicitSignin : public DiceBrowserTest {
  public:
   // Sets the user choice for Chrome Signin on `main_email_`.
   void SetChromeSigninChoice(ChromeSigninUserChoice choice) {
-    DiceWebSigninInterceptor::SetChromeSigninUserChoice(
-        *browser()->profile()->GetPrefs(), main_email_, choice);
+    SigninPrefs(*browser()->profile()->GetPrefs())
+        .SetChromeSigninInterceptionUserChoice(
+            signin::GetTestGaiaIdForEmail(main_email_), choice);
   }
 
   // Signs in `main_email_`.
