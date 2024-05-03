@@ -8,8 +8,6 @@
 #include <tuple>
 
 #include "base/containers/contains.h"
-#include "base/containers/map_util.h"
-#include "base/types/optional_util.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
@@ -59,14 +57,9 @@ bool IsWebViewProcessForExtension(int process_id,
 }  // namespace
 
 // ProcessMap
-ProcessMap::ProcessMap(content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+ProcessMap::ProcessMap() = default;
 
 ProcessMap::~ProcessMap() = default;
-
-void ProcessMap::Shutdown() {
-  browser_context_ = nullptr;
-}
 
 // static
 ProcessMap* ProcessMap::Get(content::BrowserContext* browser_context) {
@@ -74,35 +67,32 @@ ProcessMap* ProcessMap::Get(content::BrowserContext* browser_context) {
 }
 
 bool ProcessMap::Insert(const ExtensionId& extension_id, int process_id) {
-  return items_.emplace(process_id, extension_id).second;
+  return items_.emplace(extension_id, process_id).second;
 }
 
-int ProcessMap::Remove(int process_id) {
-  return items_.erase(process_id);
+int ProcessMap::RemoveAllFromProcess(int process_id) {
+  return std::erase_if(
+      items_, [&](const auto& item) { return item.second == process_id; });
 }
 
-bool ProcessMap::Contains(const ExtensionId& extension_id_in,
+bool ProcessMap::Contains(const ExtensionId& extension_id,
                           int process_id) const {
-  auto* extension_id = base::FindOrNull(items_, process_id);
-  return extension_id && *extension_id == extension_id_in;
+  return items_.contains({extension_id, process_id});
 }
 
 bool ProcessMap::Contains(int process_id) const {
-  return base::Contains(items_, process_id);
+  return base::Contains(items_, process_id, &Item::second);
 }
 
-const Extension* ProcessMap::GetEnabledExtensionByProcessID(
-    int process_id) const {
-  auto* extension_id = base::FindOrNull(items_, process_id);
-  return extension_id ? ExtensionRegistry::Get(browser_context_)
-                            ->enabled_extensions()
-                            .GetByID(*extension_id)
-                      : nullptr;
-}
-
-std::optional<ExtensionId> ProcessMap::GetExtensionIdForProcess(
-    int process_id) const {
-  return base::OptionalFromPtr(base::FindOrNull(items_, process_id));
+std::set<ExtensionId> ProcessMap::GetExtensionsInProcess(
+    int process_id_in) const {
+  std::set<ExtensionId> result;
+  for (const auto& [extension_id, process_id] : items_) {
+    if (process_id == process_id_in) {
+      result.insert(extension_id);
+    }
+  }
+  return result;
 }
 
 bool ProcessMap::IsPrivilegedExtensionProcess(const Extension& extension,

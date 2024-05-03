@@ -4767,7 +4767,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
   auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
   auto* guest_process = guest->GetProcess();
   EXPECT_FALSE(process_map->Contains(guest_process->GetID()));
-  EXPECT_FALSE(process_map->GetExtensionIdForProcess(guest_process->GetID()));
+  EXPECT_TRUE(
+      process_map->GetExtensionsInProcess(guest_process->GetID()).empty());
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
@@ -6157,8 +6158,8 @@ IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   // APIs.
   auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
   EXPECT_FALSE(process_map->Contains(guest->GetProcess()->GetID()));
-  EXPECT_FALSE(
-      process_map->GetExtensionIdForProcess(guest->GetProcess()->GetID()));
+  EXPECT_TRUE(process_map->GetExtensionsInProcess(guest->GetProcess()->GetID())
+                  .empty());
   EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.webstorePrivate"));
   EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.dashboardPrivate"));
 }
