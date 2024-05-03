@@ -23,20 +23,13 @@
   _viewController = [[QuickDeleteViewController alloc] init];
   _viewController.presentationHandler = self;
 
-  _navigationController = [[UINavigationController alloc]
-      initWithRootViewController:_viewController];
-  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-
-  [self.baseViewController presentViewController:_navigationController
+  [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
 }
 
 - (void)stop {
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
-  _navigationController = nil;
+  [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController.presentationHandler = nil;
   _viewController = nil;
 }
