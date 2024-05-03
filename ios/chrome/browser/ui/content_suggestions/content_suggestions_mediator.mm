@@ -109,7 +109,9 @@
   if (!self.consumer) {
     return;
   }
-  [self.magicStackRankingModel fetchLatestMagicStackRanking];
+  if (!IsIOSMagicStackCollectionViewEnabled()) {
+    [self.magicStackRankingModel fetchLatestMagicStackRanking];
+  }
   if (!ShouldPutMostVisitedSitesInMagicStack() &&
       self.mostVisitedTilesMediator.mostVisitedConfig) {
     [self.consumer setMostVisitedTilesConfig:self.mostVisitedTilesMediator
