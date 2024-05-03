@@ -37,14 +37,13 @@ public class PwaRestoreBottomSheetCoordinator {
             int backArrowId) {
         mController = bottomSheetController;
 
-        ArrayList<PwaRestoreProperties.AppInfo> recentApps = new ArrayList();
-        ArrayList<PwaRestoreProperties.AppInfo> olderApps = new ArrayList();
+        ArrayList<PwaRestoreProperties.AppInfo> apps = new ArrayList();
 
         assert appIds.length == appNames.length;
         assert appIds.length == lastUsedInDays.length;
         assert appIds.length == appIcons.size();
         for (int i = 0; i < appIds.length; i++) {
-            recentApps.add(
+            apps.add(
                     new PwaRestoreProperties.AppInfo(
                             appIds[i], appNames[i], appIcons.get(i), lastUsedInDays[i]));
         }
@@ -54,8 +53,7 @@ public class PwaRestoreBottomSheetCoordinator {
         mContent = new PwaRestoreBottomSheetContent(mView);
         mMediator =
                 new PwaRestoreBottomSheetMediator(
-                        recentApps,
-                        olderApps,
+                        apps,
                         activity,
                         this::onReviewButtonClicked,
                         this::onRestoreButtonClicked,

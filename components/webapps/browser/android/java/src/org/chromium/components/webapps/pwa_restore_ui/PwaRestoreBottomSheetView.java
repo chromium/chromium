@@ -7,7 +7,6 @@ package org.chromium.components.webapps.pwa_restore_ui;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -98,16 +97,10 @@ public class PwaRestoreBottomSheetView implements View.OnTouchListener {
         mContentView.setVisibility(viewState == ViewState.PREVIEW ? View.GONE : View.VISIBLE);
     }
 
-    protected void setAppList(
-            Pair<List<PwaRestoreProperties.AppInfo>, List<PwaRestoreProperties.AppInfo>> appLists,
-            String recentAppLabel,
-            String oldAppLabel) {
+    protected void setAppList(List<PwaRestoreProperties.AppInfo> appList, String appLabel) {
         LinearLayout scrollViewContent = getContentView().findViewById(R.id.scroll_view_content);
         scrollViewContent.removeAllViews();
-        prepareAppList(appLists.first, recentAppLabel, scrollViewContent);
-        if (appLists.second.size() > 0) {
-            prepareAppList(appLists.second, oldAppLabel, scrollViewContent);
-        }
+        prepareAppList(appList, appLabel, scrollViewContent);
     }
 
     private void prepareAppList(

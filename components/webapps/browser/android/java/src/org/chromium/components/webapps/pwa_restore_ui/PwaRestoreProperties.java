@@ -5,7 +5,6 @@
 package org.chromium.components.webapps.pwa_restore_ui;
 
 import android.graphics.Bitmap;
-import android.util.Pair;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
@@ -86,8 +85,8 @@ public class PwaRestoreProperties {
     // PropertyKey indicating the view state of the bottom sheet:
     static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey();
 
-    // App list (recent apps and older apps):
-    static final WritableObjectPropertyKey<Pair<List<AppInfo>, List<AppInfo>>> APPS =
+    // App list:
+    static final WritableObjectPropertyKey<List<AppInfo>> APPS =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     // Simple labels:
@@ -105,10 +104,7 @@ public class PwaRestoreProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> EXPANDED_BUTTON_LABEL =
             new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<String> RECENT_APPS_TITLE =
-            new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<String> OLDER_APPS_TITLE =
-            new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<String> APPS_TITLE = new WritableObjectPropertyKey<>();
 
     // Button handling:
     static final ReadableObjectPropertyKey<OnClickListener> BACK_BUTTON_ON_CLICK_CALLBACK =
@@ -134,8 +130,7 @@ public class PwaRestoreProperties {
         EXPANDED_TITLE,
         DESELECT_BUTTON_LABEL,
         EXPANDED_BUTTON_LABEL,
-        RECENT_APPS_TITLE,
-        OLDER_APPS_TITLE,
+        APPS_TITLE,
         BACK_BUTTON_ON_CLICK_CALLBACK,
         REVIEW_BUTTON_ON_CLICK_CALLBACK,
         DESELECT_BUTTON_ON_CLICK_CALLBACK,

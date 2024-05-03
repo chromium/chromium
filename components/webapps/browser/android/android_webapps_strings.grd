@@ -256,11 +256,8 @@
       <message name="IDS_PWA_RESTORE_TITLE_PEEKING" desc="The sheet title when the PWA Restore BottomSheet UI is in peeking state.">
          Restore your web apps
       </message>
-      <message name="IDS_PWA_RESTORE_RECENT_APPS_LIST" desc="The label for the recent list.">
+      <message name="IDS_PWA_RESTORE_APPS_LIST" desc="The label for the app list.">
          Web apps used in the last month
-      </message>
-      <message name="IDS_PWA_RESTORE_OLDER_APPS_LIST" desc="The label for the list of older apps.">
-         Older
       </message>
       <message name="IDS_PWA_RESTORE_BUTTON_DESELECT" desc="The label for the 'Deselect All' button.">
          Deselect all

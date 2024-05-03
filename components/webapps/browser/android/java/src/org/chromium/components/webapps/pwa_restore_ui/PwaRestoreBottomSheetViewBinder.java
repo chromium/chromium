@@ -21,8 +21,7 @@ class PwaRestoreBottomSheetViewBinder {
         } else if (propertyKey.equals(PwaRestoreProperties.APPS)) {
             view.setAppList(
                     model.get(PwaRestoreProperties.APPS),
-                    model.get(PwaRestoreProperties.RECENT_APPS_TITLE),
-                    model.get(PwaRestoreProperties.OLDER_APPS_TITLE));
+                    model.get(PwaRestoreProperties.APPS_TITLE));
         } else if (propertyKey.equals(PwaRestoreProperties.PEEK_DESCRIPTION)) {
             ((TextView) view.getPreviewView().findViewById(R.id.description))
                     .setText(model.get(PwaRestoreProperties.PEEK_DESCRIPTION));
