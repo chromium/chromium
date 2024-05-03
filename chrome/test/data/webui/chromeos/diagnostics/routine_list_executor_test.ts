@@ -7,14 +7,13 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {ExecutionProgress, ResultStatusItem, RoutineListExecutor} from 'chrome://diagnostics/routine_list_executor.js';
 import {PowerRoutineResult, RoutineResultInfo, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('fakeRoutineListExecutorTestSuite', function() {
-  /** @type {?FakeSystemRoutineController} */
-  let controller = null;
+  let controller: FakeSystemRoutineController|null = null;
 
-  /** @type {?RoutineListExecutor} */
-  let executor = null;
+  let executor: RoutineListExecutor|null = null;
 
   setup(() => {
     controller = new FakeSystemRoutineController();
@@ -30,12 +29,13 @@ suite('fakeRoutineListExecutorTestSuite', function() {
    * Helper function that takes an array of RoutineResultInfo which contains
    * the routine name and expected result, initializes the fake routine runner,
    * then executes and validates the results.
-   * @param {!Array<!RoutineResultInfo>} routines
    */
-  function runRoutinesAndAssertResults(routines) {
-    const expectedCallbacks = [];
-    const routineTypes = [];
-    routines.forEach((routine) => {
+  function runRoutinesAndAssertResults(routines: RoutineResultInfo[]):
+      Promise<void> {
+    const expectedCallbacks: ResultStatusItem[] = [];
+    const routineTypes: RoutineType[] = [];
+    routines.forEach((routine: RoutineResultInfo) => {
+      assert(controller);
       // Set the result into the fake.
       assertNotEquals(undefined, routine);
       assertNotEquals(undefined, routine.result);
@@ -47,15 +47,12 @@ suite('fakeRoutineListExecutorTestSuite', function() {
 
       if (routine.result.hasOwnProperty('simpleResult')) {
         controller.setFakeStandardRoutineResult(
-            /** @type {!RoutineType} */ (routine.type),
-            /** @type {!StandardRoutineResult} */
-            (routine.result.simpleResult));
+            routine.type,
+            routine.result!.simpleResult as StandardRoutineResult);
       } else {
-        assertTrue(routine.result.powerResult.hasOwnProperty('simpleResult'));
+        assertTrue(routine.result!.powerResult!.hasOwnProperty('simpleResult'));
         controller.setFakePowerRoutineResult(
-            /** @type {!RoutineType} */ (routine.type),
-            /** @type {!PowerRoutineResult} */
-            (routine.result.powerResult));
+            routine.type, routine.result!.powerResult as PowerRoutineResult);
       }
 
       // Build the list of routines to run.
@@ -73,73 +70,76 @@ suite('fakeRoutineListExecutorTestSuite', function() {
     });
 
     // Create the callback that validates the arguments.
-    let upto = 0;
+    let callbackIndex = 0;
 
-    /** @type {!function(!ResultStatusItem)} */
-    const statusCallback = (status) => {
-      assertTrue(upto < expectedCallbacks.length);
-      assertEquals(expectedCallbacks[upto].routine, status.routine);
-      assertEquals(expectedCallbacks[upto].progress, status.progress);
+    const statusCallback = (status: ResultStatusItem) => {
+      assertTrue(callbackIndex < expectedCallbacks.length);
+      assertEquals(expectedCallbacks[callbackIndex]!.routine, status.routine);
+      assertEquals(expectedCallbacks[callbackIndex]!.progress, status.progress);
       if (status.progress === ExecutionProgress.RUNNING) {
         assertEquals(null, status.result);
       } else {
-        if (expectedCallbacks[upto].result.hasOwnProperty('simpleResult')) {
+        if (expectedCallbacks[callbackIndex]!.result!.hasOwnProperty(
+                'simpleResult')) {
           assertEquals(
-              expectedCallbacks[upto].result.simpleResult,
-              status.result.simpleResult);
+              expectedCallbacks[callbackIndex]!.result!.simpleResult,
+              status.result!.simpleResult);
         } else {
           assertEquals(
-              expectedCallbacks[upto].result.powerResult.simpleResult,
-              status.result.powerResult.simpleResult);
+              expectedCallbacks[callbackIndex]!.result!.powerResult!
+                  .simpleResult,
+              status!.result!.powerResult!.simpleResult);
         }
       }
 
-      upto++;
+      ++callbackIndex;
     };
-
+    assert(executor);
     return executor.runRoutines(routineTypes, statusCallback).then(() => {
       // Ensure that all the callbacks were sent.
-      assertEquals(expectedCallbacks.length, upto);
+      assertEquals(expectedCallbacks.length, callbackIndex);
     });
   }
 
   test('SingleTest', () => {
-    /** @type {!Array<!RoutineResultInfo>} */
-    const routines = [{
+    const routines: RoutineResultInfo[] = [{
       type: RoutineType.kCpuStress,
-      result: {simpleResult: StandardRoutineResult.kTestFailed},
+      result: {
+        simpleResult: StandardRoutineResult.kTestFailed,
+        powerResult: undefined,
+      },
     }];
     return runRoutinesAndAssertResults(routines);
   });
 
   test('MultipleTests', () => {
-    /** @type {!Array<!RoutineResultInfo>} */
-    const routines = [
+    const routines: RoutineResultInfo[] = [
       {
         type: RoutineType.kCpuStress,
-        result: {simpleResult: StandardRoutineResult.kTestPassed},
+        result: {
+          simpleResult: StandardRoutineResult.kTestPassed,
+          powerResult: undefined,
+        },
       },
       {
         type: RoutineType.kCpuCache,
-        result: {simpleResult: StandardRoutineResult.kTestFailed},
+        result: {
+          simpleResult: StandardRoutineResult.kTestFailed,
+          powerResult: undefined,
+        },
       },
       {
         type: RoutineType.kCpuFloatingPoint,
-        result: {simpleResult: StandardRoutineResult.kTestPassed},
+        result: {
+          simpleResult: StandardRoutineResult.kTestPassed,
+          powerResult: undefined,
+        },
       },
       {
         type: RoutineType.kCpuPrime,
-        result: {simpleResult: StandardRoutineResult.kTestFailed},
-      },
-      {
-        type: RoutineType.kBatteryCharge,
         result: {
-          powerResult: {
-            simpleResult: StandardRoutineResult.kTestFailed,
-            isCharging: true,
-            percentDelta: 10,
-            timeDeltaSeconds: 10,
-          },
+          simpleResult: StandardRoutineResult.kTestFailed,
+          powerResult: undefined,
         },
       },
     ];

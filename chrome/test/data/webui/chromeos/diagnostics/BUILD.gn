@@ -47,7 +47,7 @@ build_webui_tests("build_webui_tests") {
     "percent_bar_chart_test.js",
     "realtime_cpu_chart_test.js",
     "routine_group_test.js",
-    "routine_list_executor_test.js",
+    "routine_list_executor_test.ts",
     "routine_result_entry_test.js",
     "routine_result_list_test.js",
     "routine_section_test.js",
