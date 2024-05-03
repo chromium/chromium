@@ -231,19 +231,21 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
     return;
   }
 
-  GURL url = web_contents->GetLastCommittedURL();
   std::string identifier = GetIdentifier(profile);
 
-  DataProtectionPageUserData::UpdateScreenshotState(
-      GetPageFromWebContents(web_contents), identifier,
-      IsScreenshotAllowedByDataControls(profile, url));
+  if (IsDesktopDataControlsEnabled()) {
+    DataProtectionPageUserData::UpdateScreenshotState(
+        GetPageFromWebContents(web_contents), identifier,
+        IsScreenshotAllowedByDataControls(profile,
+                                          web_contents->GetLastCommittedURL()));
+  }
 
   auto* lookup_service =
       g_lookup_service
           ? g_lookup_service
           : safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::
                 GetForProfile(profile);
-  if (lookup_service) {
+  if (lookup_service && IsEnterpriseLookupEnabled(profile)) {
     auto lookup_callback = base::BindOnce(
         [](const std::string& identifier,
            DataProtectionNavigationObserver::Callback callback,
@@ -383,7 +385,12 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
         base::BindOnce(&OnDoLookupComplete, web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_), identifier_),
         web_contents());
+  } else if (web_contents()) {
+    RunPendingNavigationCallback(web_contents(),
+                                 std::move(pending_navigation_callback_));
   }
+
+  DCHECK(pending_navigation_callback_.is_null());
 }
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(DataProtectionNavigationObserver);

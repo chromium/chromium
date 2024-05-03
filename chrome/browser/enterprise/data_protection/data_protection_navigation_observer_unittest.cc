@@ -319,6 +319,58 @@ TEST_F(DataProtectionNavigationObserverTest,
   simulator->Commit();
 
   EXPECT_FALSE(future.Get().allow_screenshots);
+  EXPECT_TRUE(future.Get().watermark_text.empty());
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings(), future.Get());
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       TestScreenshotUpdated_DataControls_NoUrlCheck) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+        {
+          "name":"block",
+          "rule_id":"1234",
+          "sources":{"urls":["example.com"]},
+          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+        }
+      )"});
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
+
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by BrowserView. So we simply call Start() and manually
+  // construct the class using the navigation handle that is provided once
+  // Start() is called.
+  simulator->Start();
+  content::NavigationHandle* navigation_handle =
+      simulator->GetNavigationHandle();
+  base::test::TestFuture<const UrlSettings&> future;
+
+  // The DataProtectionNavigationObserver needs to be constructed using
+  // CreateForNavigationHandle to allow for proper lifetime management of the
+  // object, since we call DeleteForNavigationHandle() in our
+  // DidFinishNavigation() override.
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      CreateForNavigationHandle(*navigation_handle, nullptr,
+                                navigation_handle->GetWebContents(),
+                                future.GetCallback());
+
+  // Call DidFinishNavigation() navigation, which should invoke our callback.
+  simulator->Commit();
+
+  EXPECT_FALSE(future.Get().allow_screenshots);
+  EXPECT_TRUE(future.Get().watermark_text.empty());
 
   // Value should be cached.
   auto* user_data = DataProtectionPageUserData::GetForPage(
@@ -453,6 +505,40 @@ TEST_F(DataProtectionNavigationObserverTest,
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
+       GetDataProtectionSettings_DC_BlockScreenshot_NoUrlCheck) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+        {
+          "name":"block",
+          "rule_id":"1234",
+          "sources":{"urls":["example.com"]},
+          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+        }
+      )"});
+
+  SetContents(CreateTestWebContents());
+  NavigateAndCommit(GURL("https://example.com"));
+
+  base::test::TestFuture<const UrlSettings&> future;
+  DataProtectionNavigationObserver::GetDataProtectionSettings(
+      Profile::FromBrowserContext(browser_context()), web_contents(),
+      future.GetCallback());
+  EXPECT_TRUE(future.Get().watermark_text.empty());
+  EXPECT_FALSE(future.Get().allow_screenshots);
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings(), future.Get());
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
        GetDataProtectionSettings_DC_BlockScreenshot_Redirect) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
@@ -502,6 +588,59 @@ TEST_F(DataProtectionNavigationObserverTest,
     simulator->Redirect(kRedirectUrl);
     EXPECT_TRUE(future_lookup_complete.Wait());
   }
+
+  simulator->Commit();
+  EXPECT_TRUE(navigation_future.Wait());
+
+  // The result of the above should be that
+  // screenshots are not allowed.
+  base::test::TestFuture<const UrlSettings&> get_settings_future;
+  DataProtectionNavigationObserver::GetDataProtectionSettings(
+      Profile::FromBrowserContext(browser_context()), web_contents(),
+      get_settings_future.GetCallback());
+  EXPECT_FALSE(get_settings_future.Get().allow_screenshots);
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings(), get_settings_future.Get());
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       GetDataProtectionSettings_DC_BlockScreenshot_RedirectWithoutUrlCheck) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      safe_browsing::REAL_TIME_CHECK_DISABLED);
+
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+        {
+          "name":"block",
+          "rule_id":"1234",
+          "sources":{"urls":["redirect.com"]},
+          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+        }
+      )"});
+
+  SetContents(CreateTestWebContents());
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
+  simulator->Start();
+  content::NavigationHandle* navigation_handle =
+      simulator->GetNavigationHandle();
+  base::test::TestFuture<const UrlSettings&> navigation_future;
+
+  const GURL kRedirectUrl = GURL("https://redirect.com");
+
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      CreateForNavigationHandle(*navigation_handle, nullptr,
+                                navigation_handle->GetWebContents(),
+                                navigation_future.GetCallback());
+
+  // Redirect to a URL that should not allow screenshots.
+  simulator->Redirect(kRedirectUrl);
 
   simulator->Commit();
   EXPECT_TRUE(navigation_future.Wait());
