@@ -13,11 +13,15 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+// Vertical insets of the "Autofill Form" button.
+constexpr CGFloat kAutofillFormButtonVerticalInsets = 9;
 
 // Bottom margin for the cell content. Used when the Keyboard Accessory Upgrade
 // feature is disabled.
@@ -465,6 +469,21 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
   }
 
   return gray_line;
+}
+
+UIButton* CreateAutofillFormButton() {
+  UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  UIButtonConfiguration* buttonConfiguration = button.configuration;
+  buttonConfiguration.contentInsets =
+      NSDirectionalEdgeInsetsMake(kAutofillFormButtonVerticalInsets, 0,
+                                  kAutofillFormButtonVerticalInsets, 0);
+  button.configuration = buttonConfiguration;
+
+  SetConfigurationTitle(
+      button, l10n_util::GetNSString(
+                  IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE));
+
+  return button;
 }
 
 UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,

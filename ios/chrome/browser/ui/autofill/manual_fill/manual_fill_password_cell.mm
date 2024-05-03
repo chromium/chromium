@@ -151,6 +151,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
 // Layout guide for the cell's content.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
 
+// Button to autofill the current form with the credential's data.
+@property(nonatomic, strong) UIButton* autofillFormButton;
+
 @end
 
 @implementation ManualFillPasswordCell
@@ -262,6 +265,12 @@ static const CGFloat kOffsetForConnectedCell = 16;
     self.grayLine.hidden = YES;
   }
 
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    AddViewToVerticalLeadViews(self.autofillFormButton,
+                               ManualFillCellView::ElementType::kOther,
+                               verticalLeadViews);
+  }
+
   // Set and activate constraints.
   self.dynamicConstraints = [[NSMutableArray alloc] init];
   CGFloat offset = isConnectedToPreviousCell ? -kOffsetForConnectedCell : 0;
@@ -334,6 +343,13 @@ static const CGFloat kOffsetForConnectedCell = 16;
       staticConstraints, @[ self.passwordButton ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
+
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    self.autofillFormButton = CreateAutofillFormButton();
+    [self.contentView addSubview:self.autofillFormButton];
+    AppendHorizontalConstraintsForViews(
+        staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
+  }
 
   [NSLayoutConstraint activateConstraints:staticConstraints];
 }
