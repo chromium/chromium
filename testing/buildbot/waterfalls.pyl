@@ -1095,6 +1095,19 @@
           'gtest_tests': 'android_13_emulator_gtests',
         }
       },
+      'android-15-x64-fyi-rel': {
+        'mixins': [
+          '15-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_15_emulator_gtests',
+        }
+      },
       'android-annotator-rel': {
           'test_suites': {
             'scripts': 'test_traffic_annotation_auditor_script',
