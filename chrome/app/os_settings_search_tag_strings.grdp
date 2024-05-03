@@ -128,28 +128,46 @@
   <message name="IDS_OS_SETTINGS_TAG_CELLULAR_RENAME_PROFILE_ALT1" desc="Text for search result item which, when clicked, navigates the user to the Cellular eSIM network settings, with a menu containing a button to rename the currently-connected eSIM Cellular network. Alternate phrase for: 'Rename eSIM Cellular network">
     Rename eSIM profile
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone). Alternate phrase for: 'Hotspot'">
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS" desc="Text for search result item which, when clicked, navigates the user to Instant hotspot settings (allows Chromebook to use mobile connection from phone). Alternate phrase for: 'Hotspot'">
     Mobile networks
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS_ALT1" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone). Alternate phrase for: 'Mobile networks'">
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS_ALT1" desc="Text for search result item which, when clicked, navigates the user to Instant hotspot settings (allows Chromebook to use mobile connection from phone). Alternate phrase for: 'Mobile networks'">
     Instant hotspot
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone), with a toggle to turn off the feature. Alternate phrase for: 'Disable Instant Tethering'">
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to Instant hotspot settings (allows Chromebook to use mobile connection from phone), with a toggle to turn off the feature. Alternate phrase for: 'Disable Instant hotspot'">
+    Turn off Instant hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to Instant hotspot settings (allows Chromebook to use mobile connection from phone), with a toggle to turn off the feature. Alternate phrase for: 'Turn off Instant hotspot'">
+    Disable Instant hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_LEGACY" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone), with a toggle to turn off the feature. Alternate phrase for: 'Disable Instant Tethering'">
     Turn off Instant Tethering
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone), with a toggle to turn off the feature. Alternate phrase for: 'Turn off Instant Tethering'">
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_OFF_ALT1_LEGACY" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone), with a toggle to turn off the feature. Alternate phrase for: 'Turn off Instant Tethering'">
     Disable Instant Tethering
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone), with a toggle to turn on the feature. Alternate phrase for: 'Enable Instant Tethering'">
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to Instant hotspot settings (allows Chromebook to use mobile connection from phone), with a toggle to turn on the feature. Alternate phrase for: 'Enable Instant hotspot'">
+    Turn on Instant hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1" desc="Text for search result item which, when clicked, navigates the user to Instant hotspot settings (allows Chromebook to use mobile connection from phone), with a toggle to turn on the feature. Alternate phrase for: 'Turn on Instant hotspot'">
+    Enable Instant hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_LEGACY" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone), with a toggle to turn on the feature. Alternate phrase for: 'Enable Instant Tethering'">
     Turn on Instant Tethering
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone), with a toggle to turn on the feature. Alternate phrase for: 'Turn on Instant Tethering'">
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_TURN_ON_ALT1_LEGACY" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings (allows Chromebook to use mobile connection from phone), with a toggle to turn on the feature. Alternate phrase for: 'Turn on Instant Tethering'">
     Enable Instant Tethering
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings, which lists properties about the currently-connected Instant Tethering network. Alternate phrase for: 'Disconnect Instant Tethering network', 'Configure Wi-Fi'">
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING" desc="Text for search result item which, when clicked, navigates the user to Instant hotspot settings, which lists properties about the currently-connected Instant hotspot network. Alternate phrase for: 'Disconnect Instant hotspot network', 'Configure Wi-Fi'">
+    Instant hotspot
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_LEGACY" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings, which lists properties about the currently-connected Instant Tethering network. Alternate phrase for: 'Disconnect Instant Tethering network', 'Configure Wi-Fi'">
     Instant Tethering
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings, with a button to disconnect from the currently-connected Instant Tethering network. Alternate phrase for: 'Configure Wi-Fi'">
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT" desc="Text for search result item which, when clicked, navigates the user to Instant hotspot settings, with a button to disconnect from the currently-connected Instant hotspot network. Alternate phrase for: 'Configure Wi-Fi'">
+    Disconnect Instant hotspot network
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_INSTANT_TETHERING_DISCONNECT_LEGACY" desc="Text for search result item which, when clicked, navigates the user to Instant Tethering settings, with a button to disconnect from the currently-connected Instant Tethering network. Alternate phrase for: 'Configure Wi-Fi'">
     Disconnect Instant Tethering network
   </message>
   <message name="IDS_OS_SETTINGS_TAG_VPN" desc="Text for search result item which, when clicked, navigates the user to VPN settings.">

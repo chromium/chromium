@@ -222,8 +222,11 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
 
   ShowNotification(CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id,
-      l10n_util::GetStringUTF16(
-          IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE),
+      features::IsInstantHotspotRebrandEnabled()
+          ? l10n_util::GetStringUTF16(
+                IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE)
+          : l10n_util::GetStringUTF16(
+                IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE_LEGACY),
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE),
       std::u16string() /* display_source */, GURL() /* origin_url */,
