@@ -42,6 +42,8 @@ class LocalDataSource : public mojom::DataSource {
 
  protected:
   void FillDataBuffer();
+  // Make this virtual so unittests can override it
+  virtual void SerializeDataBuffer(std::vector<std::string>& buffer);
 
   // Returns a unique identifier for logging purposes only.
   virtual const std::string& GetDisplayName() = 0;
@@ -55,7 +57,7 @@ class LocalDataSource : public mojom::DataSource {
 
  private:
   bool IsDataBufferOverMaxLimit();
-  void RedactUploadBuffer();
+  void RedactDataBuffer(std::vector<std::string>& buffer);
   void AddTimestamps(std::vector<std::string>& data);
   bool IsWatchDogFilterValid(mojom::DataFilterPtr& filter);
   void FireChangeWatchdogCallbacks(const std::string& data);

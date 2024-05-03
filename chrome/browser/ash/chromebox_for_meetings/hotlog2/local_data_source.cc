@@ -45,11 +45,6 @@ void LocalDataSource::Fetch(FetchCallback callback) {
     std::move(data_buffer_.begin(), data_buffer_.end(),
               std::back_inserter(pending_upload_buffer_));
     data_buffer_.clear();
-
-    if (data_needs_redacting_) {
-      RedactUploadBuffer();
-    }
-    // TODO(b/326441003): serialize upload buffer
   }
 
   std::move(callback).Run(pending_upload_buffer_);
@@ -138,6 +133,12 @@ void LocalDataSource::FillDataBuffer() {
     CheckRegexWatchdogsAndFireCallbacks(line);
   }
 
+  if (data_needs_redacting_) {
+    RedactDataBuffer(next_data);
+  }
+
+  SerializeDataBuffer(next_data);
+
   std::move(next_data.begin(), next_data.end(),
             std::back_inserter(data_buffer_));
 
@@ -160,10 +161,15 @@ bool LocalDataSource::IsDataBufferOverMaxLimit() {
   return data_buffer_.size() > kMaxInternalBufferSize;
 }
 
-void LocalDataSource::RedactUploadBuffer() {
-  for (size_t i = 0; i < pending_upload_buffer_.size(); i++) {
-    pending_upload_buffer_[i] = redactor_.Redact(pending_upload_buffer_[i]);
+void LocalDataSource::RedactDataBuffer(std::vector<std::string>& buffer) {
+  for (size_t i = 0; i < buffer.size(); i++) {
+    buffer[i] = redactor_.Redact(buffer[i]);
   }
+}
+
+void LocalDataSource::SerializeDataBuffer(std::vector<std::string>& buffer) {
+  // TODO(b/326441003): add serialization logic
+  (void)buffer;
 }
 
 void LocalDataSource::AddTimestamps(std::vector<std::string>& data) {
