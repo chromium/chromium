@@ -234,6 +234,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(
             kFakeGeolocationLatitude, kFakeGeolocationLongitude);
+
+    SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting();
   }
 
   void TearDownOnMainThread() override {
@@ -770,16 +772,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
 // Tests the local save bubble. Ensures that clicking the [No thanks] button
 // successfully causes the bubble to go away.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Local_ClickingNoThanksClosesBubble \
-  DISABLED_Local_ClickingNoThanksClosesBubble
-#else
-#define MAYBE_Local_ClickingNoThanksClosesBubble \
-  Local_ClickingNoThanksClosesBubble
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_Local_ClickingNoThanksClosesBubble) {
+                       Local_ClickingNoThanksClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -806,14 +800,8 @@ class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_AlertAccessibleEvent DISABLED_AlertAccessibleEvent
-#else
-#define MAYBE_AlertAccessibleEvent AlertAccessibleEvent
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_AlertAccessibleEvent) {
+                       AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
@@ -868,15 +856,8 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
 
 // Tests the manage cards bubble. Ensures that clicking the [Manage cards]
 // button redirects properly.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Local_ManageCardsButtonRedirects \
-  DISABLED_Local_ManageCardsButtonRedirects
-#else
-#define MAYBE_Local_ManageCardsButtonRedirects Local_ManageCardsButtonRedirects
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestSettings,
-                       MAYBE_Local_ManageCardsButtonRedirects) {
+                       Local_ManageCardsButtonRedirects) {
   base::HistogramTester histogram_tester;
   OpenSettingsFromManageCardsPrompt();
 
@@ -894,16 +875,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestSettings,
 // dismissed and then immediately torn down (e.g. by closing browser window)
 // before the asynchronous close completes. Regression test for
 // https://crbug.com/842577 .
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_Local_SynchronousCloseAfterAsynchronousClose \
-  DISABLED_Local_SynchronousCloseAfterAsynchronousClose
-#else
-#define MAYBE_Local_SynchronousCloseAfterAsynchronousClose \
-  Local_SynchronousCloseAfterAsynchronousClose
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_Local_SynchronousCloseAfterAsynchronousClose) {
+                       Local_SynchronousCloseAfterAsynchronousClose) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -1008,16 +981,8 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
 
 // Tests the implicit sync state. Ensures that the (i) info icon appears for
 // upload save offers.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_TransportMode_InfoTextIconExists \
-  DISABLED_Upload_TransportMode_InfoTextIconExists
-#else
-#define MAYBE_Upload_TransportMode_InfoTextIconExists \
-  Upload_TransportMode_InfoTextIconExists
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-                       MAYBE_Upload_TransportMode_InfoTextIconExists) {
+                       Upload_TransportMode_InfoTextIconExists) {
   SetUpForSyncTransportModeTest();
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1029,16 +994,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 
 // Tests the implicit sync state. Ensures that the (i) info icon does not appear
 // for local save offers.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Local_TransportMode_InfoTextIconDoesNotExist \
-  DISABLED_Local_TransportMode_InfoTextIconDoesNotExist
-#else
-#define MAYBE_Local_TransportMode_InfoTextIconDoesNotExist \
-  Local_TransportMode_InfoTextIconDoesNotExist
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-                       MAYBE_Local_TransportMode_InfoTextIconDoesNotExist) {
+                       Local_TransportMode_InfoTextIconDoesNotExist) {
   SetUpForSyncTransportModeTest();
   FillForm();
 
@@ -1063,17 +1020,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 // Tests the upload save bubble when sync transport for Wallet data is active.
 // Ensures that if cardholder name is explicitly requested, it is prefilled with
 // the name from the user's Google Account.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName \
-  DISABLED_Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName
-#else
-#define MAYBE_Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName \
-  Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-    MAYBE_Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
+    Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
   // Signing in (without granting sync consent or explicitly setting up Sync)
   // should trigger starting the Sync machinery in standalone transport mode.
   secondary_account_helper::SignInUnconsentedAccount(
@@ -1115,18 +1064,9 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTestParameterized
 // Tests the upload save bubble. Ensures that clicking the "Save" button
 // successfully accepts the bubble and sends an UploadCardRequest RPC to
 // Google Payments.
-// TODO(crbug.com/330528954): Flaky test fails CHECK(save_card_bubble_views) in
-// FindViewInBubbleById().
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Upload_TransportMode_ClickingSaveAcceptsBubble \
-  DISABLED_Upload_TransportMode_ClickingSaveAcceptsBubble
-#else
-#define MAYBE_Upload_TransportMode_ClickingSaveAcceptsBubble \
-  Upload_TransportMode_ClickingSaveAcceptsBubble
-#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsSyncTransportFullFormBrowserTestParameterized,
-    MAYBE_Upload_TransportMode_ClickingSaveAcceptsBubble) {
+    Upload_TransportMode_ClickingSaveAcceptsBubble) {
   SetUpForSyncTransportModeTest();
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1158,17 +1098,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests the fully-syncing state. Ensures that the Butter (i) info icon does not
 // appear for fully-syncing users.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_NotTransportMode_InfoTextIconDoesNotExist \
-  DISABLED_Upload_NotTransportMode_InfoTextIconDoesNotExist
-#else
-#define MAYBE_Upload_NotTransportMode_InfoTextIconDoesNotExist \
-  Upload_NotTransportMode_InfoTextIconDoesNotExist
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_NotTransportMode_InfoTextIconDoesNotExist) {
+    Upload_NotTransportMode_InfoTextIconDoesNotExist) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1182,17 +1114,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that clicking the [No thanks] button
 // successfully causes the bubble to go away.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_ClickingNoThanksClosesBubble \
-  DISABLED_Upload_ClickingNoThanksClosesBubble
-#else
-#define MAYBE_Upload_ClickingNoThanksClosesBubble \
-  Upload_ClickingNoThanksClosesBubble
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_ClickingNoThanksClosesBubble) {
+    Upload_ClickingNoThanksClosesBubble) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1213,16 +1137,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that clicking the top-right [X] close
 // button successfully causes the bubble to go away.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_ClickingCloseClosesBubble \
-  DISABLED_Upload_ClickingCloseClosesBubble
-#else
-#define MAYBE_Upload_ClickingCloseClosesBubble Upload_ClickingCloseClosesBubble
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_ClickingCloseClosesBubble) {
+    Upload_ClickingCloseClosesBubble) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1235,17 +1152,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble does not surface the
 // cardholder name textfield if it is not needed.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_ShouldNotRequestCardholderNameInHappyPath \
-  DISABLED_Upload_ShouldNotRequestCardholderNameInHappyPath
-#else
-#define MAYBE_Upload_ShouldNotRequestCardholderNameInHappyPath \
-  Upload_ShouldNotRequestCardholderNameInHappyPath
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_ShouldNotRequestCardholderNameInHappyPath) {
+    Upload_ShouldNotRequestCardholderNameInHappyPath) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1258,17 +1167,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a textfield
 // requesting cardholder name if cardholder name is missing.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn \
-  DISABLED_Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn
-#else
-#define MAYBE_Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn \
-  Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn) {
+    Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1310,17 +1211,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if the cardholder name textfield
 // is empty, the user is not allowed to click [Save] and close the dialog.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested \
-  DISABLED_Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested
-#else
-#define MAYBE_Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested \
-  Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested) {
+    Upload_SaveButtonIsDisabledIfNoCardholderNameAndCardholderNameRequested) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1348,17 +1241,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested, it is prefilled with the name from the user's Google Account.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_RequestedCardholderNameTextfieldIsPrefilledWithFocusName \
-  DISABLED_Upload_RequestedCardholderNameTextfieldIsPrefilledWithFocusName
-#else
-#define MAYBE_Upload_RequestedCardholderNameTextfieldIsPrefilledWithFocusName \
-  Upload_RequestedCardholderNameTextfieldIsPrefilledWithFocusName
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
+    Upload_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
   base::HistogramTester histogram_tester;
 
   // Start sync.
@@ -1387,17 +1272,9 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested but the name on the user's Google Account is unable to be fetched
 // for any reason, the textfield is left blank.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing \
-  DISABLED_Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing
-#else
-#define MAYBE_Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing \
-  Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing) {
+    Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing) {
   base::HistogramTester histogram_tester;
 
   // Start sync.
@@ -1665,17 +1542,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests UMA logging for the upload save bubble. Ensures that if the user
 // declines upload, Autofill.UploadAcceptedCardOrigin is not logged.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_DecliningUploadDoesNotLogUserAcceptedCardOriginUMA \
-  DISABLED_Upload_DecliningUploadDoesNotLogUserAcceptedCardOriginUMA
-#else
-#define MAYBE_Upload_DecliningUploadDoesNotLogUserAcceptedCardOriginUMA \
-  Upload_DecliningUploadDoesNotLogUserAcceptedCardOriginUMA
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_DecliningUploadDoesNotLogUserAcceptedCardOriginUMA) {
+    Upload_DecliningUploadDoesNotLogUserAcceptedCardOriginUMA) {
   base::HistogramTester histogram_tester;
 
   // Start sync.
@@ -1696,17 +1565,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date is missing.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate \
-  DISABLED_Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate
-#else
-#define MAYBE_Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate \
-  Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate) {
+    Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate) {
   SetUpForEditableExpirationDate();
   FillFormWithoutExpirationDate();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1715,17 +1576,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date is expired.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate \
-  DISABLED_Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate
-#else
-#define MAYBE_Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate \
-  Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate) {
+    Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate) {
   SetUpForEditableExpirationDate();
   FillFormWithSpecificExpirationDate("08", "2000");
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1734,17 +1587,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that the bubble does not surface the
 // expiration date dropdowns if it is not needed.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
-#define MAYBE_Upload_ShouldNotRequestExpirationDateInHappyPath \
-  DISABLED_Upload_ShouldNotRequestExpirationDateInHappyPath
-#else
-#define MAYBE_Upload_ShouldNotRequestExpirationDateInHappyPath \
-  Upload_ShouldNotRequestExpirationDateInHappyPath
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_ShouldNotRequestExpirationDateInHappyPath) {
+    Upload_ShouldNotRequestExpirationDateInHappyPath) {
   SetUpForEditableExpirationDate();
   FillForm();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1761,17 +1606,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if the expiration date drop down
 // box is changing, [Save] button will change status correctly.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SaveButtonStatusResetBetweenExpirationDateSelectionChanges \
-  DISABLED_Upload_SaveButtonStatusResetBetweenExpirationDateSelectionChanges
-#else
-#define MAYBE_Upload_SaveButtonStatusResetBetweenExpirationDateSelectionChanges \
-  Upload_SaveButtonStatusResetBetweenExpirationDateSelectionChanges
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SaveButtonStatusResetBetweenExpirationDateSelectionChanges) {
+    Upload_SaveButtonStatusResetBetweenExpirationDateSelectionChanges) {
   SetUpForEditableExpirationDate();
   FillFormWithoutExpirationDate();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1801,17 +1638,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that if the user is selecting an
 // expired expiration date, it is not allowed to click [Save].
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SaveButtonIsDisabledIfExpiredExpirationDateAndExpirationDateRequested \
-  DISABLED_Upload_SaveButtonIsDisabledIfExpiredExpirationDateAndExpirationDateRequested
-#else
-#define MAYBE_Upload_SaveButtonIsDisabledIfExpiredExpirationDateAndExpirationDateRequested \
-  Upload_SaveButtonIsDisabledIfExpiredExpirationDateAndExpirationDateRequested
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SaveButtonIsDisabledIfExpiredExpirationDateAndExpirationDateRequested) {
+    Upload_SaveButtonIsDisabledIfExpiredExpirationDateAndExpirationDateRequested) {
   SetUpForEditableExpirationDate();
   FillFormWithoutExpirationDate();
   SubmitFormAndWaitForCardUploadSaveBubble();
@@ -1874,17 +1703,9 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if month is missing and year is detected
 // but out of the range of dropdown.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange \
-  DISABLED_Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange
-#else
-#define MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange \
-  Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange) {
+    Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange) {
   SetUpForEditableExpirationDate();
   // Fill form but with an expiration year ten years in the future which is out
   // of the range of |year_input_dropdown_|.
@@ -1900,17 +1721,9 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date month is missing and
 // year is detected but passed.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndYearExpired \
-  DISABLED_Upload_SubmittingFormWithExpirationDateMonthAndYearExpired
-#else
-#define MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndYearExpired \
-  Upload_SubmittingFormWithExpirationDateMonthAndYearExpired
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndYearExpired) {
+    Upload_SubmittingFormWithExpirationDateMonthAndYearExpired) {
   SetUpForEditableExpirationDate();
   // Fill form with a valid month but a passed year.
   FillFormWithSpecificExpirationDate("08", "2000");
@@ -1926,17 +1739,9 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date is expired but is
 // current year.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear \
-  DISABLED_Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear
-#else
-#define MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear \
-  Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear) {
+    Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear) {
   SetUpForEditableExpirationDate();
   const base::Time kJune2017 =
       base::Time::FromSecondsSinceUnixEpoch(1497552271);
@@ -1959,16 +1764,8 @@ IN_PROC_BROWSER_TEST_F(
 //                         boolean to branch local vs. upload logic.
 // Tests the local save bubble. Ensures that clicking the [No thanks] button
 // successfully causes a strike to be added.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleDeclined \
-  DISABLED_StrikeDatabase_Local_AddStrikeIfBubbleDeclined
-#else
-#define MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleDeclined \
-  StrikeDatabase_Local_AddStrikeIfBubbleDeclined
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleDeclined) {
+                       StrikeDatabase_Local_AddStrikeIfBubbleDeclined) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -1986,16 +1783,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the [X] button
 // successfully causes a strike to be added.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleIgnored \
-  DISABLED_StrikeDatabase_Local_AddStrikeIfBubbleIgnored
-#else
-#define MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleIgnored \
-  StrikeDatabase_Local_AddStrikeIfBubbleIgnored
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleIgnored) {
+                       StrikeDatabase_Local_AddStrikeIfBubbleIgnored) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -2013,17 +1802,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
 // Tests the upload save bubble. Ensures that clicking the [No thanks] button
 // successfully causes a strike to be added.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_StrikeDatabase_Upload_AddStrikeIfBubbleDeclined \
-  DISABLED_StrikeDatabase_Upload_AddStrikeIfBubbleDeclined
-#else
-#define MAYBE_StrikeDatabase_Upload_AddStrikeIfBubbleDeclined \
-  StrikeDatabase_Upload_AddStrikeIfBubbleDeclined
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_StrikeDatabase_Upload_AddStrikeIfBubbleDeclined) {
+    StrikeDatabase_Upload_AddStrikeIfBubbleDeclined) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -2044,17 +1825,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save bubble. Ensures that clicking the [X] button
 // successfully causes a strike to be added.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_StrikeDatabase_Upload_AddStrikeIfBubbleIgnored \
-  DISABLED_StrikeDatabase_Upload_AddStrikeIfBubbleIgnored
-#else
-#define MAYBE_StrikeDatabase_Upload_AddStrikeIfBubbleIgnored \
-  StrikeDatabase_Upload_AddStrikeIfBubbleIgnored
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_StrikeDatabase_Upload_AddStrikeIfBubbleIgnored) {
+    StrikeDatabase_Upload_AddStrikeIfBubbleIgnored) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -2077,16 +1850,8 @@ IN_PROC_BROWSER_TEST_F(
 // example of declining the prompt three times and ensuring that the
 // offer-to-save bubble does not appear on the fourth try. Then, ensures that no
 // strikes are added if the card already has max strikes.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_StrikeDatabase_Local_FullFlowTest \
-  DISABLED_StrikeDatabase_Local_FullFlowTest
-#else
-#define MAYBE_StrikeDatabase_Local_FullFlowTest \
-  StrikeDatabase_Local_FullFlowTest
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_StrikeDatabase_Local_FullFlowTest) {
+                       StrikeDatabase_Local_FullFlowTest) {
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
   for (int i = 0; i < credit_card_save_manager()
                           ->GetCreditCardSaveStrikeDatabase()
@@ -2147,11 +1912,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 // example of declining the prompt three times and ensuring that the
 // offer-to-save bubble does not appear on the fourth try. Then, ensures that no
 // strikes are added if the card already has max strikes.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-// TODO(crbug.com/330571334): Resolve widespread flakes.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    DISABLED_StrikeDatabase_Upload_FullFlowTest) {
+    StrikeDatabase_Upload_FullFlowTest) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -2218,15 +1981,9 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Tests to ensure the card nickname is shown correctly in the Upstream bubble.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_LocalCardHasNickname DISABLED_LocalCardHasNickname
-#else
-#define MAYBE_LocalCardHasNickname LocalCardHasNickname
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_LocalCardHasNickname) {
+    LocalCardHasNickname) {
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();
   // Set card number to match the number to be filled in the form.
@@ -2244,15 +2001,9 @@ IN_PROC_BROWSER_TEST_F(
             card.NicknameAndLastFourDigitsForTesting());
 }
 
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_LocalCardHasNoNickname DISABLED_LocalCardHasNoNickname
-#else
-#define MAYBE_LocalCardHasNoNickname LocalCardHasNoNickname
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_LocalCardHasNoNickname) {
+    LocalCardHasNoNickname) {
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();
   // Set card number to match the number to be filled in the form.
@@ -2285,17 +2036,9 @@ class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested and the user accepts the dialog after changing it, the correct
 // metric is logged.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric \
-  DISABLED_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric
-#else
-#define MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric \
-  Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric
-#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized,
-    MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric) {
+    Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
   // Set the user's full name.
@@ -2329,18 +2072,9 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested and the user accepts the dialog without changing it, the correct
 // metric is logged.
-// TODO(crbug.com/330528954): Flaky test fails CHECK(save_card_bubble_views) in
-// FindViewInBubbleById().
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
-#define MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric \
-  DISABLED_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric
-#else
-#define MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric \
-  Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric
-#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized,
-    MAYBE_Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric) {
+    Upload_CardholderNameRequested_SubmittingPrefilledValueLogsUneditedMetric) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
   // Set the user's full name.
@@ -2370,18 +2104,9 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested, filling it and clicking "Save" logs dialog's acceptance.
-// TODO(crbug.com/330528954): Flaky test fails CHECK(save_card_bubble_views) in
-// FindViewInBubbleById().
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested \
-  DISABLED_Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested
-#else
-#define MAYBE_Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested \
-  Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested
-#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstreamParameterized,
-    MAYBE_Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested) {
+    Upload_EnteringCardholderNameAndClickingSaveAcceptsBubbleIfCardholderNameRequested) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -2436,17 +2161,9 @@ class SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation
 // Tests the upload save bubble. Ensures that clicking the [Save] button
 // does not close the bubble, causes a loading throbber to appear and hides the
 // other dialog buttons.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_ClickingSave_ShowsLoadingView \
-  DISABLED_Upload_ClickingSave_ShowsLoadingView
-#else
-#define MAYBE_Upload_ClickingSave_ShowsLoadingView \
-  Upload_ClickingSave_ShowsLoadingView
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
-    MAYBE_Upload_ClickingSave_ShowsLoadingView) {
+    Upload_ClickingSave_ShowsLoadingView) {
   ASSERT_TRUE(SetupSync());
 
   FillForm();
@@ -2469,16 +2186,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the local save bubble. Ensures that clicking the [Save] button
 // closes the bubble.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Local_ClickingSave_ClosesBubble \
-  DISABLED_Local_ClickingSave_ClosesBubble
-#else
-#define MAYBE_Local_ClickingSave_ClosesBubble Local_ClickingSave_ClosesBubble
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
-    MAYBE_Local_ClickingSave_ClosesBubble) {
+    Local_ClickingSave_ClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -2494,17 +2204,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that when the bubble view is created while the controller is in an
 // UPLOAD_IN_PROGRESS state, the loading view will be shown.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Upload_InProgress_ShowsLoadingView \
-  DISABLED_Upload_InProgress_ShowsLoadingView
-#else
-#define MAYBE_Upload_InProgress_ShowsLoadingView \
-  Upload_InProgress_ShowsLoadingView
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
-    MAYBE_Upload_InProgress_ShowsLoadingView) {
+    Upload_InProgress_ShowsLoadingView) {
   ASSERT_TRUE(SetupSync());
 
   FillForm();
@@ -2543,15 +2245,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the local save bubble. Ensures that clicking the [Save] button
 // successfully causes the bubble to go away.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Local_ClickingSaveClosesBubble \
-  DISABLED_Local_ClickingSaveClosesBubble
-#else
-#define MAYBE_Local_ClickingSaveClosesBubble Local_ClickingSaveClosesBubble
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_Local_ClickingSaveClosesBubble) {
+                       Local_ClickingSaveClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -2572,16 +2267,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
 // Tests the manage cards bubble. Ensures that it shows up by clicking the
 // credit card icon.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Local_ClickingIconShowsManageCards \
-  DISABLED_Local_ClickingIconShowsManageCards
-#else
-#define MAYBE_Local_ClickingIconShowsManageCards \
-  Local_ClickingIconShowsManageCards
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_Local_ClickingIconShowsManageCards) {
+                       Local_ClickingIconShowsManageCards) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -2609,16 +2296,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
 // Tests the manage cards bubble. Ensures that clicking the [Done]
 // button closes the bubble.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Local_ManageCardsDoneButtonClosesBubble \
-  DISABLED_Local_ManageCardsDoneButtonClosesBubble
-#else
-#define MAYBE_Local_ManageCardsDoneButtonClosesBubble \
-  Upload_Local_ManageCardsDoneButtonClosesBubble
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_Local_ManageCardsDoneButtonClosesBubble) {
+                       Local_ManageCardsDoneButtonClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -2647,14 +2326,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                   Bucket(ManageCardsPromptMetric::kManageCardsDone, 1)));
 }
 
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_IconViewAccessibleName DISABLED_IconViewAccessibleName
-#else
-#define MAYBE_IconViewAccessibleName IconViewAccessibleName
-#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       MAYBE_IconViewAccessibleName) {
+                       IconViewAccessibleName) {
   EXPECT_EQ(GetSaveCardIconView()->GetAccessibleName(),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD));
   EXPECT_EQ(GetSaveCardIconView()->GetTextForTooltipAndAccessibleName(),
@@ -2663,17 +2336,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
 // Test to verify the account chip footer is displayed correctly on the upload
 // save bubble. User label information contains the user avatar and email.
-// TODO(crbug.com/40917625): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_UploadBubble_CheckForAccountChipFooter \
-  DISABLED_UploadBubble_CheckForAccountChipFooter
-#else
-#define MAYBE_UploadBubble_CheckForAccountChipFooter \
-  UploadBubble_CheckForAccountChipFooter
-#endif
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    MAYBE_UploadBubble_CheckForAccountChipFooter) {
+    UploadBubble_CheckForAccountChipFooter) {
   ASSERT_TRUE(SetupSync());
 
   FillForm();

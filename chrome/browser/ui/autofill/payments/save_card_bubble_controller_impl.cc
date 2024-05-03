@@ -55,6 +55,8 @@
 
 namespace autofill {
 
+static bool g_ignore_window_activation_for_testing = false;
+
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
@@ -692,6 +694,11 @@ int SaveCardBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
              : IDS_AUTOFILL_CARD_SAVED;
 }
 
+// static
+void SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting() {
+  g_ignore_window_activation_for_testing = true;
+}
+
 void SaveCardBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
   if (base::FeatureList::IsEnabled(
@@ -839,6 +846,10 @@ void SaveCardBubbleControllerImpl::OpenUrl(const GURL& url) {
 }
 
 bool SaveCardBubbleControllerImpl::IsWebContentsActive() {
+  if (g_ignore_window_activation_for_testing) {
+    return true;
+  }
+
   Browser* active_browser = chrome::FindBrowserWithActiveWindow();
   return active_browser &&
          active_browser->tab_strip_model()->GetActiveWebContents() ==

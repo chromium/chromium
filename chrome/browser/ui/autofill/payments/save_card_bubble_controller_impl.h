@@ -126,6 +126,8 @@ class SaveCardBubbleControllerImpl
   PaymentBubbleType GetPaymentBubbleType() const override;
   int GetSaveSuccessAnimationStringId() const override;
 
+  static void IgnoreWindowActivationForTesting();
+
  protected:
   explicit SaveCardBubbleControllerImpl(content::WebContents* web_contents);
 
