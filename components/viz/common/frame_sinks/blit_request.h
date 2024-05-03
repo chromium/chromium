@@ -74,6 +74,10 @@ class VIZ_COMMON_EXPORT BlitRequest {
       const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
           mailboxes,
       bool populates_gpu_memory_buffer);
+  explicit BlitRequest(const gfx::Point& destination_region_offset,
+                       LetterboxingBehavior letterboxing_behavior,
+                       const gpu::MailboxHolder& mailbox,
+                       bool populates_gpu_memory_buffer);
 
   BlitRequest(BlitRequest&& other);
   BlitRequest& operator=(BlitRequest&& other);

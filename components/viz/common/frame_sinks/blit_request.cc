@@ -40,6 +40,16 @@ BlitRequest::BlitRequest(
       mailboxes_(mailboxes),
       populates_gpu_memory_buffer_(populates_gpu_memory_buffer) {}
 
+BlitRequest::BlitRequest(const gfx::Point& destination_region_offset,
+                         LetterboxingBehavior letterboxing_behavior,
+                         const gpu::MailboxHolder& mailbox,
+                         bool populates_gpu_memory_buffer)
+    : destination_region_offset_(destination_region_offset),
+      letterboxing_behavior_(letterboxing_behavior),
+      populates_gpu_memory_buffer_(populates_gpu_memory_buffer) {
+  mailboxes_[0] = mailbox;
+}
+
 BlitRequest::BlitRequest(BlitRequest&& other) = default;
 BlitRequest& BlitRequest::operator=(BlitRequest&& other) = default;
 

@@ -133,11 +133,11 @@ size_t GetRowBytesForColorType(int width, SkColorType color_type) {
   return row_bytes;
 }
 
-void ReadbackTexturesOnGpuThread(gpu::SharedImageManager* shared_image_manager,
-                                 gpu::SharedContextState* context_state,
-                                 const gpu::Mailbox& mailbox,
-                                 ReadbackTextureInfo readback_texture_infos[],
-                                 int num_textures) {
+void ReadbackTexturesOnGpuThread(
+    gpu::SharedImageManager* shared_image_manager,
+    gpu::SharedContextState* context_state,
+    const gpu::Mailbox& mailbox,
+    base::span<ReadbackTextureInfo> readback_texture_infos) {
   if (!context_state->MakeCurrent(nullptr)) {
     return;
   }
@@ -157,7 +157,7 @@ void ReadbackTexturesOnGpuThread(gpu::SharedImageManager* shared_image_manager,
   context_state->gr_context()->wait(begin_semaphores.size(),
                                     begin_semaphores.data());
 
-  for (int i = 0; i < num_textures; i++) {
+  for (size_t i = 0; i < readback_texture_infos.size(); i++) {
     auto* surface = scoped_write->surface(i);
 
     auto& texture_size = readback_texture_infos[i].size;
@@ -271,35 +271,17 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
                                   ->GetCompositorGpuThreadSharedContextState()
                                   .get();
 
-        auto luma_plane_texture_info = ReadbackTextureInfo(
-            texture_size, kAlpha_8_SkColorType, out_luma_plane);
-        auto chroma_planes_texture_info = ReadbackTextureInfo(
+        std::vector<ReadbackTextureInfo> texture_infos;
+        texture_infos.emplace_back(texture_size, kAlpha_8_SkColorType,
+                                   out_luma_plane);
+        texture_infos.emplace_back(
             gfx::Size(texture_size.width() / 2, texture_size.height() / 2),
             kR8G8_unorm_SkColorType, out_chroma_planes);
 
-        if (result.format() == CopyOutputResult::Format::NV12_MULTIPLANE) {
-          ReadbackTextureInfo texture_infos[] = {luma_plane_texture_info,
-                                                 chroma_planes_texture_info};
-          ReadbackTexturesOnGpuThread(
-              shared_image_manager, context_state,
-              result.GetTextureResult()->mailbox_holders[0].mailbox,
-              texture_infos,
-              /*num_textures=*/2);
-        } else {
-          ASSERT_EQ(result.format(), CopyOutputResult::Format::NV12_PLANES);
-
-          ReadbackTexturesOnGpuThread(
-              shared_image_manager, context_state,
-              result.GetTextureResult()->mailbox_holders[0].mailbox,
-              &luma_plane_texture_info,
-              /*num_textures=*/1);
-
-          ReadbackTexturesOnGpuThread(
-              shared_image_manager, context_state,
-              result.GetTextureResult()->mailbox_holders[1].mailbox,
-              &chroma_planes_texture_info,
-              /*num_textures=*/1);
-        }
+        ReadbackTexturesOnGpuThread(
+            shared_image_manager, context_state,
+            result.GetTextureResult()->mailbox_holders[0].mailbox,
+            texture_infos);
 
         wait.Signal();
       }));
@@ -329,29 +311,6 @@ void WriteRGBAPlane(TestGpuServiceHolder* gpu_service_holder,
   wait.Wait();
 }
 
-void WriteNV12Plane(TestGpuServiceHolder* gpu_service_holder,
-                    gpu::Mailbox mailbox,
-                    const gfx::Size& texture_size,
-                    SkColorType color_type,
-                    base::span<const uint8_t> pixel_data) {
-  base::WaitableEvent wait;
-
-  // Write the texture on the GPU main thread to ensure ordering with the
-  // creation of the SharedImage referred to by `mailbox`.
-  gpu_service_holder->ScheduleGpuMainTask(base::BindLambdaForTesting(
-      [&mailbox, &texture_size, &color_type, &pixel_data, &wait]() {
-        WriteTextureOnGpuMainThread(
-            TestGpuServiceHolder::GetInstance()
-                ->gpu_service()
-                ->shared_image_manager(),
-            TestGpuServiceHolder::GetInstance()->GetSharedContextState().get(),
-            mailbox, texture_size, color_type, pixel_data);
-        wait.Signal();
-      }));
-
-  wait.Wait();
-}
-
 // Reads back RGBA planes from textures returned in the result like above.
 void ReadbackRGBAPlanes(TestGpuServiceHolder* gpu_service_holder,
                         CopyOutputResult& result,
@@ -372,15 +331,14 @@ void ReadbackRGBAPlanes(TestGpuServiceHolder* gpu_service_holder,
                                   ->GetCompositorGpuThreadSharedContextState()
                                   .get();
 
-        auto plane_texture_info = ReadbackTextureInfo(
-            texture_size, kRGBA_8888_SkColorType, out_plane);
+        std::vector<ReadbackTextureInfo> texture_infos;
+        texture_infos.emplace_back(texture_size, kRGBA_8888_SkColorType,
+                                   out_plane);
 
-        ReadbackTextureInfo texture_infos[] = {plane_texture_info};
         ReadbackTexturesOnGpuThread(
             shared_image_manager, context_state,
             result.GetTextureResult()->mailbox_holders[0].mailbox,
-            texture_infos,
-            /*num_textures=*/1);
+            texture_infos);
 
         wait.Signal();
       }));
@@ -402,20 +360,6 @@ std::vector<uint8_t> GeneratePixels(size_t num_bytes,
   }
 
   return result;
-}
-
-// NV12 tests can't run on certain platforms/configurations.
-bool can_run_nv12_test(bool use_multiplanar_si) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, multiplanar SharedImage is supported only when the
-  // passthrough decoder is used.
-  return !use_multiplanar_si || TestGpuServiceHolder::GetInstance()
-                                    ->gpu_service()
-                                    ->gpu_preferences()
-                                    .use_passthrough_cmd_decoder;
-#else
-  return true;
-#endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -880,43 +824,32 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests of NV12.
 
 // NOTE: These tests don't run on Android. Android doesn't use NV12 GMB and
-// doesn't support the MultiPlane:: kNV12 format. Additionally, the test
-// variants that use one SharedImage per plane cannot be made to pass with
-// Vulkan, as they require cross-thread access and there is no SharedImage
-// factory on Android that supports cross-thread access for the required
-// formats (WrappedSkImageBackingFactory and ExternalVkImageBackingFactory
-// don't support cross-thread access, while AHardwareBufferImageBackingFactory
-// doesn't support the plane formats).
+// doesn't support the MultiPlane:: kNV12 format.
 class ReadbackPixelTestNV12
     : public ReadbackPixelTest,
       public testing::WithParamInterface<
-          std::tuple<RendererType, bool, CopyOutputResult::Destination, bool>> {
+          std::tuple<RendererType, bool, CopyOutputResult::Destination>> {
  public:
   ReadbackPixelTestNV12()
       : ReadbackPixelTest(std::get<0>(GetParam())),
         should_scale_by_half_(std::get<1>(GetParam())),
-        request_destination_(std::get<2>(GetParam())),
-        use_multiplanar_si_(std::get<3>(GetParam())) {}
+        request_destination_(std::get<2>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
     return request_destination_;
   }
 
   CopyOutputResult::Format RequestFormat() const {
-    return use_multiplanar_si_ ? CopyOutputResult::Format::NV12_MULTIPLANE
-                               : CopyOutputResult::Format::NV12_PLANES;
+    return CopyOutputResult::Format::NV12_MULTIPLANE;
   }
 
   void SetUp() override {
     ReadbackPixelTest::SetUpReadbackPixeltest(should_scale_by_half_);
   }
 
-  bool use_multiplanar_si() { return use_multiplanar_si_; }
-
  private:
   bool should_scale_by_half_ = false;
   CopyOutputResult::Destination request_destination_;
-  bool use_multiplanar_si_ = false;
 };
 
 // Test that NV12 readback works correctly.
@@ -924,10 +857,6 @@ TEST_P(ReadbackPixelTestNV12, ExecutesCopyRequest) {
   // Generates a RenderPass which contains one quad that spans the full output.
   // The quad has our source image, so the framebuffer should contain the source
   // image after DrawFrame().
-
-  if (!can_run_nv12_test(use_multiplanar_si())) {
-    GTEST_SKIP();
-  }
 
   const gfx::Rect result_selection = GetRequestArea();
 
@@ -1015,29 +944,25 @@ INSTANTIATE_TEST_SUITE_P(
         // Result scaling: Scale by half?
         testing::Values(true, false),
         testing::Values(CopyOutputResult::Destination::kSystemMemory,
-                        CopyOutputResult::Destination::kNativeTextures),
-        // Use MultiplanarSharedImage?
-        testing::Values(true, false)));
+                        CopyOutputResult::Destination::kNativeTextures)));
 
 class ReadbackPixelTestNV12WithBlit
     : public ReadbackPixelTest,
       public testing::WithParamInterface<
-          std::tuple<RendererType, bool, LetterboxingBehavior, bool, bool>> {
+          std::tuple<RendererType, bool, LetterboxingBehavior, bool>> {
  public:
   ReadbackPixelTestNV12WithBlit()
       : ReadbackPixelTest(std::get<0>(GetParam())),
         should_scale_by_half_(std::get<1>(GetParam())),
         letterboxing_behavior_(std::get<2>(GetParam())),
-        populates_gpu_memory_buffer_(std::get<3>(GetParam())),
-        use_multiplanar_si_(std::get<4>(GetParam())) {}
+        populates_gpu_memory_buffer_(std::get<3>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
     return CopyOutputResult::Destination::kNativeTextures;
   }
 
   CopyOutputResult::Format RequestFormat() const {
-    return use_multiplanar_si_ ? CopyOutputResult::Format::NV12_MULTIPLANE
-                               : CopyOutputResult::Format::NV12_PLANES;
+    return CopyOutputResult::Format::NV12_MULTIPLANE;
   }
 
   void SetUp() override {
@@ -1055,21 +980,14 @@ class ReadbackPixelTestNV12WithBlit
     return populates_gpu_memory_buffer_;
   }
 
-  bool use_multiplanar_si() const { return use_multiplanar_si_; }
-
  private:
   bool should_scale_by_half_ = false;
   LetterboxingBehavior letterboxing_behavior_;
   bool populates_gpu_memory_buffer_ = false;
-  bool use_multiplanar_si_ = false;
 };
 
 // Test that NV12 readback works correctly using existing textures.
 TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
-  if (!can_run_nv12_test(use_multiplanar_si())) {
-    GTEST_SKIP();
-  }
-
   const gfx::Rect result_selection = GetRequestArea();
 
   // Check if request's width and height are even (required for NV12 format).
@@ -1115,19 +1033,9 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   auto* sii = child_context_provider_->SharedImageInterface();
   auto* ri = child_context_provider_->RasterInterface();
 
-  size_t num_mailboxes =
-      use_multiplanar_si() ? 1 : CopyOutputResult::kNV12MaxPlanes;
-
-  std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes;
-  std::array<scoped_refptr<gpu::ClientSharedImage>,
-             CopyOutputResult::kMaxPlanes>
-      shared_images;
   std::array<std::vector<uint8_t>, CopyOutputResult::kNV12MaxPlanes> pixels;
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
-    const auto format = use_multiplanar_si() ? MultiPlaneFormat::kNV12
-                        : i == 0             ? SinglePlaneFormat::kR_8
-                                             : SinglePlaneFormat::kRG_88;
     const gfx::Size plane_size =
         i == 0 ? source_size
                : gfx::Size(source_size.width() / 2, source_size.height() / 2);
@@ -1142,46 +1050,36 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
         SkPixmap(SkImageInfo::Make(plane_size.width(), plane_size.height(),
                                    color_type, kUnpremul_SkAlphaType),
                  pixels[i].data(), row_bytes);
-
-    if (!use_multiplanar_si() || i == 0) {
-      shared_images[i] = sii->CreateSharedImage(
-          {format, plane_size, gfx::ColorSpace::CreateREC709(),
-           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels"},
-          gpu::kNullSurfaceHandle);
-      DCHECK(shared_images[i]);
-      mailboxes[i].mailbox = shared_images[i]->mailbox();
-    }
-
-    // Populate the data. Note that this is done on the GPU main thread, so it
-    // is ordered with the creation of the SharedImage above.
-    if (!use_multiplanar_si()) {
-      WriteNV12Plane(gpu_service_holder_, mailboxes[i].mailbox, plane_size,
-                     color_type, pixels[i]);
-    }
   }
 
-  if (use_multiplanar_si()) {
-    // Create and wait on shared image interface sync token to wait for shared
-    // image creation.
-    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  auto shared_image = sii->CreateSharedImage(
+      {MultiPlaneFormat::kNV12, source_size, gfx::ColorSpace::CreateREC709(),
+       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels"},
+      gpu::kNullSurfaceHandle);
+  CHECK(shared_image);
 
-    SkYUVAInfo info = SkYUVAInfo({source_size.width(), source_size.height()},
-                                 SkYUVAInfo::PlaneConfig::kY_UV,
-                                 SkYUVAInfo::Subsampling::k420,
-                                 SkYUVColorSpace::kIdentity_SkYUVColorSpace);
-    SkYUVAPixmaps yuv_pixmap =
-        SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
-    ri->WritePixelsYUV(mailboxes[0].mailbox, yuv_pixmap);
+  // Create and wait on shared image interface sync token to wait for shared
+  // image creation.
+  ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
-    // Create and wait on raster interface sync token for write pixels YUV.
-    ri->GenUnverifiedSyncTokenCHROMIUM(mailboxes[0].sync_token.GetData());
-  }
+  SkYUVAInfo info =
+      SkYUVAInfo({source_size.width(), source_size.height()},
+                 SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420,
+                 SkYUVColorSpace::kIdentity_SkYUVColorSpace);
+  SkYUVAPixmaps yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
+  ri->WritePixelsYUV(shared_image->mailbox(), yuv_pixmap);
+
+  gpu::MailboxHolder mailbox_holder;
+  mailbox_holder.mailbox = shared_image->mailbox();
+
+  // Create and wait on raster interface sync token for write pixels YUV.
+  ri->GenUnverifiedSyncTokenCHROMIUM(mailbox_holder.sync_token.GetData());
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
       RequestFormat(), RequestDestination(),
       base::BindLambdaForTesting([this, &result_selection,
                                   &destination_subregion,
-                                  &mailboxes](CopyOutputRequest& request) {
+                                  &mailbox_holder](CopyOutputRequest& request) {
         // Build CopyOutputRequest based on test parameters.
         if (ScaleByHalf()) {
           request.SetUniformScaleRatio(2, 1);
@@ -1191,7 +1089,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
         request.set_blit_request(BlitRequest(
             destination_subregion.origin(), GetLetterboxingBehavior(),
-            mailboxes, populates_gpu_memory_buffer()));
+            mailbox_holder, populates_gpu_memory_buffer()));
       }));
 
   // Check that a result was produced and is of the expected rect/size.
@@ -1216,10 +1114,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   ReadbackNV12Planes(gpu_service_holder_, *result, source_size, luma_plane,
                      chroma_planes);
 
-  for (size_t i = 0; i < num_mailboxes; ++i) {
-    sii->DestroySharedImage(mailboxes[i].sync_token,
-                            std::move(shared_images[i]));
-  }
+  sii->DestroySharedImage(mailbox_holder.sync_token, std::move(shared_image));
 
   // Allocate new bitmap & populate it with Y & UV data.
   SkBitmap actual = GLScalerTestUtil::AllocateRGBABitmap(source_size);
@@ -1270,8 +1165,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),  // Result scaling: Scale by half?
         testing::Values(LetterboxingBehavior::kDoNotLetterbox,
                         LetterboxingBehavior::kLetterbox),
-        testing::Bool(),  // Should behave as if COR is populating a GMB?
-        testing::Bool()   // Use MultiplanarSI?
+        testing::Bool()  // Should behave as if COR is populating a GMB?
         ));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
