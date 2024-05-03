@@ -30,7 +30,7 @@ picture {
   font-weight: 500;
   line-height: 24px;
   margin-block-end: 8px;
-  width: 259px;
+  max-width: 259px;
 }
 
 #body {
@@ -39,5 +39,5 @@ picture {
   font-weight: 400;
   line-height: 20px;
   margin-block-end: 12px;
-  width: 229px;
+  max-width: 229px;
 }
