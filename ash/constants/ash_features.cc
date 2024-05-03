@@ -2849,7 +2849,7 @@ BASE_FEATURE(kUnmanagedDeviceDeviceTrustConnectorEnabled,
 // Enables firmware updates for valid firmwares uploaded to lvfs.
 BASE_FEATURE(kUpstreamTrustedReportsFirmware,
              "UpstreamTrustedReportsFirmware",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use the Android staging SM-DS server when fetching pending eSIM profiles.
 BASE_FEATURE(kUseAndroidStagingSmds,

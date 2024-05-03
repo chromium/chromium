@@ -512,6 +512,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
     dict_writer.AppendVariantOfString(kEmptyFileSha256ForTesting);
     device_array_writer.CloseContainer(&dict_writer);
 
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kTrustFlagsKey);
+    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
     response_array_writer.CloseContainer(&device_array_writer);
     response_writer.CloseContainer(&response_array_writer);
 
@@ -564,6 +569,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
     device_array_writer.OpenDictEntry(&dict_writer);
     dict_writer.AppendString(kChecksumKey);
     dict_writer.AppendVariantOfString(checksum);
+    device_array_writer.CloseContainer(&dict_writer);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kTrustFlagsKey);
+    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
     device_array_writer.CloseContainer(&dict_writer);
 
     response_array_writer.CloseContainer(&device_array_writer);

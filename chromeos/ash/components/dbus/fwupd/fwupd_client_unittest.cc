@@ -179,6 +179,11 @@ class FwupdClientTest : public testing::Test {
     dict_writer.AppendVariantOfString(checksum);
     device_array_writer.CloseContainer(&dict_writer);
 
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kTrustFlagsKey);
+    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
     response_array_writer.CloseContainer(&device_array_writer);
     response_writer.CloseContainer(&response_array_writer);
 
@@ -218,6 +223,11 @@ class FwupdClientTest : public testing::Test {
     dict_writer.AppendVariantOfString(kFakeSha256ForTesting);
     device_array_writer.CloseContainer(&dict_writer);
     SetExpectedChecksum(kFakeSha256ForTesting);
+
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kTrustFlagsKey);
+    dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
 
     response_array_writer.CloseContainer(&device_array_writer);
     response_writer.CloseContainer(&response_array_writer);
@@ -506,6 +516,11 @@ TEST_F(FwupdClientTest, RequestUpgradesWithoutPriority) {
   dict_writer.AppendVariantOfString(kFakeSha256ForTesting);
   device_array_writer.CloseContainer(&dict_writer);
   SetExpectedChecksum(kFakeSha256ForTesting);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kTrustFlagsKey);
+  dict_writer.AppendVariantOfUint64(kFakeReportFlagForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
 
   response_array_writer.CloseContainer(&device_array_writer);
   response_writer.CloseContainer(&response_array_writer);
