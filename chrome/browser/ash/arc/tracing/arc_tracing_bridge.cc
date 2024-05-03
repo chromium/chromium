@@ -101,14 +101,10 @@ class ArcTracingDataSource
 
  private:
   friend class base::NoDestructor<ArcTracingDataSource>;
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   using DataSourceProxy =
       tracing::PerfettoTracedProcess::DataSourceProxy<ArcTracingDataSource>;
   using SystemTraceWriter =
       tracing::SystemTraceWriter<std::string, DataSourceProxy>;
-#else
-  using SystemTraceWriter = tracing::SystemTraceWriter<std::string>;
-#endif
 
   ArcTracingDataSource()
       : DataSourceBase(tracing::mojom::kArcTraceDataSourceName),
@@ -116,11 +112,9 @@ class ArcTracingDataSource
                                   ->GetTaskRunner()
                                   ->GetOrCreateTaskRunner()) {
     tracing::PerfettoTracedProcess::Get()->AddDataSource(this);
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     perfetto::DataSourceDescriptor dsd;
     dsd.set_name(tracing::mojom::kArcTraceDataSourceName);
     DataSourceProxy::Register(dsd, this);
-#endif
   }
 
   // Note that ArcTracingDataSource is a singleton that's never destroyed.

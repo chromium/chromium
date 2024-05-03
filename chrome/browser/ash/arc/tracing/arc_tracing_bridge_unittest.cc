@@ -71,10 +71,8 @@ class ArcTracingBridgeTest : public testing::Test {
   ArcBridgeService bridge_service_;
   std::unique_ptr<ArcTracingBridge> tracing_bridge_;
   FakeTracingInstance fake_tracing_instance_;
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
  private:
   ::base::test::TracingEnvironment tracing_environment_;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 };
 
 TEST_F(ArcTracingBridgeTest, Creation) {
