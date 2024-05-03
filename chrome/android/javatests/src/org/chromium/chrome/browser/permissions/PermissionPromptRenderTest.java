@@ -80,15 +80,14 @@ public class PermissionPromptRenderTest {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
-    private void testPrompt(boolean isOneTime) throws TimeoutException, IOException {
+    private void testPrompt(String goldenViewId) throws TimeoutException, IOException {
         mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "initiate_getCurrentPosition()");
 
         mPermissionRule.waitForDialogShownState(true);
 
         mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view),
-                isOneTime ? "oneTimePrompt" : "regularPrompt");
+                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view), goldenViewId);
     }
 
     @Test
@@ -101,18 +100,8 @@ public class PermissionPromptRenderTest {
 
         mPermissionRule.loadUrl(mPermissionRule.getURL(TEST_FILE));
 
-        testPrompt(/* isOneTime= */ false);
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
-                "initiate_getCurrentPosition()");
-
-        mPermissionRule.waitForDialogShownState(true);
-
-        mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view),
-                "regularPrompt");
+        testPrompt(/* goldenViewId= */ "regularPrompt");
     }
-
-
 
     @Test
     @MediumTest
@@ -122,7 +111,7 @@ public class PermissionPromptRenderTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
         mPermissionRule.setUpUrl(TEST_FILE);
-        testPrompt(/* isOneTime= */ true);
+        testPrompt(/* goldenViewId= */ "oneTimePrompt");
     }
 
     @Test
@@ -137,6 +126,6 @@ public class PermissionPromptRenderTest {
         mPermissionRule.setupUrlWithHostName(
                 "unelided.long.wrapping.hostname.with.subdomains.com", TEST_FILE);
 
-        testPrompt(/* isOneTime= */ true);
+        testPrompt(/* goldenViewId= */ "oneTimePromptLongOrigin");
     }
 }

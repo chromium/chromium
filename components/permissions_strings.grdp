@@ -185,7 +185,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Allow this time
   </message>
   <message name="IDS_PERMISSION_ALLOW_EVERY_VISIT" desc="Label on button to permanent grant in a one-time granting use case">
-    Allow every visit
+    Allow on every visit
   </message>
   <message name="IDS_PERMISSION_DONT_ALLOW" desc="Label on button to permanent deny in a one-time granting use case">
     Don't allow
