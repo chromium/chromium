@@ -529,7 +529,7 @@
 <translation id="1403222014593521787">امکان اتصال به پراکسی وجود ندارد</translation>
 <translation id="1405779994569073824">خراب.</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
-<translation id="1407069428457324124">زمینه تیره</translation>
+<translation id="1407069428457324124">زمینه تاریک</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="140723521119632973">فعال‌سازی شبکه داده تلفن همراه</translation>
 <translation id="1408504635543854729">‏محتوای دستگاه را در برنامه Files کاوش کنید. محتوا توسط سرپرست محدود شده است و قابل ویرایش نیست.</translation>
@@ -2313,7 +2313,7 @@
 <translation id="2710507903599773521">اکنون <ph name="DEVICE_TYPE" /> شما قفل شده است</translation>
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2713444072780614174">سفید</translation>
-<translation id="2714180132046334502">پس‌زمینه تیره</translation>
+<translation id="2714180132046334502">پس‌زمینه تاریک</translation>
 <translation id="2714393097308983682">‏فروشگاه Google Play</translation>
 <translation id="2714926041741472174">گذرکلیدی برای <ph name="APP_NAME" /> انتخاب کنید</translation>
 <translation id="2715640894224696481">درخواست کلید ایمنی</translation>
@@ -3293,7 +3293,7 @@
 <translation id="348247802372410699">سبکی را انتخاب کنید</translation>
 <translation id="348268549820508141">تشخیص گفتار</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> می‌تواند فایل‌های زیر را مشاهده کند</translation>
-<translation id="3484595034894304035">شخصی‌سازی کاغذدیواری، محافظ صفحه، زمینه تیره، و موارد دیگر</translation>
+<translation id="3484595034894304035">شخصی‌سازی کاغذدیواری، محافظ صفحه، زمینه تاریک، و موارد دیگر</translation>
 <translation id="3484869148456018791">دریافت گواهی‌نامه جدید</translation>
 <translation id="3486950712960783074">سفر شما</translation>
 <translation id="3487007233252413104">تابع ناشناس</translation>
@@ -4889,7 +4889,7 @@
 <translation id="4694024090038830733">سرپرست سیستم، پیکربندی چاپگر را انجام می‌دهد.</translation>
 <translation id="4694604912444486114">میمون</translation>
 <translation id="4694820450536519583">اجازه‌ها</translation>
-<translation id="4695318956047767909">زمینه تیره، محافظ صفحه</translation>
+<translation id="4695318956047767909">زمینه تاریک، محافظ صفحه</translation>
 <translation id="4697071790493980729">هیچ نتیجه‌ای یافت نشد</translation>
 <translation id="4697551882387947560">هنگام پایان جلسه مرور</translation>
 <translation id="469838979880025581">سایت‌ها می‌توانند استفاده از میکروفون را درخواست کنند</translation>
@@ -6762,7 +6762,7 @@
 <translation id="6180510783007738939">ابزار خط</translation>
 <translation id="6180550893222597997">می‌خواهید از کدام گذرکلید برای <ph name="APP_NAME" /> استفاده کنید؟</translation>
 <translation id="6181431612547969857">بارگیری مسدود شد</translation>
-<translation id="6183369864942961155">زمینه تیره/روشن خودکار</translation>
+<translation id="6183369864942961155">زمینه تاریک/روشن خودکار</translation>
 <translation id="6184099524311454384">جستجوی برگه‌ها</translation>
 <translation id="6184868291074982484">‏‫Chrome کوکی‌های شخص ثالث را به‌طور خودکار محدود می‌کند</translation>
 <translation id="6185132558746749656">مکان دستگاه</translation>

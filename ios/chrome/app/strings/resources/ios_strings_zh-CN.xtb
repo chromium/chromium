@@ -94,7 +94,7 @@
 <translation id="143681031165817424">地址仅保存在此设备上</translation>
 <translation id="1449835205994625556">隐藏密码</translation>
 <translation id="1450170672351507823">已开启标准保护。若要进一步提升安全性，请使用增强型保护。</translation>
-<translation id="1469381646033328562">您的账号由您的家长管理。
+<translation id="1469381646033328562">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">点按两次即可切换设置</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
@@ -757,7 +757,7 @@
 <translation id="484280513275854557">您已退出账号；浏览数据已被删除</translation>
 <translation id="4844899002472726590">查看和修改您感兴趣的主题</translation>
 <translation id="4848999860252535517">要删除用于登录 <ph name="WEBSITE" /> 的密码吗？</translation>
-<translation id="4850886885716139402">视图</translation>
+<translation id="4850886885716139402">查看</translation>
 <translation id="4854345657858711387">设置密码</translation>
 <translation id="4856498338299082007">保存在您的 Google 账号中</translation>
 <translation id="4856841893565072365">智能排序菜单栏</translation>
@@ -1204,7 +1204,7 @@
 <translation id="7029809446516969842">密码</translation>
 <translation id="704692552158601232">默认浏览器应用</translation>
 <translation id="7062545763355031412">接受并切换账号</translation>
-<translation id="7063811929043357292">您的账号由您的家长管理。
+<translation id="7063811929043357292">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">从此设备中移除</translation>
 <translation id="7080806333218412752">会将网址发送给“安全浏览”功能进行检查。还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁。而且，会在您登录后暂时将这些数据关联到您的 Google 账号，以便在各个 Google 应用中为您提供保护。</translation>
@@ -1438,7 +1438,7 @@
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">您在 iPad 重置过程中退出了账号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="8271720166617117963">接受并登录</translation>
-<translation id="8273982424131314219">您的信息将会自动填充到 <ph name="URL" /> 中</translation>
+<translation id="8273982424131314219">您的信息将自动填充到 <ph name="URL" /> 中</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="828291969289324795">{count,plural, =1{在新标签页分组中添加标签页}other{在新标签页分组中添加标签页}}</translation>
@@ -1600,7 +1600,7 @@
 <translation id="9055960261314198756">已关闭增强型保护</translation>
 <translation id="9057972802061533987">无法关注。出了点问题。</translation>
 <translation id="9061495354530850708">保存在您的 Google 账号中</translation>
-<translation id="9065203028668620118">编辑</translation>
+<translation id="9065203028668620118">修改</translation>
 <translation id="9079935439869366234">全部标为未读</translation>
 <translation id="9081058212938299310">更新 <ph name="USERNAME" /> 的密码？</translation>
 <translation id="9083838294503912307">要在您的所有设备上保持同步并获享个性化体验，请开启同步功能。</translation>

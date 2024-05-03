@@ -559,7 +559,7 @@
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />프록시 및 방화벽 확인<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">바로가기는 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />에서 정의한 기본 검색 공급자 키워드와 같을 수 없습니다. <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">무시하고 저장</translation>
-<translation id="2036514476578229158">이 사이트의 방문을 요청했습니다. 부모님이 Family Link에서 답장을 보낼 수 있습니다.</translation>
+<translation id="2036514476578229158">이 사이트의 방문을 요청했습니다. 부모님은 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="2036983605131262583">대체 롤</translation>
 <translation id="2040463897538655645">이동식 저장소</translation>
 <translation id="2040894699575719559">위치가 차단됨</translation>
@@ -617,7 +617,7 @@
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">무작위 순서로 표시됩니다. 언제든지 기본값을 변경할 수 있습니다.</translation>
-<translation id="2137891579555018930">권한을 기다리는 중…</translation>
+<translation id="2137891579555018930">허락을 기다리는 중…</translation>
 <translation id="213826338245044447">모바일 북마크</translation>
 <translation id="2141000681034340397">입력한 내용 수정</translation>
 <translation id="2144171668675205303">활성 주제 없음</translation>
@@ -4271,7 +4271,7 @@
 <translation id="945855313015696284">아래 정보를 확인하고 잘못된 카드를 삭제하세요.</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Sites에서 빠르게 새 사이트 만들기</translation>
 <translation id="947974362755924771">{COUNT,plural, =0{오늘 Chrome에서 다시 쿠키를 제한합니다.}=1{내일 Chrome에서 다시 쿠키를 제한합니다}other{#일 후 Chrome에서 다시 쿠키를 제한합니다.}}</translation>
-<translation id="949314938206378263">이 사이트의 방문을 요청했습니다. 부모님이 Family Link에서 답장을 보낼 수 있습니다.</translation>
+<translation id="949314938206378263">이 사이트의 방문을 요청했습니다. 부모님은 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="950736567201356821">상단 3공 펀칭</translation>
 <translation id="961663415146723894">하단 바인드</translation>
 <translation id="961930410699694996">현재 위치 허용됨</translation>

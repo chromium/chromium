@@ -484,7 +484,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Access your passwords across other apps.</translation>
-<translation id="3478058380795961209">Month of Expiry</translation>
+<translation id="3478058380795961209">Month of expiry</translation>
 <translation id="3482959374254649722">Syncing your tabs...</translation>
 <translation id="3484946776651937681">Open in downloads</translation>
 <translation id="3485558910355485767">New incognito window</translation>
@@ -851,7 +851,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5329451663851195956">You can pull down to refresh.</translation>
 <translation id="5339316356165661760">Turn on sync</translation>
 <translation id="5343472494710226394">News, sports and content based on your interests.</translation>
-<translation id="5345660046352249607">{COUNT,plural, =1{Track this parcel?}other{Track {COUNT} parcels?}}</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Track this package?}other{Track {COUNT} packages?}}</translation>
 <translation id="5348775987281903912">You can share this page here from the share button.</translation>
 <translation id="536067926684072644">Show bookmarks</translation>
 <translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
@@ -1064,7 +1064,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6377118281273296434">Site security</translation>
 <translation id="6383719166112032471">Open location…</translation>
 <translation id="6387994324662817823">Passwords are saved to Google Password Manager on this device only.</translation>
-<translation id="6389470377220713856">Name on Card</translation>
+<translation id="6389470377220713856">Name on card</translation>
 <translation id="6404422529625928907">Open in Google Drive</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
@@ -1489,7 +1489,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="852576975834694248">You will be signed out and tabs will be closed</translation>
 <translation id="8528009254289981965">Open links from other apps in Incognito</translation>
 <translation id="8529767659511976195">New</translation>
-<translation id="8532105204136943229">Year of Expiry</translation>
+<translation id="8532105204136943229">Year of expiry</translation>
 <translation id="8533166274275423134">Opened elsewhere</translation>
 <translation id="8533670235862049797">Safe Browsing is on</translation>
 <translation id="8534481786647257214">Google+ post completed.</translation>
