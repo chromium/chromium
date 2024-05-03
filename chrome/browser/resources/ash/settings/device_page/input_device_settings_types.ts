@@ -134,6 +134,9 @@ export type ButtonRemapping = InputDeviceSettingsTypes.ButtonRemapping;
 
 export type RemappingAction = InputDeviceSettingsTypes.RemappingAction;
 
+export type ChargeState = InputDeviceSettingsTypes.ChargeState;
+export const ChargeState = InputDeviceSettingsTypes.ChargeState;
+
 export type KeyEvent =
     Required<InputDeviceSettingsTypes.KeyEvent>&Partial<FakeKeyEvent>;
 

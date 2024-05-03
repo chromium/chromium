@@ -41,8 +41,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -219,6 +224,8 @@ const AccountId account_id_3 =
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
 constexpr char kKbdTopRowLayout2Tag[] = "2";
+constexpr char kBluetoothDeviceName[] = "Bluetooth Device";
+constexpr char kBluetoothDevicePublicAddress[] = "01:23:45:67:89:AB";
 
 class FakeDeviceManager {
  public:
@@ -489,6 +496,11 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
 
   // testing::Test:
   void SetUp() override {
+    mock_adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
+    ON_CALL(*mock_adapter_, IsPowered).WillByDefault(testing::Return(true));
+    ON_CALL(*mock_adapter_, IsPresent).WillByDefault(testing::Return(true));
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
     scoped_feature_list_.InitWithFeatures(
@@ -576,6 +588,27 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
   }
 
+  std::unique_ptr<device::MockBluetoothDevice> SetupMockBluetoothDevice(
+      uint32_t vendor_id,
+      uint32_t product_id,
+      const char* device_name,
+      const char* device_address) {
+    std::unique_ptr<device::MockBluetoothDevice> mock_device =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            mock_adapter_.get(), /*bluetooth_class=*/0, device_name,
+            device_address,
+            /*initially_paired=*/true, /*connected=*/true);
+    mock_device->SetBatteryInfo(device::BluetoothDevice::BatteryInfo(
+        device::BluetoothDevice::BatteryType::kDefault, 66));
+    ON_CALL(*mock_device, GetDeviceType)
+        .WillByDefault(testing::Return(device::BluetoothDeviceType::KEYBOARD));
+    ON_CALL(*mock_device, GetVendorID)
+        .WillByDefault(testing::Return(vendor_id));
+    ON_CALL(*mock_device, GetProductID)
+        .WillByDefault(testing::Return(product_id));
+    return mock_device;
+  }
+
  protected:
   std::unique_ptr<InputDeviceSettingsControllerImpl> controller_;
   std::unique_ptr<FakeDeviceManager> fake_device_manager_;
@@ -592,6 +625,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
   // whether or not to sign in within the SetUp() function. Configured to sign
   // in by default.
   bool should_sign_in_ = true;
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 };
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardAddingOne) {
@@ -1734,6 +1768,31 @@ TEST_F(InputDeviceSettingsControllerNoSignInTest,
       controller_->GetGraphicsTablet(kSampleGraphicsTablet.id);
   ASSERT_TRUE(graphics_tablet);
   ASSERT_TRUE(graphics_tablet->settings);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, BatteryInfoAddedForBluetoothDevices) {
+  uint32_t test_vendor_id = 0x1111;
+  uint32_t test_product_id = 0x1112;
+  auto mock_device = SetupMockBluetoothDevice(test_vendor_id, test_product_id,
+                                              kBluetoothDeviceName,
+                                              kBluetoothDevicePublicAddress);
+  mock_device->SetBatteryInfo(device::BluetoothDevice::BatteryInfo(
+      device::BluetoothDevice::BatteryType::kDefault, 66,
+      device::BluetoothDevice::BatteryInfo::ChargeState::kDischarging));
+  std::vector<raw_ptr<const device::BluetoothDevice, VectorExperimental>>
+      devices;
+  devices.push_back(mock_device.get());
+  ON_CALL(*mock_adapter_, GetDevices).WillByDefault(testing::Return(devices));
+  ui::KeyboardDevice bluetooth_keyboard = kSampleKeyboardBluetooth;
+  bluetooth_keyboard.product_id = test_product_id;
+  bluetooth_keyboard.vendor_id = test_vendor_id;
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({bluetooth_keyboard});
+  auto* keyboard = controller_->GetKeyboard(bluetooth_keyboard.id);
+  ASSERT_TRUE(keyboard);
+  ASSERT_TRUE(keyboard->battery_info);
+  ASSERT_EQ(mojom::ChargeState::kDischarging,
+            keyboard->battery_info->charge_state);
+  ASSERT_EQ(66, keyboard->battery_info->battery_percentage);
 }
 
 }  // namespace ash

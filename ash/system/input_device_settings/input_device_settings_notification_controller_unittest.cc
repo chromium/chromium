@@ -43,7 +43,8 @@ const mojom::Mouse kMouse1 = mojom::Mouse(
     /*customization_restriction=*/
     mojom::CustomizationRestriction::kAllowCustomizations,
     /*mouse_button_config=*/mojom::MouseButtonConfig::kNoConfig,
-    mojom::MouseSettings::New());
+    mojom::MouseSettings::New(),
+    mojom::BatteryInfo::New());
 
 const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
     /*name=*/"Wacom Intuos S",
@@ -53,7 +54,8 @@ const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
     ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
     /*graphics_tablet_button_config=*/
     mojom::GraphicsTabletButtonConfig::kNoConfig,
-    mojom::GraphicsTabletSettings::New());
+    mojom::GraphicsTabletSettings::New(),
+    mojom::BatteryInfo::New());
 
 int GetPrefNotificationCount(const char* pref_name) {
   PrefService* prefs =

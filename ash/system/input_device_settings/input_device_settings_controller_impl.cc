@@ -54,6 +54,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -219,7 +220,43 @@ void RecordKeyboardMetadataTierMetrics(const ui::KeyboardDevice& keyboard) {
   base::UmaHistogramEnumeration("ChromeOS.Inputs.Keyboard.MetadataTier", tier);
 }
 
-mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
+mojom::ChargeState GetChargeStateFromBluetoothDevice(
+    device::BluetoothDevice::BatteryInfo::ChargeState charge_state) {
+  switch (charge_state) {
+    case device::BluetoothDevice::BatteryInfo::ChargeState::kUnknown:
+      return mojom::ChargeState::kUnknown;
+    case device::BluetoothDevice::BatteryInfo::ChargeState::kCharging:
+      return mojom::ChargeState::kCharging;
+    case device::BluetoothDevice::BatteryInfo::ChargeState::kDischarging:
+      return mojom::ChargeState::kDischarging;
+  }
+}
+
+mojom::BatteryInfoPtr GetBatteryInfo(
+    const ui::InputDevice& device,
+    BluetoothDevicesObserver* bluetooth_observer) {
+  auto* bt_device = bluetooth_observer->GetConnectedBluetoothDevice(device);
+  CHECK(bt_device);
+  auto battery_info =
+      bt_device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
+  CHECK(battery_info->percentage.has_value());
+  const int percentage = battery_info->percentage.value();
+  CHECK_GE(percentage, 0);
+  CHECK_LE(percentage, 100);
+  return mojom::BatteryInfo::New(percentage, GetChargeStateFromBluetoothDevice(
+                                                 battery_info->charge_state));
+}
+
+bool ShouldAddBatteryInfo(const ui::InputDevice& device,
+                          BluetoothDevicesObserver* bluetooth_observer) {
+  return features::IsWelcomeExperienceEnabled() &&
+         device.type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH &&
+         bluetooth_observer->IsConnectedBluetoothDevice(device);
+}
+
+mojom::KeyboardPtr BuildMojomKeyboard(
+    const ui::KeyboardDevice& keyboard,
+    BluetoothDevicesObserver* bluetooth_observer) {
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
   mojom_keyboard->name = keyboard.name;
@@ -240,13 +277,18 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
   }
   RecordKeyboardMetadataTierMetrics(keyboard);
 
+  if (ShouldAddBatteryInfo(keyboard, bluetooth_observer)) {
+    mojom_keyboard->battery_info = GetBatteryInfo(keyboard, bluetooth_observer);
+  }
+
   return mojom_keyboard;
 }
 
 mojom::MousePtr BuildMojomMouse(
     const ui::InputDevice& mouse,
     mojom::CustomizationRestriction customization_restriction,
-    mojom::MouseButtonConfig mouse_button_config) {
+    mojom::MouseButtonConfig mouse_button_config,
+    BluetoothDevicesObserver* bluetooth_observer) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
   mojom_mouse->name = mouse.name;
@@ -259,10 +301,16 @@ mojom::MousePtr BuildMojomMouse(
       mouse.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   RecordMouseMetadataTierMetrics(mouse, mouse_button_config);
 
+  if (ShouldAddBatteryInfo(mouse, bluetooth_observer)) {
+    mojom_mouse->battery_info = GetBatteryInfo(mouse, bluetooth_observer);
+  }
+
   return mojom_mouse;
 }
 
-mojom::TouchpadPtr BuildMojomTouchpad(const ui::TouchpadDevice& touchpad) {
+mojom::TouchpadPtr BuildMojomTouchpad(
+    const ui::TouchpadDevice& touchpad,
+    BluetoothDevicesObserver* bluetooth_observer) {
   mojom::TouchpadPtr mojom_touchpad = mojom::Touchpad::New();
   mojom_touchpad->id = touchpad.id;
   mojom_touchpad->name = touchpad.name;
@@ -272,6 +320,11 @@ mojom::TouchpadPtr BuildMojomTouchpad(const ui::TouchpadDevice& touchpad) {
   mojom_touchpad->is_external =
       touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   mojom_touchpad->is_haptic = touchpad.is_haptic;
+
+  if (ShouldAddBatteryInfo(touchpad, bluetooth_observer)) {
+    mojom_touchpad->battery_info = GetBatteryInfo(touchpad, bluetooth_observer);
+  }
+
   return mojom_touchpad;
 }
 
@@ -291,7 +344,8 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
     const ui::InputDevice& graphics_tablet,
     mojom::CustomizationRestriction customization_restriction,
-    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config) {
+    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config,
+    BluetoothDevicesObserver* bluetooth_observer) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
   mojom_graphics_tablet->name = graphics_tablet.name;
   mojom_graphics_tablet->id = graphics_tablet.id;
@@ -303,6 +357,11 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
           graphics_tablet);
   RecordGraphicsTabletMetadataTierMetrics(graphics_tablet,
                                           graphics_tablet_button_config);
+
+  if (ShouldAddBatteryInfo(graphics_tablet, bluetooth_observer)) {
+    mojom_graphics_tablet->battery_info =
+        GetBatteryInfo(graphics_tablet, bluetooth_observer);
+  }
 
   return mojom_graphics_tablet;
 }
@@ -685,6 +744,12 @@ void InputDeviceSettingsControllerImpl::Init() {
         base::BindRepeating(
             &InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated,
             base::Unretained(this)));
+  }
+  if (features::IsWelcomeExperienceEnabled()) {
+    bluetooth_devices_observer_ = std::make_unique<
+        BluetoothDevicesObserver>(base::BindRepeating(
+        &InputDeviceSettingsControllerImpl::OnBluetoothAdapterOrDeviceChanged,
+        base::Unretained(this)));
   }
   metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
 }
@@ -1682,7 +1747,8 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
   for (const auto& keyboard : keyboards_to_add) {
     // Get initial settings from the pref manager and generate our local
     // storage of the device.
-    auto mojom_keyboard = BuildMojomKeyboard(keyboard);
+    auto mojom_keyboard =
+        BuildMojomKeyboard(keyboard, bluetooth_devices_observer_.get());
     InitializeKeyboardSettings(mojom_keyboard.get());
     keyboards_.insert_or_assign(keyboard.id, std::move(mojom_keyboard));
     DispatchKeyboardConnected(keyboard.id);
@@ -1699,7 +1765,8 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     std::vector<ui::TouchpadDevice> touchpads_to_add,
     std::vector<DeviceId> touchpad_ids_to_remove) {
   for (const auto& touchpad : touchpads_to_add) {
-    auto mojom_touchpad = BuildMojomTouchpad(touchpad);
+    auto mojom_touchpad =
+        BuildMojomTouchpad(touchpad, bluetooth_devices_observer_.get());
     InitializeTouchpadSettings(mojom_touchpad.get());
     touchpads_.insert_or_assign(touchpad.id, std::move(mojom_touchpad));
     DispatchTouchpadConnected(touchpad.id);
@@ -1716,9 +1783,9 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     std::vector<ui::InputDevice> mice_to_add,
     std::vector<DeviceId> mouse_ids_to_remove) {
   for (const auto& mouse : mice_to_add) {
-    auto mojom_mouse =
-        BuildMojomMouse(mouse, GetMouseCustomizationRestriction(mouse),
-                        GetMouseButtonConfig(mouse));
+    auto mojom_mouse = BuildMojomMouse(
+        mouse, GetMouseCustomizationRestriction(mouse),
+        GetMouseButtonConfig(mouse), bluetooth_devices_observer_.get());
     InitializeMouseSettings(mojom_mouse.get());
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyMouseFirstTimeConnected(*mojom_mouse);
@@ -1760,7 +1827,8 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(
         graphics_tablet,
         GetGraphicsTabletCustomizationRestriction(graphics_tablet),
-        GetGraphicsTabletButtonConfig(graphics_tablet));
+        GetGraphicsTabletButtonConfig(graphics_tablet),
+        bluetooth_devices_observer_.get());
     InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyGraphicsTabletFirstTimeConnected(
@@ -2303,5 +2371,10 @@ void InputDeviceSettingsControllerImpl::InputMethodChanged(
       base::BindOnce(&InputDeviceSettingsControllerImpl::RefreshKeyDisplay,
                      weak_ptr_factory_.GetWeakPtr()));
 }
+
+// Do nothing as OnBluetoothAdapterOrDeviceChanged is very noisy and causes
+// updates to happen many times per second.
+void InputDeviceSettingsControllerImpl::OnBluetoothAdapterOrDeviceChanged(
+    device::BluetoothDevice* device) {}
 
 }  // namespace ash

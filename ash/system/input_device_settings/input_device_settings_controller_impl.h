@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/bluetooth_devices_observer.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
@@ -232,6 +233,10 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   mojom::GraphicsTabletButtonConfig GetGraphicsTabletButtonConfig(
       const ui::InputDevice& graphics_tablet);
 
+  // Used as callback for `bluetooth_devices_observer_` whenever a bluetooth
+  // device state changes.
+  void OnBluetoothAdapterOrDeviceChanged(device::BluetoothDevice* device);
+
   mojom::Mouse* FindMouse(DeviceId id);
   mojom::Touchpad* FindTouchpad(DeviceId id);
   mojom::Keyboard* FindKeyboard(DeviceId id);
@@ -275,6 +280,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   std::unique_ptr<InputDeviceSettingsNotificationController>
       notification_controller_;
+
+  std::unique_ptr<BluetoothDevicesObserver> bluetooth_devices_observer_;
 
   raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
   std::optional<AccountId> active_account_id_;

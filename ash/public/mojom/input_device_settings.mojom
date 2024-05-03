@@ -128,6 +128,26 @@ enum TopRowActionKey {
   kAccessibility,
 };
 
+// Specifies the current charging state of a battery-powered device.
+enum ChargeState {
+  // Initial state or when the charge state cannot be determined.
+  kUnknown,
+  // The device is currently being charged (plugged in and receiving power).
+  kCharging,
+  // The device is running on battery power (not plugged in or not receiving
+  // power).
+  kDischarging,
+};
+
+// Represents the current state of a device's battery.
+struct BatteryInfo {
+  // The remaining battery charge as a percentage (0-100).
+  uint8 battery_percentage;
+  // Indicates whether the battery is charging, discharging, or in an unknown
+  // state.
+  ChargeState charge_state;
+};
+
 // Contains all information needed to display, apply, and update keyboard
 // settings.
 struct Keyboard {
@@ -151,6 +171,7 @@ struct Keyboard {
   // The keys are stored in the order they appear on the device.
   array<TopRowActionKey> top_row_action_keys;
   KeyboardSettings settings;
+  BatteryInfo? battery_info;
 };
 
 // Contains all existing keyboard settings available for use.
@@ -187,6 +208,7 @@ struct Mouse {
   // Used to get the mouse button config.
   MouseButtonConfig mouse_button_config;
   MouseSettings settings;
+  BatteryInfo? battery_info;
 };
 
 // Contains all existing mouse settings available for use.
@@ -225,6 +247,7 @@ struct Touchpad {
   // Whether the touchpad is haptic or not.
   bool is_haptic;
   TouchpadSettings settings;
+  BatteryInfo? battery_info;
 };
 
 // Contains all existing touchpad settings available for use.
@@ -308,6 +331,7 @@ struct GraphicsTablet {
   // metadata.
   GraphicsTabletButtonConfig graphics_tablet_button_config;
   GraphicsTabletSettings settings;
+  BatteryInfo? battery_info;
 };
 
 // Contains all existing graphics tablet settings available for use.
