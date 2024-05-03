@@ -236,8 +236,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 
   // Perform the operations on the WebStateList.
-  const WebStateList::ScopedBatchOperation batch =
-      webStateList->StartBatchOperation();
+  // TODO(crbug.com/338346284): Add a ScopedBatchOperation lock once all
+  // observers are correctly handling batched operations.
 
   // If the active tab is going to be closed, pick the last ungrouped
   // NTP as the new active tab, otherwise insert a new NTP.
