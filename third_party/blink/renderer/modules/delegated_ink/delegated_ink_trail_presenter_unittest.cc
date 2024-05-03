@@ -91,6 +91,7 @@ class DelegatedInkTrailPresenterUnitTest : public SimTest {
       init->setButtons(MouseEvent::WebInputEventModifiersToButtons(
           WebInputEvent::Modifiers::kLeftButtonDown));
     }
+    init->setView(&Window());
     PointerEvent* event =
         PointerEvent::Create(event_type_names::kPointermove, init);
     event->SetTrusted(true);

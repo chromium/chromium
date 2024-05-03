@@ -76,13 +76,11 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   if (!layout_box || !layout_view)
     return;
 
-  const float effective_zoom = layout_view->StyleRef().EffectiveZoom();
-
-  PhysicalOffset physical_point(LayoutUnit(evt->x()), LayoutUnit(evt->y()));
-  physical_point.Scale(effective_zoom);
-  physical_point = layout_view->LocalToAbsolutePoint(
-      physical_point, kTraverseDocumentBoundaries);
-  gfx::PointF point = gfx::PointF(physical_point);
+  // Use the event's absolute location as it is already scaled by the page
+  // zoom factor. Convert to absolute point so that a point from the root frame
+  // is obtained in the case of an iframe.
+  gfx::PointF point = evt->AbsoluteLocation();
+  point = layout_view->LocalToAbsolutePoint(point, kTraverseDocumentBoundaries);
 
   // Intersect with the visible viewport so that the presentation area can't
   // extend beyond the edges of the window or over the scrollbars. The frame
@@ -129,7 +127,8 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   const bool is_hovering =
       !(evt->GetModifiers() & WebInputEvent::Modifiers::kLeftButtonDown);
 
-  const double diameter_in_physical_pixels = style->diameter() * effective_zoom;
+  const double diameter_in_physical_pixels =
+      style->diameter() * layout_view->StyleRef().EffectiveZoom();
   std::unique_ptr<gfx::DelegatedInkMetadata> metadata =
       std::make_unique<gfx::DelegatedInkMetadata>(
           point, diameter_in_physical_pixels, color.Rgb(),
