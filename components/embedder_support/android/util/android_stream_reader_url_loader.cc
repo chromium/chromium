@@ -467,10 +467,14 @@ void AndroidStreamReaderURLLoader::DidRead(int result) {
   producer_handle_ = pending_buffer_->Complete(result);
   pending_buffer_ = nullptr;
 
-  // TODO(timvolodine): consider using a sequenced task runner.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&AndroidStreamReaderURLLoader::ReadMore,
-                                weak_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(features::kInputStreamOptimizations)) {
+    ReadMore();
+  } else {
+    // TODO(timvolodine): consider using a sequenced task runner.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&AndroidStreamReaderURLLoader::ReadMore,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void AndroidStreamReaderURLLoader::OnDataPipeWritable(MojoResult result) {
