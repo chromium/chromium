@@ -11,7 +11,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
@@ -118,10 +118,9 @@ public class FeedPositionUtils {
      * Called to cache segment selection result from segmentation platform service into prefs for
      * synchronous API calls. Called early during initialization.
      */
-    public static void cacheSegmentationResult() {
+    public static void cacheSegmentationResult(Profile profile) {
         SegmentationPlatformService segmentationPlatformService =
-                SegmentationPlatformServiceFactory.getForProfile(
-                        ProfileManager.getLastUsedRegularProfile());
+                SegmentationPlatformServiceFactory.getForProfile(profile);
         PredictionOptions options = new PredictionOptions(/* onDemandExecution= */ false);
         segmentationPlatformService.getClassificationResult(
                 FEED_USER_SEGMENT_KEY,

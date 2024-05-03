@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap.ProfileSelection;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
@@ -203,6 +204,7 @@ public class ProcessInitializationHandler {
     }
 
     /** Performs the post native initialization. */
+    @CallSuper
     protected void handlePostNativeInitialization() {
         ChromeActivitySessionTracker.getInstance().initializeWithNative();
         ProfileManagerUtils.removeSessionCookiesForAllProfiles();
@@ -278,8 +280,25 @@ public class ProcessInitializationHandler {
                                 () -> PlatformContentCaptureController.getInstance()));
 
         PrivacyPreferencesManagerImpl.getInstance().onNativeInitialized();
-        refreshCachedSegmentationResult();
         setProcessStateSummaryForAnrs(true);
+
+        List<Profile> profiles = ProfileManager.getLoadedProfiles();
+        assert !profiles.isEmpty()
+                : "At least one Profile should be loaded before post native init.";
+        for (Profile profile : profiles) {
+            handleProfileDependentPostNativeInitialization(profile);
+        }
+        ProfileManager.addObserver(
+                new ProfileManager.Observer() {
+                    @Override
+                    public void onProfileAdded(Profile profile) {
+                        if (profile.isOffTheRecord()) return;
+                        handleProfileDependentPostNativeInitialization(profile);
+                    }
+
+                    @Override
+                    public void onProfileDestroyed(Profile profile) {}
+                });
 
         AccessibilityState.registerObservers();
 
@@ -298,12 +317,22 @@ public class ProcessInitializationHandler {
     }
 
     /**
+     * Handle per-{@link Profile} post native initialization.
+     *
+     * <p>This will be called for each non-incognito {@link Profile} that is loaded and initialized.
+     */
+    @CallSuper
+    protected void handleProfileDependentPostNativeInitialization(Profile profile) {
+        FeedPositionUtils.cacheSegmentationResult(profile);
+    }
+
+    /**
      * We use the Android API to store key information which we can't afford to have wrong on our
      * ANR reports. So, we set the version number, and the main .so file's Build ID once native has
      * been loaded. Then, when we query Android for any ANRs that have happened, we can also pull
      * these key fields.
      *
-     * We are limited to 128 bytes in ProcessStateSummary, so we only store the most important
+     * <p>We are limited to 128 bytes in ProcessStateSummary, so we only store the most important
      * things that can change between the ANR happening and an upload (when the rest of the metadata
      * is gathered). Some fields we ignore because they won't change (eg. which channel or what the
      * .so filename is) and some we ignore because they aren't as critical (eg. experiments). In the
@@ -693,10 +722,6 @@ public class ProcessInitializationHandler {
                 prefs.writeBoolean(ChromePreferenceKeys.SNAPSHOT_DATABASE_REMOVED, true);
             }
         }
-    }
-
-    private void refreshCachedSegmentationResult() {
-        FeedPositionUtils.cacheSegmentationResult();
     }
 
     private void startBindingManagementIfNeeded() {

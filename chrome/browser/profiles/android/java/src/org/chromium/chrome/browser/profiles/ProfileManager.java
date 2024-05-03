@@ -14,6 +14,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** Java interface to the C++ ProfileManager. */
 public class ProfileManager {
     private static Profile sLastUsedProfileForTesting;
@@ -98,6 +101,11 @@ public class ProfileManager {
         return (Profile) ProfileManagerJni.get().getLastUsedRegularProfile();
     }
 
+    /** Return the fully loaded and initialized Profiles (excluding off the record Profiles). */
+    public static List<Profile> getLoadedProfiles() {
+        return (List<Profile>) (List<?>) Arrays.asList(ProfileManagerJni.get().getLoadedProfiles());
+    }
+
     /**
      * Destroys the Profile. Destruction is delayed until all associated renderers have been killed,
      * so the profile might not be destroyed upon returning from this call.
@@ -123,5 +131,7 @@ public class ProfileManager {
         Object getLastUsedRegularProfile();
 
         void destroyWhenAppropriate(@JniType("Profile*") Profile caller);
+
+        Object[] getLoadedProfiles();
     }
 }

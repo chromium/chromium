@@ -30,7 +30,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
@@ -50,7 +49,6 @@ public class FeedPositionUtilUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
         SegmentationPlatformServiceFactory.setForTests(mSegmentationPlatformService);
         setClassificationResult(new ClassificationResult(PredictionStatus.NOT_READY, null));
     }
@@ -70,7 +68,7 @@ public class FeedPositionUtilUnitTest {
                 .when(mSegmentationPlatformService)
                 .getClassificationResult(eq(FEED_USER_SEGMENT_KEY), any(), any(), any());
 
-        FeedPositionUtils.cacheSegmentationResult();
+        FeedPositionUtils.cacheSegmentationResult(mProfile);
     }
 
     @Test
