@@ -339,8 +339,7 @@ bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
   TRACE_EVENT0(
       "blink",
       "CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource");
-  const gpu::Mailbox& mailbox = GetOrCreateGpuMailbox(kVerifiedSyncToken);
-  if (mailbox.IsZero()) {
+  if (shared_bitmap_id_.IsZero()) {
     return false;
   }
 
@@ -348,8 +347,9 @@ bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
   // the resource type and completely ignores the format set on the
   // TransferableResource. Clients are expected to render in N32 format but use
   // RGBA as the tagged format on resources.
-  *out_resource = viz::TransferableResource::MakeSoftware(
-      mailbox, gpu::SyncToken(), Size(), viz::SinglePlaneFormat::kRGBA_8888,
+  *out_resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
+      shared_bitmap_id_, gpu::SyncToken(), Size(),
+      viz::SinglePlaneFormat::kRGBA_8888,
       viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
