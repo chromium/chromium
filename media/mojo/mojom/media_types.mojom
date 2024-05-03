@@ -433,6 +433,7 @@ union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedMemoryVideoFrameData shared_memory_data;
   GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
+  GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
   MailboxVideoFrameData mailbox_data;
   SharedImageVideoFrameData shared_image_data;
 };
@@ -455,6 +456,14 @@ struct SharedMemoryVideoFrameData {
 struct GpuMemoryBufferVideoFrameData {
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
   array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
+};
+
+struct GpuMemoryBufferSharedImageVideoFrameData {
+  gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
+  // Size should be no greater than media::VideoFrame::kMaxPlanes.
+  array<gpu.mojom.ExportedSharedImage> shared_images;
+  gpu.mojom.SyncToken sync_token;
+  uint32 texture_target;
 };
 
 // This defines video frame data stored in texture mailboxes.
