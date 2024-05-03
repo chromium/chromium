@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 63
+version_id: 64
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -885,6 +885,46 @@ file_types {
 file_types {
   extension: "pyw"
   uma_value: 132
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_LINUX
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  platform_settings {
+    platform: PLATFORM_TYPE_MAC
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "pyz"
+  uma_value: 410
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_LINUX
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  platform_settings {
+    platform: PLATFORM_TYPE_MAC
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "pyzw"
+  uma_value: 411
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_TYPE_LINUX
