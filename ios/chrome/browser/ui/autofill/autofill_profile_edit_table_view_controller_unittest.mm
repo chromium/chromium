@@ -459,13 +459,26 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AutofillProfileEditTableViewControllerTestWithDynamicFieldsEnabled,
        SectionsAndItems) {
   auto test_case = GetParam();
-  bool multiple_sections = (test_case.is_settings && test_case.account_profile);
-  EXPECT_EQ(NumberOfSections(), multiple_sections ? 2 : 1);
-  if (test_case.account_profile ||
-      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
-    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 9 : 11);
-  } else {
-    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 9 : 10);
+  EXPECT_EQ(NumberOfSections(),
+            (test_case.is_settings && !test_case.account_profile) ? 3 : 4);
+  EXPECT_EQ(NumberOfItemsInSection(0), 2);
+  EXPECT_EQ(NumberOfItemsInSection(1), 5);
+  EXPECT_EQ(NumberOfItemsInSection(2), 2);
+
+  if (test_case.account_profile) {
+    EXPECT_EQ(NumberOfItemsInSection(3), test_case.is_settings ? 0 : 2);
+    if (test_case.is_settings) {
+      NSString* expected_footer_text = l10n_util::GetNSStringF(
+          IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT,
+          kTestSyncingEmail);
+      CheckSectionFooter(expected_footer_text, 3);
+    }
+  } else if (!test_case.is_settings) {
+    EXPECT_EQ(
+        NumberOfItemsInSection(3),
+        test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile
+            ? 2
+            : 1);
   }
 
   CountryItem* countryItem =
@@ -475,11 +488,5 @@ TEST_P(AutofillProfileEditTableViewControllerTestWithDynamicFieldsEnabled,
 
   [autofill_profile_edit_mediator_ didSelectCountry:countryItem];
 
-  // Check state field is not an input field for Germany.
-  if (test_case.account_profile ||
-      test_case.prompt_mode == AutofillSaveProfilePromptMode::kMigrateProfile) {
-    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 8 : 10);
-  } else {
-    EXPECT_EQ(NumberOfItemsInSection(0), test_case.is_settings ? 8 : 9);
-  }
+  EXPECT_EQ(NumberOfItemsInSection(1), 4);
 }

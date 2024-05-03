@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -23,6 +24,9 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
 // Custom detent identifier for when the bottom sheet is expanded.
 NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
+
+// Estimated height of the header/footer, used to speed the constraints.
+const CGFloat kEstimatedHeaderFooterHeight = 10;
 
 }  // namespace
 
@@ -46,7 +50,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     initWithDelegate:
         (id<AutofillEditProfileBottomSheetTableViewControllerDelegate>)delegate
        editSheetMode:(AutofillSaveProfilePromptMode)editSheetMode {
-  self = [super initWithStyle:UITableViewStylePlain];
+  self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _delegate = delegate;
     _editSheetMode = editSheetMode;
@@ -60,9 +64,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [self setUpBottomSheetPresentationController];
   [self setUpBottomSheetDetents];
 
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.tableView.sectionHeaderHeight = 0;
+  self.tableView.sectionHeaderHeight = kEstimatedHeaderFooterHeight;
+  self.tableView.sectionFooterHeight = kEstimatedHeaderFooterHeight;
   self.tableView.estimatedRowHeight = 56;
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];

@@ -9,6 +9,7 @@
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
@@ -78,6 +79,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   // Denotes that the views are laid out to migrate an incomplete profile to
   // account from the settings.
   BOOL _moveToAccountFromSettings;
+
+  // Yes if `kAutofillDynamicallyLoadsFieldsForAddressInput` is enabled.
+  BOOL _dynamicallyLoadInputFieldsEnabled;
 }
 
 #pragma mark - Initialization
@@ -96,6 +100,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _controller = controller;
     _settingsView = settingsView;
     _moveToAccountFromSettings = NO;
+    _dynamicallyLoadInputFieldsEnabled = base::FeatureList::IsEnabled(
+        kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
 
   return self;
@@ -108,42 +114,37 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)updateProfileData {
-  TableViewModel* model = _controller.tableViewModel;
-  NSInteger itemCount =
-      [model numberOfItemsInSection:
-                 [model sectionForSectionIdentifier:
-                            AutofillProfileDetailsSectionIdentifierFields]];
-
-  // Reads the values from the fields and updates the local copy of the
-  // profile accordingly.
-  NSInteger section = [model sectionForSectionIdentifier:
-                                 AutofillProfileDetailsSectionIdentifierFields];
-  for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
-    NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
-                                            inSection:section];
-    NSInteger itemType = [_controller.tableViewModel itemTypeForIndexPath:path];
-
-    if (itemType == AutofillProfileDetailsItemTypeCountrySelectionField) {
-      [_delegate updateProfileMetadataWithValue:[self countryFieldCurrentValue]
-                           forAutofillFieldType:[self countryFieldKeyValue]];
-      continue;
-    } else if (![self isItemTypeTextEditCell:itemType]) {
-      continue;
-    }
-
-    AutofillProfileEditItem* item =
-        base::apple::ObjCCastStrict<AutofillProfileEditItem>(
-            [model itemAtIndexPath:path]);
-    [_delegate updateProfileMetadataWithValue:item.textFieldValue
-                         forAutofillFieldType:item.autofillFieldType];
+  if (_dynamicallyLoadInputFieldsEnabled) {
+    [self updateProfileDataForSection:
+              AutofillProfileDetailsSectionIdentifierName];
+    [self updateProfileDataForSection:
+              AutofillProfileDetailsSectionIdentifierAddress];
+    [self updateProfileDataForSection:
+              AutofillProfileDetailsSectionIdentifierPhoneEmail];
+  } else {
+    [self updateProfileDataForSection:
+              AutofillProfileDetailsSectionIdentifierFields];
   }
 }
 
 - (void)reconfigureCells {
-  [_controller reconfigureCellsForItems:
-                   [_controller.tableViewModel
-                       itemsInSectionWithIdentifier:
-                           AutofillProfileDetailsSectionIdentifierFields]];
+  if (_dynamicallyLoadInputFieldsEnabled) {
+    const std::array<AutofillProfileDetailsSectionIdentifier, 3> allSections = {
+        AutofillProfileDetailsSectionIdentifierName,
+        AutofillProfileDetailsSectionIdentifierAddress,
+        AutofillProfileDetailsSectionIdentifierPhoneEmail};
+
+    for (const AutofillProfileDetailsSectionIdentifier section : allSections) {
+      [_controller
+          reconfigureCellsForItems:[_controller.tableViewModel
+                                       itemsInSectionWithIdentifier:section]];
+    }
+  } else {
+    [_controller reconfigureCellsForItems:
+                     [_controller.tableViewModel
+                         itemsInSectionWithIdentifier:
+                             AutofillProfileDetailsSectionIdentifierFields]];
+  }
 }
 
 - (void)loadModel {
@@ -152,31 +153,73 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   TableViewModel* model = _controller.tableViewModel;
 
-  if (![model hasSectionForSectionIdentifier:
-                  AutofillProfileDetailsSectionIdentifierFields]) {
-    [model
-        addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
-  }
+  if (_dynamicallyLoadInputFieldsEnabled) {
+    if (![model hasSectionForSectionIdentifier:
+                    AutofillProfileDetailsSectionIdentifierName]) {
+      [model
+          addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
 
-  [model addItem:[self nameItem]
-      toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
-  [model addItem:[self companyItem]
-      toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+      [model addItem:[self nameItem]
+          toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
+      [model addItem:[self companyItem]
+          toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierName];
+    }
 
-  for (AutofillProfileAddressField* addressField in self.addressInputFields) {
+    if (![model hasSectionForSectionIdentifier:
+                    AutofillProfileDetailsSectionIdentifierAddress]) {
+      [model addSectionWithIdentifier:
+                 AutofillProfileDetailsSectionIdentifierAddress];
+    }
+    for (AutofillProfileAddressField* addressField in self.addressInputFields) {
+      [model addItem:[self addressItem:addressField.fieldLabel
+                             fieldType:addressField.fieldType]
+          toSectionWithIdentifier:
+              AutofillProfileDetailsSectionIdentifierAddress];
+    }
+
+    [model addItem:[self countryItem]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierAddress];
+
+    if (![model hasSectionForSectionIdentifier:
+                    AutofillProfileDetailsSectionIdentifierPhoneEmail]) {
+      [model addSectionWithIdentifier:
+                 AutofillProfileDetailsSectionIdentifierPhoneEmail];
+
+      [model addItem:[self phoneItem]
+          toSectionWithIdentifier:
+              AutofillProfileDetailsSectionIdentifierPhoneEmail];
+      [model addItem:[self emailItem]
+          toSectionWithIdentifier:
+              AutofillProfileDetailsSectionIdentifierPhoneEmail];
+    }
+
+  } else {
+    if (![model hasSectionForSectionIdentifier:
+                    AutofillProfileDetailsSectionIdentifierFields]) {
+      [model addSectionWithIdentifier:
+                 AutofillProfileDetailsSectionIdentifierFields];
+    }
+
+    [model addItem:[self nameItem]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+    [model addItem:[self companyItem]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+
+    for (AutofillProfileAddressField* addressField in self.addressInputFields) {
       [model addItem:[self addressItem:addressField.fieldLabel
                              fieldType:addressField.fieldType]
           toSectionWithIdentifier:
               AutofillProfileDetailsSectionIdentifierFields];
+    }
+
+    [model addItem:[self countryItem]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+
+    [model addItem:[self phoneItem]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+    [model addItem:[self emailItem]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
   }
-
-  [model addItem:[self countryItem]
-      toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
-
-  [model addItem:[self phoneItem]
-      toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
-  [model addItem:[self emailItem]
-      toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
 }
 
 - (UITableViewCell*)cell:(UITableViewCell*)cell
@@ -241,7 +284,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   NSInteger sectionIdentifier =
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
-  return sectionIdentifier == AutofillProfileDetailsSectionIdentifierFooter ||
+  AutofillProfileDetailsSectionIdentifier firstFieldSection =
+      _dynamicallyLoadInputFieldsEnabled
+          ? AutofillProfileDetailsSectionIdentifierName
+          : AutofillProfileDetailsSectionIdentifierFields;
+
+  return sectionIdentifier == firstFieldSection ||
          sectionIdentifier ==
              AutofillProfileDetailsSectionIdentifierErrorFooter;
 }
@@ -250,7 +298,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   NSInteger sectionIdentifier =
       [_controller.tableViewModel sectionIdentifierForSectionIndex:section];
 
-  return (sectionIdentifier == AutofillProfileDetailsSectionIdentifierFields) ||
+  AutofillProfileDetailsSectionIdentifier lastFieldSection =
+      _dynamicallyLoadInputFieldsEnabled
+          ? AutofillProfileDetailsSectionIdentifierPhoneEmail
+          : AutofillProfileDetailsSectionIdentifierFields;
+
+  return (sectionIdentifier == lastFieldSection) ||
          (!_settingsView &&
           sectionIdentifier == AutofillProfileDetailsSectionIdentifierFooter);
 }
@@ -270,14 +323,21 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)loadMessageAndButtonForModalIfSaveOrUpdate:(BOOL)update {
   CHECK(!_settingsView);
   TableViewModel* model = _controller.tableViewModel;
+  AutofillProfileDetailsSectionIdentifier sectionIdentifier =
+      AutofillProfileDetailsSectionIdentifierFields;
+  if (_dynamicallyLoadInputFieldsEnabled) {
+    sectionIdentifier = AutofillProfileDetailsSectionIdentifierButton;
+    [model addSectionWithIdentifier:sectionIdentifier];
+  }
+
   if (self.accountProfile || self.migrationPrompt) {
     DCHECK([_userEmail length] > 0);
     [model addItem:[self footerItemForModalViewIfSaveOrUpdate:update]
-        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+        toSectionWithIdentifier:sectionIdentifier];
   }
 
   [model addItem:[self saveButtonIfSaveOrUpdate:update]
-      toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+      toSectionWithIdentifier:sectionIdentifier];
   _hasSaveButton = !update;
   _hasUpdateButton = update;
 }
@@ -333,14 +393,19 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)didSelectCountry:(NSString*)country {
   // Remove the previously inserted fields.
   TableViewModel* model = _controller.tableViewModel;
-  [model deleteAllItemsFromSectionWithIdentifier:
-             AutofillProfileDetailsSectionIdentifierFields];
+  if (_dynamicallyLoadInputFieldsEnabled) {
+    [model deleteAllItemsFromSectionWithIdentifier:
+               AutofillProfileDetailsSectionIdentifierAddress];
+  } else {
+    [model deleteAllItemsFromSectionWithIdentifier:
+               AutofillProfileDetailsSectionIdentifierFields];
+  }
 
   // Re-insert the fields based on the new country.
   BOOL hasButton = _hasSaveButton || _hasUpdateButton;
   BOOL update = _hasUpdateButton;
   [self loadModel];
-  if (hasButton) {
+  if (hasButton && !_dynamicallyLoadInputFieldsEnabled) {
     [self loadMessageAndButtonForModalIfSaveOrUpdate:update];
   }
 
@@ -560,11 +625,16 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
         if (!strongSelf) {
           return;
         }
-        [weakSelf removeSectionWithIdentifier:removeSection
-                             withRowAnimation:UITableViewRowAnimationTop];
+
+        [strongSelf removeSectionWithIdentifier:removeSection
+                               withRowAnimation:UITableViewRowAnimationTop];
+
+        AutofillProfileDetailsSectionIdentifier lastFieldSection =
+            strongSelf->_dynamicallyLoadInputFieldsEnabled
+                ? AutofillProfileDetailsSectionIdentifierPhoneEmail
+                : AutofillProfileDetailsSectionIdentifierFields;
         NSUInteger fieldsSectionIndex =
-            [model sectionForSectionIdentifier:
-                       AutofillProfileDetailsSectionIdentifierFields];
+            [model sectionForSectionIdentifier:lastFieldSection];
         [model insertSectionWithIdentifier:addSection
                                    atIndex:fieldsSectionIndex + 1];
         [strongSelf->_controller.tableView
@@ -696,9 +766,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Recomputes the required fields that are empty.
 - (void)findRequiredFieldsWithEmptyValues {
   [_delegate resetRequiredFieldsWithEmptyValuesCount];
+  AutofillProfileDetailsSectionIdentifier sectionIdentifier =
+      _dynamicallyLoadInputFieldsEnabled
+          ? AutofillProfileDetailsSectionIdentifierAddress
+          : AutofillProfileDetailsSectionIdentifierFields;
   for (TableViewItem* item in [_controller.tableViewModel
-           itemsInSectionWithIdentifier:
-               AutofillProfileDetailsSectionIdentifierFields]) {
+           itemsInSectionWithIdentifier:sectionIdentifier]) {
     if (item.type == AutofillProfileDetailsItemTypeCountrySelectionField) {
       TableViewMultiDetailTextItem* multiDetailTextItem =
           base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
@@ -732,6 +805,38 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (NSString*)countryFieldKeyValue {
   return base::SysUTF8ToNSString(
       autofill::FieldTypeToString(autofill::ADDRESS_HOME_COUNTRY));
+}
+
+// Informs the delegate to update the field data for the section
+// `sectionIdentifier`.
+- (void)updateProfileDataForSection:
+    (AutofillProfileDetailsSectionIdentifier)sectionIdentifier {
+  TableViewModel* model = _controller.tableViewModel;
+  NSInteger itemCount =
+      [model numberOfItemsInSection:
+                 [model sectionForSectionIdentifier:sectionIdentifier]];
+  // Reads the values from the fields and updates the local copy of the
+  // profile accordingly.
+  NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
+  for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+    NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
+                                            inSection:section];
+    NSInteger itemType = [_controller.tableViewModel itemTypeForIndexPath:path];
+
+    if (itemType == AutofillProfileDetailsItemTypeCountrySelectionField) {
+      [_delegate updateProfileMetadataWithValue:[self countryFieldCurrentValue]
+                           forAutofillFieldType:[self countryFieldKeyValue]];
+      continue;
+    } else if (![self isItemTypeTextEditCell:itemType]) {
+      continue;
+    }
+
+    AutofillProfileEditItem* item =
+        base::apple::ObjCCastStrict<AutofillProfileEditItem>(
+            [model itemAtIndexPath:path]);
+    [_delegate updateProfileMetadataWithValue:item.textFieldValue
+                         forAutofillFieldType:item.autofillFieldType];
+  }
 }
 
 @end

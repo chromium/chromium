@@ -15,6 +15,10 @@
 // for autofill profile edit views.
 typedef NS_ENUM(NSInteger, AutofillProfileDetailsSectionIdentifier) {
   AutofillProfileDetailsSectionIdentifierFields = kSectionIdentifierEnumZero,
+  AutofillProfileDetailsSectionIdentifierName,
+  AutofillProfileDetailsSectionIdentifierAddress,
+  AutofillProfileDetailsSectionIdentifierPhoneEmail,
+  AutofillProfileDetailsSectionIdentifierButton,
   AutofillProfileDetailsSectionIdentifierErrorFooter,
   AutofillProfileDetailsSectionIdentifierFooter,
 };
